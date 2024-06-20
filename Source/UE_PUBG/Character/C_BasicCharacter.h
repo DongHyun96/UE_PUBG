@@ -6,6 +6,25 @@
 #include "GameFramework/Character.h"
 #include "C_BasicCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class EHandState : uint8
+{
+	UNARMED,
+	WEAWPON_MAIN,
+	WEAPON_SUB,
+	WEAPON_MELEE,
+	WEAPON_THROWABLE
+};
+
+UENUM(BlueprintType)
+enum class EPoseState : uint8
+{
+	STAND,
+	CROUCH,
+	CRAWL
+};
+
+
 UCLASS()
 class UE_PUBG_API AC_BasicCharacter : public ACharacter
 {
@@ -25,5 +44,13 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+protected:
+
+	// Current hand state
+	EHandState HandState{};
+
+	// Current post state 
+	EPoseState PoseState{};
 
 };
