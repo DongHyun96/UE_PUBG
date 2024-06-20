@@ -13,5 +13,21 @@ UCLASS()
 class UE_PUBG_API AC_Player : public AC_BasicCharacter
 {
 	GENERATED_BODY()
-	
+
+public:
+	AC_Player();
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	class UC_InputComponent* MyInputComponent{};
+
 };
