@@ -25,6 +25,14 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	void Move(const struct FInputActionValue& Value);
+	void Look(const struct FInputActionValue& Value);
+	void Walk(const struct FInputActionValue& Value);
+
+	void OnJump();
+
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
