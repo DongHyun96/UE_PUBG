@@ -45,6 +45,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public: // Getters and setters
+
+	EHandState GetHandState() const { return HandState; }
+	EPoseState GetPoseState() const { return PoseState; }
+
 protected:
 
 	// Current hand state
