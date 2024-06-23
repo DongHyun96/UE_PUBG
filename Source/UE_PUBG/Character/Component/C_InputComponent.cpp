@@ -3,9 +3,6 @@
 
 #include "Character/Component/C_InputComponent.h"
 #include "Components/ActorComponent.h"
-#include "UE_PUBG/Character/C_Player.h"
-#include "EnhancedInputComponent.h"
-
 
 // Sets default values for this component's properties
 UC_InputComponent::UC_InputComponent()
@@ -24,7 +21,7 @@ void UC_InputComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-
+	
 }
 
 
@@ -35,22 +32,4 @@ void UC_InputComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	// ...
 }
-
-void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Player* Player)
-{
-	//Player->SetupPlayerInputComponent(PlayerInputComponent);
-
-	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-
-	if (IsValid(EnhancedInputComponent))
-	{
-		//EnhancedInputComponent->BindAction(MyInputComponent->JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, Player, &AC_Player::OnJump);
-
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, Player, &AC_Player::Move);
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, Player, &AC_Player::Look);
-	}
-}
-
-
 
