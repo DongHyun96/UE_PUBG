@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+//#include "GameFramework/Character.h"
 #include "Character/C_BasicCharacter.h"
 #include "C_Player.generated.h"
+
 
 /**
  * 

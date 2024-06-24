@@ -23,6 +23,19 @@ AC_Player::AC_Player()
 void AC_Player::BeginPlay()
 {
 	Super::BeginPlay();
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+
+	if (PlayerController != nullptr)
+	{
+		//if (UEnhancedInputLocalPlayerSubsystem)
+		UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+
+		if (IsValid(SubSystem))
+		{
+			SubSystem->AddMappingContext(MyInputComponent->MappingContext, 0);
+		}
+	}
 }
 
 void AC_Player::Tick(float DeltaTime)
@@ -46,6 +59,7 @@ void AC_Player::Move(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		FRotator Rotation;
+
 
 		//if (CurWeaponType == EWeaponType::UNARMED)
 		//	Rotation = Controller->GetControlRotation();
