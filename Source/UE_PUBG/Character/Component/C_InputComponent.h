@@ -24,7 +24,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-protected:
+	void BindAction(UInputComponent* PlayerInputComponent, class AC_Player* Player);
+
+public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputMappingContext* MappingContext{};
