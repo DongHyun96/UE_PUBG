@@ -60,9 +60,10 @@ void AC_Player::Move(const FInputActionValue& Value)
 	{
 		FRotator Rotation;
 
-		if (true)
-			Rotation = Controller->GetControlRotation();
-		else
+
+		//if (CurWeaponType == EWeaponType::UNARMED)
+		//	Rotation = Controller->GetControlRotation();
+		//else
 			Rotation = GetActorRotation();
 
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
