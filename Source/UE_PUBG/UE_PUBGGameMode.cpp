@@ -7,6 +7,7 @@
 
 AUE_PUBGGameMode::AUE_PUBGGameMode()
 {
+	//Change to Playable Character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Project_PUBG/Common/Character/BPC_Player"));
 
 // set default pawn class to our Blueprinted character
