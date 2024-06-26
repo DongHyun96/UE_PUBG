@@ -46,4 +46,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* SprintAction{};
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* CrawlAction{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* CrouchAction{};
+
 };
