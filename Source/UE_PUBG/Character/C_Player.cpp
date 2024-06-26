@@ -103,6 +103,30 @@ void AC_Player::Walk(const FInputActionValue& Value)
 	//}
 }
 
+void AC_Player::Crouch()
+{
+	if (PoseState == EPoseState::CROUCH)
+	{
+		PoseState = EPoseState::STAND;
+	}
+	else
+	{
+		PoseState = EPoseState::CROUCH;
+	}
+}
+
+void AC_Player::Crawl()
+{
+	if (PoseState == EPoseState::CRAWL)
+	{
+		PoseState = EPoseState::STAND;
+	}
+	else
+	{
+		PoseState = EPoseState::CRAWL;
+	}
+}
+
 void AC_Player::OnJump()
 {
 	bPressedJump = true;
