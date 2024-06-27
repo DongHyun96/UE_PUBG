@@ -18,7 +18,8 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 
 	if (!OwnerCharacter) return;
 
-	Speed = OwnerCharacter->GetVelocity().Size2D();
+	//Speed = OwnerCharacter->GetVelocity().Size2D();
+	Speed = FMath::Lerp(Speed, OwnerCharacter->GetNextSpeed(), DeltaSeconds * 5.f);
 
 	//bIsFalling = OwnerCharacter->GetCharacterMovement()->IsFalling();
 

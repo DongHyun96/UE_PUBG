@@ -3,6 +3,9 @@
 
 #include "Character/C_BasicCharacter.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 // Sets default values
 AC_BasicCharacter::AC_BasicCharacter()
 {
@@ -23,13 +26,13 @@ void AC_BasicCharacter::BeginPlay()
 void AC_BasicCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
 // Called to bind functionality to input
 void AC_BasicCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	
 }
 

@@ -50,12 +50,26 @@ public: // Getters and setters
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
 
+	float GetNextSpeed() const { return NextSpeed; }
+
 protected:
 
 	// Current hand state
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EHandState HandState{};
 
 	// Current post state 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPoseState PoseState{};
+
+protected: // Camera
+
+	UPROPERTY(BluePrintReadWrite, EditDefaultsOnly)
+	class UCameraComponent* MainCamera{};
+
+protected:
+
+	// AnimCharacter에서 참조할 Speed의 다음 Lerp destination 값
+	float NextSpeed{};
 
 };

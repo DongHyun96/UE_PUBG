@@ -6,7 +6,15 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
+
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
+
+#include "Kismet/KismetMathLibrary.h"
+
 #include "GameFramework/CharacterMovementComponent.h"
+
+//#include "Engine"
 
 #include "Character/Component/C_InputComponent.h"
 
@@ -41,6 +49,8 @@ void AC_Player::BeginPlay()
 void AC_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	HandleTurnInPlace();
 }
 
 void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -53,6 +63,10 @@ void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AC_Player::Move(const FInputActionValue& Value)
 {
+	// 움직일 땐 카메라가 바라보는 방향으로 몸체도 돌려버림 (수업 기본 StrafeOn 세팅)
+	bUseControllerRotationYaw = true; 
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -74,8 +88,16 @@ void AC_Player::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.X);
 		AddMovementInput(RightDirection, MovementVector.Y);
 
+		NextSpeed = 400.f; // AnimCharacter에서 Speed Lerp할 값 setting
 	}
 
+}
+
+void AC_Player::MoveEnd(const FInputActionValue& Value)
+{
+	NextSpeed = 0.f;
+
+	SetStrafeRotationToIdleStop();
 }
 
 void AC_Player::Look(const FInputActionValue& Value)
@@ -86,7 +108,6 @@ void AC_Player::Look(const FInputActionValue& Value)
 	{
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
-
 	}
 }
 
@@ -132,4 +153,51 @@ void AC_Player::OnJump()
 {
 	bPressedJump = true;
 	JumpKeyHoldTime = 0.0f;
+}
+
+void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되어서 버그가 있는듯?
+{
+	// 현재 멈춰있는 상황이 아니면 처리 x
+	if (GetVelocity().Size() > 0.f) return;
+
+	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;
+
+	// Debugging
+	//FString TheFloatStr = FString::SanitizeFloat(Delta);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+
+	if (Delta > 90.f) // Right Turn in place motion
+	{
+		// Controller
+		GetCharacterMovement()->bUseControllerDesiredRotation	= true;
+		GetCharacterMovement()->bOrientRotationToMovement		= false;
+
+		if (TurnRightMontage)
+		{
+			if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(TurnRightMontage))
+				PlayAnimMontage(TurnRightMontage);
+		}
+			
+
+	}
+	else if (Delta < -90.f) // Left Turn in place motion
+	{
+		GetCharacterMovement()->bUseControllerDesiredRotation	= true;
+		GetCharacterMovement()->bOrientRotationToMovement		= false;
+
+		if (TurnLeftMontage)
+		{
+			if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(TurnLeftMontage))
+				PlayAnimMontage(TurnLeftMontage);
+		}
+	}
+
+}
+
+void AC_Player::SetStrafeRotationToIdleStop()
+{
+	GetCharacterMovement()->bUseControllerDesiredRotation	= false;
+	GetCharacterMovement()->bOrientRotationToMovement		= true;
+
+	bUseControllerRotationYaw = false;
 }

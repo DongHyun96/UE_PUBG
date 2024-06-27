@@ -48,6 +48,7 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, Player, &AC_Player::OnJump);
 
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, Player, &AC_Player::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, Player, &AC_Player::MoveEnd);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, Player, &AC_Player::Look);
 
 		EnhancedInputComponent->BindAction(CrawlAction, ETriggerEvent::Triggered, Player, &AC_Player::Crawl);
