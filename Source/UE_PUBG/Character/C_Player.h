@@ -29,6 +29,12 @@ public:
 
 public:
 	void Move(const struct FInputActionValue& Value);
+	
+	/// <summary>
+	/// Move가 끝날 때 호출됨, AnimCharacter에서 Speed Lerp할 값 setting 및 Turn in place 동작 초기 setting 
+	/// </summary>
+	void MoveEnd(const struct FInputActionValue& Value);
+
 	void Look(const struct FInputActionValue& Value);
 	void Walk(const struct FInputActionValue& Value);
 
@@ -37,10 +43,43 @@ public:
 
 	void OnJump();
 
+protected:
+
+	/*
+	카메라가 바라보는 방향으로 몸체가 돌아가는 기본 StrafeOn 설정 :
+	BPC_Player(self) : Use Control Rotation Yaw			= true
+	Spring Arm : Use Pawn Control Rotation				= true
+	Character Movement : Orient Rotation to Movement	= false;
+
+	가만히 있을 시 Use Control Rotation Yaw : false
+
+	*/
+
+	/// <summary>
+	/// <para> 캐릭터가 멈춰있을 때, 캐릭터가 오브젝트가 바라보는 방향과 컨트롤러(카메라)가 </para>
+	/// <para> 바라보는 방향의 각이 90도 이상이면, Turn In place로 캐릭터 조정 </para>
+	/// </summary>
+	void HandleTurnInPlace();
+	
+	/// <summary>
+	/// 멈춰 있을 때의 Rotation 세팅 값들로 돌아가기
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void SetStrafeRotationToIdleStop();
 
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UC_InputComponent* MyInputComponent{};
+
+protected:
+
+	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+	class UAnimMontage* TurnRightMontage{};
+
+	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+	class UAnimMontage* TurnLeftMontage{};
+
+
 
 };
