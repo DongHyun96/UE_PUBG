@@ -100,7 +100,7 @@ void AC_Player::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.X);
 		AddMovementInput(RightDirection, MovementVector.Y);
 
-		NextSpeed = 400.f; // AnimCharacter에서 Speed Lerp할 값 setting
+		NextSpeed = GetCharacterMovement()->MaxWalkSpeed; // AnimCharacter에서 Speed Lerp할 값 setting
 	}
 
 }
@@ -202,12 +202,13 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 		GetCharacterMovement()->bUseControllerDesiredRotation	= true;
 		GetCharacterMovement()->bOrientRotationToMovement		= false;
 
-		if (TurnRightMontage)
-		{
-			if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(TurnRightMontage))
-				PlayAnimMontage(TurnRightMontage);
-		}
-			
+		// HandState와 PoseState에 따른 Right Montage Animation
+		UAnimMontage* RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState];
+
+		if (!IsValid(RightMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(RightMontage)) return;
+
+		PlayAnimMontage(RightMontage);
 
 	}
 	else if (Delta < -90.f) // Left Turn in place motion
@@ -215,11 +216,13 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 		GetCharacterMovement()->bUseControllerDesiredRotation	= true;
 		GetCharacterMovement()->bOrientRotationToMovement		= false;
 
-		if (TurnLeftMontage)
-		{
-			if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(TurnLeftMontage))
-				PlayAnimMontage(TurnLeftMontage);
-		}
+		// HandState와 PoseState에 따른 Left Montage Animation
+		UAnimMontage* LeftMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState];
+
+		if (!LeftMontage) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftMontage)) return;
+		
+		PlayAnimMontage(LeftMontage);
 	}
 
 }

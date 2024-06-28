@@ -7,6 +7,17 @@
 #include "Character/C_BasicCharacter.h"
 #include "C_Player.generated.h"
 
+USTRUCT(BlueprintType)
+struct FPoseAnimMontage
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+	TMap<EPoseState, class UAnimMontage*> LeftMontages{};
+
+	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+	TMap<EPoseState, class UAnimMontage*> RightMontages{};
+};
 
 /**
  * 
@@ -75,14 +86,24 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UC_InputComponent* MyInputComponent{};
 
-protected:
+protected: // Turn in place ¾Ö´Ô ¸ùÅ¸ÁÖ °ü·Ã
 
+	//USTRUCT(BlueprintType)
+	//struct FAnimMontagePair
+	//{
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	UAnimMontage* LeftMontage{};
+
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	UAnimMontage* RightMontage{};
+	//};
+
+
+
+	/// <summary>
+	/// °¢ HandState¿Í PoseState¿¡ µû¸¥ TurnAnimMontage ¸Ê
+	/// </summary>
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
-	class UAnimMontage* TurnRightMontage{};
-
-	UPROPERTY(BluePrintReadWrite, EditAnywhere)
-	class UAnimMontage* TurnLeftMontage{};
-
-
+	TMap<EHandState, FPoseAnimMontage> TurnAnimMontageMap{};
 
 };
