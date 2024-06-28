@@ -71,5 +71,6 @@ protected:
 
 	// AnimCharacter에서 참조할 Speed의 다음 Lerp destination 값
 	float NextSpeed{};
-
+	// Alt키 누르고 있는지 체크
+	bool bIsHoldDirection = false;
 };

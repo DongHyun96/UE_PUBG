@@ -64,9 +64,21 @@ void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AC_Player::Move(const FInputActionValue& Value)
 {
 	// 움직일 땐 카메라가 바라보는 방향으로 몸체도 돌려버림 (수업 기본 StrafeOn 세팅)
-	bUseControllerRotationYaw = true; 
-	GetCharacterMovement()->bUseControllerDesiredRotation = false;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	if (bIsHoldDirection)
+	{
+		GetCharacterMovement()->bUseControllerDesiredRotation = false;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+
+		bUseControllerRotationYaw = false;
+
+	}
+	else
+	{
+
+		bUseControllerRotationYaw = true; 
+		GetCharacterMovement()->bUseControllerDesiredRotation = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+	}
 
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -153,6 +165,24 @@ void AC_Player::OnJump()
 {
 	bPressedJump = true;
 	JumpKeyHoldTime = 0.0f;
+}
+
+void AC_Player::HoldDirection()
+{
+	bIsHoldDirection = true;
+}
+
+void AC_Player::ReleaseDirection()
+{
+	bIsHoldDirection = false;
+	if (Controller)
+	{
+		FRotator NewRotation;
+		NewRotation.Yaw = GetActorRotation().Yaw;
+		NewRotation.Pitch = GetActorRotation().Pitch;
+		NewRotation.Roll = Controller->GetControlRotation().Roll;
+		Controller->SetControlRotation(NewRotation);
+	}
 }
 
 void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되어서 버그가 있는듯?

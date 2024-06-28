@@ -53,6 +53,8 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 
 		EnhancedInputComponent->BindAction(CrawlAction, ETriggerEvent::Triggered, Player, &AC_Player::Crawl);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, Player, &AC_Player::Crouch);
+		EnhancedInputComponent->BindAction(HoldDirectionAction, ETriggerEvent::Triggered, Player, &AC_Player::HoldDirection);
+		EnhancedInputComponent->BindAction(HoldDirectionAction, ETriggerEvent::Completed, Player, &AC_Player::ReleaseDirection);
 
 	}
 }
