@@ -51,6 +51,7 @@ void AC_Player::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	HandleTurnInPlace();
+	HandleControllerRotation(DeltaTime);
 }
 
 void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -63,8 +64,25 @@ void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AC_Player::Move(const FInputActionValue& Value)
 {
+	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
+	UAnimMontage* RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState];
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!IsValid(RightMontage)) return;
+	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(RightMontage))
+	{
+		AnimInstance->Montage_Stop(0.2f);
+	}
+	UAnimMontage* LeftMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState];
+
+	if (!LeftMontage) return;
+	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftMontage))
+	{
+		AnimInstance->Montage_Stop(0.2f);
+	}
+
 	// 움직일 땐 카메라가 바라보는 방향으로 몸체도 돌려버림 (수업 기본 StrafeOn 세팅)
-	if (bIsHoldDirection)
+	//Alt 키 누를때아닐떄 구분해서 설정
+	if (bIsHoldDirection || bIsAltPressed)
 	{
 		GetCharacterMovement()->bUseControllerDesiredRotation = false;
 		GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -85,7 +103,7 @@ void AC_Player::Move(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		FRotator Rotation;
-
+			
 
 		//if (CurWeaponType == EWeaponType::UNARMED)
 		//	Rotation = Controller->GetControlRotation();
@@ -170,18 +188,44 @@ void AC_Player::OnJump()
 void AC_Player::HoldDirection()
 {
 	bIsHoldDirection = true;
+	if (Controller)
+	{
+		//FRotator NewRotation;
+		CharacterMovingDirection.Yaw = GetActorRotation().Yaw;
+		CharacterMovingDirection.Pitch = GetActorRotation().Pitch;
+		CharacterMovingDirection.Roll = Controller->GetControlRotation().Roll;
+		//Controller->SetControlRotation(NewRotation);	
+	}
 }
 
 void AC_Player::ReleaseDirection()
 {
 	bIsHoldDirection = false;
+
+	bIsAltPressed = true;
+
+}
+
+void AC_Player::HandleControllerRotation(float DeltaTime)
+{
+	//Alt 를 누른적 없으면 리턴
+		// Debugging
+
+	if (!bIsAltPressed) return;
 	if (Controller)
 	{
-		FRotator NewRotation;
-		NewRotation.Yaw = GetActorRotation().Yaw;
-		NewRotation.Pitch = GetActorRotation().Pitch;
-		NewRotation.Roll = Controller->GetControlRotation().Roll;
-		Controller->SetControlRotation(NewRotation);
+		Controller->SetControlRotation(FMath::Lerp(Controller->GetControlRotation(), CharacterMovingDirection, DeltaTime * 10.0f));
+	}
+	//일정각도 이하로 차이나면 캐릭터 로테이션으로 정해버리기(가끔 적용이 안되는데 이유를 아직 못찾음)
+	float DeltaYaw = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Yaw);
+	float DeltaPitch = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Pitch);
+
+	FString TheFloatStr = FString::SanitizeFloat(DeltaYaw);
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+	if (DeltaYaw < 5 && DeltaPitch< 5)
+	{
+		Controller->SetControlRotation(CharacterMovingDirection);
+		bIsAltPressed = false;
 	}
 }
 
@@ -189,7 +233,7 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 {
 	// 현재 멈춰있는 상황이 아니면 처리 x
 	if (GetVelocity().Size() > 0.f) return;
-
+	if (bIsHoldDirection) return;
 	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;
 
 	// Debugging
