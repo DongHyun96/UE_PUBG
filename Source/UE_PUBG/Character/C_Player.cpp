@@ -193,6 +193,8 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 	// 현재 멈춰있는 상황이 아니면 처리 x
 	if (GetVelocity().Size() > 0.f) return;
 
+	if (bIsHoldDirection) return;
+
 	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;
 
 	// Debugging
