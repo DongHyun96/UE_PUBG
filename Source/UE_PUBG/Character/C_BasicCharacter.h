@@ -73,4 +73,8 @@ protected:
 	float NextSpeed{};
 	// Alt키 누르고 있는지 체크
 	bool bIsHoldDirection = false;
+	// Alt키 눌렸었는지 체크
+	bool bIsAltPressed = false;
+	FRotator CharacterMovingDirection;
+
 };
