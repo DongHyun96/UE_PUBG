@@ -191,6 +191,7 @@ void AC_Player::OnJump()
 void AC_Player::HoldDirection()
 {
 	bIsHoldDirection = true;
+	bIsAltPressed = false;
 	if (Controller)
 	{
 		//FRotator NewRotation;
