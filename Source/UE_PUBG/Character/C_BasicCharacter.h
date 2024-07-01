@@ -73,4 +73,12 @@ protected:
 	float NextSpeed{};
 	// Alt키 누르고 있는지 체크
 	bool bIsHoldDirection = false;
+	// Alt키 눌렸었는지 체크
+	bool bIsAltPressed = false;
+	FRotator CharacterMovingDirection;
+
+protected:
+	// 장착된 무기 및 장구류 component
+	class UC_EquippedComponent* EquippedComponent{};
+
 };
