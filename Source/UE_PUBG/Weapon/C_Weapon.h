@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "C_Weapon.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class UE_PUBG_API AC_Weapon : public AActor
 {
 	GENERATED_BODY()
@@ -77,11 +77,29 @@ public:
 
 	void SetOwnerCharacter(class C_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
+public:
+
+	/// <summary>
+	/// 무기집에 무기 붙이기
+	/// </summary>
+	/// <returns> 붙이기를 실패하거나 붙일 무기집이 없다면 return false </returns>
+	virtual bool AttachToHolster(class USceneComponent* InParent) PURE_VIRTUAL(AC_Weapon::AttachToHolster, return false;);
+
+	/// <summary>
+	/// 손에 장착하기
+	/// </summary>
+	/// <returns> 무기를 손에 붙이지 못하였다면 return false </returns>
+	virtual bool AttachToHand(class USceneComponent* InParent) PURE_VIRTUAL(AC_Weapon::AttachToHolster, return false;);
+
 protected:
 
 	// 무기에 따른 각 버튼에 대한 strategy 알고리즘 객체
 	class II_WeaponButtonStrategy* WeaponButtonStrategy{};
 
 	class C_BasicCharacter* OwnerCharacter{};
+
+protected:
+
+
 
 };
