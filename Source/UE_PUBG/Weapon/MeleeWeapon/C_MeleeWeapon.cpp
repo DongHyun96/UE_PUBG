@@ -10,3 +10,13 @@ AC_MeleeWeapon::AC_MeleeWeapon()
 {
 	WeaponButtonStrategy = NewObject<UC_MeleeWeaponStrategy>();
 }
+
+void AC_MeleeWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void AC_MeleeWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
