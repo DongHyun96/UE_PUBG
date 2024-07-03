@@ -57,4 +57,20 @@ public:
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* HoldDirectionAction{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* Num1Action{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* Num2Action{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* Num4Action{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* Num5Action{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+
+	class UInputAction* XAction{};
 };
