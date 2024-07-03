@@ -11,4 +11,14 @@ AC_Gun::AC_Gun()
 
 }
 
+bool AC_Gun::AttachToHolster(USceneComponent* InParent)
+{
+    return false;
+}
+
+bool AC_Gun::AttachToHand(USceneComponent* InParent)
+{
+    return false;
+}
+
 

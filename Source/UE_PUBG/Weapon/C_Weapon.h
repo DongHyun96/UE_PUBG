@@ -75,10 +75,6 @@ public: /* 각 Key에 따른 무기 작동 */
 
 public:
 
-	void SetOwnerCharacter(class C_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
-
-public:
-
 	/// <summary>
 	/// 무기집에 무기 붙이기
 	/// </summary>
@@ -91,15 +87,27 @@ public:
 	/// <returns> 무기를 손에 붙이지 못하였다면 return false </returns>
 	virtual bool AttachToHand(class USceneComponent* InParent) PURE_VIRTUAL(AC_Weapon::AttachToHolster, return false;);
 
+
+public:
+
+	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+
+	class UAnimMontage* GetCurDrawMontage() const { return CurDrawMontage; }
+	class UAnimMontage* GetCurSheathMontage() const { return CurSheathMontage; }
+
 protected:
 
 	// 무기에 따른 각 버튼에 대한 strategy 알고리즘 객체
 	class II_WeaponButtonStrategy* WeaponButtonStrategy{};
 
-	class C_BasicCharacter* OwnerCharacter{};
+	class AC_BasicCharacter* OwnerCharacter{};
 
 protected:
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UAnimMontage* CurDrawMontage{}; // 현재 무기 위치에 해당하는 무기 뽑기 Anim montage
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UAnimMontage* CurSheathMontage{}; // 현재 무기 위치에 해당하는 무기 집어넣기 Anim montage
 
 };

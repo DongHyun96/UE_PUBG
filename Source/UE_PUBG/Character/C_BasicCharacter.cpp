@@ -6,13 +6,16 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "Character/Component/C_EquippedComponent.h"
+
 // Sets default values
 AC_BasicCharacter::AC_BasicCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-
+	EquippedComponent = CreateDefaultSubobject<UC_EquippedComponent>("EQC");
+	EquippedComponent->SetOwnerCharacter(this);
 }
 
 // Called when the game starts or when spawned

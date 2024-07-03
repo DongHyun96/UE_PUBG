@@ -15,5 +15,7 @@ class UE_PUBG_API AC_Gun : public AC_Weapon
 public:	
 	AC_Gun();
 
+	bool AttachToHolster(class USceneComponent* InParent) override;
+	bool AttachToHand(class USceneComponent* InParent) override;
 
 };

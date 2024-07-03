@@ -10,8 +10,7 @@ UENUM(BlueprintType)
 enum class EHandState : uint8
 {
 	UNARMED,
-	WEAWPON_MAIN,
-	WEAPON_SUB,
+	WEAWPON_GUN,
 	WEAPON_MELEE,
 	WEAPON_THROWABLE
 };
@@ -49,8 +48,12 @@ public: // Getters and setters
 
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
+	void SetHandState(EHandState InHandState) { HandState = InHandState; }
 
 	float GetNextSpeed() const { return NextSpeed; }
+
+	UFUNCTION(BlueprintCallable)
+	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
 
 protected:
 
@@ -79,6 +82,7 @@ protected:
 
 protected:
 	// 장착된 무기 및 장구류 component
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_EquippedComponent* EquippedComponent{};
 
 };
