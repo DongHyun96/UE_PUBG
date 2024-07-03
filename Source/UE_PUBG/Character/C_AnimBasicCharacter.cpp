@@ -2,6 +2,7 @@
 
 
 #include "Character/C_AnimBasicCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 #include "Character/C_BasicCharacter.h"
 
@@ -19,8 +20,8 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	if (!OwnerCharacter) return;
 
 	//Speed = OwnerCharacter->GetVelocity().Size2D();
-	Speed = FMath::Lerp(Speed, OwnerCharacter->GetNextSpeed(), DeltaSeconds * 5.f);
-
+	Speed = FMath::Lerp(Speed, OwnerCharacter->GetNextSpeed(), DeltaSeconds * 15.f);
+	//Speed = OwnerCharacter->GetNextSpeed();
 	//bIsFalling = OwnerCharacter->GetCharacterMovement()->IsFalling();
 
 	//const FRotator Rotation = (OwnerCharacter->GetCurWeaponType() == EWeaponType::UNARMED) ?
@@ -31,7 +32,10 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 	Direction = CalculateDirection(OwnerCharacter->GetVelocity().GetSafeNormal2D(), YawRotation);
-
+	FString TheFloatStr = FString::SanitizeFloat(Direction);
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	HandState = OwnerCharacter->GetHandState();
 	PoseState = OwnerCharacter->GetPoseState();
+	bIsFalling = OwnerCharacter->GetCharacterMovement()->IsFalling();
+	
 }

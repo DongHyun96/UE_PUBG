@@ -65,20 +65,7 @@ void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AC_Player::Move(const FInputActionValue& Value)
 {
 	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
-	UAnimMontage* RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState];
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-
-	if (!IsValid(RightMontage)) return;
-
-	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(RightMontage))
-		AnimInstance->Montage_Stop(0.2f);
-
-	UAnimMontage* LeftMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState];
-
-	if (!LeftMontage) return;
-
-	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftMontage))
-		AnimInstance->Montage_Stop(0.2f);
+	CancelTurnInPlaceMotion();
 
 	// 움직일 땐 카메라가 바라보는 방향으로 몸체도 돌려버림 (수업 기본 StrafeOn 세팅)
 	//Alt 키 누를때아닐떄 구분해서 설정
@@ -95,7 +82,7 @@ void AC_Player::Move(const FInputActionValue& Value)
 
 		bUseControllerRotationYaw = true; 
 		GetCharacterMovement()->bUseControllerDesiredRotation = false;
-		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
 	}
 
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -178,8 +165,28 @@ void AC_Player::Crawl()
 
 void AC_Player::OnJump()
 {
+	CancelTurnInPlaceMotion();
 	bPressedJump = true;
 	JumpKeyHoldTime = 0.0f;
+}
+
+void AC_Player::CancelTurnInPlaceMotion()
+{
+	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
+	UAnimMontage* RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState];
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (!IsValid(RightMontage)) return;
+
+	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(RightMontage))
+		AnimInstance->Montage_Stop(0.2f);
+
+	UAnimMontage* LeftMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState];
+
+	if (!IsValid(LeftMontage)) return;
+
+	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftMontage))
+		AnimInstance->Montage_Stop(0.2f);
 }
 
 void AC_Player::HoldDirection()
@@ -218,8 +225,7 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 	float DeltaYaw = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Yaw);
 	float DeltaPitch = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Pitch);
 
-	FString TheFloatStr = FString::SanitizeFloat(DeltaYaw);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+
 	if (DeltaYaw < 5 && DeltaPitch< 5)
 	{
 		Controller->SetControlRotation(CharacterMovingDirection);
@@ -258,7 +264,7 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 		// HandState와 PoseState에 따른 Left Montage Animation
 		UAnimMontage* LeftMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState];
 
-		if (!LeftMontage) return;
+		if (!IsValid(LeftMontage)) return;
 		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftMontage)) return;
 		
 		PlayAnimMontage(LeftMontage);
