@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 //#include "GameFramework/Character.h"
 #include "Character/C_BasicCharacter.h"
+
 #include "C_Player.generated.h"
 
 USTRUCT(BlueprintType)
@@ -38,7 +39,8 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-public:
+public: // Input mapped actions
+
 	void Move(const struct FInputActionValue& Value);
 	
 	/// <summary>
@@ -58,6 +60,15 @@ public:
 	void HoldDirection();
 	void ReleaseDirection();
 	void HandleControllerRotation(float DeltaTime);
+
+	// Number input mappings
+	void OnNum1();
+	void OnNum2();
+	void OnNum4();
+	void OnNum5();
+
+	void OnXKey();
+
 protected:
 
 	/*

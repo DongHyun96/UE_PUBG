@@ -28,7 +28,7 @@ public:
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
 	/// <param name="Weapon">     : 해당 전략을 사용할 Weapon 객체 </param>
 	/// <returns> 해당하는 무기 전략이 없거나 전략 실행 실패 시 return false </returns>
-	virtual bool UseBKeyStrategy(class C_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
+	virtual bool UseBKeyStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// R key mapped weapon strategy
@@ -36,7 +36,7 @@ public:
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
 	/// <param name="Weapon">     : 해당 전략을 사용할 Weapon 객체 </param>
 	/// <returns> 해당하는 무기 전략이 없거나 전략 실행 실패 시 return false </returns>
-	virtual bool UseRKeyStrategy(class C_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
+	virtual bool UseRKeyStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// MLB Click Started mapped weapon strategy
@@ -44,7 +44,7 @@ public:
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
 	/// <param name="Weapon">     : 해당 전략을 사용할 Weapon 객체 </param>
 	/// <returns> 해당하는 무기 전략이 없거나 전략 실행 실패 시 return false </returns>
-	virtual bool UseMlb_StartedStrategy(class C_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
+	virtual bool UseMlb_StartedStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// MLB Click OnGoing mapped weapon strategy
@@ -52,7 +52,7 @@ public:
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
 	/// <param name="Weapon">     : 해당 전략을 사용할 Weapon 객체 </param>
 	/// <returns> 해당하는 무기 전략이 없거나 전략 실행 실패 시 return false </returns>
-	virtual bool UseMlb_OnGoingStrategy(class C_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
+	virtual bool UseMlb_OnGoingStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// MLB Click Completed mapped weapon strategy
@@ -60,7 +60,7 @@ public:
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
 	/// <param name="Weapon">     : 해당 전략을 사용할 Weapon 객체 </param>
 	/// <returns> 해당하는 무기 전략이 없거나 전략 실행 실패 시 return false </returns>
-	virtual bool UseMlb_CompletedStrategy(class C_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
+	virtual bool UseMlb_CompletedStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// MRB Click Started mapped weapon strategy
@@ -68,7 +68,7 @@ public:
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
 	/// <param name="Weapon">     : 해당 전략을 사용할 Weapon 객체 </param>
 	/// <returns> 해당하는 무기 전략이 없거나 전략 실행 실패 시 return false </returns>
-	virtual bool UseMrb_StartedStrategy(class C_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
+	virtual bool UseMrb_StartedStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// MRB Click OnGoing mapped weapon strategy
@@ -76,7 +76,7 @@ public:
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
 	/// <param name="Weapon">     : 해당 전략을 사용할 Weapon 객체 </param>
 	/// <returns> 해당하는 무기 전략이 없거나 전략 실행 실패 시 return false </returns>
-	virtual bool UseMrb_OnGoingStrategy(class C_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
+	virtual bool UseMrb_OnGoingStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// MRB Click Completed mapped weapon strategy
@@ -84,6 +84,6 @@ public:
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
 	/// <param name="Weapon">     : 해당 전략을 사용할 Weapon 객체 </param>
 	/// <returns> 해당하는 무기 전략이 없거나 전략 실행 실패 시 return false </returns>
-	virtual bool UseMrb_CompletedStrategy(class C_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
+	virtual bool UseMrb_CompletedStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 };

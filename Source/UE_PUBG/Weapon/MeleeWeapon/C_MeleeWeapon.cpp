@@ -5,6 +5,9 @@
 #include "Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
 #include "Weapon/WeaponStrategy/C_MeleeWeaponStrategy.h"
 
+#include "Character/C_BasicCharacter.h"
+#include "Character/Component/C_EquippedComponent.h"
+
 
 AC_MeleeWeapon::AC_MeleeWeapon()
 {
@@ -19,4 +22,26 @@ void AC_MeleeWeapon::BeginPlay()
 void AC_MeleeWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+bool AC_MeleeWeapon::AttachToHolster(USceneComponent* InParent)
+{
+	return AttachToComponent
+	(
+		InParent,
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		HOLSTER_SOCKET_NAME
+	);
+}
+
+bool AC_MeleeWeapon::AttachToHand(USceneComponent* InParent)
+{
+	OwnerCharacter->SetHandState(EHandState::WEAPON_MELEE);
+
+	return AttachToComponent
+	(
+		InParent,
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		EQUIPPED_SOCKET_NAME
+	);
 }

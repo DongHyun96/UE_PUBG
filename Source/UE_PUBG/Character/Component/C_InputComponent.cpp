@@ -56,6 +56,12 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 		EnhancedInputComponent->BindAction(HoldDirectionAction, ETriggerEvent::Triggered, Player, &AC_Player::HoldDirection);
 		EnhancedInputComponent->BindAction(HoldDirectionAction, ETriggerEvent::Completed, Player, &AC_Player::ReleaseDirection);
 
+		EnhancedInputComponent->BindAction(Num1Action, ETriggerEvent::Started, Player, &AC_Player::OnNum1);
+		EnhancedInputComponent->BindAction(Num2Action, ETriggerEvent::Started, Player, &AC_Player::OnNum2);
+		EnhancedInputComponent->BindAction(Num4Action, ETriggerEvent::Started, Player, &AC_Player::OnNum4);
+		EnhancedInputComponent->BindAction(Num5Action, ETriggerEvent::Started, Player, &AC_Player::OnNum5);
+
+		EnhancedInputComponent->BindAction(Num5Action, ETriggerEvent::Started, Player, &AC_Player::OnXKey);
 	}
 }
 

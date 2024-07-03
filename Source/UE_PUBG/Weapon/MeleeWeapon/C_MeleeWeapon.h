@@ -26,5 +26,15 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
+public:
+	bool AttachToHolster(class USceneComponent* InParent) override;
+
+	bool AttachToHand(class USceneComponent* InParent) override;
+
+protected:
+
+	const FName HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
+	const FName EQUIPPED_SOCKET_NAME = "Pan_Equip"; // 무기가 손에 부착될 socket 이름
+
 };

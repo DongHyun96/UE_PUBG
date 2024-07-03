@@ -14,9 +14,9 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 
-//#include "Engine"
-
 #include "Character/Component/C_InputComponent.h"
+
+#include "Character/Component/C_EquippedComponent.h"
 
 
 AC_Player::AC_Player()
@@ -231,6 +231,31 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 		Controller->SetControlRotation(CharacterMovingDirection);
 		bIsAltPressed = false;
 	}
+}
+
+void AC_Player::OnNum1()
+{
+	EquippedComponent->ChangeCurWeapon(EWeaponSlot::MAIN_GUN);
+}
+
+void AC_Player::OnNum2()
+{
+	EquippedComponent->ChangeCurWeapon(EWeaponSlot::SUB_GUN);
+}
+
+void AC_Player::OnNum4()
+{
+	EquippedComponent->ChangeCurWeapon(EWeaponSlot::MELEE_WEAPON);
+}
+
+void AC_Player::OnNum5()
+{
+	EquippedComponent->ChangeCurWeapon(EWeaponSlot::THROWABLE_WEAPON);
+}
+
+void AC_Player::OnXKey()
+{
+	EquippedComponent->ToggleArmed();
 }
 
 void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되어서 버그가 있는듯?
