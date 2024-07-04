@@ -48,6 +48,8 @@ public:
 
 	void Look(const struct FInputActionValue& Value);
 	void Walk(const struct FInputActionValue& Value);
+	void Sprint();
+
 
 	void Crouch();
 	void Crawl();

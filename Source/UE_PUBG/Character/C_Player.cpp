@@ -110,8 +110,9 @@ void AC_Player::Move(const FInputActionValue& Value)
 		//else
 			//Rotation = GetActorRotation();
 
-		//Rotation = Controller->GetControlRotation();
-		Rotation = GetActorRotation();
+		Rotation = Controller->GetControlRotation();
+		//여기 alt때문에 위에꺼 안쓰고 아래꺼 쓰는거?-상연
+		//Rotation = GetActorRotation();
 
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
@@ -156,6 +157,10 @@ void AC_Player::Walk(const FInputActionValue& Value)
 	//{
 	//	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	//}
+}
+
+void AC_Player::Sprint()
+{
 }
 
 void AC_Player::Crouch()
