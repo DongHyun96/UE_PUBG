@@ -12,7 +12,33 @@ public class UE_PUBG : ModuleRules
 
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "GameplayCameras" });
+        PublicDependencyModuleNames.AddRange(new string[] 
+        {
+            "Core",
+            "CoreUObject",
+            "Engine",
+            "InputCore",
+            "EnhancedInput",
+            "UMG",
+            "GameplayCameras",
+            "AIModule",
+            "GameplayTasks"
+        });
+
+        /*
+         PublicDependencyModuleNames.AddRange(new string[] 
+        {
+            "Core",
+            "CoreUObject",
+            "Engine",
+            "InputCore",
+            "AnimGraphRuntime",
+            "AIModule",
+            "GameplayTasks",
+            "AnimationCore", // Add this for advanced animation functionality
+            "AnimGraph", // Add this for animation graph support
+        });
+        */
 
         PrivateDependencyModuleNames.AddRange(new string[] { });
 
