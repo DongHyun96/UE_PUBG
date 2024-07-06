@@ -54,7 +54,7 @@ public: // Getters and setters
 
 	UFUNCTION(BlueprintCallable)
 	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
-
+	void SetCanMove(bool CanMove) { bCanMove = CanMove; }
 protected:
 
 	// Current hand state
@@ -80,6 +80,7 @@ protected:
 	bool bIsAltPressed = false;
 	FRotator CharacterMovingDirection;
 
+	bool bCanMove = true;
 protected:
 	// 장착된 무기 및 장구류 component
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

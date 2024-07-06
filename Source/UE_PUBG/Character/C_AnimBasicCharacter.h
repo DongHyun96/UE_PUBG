@@ -12,6 +12,7 @@ enum class EPoseState : uint8;
 /**
  * 
  */
+
 UCLASS()
 class UE_PUBG_API UC_AnimBasicCharacter : public UAnimInstance
 {
@@ -45,4 +46,16 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPoseState PoseState{};
+
+
+
+	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
+	void AnimNotify_OnStartTransition_RunningJump_To_Falling();
+
+	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
+	void AnimNotify_OnEndTransition_HardLand_To_Stand();
+
+
+
+
 };

@@ -19,7 +19,7 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 
 	if (!OwnerCharacter) return;
 
-	//Speed = OwnerCharacter->GetVelocity().Size2D();
+	//Speed = OwnerCharacter->GetVelocity().Size2D();		
 	Speed = FMath::Lerp(Speed, OwnerCharacter->GetNextSpeed(), DeltaSeconds * 15.f);
 	//Speed = OwnerCharacter->GetNextSpeed();
 	//bIsFalling = OwnerCharacter->GetCharacterMovement()->IsFalling();
@@ -32,10 +32,30 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 	Direction = CalculateDirection(OwnerCharacter->GetVelocity().GetSafeNormal2D(), YawRotation);
-	FString TheFloatStr = FString::SanitizeFloat(Direction);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+	//FString TheFloatStr = FString::SanitizeFloat(Direction);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	HandState = OwnerCharacter->GetHandState();
 	PoseState = OwnerCharacter->GetPoseState();
 	bIsFalling = OwnerCharacter->GetCharacterMovement()->IsFalling();
 	
 }
+
+void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_RunningJump_To_Falling()
+{
+	// Start Transition 시 수행할 로직 추가
+	FString TheFloatStr = "Start Transition";
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+	UE_LOG(LogTemp, Warning, TEXT("Transition Started"));
+	OwnerCharacter->SetCanMove(false);
+}
+
+void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_HardLand_To_Stand()
+{
+	// End Transition 시 수행할 로직 추가
+	FString TheFloatStr = "End Transition";
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+	UE_LOG(LogTemp, Warning, TEXT("Transition Ended"));
+	OwnerCharacter->SetCanMove(true);
+
+}
+

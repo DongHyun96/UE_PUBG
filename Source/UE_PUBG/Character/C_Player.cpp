@@ -64,6 +64,7 @@ void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AC_Player::Move(const FInputActionValue& Value)
 {
+	if (!bCanMove) return;
 	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
 	CancelTurnInPlaceMotion();
 
@@ -141,6 +142,8 @@ void AC_Player::Walk(const FInputActionValue& Value)
 
 void AC_Player::Crouch()
 {
+	if (!bCanMove) return;
+
 	if (PoseState == EPoseState::CROUCH)
 	{
 		PoseState = EPoseState::STAND;
@@ -153,6 +156,8 @@ void AC_Player::Crouch()
 
 void AC_Player::Crawl()
 {
+	if (!bCanMove) return;
+
 	if (PoseState == EPoseState::CRAWL)
 	{
 		PoseState = EPoseState::STAND;
@@ -165,6 +170,8 @@ void AC_Player::Crawl()
 
 void AC_Player::OnJump()
 {
+	if (!bCanMove) return;
+
 	CancelTurnInPlaceMotion();
 	bPressedJump = true;
 	JumpKeyHoldTime = 0.0f;
@@ -261,6 +268,8 @@ void AC_Player::OnXKey()
 void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되어서 버그가 있는듯?
 {
 	// 현재 멈춰있는 상황이 아니면 처리 x
+	if (!bCanMove) return;
+
 	if (GetVelocity().Size() > 0.f) return;
 	if (bIsHoldDirection) return;
 
