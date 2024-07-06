@@ -8,15 +8,29 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/Component/C_EquippedComponent.h"
 
+#include "Components/ShapeComponent.h"
+
+#include "Kismet/GamePlayStatics.h"
+
 
 AC_MeleeWeapon::AC_MeleeWeapon()
 {
 	WeaponButtonStrategy = NewObject<UC_MeleeWeaponStrategy>();
+
+	AttackMontage.Priority = EMontagePriority::ATTACK;
+
+	CurDrawMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
+	CurSheathMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
 }
 
 void AC_MeleeWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AttackCollider = Cast<UShapeComponent>(GetComponentByClass(UShapeComponent::StaticClass()));
+	AttackCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	AttackCollider->OnComponentBeginOverlap.AddDynamic(this, &AC_MeleeWeapon::OnBodyColliderBeginOverlap);
 }
 
 void AC_MeleeWeapon::Tick(float DeltaTime)
@@ -44,4 +58,24 @@ bool AC_MeleeWeapon::AttachToHand(USceneComponent* InParent)
 		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 		EQUIPPED_SOCKET_NAME
 	);
+}
+
+void AC_MeleeWeapon::SetAttackColliderEnabled(const bool& Enabled)
+{
+	if (Enabled) AttackCollider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	else		 AttackCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AC_MeleeWeapon::OnBodyColliderBeginOverlap
+(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult
+)
+{
+	// TODO : 피격체에 데미지 주기
+
 }
