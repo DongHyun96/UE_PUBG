@@ -31,7 +31,7 @@ void UC_EquippedComponent::BeginPlay()
 	AC_MeleeWeapon* MeleeTemp = GetWorld()->SpawnActor<AC_MeleeWeapon>(WeaponClasses[EWeaponSlot::MELEE_WEAPON], Param);
 	MeleeTemp->SetOwnerCharacter(OwnerCharacter);
 	MeleeTemp->AttachToHolster(OwnerCharacter->GetMesh());
-	MeleeWeapon = MeleeTemp;
+	Weapons[EWeaponSlot::MELEE_WEAPON] = MeleeTemp;
 }
 
 
@@ -45,90 +45,76 @@ void UC_EquippedComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 {
-	if (CurWeapon)
+	if (IsValid(Weapons[CurWeaponType]))
 	{
 		// 현재 무기의 Sheath나 Draw animation montage가 이미 재생 중이라면 return
-		if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(CurWeapon->GetCurDrawMontage())) return false;
+		if (OwnerCharacter->GetMesh()->GetAnimInstance()
+			->Montage_IsPlaying(Weapons[CurWeaponType]->GetCurDrawMontage().AnimMontage)) 
+			return false;
 
-		if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(CurWeapon->GetCurSheathMontage())) return false;
+		if (OwnerCharacter->GetMesh()->GetAnimInstance()
+			->Montage_IsPlaying(Weapons[CurWeaponType]->GetCurSheathMontage().AnimMontage))
+			return false;
 	}
 
-	switch (InChangeTo)
-	{
-	case EWeaponSlot::NONE:				NextWeapon = nullptr;
-		break;
-	case EWeaponSlot::MAIN_GUN:			NextWeapon = MainGun;
-		break;
-	case EWeaponSlot::SUB_GUN:			NextWeapon = SubGun;
-		break;
-	case EWeaponSlot::MELEE_WEAPON:		NextWeapon = MeleeWeapon;
-		break;
-	case EWeaponSlot::THROWABLE_WEAPON:	NextWeapon = ThrowingWeapon;
-		break;
-	default: break;
-	}
+	NextWeaponType = InChangeTo;
 
-	if (CurWeapon == NextWeapon) return false; // 현재 무기와 다음 무기가 같을 때 무기를 굳이 다시 꺼내지 않음
+	if (CurWeaponType == NextWeaponType) return false; // 현재 무기와 다음 무기가 같을 때 무기를 굳이 다시 꺼내지 않음
 
-	// 바꿀 다음 무기가 UNARMED가 아닌 상태에서, 해당 무기 슬롯에 무기가 없을 때
-	if (!NextWeapon && InChangeTo != EWeaponSlot::NONE) return false;
+	// NextWeaponType이 None이 아니고, 해당 무기 슬롯에 무기가 없을 때
+	if (NextWeaponType != EWeaponSlot::NONE && !IsValid(Weapons[NextWeaponType])) return false;
 
 	// 현재 무기를 착용중이지 않을 때 (UnArmed 상태), 다음 무기 Draw만 재생
-	if (!CurWeapon)
+	if (CurWeaponType == EWeaponSlot::NONE || !IsValid(GetCurWeapon()))
 	{
-		CurWeapon = NextWeapon;
-		OwnerCharacter->PlayAnimMontage(CurWeapon->GetCurDrawMontage());
+		CurWeaponType = NextWeaponType;
+		OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurDrawMontage());
 		return true;
 	}
 	
 	// 현재 무기를 착용중인 상황
-	OwnerCharacter->PlayAnimMontage(CurWeapon->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
+	OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
 
-	return false;
+	return true;
 }
 
 bool UC_EquippedComponent::ToggleArmed()
 {
-	// 현재 무기도 장착하지 않았고 이전에 들고 있었던 무기도 없을 때
-	if (!CurWeapon && !PrevWeapon) return false;
-
-	// 현재 들고 있는 무기가 있을 때 
-	if (CurWeapon)
+	// 현재 무기도 장착하지 않았고 이전에 들고 있었던 무기도 없을 때 (초기 상태)
+	if (CurWeaponType == EWeaponSlot::NONE && PrevWeaponType == EWeaponSlot::NONE) return false;
+	
+	// 현재 들고 있는 무기가 있을 때
+	if (CurWeaponType != EWeaponSlot::NONE && IsValid(GetCurWeapon()))
 	{
-		PrevWeapon = CurWeapon;
-
-
-
-		return true;
+		PrevWeaponType = CurWeaponType;
+		return ChangeCurWeapon(EWeaponSlot::NONE);
 	}
 
 	// 현재 들고 있는 무기가 없을 때
-
-
-	return false;
+	return ChangeCurWeapon(PrevWeaponType);
 }
 
 void UC_EquippedComponent::OnSheathEnd()
 {
 	// 현재 무기 무기집에 붙이기
-	CurWeapon->AttachToHolster(OwnerCharacter->GetMesh());
+	GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
 
-	CurWeapon = NextWeapon;
+	CurWeaponType = NextWeaponType;
 	
-	if (!CurWeapon)
+	if (!IsValid(GetCurWeapon()))
 	{
 		OwnerCharacter->SetHandState(EHandState::UNARMED);
 		return;
 	}
 
-	OwnerCharacter->PlayAnimMontage(CurWeapon->GetCurDrawMontage());
+	OwnerCharacter->PlayAnimMontage(GetCurWeapon()->GetCurDrawMontage());
 }
 
 void UC_EquippedComponent::OnDrawEnd()
 {
-	CurWeapon->AttachToHand(OwnerCharacter->GetMesh());
+	GetCurWeapon()->AttachToHand(OwnerCharacter->GetMesh());
 
-	NextWeapon = nullptr;
+	NextWeaponType = EWeaponSlot::NONE;
 }
 
 

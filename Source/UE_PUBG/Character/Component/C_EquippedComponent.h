@@ -38,7 +38,8 @@ public:
 	
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
-	class AC_Weapon* GetCurWeapon() const { return CurWeapon; }
+	UFUNCTION(BlueprintCallable)
+	class AC_Weapon* GetCurWeapon() const { return Weapons[CurWeaponType]; }
 
 public:
 	/// <summary>
@@ -74,23 +75,20 @@ protected:
 	class AC_BasicCharacter* OwnerCharacter{};
 
 protected:
-	UPROPERTY(VisibleAnywhere)
-
-	class AC_Weapon* CurWeapon{};	// 현재 손에 들고 있는 무기 (없다면 nullptr)
 	
-	class AC_Weapon* NextWeapon{};	// 무기 교체 시 이용, 다음으로 손에 들 무기
+	UPROPERTY(VisibleAnywhere)
+	EWeaponSlot CurWeaponType{};
 
-	class AC_Weapon* PrevWeapon{};	// 이전에 장착했었던 무기, x키 UnArmed, Armed 토글에 쓰일 예정
+	EWeaponSlot NextWeaponType{};
+	EWeaponSlot PrevWeaponType{};
 
 protected:
 
-	class AC_Gun* MainGun{};	// 장착된 주무기 1
-	class AC_Gun* SubGun{};	// 장착된 주무기 2
-
-	UPROPERTY(VisibleAnywhere)
-	class AC_MeleeWeapon* MeleeWeapon{};	// 장착된 근접무기
-
-	class AC_ThrowingWeapon* ThrowingWeapon{};	// 장착된 투척류 무기
+	/// <summary>
+	/// 슬롯 별 Weapon들
+	/// </summary>
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<EWeaponSlot, class AC_Weapon*> Weapons{};
 
 protected:
 
