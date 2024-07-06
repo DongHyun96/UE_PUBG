@@ -3,6 +3,10 @@
 
 #include "Weapon/WeaponStrategy/C_MeleeWeaponStrategy.h"
 
+#include "Character/C_BasicCharacter.h"
+#include "Weapon/C_Weapon.h"
+#include "Weapon/MeleeWeapon/C_MeleeWeapon.h"
+
 bool UC_MeleeWeaponStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
 	return false;
@@ -15,6 +19,17 @@ bool UC_MeleeWeaponStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_W
 
 bool UC_MeleeWeaponStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	AC_MeleeWeapon* MeleeWeapon = Cast<AC_MeleeWeapon>(Weapon);
+
+	if (!IsValid(MeleeWeapon)) return false;
+
+	FPriorityAnimMontage AttackMontage = MeleeWeapon->GetAttackMontage();
+
+	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(AttackMontage.AnimMontage))
+		return false;
+
+	WeaponUser->PlayAnimMontage(AttackMontage);
+
 	return false;
 }
 

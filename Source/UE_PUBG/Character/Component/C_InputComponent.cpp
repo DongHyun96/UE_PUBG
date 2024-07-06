@@ -61,7 +61,17 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 		EnhancedInputComponent->BindAction(Num4Action, ETriggerEvent::Started, Player, &AC_Player::OnNum4);
 		EnhancedInputComponent->BindAction(Num5Action, ETriggerEvent::Started, Player, &AC_Player::OnNum5);
 
-		EnhancedInputComponent->BindAction(Num5Action, ETriggerEvent::Started, Player, &AC_Player::OnXKey);
+		EnhancedInputComponent->BindAction(XAction, ETriggerEvent::Started, Player, &AC_Player::OnXKey);
+
+		EnhancedInputComponent->BindAction(RAction, ETriggerEvent::Started, Player, &AC_Player::OnRKey);
+
+		EnhancedInputComponent->BindAction(MLBAction, ETriggerEvent::Started, Player, &AC_Player::OnMLBStarted);
+		EnhancedInputComponent->BindAction(MLBAction, ETriggerEvent::Ongoing, Player, &AC_Player::OnMLBOnGoing);
+		EnhancedInputComponent->BindAction(MLBAction, ETriggerEvent::Completed, Player, &AC_Player::OnMLBCompleted);
+
+		EnhancedInputComponent->BindAction(MRBAction, ETriggerEvent::Started, Player, &AC_Player::OnMRBStarted);
+		EnhancedInputComponent->BindAction(MRBAction, ETriggerEvent::Ongoing, Player, &AC_Player::OnMRBOnGoing);
+		EnhancedInputComponent->BindAction(MRBAction, ETriggerEvent::Completed, Player, &AC_Player::OnMRBCompleted);
 	}
 }
 

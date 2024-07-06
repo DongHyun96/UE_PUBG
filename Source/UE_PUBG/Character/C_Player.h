@@ -14,10 +14,10 @@ struct FPoseAnimMontage
 	GENERATED_BODY()
 
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
-	TMap<EPoseState, class UAnimMontage*> LeftMontages{};
+	TMap<EPoseState, FPriorityAnimMontage> LeftMontages{};
 
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
-	TMap<EPoseState, class UAnimMontage*> RightMontages{};
+	TMap<EPoseState, FPriorityAnimMontage> RightMontages{};
 };
 
 /**
@@ -70,6 +70,16 @@ public: // Input mapped actions
 	void OnNum5();
 
 	void OnXKey();
+	void OnRKey();
+
+	// TODO : 무기에 대한 마우스 버튼 클릭 처리만 해둠, 다른 처리도 필요할 예정
+	void OnMLBStarted();
+	void OnMLBOnGoing();
+	void OnMLBCompleted();
+
+	void OnMRBStarted();
+	void OnMRBOnGoing();
+	void OnMRBCompleted();
 
 protected:
 
@@ -101,18 +111,6 @@ protected:
 	class UC_InputComponent* MyInputComponent{};
 
 protected: // Turn in place 애님 몽타주 관련
-
-	//USTRUCT(BlueprintType)
-	//struct FAnimMontagePair
-	//{
-	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	UAnimMontage* LeftMontage{};
-
-	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	UAnimMontage* RightMontage{};
-	//};
-
-
 
 	/// <summary>
 	/// 각 HandState와 PoseState에 따른 TurnAnimMontage 맵

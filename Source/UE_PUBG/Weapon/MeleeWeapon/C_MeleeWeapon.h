@@ -32,9 +32,38 @@ public:
 
 	bool AttachToHand(class USceneComponent* InParent) override;
 
+public:
+
+	struct FPriorityAnimMontage GetAttackMontage() const { return AttackMontage; }
+
+public:
+
+	UFUNCTION(BlueprintCallable)
+	void SetAttackColliderEnabled(const bool& Enabled);
+
+protected:
+
+	UFUNCTION()
+	void OnBodyColliderBeginOverlap
+	(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32				 OtherBodyIndex,
+		bool				 bFromSweep,
+		const FHitResult& SweepResult
+	);
+
 protected:
 
 	const FName HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
 	const FName EQUIPPED_SOCKET_NAME = "Pan_Equip"; // 무기가 손에 부착될 socket 이름
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	struct FPriorityAnimMontage AttackMontage{};
+
+protected:
+
+	class UShapeComponent* AttackCollider{};
 
 };
