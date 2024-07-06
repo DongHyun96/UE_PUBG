@@ -71,6 +71,15 @@ public:
 	class UInputAction* Num5Action{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-
 	class UInputAction* XAction{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* RAction{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* MLBAction{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* MRBAction{};
+
 };
