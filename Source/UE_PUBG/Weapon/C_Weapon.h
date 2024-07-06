@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Character/C_BasicCharacter.h"
+
 #include "C_Weapon.generated.h"
+
 
 UCLASS(Abstract)
 class UE_PUBG_API AC_Weapon : public AActor
@@ -92,8 +95,8 @@ public:
 
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
-	class UAnimMontage* GetCurDrawMontage() const { return CurDrawMontage; }
-	class UAnimMontage* GetCurSheathMontage() const { return CurSheathMontage; }
+	FPriorityAnimMontage GetCurDrawMontage() const { return CurDrawMontage; }
+	FPriorityAnimMontage GetCurSheathMontage() const { return CurSheathMontage; }
 
 protected:
 
@@ -104,10 +107,10 @@ protected:
 
 protected:
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UAnimMontage* CurDrawMontage{}; // 현재 무기 위치에 해당하는 무기 뽑기 Anim montage
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
+	FPriorityAnimMontage CurDrawMontage{}; // 현재 무기 위치에 해당하는 무기 뽑기 Anim montage
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UAnimMontage* CurSheathMontage{}; // 현재 무기 위치에 해당하는 무기 집어넣기 Anim montage
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
+	FPriorityAnimMontage CurSheathMontage{}; // 현재 무기 위치에 해당하는 무기 집어넣기 Anim montage
 
 };
