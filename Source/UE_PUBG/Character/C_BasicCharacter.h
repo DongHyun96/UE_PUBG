@@ -91,10 +91,12 @@ public: // Getters and setters
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }
 
 	float GetNextSpeed() const { return NextSpeed; }
-
+	void SetNextSpeed(float InNextSpeed) { NextSpeed = InNextSpeed; }
+	bool GetIsJumping() const { return bIsJumping; }
 	UFUNCTION(BlueprintCallable)
 	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
-
+	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
+	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 protected:
 
 	// Current hand state
@@ -120,6 +122,10 @@ protected:
 	bool bIsAltPressed = false;
 	FRotator CharacterMovingDirection;
 
+	bool bCanMove = true;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsJumping = false;
 protected:
 	// 장착된 무기 및 장구류 component
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
