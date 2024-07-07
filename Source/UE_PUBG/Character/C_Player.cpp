@@ -174,6 +174,7 @@ void AC_Player::OnJump()
 
 	CancelTurnInPlaceMotion();
 	bPressedJump = true;
+	bIsJumping = true;
 	JumpKeyHoldTime = 0.0f;
 }
 

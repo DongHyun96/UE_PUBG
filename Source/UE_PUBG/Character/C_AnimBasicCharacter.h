@@ -39,14 +39,24 @@ protected:
 	bool bIsFalling{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsJumping{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float Direction{}; // Direction Angle
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FRotator CSpineRotation = FRotator(0);
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FQuat CHeadLookAtRotation= FQuat(0);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EHandState HandState{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPoseState PoseState{};
-
+	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
+	void AnimNotify_OnStartTransition_Stand_To_Falling();
 
 
 	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
@@ -55,7 +65,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
 	void AnimNotify_OnEndTransition_HardLand_To_Stand();
 
+	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
+	void AnimNotify_OnEndTransition_Falling_To_Standing();
 
-
+	void ControlHeadRotation();
 
 };
