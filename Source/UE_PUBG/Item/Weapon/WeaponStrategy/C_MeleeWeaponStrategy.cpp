@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Weapon/WeaponStrategy/C_MeleeWeaponStrategy.h"
+#include "Item/Weapon/WeaponStrategy/C_MeleeWeaponStrategy.h"
 
 #include "Character/C_BasicCharacter.h"
-#include "Weapon/C_Weapon.h"
-#include "Weapon/MeleeWeapon/C_MeleeWeapon.h"
+#include "Item/Weapon/C_Weapon.h"
+#include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
 
 bool AC_MeleeWeaponStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {

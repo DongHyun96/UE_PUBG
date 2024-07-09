@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Weapon/Gun/C_Gun.h"
+#include "Item/Weapon/Gun/C_Gun.h"
 
-#include "Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
-#include "Weapon/WeaponStrategy/C_GunStrategy.h"
+#include "Item/Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
+#include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 
 // Sets default values
 AC_Gun::AC_Gun()

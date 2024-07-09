@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 #include "I_WeaponButtonStrategy.h"
 #include "C_MeleeWeaponStrategy.generated.h"
 

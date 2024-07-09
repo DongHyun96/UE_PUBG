@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Weapon/C_Weapon.h"
+#include "Item/Weapon/C_Weapon.h"
 #include "C_Gun.generated.h"
 
 UCLASS()

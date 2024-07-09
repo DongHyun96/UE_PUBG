@@ -3,18 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 #include "I_WeaponButtonStrategy.h"
-#include "C_GunStrategy.generated.h"
+#include "C_ThrowingWeaponStrategy.generated.h"
 
 /**
  * 
  */
+//UCLASS(Abstract)
 UCLASS()
-class UE_PUBG_API AC_GunStrategy : public AActor, public II_WeaponButtonStrategy
+class UE_PUBG_API AC_ThrowingWeaponStrategy : public AActor, public II_WeaponButtonStrategy
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	bool UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)			override;

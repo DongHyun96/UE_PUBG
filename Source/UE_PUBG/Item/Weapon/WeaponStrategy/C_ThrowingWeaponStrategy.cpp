@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Weapon/WeaponStrategy/C_ThrowingWeaponStrategy.h"
+#include "Item/Weapon/WeaponStrategy/C_ThrowingWeaponStrategy.h"
 
 bool AC_ThrowingWeaponStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
