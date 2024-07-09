@@ -15,7 +15,7 @@
 
 AC_MeleeWeapon::AC_MeleeWeapon()
 {
-	WeaponButtonStrategy = NewObject<UC_MeleeWeaponStrategy>();
+	WeaponButtonStrategy = CreateDefaultSubobject<AC_MeleeWeaponStrategy>("MeleeWeaponStrategy");
 
 	AttackMontage.Priority = EMontagePriority::ATTACK;
 
@@ -36,6 +36,10 @@ void AC_MeleeWeapon::BeginPlay()
 void AC_MeleeWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	CurDrawMontage   = DrawMontages[OwnerCharacter->GetPoseState()];
+	CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()];
+
 }
 
 bool AC_MeleeWeapon::AttachToHolster(USceneComponent* InParent)

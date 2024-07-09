@@ -25,17 +25,13 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 
 	//Speed = OwnerCharacter->GetVelocity().Size2D();		
 	Speed = FMath::Lerp(Speed, OwnerCharacter->GetNextSpeed(), DeltaSeconds * 15.f);
-	//Speed = OwnerCharacter->GetNextSpeed();
-	//bIsFalling = OwnerCharacter->GetCharacterMovement()->IsFalling();
-
-	//const FRotator Rotation = (OwnerCharacter->GetCurWeaponType() == EWeaponType::UNARMED) ?
-	//	OwnerCharacter->Controller->GetControlRotation() : OwnerCharacter->GetActorRotation();
 
 	const FRotator Rotation = OwnerCharacter->GetActorRotation();
 
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 	Direction = CalculateDirection(OwnerCharacter->GetVelocity().GetSafeNormal2D(), YawRotation);
+
 	//FString TheFloatStr = FString::SanitizeFloat(Direction);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	HandState = OwnerCharacter->GetHandState();

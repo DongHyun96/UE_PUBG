@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_GunStrategy : public UObject, public II_WeaponButtonStrategy
+class UE_PUBG_API AC_GunStrategy : public AActor, public II_WeaponButtonStrategy
 {
 	GENERATED_BODY()
 	

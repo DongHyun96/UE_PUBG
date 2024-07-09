@@ -27,8 +27,8 @@ UENUM(BlueprintType)
 enum class EMontagePriority : uint8
 {
 	TURN_IN_PLACE,
-	DRAW_SHEATH_WEAPON,
-	ATTACK
+	ATTACK,
+	DRAW_SHEATH_WEAPON
 };
 
 USTRUCT(BlueprintType)

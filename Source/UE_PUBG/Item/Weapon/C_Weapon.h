@@ -102,7 +102,8 @@ public:
 protected:
 
 	// 무기에 따른 각 버튼에 대한 strategy 알고리즘 객체
-	class II_WeaponButtonStrategy* WeaponButtonStrategy{};
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TScriptInterface<class II_WeaponButtonStrategy> WeaponButtonStrategy{};
 
 	class AC_BasicCharacter* OwnerCharacter{};
 
