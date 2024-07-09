@@ -50,10 +50,10 @@ public:
 protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
-	uint8 maxVolume = 70;
-	uint8 curVolume =  0;
+	uint8 MaxVolume = 70;
+	uint8 CurVolume =  0;
 
-	EBackPackLevel curBackPackLevel = EBackPackLevel::LV0;
+	EBackPackLevel CurBackPackLevel = EBackPackLevel::LV0;
 
 protected:
 

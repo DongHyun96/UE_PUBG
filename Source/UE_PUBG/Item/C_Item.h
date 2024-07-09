@@ -28,10 +28,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	uint8 GetVolume() { return volume; }
+	uint8 GetVolume() { return Volume; }
 
 	virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction;);
 
 private:
-	uint8 volume;
+	uint8 Volume;
 };

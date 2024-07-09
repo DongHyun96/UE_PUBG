@@ -21,5 +21,5 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	uint8 level;
+	uint8 Level;
 };
