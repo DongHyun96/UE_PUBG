@@ -34,7 +34,7 @@ void UC_InvenComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 bool UC_InvenComponent::CheckVolume(uint8 volume)
 {
-	if (maxVolume < curVolume + volume)
+	if (MaxVolume < CurVolume + volume)
 	{
 		return false;
 	}
@@ -84,7 +84,7 @@ void UC_InvenComponent::Interaction(AC_Item wilditem)
 	if (CheckVolume(wilditem.GetVolume()))
 	{
 		//상호작용된 아이템의 무게를 더해도 무게한도를 넘지 않는 경우.
-		curVolume += wilditem.GetVolume();
+		CurVolume += wilditem.GetVolume();
 		//서버와 동기화하는데 주로 사용한다고함. 서버와 클라이언트간에 컴포넌트 상태를 동기화하고, 소유한다.
 		wilditem.AddActorComponentReplicatedSubObject(this,&wilditem);
 	}
