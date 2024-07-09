@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Item/Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
-#include "Item/Weapon/WeaponStrategy/C_ThrowingWeaponStrategy.h"
+#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 
 
 AC_ThrowingWeapon::AC_ThrowingWeapon()
