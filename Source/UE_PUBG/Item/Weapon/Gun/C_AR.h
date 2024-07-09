@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "C_AR.generated.h"
 
@@ -23,4 +24,5 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
 };

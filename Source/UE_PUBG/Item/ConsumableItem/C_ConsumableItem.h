@@ -3,8 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+<<<<<<<< HEAD:Source/UE_PUBG/Item/ConsumableItem/C_ConsumableItem.h
 #include "Item/C_Item.h"
 #include "C_ConsumableItem.generated.h"
+========
+#include "Item/Weapon/Gun/C_Gun.h"
+#include "C_AR.generated.h"
+>>>>>>>> DongHyunTemp:Source/UE_PUBG/Item/Weapon/Gun/C_AR.h
 
 /**
  * 

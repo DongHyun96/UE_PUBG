@@ -2,6 +2,7 @@
 
 
 #include "Item/Weapon/Gun/C_AR.h"
+#include "Item/Attachment/C_AttachableItem.h"
 
 AC_AR::AC_AR()
 {

@@ -6,12 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "C_Gun.generated.h"
+
 UENUM(BlueprintType)
 enum class EGunState : uint8
 {
 	MAIN_GUN,
 	SUB_GUN
 };
+
 UCLASS()
 class UE_PUBG_API AC_Gun : public AC_Weapon
 {
@@ -41,4 +43,5 @@ private:
 	const FName HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
 	const FName EQUIPPED_SOCKET_NAME = "Pan_Equip"; // 무기가 손에 부착될 socket 이름
 	EGunState CurState = EGunState::MAIN_GUN;
+
 };
