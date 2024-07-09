@@ -7,7 +7,7 @@ AC_BackPack::AC_BackPack()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	level = 2;
+	Level = 2;
 }
 
 void AC_BackPack::Interaction(AC_BasicCharacter* character)
