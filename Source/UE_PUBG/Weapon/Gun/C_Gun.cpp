@@ -2,7 +2,8 @@
 
 
 #include "Weapon/Gun/C_Gun.h"
-
+#include "Character/C_BasicCharacter.h"
+#include "Character/Component/C_EquippedComponent.h"
 // Sets default values
 AC_Gun::AC_Gun()
 {
@@ -11,14 +12,37 @@ AC_Gun::AC_Gun()
 
 }
 
+void AC_Gun::BeginPlay()
+{
+	Super::BeginPlay();
+
+}
+
+void AC_Gun::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 {
-    return false;
+	return AttachToComponent
+	(
+		InParent,
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		HOLSTER_SOCKET_NAME
+	);
 }
 
 bool AC_Gun::AttachToHand(USceneComponent* InParent)
 {
-    return false;
+	OwnerCharacter->SetHandState(EHandState::WEAWPON_GUN);
+
+	return AttachToComponent
+	(
+		InParent,
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		EQUIPPED_SOCKET_NAME
+	);
 }
 
 
