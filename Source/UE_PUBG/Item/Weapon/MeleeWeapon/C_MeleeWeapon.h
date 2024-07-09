@@ -46,28 +46,21 @@ protected:
 	UFUNCTION()
 	void OnBodyColliderBeginOverlap
 	(
-		UPrimitiveComponent*	OverlappedComponent,
-		AActor*					OtherActor,
-		UPrimitiveComponent*	OtherComp,
-		int32					OtherBodyIndex,
-		bool					bFromSweep,
-		const FHitResult&		SweepResult
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32				 OtherBodyIndex,
+		bool				 bFromSweep,
+		const FHitResult& SweepResult
 	);
 
 protected:
-	
+
 	const FName HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
 	const FName EQUIPPED_SOCKET_NAME = "Pan_Equip"; // 무기가 손에 부착될 socket 이름
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	struct FPriorityAnimMontage AttackMontage{};
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TMap<EPoseState, FPriorityAnimMontage> DrawMontages{};
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TMap<EPoseState, FPriorityAnimMontage> SheathMontages{};
-
 
 protected:
 

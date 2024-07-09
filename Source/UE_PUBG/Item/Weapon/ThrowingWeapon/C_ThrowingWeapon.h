@@ -28,16 +28,8 @@ public:
 
 public:
 
-	/// <summary>
-	/// Throwable의 Holster는 따로 두지 않을 것임
-	/// </summary>
 	bool AttachToHolster(class USceneComponent* InParent) override;
 
-
 	bool AttachToHand(class USceneComponent* InParent) override;
-
-protected:
-
-	const FName EQUIPPED_SOCKET_NAME = "Throwable_Equip";
 
 };

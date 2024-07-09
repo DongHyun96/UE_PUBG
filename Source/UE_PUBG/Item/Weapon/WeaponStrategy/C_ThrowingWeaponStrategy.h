@@ -12,7 +12,7 @@
  */
 //UCLASS(Abstract)
 UCLASS()
-class UE_PUBG_API AC_ThrowingWeaponStrategy : public AActor, public II_WeaponButtonStrategy
+class UE_PUBG_API UC_ThrowingWeaponStrategy : public UObject, public II_WeaponButtonStrategy
 {
 	GENERATED_BODY()
 

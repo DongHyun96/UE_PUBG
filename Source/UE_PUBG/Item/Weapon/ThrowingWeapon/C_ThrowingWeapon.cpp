@@ -1,14 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
-
 #include "Item/Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
 #include "Item/Weapon/WeaponStrategy/C_ThrowingWeaponStrategy.h"
 
+
 AC_ThrowingWeapon::AC_ThrowingWeapon()
 {
-	WeaponButtonStrategy = CreateDefaultSubobject<AC_ThrowingWeaponStrategy>("ThrowingWeaponStrategy");
 }
 
 void AC_ThrowingWeapon::BeginPlay()
@@ -28,12 +26,5 @@ bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
 
 bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 {
-	OwnerCharacter->SetHandState(EHandState::WEAPON_THROWABLE);
-
-	return AttachToComponent
-	(
-		InParent,
-		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
-		EQUIPPED_SOCKET_NAME
-	);
+	return false;
 }

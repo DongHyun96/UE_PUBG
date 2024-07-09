@@ -74,9 +74,6 @@ public:
 	class UInputAction* XAction{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* BAction{};
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* RAction{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
