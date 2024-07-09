@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Weapon/MeleeWeapon/C_MeleeWeapon.h"
-#include "Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
-#include "Weapon/WeaponStrategy/C_MeleeWeaponStrategy.h"
+#include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
+#include "Item/Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
+#include "Item/Weapon/WeaponStrategy/C_MeleeWeaponStrategy.h"
 
 #include "Character/C_BasicCharacter.h"
 #include "Character/Component/C_EquippedComponent.h"

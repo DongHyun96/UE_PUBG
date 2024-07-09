@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Weapon/WeaponStrategy/C_GunStrategy.h"
+#include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 
 bool UC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {

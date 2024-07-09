@@ -4,10 +4,10 @@
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_BasicCharacter.h"
 
-#include "Weapon/C_Weapon.h"
-#include "Weapon/Gun/C_Gun.h"
-#include "Weapon/MeleeWeapon/C_MeleeWeapon.h"
-#include "Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Item/Weapon/C_Weapon.h"
+#include "Item/Weapon/Gun/C_Gun.h"
+#include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
+#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 
 // Sets default values for this component's properties
 UC_EquippedComponent::UC_EquippedComponent()

@@ -85,4 +85,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_EquippedComponent* EquippedComponent{};
 
+	//인벤토리(가방) component
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UC_InvenComponent* InvenComponent{};
 };

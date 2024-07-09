@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapon/Gun/C_Gun.h"
-#include "C_SR.generated.h"
+#include "Item/C_Item.h"
+#include "C_AttachableItem.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API AC_SR : public AC_Gun
+class UE_PUBG_API AC_AttachableItem : public AC_Item
 {
 	GENERATED_BODY()
 	
