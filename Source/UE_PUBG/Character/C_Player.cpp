@@ -175,6 +175,19 @@ void AC_Player::Crawl()
 void AC_Player::OnJump()
 {
 	CancelTurnInPlaceMotion();
+
+	if (PoseState == EPoseState::CRAWL)
+	{
+		PoseState = EPoseState::CROUCH;
+		return;
+	}
+
+	if (PoseState == EPoseState::CROUCH)
+	{
+		PoseState = EPoseState::STAND;
+		return;
+	}
+
 	bPressedJump = true;
 	JumpKeyHoldTime = 0.0f;
 }
@@ -267,6 +280,12 @@ void AC_Player::OnXKey()
 	EquippedComponent->ToggleArmed();
 }
 
+void AC_Player::OnBKey()
+{
+	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
+	EquippedComponent->GetCurWeapon()->ExecuteBKey();
+}
+
 void AC_Player::OnRKey()
 {
 	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
@@ -276,7 +295,6 @@ void AC_Player::OnRKey()
 void AC_Player::OnMLBStarted()
 {
 	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
-	
 	EquippedComponent->GetCurWeapon()->ExecuteMlb_Started();
 }
 

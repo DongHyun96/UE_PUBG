@@ -20,6 +20,8 @@ class UE_PUBG_API II_WeaponButtonStrategy
 {
 	GENERATED_BODY()
 
+	//UCLASS(Abstract)
+
 public:
 
 	/// <summary>
@@ -45,6 +47,7 @@ public:
 	/// <param name="Weapon">     : 해당 전략을 사용할 Weapon 객체 </param>
 	/// <returns> 해당하는 무기 전략이 없거나 전략 실행 실패 시 return false </returns>
 	virtual bool UseMlb_StartedStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
+
 
 	/// <summary>
 	/// MLB Click OnGoing mapped weapon strategy

@@ -68,6 +68,7 @@ public: // Input mapped actions
 	void OnNum5();
 
 	void OnXKey();
+	void OnBKey();
 	void OnRKey();
 
 	// TODO : 무기에 대한 마우스 버튼 클릭 처리만 해둠, 다른 처리도 필요할 예정
