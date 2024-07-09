@@ -18,7 +18,7 @@
 
 #include "Character/Component/C_EquippedComponent.h"
 
-#include "Weapon/C_Weapon.h"
+#include "Item/Weapon/C_Weapon.h"
 
 
 AC_Player::AC_Player()

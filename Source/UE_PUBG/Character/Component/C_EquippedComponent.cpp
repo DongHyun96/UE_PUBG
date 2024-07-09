@@ -37,14 +37,13 @@ void UC_EquippedComponent::BeginPlay()
 
 	Weapons[EWeaponSlot::MELEE_WEAPON] = MeleeTemp;
 
-	MeleeWeapon = MeleeTemp;
-
 	FActorSpawnParameters Param2{};
 	Param2.Owner = OwnerCharacter;
 	AC_Gun* ARTemp = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::MAIN_GUN], Param2);
 	ARTemp->SetOwnerCharacter(OwnerCharacter);
 	ARTemp->AttachToHolster(OwnerCharacter->GetMesh());
-	MainGun = ARTemp;
+	Weapons[EWeaponSlot::MAIN_GUN] = MeleeTemp;
+
 
 }
 
