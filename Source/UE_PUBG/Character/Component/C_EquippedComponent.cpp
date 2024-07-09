@@ -42,8 +42,8 @@ void UC_EquippedComponent::BeginPlay()
 	AC_Gun* ARTemp = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::MAIN_GUN], Param2);
 	ARTemp->SetOwnerCharacter(OwnerCharacter);
 	ARTemp->AttachToHolster(OwnerCharacter->GetMesh());
-	Weapons[EWeaponSlot::MAIN_GUN] = MeleeTemp;
 
+	Weapons[EWeaponSlot::MAIN_GUN] = ARTemp;
 
 }
 
