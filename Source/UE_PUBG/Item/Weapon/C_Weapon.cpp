@@ -1,14 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Weapon/C_Weapon.h"
-#include "Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
+#include "Item/Weapon/C_Weapon.h"
+
+#include "Item/Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
 
 // Sets default values
 AC_Weapon::AC_Weapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
 }
 
 // Called when the game starts or when spawned

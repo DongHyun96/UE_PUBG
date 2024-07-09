@@ -7,6 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenComponent.h"
 
 // Sets default values
 AC_BasicCharacter::AC_BasicCharacter()
@@ -16,6 +17,9 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	EquippedComponent = CreateDefaultSubobject<UC_EquippedComponent>("EquippedComponent");
 	EquippedComponent->SetOwnerCharacter(this);
+
+	InvenComponent = CreateDefaultSubobject<UC_InvenComponent>("InvenComponent");
+	InvenComponent->SetOwnerCharacter(this);
 }
 
 // Called when the game starts or when spawned

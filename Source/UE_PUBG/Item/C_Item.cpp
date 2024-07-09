@@ -1,24 +1,27 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Weapon/Gun/C_Gun.h"
+#include "Item/C_Item.h"
 
 // Sets default values
-AC_Gun::AC_Gun()
+AC_Item::AC_Item()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-bool AC_Gun::AttachToHolster(USceneComponent* InParent)
+// Called when the game starts or when spawned
+void AC_Item::BeginPlay()
 {
-    return false;
+	Super::BeginPlay();
+	
 }
 
-bool AC_Gun::AttachToHand(USceneComponent* InParent)
+// Called every frame
+void AC_Item::Tick(float DeltaTime)
 {
-    return false;
-}
+	Super::Tick(DeltaTime);
 
+}
 

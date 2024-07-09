@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UE_PUBG/Item/C_Item.h"
 #include "GameFramework/Actor.h"
 #include "Character/C_BasicCharacter.h"
 
@@ -10,7 +11,7 @@
 
 
 UCLASS(Abstract)
-class UE_PUBG_API AC_Weapon : public AActor
+class UE_PUBG_API AC_Weapon : public AC_Item
 {
 	GENERATED_BODY()
 	

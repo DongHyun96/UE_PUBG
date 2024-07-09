@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 
 AC_ThrowingWeapon::AC_ThrowingWeapon()
 {
