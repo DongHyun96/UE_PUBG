@@ -6,6 +6,7 @@
 
 #include "Weapon/C_Weapon.h"
 #include "Weapon/Gun/C_Gun.h"
+#include "Weapon/Gun/C_AR.h"
 #include "Weapon/MeleeWeapon/C_MeleeWeapon.h"
 #include "Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 
@@ -32,6 +33,13 @@ void UC_EquippedComponent::BeginPlay()
 	MeleeTemp->SetOwnerCharacter(OwnerCharacter);
 	MeleeTemp->AttachToHolster(OwnerCharacter->GetMesh());
 	MeleeWeapon = MeleeTemp;
+
+	FActorSpawnParameters Param2{};
+	Param2.Owner = OwnerCharacter;
+	AC_Gun* ARTemp = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::MAIN_GUN], Param2);
+	ARTemp->SetOwnerCharacter(OwnerCharacter);
+	ARTemp->AttachToHolster(OwnerCharacter->GetMesh());
+	MainGun = ARTemp;
 }
 
 
