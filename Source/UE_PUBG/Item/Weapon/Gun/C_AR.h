@@ -14,4 +14,13 @@ class UE_PUBG_API AC_AR : public AC_Gun
 {
 	GENERATED_BODY()
 	
+public:
+	AC_AR();
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 };
