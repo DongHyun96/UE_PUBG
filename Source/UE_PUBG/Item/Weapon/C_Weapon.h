@@ -89,8 +89,7 @@ public:
 	/// 손에 장착하기
 	/// </summary>
 	/// <returns> 무기를 손에 붙이지 못하였다면 return false </returns>
-	virtual bool AttachToHand(class USceneComponent* InParent) PURE_VIRTUAL(AC_Weapon::AttachToHolster, return false;);
-
+	virtual bool AttachToHand(class USceneComponent* InParent) PURE_VIRTUAL(AC_Weapon::AttachToHand, return false;);
 
 public:
 

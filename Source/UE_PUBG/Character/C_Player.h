@@ -15,7 +15,7 @@ struct FPoseAnimMontage
 
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	TMap<EPoseState, FPriorityAnimMontage> LeftMontages{};
-
+		
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	TMap<EPoseState, FPriorityAnimMontage> RightMontages{};
 };

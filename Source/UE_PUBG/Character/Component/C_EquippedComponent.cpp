@@ -123,6 +123,11 @@ void UC_EquippedComponent::OnSheathEnd()
 	OwnerCharacter->PlayAnimMontage(GetCurWeapon()->GetCurDrawMontage());
 }
 
+void UC_EquippedComponent::OnDrawStart()
+{
+	GetCurWeapon()->AttachToHand(OwnerCharacter->GetMesh());
+}
+
 void UC_EquippedComponent::OnDrawEnd()
 {
 	GetCurWeapon()->AttachToHand(OwnerCharacter->GetMesh());
