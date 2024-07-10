@@ -14,9 +14,11 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 
-//#include "Engine"
-
 #include "Character/Component/C_InputComponent.h"
+
+#include "Character/Component/C_EquippedComponent.h"
+
+#include "Item/Weapon/C_Weapon.h"
 
 
 AC_Player::AC_Player()
@@ -25,7 +27,14 @@ AC_Player::AC_Player()
 
 	MyInputComponent = CreateDefaultSubobject<UC_InputComponent>("MyInputComponent");
 
+	for (auto& HandPosePair : TurnAnimMontageMap)
+	{
+		for (auto& PoseMontagePair : HandPosePair.Value.LeftMontages)
+			PoseMontagePair.Value.Priority = EMontagePriority::TURN_IN_PLACE;
 
+		for (auto& PoseMontagePair : HandPosePair.Value.RightMontages)
+			PoseMontagePair.Value.Priority = EMontagePriority::TURN_IN_PLACE;
+	}
 }
 
 void AC_Player::BeginPlay()
@@ -64,21 +73,9 @@ void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AC_Player::Move(const FInputActionValue& Value)
 {
+	if (!bCanMove) return;
 	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
-	UAnimMontage* RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState];
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (!IsValid(RightMontage)) return;
-	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(RightMontage))
-	{
-		AnimInstance->Montage_Stop(0.2f);
-	}
-	UAnimMontage* LeftMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState];
-
-	if (!LeftMontage) return;
-	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftMontage))
-	{
-		AnimInstance->Montage_Stop(0.2f);
-	}
+	CancelTurnInPlaceMotion();
 
 	// 움직일 땐 카메라가 바라보는 방향으로 몸체도 돌려버림 (수업 기본 StrafeOn 세팅)
 	//Alt 키 누를때아닐떄 구분해서 설정
@@ -95,7 +92,7 @@ void AC_Player::Move(const FInputActionValue& Value)
 
 		bUseControllerRotationYaw = true; 
 		GetCharacterMovement()->bUseControllerDesiredRotation = false;
-		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
 	}
 
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -103,14 +100,7 @@ void AC_Player::Move(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		FRotator Rotation;
-			
 
-		//if (CurWeaponType == EWeaponType::UNARMED)
-		//	Rotation = Controller->GetControlRotation();
-		//else
-			//Rotation = GetActorRotation();
-
-		//Rotation = Controller->GetControlRotation();
 		Rotation = GetActorRotation();
 
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -158,8 +148,14 @@ void AC_Player::Walk(const FInputActionValue& Value)
 	//}
 }
 
+void AC_Player::Sprint()
+{
+}
+
 void AC_Player::Crouch()
 {
+	if (!bCanMove) return;
+
 	if (PoseState == EPoseState::CROUCH)
 	{
 		PoseState = EPoseState::STAND;
@@ -172,6 +168,8 @@ void AC_Player::Crouch()
 
 void AC_Player::Crawl()
 {
+	if (!bCanMove) return;
+
 	if (PoseState == EPoseState::CRAWL)
 	{
 		PoseState = EPoseState::STAND;
@@ -184,8 +182,44 @@ void AC_Player::Crawl()
 
 void AC_Player::OnJump()
 {
+	if (!bCanMove) return;
+
+	CancelTurnInPlaceMotion();
+
+	if (PoseState == EPoseState::CRAWL)
+	{
+		PoseState = EPoseState::CROUCH;
+		return;
+	}
+
+	if (PoseState == EPoseState::CROUCH)
+	{
+		PoseState = EPoseState::STAND;
+		return;
+	}
+
 	bPressedJump = true;
+	bIsJumping = true;
 	JumpKeyHoldTime = 0.0f;
+}
+
+void AC_Player::CancelTurnInPlaceMotion()
+{
+	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
+	UAnimMontage* RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState].AnimMontage;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (!IsValid(RightMontage)) return;
+
+	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(RightMontage))
+		AnimInstance->Montage_Stop(0.2f);
+
+	UAnimMontage* LeftMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState].AnimMontage;
+
+	if (!IsValid(LeftMontage)) return;
+
+	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftMontage))
+		AnimInstance->Montage_Stop(0.2f);
 }
 
 void AC_Player::HoldDirection()
@@ -224,8 +258,7 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 	float DeltaYaw = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Yaw);
 	float DeltaPitch = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Pitch);
 
-	FString TheFloatStr = FString::SanitizeFloat(DeltaYaw);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+
 	if (DeltaYaw < 5 && DeltaPitch< 5)
 	{
 		Controller->SetControlRotation(CharacterMovingDirection);
@@ -233,17 +266,88 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 	}
 }
 
+void AC_Player::OnNum1()
+{
+	EquippedComponent->ChangeCurWeapon(EWeaponSlot::MAIN_GUN);
+}
+
+void AC_Player::OnNum2()
+{
+	EquippedComponent->ChangeCurWeapon(EWeaponSlot::SUB_GUN);
+}
+
+void AC_Player::OnNum4()
+{
+	EquippedComponent->ChangeCurWeapon(EWeaponSlot::MELEE_WEAPON);
+}
+
+void AC_Player::OnNum5()
+{
+	EquippedComponent->ChangeCurWeapon(EWeaponSlot::THROWABLE_WEAPON);
+}
+
+void AC_Player::OnXKey()
+{
+	EquippedComponent->ToggleArmed();
+}
+
+void AC_Player::OnBKey()
+{
+	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
+	EquippedComponent->GetCurWeapon()->ExecuteBKey();
+}
+
+void AC_Player::OnRKey()
+{
+	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
+	EquippedComponent->GetCurWeapon()->ExecuteRKey();
+}
+
+void AC_Player::OnMLBStarted()
+{
+	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
+	EquippedComponent->GetCurWeapon()->ExecuteMlb_Started();
+}
+
+void AC_Player::OnMLBOnGoing()
+{
+	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
+	EquippedComponent->GetCurWeapon()->ExecuteMlb_OnGoing();
+}
+
+void AC_Player::OnMLBCompleted()
+{
+	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
+	EquippedComponent->GetCurWeapon()->ExecuteMlb_Completed();
+}
+
+void AC_Player::OnMRBStarted()
+{
+	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
+	EquippedComponent->GetCurWeapon()->ExecuteMrb_Started();
+}
+
+void AC_Player::OnMRBOnGoing()
+{
+	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
+	EquippedComponent->GetCurWeapon()->ExecuteMrb_OnGoing();
+}
+
+void AC_Player::OnMRBCompleted()
+{
+	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
+	EquippedComponent->GetCurWeapon()->ExecuteMrb_Completed();
+}
+
 void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되어서 버그가 있는듯?
 {
 	// 현재 멈춰있는 상황이 아니면 처리 x
+	if (!bCanMove) return;
+
 	if (GetVelocity().Size() > 0.f) return;
 	if (bIsHoldDirection) return;
 
 	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;
-
-	// Debugging
-	//FString TheFloatStr = FString::SanitizeFloat(Delta);
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 
 	if (Delta > 90.f) // Right Turn in place motion
 	{
@@ -252,12 +356,12 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 		GetCharacterMovement()->bOrientRotationToMovement		= false;
 
 		// HandState와 PoseState에 따른 Right Montage Animation
-		UAnimMontage* RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState];
+		FPriorityAnimMontage RightPriorityMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState];
 
-		if (!IsValid(RightMontage)) return;
-		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(RightMontage)) return;
+		if (!IsValid(RightPriorityMontage.AnimMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(RightPriorityMontage.AnimMontage)) return;
 
-		PlayAnimMontage(RightMontage);
+		PlayAnimMontage(RightPriorityMontage);
 
 	}
 	else if (Delta < -90.f) // Left Turn in place motion
@@ -266,12 +370,12 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 		GetCharacterMovement()->bOrientRotationToMovement		= false;
 
 		// HandState와 PoseState에 따른 Left Montage Animation
-		UAnimMontage* LeftMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState];
+		FPriorityAnimMontage LeftPriorityMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState];
 
-		if (!LeftMontage) return;
-		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftMontage)) return;
+		if (!IsValid(LeftPriorityMontage.AnimMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftPriorityMontage.AnimMontage)) return;
 		
-		PlayAnimMontage(LeftMontage);
+		PlayAnimMontage(LeftPriorityMontage);
 	}
 
 }

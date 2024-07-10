@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 //#include "GameFramework/Character.h"
 #include "Character/C_BasicCharacter.h"
+
 #include "C_Player.generated.h"
 
 USTRUCT(BlueprintType)
@@ -13,10 +14,10 @@ struct FPoseAnimMontage
 	GENERATED_BODY()
 
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
-	TMap<EPoseState, class UAnimMontage*> LeftMontages{};
+	TMap<EPoseState, FPriorityAnimMontage> LeftMontages{};
 
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
-	TMap<EPoseState, class UAnimMontage*> RightMontages{};
+	TMap<EPoseState, FPriorityAnimMontage> RightMontages{};
 };
 
 /**
@@ -38,7 +39,8 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-public:
+public: // Input mapped actions
+
 	void Move(const struct FInputActionValue& Value);
 	
 	/// <summary>
@@ -48,16 +50,38 @@ public:
 
 	void Look(const struct FInputActionValue& Value);
 	void Walk(const struct FInputActionValue& Value);
+	void Sprint();
+
 
 	void Crouch();
 	void Crawl();
 
 	void OnJump();
-	
+	void CancelTurnInPlaceMotion();
 	//Alt 키 누를때 이름 추천부탁
 	void HoldDirection();
 	void ReleaseDirection();
 	void HandleControllerRotation(float DeltaTime);
+
+	// Number input mappings
+	void OnNum1();
+	void OnNum2();
+	void OnNum4();
+	void OnNum5();
+
+	void OnXKey();
+	void OnBKey();
+	void OnRKey();
+
+	// TODO : 무기에 대한 마우스 버튼 클릭 처리만 해둠, 다른 처리도 필요할 예정
+	void OnMLBStarted();
+	void OnMLBOnGoing();
+	void OnMLBCompleted();
+
+	void OnMRBStarted();
+	void OnMRBOnGoing();
+	void OnMRBCompleted();
+
 protected:
 
 	/*
@@ -88,18 +112,6 @@ protected:
 	class UC_InputComponent* MyInputComponent{};
 
 protected: // Turn in place 애님 몽타주 관련
-
-	//USTRUCT(BlueprintType)
-	//struct FAnimMontagePair
-	//{
-	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	UAnimMontage* LeftMontage{};
-
-	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	UAnimMontage* RightMontage{};
-	//};
-
-
 
 	/// <summary>
 	/// 각 HandState와 PoseState에 따른 TurnAnimMontage 맵

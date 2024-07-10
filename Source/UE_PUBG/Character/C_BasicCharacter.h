@@ -10,8 +10,7 @@ UENUM(BlueprintType)
 enum class EHandState : uint8
 {
 	UNARMED,
-	WEAWPON_MAIN,
-	WEAPON_SUB,
+	WEAWPON_GUN,
 	WEAPON_MELEE,
 	WEAPON_THROWABLE
 };
@@ -22,6 +21,29 @@ enum class EPoseState : uint8
 	STAND,
 	CROUCH,
 	CRAWL
+};
+
+UENUM(BlueprintType)
+enum class EMontagePriority : uint8
+{
+	TURN_IN_PLACE,
+	ATTACK,
+	DRAW_SHEATH_WEAPON
+};
+
+USTRUCT(BlueprintType)
+struct FPriorityAnimMontage : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UAnimMontage* AnimMontage{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EMontagePriority Priority{};
+
 };
 
 
@@ -45,13 +67,36 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+	
+	// TODO : 얘를 Deprecated 시킬지, 아니면 Priority를 사용 안하고 무조건적으로 재생시키는 AnimMontage도 존재하게끔 놔두는게 좋을지
+	// 후자의 경우 그냥 해당 오버라이딩 함수는 지워버리면 됨
+	/// <summary>
+	/// Deprecated in current UE_PUBG Project : Priority를 적용한 AC_PriorityAnimMontage로 AnimMontage 재생해야 함
+	/// </summary>
+	float PlayAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None) override;
+
+public:
+
+	/// <summary>
+	/// 몽타주 재생 우선순위에 따른 PlayAnimMontage 함수
+	/// </summary>
+	/// <param name="PAnimMontage"> : Priority 적용된 AnimMontage </param>
+	float PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
+
 public: // Getters and setters
 
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
+	void SetHandState(EHandState InHandState) { HandState = InHandState; }
 
 	float GetNextSpeed() const { return NextSpeed; }
-
+	void SetNextSpeed(float InNextSpeed) { NextSpeed = InNextSpeed; }
+	bool GetIsJumping() const { return bIsJumping; }
+	UFUNCTION(BlueprintCallable)
+	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
+	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
+	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 protected:
 
 	// Current hand state
@@ -77,8 +122,24 @@ protected:
 	bool bIsAltPressed = false;
 	FRotator CharacterMovingDirection;
 
+	bool bCanMove = true;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsJumping = false;
 protected:
 	// 장착된 무기 및 장구류 component
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_EquippedComponent* EquippedComponent{};
+
+
+protected:
+	
+	// 현재 재생 중인, 또는 직전에 재생한 PriorityAnimMontage
+	UPROPERTY(BlueprintReadOnly)
+	FPriorityAnimMontage CurPriorityAnimMontage{};
+
+	//인벤토리(가방) component
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UC_InvenComponent* InvenComponent{};
 
 };
