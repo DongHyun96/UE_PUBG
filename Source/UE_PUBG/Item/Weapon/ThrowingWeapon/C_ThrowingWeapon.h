@@ -29,7 +29,7 @@ public:
 public:
 
 	/// <summary>
-	/// Throwable의 Holster는 따로 두지 않을 것임
+	/// Throwable의 Holster에 부착 시, visible을 끔
 	/// </summary>
 	bool AttachToHolster(class USceneComponent* InParent) override;
 
@@ -39,5 +39,14 @@ public:
 protected:
 
 	const FName EQUIPPED_SOCKET_NAME = "Throwable_Equip";
+	const FName HOLSTER_SOCKET_NAME = "Throwable_Holster";
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EPoseState, FPriorityAnimMontage> DrawMontages{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EPoseState, FPriorityAnimMontage> SheathMontages{};
 
 };
