@@ -20,15 +20,27 @@ void AC_ThrowingWeapon::BeginPlay()
 void AC_ThrowingWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	CurDrawMontage   = DrawMontages[OwnerCharacter->GetPoseState()];
+	CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()];
 }
 
 bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
 {
-	return false;
+	this->SetHidden(true);
+
+	return AttachToComponent
+	(
+		InParent,
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		HOLSTER_SOCKET_NAME
+	);
 }
 
 bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 {
+	this->SetHidden(false);
+
 	OwnerCharacter->SetHandState(EHandState::WEAPON_THROWABLE);
 
 	return AttachToComponent

@@ -68,7 +68,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> SheathMontages{};
 
-
 protected:
 
 	class UShapeComponent* AttackCollider{};
