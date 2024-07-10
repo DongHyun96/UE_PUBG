@@ -82,6 +82,9 @@ public: // Input mapped actions
 	void OnMRBOnGoing();
 	void OnMRBCompleted();
 
+public:
+	//class UC_InputComponent* GetInvenComponent() { return MyInputComponent; }/부모 클래스에 존재
+
 protected:
 
 	/*
@@ -108,8 +111,8 @@ protected:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	class UC_InputComponent* MyInputComponent{};
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly) 
+	class UC_InputComponent* MyInputComponent{};   
 
 protected: // Turn in place 애님 몽타주 관련
 

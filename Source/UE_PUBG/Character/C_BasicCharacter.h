@@ -97,6 +97,8 @@ public: // Getters and setters
 	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
 	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
+
+	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
 protected:
 
 	// Current hand state
