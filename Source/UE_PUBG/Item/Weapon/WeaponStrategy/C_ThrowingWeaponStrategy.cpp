@@ -3,7 +3,6 @@
 
 #include "Item/Weapon/WeaponStrategy/C_ThrowingWeaponStrategy.h"
 
-
 bool AC_ThrowingWeaponStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
 	return false;

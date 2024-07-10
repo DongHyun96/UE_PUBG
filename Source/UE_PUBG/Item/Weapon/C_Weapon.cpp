@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Item/Weapon/C_Weapon.h"
 
+#include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
 
 
@@ -30,7 +30,6 @@ void AC_Weapon::Tick(float DeltaTime)
 
 bool AC_Weapon::ExecuteBKey()
 {
-
 	if (!WeaponButtonStrategy) return false;
 	return WeaponButtonStrategy->UseBKeyStrategy(OwnerCharacter, this);
 }
@@ -105,21 +104,18 @@ bool AC_Weapon::ExecuteMlb_Completed()
 
 bool AC_Weapon::ExecuteMrb_Started()
 {
-
 	if (!WeaponButtonStrategy) return false;
 	return WeaponButtonStrategy->UseMrb_StartedStrategy(OwnerCharacter, this);
 }
 
 bool AC_Weapon::ExecuteMrb_OnGoing()
 {
-
 	if (!WeaponButtonStrategy) return false;
 	return WeaponButtonStrategy->UseMrb_OnGoingStrategy(OwnerCharacter, this);
 }
 
 bool AC_Weapon::ExecuteMrb_Completed()
 {
-
 	if (!WeaponButtonStrategy) return false;
 	return WeaponButtonStrategy->UseMrb_CompletedStrategy(OwnerCharacter, this);
 }

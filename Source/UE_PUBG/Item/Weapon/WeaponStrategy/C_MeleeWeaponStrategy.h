@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_MeleeWeaponStrategy : public UObject, public II_WeaponButtonStrategy
+class UE_PUBG_API AC_MeleeWeaponStrategy : public AActor, public II_WeaponButtonStrategy
 {
 	GENERATED_BODY()
 	

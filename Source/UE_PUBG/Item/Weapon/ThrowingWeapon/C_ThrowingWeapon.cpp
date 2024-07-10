@@ -3,9 +3,9 @@
 
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 
-
 #include "Item/Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
 #include "Item/Weapon/WeaponStrategy/C_ThrowingWeaponStrategy.h"
+
 
 AC_ThrowingWeapon::AC_ThrowingWeapon()
 {
@@ -29,7 +29,6 @@ bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
 
 bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 {
-
 	OwnerCharacter->SetHandState(EHandState::WEAPON_THROWABLE);
 
 	return AttachToComponent
