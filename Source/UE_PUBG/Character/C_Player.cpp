@@ -101,9 +101,7 @@ void AC_Player::Move(const FInputActionValue& Value)
 	{
 		FRotator Rotation;
 
-		Rotation = Controller->GetControlRotation();
-		//여기 alt때문에 위에꺼 안쓰고 아래꺼 쓰는거?-상연
-		//Rotation = GetActorRotation();
+		Rotation = GetActorRotation();
 
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
