@@ -28,7 +28,7 @@ void UC_EquippedComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Test�� weapon spawn, �������Ҹ� ���� ������
+	// Test용 weapon spawn, 프라이팬만 스폰 시켰음
 	FActorSpawnParameters Param{};
 	Param.Owner = OwnerCharacter;
 	AC_MeleeWeapon* MeleeTemp = GetWorld()->SpawnActor<AC_MeleeWeapon>(WeaponClasses[EWeaponSlot::MELEE_WEAPON], Param);
@@ -60,7 +60,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 {
 	if (IsValid(Weapons[CurWeaponType]))
 	{
-		// ���� ������ Sheath�� Draw animation montage�� �̹� ��� ���̶�� return
+		// 현재 무기의 Sheath나 Draw animation montage가 이미 재생 중이라면 return
 		if (OwnerCharacter->GetMesh()->GetAnimInstance()
 			->Montage_IsPlaying(Weapons[CurWeaponType]->GetCurDrawMontage().AnimMontage)) 
 			return false;
@@ -72,12 +72,12 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
 	NextWeaponType = InChangeTo;
 
-	if (CurWeaponType == NextWeaponType) return false; // ���� ����� ���� ���Ⱑ ���� �� ���⸦ ���� �ٽ� ������ ����
+	if (CurWeaponType == NextWeaponType) return false; // 현재 무기와 다음 무기가 같을 때 무기를 굳이 다시 꺼내지 않음
 
-	// NextWeaponType�� None�� �ƴϰ�, �ش� ���� ���Կ� ���Ⱑ ���� ��
+	// NextWeaponType이 None이 아니고, 해당 무기 슬롯에 무기가 없을 때
 	if (NextWeaponType != EWeaponSlot::NONE && !IsValid(Weapons[NextWeaponType])) return false;
 
-	// ���� ���⸦ ���������� ���� �� (UnArmed ����), ���� ���� Draw�� ���
+	// 현재 무기를 착용중이지 않을 때 (UnArmed 상태), 다음 무기 Draw만 재생
 	if (CurWeaponType == EWeaponSlot::NONE || !IsValid(GetCurWeapon()))
 	{
 		CurWeaponType = NextWeaponType;
@@ -85,31 +85,31 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 		return true;
 	}
 	
-	// ���� ���⸦ �������� ��Ȳ
-	OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // �� ���� ����ִ� ���ۿ� Notify�Լ� �ɾ ���� ����� ��ȯ
+	// 현재 무기를 착용중인 상황
+	OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
 
 	return true;
 }
 
 bool UC_EquippedComponent::ToggleArmed()
 {
-	// ���� ���⵵ �������� �ʾҰ� ������ ��� �־��� ���⵵ ���� �� (�ʱ� ����)
+	// 현재 무기도 장착하지 않았고 이전에 들고 있었던 무기도 없을 때 (초기 상태)
 	if (CurWeaponType == EWeaponSlot::NONE && PrevWeaponType == EWeaponSlot::NONE) return false;
 	
-	// ���� ��� �ִ� ���Ⱑ ���� ��
+	// 현재 들고 있는 무기가 있을 때
 	if (CurWeaponType != EWeaponSlot::NONE && IsValid(GetCurWeapon()))
 	{
 		PrevWeaponType = CurWeaponType;
 		return ChangeCurWeapon(EWeaponSlot::NONE);
 	}
 
-	// ���� ��� �ִ� ���Ⱑ ���� ��
+	// 현재 들고 있는 무기가 없을 때
 	return ChangeCurWeapon(PrevWeaponType);
 }
 
 void UC_EquippedComponent::OnSheathEnd()
 {
-	// ���� ���� �������� ���̱�
+	// 현재 무기 무기집에 붙이기
 	GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
 
 	CurWeaponType = NextWeaponType;
