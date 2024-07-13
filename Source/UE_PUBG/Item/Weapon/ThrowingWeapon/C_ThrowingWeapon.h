@@ -6,6 +6,21 @@
 #include "Item/Weapon/C_Weapon.h"
 #include "C_ThrowingWeapon.generated.h"
 
+USTRUCT(BlueprintType)
+struct FThrowProcessMontages
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FPriorityAnimMontage RemovePinMontage{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FPriorityAnimMontage ThrowReadyMontage{};		// overdraw
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FPriorityAnimMontage ThrowMontage{};
+};
+
 /**
  * 
  */
@@ -36,6 +51,24 @@ public:
 
 	bool AttachToHand(class USceneComponent* InParent) override;
 
+public:
+
+	/// <summary>
+	/// 수류탄 던지기 다음 동작 call back 함수
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void OnSetNextAction();
+
+public: // Getters & Setters
+
+	void SetIsCharging(bool InIsCharging) { bIsCharging = InIsCharging; }
+	bool GetIsCharging() const { return bIsCharging; }
+
+	FThrowProcessMontages GetCurThrowProcessMontages() const { return CurThrowProcessMontages; }
+	FPriorityAnimMontage GetCurRemovePinMontage() const { return CurThrowProcessMontages.RemovePinMontage; }
+	FPriorityAnimMontage GetCurThrowReadyMontage() const { return CurThrowProcessMontages.ThrowReadyMontage; }
+	FPriorityAnimMontage GetCurThrowMontage() const { return CurThrowProcessMontages.ThrowMontage; }
+
 protected:
 
 	const FName EQUIPPED_SOCKET_NAME = "Throwable_Equip";
@@ -49,4 +82,17 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> SheathMontages{};
 
+protected:
+
+	// 현재 자세에 맞는 Throw process 몽타주들
+	UPROPERTY(BlueprintReadOnly)
+	FThrowProcessMontages CurThrowProcessMontages{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EPoseState, FThrowProcessMontages> ThrowProcessMontages{};
+
+protected:
+
+	// 마우스를 누르고 있는 상태(OnGoing)
+	bool bIsCharging{};
 };

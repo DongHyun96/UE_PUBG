@@ -21,13 +21,17 @@ void AC_ThrowingWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CurDrawMontage   = DrawMontages[OwnerCharacter->GetPoseState()];
-	CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()];
+	if (IsValid(OwnerCharacter))
+	{
+		CurDrawMontage			= DrawMontages[OwnerCharacter->GetPoseState()];
+		CurSheathMontage		= SheathMontages[OwnerCharacter->GetPoseState()];
+		CurThrowProcessMontages = ThrowProcessMontages[OwnerCharacter->GetPoseState()];
+	}
 }
 
 bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
 {
-	this->SetHidden(true);
+	SetActorHiddenInGame(true);
 
 	return AttachToComponent
 	(
@@ -39,7 +43,9 @@ bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
 
 bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 {
-	this->SetHidden(false);
+	//this->SetHidden(false);
+
+	SetActorHiddenInGame(false);
 
 	OwnerCharacter->SetHandState(EHandState::WEAPON_THROWABLE);
 
@@ -49,4 +55,11 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 		EQUIPPED_SOCKET_NAME
 	);
+}
+
+void AC_ThrowingWeapon::OnSetNextAction()
+{
+	// Play Ready or Throw
+	if (bIsCharging)	OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
+	else 				OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowMontage);
 }
