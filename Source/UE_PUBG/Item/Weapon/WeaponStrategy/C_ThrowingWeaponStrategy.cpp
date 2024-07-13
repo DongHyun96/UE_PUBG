@@ -21,10 +21,11 @@ bool AC_ThrowingWeaponStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* Weapon
 
 	if (!IsValid(ThrowingWeapon)) return false;
 
+	ThrowingWeapon->SetIsCharging(false);
+
 	FPriorityAnimMontage RemovePinMontage = ThrowingWeapon->GetCurRemovePinMontage();
 	FPriorityAnimMontage ReadyMontage = ThrowingWeapon->GetCurThrowReadyMontage();
 	FPriorityAnimMontage ThrowMontage = ThrowingWeapon->GetCurThrowMontage();
-
 
 	if (
 		WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(RemovePinMontage.AnimMontage) ||
@@ -32,7 +33,6 @@ bool AC_ThrowingWeaponStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* Weapon
 		WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ThrowMontage.AnimMontage)
 		)
 		return false;
-
 
 
 	WeaponUser->PlayAnimMontage(RemovePinMontage);

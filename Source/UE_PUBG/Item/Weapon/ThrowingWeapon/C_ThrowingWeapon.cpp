@@ -60,6 +60,12 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 void AC_ThrowingWeapon::OnSetNextAction()
 {
 	// Play Ready or Throw
-	if (bIsCharging)	OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
-	else 				OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowMontage);
+	if (bIsCharging)
+	{
+		//if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(CurThrowProcessMontages.ThrowReadyMontage.AnimMontage))
+		//	return;
+
+		OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
+	}
+	else OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowMontage);
 }
