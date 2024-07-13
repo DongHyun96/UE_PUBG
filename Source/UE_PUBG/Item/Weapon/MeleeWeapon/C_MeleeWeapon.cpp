@@ -12,6 +12,8 @@
 
 #include "Kismet/GamePlayStatics.h"
 
+#include "UObject/ConstructorHelpers.h"
+
 
 AC_MeleeWeapon::AC_MeleeWeapon()
 {
@@ -36,9 +38,14 @@ void AC_MeleeWeapon::BeginPlay()
 void AC_MeleeWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (IsValid(OwnerCharacter))
+	{
+		CurDrawMontage   = DrawMontages[OwnerCharacter->GetPoseState()];
+		CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()];
 
-	CurDrawMontage   = DrawMontages[OwnerCharacter->GetPoseState()];
-	CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()];
+		// TODO : CurDrawMontage 등등이 재생 중일 때, OwnerCharacter가 자세를 바꾸는 문제
+	}
 
 }
 
@@ -83,3 +90,32 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 	// TODO : 피격체에 데미지 주기
 
 }
+
+//void AC_MeleeWeapon::InitPriorityAnimMontages()
+//{
+//	AttackMontage.Priority = EMontagePriority::ATTACK;
+//
+//	/*FString leftMontagePath = FString::Printf
+//	(
+//		TEXT("/Game/Project_PUBG/DongHyun/Character/Animation/Turn_In_Place/Montages/%u%u_TurnLeft_Montage"),
+//		handState,
+//		poseState
+//	);
+//
+//	ConstructorHelpers::FObjectFinder<UAnimMontage> TurnLeftMontage(*leftMontagePath);*/
+//
+//	//static ConstructorHelpers::FObjectFinder<UAnimMontage> attackAnimMontage
+//	//(
+//	//	TEXT("/Game/Project_PUBG/DongHyun/Character/Animation/WeaponMotions/MeleeMontages/MeleeAttack_Montage")
+//	//);
+//	//
+//	//AttackMontage.AnimMontage = (attackAnimMontage.Succeeded()) ? attackAnimMontage.Object : nullptr;
+//	//AttackMontage.Priority = EMontagePriority::ATTACK;
+//
+//	// Init Draw Montages
+//
+//	// Init Sheath Montages
+//
+//	//CurDrawMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
+//	//CurSheathMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
+//}

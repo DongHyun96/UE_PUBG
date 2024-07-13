@@ -13,10 +13,11 @@ struct FPoseAnimMontage
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+public:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TMap<EPoseState, FPriorityAnimMontage> LeftMontages{};
 		
-	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TMap<EPoseState, FPriorityAnimMontage> RightMontages{};
 };
 
@@ -109,6 +110,13 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetStrafeRotationToIdleStop();
 
+private:
+
+	/// <summary>
+	/// Turn Anim Montage 檬扁拳
+	/// </summary>
+	void InitTurnAnimMontageMap();
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly) 
@@ -122,4 +130,23 @@ protected: // Turn in place 局丛 根鸥林 包访
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	TMap<EHandState, FPoseAnimMontage> TurnAnimMontageMap{};
 
+	/*
+	UENUM(BlueprintType)
+	enum class EHandState : uint8
+	{
+		UNARMED,
+		WEAWPON_GUN,
+		WEAPON_MELEE,
+		WEAPON_THROWABLE
+	};
+	*/
+	
+	/*
+	enum class EPoseState : uint8
+	{
+		STAND,
+		CROUCH,
+		CRAWL
+	};
+	*/
 };

@@ -20,6 +20,8 @@
 
 #include "Item/Weapon/C_Weapon.h"
 
+#include "UObject/ConstructorHelpers.h"
+
 
 AC_Player::AC_Player()
 {
@@ -27,14 +29,7 @@ AC_Player::AC_Player()
 
 	MyInputComponent = CreateDefaultSubobject<UC_InputComponent>("MyInputComponent");
 
-	for (auto& HandPosePair : TurnAnimMontageMap)
-	{
-		for (auto& PoseMontagePair : HandPosePair.Value.LeftMontages)
-			PoseMontagePair.Value.Priority = EMontagePriority::TURN_IN_PLACE;
-
-		for (auto& PoseMontagePair : HandPosePair.Value.RightMontages)
-			PoseMontagePair.Value.Priority = EMontagePriority::TURN_IN_PLACE;
-	}
+	InitTurnAnimMontageMap();
 }
 
 void AC_Player::BeginPlay()
@@ -386,4 +381,54 @@ void AC_Player::SetStrafeRotationToIdleStop()
 	GetCharacterMovement()->bOrientRotationToMovement		= true;
 
 	bUseControllerRotationYaw = false;
+}
+
+void AC_Player::InitTurnAnimMontageMap()
+{
+	for (uint8 handState = 0; handState < static_cast<uint8>(EHandState::HANDSTATE_MAX); handState++)
+	{
+		FPoseAnimMontage CurrenteHandStateTurnInPlaces{};
+
+		for (uint8 poseState = 0; poseState < static_cast<uint8>(EPoseState::POSE_MAX); poseState++)
+		{
+			EPoseState currentPose = static_cast<EPoseState>(poseState);
+
+			// Left side
+			// 원래 static으로 두는게 정석이라고 함
+			FString leftMontagePath = FString::Printf
+			(
+				TEXT("/Game/Project_PUBG/DongHyun/Character/Animation/Turn_In_Place/Montages/%u%u_TurnLeft_Montage"),
+				handState,
+				poseState
+			);
+
+			ConstructorHelpers::FObjectFinder<UAnimMontage> TurnLeftMontage(*leftMontagePath);
+
+			FPriorityAnimMontage PriorityLeftMontage{};
+
+			PriorityLeftMontage.Priority	= EMontagePriority::TURN_IN_PLACE;
+			PriorityLeftMontage.AnimMontage = (TurnLeftMontage.Succeeded()) ? TurnLeftMontage.Object : nullptr;
+			
+			CurrenteHandStateTurnInPlaces.LeftMontages.Emplace(currentPose, PriorityLeftMontage);
+
+			// Right side
+			FString rightMontagePath = FString::Printf
+			(
+				TEXT("/Game/Project_PUBG/DongHyun/Character/Animation/Turn_In_Place/Montages/%u%u_TurnRight_Montage"),
+				handState,
+				poseState
+			);
+			ConstructorHelpers::FObjectFinder<UAnimMontage> TurnRightMontage(*rightMontagePath);
+
+			FPriorityAnimMontage PriorityRightMontage{};
+
+			PriorityRightMontage.Priority    = EMontagePriority::TURN_IN_PLACE;
+			PriorityRightMontage.AnimMontage = (TurnRightMontage.Succeeded()) ? TurnRightMontage.Object : nullptr;
+
+			CurrenteHandStateTurnInPlaces.RightMontages.Emplace(currentPose, PriorityRightMontage);
+		}
+
+		TurnAnimMontageMap.Emplace(static_cast<EHandState>(handState), CurrenteHandStateTurnInPlaces);
+	}
+
 }
