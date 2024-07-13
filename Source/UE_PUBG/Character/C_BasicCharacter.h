@@ -105,6 +105,7 @@ public: // Getters and setters
 	bool GetIsJumping() const { return bIsJumping; }
 	UFUNCTION(BlueprintCallable)
 	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
+	class UC_InvenComponent* GetInvenComponent() const { return InvenComponent; }
 	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
 	bool GetCanMove() const {return bCanMove;}
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
@@ -146,15 +147,14 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_EquippedComponent* EquippedComponent{};
 
-
+	//인벤토리(가방) component
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UC_InvenComponent* InvenComponent{};
 protected:
 	
 	// 현재 재생 중인, 또는 직전에 재생한 PriorityAnimMontage
 	UPROPERTY(BlueprintReadOnly)
 	FPriorityAnimMontage CurPriorityAnimMontage{};
 
-	//인벤토리(가방) component
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UC_InvenComponent* InvenComponent{};
 
 };

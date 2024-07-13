@@ -4,6 +4,7 @@
 #include "Character/C_BasicCharacter.h"
 #include "Item/C_Item.h"
 #include "Item/Equipment/C_BackPack.h"
+#include "Character/Component/C_EquippedComponent.h"
 
 // Sets default values for this component's properties
 UC_InvenComponent::UC_InvenComponent()
@@ -43,6 +44,8 @@ bool UC_InvenComponent::CheckVolume(uint8 volume)
 	{
 		return false;
 	}
+
+	OwnerCharacter->GetEquippedComponent()
 
 	return true;
 }
