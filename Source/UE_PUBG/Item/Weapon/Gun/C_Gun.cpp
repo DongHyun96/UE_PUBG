@@ -8,6 +8,7 @@
 #include "Components/SceneComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
+#include "Components/SkeletalMeshComponent.h"
 
 // Sets default values
 AC_Gun::AC_Gun()
@@ -20,7 +21,19 @@ AC_Gun::AC_Gun()
 void AC_Gun::BeginPlay()
 {
 	Super::BeginPlay();
-
+	//블루프린트에서 할당한 Skeletal Mesh 찾아서 변수에 저장
+	GunMesh = FindComponentByClass<USkeletalMeshComponent>();
+	//if (IsValid(MyMesh))
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Skeletal Mesh: %s"), *MyMesh->GetName());
+	//	FString TheFloatStr = "Found Mesh";
+	//	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+	//	// 추가적인 논리로 스켈레탈 메쉬를 처리합니다.
+	//}
+	//else
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Skeletal Mesh not found!"));
+	//}
 }
 
 void AC_Gun::Tick(float DeltaTime)
@@ -28,6 +41,18 @@ void AC_Gun::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	CurDrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState];
 	CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurState];
+	if (IsValid(GunMesh))
+	{
+		FTransform TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
+		FVector OutLocation{};
+		FRotator OutRotation{};
+		OwnerCharacter->GetMesh()->TransformToBoneSpace("RightHand", TempVec.GetLocation(), TempVec.GetRotation().Rotator(), OutLocation, OutRotation);
+		LeftHandSocketLocation.SetLocation(OutLocation);
+		LeftHandSocketLocation.SetRotation(OutRotation.Quaternion());
+
+		//FString TheFloatStr = FString::SanitizeFloat(TempVec.GetLocation().X);
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+	}
 }
 
 bool AC_Gun::AttachToHolster(USceneComponent* InParent)
@@ -75,17 +100,16 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 			SUB_DRAW_SOCKET_NAME
 		);
 	}
-
 	OwnerCharacter->SetHandState(EHandState::WEAWPON_GUN);
-
-
+	
+	
 	return AttachToComponent
 	(
 		InParent,
 		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 		EQUIPPED_SOCKET_NAME
 	);
-
+	
 }
 
 

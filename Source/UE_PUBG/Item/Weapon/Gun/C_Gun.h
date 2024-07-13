@@ -44,6 +44,7 @@ public:
 	bool AttachToHolster(class USceneComponent* InParent) override;
 	bool AttachToHand(class USceneComponent* InParent) override;
 	void ChangeGunState(EGunState InGunState) { CurState = InGunState; }
+	FTransform GetLeftHandSocketTransform() const { return LeftHandSocketLocation; }
 public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages > DrawMontages{};
@@ -59,4 +60,11 @@ private:
 	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // 무기가 손에 부착될 socket 이름
 	EGunState CurState = EGunState::SUB_GUN;
 
+private:
+	//블루프린트에서 할당한 스켈레탈 메쉬를 저장하는 변수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* GunMesh;
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FTransform LeftHandSocketLocation;
 };

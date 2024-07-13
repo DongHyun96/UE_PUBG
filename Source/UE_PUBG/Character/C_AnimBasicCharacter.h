@@ -51,6 +51,10 @@ protected:
 	FQuat CHeadLookAtRotation= FQuat(0);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bCanCharacterMove = true;
+
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EHandState HandState{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -70,4 +74,5 @@ protected:
 
 	void ControlHeadRotation();
 
+	void RilfeLeftHandIK();
 };

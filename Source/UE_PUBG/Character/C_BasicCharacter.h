@@ -96,6 +96,7 @@ public: // Getters and setters
 	UFUNCTION(BlueprintCallable)
 	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
 	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
+	bool GetCanMove() const {return bCanMove;}
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 
 	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
@@ -124,6 +125,7 @@ protected:
 	bool bIsAltPressed = false;
 	FRotator CharacterMovingDirection;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanMove = true;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

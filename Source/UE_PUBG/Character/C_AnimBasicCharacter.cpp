@@ -5,7 +5,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-
 #include "Character/C_BasicCharacter.h"
 
 void UC_AnimBasicCharacter::NativeBeginPlay()
@@ -38,6 +37,7 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	PoseState = OwnerCharacter->GetPoseState();
 	bIsFalling = OwnerCharacter->GetCharacterMovement()->IsFalling();
 	bIsJumping = OwnerCharacter->GetIsJumping();
+	bCanCharacterMove = OwnerCharacter->GetCanMove();
 	ControlHeadRotation();
 	
 }
@@ -100,5 +100,9 @@ void UC_AnimBasicCharacter::ControlHeadRotation()
 	CSpineRotation = UKismetMathLibrary::RInterpTo(CSpineRotation, DeltaRotation, 1.0, 0.1);
 
 	CHeadLookAtRotation = UKismetMathLibrary::MakeRotator(CSpineRotation.Pitch, CSpineRotation.Yaw, CSpineRotation.Roll).Quaternion();
+}
+
+void UC_AnimBasicCharacter::RilfeLeftHandIK()
+{
 }
 
