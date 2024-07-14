@@ -40,6 +40,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	class AC_Weapon* GetCurWeapon() const { return Weapons[CurWeaponType]; }
+	
+	/// <summary>
+	/// 슬롯에 무기 장착하기 / 해제는 Weapon에 nullptr를 줄 것
+	/// </summary>
+	/// <param name="InSlot"> : 장착할 슬롯 </param>
+	/// <param name="Weapon"> : 장착할 무기 객체 / 장착 해제는 nullptr </param>
+	void SetSlotWeapon(EWeaponSlot InSlot, class AC_Weapon* Weapon) { Weapons[InSlot] = Weapon; }
 
 public:
 	/// <summary>

@@ -21,20 +21,10 @@ bool AC_ThrowingWeaponStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* Weapon
 
 	if (!IsValid(ThrowingWeapon)) return false;
 
-	ThrowingWeapon->SetIsCharging(false);
+	if (ThrowingWeapon->GetIsOnThrowProcess()) return false;
 
+	ThrowingWeapon->SetIsOnThrowProcess(true);
 	FPriorityAnimMontage RemovePinMontage = ThrowingWeapon->GetCurRemovePinMontage();
-	FPriorityAnimMontage ReadyMontage = ThrowingWeapon->GetCurThrowReadyMontage();
-	FPriorityAnimMontage ThrowMontage = ThrowingWeapon->GetCurThrowMontage();
-
-	if (
-		WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(RemovePinMontage.AnimMontage) ||
-		WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReadyMontage.AnimMontage)     ||
-		WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ThrowMontage.AnimMontage)
-		)
-		return false;
-
-
 	WeaponUser->PlayAnimMontage(RemovePinMontage);
 
 	return true;
@@ -46,7 +36,6 @@ bool AC_ThrowingWeaponStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* Weapon
 	if (!IsValid(ThrowingWeapon)) return false;
 
 	ThrowingWeapon->SetIsCharging(true);
-
 	return true;
 }
 
@@ -56,7 +45,6 @@ bool AC_ThrowingWeaponStrategy::UseMlb_CompletedStrategy(AC_BasicCharacter* Weap
 	if (!IsValid(ThrowingWeapon)) return false;
 
 	ThrowingWeapon->SetIsCharging(false);
-
 	return true;
 }
 

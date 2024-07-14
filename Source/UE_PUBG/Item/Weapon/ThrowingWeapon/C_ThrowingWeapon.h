@@ -51,18 +51,42 @@ public:
 
 	bool AttachToHand(class USceneComponent* InParent) override;
 
+
+
 public:
 
 	/// <summary>
-	/// 수류탄 던지기 다음 동작 call back 함수
+	/// On Remove Pin Anim Montage end call back
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	void OnSetNextAction();
+	void OnRemovePinFin();
+
+	/// <summary>
+	/// On Throw loop call back
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void OnThrowReadyLoop();
+
+	/// <summary>
+	/// 실질적으로 던지기 처리
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void OnThrowThrowable();
+
+	/// <summary>
+	/// On Throw Process End call
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void OnThrowProcessEnd();
+
 
 public: // Getters & Setters
 
 	void SetIsCharging(bool InIsCharging) { bIsCharging = InIsCharging; }
 	bool GetIsCharging() const { return bIsCharging; }
+
+	void SetIsOnThrowProcess(bool IsOnThrowProcess) { bIsOnThrowProcess = IsOnThrowProcess; }
+	bool GetIsOnThrowProcess() const { return bIsOnThrowProcess; }
 
 	FThrowProcessMontages GetCurThrowProcessMontages() const { return CurThrowProcessMontages; }
 	FPriorityAnimMontage GetCurRemovePinMontage() const { return CurThrowProcessMontages.RemovePinMontage; }
@@ -95,4 +119,23 @@ protected:
 
 	// 마우스를 누르고 있는 상태(OnGoing)
 	bool bIsCharging{};
+
+	UPROPERTY(BluePrintReadOnly)
+	bool bIsOnThrowProcess{};
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	class UShapeComponent* Collider{};
+
+protected: // Projectile 관련
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	class UProjectileMovementComponent* ProjectileMovement{};
+
+	FVector Direction{};
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	float Speed = 2000.f;
+
 };
