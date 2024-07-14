@@ -17,8 +17,12 @@ UCLASS()
 class UE_PUBG_API AC_BackPack : public AC_EquipableItem
 {
 	GENERATED_BODY()
-	
+
+protected:
+	virtual void BeginPlay() override;
+
 public:
+
 	AC_BackPack();
 
 	void Interaction(class AC_BasicCharacter* character) override;

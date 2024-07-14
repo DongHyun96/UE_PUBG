@@ -112,6 +112,7 @@ public: // Getters and setters
 
 	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
 
+
 protected:
 
 	// Current hand state

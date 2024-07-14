@@ -15,9 +15,14 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "Character/Component/C_InputComponent.h"
-
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenComponent.h"
 
+#include "Components/SphereComponent.h"
+
+#include "Item/C_Item.h"
+#include "Item/Equipment/C_EquipableItem.h"
+#include "Item/Equipment/C_BackPack.h"
 #include "Item/Weapon/C_Weapon.h"
 
 #include "UObject/ConstructorHelpers.h"
@@ -30,6 +35,13 @@ AC_Player::AC_Player()
 	MyInputComponent = CreateDefaultSubobject<UC_InputComponent>("MyInputComponent");
 
 	InitTurnAnimMontageMap();
+
+	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
+	DetectionSphere->InitSphereRadius(100.0f); // 탐지 반경 설정
+	DetectionSphere->SetupAttachment(RootComponent);
+
+	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &AC_Player::OnOverlapBegin);
+	DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &AC_Player::OnOverlapEnd);
 }
 
 void AC_Player::BeginPlay()
@@ -333,6 +345,80 @@ void AC_Player::OnMRBCompleted()
 	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
 	EquippedComponent->GetCurWeapon()->ExecuteMrb_Completed();
 }
+
+/// <summary>
+/// 상호작용(F)와 대응되는 키로 구상중.
+/// 봇도 상호작용함.
+/// </summary>
+void AC_Player::Interaction()
+{
+	UE_LOG(LogTemp, Log, TEXT("Current Volume: %d"), this->InvenComponent->GetMaxVolume());
+	FString TheFloatStr = FString::SanitizeFloat(this->InvenComponent->GetMaxVolume());
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
+
+	if (NearInventory.Num() > 0)
+	{
+		//AC_Item* Item = *NearInventory.CreateIterator();
+		AC_Item* item = NearInventory[0];
+
+		//NearInventory.Add(Item);
+		item->Interaction(this);
+		//item->SetActorHiddenInGame(true); // Hide item from the world
+		item->SetActorEnableCollision(false); // Disable collision
+		NearInventory.Remove(item);
+		
+	}
+}
+/// <summary>
+/// 아이템이 캐릭터의 근처에 있을 때.
+/// </summary>
+/// <param name="OverlappedComp"></param>
+/// <param name="OtherActor"></param>
+/// <param name="OtherComp"></param>
+/// <param name="OtherBodyIndex"></param>
+/// <param name="bFromSweep"></param>
+/// <param name="SweepResult"></param>
+void AC_Player::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	FString TheFloatStr = FString::SanitizeFloat(this->InvenComponent->GetCurVolume());
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
+
+	AC_BackPack* OverlappedItem = Cast<AC_BackPack>(OtherActor);
+	//AC_Item* OverlappedItem = CastChecked<AC_Item>(OtherActor);
+	//UE_LOG(LogTemp, Log, TEXT("Overlapped actor class: %s"), *OverlappedItem->GetClass()->GetName());
+
+
+	UE_LOG(LogTemp, Log, TEXT("Overlapped actor class: %s"), *OtherActor->GetClass()->GetName());
+
+	if (IsValid(OverlappedItem))
+	{
+		UE_LOG(LogTemp, Log, TEXT("Item overlapped: %s"), *OverlappedItem->GetName());
+		NearInventory.Add(OverlappedItem);
+		//OverlappedItem->Interaction(this);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Overlap with non-item: %s"), *OtherActor->GetName());
+		return;
+	}
+}
+/// <summary>
+/// 아이템이 캐릭터의 감지범위를 벗어났을 때.
+/// </summary>
+/// <param name="OverlappedComp"></param>
+/// <param name="OtherActor"></param>
+/// <param name="OtherComp"></param>
+/// <param name="OtherBodyIndex"></param>
+void AC_Player::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+
+	if (OverlappedItem)
+	{
+		NearInventory.Remove(OverlappedItem);
+	}
+}
+
 
 void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되어서 버그가 있는듯?
 {

@@ -14,6 +14,7 @@ void UC_AnimBasicCharacter::NativeBeginPlay()
 	OwnerCharacter = Cast<AC_BasicCharacter>(TryGetPawnOwner());
 	//CSpineRotation = FRotator(0);
 	//CHeadLookAtRotation = FQuat(0);
+
 }
 
 void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)

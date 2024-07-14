@@ -30,6 +30,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class AC_BasicCharacter* OwnerCharacter{}; // owner
 
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

@@ -5,6 +5,11 @@
 #include "Character/C_Player.h"
 #include "Character/Component/C_InvenComponent.h"
 
+void AC_BackPack::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 AC_BackPack::AC_BackPack()
 {
 	PrimaryActorTick.bCanEverTick = true;
