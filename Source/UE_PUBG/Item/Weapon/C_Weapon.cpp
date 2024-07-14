@@ -42,63 +42,25 @@ bool AC_Weapon::ExecuteRKey()
 
 bool AC_Weapon::ExecuteMlb_Started()
 {
-	if (!WeaponButtonStrategy) return false;
-
-	/*UObject* StrategyObj = Cast<UObject>(WeaponButtonStrategy);
-
-	if (!StrategyObj)
+	if (!WeaponButtonStrategy)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("From AC_Weapon::ExecuteMlb_Started : Can't cast to UObject"));
+		FString DebugMessage = "In AC_Weapon::ExecuteMlb_Started : WeaponStrategy nullptr!";
+		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *DebugMessage);
+
 		return false;
 	}
-
-	if (!StrategyObj->GetClass()->ImplementsInterface(UI_WeaponButtonStrategy::StaticClass()))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("From AC_Weapon::ExecuteMlb_Started : WeaponButtonStrategy does not implement UseMlb_StartedStrategy"));
-		return false;
-	}*/
 	return WeaponButtonStrategy->UseMlb_StartedStrategy(OwnerCharacter, this);
 }
 
 bool AC_Weapon::ExecuteMlb_OnGoing()
 {
 	if (!WeaponButtonStrategy) return false;
-
-	//WeaponButtonStrategy->_getUObject()->GetClass()->ImplementsInteraf
-
-	/*UObject* StrategyObj = Cast<UObject>(WeaponButtonStrategy);
-
-	if (!StrategyObj)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("From AC_Weapon::ExecuteMlb_OnGoing : Can't cast to UObject"));
-		return false;
-	}
-
-	if (!StrategyObj->GetClass()->ImplementsInterface(UI_WeaponButtonStrategy::StaticClass()))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("From AC_Weapon::ExecuteMlb_OnGoing : WeaponButtonStrategy does not implement UseMlb_StartedStrategy"));
-		return false;
-	}*/
 	return WeaponButtonStrategy->UseMlb_OnGoingStrategy(OwnerCharacter, this);
 }
 
 bool AC_Weapon::ExecuteMlb_Completed()
 {
 	if (!WeaponButtonStrategy) return false;
-
-	/*UObject* StrategyObj = Cast<UObject>(WeaponButtonStrategy);
-
-	if (!StrategyObj)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("From AC_Weapon::ExecuteMlb_Completed : Can't cast to UObject"));
-		return false;
-	}
-
-	if (!StrategyObj->GetClass()->ImplementsInterface(UI_WeaponButtonStrategy::StaticClass()))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("From AC_Weapon::ExecuteMlb_Completed : WeaponButtonStrategy does not implement UseMlb_StartedStrategy"));
-		return false;
-	}*/
 	return WeaponButtonStrategy->UseMlb_CompletedStrategy(OwnerCharacter, this);
 }
 

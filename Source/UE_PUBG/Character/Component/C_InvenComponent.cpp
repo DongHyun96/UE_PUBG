@@ -3,6 +3,8 @@
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/C_BasicCharacter.h"
 #include "Item/C_Item.h"
+#include "Item/Equipment/C_BackPack.h"
+#include "Character/Component/C_EquippedComponent.h"
 
 // Sets default values for this component's properties
 UC_InvenComponent::UC_InvenComponent()
@@ -31,21 +33,26 @@ void UC_InvenComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	// ...
 }
-
+/// <summary>
+/// Item을 인벤에 넣을 때, 나의 최대 용량(MaxVolume)을 넘는지를 검사.
+/// </summary>
+/// <param name="volume"></param>
+/// <returns></returns>
 bool UC_InvenComponent::CheckVolume(uint8 volume)
 {
-	if (MaxVolume < CurVolume + volume)
+	if (MaxVolume > CurVolume + volume)
 	{
-		return false;
+		return true;
 	}
 
-	return true;
+	return false;
+
 }
 /// <summary>
-/// Holster가 nullptr이면 maxVolume+= volume을 해준다.
+/// 1. Holster가 nullptr이면 maxVolume+= volume을 해준다.
 /// Holster가 ture면 가방의 레벨을 비교. 
-/// 바꾸려는 가방의 레벨이 높으면 기존가방의 vulume을 새로운 가방의 volume에서 뺀만큼만 character의 maxVulume을 더해준다. maxVolume += (새가방의 volume - 기존가방의 volume);을 해준다.
-/// 바꾸려는 가방의 레벨이 낮으면 testVolume = 새가방의 volume - 기존가방의 volume;
+/// 2. 바꾸려는 가방의 레벨이 높으면 기존가방의 vulume을 새로운 가방의 volume에서 뺀만큼만 character의 maxVulume을 더해준다. maxVolume += (새가방의 volume - 기존가방의 volume);을 해준다.
+/// 3. 바꾸려는 가방의 레벨이 낮으면 testVolume = 새가방의 volume - 기존가방의 volume;
 /// if (maxVolume - testVolume > curVolume)
 /// {
 ///		//가방을 바꾸어줌.
@@ -54,10 +61,49 @@ bool UC_InvenComponent::CheckVolume(uint8 volume)
 /// {
 ///		//가방이 바뀌지 않음.
 /// }
+/// 
+/// bool 반환함수로 만들어서 가방을 바꿀 수 있을때 true를 아니라면 false를 반환하도록 하도록 하였음.
 /// </summary>
-void UC_InvenComponent::ChackMyBackPack()
+bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 {
+	CheckBackPackVolume(backpack->GetLevel());
 
+	if (CurBackPackLevel < PreBackPackLevel)
+	{
+		MaxVolume += CheckBackPackVolume(backpack->GetLevel());
+		CurBackPackLevel = PreBackPackLevel;
+		return true;
+	}
+	else if (CurBackPackLevel > PreBackPackLevel)
+	{
+		//다음 용량 = 현재가방상태의 최대 용량 - (현재 가방의 용량 - 다음 가방의 용량)
+		uint8 NextVolume = MaxVolume - (CheckBackPackVolume(CurBackPackLevel) - CheckBackPackVolume(backpack->GetLevel()));
+		
+		//
+		if (CurVolume < NextVolume)
+		{
+			//현재 용량보다 다음 용량이 크다면 배낭을 변경.
+			MaxVolume = NextVolume;
+			CurBackPackLevel = PreBackPackLevel;
+			return true;
+		}
+		else if (CurVolume > NextVolume)
+		{
+			//현재 용량이 다음 용량보다 크다면 배낭 변경이 불가능.
+			//해당 상황에 대한 문구 출력.
+			return false;
+		}
+		else
+		{
+			//현재 용량과 다음 용량이 같으므로 가방의 변경이 가능.
+			return true;
+		}
+	}
+	else
+	{
+		//현재 가방과 다음 가방의 레벨이 같으면 가방 변경 가능
+		return true;
+	}
 }
 /// <summary>
 /// Bag 아이템에서 상호작용(interaction)에서 모두 처리할까?
@@ -94,6 +140,50 @@ void UC_InvenComponent::Interaction(AC_Item wilditem)
 
 		//print("공간이 부족합니다"); 와 같은 멘트가 나오도록
 		return;
+	}
+}
+/// <summary>
+/// 가방의 Level에 따라 알맞는 Volume(용량)을 반환해준다.
+/// </summary>
+/// <param name="backpacklevel"></param>
+/// <returns></returns>
+uint8 UC_InvenComponent::CheckBackPackVolume(uint8 backpacklevel)
+{
+	switch (backpacklevel)
+	{
+	case 0:
+		PreBackPackLevel = EBackPackLevel::LV0;
+		return 50;
+	case 1:
+		PreBackPackLevel = EBackPackLevel::LV1;
+		return 150;
+	case 2:
+		PreBackPackLevel = EBackPackLevel::LV2;
+		return 200;
+	case 3:
+		PreBackPackLevel = EBackPackLevel::LV3;
+		return 250;
+	default:
+		return 0;
+		break;
+	}
+}
+
+uint8 UC_InvenComponent::CheckBackPackVolume(EBackPackLevel backpacklevel)
+{
+	switch (backpacklevel)
+	{
+	case EBackPackLevel::LV0:
+		return 50;
+	case EBackPackLevel::LV1:
+		return 150;
+	case EBackPackLevel::LV2:
+		return 200;
+	case EBackPackLevel::LV3:
+		return 250;
+	default:
+		return 0;
+		break;
 	}
 }
 

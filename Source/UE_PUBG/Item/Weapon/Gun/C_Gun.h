@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Item/Weapon/C_Weapon.h"
+#include "Containers/Map.h"
+#include "Containers/Array.h"
+#include "Templates/Tuple.h"
 #include "C_Gun.generated.h"
 
 UENUM(BlueprintType)
@@ -14,6 +17,14 @@ enum class EGunState : uint8
 	SUB_GUN
 };
 
+USTRUCT(BlueprintType)
+struct FAnimationMontages
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EGunState, FPriorityAnimMontage> Montages;
+};
 UCLASS()
 class UE_PUBG_API AC_Gun : public AC_Weapon
 {
@@ -33,15 +44,27 @@ public:
 	bool AttachToHolster(class USceneComponent* InParent) override;
 	bool AttachToHand(class USceneComponent* InParent) override;
 	void ChangeGunState(EGunState InGunState) { CurState = InGunState; }
+	FTransform GetLeftHandSocketTransform() const { return LeftHandSocketLocation; }
+public:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EPoseState, FAnimationMontages > DrawMontages{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)	
+	TMap<EPoseState, FAnimationMontages> SheathMontages{};
+
+	
+private:
+	const FName SUB_HOLSTER_SOCKET_NAME = "SubGunSocket_NoBag"; // 무기집 socket 이름
+	const FName MAIN_HOLSTER_SOCKET_NAME = "MainGunSocket_NoBag"; // 무기집 socket 이름
+	const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
+	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // 무기가 손에 부착될 socket 이름
+	EGunState CurState = EGunState::SUB_GUN;
+
+private:
+	//블루프린트에서 할당한 스켈레탈 메쉬를 저장하는 변수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* GunMesh;
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UAnimMontage* CurDrawMontageSub{}; // 현재 무기 위치에 해당하는 무기 뽑기 Anim montage
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UAnimMontage* CurSheathMontageSub{}; // 현재 무기 위치에 해당하는 무기 집어넣기 Anim montage
-private:
-	const FName HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
-	const FName EQUIPPED_SOCKET_NAME = "Pan_Equip"; // 무기가 손에 부착될 socket 이름
-	EGunState CurState = EGunState::MAIN_GUN;
-
+	FTransform LeftHandSocketLocation;
 };

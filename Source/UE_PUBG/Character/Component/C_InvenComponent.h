@@ -44,9 +44,21 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool CheckVolume(uint8 volume);
 
-	void ChackMyBackPack();
+	bool ChackMyBackPack(class AC_BackPack* backpack);
 
 	void Interaction(class AC_Item wilditem);
+
+	uint8 CheckBackPackVolume(uint8 backpacklevel);
+	uint8 CheckBackPackVolume(EBackPackLevel backpacklevel);
+
+
+public://Getter and Seter
+	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; }
+	//EBackPackLevel SetCurBackPackLevel(uint8 level) { CurBackPackLevel = (EBackPackLevel)level; }
+
+	uint8 GetMaxVolume() { return MaxVolume; }
+	uint8 GetCurVolume() { return CurVolume; }
+
 protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
@@ -54,8 +66,12 @@ protected:
 	uint8 CurVolume =  0;
 
 	EBackPackLevel CurBackPackLevel = EBackPackLevel::LV0;
+	EBackPackLevel PreBackPackLevel = EBackPackLevel::LV0;
 
 protected:
+	
+private:
+	class AC_BackPack* MyBackPack {};
 
 
 	

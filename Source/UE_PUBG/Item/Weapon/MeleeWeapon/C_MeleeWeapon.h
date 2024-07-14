@@ -54,6 +54,20 @@ protected:
 		const FHitResult&		SweepResult
 	);
 
+private:
+
+	/// <summary>
+	/// <para> 자세 별 AnimMontage를 Play하고 있는 도중, OwnerCharacter의 자세가 바뀔 때 </para>
+	/// <para> 현재 재생 중인 AnimMontage의 재생위치 비율에 따라 다음 자세의 Montage의 시작위치를 조정하여 재생 </para>
+	/// </summary>
+	/// <param name="PrevMontage"> 현재 재생중인 몽타주 </param>
+	/// <param name="NextMontage"> 바꿀 몽타주 </param>
+	//void SwitchCurrentPlayingMontage(FPriorityAnimMontage CurrentMontage, FPriorityAnimMontage NextMontage);
+
+private:
+
+	//void InitPriorityAnimMontages();
+
 protected:
 	
 	const FName HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
@@ -67,7 +81,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> SheathMontages{};
-
 
 protected:
 

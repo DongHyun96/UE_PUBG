@@ -30,6 +30,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class AC_BasicCharacter* OwnerCharacter{}; // owner
 
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -51,6 +52,10 @@ protected:
 	FQuat CHeadLookAtRotation= FQuat(0);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bCanCharacterMove = true;
+
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EHandState HandState{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -70,4 +75,5 @@ protected:
 
 	void ControlHeadRotation();
 
+	void RilfeLeftHandIK();
 };

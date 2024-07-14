@@ -28,23 +28,7 @@ void UC_EquippedComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Test용 weapon spawn, 프라이팬만 스폰 시켰음
-	FActorSpawnParameters Param{};
-	Param.Owner = OwnerCharacter;
-	AC_MeleeWeapon* MeleeTemp = GetWorld()->SpawnActor<AC_MeleeWeapon>(WeaponClasses[EWeaponSlot::MELEE_WEAPON], Param);
-	MeleeTemp->SetOwnerCharacter(OwnerCharacter);
-	MeleeTemp->AttachToHolster(OwnerCharacter->GetMesh());
-
-	Weapons[EWeaponSlot::MELEE_WEAPON] = MeleeTemp;
-
-	FActorSpawnParameters Param2{};
-	Param2.Owner = OwnerCharacter;
-	AC_Gun* ARTemp = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::MAIN_GUN], Param2);
-	ARTemp->SetOwnerCharacter(OwnerCharacter);
-	ARTemp->AttachToHolster(OwnerCharacter->GetMesh());
-
-	Weapons[EWeaponSlot::MAIN_GUN] = ARTemp;
-
+	SpawnWeaponsForTesting();
 }
 
 
@@ -123,11 +107,45 @@ void UC_EquippedComponent::OnSheathEnd()
 	OwnerCharacter->PlayAnimMontage(GetCurWeapon()->GetCurDrawMontage());
 }
 
+void UC_EquippedComponent::OnDrawStart()
+{
+	GetCurWeapon()->AttachToHand(OwnerCharacter->GetMesh());
+}
+
 void UC_EquippedComponent::OnDrawEnd()
 {
 	GetCurWeapon()->AttachToHand(OwnerCharacter->GetMesh());
 
 	NextWeaponType = EWeaponSlot::NONE;
+}
+
+void UC_EquippedComponent::SpawnWeaponsForTesting()
+{
+	// Test용 weapon spawn들
+	FActorSpawnParameters Param{};
+	Param.Owner = OwnerCharacter;
+	AC_MeleeWeapon* MeleeTemp = GetWorld()->SpawnActor<AC_MeleeWeapon>(WeaponClasses[EWeaponSlot::MELEE_WEAPON], Param);
+	MeleeTemp->SetOwnerCharacter(OwnerCharacter);
+	MeleeTemp->AttachToHolster(OwnerCharacter->GetMesh());
+
+	Weapons[EWeaponSlot::MELEE_WEAPON] = MeleeTemp;
+
+	FActorSpawnParameters Param2{};
+	Param2.Owner = OwnerCharacter;
+	AC_Gun* ARTemp = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::MAIN_GUN], Param2);
+	ARTemp->SetOwnerCharacter(OwnerCharacter);
+	ARTemp->AttachToHolster(OwnerCharacter->GetMesh());
+
+	Weapons[EWeaponSlot::MAIN_GUN] = ARTemp;
+
+	FActorSpawnParameters Param3{};
+	Param3.Owner = OwnerCharacter;
+	AC_ThrowingWeapon* ThrowTemp = GetWorld()->SpawnActor<AC_ThrowingWeapon>(WeaponClasses[EWeaponSlot::THROWABLE_WEAPON], Param3);
+	ThrowTemp->SetOwnerCharacter(OwnerCharacter);
+	ThrowTemp->AttachToHolster(OwnerCharacter->GetMesh());
+
+	Weapons[EWeaponSlot::THROWABLE_WEAPON] = ThrowTemp;
+
 }
 
 

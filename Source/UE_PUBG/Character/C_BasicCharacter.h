@@ -12,7 +12,8 @@ enum class EHandState : uint8
 	UNARMED,
 	WEAWPON_GUN,
 	WEAPON_MELEE,
-	WEAPON_THROWABLE
+	WEAPON_THROWABLE,
+	HANDSTATE_MAX
 };
 
 UENUM(BlueprintType)
@@ -20,7 +21,8 @@ enum class EPoseState : uint8
 {
 	STAND,
 	CROUCH,
-	CRAWL
+	CRAWL,
+	POSE_MAX
 };
 
 UENUM(BlueprintType)
@@ -28,7 +30,9 @@ enum class EMontagePriority : uint8
 {
 	TURN_IN_PLACE,
 	ATTACK,
-	DRAW_SHEATH_WEAPON
+	DRAW_SHEATH_WEAPON,
+	THROW_THROWABLE,		// 실질적으로 던지는 자세일 때
+	PRIORITY_MAX
 };
 
 USTRUCT(BlueprintType)
@@ -36,12 +40,17 @@ struct FPriorityAnimMontage : public FTableRowBase
 {
 	GENERATED_BODY()
 
+	FPriorityAnimMontage() {}
+
+	FPriorityAnimMontage(UAnimMontage* InAnimMontage, EMontagePriority InPriority)
+		:AnimMontage(InAnimMontage), Priority(InPriority) {}
+
 public:
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	UAnimMontage* AnimMontage{};
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	EMontagePriority Priority{};
 
 };
@@ -82,6 +91,7 @@ public:
 	/// 몽타주 재생 우선순위에 따른 PlayAnimMontage 함수
 	/// </summary>
 	/// <param name="PAnimMontage"> : Priority 적용된 AnimMontage </param>
+	/// <returns> Animation Montage Duration </returns>
 	float PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
 
 public: // Getters and setters
@@ -95,8 +105,14 @@ public: // Getters and setters
 	bool GetIsJumping() const { return bIsJumping; }
 	UFUNCTION(BlueprintCallable)
 	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
+	class UC_InvenComponent* GetInvenComponent() const { return InvenComponent; }
 	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
+	bool GetCanMove() const {return bCanMove;}
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
+
+	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
+
+
 protected:
 
 	// Current hand state
@@ -122,6 +138,7 @@ protected:
 	bool bIsAltPressed = false;
 	FRotator CharacterMovingDirection;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanMove = true;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -131,15 +148,14 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_EquippedComponent* EquippedComponent{};
 
-
+	//인벤토리(가방) component
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UC_InvenComponent* InvenComponent{};
 protected:
 	
 	// 현재 재생 중인, 또는 직전에 재생한 PriorityAnimMontage
 	UPROPERTY(BlueprintReadOnly)
 	FPriorityAnimMontage CurPriorityAnimMontage{};
 
-	//인벤토리(가방) component
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UC_InvenComponent* InvenComponent{};
 
 };
