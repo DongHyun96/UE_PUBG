@@ -20,6 +20,8 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	InvenComponent = CreateDefaultSubobject<UC_InvenComponent>("InvenComponent");
 	InvenComponent->SetOwnerCharacter(this);
+
+
 }
 
 // Called when the game starts or when spawned

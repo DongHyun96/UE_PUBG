@@ -73,6 +73,9 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 		EnhancedInputComponent->BindAction(MRBAction, ETriggerEvent::Started,   Player, &AC_Player::OnMRBStarted);
 		EnhancedInputComponent->BindAction(MRBAction, ETriggerEvent::Ongoing,   Player, &AC_Player::OnMRBOnGoing);
 		EnhancedInputComponent->BindAction(MRBAction, ETriggerEvent::Completed, Player, &AC_Player::OnMRBCompleted);
+
+		EnhancedInputComponent->BindAction(Interaction, ETriggerEvent::Started, Player, &AC_Player::Interaction);
+
 	}
 }
 

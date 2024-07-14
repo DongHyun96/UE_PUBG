@@ -83,8 +83,27 @@ public: // Input mapped actions
 	void OnMRBOnGoing();
 	void OnMRBCompleted();
 
+	//상호작용(F)
+	//오브젝트의 묶음별로 만들어야 할 수도?
+	//아니면 그냥 UObject로 만들기
+	void Interaction();
+
+/// <summary>
+/// 아이템 상호작용을 위한 변수와 함수.
+/// 구를 통해 아이템과의 충동을 감지하는 함수.
+/// </summary>
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* DetectionSphere;
+
+	UFUNCTION()
+	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 public:
-	//class UC_InputComponent* GetInvenComponent() { return MyInputComponent; }/부모 클래스에 존재
+	class UC_InputComponent* GetInvenComponent() { return MyInputComponent; }//부모 클래스에 존재
 
 protected:
 
@@ -129,6 +148,8 @@ protected: // Turn in place 애님 몽타주 관련
 	/// </summary>
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	TMap<EHandState, FPoseAnimMontage> TurnAnimMontageMap{};
+
+	TArray<class AC_Item*> NearInventory;
 
 	/*
 	UENUM(BlueprintType)

@@ -55,6 +55,10 @@ public:
 public://Getter and Seter
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; }
 	//EBackPackLevel SetCurBackPackLevel(uint8 level) { CurBackPackLevel = (EBackPackLevel)level; }
+
+	uint8 GetMaxVolume() { return MaxVolume; }
+	uint8 GetCurVolume() { return CurVolume; }
+
 protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
@@ -66,6 +70,9 @@ protected:
 
 protected:
 	
+private:
+	class AC_BackPack* MyBackPack {};
+
 
 	
 };

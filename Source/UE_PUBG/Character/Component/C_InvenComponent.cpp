@@ -40,12 +40,12 @@ void UC_InvenComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 /// <returns></returns>
 bool UC_InvenComponent::CheckVolume(uint8 volume)
 {
-	if (MaxVolume < CurVolume + volume)
+	if (MaxVolume > CurVolume + volume)
 	{
-		return false;
+		return true;
 	}
 
-	return true;
+	return false;
 }
 /// <summary>
 /// 1. Holster가 nullptr이면 maxVolume+= volume을 해준다.

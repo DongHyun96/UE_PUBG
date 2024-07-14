@@ -84,5 +84,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* MRBAction{};
-
+	
+	//상호작용키(F)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* Interaction{};
 };

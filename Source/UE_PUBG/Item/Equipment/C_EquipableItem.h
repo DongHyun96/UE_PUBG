@@ -13,10 +13,13 @@ UCLASS()
 class UE_PUBG_API AC_EquipableItem : public AC_Item
 {
 	GENERATED_BODY()
-	
+
+protected:
+	virtual void BeginPlay() override;
 public:
+
 	AC_EquipableItem();
 	
-	void Interaction(class AC_BasicCharacter* character) override;
+	virtual void Interaction(class AC_BasicCharacter* character) override;
 
 };
