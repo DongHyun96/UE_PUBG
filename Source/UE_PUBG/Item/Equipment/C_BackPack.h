@@ -18,12 +18,17 @@ class UE_PUBG_API AC_BackPack : public AC_EquipableItem
 {
 	GENERATED_BODY()
 
-protected:
-	virtual void BeginPlay() override;
-
 public:
 
 	AC_BackPack();
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
 	void Interaction(class AC_BasicCharacter* character) override;
 
