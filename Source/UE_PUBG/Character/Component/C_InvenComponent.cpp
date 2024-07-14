@@ -45,8 +45,6 @@ bool UC_InvenComponent::CheckVolume(uint8 volume)
 		return false;
 	}
 
-	OwnerCharacter->GetEquippedComponent()
-
 	return true;
 }
 /// <summary>
