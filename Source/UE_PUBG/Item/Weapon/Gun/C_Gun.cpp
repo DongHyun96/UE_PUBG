@@ -34,6 +34,7 @@ void AC_Gun::BeginPlay()
 	//{
 	//	UE_LOG(LogTemp, Warning, TEXT("Skeletal Mesh not found!"));
 	//}
+	
 }
 
 void AC_Gun::Tick(float DeltaTime)
@@ -41,6 +42,7 @@ void AC_Gun::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	CurDrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState];
 	CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurState];
+	//GunMesh->SetWorldRotation(OwnerCharacter->GetControlRotation());
 	if (IsValid(GunMesh))
 	{
 		FTransform TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
@@ -49,9 +51,11 @@ void AC_Gun::Tick(float DeltaTime)
 		OwnerCharacter->GetMesh()->TransformToBoneSpace("RightHand", TempVec.GetLocation(), TempVec.GetRotation().Rotator(), OutLocation, OutRotation);
 		LeftHandSocketLocation.SetLocation(OutLocation);
 		LeftHandSocketLocation.SetRotation(OutRotation.Quaternion());
-
-		//FString TheFloatStr = FString::SanitizeFloat(TempVec.GetLocation().X);
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+		//FTransform RootTrasnform = OwnerCharacter->GetMesh()->GetSocketTransform("SpineGunSocket");
+		//
+		//LeftHandSocketLocation = TempVec.GetRelativeTransform(RootTrasnform);
+		FString TheFloatStr = FString::SanitizeFloat(LeftHandSocketLocation.GetLocation().X);
+		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	}
 }
 

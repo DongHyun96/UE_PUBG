@@ -46,7 +46,6 @@ bool UC_InvenComponent::CheckVolume(uint8 volume)
 	}
 
 	return false;
-
 }
 /// <summary>
 /// 1. Holster가 nullptr이면 maxVolume+= volume을 해준다.
