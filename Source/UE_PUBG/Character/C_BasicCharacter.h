@@ -111,7 +111,7 @@ public: // Getters and setters
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 
 	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
-
+	bool GetIsHoldDirection() const { return bIsHoldDirection; }
 protected:
 
 	// Current hand state

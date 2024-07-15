@@ -19,7 +19,7 @@
 #include "Character/Component/C_EquippedComponent.h"
 
 #include "Item/Weapon/C_Weapon.h"
-
+#include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 
@@ -48,6 +48,7 @@ void AC_Player::BeginPlay()
 			SubSystem->AddMappingContext(MyInputComponent->MappingContext, 0);
 		}
 	}
+	
 }
 
 void AC_Player::Tick(float DeltaTime)

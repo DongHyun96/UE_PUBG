@@ -46,12 +46,17 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FRotator CSpineRotation = FRotator(0);
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FRotator CAimingRotation = FRotator(0);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FQuat CHeadLookAtRotation= FQuat(0);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanCharacterMove = true;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsHoldDirection = false;
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
