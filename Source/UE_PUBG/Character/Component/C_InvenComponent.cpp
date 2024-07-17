@@ -38,7 +38,7 @@ void UC_InvenComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 /// </summary>
 /// <param name="volume"></param>
 /// <returns></returns>
-bool UC_InvenComponent::CheckVolume(uint8 volume)
+bool UC_InvenComponent::CheckVolume(uint16 volume)
 {
 	if (MaxVolume > CurVolume + volume)
 	{
@@ -146,7 +146,7 @@ void UC_InvenComponent::Interaction(AC_Item wilditem)
 /// </summary>
 /// <param name="backpacklevel"></param>
 /// <returns></returns>
-uint8 UC_InvenComponent::CheckBackPackVolume(uint8 backpacklevel)
+uint16 UC_InvenComponent::CheckBackPackVolume(uint16 backpacklevel)
 {
 	switch (backpacklevel)
 	{
@@ -168,7 +168,7 @@ uint8 UC_InvenComponent::CheckBackPackVolume(uint8 backpacklevel)
 	}
 }
 
-uint8 UC_InvenComponent::CheckBackPackVolume(EBackPackLevel backpacklevel)
+uint16 UC_InvenComponent::CheckBackPackVolume(EBackPackLevel backpacklevel)
 {
 	switch (backpacklevel)
 	{

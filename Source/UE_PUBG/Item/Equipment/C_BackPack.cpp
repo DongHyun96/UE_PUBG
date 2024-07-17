@@ -11,7 +11,7 @@ AC_BackPack::AC_BackPack()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	Level = 2;
+	Level = 3;
 
 }
 
