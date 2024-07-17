@@ -41,29 +41,31 @@ public:
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 	//가방교체, 아이템획득시 해당함수로 용량이 충분한지 확인하여 T or F를 반환. 블루프린트에서 사용 가능하도록 열어줘야 할 수 있음.
-	UFUNCTION(BlueprintCallable)
-	bool CheckVolume(uint8 volume);
+	
+	//UFUNCTION(BlueprintCallable)
+	//uint16은 해당 매크로가 지원하지 않는다. uint8, uint32는 지원한다.
+	bool CheckVolume(uint16 volume);
 
 	bool ChackMyBackPack(class AC_BackPack* backpack);
 
 	void Interaction(class AC_Item wilditem);
 
-	uint8 CheckBackPackVolume(uint8 backpacklevel);
-	uint8 CheckBackPackVolume(EBackPackLevel backpacklevel);
+	uint16 CheckBackPackVolume(uint16 backpacklevel);
+	uint16 CheckBackPackVolume(EBackPackLevel backpacklevel);
 
 
 public://Getter and Seter
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; }
 	//EBackPackLevel SetCurBackPackLevel(uint8 level) { CurBackPackLevel = (EBackPackLevel)level; }
 
-	uint8 GetMaxVolume() { return MaxVolume; }
-	uint8 GetCurVolume() { return CurVolume; }
+	uint16 GetMaxVolume() { return MaxVolume; }
+	uint16 GetCurVolume() { return CurVolume; }
 
 protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
-	uint8 MaxVolume = 70;
-	uint8 CurVolume =  0;
+	uint16 MaxVolume = 70;
+	uint16 CurVolume =  0;
 
 	EBackPackLevel CurBackPackLevel = EBackPackLevel::LV0;
 	EBackPackLevel PreBackPackLevel = EBackPackLevel::LV0;

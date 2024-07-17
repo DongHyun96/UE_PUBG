@@ -30,13 +30,25 @@ void AC_Weapon::Tick(float DeltaTime)
 
 bool AC_Weapon::ExecuteBKey()
 {
-	if (!WeaponButtonStrategy) return false;
+	if (!WeaponButtonStrategy)
+	{
+		FString DebugMessage = "In AC_Weapon::ExecuteBKey : WeaponStrategy nullptr!";
+		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *DebugMessage);
+
+		return false;
+	}
 	return WeaponButtonStrategy->UseBKeyStrategy(OwnerCharacter, this);
 }
 
 bool AC_Weapon::ExecuteRKey()
 {
-	if (!WeaponButtonStrategy) return false;
+	if (!WeaponButtonStrategy)
+	{
+		FString DebugMessage = "In AC_Weapon::ExecuteRKey : WeaponStrategy nullptr!";
+		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *DebugMessage);
+
+		return false;
+	}
 	return WeaponButtonStrategy->UseRKeyStrategy(OwnerCharacter, this);
 }
 
@@ -66,7 +78,13 @@ bool AC_Weapon::ExecuteMlb_Completed()
 
 bool AC_Weapon::ExecuteMrb_Started()
 {
-	if (!WeaponButtonStrategy) return false;
+	if (!WeaponButtonStrategy)
+	{
+		FString DebugMessage = "In AC_Weapon::ExecuteMlb_Started : WeaponStrategy nullptr!";
+		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *DebugMessage);
+
+		return false;
+	}
 	return WeaponButtonStrategy->UseMrb_StartedStrategy(OwnerCharacter, this);
 }
 

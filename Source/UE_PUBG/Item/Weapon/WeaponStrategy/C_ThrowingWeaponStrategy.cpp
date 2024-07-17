@@ -21,6 +21,13 @@ bool AC_ThrowingWeaponStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* Weapon
 
 	if (!IsValid(ThrowingWeapon)) return false;
 
+	UAnimInstance* UserAnimInstance = WeaponUser->GetMesh()->GetAnimInstance();
+
+	// 아직 무기를 꺼내는 도중 or 무기를 집어넣는 중 (Priority 때문에 공격모션이 재생은 안되지만 bIsOnThrowProcess true를 막기 위함)
+	if (UserAnimInstance->Montage_IsPlaying(ThrowingWeapon->GetCurDrawMontage().AnimMontage) ||
+		UserAnimInstance->Montage_IsPlaying(ThrowingWeapon->GetCurSheathMontage().AnimMontage))
+		return false;
+
 	if (ThrowingWeapon->GetIsOnThrowProcess()) return false;
 
 	ThrowingWeapon->SetIsOnThrowProcess(true);

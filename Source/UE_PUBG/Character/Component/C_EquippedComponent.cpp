@@ -146,6 +146,7 @@ void UC_EquippedComponent::SpawnWeaponsForTesting()
 
 	Weapons[EWeaponSlot::THROWABLE_WEAPON] = ThrowTemp;
 
+	AC_ThrowingWeapon::InitTestPool(OwnerCharacter, WeaponClasses[EWeaponSlot::THROWABLE_WEAPON], this);
 }
 
 
