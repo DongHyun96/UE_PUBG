@@ -54,8 +54,8 @@ void AC_Gun::Tick(float DeltaTime)
 		//FTransform RootTrasnform = OwnerCharacter->GetMesh()->GetSocketTransform("SpineGunSocket");
 		//
 		//LeftHandSocketLocation = TempVec.GetRelativeTransform(RootTrasnform);
-		FString TheFloatStr = FString::SanitizeFloat(LeftHandSocketLocation.GetLocation().X);
-		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+		//FString TheFloatStr = FString::SanitizeFloat(LeftHandSocketLocation.GetLocation().X);
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	}
 }
 

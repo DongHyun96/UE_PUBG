@@ -431,7 +431,7 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 
 	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;
 
-	if (Delta > 90.f) // Right Turn in place motion
+	if (Delta > 60.f) // Right Turn in place motion
 	{
 		// Controller
 		GetCharacterMovement()->bUseControllerDesiredRotation	= true;
@@ -446,7 +446,7 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 		PlayAnimMontage(RightPriorityMontage);
 
 	}
-	else if (Delta < -90.f) // Left Turn in place motion
+	else if (Delta < -60.f) // Left Turn in place motion
 	{
 		GetCharacterMovement()->bUseControllerDesiredRotation	= true;
 		GetCharacterMovement()->bOrientRotationToMovement		= false;
