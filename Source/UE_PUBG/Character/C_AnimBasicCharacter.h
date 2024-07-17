@@ -30,6 +30,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class AC_BasicCharacter* OwnerCharacter{}; // owner
 
+public:
+
+	FRotator GetCSpineRotation() const { return CSpineRotation; }
+
 
 protected:
 

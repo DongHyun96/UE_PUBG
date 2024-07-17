@@ -99,7 +99,7 @@ void UC_AnimBasicCharacter::ControlHeadRotation()
 
 
 	CSpineRotation = UKismetMathLibrary::RInterpTo(CSpineRotation, DeltaRotation, 1.0, 0.1);
-
+	
 	CHeadLookAtRotation = UKismetMathLibrary::MakeRotator(CSpineRotation.Pitch, CSpineRotation.Yaw, CSpineRotation.Roll).Quaternion();
 }
 
