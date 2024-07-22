@@ -5,6 +5,7 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Camera/CameraComponent.h"
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
@@ -21,21 +22,25 @@ AC_BasicCharacter::AC_BasicCharacter()
 	InvenComponent = CreateDefaultSubobject<UC_InvenComponent>("InvenComponent");
 	InvenComponent->SetOwnerCharacter(this);
 
-
+	AimCamera = CreateDefaultSubobject<UCameraComponent>("AimCamera");
+	AimCamera->SetupAttachment(RootComponent);
+	
 }
 
 // Called when the game starts or when spawned
 void AC_BasicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	AimCamera->SetActive(false);
+	MainCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
+
 }
 
 // Called every frame
 void AC_BasicCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+	AimCamera->SetWorldRotation(GetControlRotation());
 }
 
 // Called to bind functionality to input
@@ -85,5 +90,17 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 	// Priority가 현재 재생중인 Montage가 더 크다면 새로이 재생하지 않고 그냥 return
 	return 0.0f;
+}
+
+void AC_BasicCharacter::SetToAimKeyPress()
+{
+	MainCamera->SetActive(false);
+	AimCamera->SetActive(true);
+}
+
+void AC_BasicCharacter::BackToMainCamera()
+{
+	MainCamera->SetActive(true);
+	AimCamera->SetActive(false);
 }
 

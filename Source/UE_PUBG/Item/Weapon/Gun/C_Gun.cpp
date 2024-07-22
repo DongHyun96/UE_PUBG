@@ -9,13 +9,15 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
+
 
 // Sets default values
 AC_Gun::AC_Gun()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
 }
 
 void AC_Gun::BeginPlay()
@@ -23,6 +25,9 @@ void AC_Gun::BeginPlay()
 	Super::BeginPlay();
 	//블루프린트에서 할당한 Skeletal Mesh 찾아서 변수에 저장
 	GunMesh = FindComponentByClass<USkeletalMeshComponent>();
+
+	
+
 	//if (IsValid(MyMesh))
 	//{
 	//	UE_LOG(LogTemp, Warning, TEXT("Skeletal Mesh: %s"), *MyMesh->GetName());
