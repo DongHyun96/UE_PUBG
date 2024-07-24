@@ -3,6 +3,8 @@
 
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 
+#include "Character/C_BasicCharacter.h"
+
 bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
 	return false;

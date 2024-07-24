@@ -21,6 +21,14 @@ struct FThrowProcessMontages
 	FPriorityAnimMontage ThrowMontage{};
 };
 
+UENUM(BluePrintType)
+enum class EThrowableType : uint8
+{
+	GRENADE,
+	FLASH_BANG,
+	SMOKE
+};
+
 /**
  * 
  */
@@ -36,6 +44,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
 	// Called every frame
@@ -83,6 +93,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnThrowProcessEnd();
 
+public:
+
+	/// <summary>
+	/// 블루프린트에서 사용할 event
+	/// </summary>
+	UFUNCTION(BlueprintImplementableEvent)
+	void BPE_ClearSpline();
 
 public: // Getters & Setters
 
@@ -97,6 +114,41 @@ public: // Getters & Setters
 	FPriorityAnimMontage GetCurThrowReadyMontage() const { return CurThrowProcessMontages.ThrowReadyMontage; }
 	FPriorityAnimMontage GetCurThrowMontage() const { return CurThrowProcessMontages.ThrowMontage; }
 
+	void SetIsCooked(bool IsCooked) { bIsCooked = IsCooked; }
+	bool GetIsCooked() const { return bIsCooked; }
+
+	void SetDrawPredictedPath(bool DrawPredictedPath) { bDrawPredictedPath = DrawPredictedPath; }
+
+public:
+
+	UFUNCTION(BlueprintCallable)
+	void InitExplodeStrategy(EThrowableType ThrowableType);
+
+	/// <summary>
+	/// 안전손잡이까지 날리기
+	/// </summary>
+	void StartCooking();
+
+	/// <summary>
+	/// <para> Cooking된 채로 땅에 내려놓기 / 이미 cooking이 시작되었을 때 무기를 바꾸거나, 손에 쥐고 있을 때 터졌을 때도 사용 </para>
+	/// <para> 땅에 내려놓고 OnThrowProcessEnd 호출함으로써 다음 동작도 모두 처리 </para>
+	/// </summary>
+	/// <returns> 땅에 그냥 놓을 수 없는 경우 return false </returns>
+	bool ReleaseOnGround();
+
+private:
+
+	/// <summary>
+	/// 투척류 터치기
+	/// </summary>
+	void Explode();
+
+protected:
+
+	// Get Predicted Projectile path start location
+	UFUNCTION(BlueprintCallable)
+	FVector GetPredictedThrowStartLocation();
+
 private:
 
 	/// <summary>
@@ -104,14 +156,13 @@ private:
 	/// </summary>
 	void DrawDebugPredictedPath();
 
-	/// <summary>
-	/// 수류탄 투척 예상 경로 그리기 (Niagara line) - USE THIS IN REAL PLAY
-	/// </summary>
-	void DrawNiagaraPredictedPath();
+	void DrawPredictedPath();
 
 	void HandlePredictedPath();
-	
 	void UpdateProjectileLaunchValues();
+
+protected:
+	void Example();
 
 protected:
 
@@ -165,14 +216,15 @@ protected: // Projectile 관련
 	float Speed = 1500.f;
 	const float UP_DIR_BOOST_OFFSET  = 500.f;
 
-protected:
+protected: // Predicted Path 관련
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bDrawPredictedPath{}; // Predicted Path를 그려야하는지 체크
 
-	// 예상 경로 그릴 때 사용
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UNiagaraSystem* NiagaraSystem{};
+	//class USplineComponent* PathSpline{};
+	//class UStaticMeshComponent* PredictedEndPoint{};
+	//
+	//TArray<class USplineMeshComponent*> SplineMeshes{};
 
 protected:
 
@@ -180,5 +232,27 @@ protected:
 	static TArray<AC_ThrowingWeapon*> ThrowablePool;
 	
 	static const UINT TESTPOOLCNT = 20;
+
+private:
+
+	// TODO : Initing 할 때마다 삭제 재생성
+	// Predicted Path를 그릴 때, 던지기 자세에서의 socket위치를 파악하기 위함, 플레이어만 사용
+	static class USkeletalMeshComponent* OwnerMeshTemp;
+
+private:
+	
+	bool bIsCooked{};
+
+	struct FTimerHandle TimerHandle{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	float CookingTime = 5.f;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TScriptInterface<class II_ExplodeStrategy> ExplodeStrategy{};
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 };

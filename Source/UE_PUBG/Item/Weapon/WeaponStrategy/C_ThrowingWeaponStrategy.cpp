@@ -12,7 +12,16 @@ bool AC_ThrowingWeaponStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, A
 
 bool AC_ThrowingWeaponStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
-	return false;
+	AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(Weapon);
+
+	if (!IsValid(ThrowingWeapon)) return false;
+	if (ThrowingWeapon->GetIsCooked()) return false;
+
+	// TODO : R키로 Cooking 가능한 시점도 중요할 듯
+
+	ThrowingWeapon->StartCooking();
+
+	return true;
 }
 
 bool AC_ThrowingWeaponStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)

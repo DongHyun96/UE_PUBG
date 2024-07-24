@@ -70,6 +70,21 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 	}
 	
 	// 현재 무기를 착용중인 상황
+
+	// 투척류 예외처리
+	if (CurWeaponType == EWeaponSlot::THROWABLE_WEAPON)
+	{
+		AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(GetCurWeapon());
+		if (IsValid(ThrowingWeapon))
+		{
+			ThrowingWeapon->SetDrawPredictedPath(false);
+
+			// 이미 쿠킹이 시작되었고, 아직 손에서 떠나지 않은 투척류라면 땅에 떨굼
+			if (ThrowingWeapon->GetIsCooked() && ThrowingWeapon->GetAttachParentActor())
+				return ThrowingWeapon->ReleaseOnGround();
+		}
+	}
+
 	OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
 
 	return true;
