@@ -152,8 +152,10 @@ protected:
 	class UC_EquippedComponent* EquippedComponent{};
 
 	//인벤토리(가방) component
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UC_InvenComponent* InvenComponent{};
+
 protected:
 	
 	// 현재 재생 중인, 또는 직전에 재생한 PriorityAnimMontage

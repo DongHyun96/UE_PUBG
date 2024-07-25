@@ -6,6 +6,8 @@
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
 
+#include "Character/C_BasicCharacter.h"
+
 bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
 	return false;

@@ -21,7 +21,7 @@ enum class EBackPackLevel
 ///불가능하다.
 /// EquipmentSystem을 Blueprint에서 만들어서 거기서 InvenComponent와 EquippedComponent를 사용해서 인벤시스템와 UI를 제작.
 /// </summary>
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class UE_PUBG_API UC_InvenComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -61,6 +61,8 @@ public://Getter and Seter
 	uint16 GetMaxVolume() { return MaxVolume; }
 	uint16 GetCurVolume() { return CurVolume; }
 
+	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
+
 protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
@@ -73,7 +75,7 @@ protected:
 protected:
 	
 private:
-	class AC_BackPack* MyBackPack {};
+	AC_BackPack* MyBackPack {};
 
 
 	
