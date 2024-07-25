@@ -94,8 +94,8 @@ void UC_AnimBasicCharacter::ControlHeadRotation()
 	DeltaRotation.Pitch /= -5.0f;
 	DeltaRotation.Yaw   /=  5.0f;
 
-	DeltaRotation.Roll  = FMath::Clamp(DeltaRotation.Roll,  -90, 90);
-	DeltaRotation.Pitch = FMath::Clamp(DeltaRotation.Pitch, -90, 90);
+	DeltaRotation.Roll  = FMath::Clamp(DeltaRotation.Roll,  -90, 90);	
+	DeltaRotation.Pitch = FMath::Clamp(DeltaRotation.Pitch, -90, 90);	
 	DeltaRotation.Yaw   = FMath::Clamp(DeltaRotation.Yaw,   -90, 90);
 
 	//DeltaRotation.Roll  = 0;

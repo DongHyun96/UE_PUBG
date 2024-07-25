@@ -113,7 +113,8 @@ public: // Getters and setters
 	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
 
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
-
+	void SetToAimKeyPress();
+	void BackToMainCamera();
 protected:
 
 	// Current hand state
@@ -128,7 +129,8 @@ protected: // Camera
 
 	UPROPERTY(BluePrintReadWrite, EditDefaultsOnly)
 	class UCameraComponent* MainCamera{};
-
+	UPROPERTY(EditDefaultsOnly)
+	class UCameraComponent* AimCamera;
 protected:
 
 	// AnimCharacter에서 참조할 Speed의 다음 Lerp destination 값
