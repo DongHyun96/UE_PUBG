@@ -16,6 +16,8 @@ AC_Gun::AC_Gun()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//ItemType ¼³Á¤.
+	MyItemType = EItemTypes::MAINGUN;
 }
 
 void AC_Gun::BeginPlay()
@@ -54,8 +56,8 @@ void AC_Gun::Tick(float DeltaTime)
 		//FTransform RootTrasnform = OwnerCharacter->GetMesh()->GetSocketTransform("SpineGunSocket");
 		//
 		//LeftHandSocketLocation = TempVec.GetRelativeTransform(RootTrasnform);
-		FString TheFloatStr = FString::SanitizeFloat(LeftHandSocketLocation.GetLocation().X);
-		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+		//FString TheFloatStr = FString::SanitizeFloat(LeftHandSocketLocation.GetLocation().X);
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	}
 }
 

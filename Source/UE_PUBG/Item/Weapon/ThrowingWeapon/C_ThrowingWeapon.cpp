@@ -33,6 +33,9 @@ AC_ThrowingWeapon::AC_ThrowingWeapon()
 	Collider = CreateDefaultSubobject<UCapsuleComponent>("Capsule");
 	Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	//ItemType ¼³Á¤.
+	MyItemType = EItemTypes::THROWABLE;
+
 	//RootComponent = Collider;
 }
 
