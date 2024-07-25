@@ -359,8 +359,10 @@ void AC_Player::Interaction()
 	FString TheFloatStr = FString::SanitizeFloat(this->InvenComponent->GetMaxVolume());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
 
-	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
+	FString TheFloatStr1 = FString::SanitizeFloat((float)this->InvenComponent->GetCurBackPackLevel());
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr1);
 
+	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
 
 	if (NearInventory.Num() > 0)
 	{
@@ -389,8 +391,10 @@ void AC_Player::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Othe
 	FString TheFloatStr = FString::SanitizeFloat(this->InvenComponent->GetCurVolume());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
 
-	AC_BackPack* OverlappedItem = Cast<AC_BackPack>(OtherActor);
+	//AC_BackPack* OverlappedItem = Cast<AC_BackPack>(OtherActor);
 	//AC_Item* OverlappedItem = CastChecked<AC_Item>(OtherActor);
+	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+	
 	//UE_LOG(LogTemp, Log, TEXT("Overlapped actor class: %s"), *OverlappedItem->GetClass()->GetName());
 
 	if (IsValid(OverlappedItem))

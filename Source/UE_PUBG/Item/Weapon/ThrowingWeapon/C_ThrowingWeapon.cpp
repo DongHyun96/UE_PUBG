@@ -42,10 +42,17 @@ AC_ThrowingWeapon::AC_ThrowingWeapon()
 	Collider = CreateDefaultSubobject<UCapsuleComponent>("Capsule");
 	Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+
 	PathSpline = CreateDefaultSubobject<USplineComponent>("PredictedPathSpline");
 	PredictedEndPoint = CreateDefaultSubobject<UStaticMeshComponent>("PredictedPathEndPointMesh");
 	PredictedEndPoint->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	PredictedEndPoint->SetVisibility(false);
+
+	//ItemType ¼³Á¤.
+	MyItemType = EItemTypes::THROWABLE;
+
+	//RootComponent = Collider;
+
 }
 
 void AC_ThrowingWeapon::BeginPlay()

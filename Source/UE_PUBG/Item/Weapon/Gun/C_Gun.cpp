@@ -16,6 +16,8 @@ AC_Gun::AC_Gun()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//ItemType ¼³Á¤.
+	MyItemType = EItemTypes::MAINGUN;
 }
 
 void AC_Gun::BeginPlay()
