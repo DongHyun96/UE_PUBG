@@ -93,14 +93,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnThrowProcessEnd();
 
-public:
-
-	/// <summary>
-	/// 블루프린트에서 사용할 event
-	/// </summary>
-	UFUNCTION(BlueprintImplementableEvent)
-	void BPE_ClearSpline();
-
 public: // Getters & Setters
 
 	void SetIsCharging(bool InIsCharging) { bIsCharging = InIsCharging; }
@@ -116,8 +108,6 @@ public: // Getters & Setters
 
 	void SetIsCooked(bool IsCooked) { bIsCooked = IsCooked; }
 	bool GetIsCooked() const { return bIsCooked; }
-
-	void SetDrawPredictedPath(bool DrawPredictedPath) { bDrawPredictedPath = DrawPredictedPath; }
 
 public:
 
@@ -152,17 +142,22 @@ protected:
 private:
 
 	/// <summary>
-	/// 수류탄 투척 예상 경로 그리기 (디버깅 line)
+	/// 투척 예상 경로 그리기 (디버깅 line)
 	/// </summary>
 	void DrawDebugPredictedPath();
 
+	/// <summary>
+	/// 투척 예상 경로 그리기 (실제 line)
+	/// </summary>
 	void DrawPredictedPath();
 
 	void HandlePredictedPath();
 	void UpdateProjectileLaunchValues();
 
-protected:
-	void Example();
+public:
+
+	UFUNCTION(BlueprintCallable)
+	void ClearSpline();
 
 protected:
 
@@ -207,10 +202,10 @@ protected: // Projectile 관련
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UProjectileMovementComponent* ProjectileMovement{};
 
-	UPROPERTY(BlueprintReadOnly)
+private:
+
 	FVector ProjStartLocation{};
 
-	UPROPERTY(BlueprintReadOnly)
 	FVector ProjLaunchVelocity{};
 
 	float Speed = 1500.f;
@@ -218,13 +213,15 @@ protected: // Projectile 관련
 
 protected: // Predicted Path 관련
 
-	UPROPERTY(BlueprintReadOnly)
-	bool bDrawPredictedPath{}; // Predicted Path를 그려야하는지 체크
+	class USplineComponent* PathSpline{};
 
-	//class USplineComponent* PathSpline{};
-	//class UStaticMeshComponent* PredictedEndPoint{};
-	//
-	//TArray<class USplineMeshComponent*> SplineMeshes{};
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UStaticMeshComponent* PredictedEndPoint{};
+	
+	TArray<class USplineMeshComponent*> SplineMeshes{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UStaticMesh* SplineMesh{};
 
 protected:
 
@@ -255,4 +252,6 @@ protected:
 
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UParticleSystem* ExplodeEffect{};
 };

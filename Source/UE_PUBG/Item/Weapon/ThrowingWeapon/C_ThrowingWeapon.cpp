@@ -10,7 +10,10 @@
 #include "Components/CapsuleComponent.h"
 
 #include "GameFramework/ProjectileMovementComponent.h"
+
 #include "Kismet/GameplayStatics.h"
+#include "Components/SplineMeshComponent.h"
+#include "Components/SplineComponent.h"
 
 #include "Character/C_BasicCharacter.h"
 #include "Character/Component/C_EquippedComponent.h"
@@ -19,11 +22,10 @@
 #include "I_ExplodeStrategy.h"
 #include "C_GrenadeExplode.h"
 #include "C_FlashBangExplode.h"
-//#include "C_SmokeExplode.h"
+#include "C_SmokeGrndExplode.h"
 
 #include "Utility/C_Util.h"
 
-#include "Kismet/GameplayStatics.h"
 
 TArray<AC_ThrowingWeapon*> AC_ThrowingWeapon::ThrowablePool{};
 
@@ -40,8 +42,10 @@ AC_ThrowingWeapon::AC_ThrowingWeapon()
 	Collider = CreateDefaultSubobject<UCapsuleComponent>("Capsule");
 	Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	//PathSpline = CreateDefaultSubobject<USplineComponent>("PredictedPathSpline");
-	//PredictedEndPoint = CreateDefaultSubobject<UStaticMeshComponent>("PredictedPathEndPointMesh");
+	PathSpline = CreateDefaultSubobject<USplineComponent>("PredictedPathSpline");
+	PredictedEndPoint = CreateDefaultSubobject<UStaticMeshComponent>("PredictedPathEndPointMesh");
+	PredictedEndPoint->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PredictedEndPoint->SetVisibility(false);
 }
 
 void AC_ThrowingWeapon::BeginPlay()
@@ -77,8 +81,6 @@ void AC_ThrowingWeapon::Tick(float DeltaTime)
 	CurDrawMontage			= DrawMontages[OwnerCharacter->GetPoseState()];
 	CurSheathMontage		= SheathMontages[OwnerCharacter->GetPoseState()];
 	CurThrowProcessMontages = ThrowProcessMontages[OwnerCharacter->GetPoseState()];
-	
-	//HandlePredictedPath();
 }
 
 bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
@@ -162,16 +164,12 @@ void AC_ThrowingWeapon::OnThrowReadyLoop()
 	{
 		// 다음 던지기 동작 실행
 		OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowMontage);
-		bDrawPredictedPath = false;
-		BPE_ClearSpline();
+		ClearSpline();
 	}
 }
 
 void AC_ThrowingWeapon::OnThrowThrowable()
 {
-	// TODO : 실질적으로 던지기
-	// 여기서 던져진 수류탄은 터진 이후 Destroy self
-	
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
 	// Direction 구하는 방법 1
@@ -212,9 +210,10 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 {
 	bIsOnThrowProcess = false;
 
+	bIsCharging = false;
+
 	// Ready 도중 ProcessEnd가 될 수 있기 때문에 Predicted Path spline 모두 지워주기
-	bDrawPredictedPath = false;
-	BPE_ClearSpline();
+	ClearSpline();
 
 	// 현재 Throw AnimMontage 멈추기 (우선순위 때문에 멈춰야 함)
 	OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f);
@@ -249,6 +248,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::SUB_GUN)) return;
 
 	OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::NONE);
+
 }
 
 void AC_ThrowingWeapon::InitExplodeStrategy(EThrowableType ThrowableType)
@@ -262,7 +262,7 @@ void AC_ThrowingWeapon::InitExplodeStrategy(EThrowableType ThrowableType)
 		ExplodeStrategy = NewObject<AC_FlashBangExplode>(this);
 		return;
 	case EThrowableType::SMOKE:
-		//ExplodeStrategy = CreateDefaultSubobject<AC_SmokeExplode>("SmokeExplodeStrategy");
+		ExplodeStrategy = NewObject<AC_SmokeGrndExplode>(this);
 		return;
 	default:
 		break;
@@ -307,9 +307,21 @@ void AC_ThrowingWeapon::Explode()
 
 	bool Exploded = ExplodeStrategy->UseStrategy(this);
 
+
+	if (ExplodeEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplodeEffect, GetActorLocation());
+
 	if (GetAttachParentActor()) ReleaseOnGround(); // 손에서 아직 떠나지 않았을 때
 		
-	if (Exploded) this->Destroy();
+	//if (Exploded) this->Destroy();
+	if (Exploded)
+	{
+		this->SetActorHiddenInGame(true);
+		
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+			{
+				this->Destroy();
+			}, 10.f, false);
+	}
 }
 
 FVector AC_ThrowingWeapon::GetPredictedThrowStartLocation()
@@ -400,16 +412,50 @@ void AC_ThrowingWeapon::DrawPredictedPath()
 	ProjectilePathParams.DrawDebugTime			= 1.f;
 	ProjectilePathParams.bTraceComplex			= false;
 
+	
 	FPredictProjectilePathResult Result{};
 
-	bool Hit = UGameplayStatics::PredictProjectilePath(GetWorld(), ProjectilePathParams, Result);
+	bool IsHit = UGameplayStatics::PredictProjectilePath(GetWorld(), ProjectilePathParams, Result);
 
+	ClearSpline();
+
+	TArray<FPredictProjectilePathPointData> PathData = Result.PathData;
+
+	if (IsHit)
+	{
+		PredictedEndPoint->SetWorldLocation(PathData.Last().Location);
+		PredictedEndPoint->SetVisibility(true);
+	}
+
+	for (auto& pointData : PathData) 
+		PathSpline->AddSplinePoint(pointData.Location, ESplineCoordinateSpace::Local);
+
+	PathSpline->SetSplinePointType(PathData.Num() - 1, ESplinePointType::CurveClamped);
+	
+	for (int i = 0; i < PathSpline->GetNumberOfSplinePoints() - 2; i++)
+	{
+		FVector FirstLocation{};
+		FVector SecondLocation{};
+		FVector FirstTangent{};
+		FVector SecondTangent{};
+
+		PathSpline->GetLocationAndTangentAtSplinePoint(i, FirstLocation, FirstTangent, ESplineCoordinateSpace::Local);
+		PathSpline->GetLocationAndTangentAtSplinePoint(i + 1, SecondLocation, SecondTangent, ESplineCoordinateSpace::Local);
+
+		USplineMeshComponent* SplineMeshComponent = NewObject<USplineMeshComponent>(this);
+		SplineMeshComponent->SetStaticMesh(SplineMesh);
+		SplineMeshComponent->SetStartAndEnd(FirstLocation, FirstTangent, SecondLocation, SecondTangent);
+		SplineMeshComponent->SetMobility(EComponentMobility::Movable);
+		SplineMeshComponent->RegisterComponentWithWorld(GetWorld());
+		SplineMeshComponent->AttachToComponent(PathSpline, FAttachmentTransformRules::KeepRelativeTransform);
+		//SplineMeshComponent->SetMaterial();
+		
+		SplineMeshes.Add(SplineMeshComponent);
+	}
 }
 
 void AC_ThrowingWeapon::HandlePredictedPath()
 {
-	bDrawPredictedPath = false;
-
 	// Projectile Path
 	// TODO : 플레이어일 경우에만 그리기 (추후, GameManager 멤버변수의 Player와 객체 대조해볼 것)
 
@@ -419,9 +465,8 @@ void AC_ThrowingWeapon::HandlePredictedPath()
 	if (!OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(CurThrowProcessMontages.ThrowReadyMontage.AnimMontage))
 		return;
 
-	bDrawPredictedPath = true;
-
 	UpdateProjectileLaunchValues();
+	DrawPredictedPath();
 	//DrawDebugPredictedPath();
 }
 
@@ -438,7 +483,12 @@ void AC_ThrowingWeapon::UpdateProjectileLaunchValues()
 	ProjLaunchVelocity.Z += UP_DIR_BOOST_OFFSET;
 }
 
-void AC_ThrowingWeapon::Example()
+void AC_ThrowingWeapon::ClearSpline()
 {
-	
+	PredictedEndPoint->SetVisibility(false);
+
+	for (auto& item : SplineMeshes) item->DestroyComponent();
+	SplineMeshes.Empty();
+
+	PathSpline->ClearSplinePoints();
 }

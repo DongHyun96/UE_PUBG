@@ -77,7 +77,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 		AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(GetCurWeapon());
 		if (IsValid(ThrowingWeapon))
 		{
-			ThrowingWeapon->SetDrawPredictedPath(false);
+			//ThrowingWeapon->SetDrawPredictedPath(false);
 
 			// 이미 쿠킹이 시작되었고, 아직 손에서 떠나지 않은 투척류라면 땅에 떨굼
 			if (ThrowingWeapon->GetIsCooked() && ThrowingWeapon->GetAttachParentActor())
