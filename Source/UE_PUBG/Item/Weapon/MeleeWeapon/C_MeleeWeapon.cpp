@@ -23,6 +23,9 @@ AC_MeleeWeapon::AC_MeleeWeapon()
 
 	CurDrawMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
 	CurSheathMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
+
+	//ItemType ¼³Á¤.
+	MyItemType = EItemTypes::MELEEWEAPON;
 }
 
 void AC_MeleeWeapon::BeginPlay()

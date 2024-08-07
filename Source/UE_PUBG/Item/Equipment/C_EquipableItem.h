@@ -14,11 +14,17 @@ class UE_PUBG_API AC_EquipableItem : public AC_Item
 {
 	GENERATED_BODY()
 
-protected:
-	virtual void BeginPlay() override;
 public:
-
+	// Sets default values for this actor's properties
 	AC_EquipableItem();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 	
 	virtual void Interaction(class AC_BasicCharacter* character) override;
 

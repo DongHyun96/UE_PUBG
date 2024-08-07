@@ -13,6 +13,11 @@ AC_EquipableItem::AC_EquipableItem()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void AC_EquipableItem::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 void AC_EquipableItem::Interaction(AC_BasicCharacter* character)
 {
 }

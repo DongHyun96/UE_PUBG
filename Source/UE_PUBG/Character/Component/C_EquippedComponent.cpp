@@ -70,8 +70,28 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 	}
 	
 	// 현재 무기를 착용중인 상황
-	OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
 
+	// 투척류 예외처리
+	if (CurWeaponType == EWeaponSlot::THROWABLE_WEAPON)
+	{
+		AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(GetCurWeapon());
+		if (IsValid(ThrowingWeapon))
+		{
+			//ThrowingWeapon->SetDrawPredictedPath(false);
+
+			// 이미 쿠킹이 시작되었고, 아직 손에서 떠나지 않은 투척류라면 땅에 떨굼
+			if (ThrowingWeapon->GetIsCooked() && ThrowingWeapon->GetAttachParentActor())
+				return ThrowingWeapon->ReleaseOnGround();
+		}
+	}
+	//총을 들고 Aiming 중일 때 카메라 다시 원래대로 전환
+	if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
+	{
+		AC_Gun* TempWeapon = Cast<AC_Gun>(Weapons[CurWeaponType]);
+		if (IsValid(TempWeapon))
+			TempWeapon->BackToMainCamera();
+	}
+	OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
 	return true;
 }
 
@@ -84,6 +104,8 @@ bool UC_EquippedComponent::ToggleArmed()
 	if (CurWeaponType != EWeaponSlot::NONE && IsValid(GetCurWeapon()))
 	{
 		PrevWeaponType = CurWeaponType;
+
+
 		return ChangeCurWeapon(EWeaponSlot::NONE);
 	}
 
@@ -94,8 +116,16 @@ bool UC_EquippedComponent::ToggleArmed()
 void UC_EquippedComponent::OnSheathEnd()
 {
 	// 현재 무기 무기집에 붙이기
-	GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
 
+	FString TheFloatStr = "Changing";
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+	GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
+	if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
+	{
+		AC_Gun* TempWeapon = Cast<AC_Gun>(Weapons[CurWeaponType]);
+		if (IsValid(TempWeapon))
+			TempWeapon->SetIsAimPress(false);
+	}
 	CurWeaponType = NextWeaponType;
 	
 	if (!IsValid(GetCurWeapon()))
@@ -146,6 +176,7 @@ void UC_EquippedComponent::SpawnWeaponsForTesting()
 
 	Weapons[EWeaponSlot::THROWABLE_WEAPON] = ThrowTemp;
 
+	AC_ThrowingWeapon::InitTestPool(OwnerCharacter, WeaponClasses[EWeaponSlot::THROWABLE_WEAPON], this);
 }
 
 

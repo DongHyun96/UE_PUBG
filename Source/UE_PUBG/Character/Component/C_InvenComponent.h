@@ -21,7 +21,7 @@ enum class EBackPackLevel
 ///불가능하다.
 /// EquipmentSystem을 Blueprint에서 만들어서 거기서 InvenComponent와 EquippedComponent를 사용해서 인벤시스템와 UI를 제작.
 /// </summary>
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class UE_PUBG_API UC_InvenComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -41,37 +41,54 @@ public:
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 	//가방교체, 아이템획득시 해당함수로 용량이 충분한지 확인하여 T or F를 반환. 블루프린트에서 사용 가능하도록 열어줘야 할 수 있음.
-	UFUNCTION(BlueprintCallable)
-	bool CheckVolume(uint8 volume);
+	
+	//UFUNCTION(BlueprintCallable)
+	//uint16은 해당 매크로가 지원하지 않는다. uint8, uint32는 지원한다.
+	bool CheckVolume(uint16 volume);
 
 	bool ChackMyBackPack(class AC_BackPack* backpack);
 
 	void Interaction(class AC_Item wilditem);
 
-	uint8 CheckBackPackVolume(uint8 backpacklevel);
-	uint8 CheckBackPackVolume(EBackPackLevel backpacklevel);
+	uint16 CheckBackPackVolume(uint16 backpacklevel);
+	uint16 CheckBackPackVolume(EBackPackLevel backpacklevel);
 
 
 public://Getter and Seter
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; }
 	//EBackPackLevel SetCurBackPackLevel(uint8 level) { CurBackPackLevel = (EBackPackLevel)level; }
 
-	uint8 GetMaxVolume() { return MaxVolume; }
-	uint8 GetCurVolume() { return CurVolume; }
+	uint16 GetMaxVolume() { return MaxVolume; }
+	uint16 GetCurVolume() { return CurVolume; }
+
+	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
+
+	TArray<class AC_Item*> GetNearItems() { return NearItems; }
 
 protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
-	uint8 MaxVolume = 70;
-	uint8 CurVolume =  0;
+	uint16 MaxVolume = 70;
+	uint16 CurVolume =  0;
 
 	EBackPackLevel CurBackPackLevel = EBackPackLevel::LV0;
 	EBackPackLevel PreBackPackLevel = EBackPackLevel::LV0;
 
+	/// <summary>
+	/// 기본 : Ui에서 현재 내 아이템목록을 보여주기 위함.
+	/// 추가 : 죽었을때 떨굴 내 아이템 목록.(총이나 가방같이 장착아이템들도 떨구어야하는데 이걸 죽었을때 한번에 떨구기 위한 방법은 2가지로 생각. 
+	/// 첫번째는 일일이 떨꾸어주는것. 
+	/// 두번째는 MyItem에 다 넣고 한번에 떨구는 것.
+	/// </summary>
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<class AC_Item*> MyItems;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<class AC_Item*> NearItems;
 protected:
 	
 private:
-	class AC_BackPack* MyBackPack {};
+	AC_BackPack* MyBackPack {};
 
 
 	

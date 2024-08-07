@@ -20,7 +20,8 @@ public class UE_PUBG : ModuleRules
             "InputCore",
             "EnhancedInput",
             "UMG",
-            "GameplayCameras"
+            "GameplayCameras",
+            "Niagara"
         });
 
         /*

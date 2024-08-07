@@ -44,7 +44,13 @@ public:
 	bool AttachToHolster(class USceneComponent* InParent) override;
 	bool AttachToHand(class USceneComponent* InParent) override;
 	void ChangeGunState(EGunState InGunState) { CurState = InGunState; }
+	bool SetAimingDown();
+	bool SetAimingPress();
+	bool BackToMainCamera();
+	void SetIsAimPress(bool InIsAimPress) { bIsAimPress = InIsAimPress; }
+	bool GetIsAimPress() { return bIsAimPress; }
 	FTransform GetLeftHandSocketTransform() const { return LeftHandSocketLocation; }
+	class UCameraComponent* GetGunCamera() { return AimSightCamera; }
 public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages > DrawMontages{};
@@ -57,8 +63,10 @@ private:
 	const FName SUB_HOLSTER_SOCKET_NAME = "SubGunSocket_NoBag"; // 무기집 socket 이름
 	const FName MAIN_HOLSTER_SOCKET_NAME = "MainGunSocket_NoBag"; // 무기집 socket 이름
 	const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
+	//const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
 	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // 무기가 손에 부착될 socket 이름
 	EGunState CurState = EGunState::SUB_GUN;
+	bool bIsAimPress = false;
 
 private:
 	//블루프린트에서 할당한 스켈레탈 메쉬를 저장하는 변수
@@ -67,4 +75,7 @@ private:
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FTransform LeftHandSocketLocation;
+
+	class UCameraComponent* AimSightCamera{};
+
 };

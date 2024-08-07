@@ -40,7 +40,7 @@ bool AC_MeleeWeaponStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUse
 	if (WeaponUser->GetPoseState() == EPoseState::CRAWL) return false;
 
 	AC_MeleeWeapon* MeleeWeapon = Cast<AC_MeleeWeapon>(Weapon);
-
+	
 	if (!IsValid(MeleeWeapon)) return false;
 
 	FPriorityAnimMontage AttackMontage = MeleeWeapon->GetAttackMontage();

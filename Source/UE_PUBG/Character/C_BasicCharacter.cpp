@@ -6,8 +6,14 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
+
+#include "Utility/C_Util.h"
+
 
 // Sets default values
 AC_BasicCharacter::AC_BasicCharacter()
@@ -18,9 +24,19 @@ AC_BasicCharacter::AC_BasicCharacter()
 	EquippedComponent = CreateDefaultSubobject<UC_EquippedComponent>("EquippedComponent");
 	EquippedComponent->SetOwnerCharacter(this);
 
-	InvenComponent = CreateDefaultSubobject<UC_InvenComponent>("InvenComponent");
-	InvenComponent->SetOwnerCharacter(this);
+	//InvenComponent = CreateDefaultSubobject<UC_InvenComponent>("InvenComponent");
+	//InvenComponent->SetOwnerCharacter(this);
 
+	// Find the Blueprint component class, 블루프린트 컴포넌트 클래스를 찾기.
+	//D:\UE_Project\UE_PUBG\Content\Project_PUBG\Common\InventoryUI\Blueprint_UI
+	//static ConstructorHelpers::FClassFinder<UC_InvenComponent> BlueprintComponentClassFinder(TEXT("Project_PUBG/Common/InventoryUI/Blueprint_UI/BPC_InvenSystem"));
+	//if (BlueprintComponentClassFinder.Succeeded())
+	//{
+	//	BPC_InvenSystem = BlueprintComponentClassFinder.Class;
+	//}
+
+
+	BPC_InvenSystem = nullptr;
 
 }
 
@@ -28,14 +44,57 @@ AC_BasicCharacter::AC_BasicCharacter()
 void AC_BasicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
 	
+
+	// Find the Blueprint component class, 블루프린트 컴포넌트 클래스를 찾기.
+	//D:\UE_Project\UE_PUBG\Content\Project_PUBG\Common\InventoryUI\Blueprint_UI
+	FString BPPath = TEXT("/Game/Project_PUBG/Common/InventoryUI/Blueprint_UI/BPC_InvenSystem.BPC_InvenSystem_C");
+	////D:/UE_Project/UE_PUBG/Content/Project_PUBG/Common/InventoryUI/Blueprint_UI/BPC_InvenSystem.uasset
+	////FString BPPath = TEXT("Project_PUBG/Common/InventoryUI/Blueprint_UI/BPC_InvenSystem");
+	BPC_InvenSystem = LoadClass<UC_InvenComponent>(nullptr, *BPPath);
+
+	if (BPC_InvenSystem)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Successfully loaded blueprint class."));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to load blueprint class from path: %s"), *BPPath);
+	}
+	// Add the Blueprint component to the character, 캐릭터에 블루프린트 컴포넌트 클래스를 추가해준다.
+	// 근데 에디터에서 빠져있는것을 확인하고 직접 추가해줌.
+	if (BPC_InvenSystem)
+	{
+		/*
+		CreateDefaultSubobject가 아니라 NewObject를 사용한 이유는 BPC_InvenSystem이 런타임에 동적으로 로드된 블루프린트 클래스이기 때문.
+		CreateDefaultSubobject는 컴파일타임에 생성된 서브 오브젝트를 생성하는데 적합하다.
+		NewObject는 런타임에 동적으로 생성된 객체를 생성하는데 더 적합하다.
+		*/
+		BPC_InvenSystemInstance = NewObject<UC_InvenComponent>(this, BPC_InvenSystem);
+		if (BPC_InvenSystemInstance)
+		{
+			BPC_InvenSystemInstance->RegisterComponent();
+			AddInstanceComponent(BPC_InvenSystemInstance);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to create the Blueprint component instance!"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("BPC_InvenSystem is null!"));
+	}
+
+	MainCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
+
 }
 
 // Called every frame
 void AC_BasicCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 }
 
 // Called to bind functionality to input
@@ -85,5 +144,41 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 	// Priority가 현재 재생중인 Montage가 더 크다면 새로이 재생하지 않고 그냥 return
 	return 0.0f;
+}
+
+float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	FString Str = "Character Damaged! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
+
+	UC_Util::Print(Str, FColor::Cyan, 3.f);
+
+	return 0.0f;
+}
+
+float AC_BasicCharacter::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser)
+{
+	//FString Str = "Character Damaged on certain damaging part! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
+	//UC_Util::Print(Str, FColor::Cyan, 3.f);
+
+	// TODO : Armor 확인해서 Armor 부분이라면 Damage 감소 적용
+	// TODO : Armor 또한 피 깎기
+
+	// TODO : 실질적인 피해량 return 시키기
+	return DamageAmount;
+}
+
+float AC_BasicCharacter::TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser)
+{
+	if (!DAMAGINGPARTS_MAP.Contains(DamagingPhyiscsAssetBoneName))
+	{
+		UC_Util::Print("From AC_BasicCharacter::TakeDamage : No Such PhysicsAsset Bone Name exists!");
+		return 0.f;
+	}
+
+	//UC_Util::Print(DamagingPhyiscsAssetBoneName.ToString() + " Parts damaged! Amount : " + FString::SanitizeFloat(DamageAmount));
+
+	return TakeDamage(DamageAmount, DAMAGINGPARTS_MAP[DamagingPhyiscsAssetBoneName], DamageCauser);
 }
 

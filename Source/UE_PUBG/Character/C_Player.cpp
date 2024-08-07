@@ -24,8 +24,11 @@
 #include "Item/Equipment/C_EquipableItem.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Weapon/C_Weapon.h"
-
+#include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "GameFramework/SpringArmComponent.h"
+
+#include "Utility/C_Util.h"
 
 
 AC_Player::AC_Player()
@@ -42,11 +45,18 @@ AC_Player::AC_Player()
 
 	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &AC_Player::OnOverlapBegin);
 	DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &AC_Player::OnOverlapEnd);
+	AimSpringArmTemp = CreateDefaultSubobject<USpringArmComponent>("AimSpringArm");
+	//AimSpringArmTemp->SetupAttachment(RootComponent);
+	AimSpringArmTemp->SetupAttachment(GetMesh());
+	AimCamera = CreateDefaultSubobject<UCameraComponent>("AimCamera");
+	AimCamera->SetupAttachment(AimSpringArmTemp);
+
 }
 
 void AC_Player::BeginPlay()
 {
 	Super::BeginPlay();
+	AimCamera->SetActive(false);
 
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 
@@ -60,14 +70,23 @@ void AC_Player::BeginPlay()
 			SubSystem->AddMappingContext(MyInputComponent->MappingContext, 0);
 		}
 	}
+
+	MainCamOriginLocalLocation = MainCamera->GetRelativeLocation();
+	MainCamOriginLocalRotation = MainCamera->GetRelativeRotation();
 }
 
 void AC_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	AimCamera->SetWorldRotation(GetControlRotation());
 
 	HandleTurnInPlace();
 	HandleControllerRotation(DeltaTime);
+
+	HandleCameraAimPunching();
+
+	HandleAimPressCameraLocation();
+
 }
 
 void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -166,10 +185,15 @@ void AC_Player::Crouch()
 	if (PoseState == EPoseState::CROUCH)
 	{
 		PoseState = EPoseState::STAND;
+		GetCharacterMovement()->MaxWalkSpeed = 600;
+
 	}
 	else
 	{
 		PoseState = EPoseState::CROUCH;
+		GetCharacterMovement()->MaxWalkSpeed = 200;
+		
+
 	}
 }
 
@@ -180,9 +204,13 @@ void AC_Player::Crawl()
 	if (PoseState == EPoseState::CRAWL)
 	{
 		PoseState = EPoseState::STAND;
+		GetCharacterMovement()->MaxWalkSpeed = 600;
+
 	}
 	else
 	{
+		GetCharacterMovement()->MaxWalkSpeed = 100;
+
 		PoseState = EPoseState::CRAWL;
 	}
 }
@@ -196,12 +224,16 @@ void AC_Player::OnJump()
 	if (PoseState == EPoseState::CRAWL)
 	{
 		PoseState = EPoseState::CROUCH;
+		GetCharacterMovement()->MaxWalkSpeed = 200;
+
 		return;
 	}
 
 	if (PoseState == EPoseState::CROUCH)
 	{
 		PoseState = EPoseState::STAND;
+		GetCharacterMovement()->MaxWalkSpeed = 600;
+
 		return;
 	}
 
@@ -213,7 +245,7 @@ void AC_Player::OnJump()
 void AC_Player::CancelTurnInPlaceMotion()
 {
 	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
-	UAnimMontage* RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState].AnimMontage;
+	UAnimMontage*  RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState].AnimMontage;
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
 	if (!IsValid(RightMontage)) return;
@@ -352,20 +384,25 @@ void AC_Player::OnMRBCompleted()
 /// </summary>
 void AC_Player::Interaction()
 {
-	UE_LOG(LogTemp, Log, TEXT("Current Volume: %d"), this->InvenComponent->GetMaxVolume());
-	FString TheFloatStr = FString::SanitizeFloat(this->InvenComponent->GetMaxVolume());
+	UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), this->BPC_InvenSystemInstance->GetMaxVolume());
+	FString TheFloatStr = FString::SanitizeFloat(this->BPC_InvenSystemInstance->GetMaxVolume());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
 
-	if (NearInventory.Num() > 0)
+	FString TheFloatStr1 = FString::SanitizeFloat((float)this->BPC_InvenSystemInstance->GetCurBackPackLevel());
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr1);
+
+	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
+
+	if (GetInvenComponent()->GetNearItems().Num() > 0)
 	{
 		//AC_Item* Item = *NearInventory.CreateIterator();
-		AC_Item* item = NearInventory[0];
+		AC_Item* item = GetInvenComponent()->GetNearItems()[0];
 
 		//NearInventory.Add(Item);
 		item->Interaction(this);
 		//item->SetActorHiddenInGame(true); // Hide item from the world
 		item->SetActorEnableCollision(false); // Disable collision
-		NearInventory.Remove(item);
+		GetInvenComponent()->GetNearItems().Remove(item);
 		
 	}
 }
@@ -380,21 +417,25 @@ void AC_Player::Interaction()
 /// <param name="SweepResult"></param>
 void AC_Player::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	FString TheFloatStr = FString::SanitizeFloat(this->InvenComponent->GetCurVolume());
+
+	FString TheFloatStr = FString::SanitizeFloat(this->BPC_InvenSystemInstance->GetCurVolume());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
 
-	AC_BackPack* OverlappedItem = Cast<AC_BackPack>(OtherActor);
+
+	//AC_BackPack* OverlappedItem = Cast<AC_BackPack>(OtherActor);
 	//AC_Item* OverlappedItem = CastChecked<AC_Item>(OtherActor);
+	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+	
 	//UE_LOG(LogTemp, Log, TEXT("Overlapped actor class: %s"), *OverlappedItem->GetClass()->GetName());
-
-
-	UE_LOG(LogTemp, Log, TEXT("Overlapped actor class: %s"), *OtherActor->GetClass()->GetName());
 
 	if (IsValid(OverlappedItem))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Item overlapped: %s"), *OverlappedItem->GetName());
-		NearInventory.Add(OverlappedItem);
+		//UE_LOG(LogTemp, Log, TEXT("Item overlapped: %s"), *OverlappedItem->GetName());
+		//NearInventory.Add(OverlappedItem);
 		//OverlappedItem->Interaction(this);
+
+		UE_LOG(LogTemp, Log, TEXT("Item overlapped: %s"), *OverlappedItem->GetName());
+		GetInvenComponent()->GetNearItems().Add(OverlappedItem);
 	}
 	else
 	{
@@ -415,8 +456,25 @@ void AC_Player::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 	if (OverlappedItem)
 	{
-		NearInventory.Remove(OverlappedItem);
+		GetInvenComponent()->GetNearItems().Remove(OverlappedItem);
 	}
+}
+
+void AC_Player::HandleAimPressCameraLocation()
+{
+	FVector RootLocation = GetActorLocation();
+	FVector HeadLocation = GetMesh()->GetBoneLocation("Head" ,EBoneSpaces::ComponentSpace);
+	FVector HipLocation = GetMesh()->GetBoneLocation("Hips");
+	FVector NewLocation = FVector(0, 0, 0);
+	NewLocation.Z += HeadLocation.Z;
+
+	//FString TheFloatStr = FString::SanitizeFloat(RootLocation.Z);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Blue, *TheFloatStr);
+	//TheFloatStr = FString::SanitizeFloat(HeadLocation.Z);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Green, *TheFloatStr);
+	//TheFloatStr = FString::SanitizeFloat(NewLocation.Z);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+	AimSpringArmTemp->SetRelativeLocation(NewLocation);
 }
 
 
@@ -517,4 +575,41 @@ void AC_Player::InitTurnAnimMontageMap()
 		TurnAnimMontageMap.Emplace(static_cast<EHandState>(handState), CurrenteHandStateTurnInPlaces);
 	}
 
+}
+
+
+void AC_Player::HandleCameraAimPunching()
+{
+}
+
+void AC_Player::ExecuteCameraAimPunching(FVector CamPunchingDirection, float CamPunchIntensity, float CamRotationPunchingXDelta)
+{
+	// TODO : 현재 AimDownSight이면 다르게 처리 (Character Animation으로 처리해야 할 듯)
+	// TODO : Aim Down일 때도 Aim Camera와 구분을 지어줘야 함
+
+	IsAimPunching = true;
+
+	//CamPunchingDestLocation = 
+}
+
+
+void AC_Player::SetToAimKeyPress()
+{
+	MainCamera->SetActive(false);
+	AimCamera->SetActive(true);
+	bIsAimDownSight = true;
+}
+
+void AC_Player::SetToAimDownSight()
+{
+	MainCamera->SetActive(false);
+	AimCamera->SetActive(false);
+	bIsAimDownSight = true;
+}
+
+void AC_Player::BackToMainCamera()
+{
+	AimCamera->SetActive(false);
+	MainCamera->SetActive(true);
+	bIsAimDownSight = false;
 }

@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 //#include "GameFramework/Character.h"
 #include "Character/C_BasicCharacter.h"
-
 #include "C_Player.generated.h"
+
 
 USTRUCT(BlueprintType)
 struct FPoseAnimMontage
@@ -103,7 +103,19 @@ protected:
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
-	class UC_InputComponent* GetInvenComponent() { return MyInputComponent; }//부모 클래스에 존재
+
+	class UC_InputComponent* GetInputComponent() { return MyInputComponent; }//부모 클래스에 존재
+
+
+public:
+	//Aim Press Camera
+	UPROPERTY(EditDefaultsOnly)
+	class UCameraComponent* AimCamera;
+	UPROPERTY(EditDefaultsOnly)
+	class USpringArmComponent* AimSpringArmTemp;
+protected:
+	//Aim Press Camera 위치 조정 함수
+	void HandleAimPressCameraLocation();
 
 protected:
 
@@ -136,10 +148,32 @@ private:
 	/// </summary>
 	void InitTurnAnimMontageMap();
 
+private:
+	/// <summary>
+	/// Tick 함수에서 호출될 함수 / AimPunching 관여
+	/// </summary>
+	void HandleCameraAimPunching();
+
+public:
+
+	/// <summary>
+	/// AimPunching setting하는 함수
+	/// </summary>
+	void ExecuteCameraAimPunching(FVector CamPunchingDirection, float CamPunchIntensity, float CamRotationPunchingXDelta = 0.f);
+
+
+public:
+	/// <summary>
+	/// 조준에 따른 카메라 변경
+	/// </summary>
+	void SetToAimKeyPress();
+	void SetToAimDownSight();
+	void BackToMainCamera();
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly) 
-	class UC_InputComponent* MyInputComponent{};   
+	class UC_InputComponent* MyInputComponent{};
 
 protected: // Turn in place 애님 몽타주 관련
 
@@ -149,7 +183,7 @@ protected: // Turn in place 애님 몽타주 관련
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	TMap<EHandState, FPoseAnimMontage> TurnAnimMontageMap{};
 
-	TArray<class AC_Item*> NearInventory;
+	//TArray<class AC_Item*> NearInventory;
 
 	/*
 	UENUM(BlueprintType)
@@ -170,4 +204,20 @@ protected: // Turn in place 애님 몽타주 관련
 		CRAWL
 	};
 	*/
+
+private: // Camera Aim Punching 관련
+	
+	// 현재 Aim Punching 중인지
+	bool IsAimPunching{};
+
+	// 기존 Camera local location & local rotation
+	FVector MainCamOriginLocalLocation{};
+	FRotator MainCamOriginLocalRotation{};
+	// AimCamera 또한 필요
+
+	// AimPunching을 적용시킬 Camera Local Location 위치 좌표
+	FVector CamPunchingDestLocation{};
+
+	// AimPunching을 적용시킬 Camera Local Rotation 위치 좌표
+	FRotator CamPunchingDestRotation{};
 };

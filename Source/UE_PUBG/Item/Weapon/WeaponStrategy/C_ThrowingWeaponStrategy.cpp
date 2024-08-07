@@ -12,7 +12,15 @@ bool AC_ThrowingWeaponStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, A
 
 bool AC_ThrowingWeaponStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
-	return false;
+	AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(Weapon);
+
+	if (!IsValid(ThrowingWeapon))			return false;
+	if (ThrowingWeapon->GetIsCooked())		return false;
+	if (!ThrowingWeapon->GetIsCharging())	return false;
+
+	ThrowingWeapon->StartCooking();
+
+	return true;
 }
 
 bool AC_ThrowingWeaponStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
@@ -20,6 +28,13 @@ bool AC_ThrowingWeaponStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* Weapon
 	AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(Weapon);
 
 	if (!IsValid(ThrowingWeapon)) return false;
+
+	UAnimInstance* UserAnimInstance = WeaponUser->GetMesh()->GetAnimInstance();
+
+	// 아직 무기를 꺼내는 도중 or 무기를 집어넣는 중 (Priority 때문에 공격모션이 재생은 안되지만 bIsOnThrowProcess true를 막기 위함)
+	if (UserAnimInstance->Montage_IsPlaying(ThrowingWeapon->GetCurDrawMontage().AnimMontage) ||
+		UserAnimInstance->Montage_IsPlaying(ThrowingWeapon->GetCurSheathMontage().AnimMontage))
+		return false;
 
 	if (ThrowingWeapon->GetIsOnThrowProcess()) return false;
 

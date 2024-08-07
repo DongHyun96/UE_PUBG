@@ -39,8 +39,10 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bIsFalling = OwnerCharacter->GetCharacterMovement()->IsFalling();
 	bIsJumping = OwnerCharacter->GetIsJumping();
 	bCanCharacterMove = OwnerCharacter->GetCanMove();
+	bIsHoldDirection = OwnerCharacter->GetIsHoldDirection();
+	bIsAimDownSight = OwnerCharacter->GetIsAimDown();
 	ControlHeadRotation();
-	
+	SetAimOfssetRotation();
 }
 
 void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_Stand_To_Falling()
@@ -93,17 +95,44 @@ void UC_AnimBasicCharacter::ControlHeadRotation()
 	DeltaRotation.Pitch /= -5.0f;
 	DeltaRotation.Yaw   /=  5.0f;
 
-	DeltaRotation.Roll  = FMath::Clamp(DeltaRotation.Roll,  -90, 90);
-	DeltaRotation.Pitch = FMath::Clamp(DeltaRotation.Pitch, -90, 90);
+	DeltaRotation.Roll  = FMath::Clamp(DeltaRotation.Roll,  -90, 90);	
+	DeltaRotation.Pitch = FMath::Clamp(DeltaRotation.Pitch, -90, 90);	
 	DeltaRotation.Yaw   = FMath::Clamp(DeltaRotation.Yaw,   -90, 90);
 
-
-	CSpineRotation = UKismetMathLibrary::RInterpTo(CSpineRotation, DeltaRotation, 1.0, 0.1);
+	//DeltaRotation.Roll  = 0;
+	//DeltaRotation.Pitch = 0;
+	//DeltaRotation.Yaw   = 0;
+	
+	CSpineRotation = UKismetMathLibrary::RInterpTo(CSpineRotation, DeltaRotation, 1.0, 0.3);
+	//CSpineRotation = DeltaRotation;
 
 	CHeadLookAtRotation = UKismetMathLibrary::MakeRotator(CSpineRotation.Pitch, CSpineRotation.Yaw, CSpineRotation.Roll).Quaternion();
+	//CHeadLookAtRotation = FQuat::Identity;
+	DeltaRotation.Roll  *= 5.0f / 3.0f;
+	DeltaRotation.Pitch *= 5.0f / 3.0f;
+	DeltaRotation.Yaw   *= 5.0f / 3.0f;
+
+	DeltaRotation.Roll = FMath::Clamp(DeltaRotation.Roll, -30, 30);
+	DeltaRotation.Pitch = FMath::Clamp(DeltaRotation.Pitch, -30, 30);
+	DeltaRotation.Yaw = FMath::Clamp(DeltaRotation.Yaw, -30, 30);
+	//CSpineRotation = DeltaRotation;
+	CAimingRotation.Roll = DeltaRotation.Pitch;
+	CAimingRotation.Pitch = DeltaRotation.Yaw;
+	CAimingRotation.Yaw = DeltaRotation.Roll;
 }
 
 void UC_AnimBasicCharacter::RilfeLeftHandIK()
 {
+}
+
+void UC_AnimBasicCharacter::SetAimOfssetRotation()
+{
+	FRotator ControlRotation = OwnerCharacter->GetControlRotation();
+	FRotator CapsuleRotation = OwnerCharacter->GetCapsuleComponent()->GetComponentRotation();
+	CAimOffsetRotation = UKismetMathLibrary::NormalizedDeltaRotator(ControlRotation, CapsuleRotation);
+
+	FString TheFloatStr = FString::SanitizeFloat(CAimOffsetRotation.Yaw);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Green, *TheFloatStr);
+	
 }
 

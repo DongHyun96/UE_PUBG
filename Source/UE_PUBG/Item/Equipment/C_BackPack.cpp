@@ -3,21 +3,32 @@
 #include "Item/Equipment/C_BackPack.h"
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
+#include "Components/SphereComponent.h"
 #include "Character/Component/C_InvenComponent.h"
+
+
+AC_BackPack::AC_BackPack()
+{
+	PrimaryActorTick.bCanEverTick = true;
+
+	//ItemType ¼³Á¤.
+	MyItemType = EItemTypes::BACKPACK;
+
+	Level = 3;
+
+}
 
 void AC_BackPack::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-AC_BackPack::AC_BackPack()
+void AC_BackPack::Tick(float DeltaTime)
 {
-	PrimaryActorTick.bCanEverTick = true;
-
-	Level = 2;
+	Super::Tick(DeltaTime);
 }
 
 void AC_BackPack::Interaction(AC_BasicCharacter* character)
 {
-	character->GetInvenComponent()->ChackMyBackPack(this);
+	character->GetInvenComponent()->ChackMyBackPack(this);	
 }

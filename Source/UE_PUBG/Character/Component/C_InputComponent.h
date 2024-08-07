@@ -7,7 +7,8 @@
 #include "C_InputComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+//UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UE_PUBG_API UC_InputComponent : public UActorComponent
 {
 	GENERATED_BODY()
