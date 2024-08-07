@@ -6,8 +6,13 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "Camera/CameraComponent.h"
+
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
+
+#include "Utility/C_Util.h"
+
 
 // Sets default values
 AC_BasicCharacter::AC_BasicCharacter()
@@ -28,14 +33,13 @@ AC_BasicCharacter::AC_BasicCharacter()
 void AC_BasicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	MainCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
 }
 
 // Called every frame
 void AC_BasicCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 }
 
 // Called to bind functionality to input
@@ -85,5 +89,41 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 	// Priority가 현재 재생중인 Montage가 더 크다면 새로이 재생하지 않고 그냥 return
 	return 0.0f;
+}
+
+float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	FString Str = "Character Damaged! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
+
+	UC_Util::Print(Str, FColor::Cyan, 3.f);
+
+	return 0.0f;
+}
+
+float AC_BasicCharacter::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser)
+{
+	//FString Str = "Character Damaged on certain damaging part! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
+	//UC_Util::Print(Str, FColor::Cyan, 3.f);
+
+	// TODO : Armor 확인해서 Armor 부분이라면 Damage 감소 적용
+	// TODO : Armor 또한 피 깎기
+
+	// TODO : 실질적인 피해량 return 시키기
+	return DamageAmount;
+}
+
+float AC_BasicCharacter::TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser)
+{
+	if (!DAMAGINGPARTS_MAP.Contains(DamagingPhyiscsAssetBoneName))
+	{
+		UC_Util::Print("From AC_BasicCharacter::TakeDamage : No Such PhysicsAsset Bone Name exists!");
+		return 0.f;
+	}
+
+	//UC_Util::Print(DamagingPhyiscsAssetBoneName.ToString() + " Parts damaged! Amount : " + FString::SanitizeFloat(DamageAmount));
+
+	return TakeDamage(DamageAmount, DAMAGINGPARTS_MAP[DamagingPhyiscsAssetBoneName], DamageCauser);
 }
 

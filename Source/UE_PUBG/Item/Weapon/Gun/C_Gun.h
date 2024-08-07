@@ -68,4 +68,5 @@ private:
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FTransform LeftHandSocketLocation;
+
 };

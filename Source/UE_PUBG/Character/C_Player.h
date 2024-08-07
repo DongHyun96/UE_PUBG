@@ -136,10 +136,23 @@ private:
 	/// </summary>
 	void InitTurnAnimMontageMap();
 
+private:
+	/// <summary>
+	/// Tick 함수에서 호출될 함수 / AimPunching 관여
+	/// </summary>
+	void HandleCameraAimPunching();
+
+public:
+
+	/// <summary>
+	/// AimPunching setting하는 함수
+	/// </summary>
+	void ExecuteCameraAimPunching(FVector CamPunchingDirection, float CamPunchIntensity, float CamRotationPunchingXDelta = 0.f);
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly) 
-	class UC_InputComponent* MyInputComponent{};   
+	class UC_InputComponent* MyInputComponent{};
 
 protected: // Turn in place 애님 몽타주 관련
 
@@ -170,4 +183,20 @@ protected: // Turn in place 애님 몽타주 관련
 		CRAWL
 	};
 	*/
+
+private: // Camera Aim Punching 관련
+	
+	// 현재 Aim Punching 중인지
+	bool IsAimPunching{};
+
+	// 기존 Camera local location & local rotation
+	FVector MainCamOriginLocalLocation{};
+	FRotator MainCamOriginLocalRotation{};
+	// AimCamera 또한 필요
+
+	// AimPunching을 적용시킬 Camera Local Location 위치 좌표
+	FVector CamPunchingDestLocation{};
+
+	// AimPunching을 적용시킬 Camera Local Rotation 위치 좌표
+	FRotator CamPunchingDestRotation{};
 };

@@ -35,6 +35,32 @@ enum class EMontagePriority : uint8
 	PRIORITY_MAX
 };
 
+/// <summary>
+/// 피격 판정 부위
+/// </summary>
+UENUM(BlueprintType)
+enum class EDamagingPartType : uint8
+{
+	HEAD,			// Physics Asset Neck
+
+	HIPS,
+
+	LEFT_ARM,
+	LEFT_HAND,
+	RIGHT_ARM,
+	RIGHT_HAND,
+
+	LEFT_LEG,
+	LEFT_FOOT,
+	RIGHT_LEG,
+	RIGHT_FOOT,
+
+	SHOULDER,		// Physics Asset spine2
+	UPPER_STOMACH,	// Physics Asset spine1
+	LOWER_STOMACH	// Phyiscs Asset spine
+};
+
+
 USTRUCT(BlueprintType)
 struct FPriorityAnimMontage : public FTableRowBase
 {
@@ -69,7 +95,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -77,7 +103,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-	
+
 	// TODO : 얘를 Deprecated 시킬지, 아니면 Priority를 사용 안하고 무조건적으로 재생시키는 AnimMontage도 존재하게끔 놔두는게 좋을지
 	// 후자의 경우 그냥 해당 오버라이딩 함수는 지워버리면 됨
 	/// <summary>
@@ -94,6 +120,38 @@ public:
 	/// <returns> Animation Montage Duration </returns>
 	float PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
 
+protected:
+
+	/// <summary>
+	/// UGameplayStatics::ApplyDamage를 통해 Damage를 받는 함수
+	/// </summary>
+	/// <param name="DamageAmount"> : Damage 양 </param>
+	/// <param name="DamageEvent"></param>
+	/// <param name="EventInstigator"></param>
+	/// <param name="DamageCauser"></param>
+	/// <returns> : The amount of damage actually applied. </returns>
+	virtual float TakeDamage
+	(
+		float				DamageAmount,
+		FDamageEvent const& DamageEvent,
+		AController*		EventInstigator,
+		AActor*				DamageCauser
+	) override;
+
+public:
+
+	/// <summary>
+	/// <para> 자체로 만든 TakeDamage 함수, 부위별 Damage를 줄 때 사용 </para>
+	/// <para> 주의 : 이 함수는 Armor가 적용된 부위의 데미지 감소만 구현, 실질적인 부위별 Damage량은 외부호출에서 처리 </para>
+	/// </summary>
+	/// <param name="DamageAmount">		: Damage 양 </param>
+	/// <param name="DamagingPartType"> : Damage를 줄 부위 </param>
+	/// <param name="DamageCauser">		: Damage를 주는 Actor </param>
+	/// <returns> : The amount of damage actually applied. </returns>
+	virtual float TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser);
+
+	virtual float TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser);
+
 public: // Getters and setters
 
 	EHandState GetHandState() const { return HandState; }
@@ -107,7 +165,7 @@ public: // Getters and setters
 	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
 	class UC_InvenComponent* GetInvenComponent() const { return InvenComponent; }
 	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
-	bool GetCanMove() const {return bCanMove;}
+	bool GetCanMove() const { return bCanMove; }
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 
 	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
@@ -151,14 +209,38 @@ protected:
 
 	//인벤토리(가방) component
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Components")
 	class UC_InvenComponent* InvenComponent{};
 
 protected:
-	
+
 	// 현재 재생 중인, 또는 직전에 재생한 PriorityAnimMontage
 	UPROPERTY(BlueprintReadOnly)
 	FPriorityAnimMontage CurPriorityAnimMontage{};
 
+private:
+	// 피격 판정 부위 Mapping TPair<PhysicsAssetBoneName, EDamagingPartType>
+	const TMap<FName, EDamagingPartType> DAMAGINGPARTS_MAP =	
+	{
+		{"Neck",		EDamagingPartType::HEAD},
+
+		{"Hips",		EDamagingPartType::HIPS},
+
+		{"LeftUpLeg",	EDamagingPartType::LEFT_LEG},
+		{"LeftFoot",	EDamagingPartType::LEFT_FOOT},
+		{"RightUpLeg",	EDamagingPartType::RIGHT_LEG},
+		{"RightFoot",	EDamagingPartType::RIGHT_FOOT},
+
+		{"Spine",		EDamagingPartType::LOWER_STOMACH},
+		{"Spine1",		EDamagingPartType::UPPER_STOMACH},
+		{"Spine2",		EDamagingPartType::SHOULDER},
+
+		{"LeftArm",		EDamagingPartType::LEFT_ARM},
+		{"LeftHand",	EDamagingPartType::LEFT_HAND},
+
+		{"RightArm",	EDamagingPartType::RIGHT_ARM},
+		{"RightHand",	EDamagingPartType::RIGHT_HAND}
+	};
 
 };
