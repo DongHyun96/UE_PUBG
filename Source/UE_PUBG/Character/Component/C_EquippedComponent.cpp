@@ -84,9 +84,14 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 				return ThrowingWeapon->ReleaseOnGround();
 		}
 	}
-
+	//총을 들고 Aiming 중일 때 카메라 다시 원래대로 전환
+	if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
+	{
+		AC_Gun* TempWeapon = Cast<AC_Gun>(Weapons[CurWeaponType]);
+		if (IsValid(TempWeapon))
+			TempWeapon->BackToMainCamera();
+	}
 	OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
-
 	return true;
 }
 
@@ -99,6 +104,8 @@ bool UC_EquippedComponent::ToggleArmed()
 	if (CurWeaponType != EWeaponSlot::NONE && IsValid(GetCurWeapon()))
 	{
 		PrevWeaponType = CurWeaponType;
+
+
 		return ChangeCurWeapon(EWeaponSlot::NONE);
 	}
 
@@ -109,8 +116,16 @@ bool UC_EquippedComponent::ToggleArmed()
 void UC_EquippedComponent::OnSheathEnd()
 {
 	// 현재 무기 무기집에 붙이기
-	GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
 
+	FString TheFloatStr = "Changing";
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+	GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
+	if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
+	{
+		AC_Gun* TempWeapon = Cast<AC_Gun>(Weapons[CurWeaponType]);
+		if (IsValid(TempWeapon))
+			TempWeapon->SetIsAimPress(false);
+	}
 	CurWeaponType = NextWeaponType;
 	
 	if (!IsValid(GetCurWeapon()))

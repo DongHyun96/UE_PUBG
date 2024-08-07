@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 //#include "GameFramework/Character.h"
 #include "Character/C_BasicCharacter.h"
-
 #include "C_Player.generated.h"
+
 
 USTRUCT(BlueprintType)
 struct FPoseAnimMontage
@@ -103,7 +103,19 @@ protected:
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
+
 	class UC_InputComponent* GetInputComponent() { return MyInputComponent; }//부모 클래스에 존재
+
+
+public:
+	//Aim Press Camera
+	UPROPERTY(EditDefaultsOnly)
+	class UCameraComponent* AimCamera;
+	UPROPERTY(EditDefaultsOnly)
+	class USpringArmComponent* AimSpringArmTemp;
+protected:
+	//Aim Press Camera 위치 조정 함수
+	void HandleAimPressCameraLocation();
 
 protected:
 
@@ -148,6 +160,15 @@ public:
 	/// AimPunching setting하는 함수
 	/// </summary>
 	void ExecuteCameraAimPunching(FVector CamPunchingDirection, float CamPunchIntensity, float CamRotationPunchingXDelta = 0.f);
+
+
+public:
+	/// <summary>
+	/// 조준에 따른 카메라 변경
+	/// </summary>
+	void SetToAimKeyPress();
+	void SetToAimDownSight();
+	void BackToMainCamera();
 
 protected:
 

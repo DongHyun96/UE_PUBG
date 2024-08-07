@@ -7,6 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 #include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
@@ -34,7 +35,9 @@ AC_BasicCharacter::AC_BasicCharacter()
 	//	BPC_InvenSystem = BlueprintComponentClassFinder.Class;
 	//}
 
+
 	BPC_InvenSystem = nullptr;
+
 }
 
 // Called when the game starts or when spawned

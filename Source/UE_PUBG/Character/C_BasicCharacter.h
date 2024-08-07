@@ -165,7 +165,10 @@ public: // Getters and setters
 	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
 	class UC_InvenComponent* GetInvenComponent() const { return BPC_InvenSystemInstance; }
 	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
-	bool GetCanMove() const { return bCanMove; }
+
+	bool GetCanMove() const {return bCanMove;}
+	bool GetIsAimDown() { return bIsAimDownSight; }
+
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 
 	//class UC_InvenComponent* GetInvenComponent() { return BPC_InvenSystemInstance; }
@@ -195,6 +198,8 @@ protected:
 	bool bIsHoldDirection = false;
 	// Alt키 눌렸었는지 체크
 	bool bIsAltPressed = false;
+
+	bool bIsAimDownSight = false;
 	FRotator CharacterMovingDirection;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

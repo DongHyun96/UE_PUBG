@@ -40,8 +40,9 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bIsJumping = OwnerCharacter->GetIsJumping();
 	bCanCharacterMove = OwnerCharacter->GetCanMove();
 	bIsHoldDirection = OwnerCharacter->GetIsHoldDirection();
+	bIsAimDownSight = OwnerCharacter->GetIsAimDown();
 	ControlHeadRotation();
-	
+	SetAimOfssetRotation();
 }
 
 void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_Stand_To_Falling()
@@ -94,8 +95,8 @@ void UC_AnimBasicCharacter::ControlHeadRotation()
 	DeltaRotation.Pitch /= -5.0f;
 	DeltaRotation.Yaw   /=  5.0f;
 
-	DeltaRotation.Roll  = FMath::Clamp(DeltaRotation.Roll,  -90, 90);
-	DeltaRotation.Pitch = FMath::Clamp(DeltaRotation.Pitch, -90, 90);
+	DeltaRotation.Roll  = FMath::Clamp(DeltaRotation.Roll,  -90, 90);	
+	DeltaRotation.Pitch = FMath::Clamp(DeltaRotation.Pitch, -90, 90);	
 	DeltaRotation.Yaw   = FMath::Clamp(DeltaRotation.Yaw,   -90, 90);
 
 	//DeltaRotation.Roll  = 0;
@@ -122,5 +123,16 @@ void UC_AnimBasicCharacter::ControlHeadRotation()
 
 void UC_AnimBasicCharacter::RilfeLeftHandIK()
 {
+}
+
+void UC_AnimBasicCharacter::SetAimOfssetRotation()
+{
+	FRotator ControlRotation = OwnerCharacter->GetControlRotation();
+	FRotator CapsuleRotation = OwnerCharacter->GetCapsuleComponent()->GetComponentRotation();
+	CAimOffsetRotation = UKismetMathLibrary::NormalizedDeltaRotator(ControlRotation, CapsuleRotation);
+
+	FString TheFloatStr = FString::SanitizeFloat(CAimOffsetRotation.Yaw);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Green, *TheFloatStr);
+	
 }
 
