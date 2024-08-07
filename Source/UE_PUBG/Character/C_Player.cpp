@@ -468,12 +468,12 @@ void AC_Player::HandleAimPressCameraLocation()
 	FVector NewLocation = FVector(0, 0, 0);
 	NewLocation.Z += HeadLocation.Z;
 
-	FString TheFloatStr = FString::SanitizeFloat(RootLocation.Z);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Blue, *TheFloatStr);
-	TheFloatStr = FString::SanitizeFloat(HeadLocation.Z);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Green, *TheFloatStr);
-	TheFloatStr = FString::SanitizeFloat(NewLocation.Z);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+	//FString TheFloatStr = FString::SanitizeFloat(RootLocation.Z);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Blue, *TheFloatStr);
+	//TheFloatStr = FString::SanitizeFloat(HeadLocation.Z);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Green, *TheFloatStr);
+	//TheFloatStr = FString::SanitizeFloat(NewLocation.Z);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	AimSpringArmTemp->SetRelativeLocation(NewLocation);
 }
 
