@@ -18,10 +18,18 @@ AC_BasicCharacter::AC_BasicCharacter()
 	EquippedComponent = CreateDefaultSubobject<UC_EquippedComponent>("EquippedComponent");
 	EquippedComponent->SetOwnerCharacter(this);
 
-	InvenComponent = CreateDefaultSubobject<UC_InvenComponent>("InvenComponent");
-	InvenComponent->SetOwnerCharacter(this);
+	//InvenComponent = CreateDefaultSubobject<UC_InvenComponent>("InvenComponent");
+	//InvenComponent->SetOwnerCharacter(this);
 
+	// Find the Blueprint component class, 블루프린트 컴포넌트 클래스를 찾기.
+	//D:\UE_Project\UE_PUBG\Content\Project_PUBG\Common\InventoryUI\Blueprint_UI
+	//static ConstructorHelpers::FClassFinder<UC_InvenComponent> BlueprintComponentClassFinder(TEXT("Project_PUBG/Common/InventoryUI/Blueprint_UI/BPC_InvenSystem"));
+	//if (BlueprintComponentClassFinder.Succeeded())
+	//{
+	//	BPC_InvenSystem = BlueprintComponentClassFinder.Class;
+	//}
 
+	BPC_InvenSystem = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -29,6 +37,46 @@ void AC_BasicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+
+	// Find the Blueprint component class, 블루프린트 컴포넌트 클래스를 찾기.
+	//D:\UE_Project\UE_PUBG\Content\Project_PUBG\Common\InventoryUI\Blueprint_UI
+	FString BPPath = TEXT("/Game/Project_PUBG/Common/InventoryUI/Blueprint_UI/BPC_InvenSystem.BPC_InvenSystem_C");
+	////D:/UE_Project/UE_PUBG/Content/Project_PUBG/Common/InventoryUI/Blueprint_UI/BPC_InvenSystem.uasset
+	////FString BPPath = TEXT("Project_PUBG/Common/InventoryUI/Blueprint_UI/BPC_InvenSystem");
+	BPC_InvenSystem = LoadClass<UC_InvenComponent>(nullptr, *BPPath);
+
+	if (BPC_InvenSystem)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Successfully loaded blueprint class."));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to load blueprint class from path: %s"), *BPPath);
+	}
+	// Add the Blueprint component to the character, 캐릭터에 블루프린트 컴포넌트 클래스를 추가해준다.
+	// 근데 에디터에서 빠져있는것을 확인하고 직접 추가해줌.
+	if (BPC_InvenSystem)
+	{
+		/*
+		CreateDefaultSubobject가 아니라 NewObject를 사용한 이유는 BPC_InvenSystem이 런타임에 동적으로 로드된 블루프린트 클래스이기 때문.
+		CreateDefaultSubobject는 컴파일타임에 생성된 서브 오브젝트를 생성하는데 적합하다.
+		NewObject는 런타임에 동적으로 생성된 객체를 생성하는데 더 적합하다.
+		*/
+		BPC_InvenSystemInstance = NewObject<UC_InvenComponent>(this, BPC_InvenSystem);
+		if (BPC_InvenSystemInstance)
+		{
+			BPC_InvenSystemInstance->RegisterComponent();
+			AddInstanceComponent(BPC_InvenSystemInstance);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to create the Blueprint component instance!"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("BPC_InvenSystem is null!"));
+	}
 }
 
 // Called every frame

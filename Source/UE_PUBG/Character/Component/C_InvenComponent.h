@@ -63,6 +63,8 @@ public://Getter and Seter
 
 	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
 
+	TArray<class AC_Item*> GetNearItems() { return NearItems; }
+
 protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
@@ -72,6 +74,17 @@ protected:
 	EBackPackLevel CurBackPackLevel = EBackPackLevel::LV0;
 	EBackPackLevel PreBackPackLevel = EBackPackLevel::LV0;
 
+	/// <summary>
+	/// 기본 : Ui에서 현재 내 아이템목록을 보여주기 위함.
+	/// 추가 : 죽었을때 떨굴 내 아이템 목록.(총이나 가방같이 장착아이템들도 떨구어야하는데 이걸 죽었을때 한번에 떨구기 위한 방법은 2가지로 생각. 
+	/// 첫번째는 일일이 떨꾸어주는것. 
+	/// 두번째는 MyItem에 다 넣고 한번에 떨구는 것.
+	/// </summary>
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<class AC_Item*> MyItems;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<class AC_Item*> NearItems;
 protected:
 	
 private:

@@ -355,25 +355,25 @@ void AC_Player::OnMRBCompleted()
 /// </summary>
 void AC_Player::Interaction()
 {
-	UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), this->InvenComponent->GetMaxVolume());
-	FString TheFloatStr = FString::SanitizeFloat(this->InvenComponent->GetMaxVolume());
+	UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), this->BPC_InvenSystemInstance->GetMaxVolume());
+	FString TheFloatStr = FString::SanitizeFloat(this->BPC_InvenSystemInstance->GetMaxVolume());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
 
-	FString TheFloatStr1 = FString::SanitizeFloat((float)this->InvenComponent->GetCurBackPackLevel());
+	FString TheFloatStr1 = FString::SanitizeFloat((float)this->BPC_InvenSystemInstance->GetCurBackPackLevel());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr1);
 
 	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
 
-	if (NearInventory.Num() > 0)
+	if (GetInvenComponent()->GetNearItems().Num() > 0)
 	{
 		//AC_Item* Item = *NearInventory.CreateIterator();
-		AC_Item* item = NearInventory[0];
+		AC_Item* item = GetInvenComponent()->GetNearItems()[0];
 
 		//NearInventory.Add(Item);
 		item->Interaction(this);
 		//item->SetActorHiddenInGame(true); // Hide item from the world
 		item->SetActorEnableCollision(false); // Disable collision
-		NearInventory.Remove(item);
+		GetInvenComponent()->GetNearItems().Remove(item);
 		
 	}
 }
@@ -388,7 +388,7 @@ void AC_Player::Interaction()
 /// <param name="SweepResult"></param>
 void AC_Player::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	FString TheFloatStr = FString::SanitizeFloat(this->InvenComponent->GetCurVolume());
+	FString TheFloatStr = FString::SanitizeFloat(this->BPC_InvenSystemInstance->GetCurVolume());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
 
 	//AC_BackPack* OverlappedItem = Cast<AC_BackPack>(OtherActor);
@@ -399,9 +399,12 @@ void AC_Player::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Othe
 
 	if (IsValid(OverlappedItem))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Item overlapped: %s"), *OverlappedItem->GetName());
-		NearInventory.Add(OverlappedItem);
+		//UE_LOG(LogTemp, Log, TEXT("Item overlapped: %s"), *OverlappedItem->GetName());
+		//NearInventory.Add(OverlappedItem);
 		//OverlappedItem->Interaction(this);
+
+		UE_LOG(LogTemp, Log, TEXT("Item overlapped: %s"), *OverlappedItem->GetName());
+		GetInvenComponent()->GetNearItems().Add(OverlappedItem);
 	}
 	else
 	{
@@ -422,7 +425,7 @@ void AC_Player::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 	if (OverlappedItem)
 	{
-		NearInventory.Remove(OverlappedItem);
+		GetInvenComponent()->GetNearItems().Remove(OverlappedItem);
 	}
 }
 

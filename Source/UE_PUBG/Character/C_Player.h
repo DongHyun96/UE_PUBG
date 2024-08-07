@@ -103,7 +103,7 @@ protected:
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
-	class UC_InputComponent* GetInvenComponent() { return MyInputComponent; }//부모 클래스에 존재
+	class UC_InputComponent* GetInputComponent() { return MyInputComponent; }//부모 클래스에 존재
 
 protected:
 
@@ -149,7 +149,7 @@ protected: // Turn in place 애님 몽타주 관련
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	TMap<EHandState, FPoseAnimMontage> TurnAnimMontageMap{};
 
-	TArray<class AC_Item*> NearInventory;
+	//TArray<class AC_Item*> NearInventory;
 
 	/*
 	UENUM(BlueprintType)

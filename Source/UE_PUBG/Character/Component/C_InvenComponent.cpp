@@ -76,6 +76,7 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 
 	if (CurBackPackLevel < PreBackPackLevel)
 	{
+		//현재가방보다 바꾸려는 가방이 레벨이 높을때.
 		FString TheStr0 = TEXT("Upgrade Backpack");
 		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Black, TheStr0);
 
@@ -88,6 +89,9 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 
 		CurBackPackLevel = PreBackPackLevel;
 		MyBackPack = backpack;
+
+		//가방도 내 아이템 리스트에 포함하는 함수. 현재는 고려중.
+		//MyItem.Add(backpack);
 
 		return true;
 	}
