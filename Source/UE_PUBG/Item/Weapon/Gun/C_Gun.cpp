@@ -9,6 +9,9 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Character/C_Player.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 
 
@@ -22,14 +25,18 @@ AC_Gun::AC_Gun()
 
 	//ItemType 설정.
 	MyItemType = EItemTypes::MAINGUN;
-
 }
 
 void AC_Gun::BeginPlay()
 {
 	Super::BeginPlay();
+	AimSightCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
+	//if(IsValid(AimSightCamera))
+	AimSightCamera->SetActive(false);
 	//블루프린트에서 할당한 Skeletal Mesh 찾아서 변수에 저장
 	GunMesh = FindComponentByClass<USkeletalMeshComponent>();
+	GunMesh->SetupAttachment(RootComponent);
+	//AimSightCamera->SetupAttachment(GunMesh);
 
 	
 
@@ -123,6 +130,44 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 		EQUIPPED_SOCKET_NAME
 	);
+	
+}
+
+bool AC_Gun::SetAimingDown()
+{
+	Cast<AC_Player>(OwnerCharacter)->SetToAimDownSight();
+	//CharacterMesh->HideBoneByName(FName("HeadBoneName"), EPhysBodyOp::PBO_None);
+
+
+	//AimDown 일 때 머리숨기기
+	//TODO : 내 카메라에만 안보이고 상대방 카메라에선 보이게 만들기
+	OwnerCharacter->GetMesh()->HideBoneByName(FName("Head"), EPhysBodyOp::PBO_None);
+	AimSightCamera->SetActive(true);
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(this, 0.2);
+	return true;
+}
+//견착 조준만할 때 Player AimKePress함수로 메인카메라에서 에임 카메라로 바꿔주기
+bool AC_Gun::SetAimingPress()
+{
+	Cast<AC_Player>(OwnerCharacter)->SetToAimKeyPress();
+	bIsAimPress = true;
+	return true;
+}
+
+bool AC_Gun::BackToMainCamera()
+{
+	AimSightCamera->SetActive(false);
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() == this)
+	{
+		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(OwnerCharacter, 0.2);
+	}
+	OwnerCharacter->GetMesh()->UnHideBoneByName(FName("Head"));
+
+	Cast<AC_Player>(OwnerCharacter)->BackToMainCamera();
+	return true;
+	
+	//FString TheFloatStr = FString::SanitizeFloat(MrbPressTimeCount);
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	
 }
 

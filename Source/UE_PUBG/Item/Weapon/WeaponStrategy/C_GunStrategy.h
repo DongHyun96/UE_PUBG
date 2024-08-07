@@ -29,6 +29,9 @@ public:
 	bool UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)	override;
 	bool UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)	override;
 	bool UseMrb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)	override;
+
 private:
 	float MrbPressTimeCount = 0;
+	bool bIsAimDownSight = false;
+	bool bIsAimPress = false;
 };

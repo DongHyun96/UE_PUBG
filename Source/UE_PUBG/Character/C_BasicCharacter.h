@@ -108,13 +108,13 @@ public: // Getters and setters
 	class UC_InvenComponent* GetInvenComponent() const { return InvenComponent; }
 	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
 	bool GetCanMove() const {return bCanMove;}
+	bool GetIsAimDown() { return bIsAimDownSight; }
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 
 	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
 
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
-	void SetToAimKeyPress();
-	void BackToMainCamera();
+
 protected:
 
 	// Current hand state
@@ -129,8 +129,7 @@ protected: // Camera
 
 	UPROPERTY(BluePrintReadWrite, EditDefaultsOnly)
 	class UCameraComponent* MainCamera{};
-	UPROPERTY(EditDefaultsOnly)
-	class UCameraComponent* AimCamera;
+
 protected:
 
 	// AnimCharacter에서 참조할 Speed의 다음 Lerp destination 값
@@ -139,6 +138,8 @@ protected:
 	bool bIsHoldDirection = false;
 	// Alt키 눌렸었는지 체크
 	bool bIsAltPressed = false;
+
+	bool bIsAimDownSight = false;
 	FRotator CharacterMovingDirection;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
