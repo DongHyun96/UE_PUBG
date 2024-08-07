@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+   // Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
@@ -8,10 +8,14 @@
 
 #include "Components/ShapeComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 
 #include "GameFramework/ProjectileMovementComponent.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "NiagaraFunctionLibrary.h"
+
 #include "Components/SplineMeshComponent.h"
 #include "Components/SplineComponent.h"
 
@@ -41,7 +45,7 @@ AC_ThrowingWeapon::AC_ThrowingWeapon()
 
 	Collider = CreateDefaultSubobject<UCapsuleComponent>("Capsule");
 	Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	SetRootComponent(Collider);
 
 	PathSpline = CreateDefaultSubobject<USplineComponent>("PredictedPathSpline");
 	PredictedEndPoint = CreateDefaultSubobject<UStaticMeshComponent>("PredictedPathEndPointMesh");
@@ -51,8 +55,7 @@ AC_ThrowingWeapon::AC_ThrowingWeapon()
 	//ItemType 설정.
 	MyItemType = EItemTypes::THROWABLE;
 
-	//RootComponent = Collider;
-
+	ExplosionSphere = CreateDefaultSubobject<USphereComponent>("ExplosionSphere");
 }
 
 void AC_ThrowingWeapon::BeginPlay()
@@ -150,12 +153,6 @@ void AC_ThrowingWeapon::InitTestPool(AC_BasicCharacter* InOwnerCharacter, UClass
 			ThrowWeapon->SetOwnerCharacter(InOwnerCharacter);
 			ThrowablePool.Add(ThrowWeapon);
 		}
-	}
-
-	if (OwnerMeshTemp)
-	{
-		OwnerMeshTemp->DestroyComponent();
-		OwnerMeshTemp = nullptr;
 	}
 }
 
@@ -314,9 +311,6 @@ void AC_ThrowingWeapon::Explode()
 
 	bool Exploded = ExplodeStrategy->UseStrategy(this);
 
-
-	if (ExplodeEffect) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplodeEffect, GetActorLocation());
-
 	if (GetAttachParentActor()) ReleaseOnGround(); // 손에서 아직 떠나지 않았을 때
 		
 	//if (Exploded) this->Destroy();
@@ -339,7 +333,7 @@ FVector AC_ThrowingWeapon::GetPredictedThrowStartLocation()
 
 		if (!IsValid(OwnerMeshTemp))
 		{
-			UC_Util::Print("From AC_ThrowingWeapon::DrawDebugPredictedPath : OwnerTempMesh Not inited!");
+			UC_Util::Print("From AC_ThrowingWeapon::GetPredictedThrowStartLocation : OwnerTempMesh Not inited!");
 			return FVector::ZeroVector;
 		}
 

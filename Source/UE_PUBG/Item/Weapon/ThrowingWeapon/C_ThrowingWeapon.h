@@ -109,6 +109,11 @@ public: // Getters & Setters
 	void SetIsCooked(bool IsCooked) { bIsCooked = IsCooked; }
 	bool GetIsCooked() const { return bIsCooked; }
 
+	class UShapeComponent* GetExplosionSphere() const { return ExplosionSphere; }
+
+	class UParticleSystem* GetParticleExplodeEffect() const { return ParticleExplodeEffect; }
+	class UNiagaraSystem* GetNiagaraExplodeEffect() const { return NiagaraExplodeEffect; }
+
 public:
 
 	UFUNCTION(BlueprintCallable)
@@ -134,7 +139,7 @@ private:
 	void Explode();
 
 protected:
-
+	
 	// Get Predicted Projectile path start location
 	UFUNCTION(BlueprintCallable)
 	FVector GetPredictedThrowStartLocation();
@@ -253,5 +258,15 @@ protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UParticleSystem* ExplodeEffect{};
+	class UParticleSystem* ParticleExplodeEffect{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UNiagaraSystem* NiagaraExplodeEffect{};
+
+protected:
+
+	// 폭발 반경 범위 collider
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	class UShapeComponent* ExplosionSphere{};
+
 };

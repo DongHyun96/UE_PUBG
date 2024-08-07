@@ -62,7 +62,9 @@ void AC_Player::BeginPlay()
 			SubSystem->AddMappingContext(MyInputComponent->MappingContext, 0);
 		}
 	}
-	
+
+	MainCamOriginLocalLocation = MainCamera->GetRelativeLocation();
+	MainCamOriginLocalRotation = MainCamera->GetRelativeRotation();
 }
 
 void AC_Player::Tick(float DeltaTime)
@@ -71,6 +73,7 @@ void AC_Player::Tick(float DeltaTime)
 
 	HandleTurnInPlace();
 	HandleControllerRotation(DeltaTime);
+	HandleCameraAimPunching();
 }
 
 void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -528,3 +531,18 @@ void AC_Player::InitTurnAnimMontageMap()
 	}
 
 }
+
+void AC_Player::HandleCameraAimPunching()
+{
+}
+
+void AC_Player::ExecuteCameraAimPunching(FVector CamPunchingDirection, float CamPunchIntensity, float CamRotationPunchingXDelta)
+{
+	// TODO : 현재 AimDownSight이면 다르게 처리 (Character Animation으로 처리해야 할 듯)
+	// TODO : Aim Down일 때도 Aim Camera와 구분을 지어줘야 함
+
+	IsAimPunching = true;
+
+	//CamPunchingDestLocation = 
+}
+
