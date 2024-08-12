@@ -11,7 +11,10 @@ UCLASS(Blueprintable)
 class UE_PUBG_API AC_FlashBangExplode : public AActor, public II_ExplodeStrategy
 {
 	GENERATED_BODY()
-	
+
+protected:
+	virtual void BeginPlay() override;
+
 private:
 
 	bool UseStrategy(AC_ThrowingWeapon* ThrowingWeapon) override;

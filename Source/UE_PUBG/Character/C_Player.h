@@ -152,14 +152,45 @@ private:
 	/// <summary>
 	/// Tick 함수에서 호출될 함수 / AimPunching 관여
 	/// </summary>
-	void HandleCameraAimPunching();
+	void HandleCameraAimPunching(float DeltaTime);
 
 public:
 
 	/// <summary>
-	/// AimPunching setting하는 함수
+	/// Camera AimPunching 실시
 	/// </summary>
-	void ExecuteCameraAimPunching(FVector CamPunchingDirection, float CamPunchIntensity, float CamRotationPunchingXDelta = 0.f);
+	/// <param name="CamPunchingDirection"> : 카메라를 Aim Punching할 방향 </param>
+	/// <param name="CamPunchIntensity"> : 해당 방향으로 얼마나 보낼지 </param>
+	/// <param name="CamRotationPunchingXDelta"> : X Rotation(Roll) 회전량 </param>
+	/// <param name="InPunchingLerpFactor"> : Punching Lerp 인자 </param>
+	void ExecuteCameraAimPunching
+	(
+		FVector CamPunchingDirection,
+		float CamPunchIntensity,
+		float CamRotationPunchingXDelta = 0.f,
+		float InPunchingLerpFactor = 8.f
+	);
+
+	/// <summary>
+	/// 카메라 Shake 수행
+	/// </summary>
+	/// <param name="ShakeScale"></param>
+	void ExecuteCameraShake(float ShakeScale = 1.f);
+
+private:
+
+	/// <summary>
+	/// Tick 함수에서 호출될 함수 / FlashBangEffect 관련 처리
+	/// </summary>
+	void HandleFlashBangEffect(float DeltaTime);
+
+public:
+
+	/// <summary>
+	/// FlashBangEffect 수행
+	/// </summary>
+	/// <param name="Duration"> : 지속시간 / 지속시간이 현재 진행중인 effect의 지속시간보다 짧으면  Update하지 않음 </param>
+	void ExecuteFlashBangEffect(float Duration);
 
 
 public:
@@ -207,17 +238,34 @@ protected: // Turn in place 애님 몽타주 관련
 
 private: // Camera Aim Punching 관련
 	
-	// 현재 Aim Punching 중인지
-	bool IsAimPunching{};
-
 	// 기존 Camera local location & local rotation
-	FVector MainCamOriginLocalLocation{};
-	FRotator MainCamOriginLocalRotation{};
+	FVector		MainCamOriginLocalLocation{};
+	FVector		AimCamOriginLocalLocation{};
+	FRotator	MainCamOriginLocalRotation{};
+	FRotator	AimCamOriginLocalRotation{};
+
 	// AimCamera 또한 필요
 
 	// AimPunching을 적용시킬 Camera Local Location 위치 좌표
-	FVector CamPunchingDestLocation{};
+	FVector MainCamPunchingDestLocation{};
+	FVector AimCamPunchingDestLocation{};
 
 	// AimPunching을 적용시킬 Camera Local Rotation 위치 좌표
-	FRotator CamPunchingDestRotation{};
+	FRotator MainCamPunchingDestRotation{};
+	FRotator AimCamPunchingDestRotation{};
+
+	float PunchingLerpFactor = 8.f;
+
+protected: 
+	// Camera Shake
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "CameraShake")
+	TSubclassOf<UCameraShakeBase> CameraShakeClass{};
+
+protected:
+
+	class APostProcessVolume* PostProcessVolume{};
+	float FlashBangEffectDuration{};
+
+	float PostProcessInitialIntensity{};
+
 };

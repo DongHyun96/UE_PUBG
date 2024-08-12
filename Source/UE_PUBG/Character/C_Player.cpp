@@ -11,6 +11,7 @@
 #include "Animation/AnimMontage.h"
 
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -24,9 +25,13 @@
 #include "Item/Equipment/C_EquipableItem.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Weapon/C_Weapon.h"
+#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+
 #include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GameFramework/SpringArmComponent.h"
+
+#include "Engine/PostProcessVolume.h"
 
 #include "Utility/C_Util.h"
 
@@ -71,8 +76,24 @@ void AC_Player::BeginPlay()
 		}
 	}
 
-	MainCamOriginLocalLocation = MainCamera->GetRelativeLocation();
-	MainCamOriginLocalRotation = MainCamera->GetRelativeRotation();
+	// AimPunching 돌아올 때 쓰일 Local 좌표들
+	MainCamOriginLocalLocation	= MainCamera->GetRelativeLocation();
+	MainCamOriginLocalRotation	= MainCamera->GetRelativeRotation();
+	MainCamPunchingDestLocation = MainCamOriginLocalLocation;
+	MainCamPunchingDestRotation = MainCamOriginLocalRotation;
+
+	AimCamOriginLocalLocation	= AimCamera->GetRelativeLocation();
+	AimCamOriginLocalRotation	= AimCamera->GetRelativeRotation();
+	AimCamPunchingDestLocation	= AimCamOriginLocalLocation;
+	AimCamPunchingDestRotation	= AimCamOriginLocalRotation;
+
+	// PostProcessVolume 초기화
+	TArray<AActor*> PPVolumes{};
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APostProcessVolume::StaticClass(), PPVolumes);
+
+	if (!PPVolumes.IsEmpty()) PostProcessVolume = Cast<APostProcessVolume>(PPVolumes[0]);
+	PostProcessInitialIntensity = PostProcessVolume->Settings.BloomIntensity;
+
 }
 
 void AC_Player::Tick(float DeltaTime)
@@ -83,7 +104,8 @@ void AC_Player::Tick(float DeltaTime)
 	HandleTurnInPlace();
 	HandleControllerRotation(DeltaTime);
 
-	HandleCameraAimPunching();
+	HandleCameraAimPunching(DeltaTime);
+	HandleFlashBangEffect(DeltaTime);
 
 	HandleAimPressCameraLocation();
 
@@ -263,6 +285,18 @@ void AC_Player::CancelTurnInPlaceMotion()
 
 void AC_Player::HoldDirection()
 {
+	// 수류탄 던지는 process 중이라면 Alt키 중지
+
+	AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(EquippedComponent->GetCurWeapon());
+	if (ThrowingWeapon) 
+		if (ThrowingWeapon->GetIsOnThrowProcess())
+		{
+			bIsHoldDirection = false;
+			bIsAltPressed = false;
+
+			return;
+		}
+
 	bIsHoldDirection = true;
 	bIsAltPressed = false;
 	if (Controller)
@@ -578,18 +612,96 @@ void AC_Player::InitTurnAnimMontageMap()
 }
 
 
-void AC_Player::HandleCameraAimPunching()
+void AC_Player::HandleCameraAimPunching(float DeltaTime)
 {
+	FVector		MainCamPos = MainCamera->GetRelativeLocation();
+	FVector		AimCamPos  = AimCamera->GetRelativeLocation();
+	FRotator	MainCamRot = MainCamera->GetRelativeRotation();
+	FRotator	AimCamRot  = AimCamera->GetRelativeRotation();
+
+	if (FVector::Dist(MainCamPos, MainCamPunchingDestLocation) < 0.1f) // Destination으로 도달했다고 판단
+	{
+		// 다시금 원위치로 조정
+		MainCamPunchingDestLocation = MainCamOriginLocalLocation;
+		MainCamPunchingDestRotation.Roll = MainCamOriginLocalRotation.Roll;
+	}
+
+	if (FVector::Dist(AimCamPos, AimCamPunchingDestLocation) < 0.1f)
+	{
+		AimCamPunchingDestLocation = AimCamOriginLocalLocation;
+		AimCamPunchingDestRotation.Roll = AimCamOriginLocalRotation.Roll;
+	}
+
+	//if (FMath::Abs(MainCamRot.Roll - MainCamPunchingDestRotation.Roll) < 0.1f)
+	//if (FMath::Abs(AimCamRot.Roll - AimCamPunchingDestRotation.Roll) < 0.1f)
+
+	MainCamPos = FMath::Lerp(MainCamPos, MainCamPunchingDestLocation, PunchingLerpFactor * DeltaTime);
+	AimCamPos = FMath::Lerp(AimCamPos, AimCamPunchingDestLocation, PunchingLerpFactor * DeltaTime);
+
+	MainCamRot.Roll = FMath::Lerp(MainCamRot.Roll, MainCamPunchingDestRotation.Roll, PunchingLerpFactor * DeltaTime);
+	AimCamRot.Roll = FMath::Lerp(AimCamRot.Roll, AimCamPunchingDestRotation.Roll, PunchingLerpFactor * DeltaTime);
+
+	MainCamera->SetRelativeLocation(MainCamPos);
+	AimCamera->SetRelativeLocation(AimCamPos);
+	MainCamera->SetRelativeRotation(MainCamRot);
+	AimCamera->SetRelativeRotation(AimCamRot);
 }
 
-void AC_Player::ExecuteCameraAimPunching(FVector CamPunchingDirection, float CamPunchIntensity, float CamRotationPunchingXDelta)
+void AC_Player::ExecuteCameraAimPunching
+(
+	FVector CamPunchingDirection,
+	float CamPunchIntensity,
+	float CamRotationPunchingXDelta,
+	float InPunchingLerpFactor
+)
 {
 	// TODO : 현재 AimDownSight이면 다르게 처리 (Character Animation으로 처리해야 할 듯)
-	// TODO : Aim Down일 때도 Aim Camera와 구분을 지어줘야 함
+	// TODO : Aim Down일 때와 Main Camera는 동일하게 모두 일괄 처리 (자세 바뀔 때도 다음 카메라 또한 에임 펀칭이 일어나는 중으로 해줘야 함)
 
-	IsAimPunching = true;
+	CamPunchingDirection.Normalize();
 
-	//CamPunchingDestLocation = 
+	MainCamPunchingDestLocation			= MainCamOriginLocalLocation + CamPunchingDirection * CamPunchIntensity;
+	AimCamPunchingDestLocation			= AimCamOriginLocalLocation + CamPunchingDirection * CamPunchIntensity;
+
+	MainCamPunchingDestRotation.Roll	= MainCamOriginLocalRotation.Roll + CamRotationPunchingXDelta;
+	AimCamPunchingDestRotation.Roll		= AimCamOriginLocalRotation.Roll + CamRotationPunchingXDelta;
+
+	PunchingLerpFactor = InPunchingLerpFactor;
+}
+
+void AC_Player::ExecuteCameraShake(float ShakeScale)
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+
+	if (PlayerController && PlayerController->PlayerCameraManager && CameraShakeClass)
+		PlayerController->PlayerCameraManager->StartCameraShake(CameraShakeClass, ShakeScale);
+}
+
+void AC_Player::HandleFlashBangEffect(float DeltaTime)
+{
+	FlashBangEffectDuration -= DeltaTime;
+
+	// End of Effect
+	if (FlashBangEffectDuration <= 0.f)
+	{
+		FlashBangEffectDuration = 0.f;
+
+		PostProcessVolume->Settings.BloomIntensity = FMath::Lerp(PostProcessVolume->Settings.BloomIntensity, PostProcessInitialIntensity, DeltaTime * 20.f);
+		return;
+	}
+
+	PostProcessVolume->Settings.BloomIntensity = 1000.f;
+}
+
+void AC_Player::ExecuteFlashBangEffect(float Duration)
+{
+	if (!IsValid(PostProcessVolume))
+	{
+		UC_Util::Print("From AC_Player::ExecuteFlashBangEffect : PostProcessVolume Invalid!", FColor::Cyan, 5.f);
+		return;
+	}
+	// 현재의 남은 Duration보다 더 큰 Duration이 들어왔다면 Duration Update
+	if (FlashBangEffectDuration < Duration) FlashBangEffectDuration = Duration;
 }
 
 
