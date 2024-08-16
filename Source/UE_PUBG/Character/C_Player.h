@@ -184,6 +184,11 @@ private:
 	/// </summary>
 	void HandleFlashBangEffect(float DeltaTime);
 
+	/// <summary>
+	/// 플레이어가 현재 바라보는 화면을 캡쳐하기
+	/// </summary>
+	void CaptureScene();
+
 public:
 
 	/// <summary>
@@ -261,11 +266,19 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "CameraShake")
 	TSubclassOf<UCameraShakeBase> CameraShakeClass{};
 
-protected:
+protected: // Flash Bang 피격 Effect 관련
 
 	class APostProcessVolume* PostProcessVolume{};
 	float FlashBangEffectDuration{};
 
 	float PostProcessInitialIntensity{};
+
+	class USceneCaptureComponent2D* SceneCaptureComponent{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UTextureRenderTarget2D* RenderTarget{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_ScreenShotWidget* ScreenShotWidget{};
 
 };

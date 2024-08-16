@@ -20,20 +20,29 @@
 #include "Character/Component/C_InvenComponent.h"
 
 #include "Components/SphereComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Components/Image.h"
 
 #include "Item/C_Item.h"
 #include "Item/Equipment/C_EquipableItem.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
 
 #include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GameFramework/SpringArmComponent.h"
 
 #include "Engine/PostProcessVolume.h"
+#include "Engine/TextureRenderTarget2D.h"
+
+#include "Blueprint/UserWidget.h"
 
 #include "Utility/C_Util.h"
+
+#include "Styling/SlateBrush.h"
+#include "Engine/Texture2D.h"
 
 
 AC_Player::AC_Player()
@@ -56,6 +65,8 @@ AC_Player::AC_Player()
 	AimCamera = CreateDefaultSubobject<UCameraComponent>("AimCamera");
 	AimCamera->SetupAttachment(AimSpringArmTemp);
 
+	SceneCaptureComponent = CreateDefaultSubobject<USceneCaptureComponent2D>("SceneCaptureComponent");
+	//SceneCaptureComponent->bCaptureEveryFrame = false;
 }
 
 void AC_Player::BeginPlay()
@@ -94,6 +105,7 @@ void AC_Player::BeginPlay()
 	if (!PPVolumes.IsEmpty()) PostProcessVolume = Cast<APostProcessVolume>(PPVolumes[0]);
 	PostProcessInitialIntensity = PostProcessVolume->Settings.BloomIntensity;
 
+	ScreenShotWidget->AddToViewport();
 }
 
 void AC_Player::Tick(float DeltaTime)
@@ -686,22 +698,89 @@ void AC_Player::HandleFlashBangEffect(float DeltaTime)
 	{
 		FlashBangEffectDuration = 0.f;
 
-		PostProcessVolume->Settings.BloomIntensity = FMath::Lerp(PostProcessVolume->Settings.BloomIntensity, PostProcessInitialIntensity, DeltaTime * 20.f);
+		PostProcessVolume->Settings.BloomIntensity = FMath::Lerp(PostProcessVolume->Settings.BloomIntensity, PostProcessInitialIntensity, DeltaTime * 10.f);
+
+		// TODO : Capture된 잔상 남기기
+
+
 		return;
 	}
 
 	PostProcessVolume->Settings.BloomIntensity = 1000.f;
 }
 
+void AC_Player::CaptureScene()
+{
+	if (!SceneCaptureComponent)
+	{
+		UC_Util::Print("From AC_Player::CaptureScene : SceneCaptureComponent not initialized!", FColor::Red, 5.f);
+		return;
+	}
+	if (!RenderTarget)
+	{
+		UC_Util::Print("From AC_Player::CaptureScene : RenderTarget not initialized!", FColor::Red, 5.f);
+		return;
+	}
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+
+	if (!IsValid(PlayerController))
+	{
+		UC_Util::Print("From AC_Player::CaptureScene : PlayerController Invalid!", FColor::Red, 5.f);
+		return;
+	}
+
+	AActor* ViewTarget = PlayerController->PlayerCameraManager->GetViewTarget();
+	if (!IsValid(ViewTarget))
+	{
+		UC_Util::Print("From AC_Player::CaptureScene : ViewTarget Invalid!", FColor::Red, 5.f);
+		return;
+	}
+
+	UCameraComponent* CameraComponent = ViewTarget->FindComponentByClass<UCameraComponent>();
+
+	if (!CameraComponent)
+	{
+		UC_Util::Print("From AC_Player::CaptrueScene : Camera Component not found!", FColor::Red, 5.f);
+		return;
+	}
+
+	SceneCaptureComponent->SetWorldTransform(CameraComponent->GetComponentTransform());
+	SceneCaptureComponent->FOVAngle = CameraComponent->FieldOfView;
+	
+	SceneCaptureComponent->TextureTarget = RenderTarget;
+	SceneCaptureComponent->CaptureScene();
+
+	UTexture2D* NewTexture = RenderTarget->ConstructTexture2D(SceneCaptureComponent, TEXT("CapturedImage"), EObjectFlags::RF_NoFlags, CTF_DeferCompression);
+
+	if (!NewTexture)
+	{
+		UC_Util::Print("Texture not created!", FColor::Red, 5.f);
+		return;
+	}
+
+	// 필요에 따라 텍스쳐를 더 수정할 수 있음 (무슨 소린지 잘 모르겠음)
+	NewTexture->UpdateResource();
+
+	FSlateBrush Brush{};
+    Brush.SetResourceObject(NewTexture);
+	ScreenShotWidget->GetDisplayImage()->SetBrush(Brush);
+}
+
 void AC_Player::ExecuteFlashBangEffect(float Duration)
 {
+	// 현재의 남은 Duration 이하인 Duration이 들어왔다면 새로이 FlashBangEffect를 실행하지 않음
+	if (FlashBangEffectDuration >= Duration) return;
+
 	if (!IsValid(PostProcessVolume))
 	{
 		UC_Util::Print("From AC_Player::ExecuteFlashBangEffect : PostProcessVolume Invalid!", FColor::Cyan, 5.f);
 		return;
 	}
-	// 현재의 남은 Duration보다 더 큰 Duration이 들어왔다면 Duration Update
-	if (FlashBangEffectDuration < Duration) FlashBangEffectDuration = Duration;
+	
+	FlashBangEffectDuration = Duration;
+
+	//CaptureScene();
 }
 
 

@@ -52,6 +52,12 @@ private:
 	/// <returns> : Damage를 입혔으면(LineTrace를 성공했다면) return true </returns>
 	bool TryDamagingCharacter(class AC_BasicCharacter* Character, class AC_ThrowingWeapon* ThrowingWeapon, class USphereComponent* ExplosionSphere);
 
+	/// <summary>
+	/// 피격 판정이 난 Character에게 줄 피격 Effect 실행
+	/// </summary>
+	/// <param name="Character"> : 피격 당한 Character </param>
+	/// <param name="ExplosionLocation"> : 수류탄 폭발 위치 </param>
+	/// <param name="ExplosionRad"> : 폭발 반경 </param>
 	void ExecuteExplosionEffectToCharacter(class AC_BasicCharacter* Character, FVector ExplosionLocation, float ExplosionRad);
 
 private:

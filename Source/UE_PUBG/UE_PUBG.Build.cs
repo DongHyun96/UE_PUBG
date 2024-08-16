@@ -21,7 +21,9 @@ public class UE_PUBG : ModuleRules
             "EnhancedInput",
             "UMG",
             "GameplayCameras",
-            "Niagara"
+            "Niagara",
+            "Slate",
+            "SlateCore"
         });
 
         /*

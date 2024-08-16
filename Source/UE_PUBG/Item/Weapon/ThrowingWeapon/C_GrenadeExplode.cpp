@@ -12,9 +12,8 @@
 
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
-#include "Components/PrimitiveComponent.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "Components/PrimitiveComponent.h"
+//#include "Components/SkeletalMeshComponent.h"
+//#include "Components/PrimitiveComponent.h"
 
 #include "Utility/C_Util.h"
 
@@ -106,8 +105,6 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 
 		//SetPhysicsAssetCollidersEnabled(Character->GetMesh()->GetPhysicsAsset(), false);
 		SetPhysicsAssetCollidersEnabled(Character, false);
-
-		Character->GetMesh()->RecreatePhysicsState();
 
 		// Testing Debug Message
 		/*for (USkeletalBodySetup* BodySetup : Character->GetMesh()->GetPhysicsAsset()->SkeletalBodySetups)
@@ -241,8 +238,13 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 
 		bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, ExplosionLocation, DestLocation, ECC_Visibility, CollisionParams);
 
-		if (!HasHit || HitResult.GetActor() != Character)		continue;
-		if (!BodyPartsDamageRate.Contains(HitResult.BoneName))	continue;
+		// Collision 만족 x
+		if (!HasHit || HitResult.GetActor() != Character || !BodyPartsDamageRate.Contains(HitResult.BoneName))
+		{
+			// 해당 부위 Collider 다시 끄기
+			SetPhysicsAssetColliderEnabled(Character, ColliderBoneName, false);
+			continue;
+		}
 
 		DrawDebugLine(GetWorld(), ExplosionLocation, HitResult.ImpactPoint, FColor::Red, true);
 
@@ -258,7 +260,7 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 		HitCount++;
 		Hitted = true;
 
-		// 해당 부위 Collider 다시 끄기
+		// 해당 부위 Collider 다시 끄기 (뒤에 있을 캐릭터의 중첩을 피하기 위함)
 		SetPhysicsAssetColliderEnabled(Character, ColliderBoneName, false);
 	}
 
