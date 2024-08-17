@@ -54,5 +54,9 @@ private:
 	/// <param name="ExplosionRad"> : Æø¹ß ¹Ý°æ </param>
 	void ExecuteExplosionEffectToCharacter(class AC_BasicCharacter* Character, FVector ExplosionLocation, float ExplosionRad);
 
+private:
+
+	const float EFFECT_DURATION_MAX = 6.f;
+
 
 };

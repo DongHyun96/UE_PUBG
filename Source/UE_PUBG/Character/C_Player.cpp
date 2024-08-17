@@ -702,11 +702,11 @@ void AC_Player::HandleFlashBangEffect(float DeltaTime)
 
 		// TODO : Capture된 잔상 남기기
 
-
 		return;
 	}
 
 	PostProcessVolume->Settings.BloomIntensity = 1000.f;
+	//PostProcessVolume->Settings.BloomIntensity = 500.f;
 }
 
 void AC_Player::CaptureScene()
@@ -781,6 +781,8 @@ void AC_Player::ExecuteFlashBangEffect(float Duration)
 	FlashBangEffectDuration = Duration;
 
 	//CaptureScene();
+	//FString Temp{};
+	//FScreenshotRequest::RequestScreenshot(Temp, false, false);
 }
 
 
