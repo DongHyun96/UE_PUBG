@@ -119,26 +119,30 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 {
 	if (!IsValid(PAnimMontage.AnimMontage)) return 0.f;
 
-	// 한번도 호출된 적 없을 땐 그냥 재생
-	if (!CurPriorityAnimMontage.AnimMontage)
+	FName TargetGroup = PAnimMontage.AnimMontage->GetGroupName();
+
+	// 자신의 group내의 anim montage가 한번도 재생된 적 없을 땐 바로 재생
+	if (!CurPriorityAnimMontageMap.Contains(TargetGroup))
 	{
-		CurPriorityAnimMontage = PAnimMontage;
+		CurPriorityAnimMontageMap.Add(TargetGroup, PAnimMontage);
 		return Super::PlayAnimMontage(PAnimMontage.AnimMontage, InPlayRate, StartSectionName);
 	}
+
+	FPriorityAnimMontage TargetGroupCurMontage = CurPriorityAnimMontageMap[TargetGroup];
 	
 	// 직전의 AnimMontage의 재생이 이미 끝났을 때
-	if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(CurPriorityAnimMontage.AnimMontage))
+	if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(TargetGroupCurMontage.AnimMontage))
 	{
-		CurPriorityAnimMontage = PAnimMontage;
+		CurPriorityAnimMontageMap[TargetGroup] = PAnimMontage;
 		return Super::PlayAnimMontage(PAnimMontage.AnimMontage, InPlayRate, StartSectionName);
 	}
 
 	// 현재 재생중인 PriorityAnimMontage가 있을 때
 	
 	// Priority 비교해서 현재 Priority보다 크거나 같은 Priority라면 새로 들어온 AnimMontage 재생
-	if (PAnimMontage.Priority >= CurPriorityAnimMontage.Priority)
+	if (PAnimMontage.Priority >= TargetGroupCurMontage.Priority)
 	{
-		CurPriorityAnimMontage = PAnimMontage;
+		CurPriorityAnimMontageMap[TargetGroup] = PAnimMontage;
 		return Super::PlayAnimMontage(PAnimMontage.AnimMontage, InPlayRate, StartSectionName);
 	}
 

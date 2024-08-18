@@ -8,8 +8,11 @@
 #include "C_Player.generated.h"
 
 
+/// <summary>
+/// Pose별 Turn left, right anim montage 구조체
+/// </summary>
 USTRUCT(BlueprintType)
-struct FPoseAnimMontage
+struct FPoseTurnInPlaceAnimMontage
 {
 	GENERATED_BODY()
 
@@ -136,7 +139,7 @@ protected:
 	void HandleTurnInPlace();
 	
 	/// <summary>
-	/// 멈춰 있을 때의 Rotation 세팅 값들로 돌아가기
+	/// Turn in place가 끝났을 시 anim notify에 의해 호출, 멈춰 있을 때의 Rotation 세팅 값들로 돌아가기
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void SetStrafeRotationToIdleStop();
@@ -217,7 +220,13 @@ protected: // Turn in place 애님 몽타주 관련
 	/// 각 HandState와 PoseState에 따른 TurnAnimMontage 맵
 	/// </summary>
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
-	TMap<EHandState, FPoseAnimMontage> TurnAnimMontageMap{};
+	TMap<EHandState, FPoseTurnInPlaceAnimMontage> TurnAnimMontageMap{};
+
+	/// <summary>
+	/// 각 HandState와 PoseState에 따른 Lower Body TurnAnimMontage 맵 : Lower body만 따로 재생이 필요할 시 사용
+	/// </summary>
+	UPROPERTY(BluePrintReadWrite, EditDefaultsOnly)
+	TMap<EHandState, FPoseTurnInPlaceAnimMontage> LowerBodyTurnAnimMontageMap{};
 
 	//TArray<class AC_Item*> NearInventory;
 

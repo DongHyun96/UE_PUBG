@@ -181,7 +181,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EHandState HandState{};
 
-	// Current post state 
+	// Current pose state 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPoseState PoseState{};
 
@@ -230,9 +230,9 @@ protected:
 
 protected:
 
-	// 현재 재생 중인, 또는 직전에 재생한 PriorityAnimMontage
+	// 현재 재생 중인, 또는 직전에 재생한 PriorityAnimMontage |<GroupName, AnimMontage>
 	UPROPERTY(BlueprintReadOnly)
-	FPriorityAnimMontage CurPriorityAnimMontage{};
+	TMap<FName, FPriorityAnimMontage> CurPriorityAnimMontageMap{};
 
 private:
 	// 피격 판정 부위 Mapping TPair<PhysicsAssetBoneName, EDamagingPartType>

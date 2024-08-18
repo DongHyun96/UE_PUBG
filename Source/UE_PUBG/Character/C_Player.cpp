@@ -278,21 +278,47 @@ void AC_Player::OnJump()
 
 void AC_Player::CancelTurnInPlaceMotion()
 {
-	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
+	//Turn In Place중 움직이면 Turn In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
 	UAnimMontage*  RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState].AnimMontage;
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
 	if (!IsValid(RightMontage)) return;
 
-	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(RightMontage))
+	if (AnimInstance->Montage_IsPlaying(RightMontage))
+	{
 		AnimInstance->Montage_Stop(0.2f);
+		return;
+	}
 
 	UAnimMontage* LeftMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState].AnimMontage;
-
 	if (!IsValid(LeftMontage)) return;
 
-	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftMontage))
+	if (AnimInstance->Montage_IsPlaying(LeftMontage))
+	{
 		AnimInstance->Montage_Stop(0.2f);
+		return;
+	}
+
+	// Lower body part도 확인
+	if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
+
+	UAnimMontage* LowerRightMontage = LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState].AnimMontage;
+	if (!IsValid(LowerRightMontage)) return;
+
+	if (AnimInstance->Montage_IsPlaying(LowerRightMontage))
+	{
+		AnimInstance->Montage_Stop(0.2f);
+		return;
+	}
+
+	UAnimMontage* LowerLeftMontage = LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState].AnimMontage;
+	if (!IsValid(LowerLeftMontage)) return;
+
+	if (AnimInstance->Montage_IsPlaying(LowerLeftMontage))
+	{
+		AnimInstance->Montage_Stop(0.2f);
+		return;
+	}
 }
 
 void AC_Player::HoldDirection()
@@ -548,6 +574,16 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 
 		PlayAnimMontage(RightPriorityMontage);
 
+		// Lower Body도 체크
+		if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
+
+		FPriorityAnimMontage LowerRightPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState];
+
+		if (!IsValid(LowerRightPriorityMontage.AnimMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerRightPriorityMontage.AnimMontage)) return;
+
+		PlayAnimMontage(LowerRightPriorityMontage);
+
 	}
 	else if (Delta < -90.f) // Left Turn in place motion
 	{
@@ -561,6 +597,16 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftPriorityMontage.AnimMontage)) return;
 		
 		PlayAnimMontage(LeftPriorityMontage);
+
+		// Lower Body도 체크
+		if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
+
+		FPriorityAnimMontage LowerLeftPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState];
+
+		if (!IsValid(LowerLeftPriorityMontage.AnimMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerLeftPriorityMontage.AnimMontage)) return;
+
+		PlayAnimMontage(LowerLeftPriorityMontage);
 	}
 
 }
@@ -577,7 +623,7 @@ void AC_Player::InitTurnAnimMontageMap()
 {
 	for (uint8 handState = 0; handState < static_cast<uint8>(EHandState::HANDSTATE_MAX); handState++)
 	{
-		FPoseAnimMontage CurrenteHandStateTurnInPlaces{};
+		FPoseTurnInPlaceAnimMontage CurrenteHandStateTurnInPlaces{};
 
 		for (uint8 poseState = 0; poseState < static_cast<uint8>(EPoseState::POSE_MAX); poseState++)
 		{
