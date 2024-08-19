@@ -20,6 +20,8 @@
 #include "Components/SplineComponent.h"
 
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
+
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_AnimBasicCharacter.h"
 
@@ -342,7 +344,16 @@ FVector AC_ThrowingWeapon::GetPredictedThrowStartLocation()
 		OwnerMeshTemp->SetSkeletalMesh(OwnerCharacter->GetMesh()->SkeletalMesh);
 		OwnerMeshTemp->SetAnimInstanceClass(OwnerCharacter->GetMesh()->GetAnimInstance()->GetClass());
 		OwnerMeshTemp->SetWorldTransform(OwnerCharacter->GetMesh()->GetComponentTransform());
+	}
 
+	// 자세에 맞는 Montage가 재생중이지 않다면, 해당 Montage로 변경 뒤에 멈추기
+	static EPoseState PredictedPoseState = EPoseState::POSE_MAX;
+
+	// 현재 posing이 다르다면 예측 경로 시작점도 달라짐
+	if (PredictedPoseState != OwnerCharacter->GetPoseState())
+	{
+		PredictedPoseState = OwnerCharacter->GetPoseState();
+		
 		OwnerMeshTemp->GetAnimInstance()->Montage_Play(CurThrowProcessMontages.ThrowMontage.AnimMontage);
 		OwnerMeshTemp->GetAnimInstance()->Montage_SetPosition(CurThrowProcessMontages.ThrowMontage.AnimMontage, 0.33f);
 		OwnerMeshTemp->GetAnimInstance()->Montage_Pause();
@@ -457,8 +468,9 @@ void AC_ThrowingWeapon::DrawPredictedPath()
 
 void AC_ThrowingWeapon::HandlePredictedPath()
 {
-	// Projectile Path
-	// TODO : 플레이어일 경우에만 그리기 (추후, GameManager 멤버변수의 Player와 객체 대조해볼 것)
+	// 플레이어일 경우에만 그리기 (추후, GameManager 멤버변수의 Player와 객체 대조해볼 것)
+	AC_Player* Player = Cast<AC_Player>(OwnerCharacter);
+	if (!IsValid(Player)) return;
 
 	// 현재 OwnerCharacter의 손에 장착된 상황인지 확인
 	if (!IsValid(this->GetAttachParentActor()) || this->GetAttachParentSocketName() != EQUIPPED_SOCKET_NAME) return;

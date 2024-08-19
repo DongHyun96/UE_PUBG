@@ -237,7 +237,6 @@ protected:
 
 private:
 
-	// TODO : Initing 할 때마다 삭제 재생성
 	// Predicted Path를 그릴 때, 던지기 자세에서의 socket위치를 파악하기 위함, 플레이어만 사용
 	static class USkeletalMeshComponent* OwnerMeshTemp;
 
