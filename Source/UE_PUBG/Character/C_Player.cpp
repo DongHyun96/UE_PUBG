@@ -286,8 +286,8 @@ void AC_Player::CancelTurnInPlaceMotion()
 
 	if (AnimInstance->Montage_IsPlaying(RightMontage))
 	{
-		AnimInstance->Montage_Stop(0.2f);
-		return;
+		SetStrafeRotationToIdleStop();
+		AnimInstance->Montage_Stop(0.2f, RightMontage);
 	}
 
 	UAnimMontage* LeftMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState].AnimMontage;
@@ -295,8 +295,8 @@ void AC_Player::CancelTurnInPlaceMotion()
 
 	if (AnimInstance->Montage_IsPlaying(LeftMontage))
 	{
-		AnimInstance->Montage_Stop(0.2f);
-		return;
+		SetStrafeRotationToIdleStop();
+		AnimInstance->Montage_Stop(0.2f, LeftMontage);
 	}
 
 	// Lower body partµµ È®ÀÎ
@@ -307,8 +307,8 @@ void AC_Player::CancelTurnInPlaceMotion()
 
 	if (AnimInstance->Montage_IsPlaying(LowerRightMontage))
 	{
-		AnimInstance->Montage_Stop(0.2f);
-		return;
+		SetStrafeRotationToIdleStop();
+		AnimInstance->Montage_Stop(0.2f, LowerRightMontage);
 	}
 
 	UAnimMontage* LowerLeftMontage = LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState].AnimMontage;
@@ -316,8 +316,8 @@ void AC_Player::CancelTurnInPlaceMotion()
 
 	if (AnimInstance->Montage_IsPlaying(LowerLeftMontage))
 	{
-		AnimInstance->Montage_Stop(0.2f);
-		return;
+		SetStrafeRotationToIdleStop();
+		AnimInstance->Montage_Stop(0.2f, LowerLeftMontage);
 	}
 }
 
