@@ -129,7 +129,7 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 	}
 
 	FPriorityAnimMontage TargetGroupCurMontage = CurPriorityAnimMontageMap[TargetGroup];
-	
+
 	// 직전의 AnimMontage의 재생이 이미 끝났을 때
 	if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(TargetGroupCurMontage.AnimMontage))
 	{
@@ -184,5 +184,36 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FName DamagingPhyiscsAss
 	//UC_Util::Print(DamagingPhyiscsAssetBoneName.ToString() + " Parts damaged! Amount : " + FString::SanitizeFloat(DamageAmount));
 
 	return TakeDamage(DamageAmount, DAMAGINGPARTS_MAP[DamagingPhyiscsAssetBoneName], DamageCauser);
+}
+
+void AC_BasicCharacter::OnPoseTransitionGoing()
+{
+	PoseState = NextPoseState;
+
+	// 최대속력 조절
+	GetCharacterMovement()->MaxWalkSpeed =	(PoseState == EPoseState::STAND)  ? 600.f :
+											(PoseState == EPoseState::CROUCH) ? 200.f :
+											(PoseState == EPoseState::CRAWL)  ? 100.f : 600.f;
+}
+
+void AC_BasicCharacter::OnPoseTransitionFinish()
+{
+	UC_Util::Print("Transition pose finished!");
+	//PoseState = NextPoseState;
+	bCanMove = true;
+
+	// TODO : Pose Transition이 끝난 뒤, Callback해 줄 함수가 있으면 여기서 처리
+}
+
+bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState)
+{
+	// 다른 PriorityAnimMontage에 의해 자세전환이 안된 상황이면 return false
+	if (PlayAnimMontage(TransitionMontage) == 0.f) return false;
+
+	NextPoseState			= InNextPoseState;
+	bCanMove				= false;
+	bIsPoseTransitioning	= true;
+
+	return true;
 }
 

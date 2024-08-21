@@ -215,59 +215,65 @@ void AC_Player::Sprint()
 void AC_Player::Crouch()
 {
 	if (!bCanMove) return;
+	if (bIsJumping || GetCharacterMovement()->IsFalling()) return;
 
-	if (PoseState == EPoseState::CROUCH)
+	switch (PoseState)
 	{
-		PoseState = EPoseState::STAND;
-		GetCharacterMovement()->MaxWalkSpeed = 600;
-
-	}
-	else
-	{
+	case EPoseState::STAND: // Stand to crouch (Pose transition 없이 바로 처리)
+		GetCharacterMovement()->MaxWalkSpeed = 200.f;
 		PoseState = EPoseState::CROUCH;
-		GetCharacterMovement()->MaxWalkSpeed = 200;
-		
-
+		return;
+	case EPoseState::CROUCH: // Crouch to stand (Pose transition 없이 바로 처리)
+		GetCharacterMovement()->MaxWalkSpeed = 600.f;
+		PoseState = EPoseState::STAND;
+		return;
+	case EPoseState::CRAWL: // Crawl to crouch
+		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToCrouch, EPoseState::CROUCH);
+		return;
+	case EPoseState::POSE_MAX: default:
+		UC_Util::Print("From AC_Player::Crouch : UnAuthorized current pose!");
+		return;
 	}
 }
 
 void AC_Player::Crawl()
 {
 	if (!bCanMove) return;
+	if (bIsJumping || GetCharacterMovement()->IsFalling()) return;
 
-	if (PoseState == EPoseState::CRAWL)
+	switch (PoseState)
 	{
-		PoseState = EPoseState::STAND;
-		GetCharacterMovement()->MaxWalkSpeed = 600;
-
-	}
-	else
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 100;
-
-		PoseState = EPoseState::CRAWL;
+	case EPoseState::STAND: // Stand to Crawl
+		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].StandToCrawl, EPoseState::CRAWL);
+		return;
+	case EPoseState::CROUCH: // Crouch to Crawl
+		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrouchToCrawl, EPoseState::CRAWL);
+		return;
+	case EPoseState::CRAWL: // Crawl to Stand
+		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToStand, EPoseState::STAND);
+		return;
+	case EPoseState::POSE_MAX: default:
+		UC_Util::Print("From AC_Player::Crawl : UnAuthorized current pose!");
+		return;
 	}
 }
 
 void AC_Player::OnJump()
 {
 	if (!bCanMove) return;
-
+	if (bIsJumping || GetCharacterMovement()->IsFalling()) return;
 	CancelTurnInPlaceMotion();
 
-	if (PoseState == EPoseState::CRAWL)
+	if (PoseState == EPoseState::CRAWL) // Crawl to crouch
 	{
-		PoseState = EPoseState::CROUCH;
-		GetCharacterMovement()->MaxWalkSpeed = 200;
-
+		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToCrouch, EPoseState::CROUCH);
 		return;
 	}
 
-	if (PoseState == EPoseState::CROUCH)
+	if (PoseState == EPoseState::CROUCH) // Crouch to stand
 	{
 		PoseState = EPoseState::STAND;
 		GetCharacterMovement()->MaxWalkSpeed = 600;
-
 		return;
 	}
 
