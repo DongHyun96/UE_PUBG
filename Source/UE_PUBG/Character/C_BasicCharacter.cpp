@@ -88,7 +88,6 @@ void AC_BasicCharacter::BeginPlay()
 	}
 
 	MainCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
-
 }
 
 // Called every frame
@@ -198,11 +197,13 @@ void AC_BasicCharacter::OnPoseTransitionGoing()
 
 void AC_BasicCharacter::OnPoseTransitionFinish()
 {
-	UC_Util::Print("Transition pose finished!");
+	//UC_Util::Print("Transition pose finished!", FColor::Cyan, 5.f);
 	//PoseState = NextPoseState;
 	bCanMove = true;
+	bIsPoseTransitioning = false;
 
-	// TODO : Pose Transition이 끝난 뒤, Callback해 줄 함수가 있으면 여기서 처리
+	// Pose Transition이 끝난 뒤, Delegate call back 처리
+	if (Delegate_OnPoseTransitionFin.IsBound()) Delegate_OnPoseTransitionFin.Broadcast();
 }
 
 bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState)
@@ -210,10 +211,12 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 	// 다른 PriorityAnimMontage에 의해 자세전환이 안된 상황이면 return false
 	if (PlayAnimMontage(TransitionMontage) == 0.f) return false;
 
+	// 이미 자세를 바꾸는 중이라면 return false
+	//if (bIsPoseTransitioning) return false;
+
 	NextPoseState			= InNextPoseState;
 	bCanMove				= false;
 	bIsPoseTransitioning	= true;
 
 	return true;
 }
-

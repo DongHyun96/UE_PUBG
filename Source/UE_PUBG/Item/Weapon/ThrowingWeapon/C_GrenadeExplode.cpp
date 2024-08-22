@@ -126,7 +126,7 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		}
 	}
 
-	UC_Util::Print("DamagedCharacter Cnt : " + FString::FromInt(DamagedCharacterCnt), FColor::Cyan, 10.f);
+	//UC_Util::Print("DamagedCharacter Cnt : " + FString::FromInt(DamagedCharacterCnt), FColor::Cyan, 10.f);
 	
 	// 모든 캐릭터의 Physics Asset Colliders 다시 켜두기
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
@@ -254,7 +254,7 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 
 		TotalDamage += Character->TakeDamage(DamageAmount, HitResult.BoneName, ThrowingWeapon);
 
-		UC_Util::Print("Hitted Bone : " + HitResult.BoneName.ToString(), FColor::Red, 5.f);
+		//UC_Util::Print("Hitted Bone : " + HitResult.BoneName.ToString(), FColor::Red, 5.f);
 		//UC_Util::Print("Bone Damaged : " + FString::SanitizeFloat(DamageAmount), FColor::Red, 5.f);
 
 		HitCount++;

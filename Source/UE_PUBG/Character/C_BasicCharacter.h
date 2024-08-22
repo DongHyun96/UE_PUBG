@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "C_BasicCharacter.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FDele_PoseTransitionFin);
+
 UENUM(BlueprintType)
 enum class EHandState : uint8
 {
@@ -28,10 +30,10 @@ enum class EPoseState : uint8
 UENUM(BlueprintType)
 enum class EMontagePriority : uint8
 {
-	TURN_IN_PLACE,			// Default Upper body + Sub Lower
+	TURN_IN_PLACE,			// Default Full body + Sub Lower
 	ATTACK,					// Default Upper body
 	DRAW_SHEATH_WEAPON,		// Default Upper body
-	POSE_TRANSITION,		// Default Full body
+	POSE_TRANSITION,		// Sub Full body
 	THROW_THROWABLE,		// 실질적으로 던지는 자세일 때, Default Upper body
 	PRIORITY_MAX
 };
@@ -256,6 +258,10 @@ protected: // 자세 변환 Transition 관련
 	// 현재 Pose Transition 모션이 진행중인지
 	bool bIsPoseTransitioning{};
 
+public:
+	// OnTransitionFinish에서 호출될 Multicast Delegate
+	FDele_PoseTransitionFin Delegate_OnPoseTransitionFin;
+
 protected: // Camera
 
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
@@ -299,11 +305,20 @@ protected:
 	UC_InvenComponent* BPC_InvenSystemInstance;
 
 
-protected:
+protected: // PriorityAnimMontage 관련
 
 	// 현재 재생 중인, 또는 직전에 재생한 PriorityAnimMontage |<GroupName, AnimMontage>
 	UPROPERTY(BlueprintReadOnly)
 	TMap<FName, FPriorityAnimMontage> CurPriorityAnimMontageMap{};
+	
+private:
+
+	/// <summary>
+	/// <para> 현재 재생 중인 PriorityAnimMontage의 Priority에 상관 없이 가장 최상위로 재생시킬 때 사용 </para>
+	/// <para> 재생 시작 시 무조건 재생 & 재생 중일 때 다음 Montage 들어오지 못하도록 block </para>
+	/// </summary>
+	//bool bForcePlayCurrentMontage{};
+
 
 private:
 	// 피격 판정 부위 Mapping TPair<PhysicsAssetBoneName, EDamagingPartType>
