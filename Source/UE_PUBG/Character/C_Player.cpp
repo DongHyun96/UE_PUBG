@@ -771,7 +771,7 @@ void AC_Player::HandleFlashBangEffect(float DeltaTime)
 	{
 		FlashBangEffectDuration = 0.f;
 
-		PostProcessVolume->Settings.BloomIntensity = FMath::Lerp(PostProcessVolume->Settings.BloomIntensity, PostProcessInitialIntensity, DeltaTime * 10.f);
+		//PostProcessVolume->Settings.BloomIntensity = FMath::Lerp(PostProcessVolume->Settings.BloomIntensity, PostProcessInitialIntensity, DeltaTime * 10.f);
 
 		// TODO : Capture된 잔상 남기기
 
