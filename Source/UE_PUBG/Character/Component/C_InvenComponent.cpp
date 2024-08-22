@@ -6,6 +6,8 @@
 #include "Item/Equipment/C_BackPack.h"
 #include "Character/Component/C_EquippedComponent.h"
 
+#include "Utility/C_Util.h"
+
 // Sets default values for this component's properties
 UC_InvenComponent::UC_InvenComponent()
 {
@@ -136,6 +138,8 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 		FString TheStr4 = TEXT("same backpack level");
 		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Black, TheStr4);
 		
+		UC_Util::Print((float)MaxVolume);
+
 		//현재 가방과 다음 가방의 레벨이 같으면 가방 변경 가능
 		MyBackPack = backpack;
 
@@ -158,18 +162,18 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 /// 그렇다면 상호작용은 object에서 내용을 만들고 플레이어는 그 함수를 작동시키는 방식으로 가야 할 것 같음.
 /// </summary>
 /// <param name="wilditem"></param>
-void UC_InvenComponent::Interaction(AC_Item wilditem)
+void UC_InvenComponent::Interaction(AC_Item* wilditem)
 {
 	//AC_BasicCharacter* player = OwnerCharacter;
 	
-	wilditem.Interaction(OwnerCharacter);
+	wilditem->Interaction(OwnerCharacter);
 
-	if (CheckVolume(wilditem.GetVolume()))
+	if (CheckVolume(wilditem->GetVolume()))
 	{
 		//상호작용된 아이템의 무게를 더해도 무게한도를 넘지 않는 경우.
-		CurVolume += wilditem.GetVolume();
+		CurVolume += wilditem->GetVolume();
 		//서버와 동기화하는데 주로 사용한다고함. 서버와 클라이언트간에 컴포넌트 상태를 동기화하고, 소유한다.
-		wilditem.AddActorComponentReplicatedSubObject(this,&wilditem);
+		wilditem->AddActorComponentReplicatedSubObject(this, wilditem);
 	}
 	else
 	{
@@ -184,7 +188,7 @@ void UC_InvenComponent::Interaction(AC_Item wilditem)
 /// </summary>
 /// <param name="backpacklevel"></param>
 /// <returns></returns>
-uint16 UC_InvenComponent::CheckBackPackVolume(uint16 backpacklevel)
+uint16 UC_InvenComponent::CheckBackPackVolume(uint32 backpacklevel)
 {
 	switch (backpacklevel)
 	{

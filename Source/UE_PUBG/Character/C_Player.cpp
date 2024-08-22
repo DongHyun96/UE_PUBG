@@ -393,17 +393,22 @@ void AC_Player::Interaction()
 
 	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
 
-	if (GetInvenComponent()->GetNearItems().Num() > 0)
+
+	if (BPC_InvenSystemInstance->GetNearItems().Num() > 0)
 	{
 		//AC_Item* Item = *NearInventory.CreateIterator();
-		AC_Item* item = GetInvenComponent()->GetNearItems()[0];
-
+		AC_Item* item = BPC_InvenSystemInstance->GetNearItems()[0];
+	
 		//NearInventory.Add(Item);
 		item->Interaction(this);
 		//item->SetActorHiddenInGame(true); // Hide item from the world
 		item->SetActorEnableCollision(false); // Disable collision
-		GetInvenComponent()->GetNearItems().Remove(item);
+		BPC_InvenSystemInstance->GetNearItems().Remove(item);
 		
+	}
+	else
+	{
+		UC_Util::Print("NONE");
 	}
 }
 /// <summary>
@@ -426,20 +431,36 @@ void AC_Player::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Othe
 	//AC_Item* OverlappedItem = CastChecked<AC_Item>(OtherActor);
 	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
 	
-	//UE_LOG(LogTemp, Log, TEXT("Overlapped actor class: %s"), *OverlappedItem->GetClass()->GetName());
+	//UC_Util::Print(*OverlappedItem->GetName());
 
+
+	//UE_LOG(LogTemp, Log, TEXT("Overlapped actor class: %s"), *OverlappedItem->GetClass()->GetName());
+	//if (OverlappedItem == nullptr || OverlappedItem->GetClass() != AC_Item::StaticClass())
+	//	return;
+	
 	if (IsValid(OverlappedItem))
 	{
-		//UE_LOG(LogTemp, Log, TEXT("Item overlapped: %s"), *OverlappedItem->GetName());
+	
 		//NearInventory.Add(OverlappedItem);
 		//OverlappedItem->Interaction(this);
-
-		UE_LOG(LogTemp, Log, TEXT("Item overlapped: %s"), *OverlappedItem->GetName());
-		GetInvenComponent()->GetNearItems().Add(OverlappedItem);
+		UC_Util::Print("OverlappedItem");
+		//UC_Util::Print(*OverlappedItem->GetName());
+	
+		//GetInvenComponent()->GetNearItems().Add(OverlappedItem);
+		//TArray<AC_Item*> TestNearItems = GetInvenComponent()->GetNearItems();
+		//TestNearItems.Add(OverlappedItem);
+		BPC_InvenSystemInstance->GetNearItems().Add(OverlappedItem);
+		//AC_BackPack* TestBackPack = Cast<AC_BackPack>(OverlappedItem);
+		//BPC_InvenSystemInstance->GetNearItems().Add(TestBackPack);
+		//NearInventory.Add(TestBackPack);
+		//TLqkf dho dksemfdjrksirh TLdldldldldldldldldlldlQKf
+		//if (IsValid(InvenComponent->GetNearItems()[0]))
+		//	UC_Util::Print(InvenComponent->GetNearItems()[0]->GetName());
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Overlap with non-item: %s"), *OtherActor->GetName());
+		UC_Util::Print("No item");
+
 		return;
 	}
 }
@@ -456,7 +477,7 @@ void AC_Player::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 	if (OverlappedItem)
 	{
-		GetInvenComponent()->GetNearItems().Remove(OverlappedItem);
+		BPC_InvenSystemInstance->GetNearItems().Remove(OverlappedItem);
 	}
 }
 

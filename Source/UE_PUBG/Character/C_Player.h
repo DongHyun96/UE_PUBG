@@ -183,8 +183,6 @@ protected: // Turn in place 局丛 根鸥林 包访
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	TMap<EHandState, FPoseAnimMontage> TurnAnimMontageMap{};
 
-	//TArray<class AC_Item*> NearInventory;
-
 	/*
 	UENUM(BlueprintType)
 	enum class EHandState : uint8

@@ -163,7 +163,7 @@ public: // Getters and setters
 	bool GetIsJumping() const { return bIsJumping; }
 	UFUNCTION(BlueprintCallable)
 	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
-	class UC_InvenComponent* GetInvenComponent() const { return BPC_InvenSystemInstance; }
+	//class UC_InvenComponent* GetInvenComponent() const { return BPC_InvenSystemInstance; }
 	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
 
 	bool GetCanMove() const {return bCanMove;}
@@ -172,6 +172,8 @@ public: // Getters and setters
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 
 	//class UC_InvenComponent* GetInvenComponent() { return BPC_InvenSystemInstance; }
+	
+	class UC_InvenComponent* GetInvenComponent() { return BPC_InvenSystemInstance; }
 
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
 
@@ -212,19 +214,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_EquippedComponent* EquippedComponent{};
 
-	//인벤토리(가방) component
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-
-	//UPROPERTY(BlueprintReadWrite, EditDefalutsOnly, Category = "Components")
-	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Components")
-	//class UC_InvenComponent* InvenComponent{};
-
-	//UPROPERTY()
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "InvenSystem", meta = (AllowPrivateAccess = "true"))
+public:
+	UPROPERTY(BlueprintReadonly, Category = "InvenSystem", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UC_InvenComponent> BPC_InvenSystem;
 	
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UC_InvenComponent* BPC_InvenSystemInstance;
 
 

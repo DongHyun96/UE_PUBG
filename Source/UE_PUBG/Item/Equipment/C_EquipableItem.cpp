@@ -3,15 +3,16 @@
 
 #include "Item/Equipment/C_EquipableItem.h"
 
+AC_EquipableItem::AC_EquipableItem()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
 void AC_EquipableItem::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-AC_EquipableItem::AC_EquipableItem()
-{
-	PrimaryActorTick.bCanEverTick = true;
-}
 
 void AC_EquipableItem::Tick(float DeltaTime)
 {

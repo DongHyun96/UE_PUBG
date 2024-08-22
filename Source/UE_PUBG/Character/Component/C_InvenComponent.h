@@ -6,7 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "C_InvenComponent.generated.h"
 
-enum class EBackPackLevel
+UENUM(BlueprintType)
+enum class EBackPackLevel : uint8
 {
 	LV0,
 	LV1,
@@ -21,6 +22,8 @@ enum class EBackPackLevel
 ///불가능하다.
 /// EquipmentSystem을 Blueprint에서 만들어서 거기서 InvenComponent와 EquippedComponent를 사용해서 인벤시스템와 UI를 제작.
 /// </summary>
+//UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class UE_PUBG_API UC_InvenComponent : public UActorComponent
 {
@@ -48,9 +51,10 @@ public:
 
 	bool ChackMyBackPack(class AC_BackPack* backpack);
 
-	void Interaction(class AC_Item wilditem);
+	//UFUNCTION(BlueprintCallable)
+	void Interaction(class AC_Item* wilditem);
 
-	uint16 CheckBackPackVolume(uint16 backpacklevel);
+	uint16 CheckBackPackVolume(uint32 backpacklevel);
 	uint16 CheckBackPackVolume(EBackPackLevel backpacklevel);
 
 
@@ -58,20 +62,23 @@ public://Getter and Seter
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; }
 	//EBackPackLevel SetCurBackPackLevel(uint8 level) { CurBackPackLevel = (EBackPackLevel)level; }
 
-	uint16 GetMaxVolume() { return MaxVolume; }
-	uint16 GetCurVolume() { return CurVolume; }
+	uint32 GetMaxVolume() { return MaxVolume; }
+	uint32 GetCurVolume() { return CurVolume; }
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
 
-	TArray<class AC_Item*> GetNearItems() { return NearItems; }
+	TArray<class AC_Item*>& GetNearItems() { return NearItems; }
 
 protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
-	uint16 MaxVolume = 70;
-	uint16 CurVolume =  0;
+	uint32 MaxVolume = 70;
+	uint32 CurVolume =  0;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EBackPackLevel CurBackPackLevel = EBackPackLevel::LV0;
+
 	EBackPackLevel PreBackPackLevel = EBackPackLevel::LV0;
 
 	/// <summary>
@@ -81,10 +88,11 @@ protected:
 	/// 두번째는 MyItem에 다 넣고 한번에 떨구는 것.
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TArray<class AC_Item*> MyItems;
+	TArray<AC_Item*> MyItems;
 
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "NearItmes Array")
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TArray<class AC_Item*> NearItems;
+	TArray<AC_Item*> NearItems;
 protected:
 	
 private:
