@@ -94,6 +94,10 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 
 }
 
+void AC_MeleeWeapon::OnOwnerCharacterPoseTransitionFin()
+{
+}
+
 //void AC_MeleeWeapon::InitPriorityAnimMontages()
 //{
 //	AttackMontage.Priority = EMontagePriority::ATTACK;

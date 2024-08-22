@@ -84,7 +84,6 @@ void AC_BasicCharacter::BeginPlay()
 	}
 
 	MainCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
-
 }
 
 // Called every frame
@@ -115,26 +114,30 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 {
 	if (!IsValid(PAnimMontage.AnimMontage)) return 0.f;
 
-	// 한번도 호출된 적 없을 땐 그냥 재생
-	if (!CurPriorityAnimMontage.AnimMontage)
+	FName TargetGroup = PAnimMontage.AnimMontage->GetGroupName();
+
+	// 자신의 group내의 anim montage가 한번도 재생된 적 없을 땐 바로 재생
+	if (!CurPriorityAnimMontageMap.Contains(TargetGroup))
 	{
-		CurPriorityAnimMontage = PAnimMontage;
+		CurPriorityAnimMontageMap.Add(TargetGroup, PAnimMontage);
 		return Super::PlayAnimMontage(PAnimMontage.AnimMontage, InPlayRate, StartSectionName);
 	}
-	
+
+	FPriorityAnimMontage TargetGroupCurMontage = CurPriorityAnimMontageMap[TargetGroup];
+
 	// 직전의 AnimMontage의 재생이 이미 끝났을 때
-	if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(CurPriorityAnimMontage.AnimMontage))
+	if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(TargetGroupCurMontage.AnimMontage))
 	{
-		CurPriorityAnimMontage = PAnimMontage;
+		CurPriorityAnimMontageMap[TargetGroup] = PAnimMontage;
 		return Super::PlayAnimMontage(PAnimMontage.AnimMontage, InPlayRate, StartSectionName);
 	}
 
 	// 현재 재생중인 PriorityAnimMontage가 있을 때
 	
 	// Priority 비교해서 현재 Priority보다 크거나 같은 Priority라면 새로 들어온 AnimMontage 재생
-	if (PAnimMontage.Priority >= CurPriorityAnimMontage.Priority)
+	if (PAnimMontage.Priority >= TargetGroupCurMontage.Priority)
 	{
-		CurPriorityAnimMontage = PAnimMontage;
+		CurPriorityAnimMontageMap[TargetGroup] = PAnimMontage;
 		return Super::PlayAnimMontage(PAnimMontage.AnimMontage, InPlayRate, StartSectionName);
 	}
 
@@ -178,3 +181,38 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FName DamagingPhyiscsAss
 	return TakeDamage(DamageAmount, DAMAGINGPARTS_MAP[DamagingPhyiscsAssetBoneName], DamageCauser);
 }
 
+void AC_BasicCharacter::OnPoseTransitionGoing()
+{
+	PoseState = NextPoseState;
+
+	// 최대속력 조절
+	GetCharacterMovement()->MaxWalkSpeed =	(PoseState == EPoseState::STAND)  ? 600.f :
+											(PoseState == EPoseState::CROUCH) ? 200.f :
+											(PoseState == EPoseState::CRAWL)  ? 100.f : 600.f;
+}
+
+void AC_BasicCharacter::OnPoseTransitionFinish()
+{
+	//UC_Util::Print("Transition pose finished!", FColor::Cyan, 5.f);
+	//PoseState = NextPoseState;
+	bCanMove = true;
+	bIsPoseTransitioning = false;
+
+	// Pose Transition이 끝난 뒤, Delegate call back 처리
+	if (Delegate_OnPoseTransitionFin.IsBound()) Delegate_OnPoseTransitionFin.Broadcast();
+}
+
+bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState)
+{
+	// 다른 PriorityAnimMontage에 의해 자세전환이 안된 상황이면 return false
+	if (PlayAnimMontage(TransitionMontage) == 0.f) return false;
+
+	// 이미 자세를 바꾸는 중이라면 return false
+	//if (bIsPoseTransitioning) return false;
+
+	NextPoseState			= InNextPoseState;
+	bCanMove				= false;
+	bIsPoseTransitioning	= true;
+
+	return true;
+}

@@ -98,6 +98,13 @@ public:
 	FPriorityAnimMontage GetCurDrawMontage() const { return CurDrawMontage; }
 	FPriorityAnimMontage GetCurSheathMontage() const { return CurSheathMontage; }
 
+public:
+
+	/// <summary>
+	/// OwnerCharacter의 Pose Transition 모션이 끝났을 때 Delegate를 통해 call back을 받는 함수 (현재 캐릭터의 slot에 장착된 무기만 call back 될 예정) 
+	/// </summary>
+	virtual void OnOwnerCharacterPoseTransitionFin() PURE_VIRTUAL(AC_Weapon::OnOwnerCharacterPoseTransitionFin, );
+
 protected:
 
 	// 무기에 따른 각 버튼에 대한 strategy 알고리즘 객체

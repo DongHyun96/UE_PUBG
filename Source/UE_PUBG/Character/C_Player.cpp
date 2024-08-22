@@ -11,6 +11,7 @@
 #include "Animation/AnimMontage.h"
 
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -19,16 +20,29 @@
 #include "Character/Component/C_InvenComponent.h"
 
 #include "Components/SphereComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Components/Image.h"
 
 #include "Item/C_Item.h"
 #include "Item/Equipment/C_EquipableItem.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Weapon/C_Weapon.h"
+#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
+
 #include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GameFramework/SpringArmComponent.h"
 
+#include "Engine/PostProcessVolume.h"
+#include "Engine/TextureRenderTarget2D.h"
+
+#include "Blueprint/UserWidget.h"
+
 #include "Utility/C_Util.h"
+
+#include "Styling/SlateBrush.h"
+#include "Engine/Texture2D.h"
 
 
 AC_Player::AC_Player()
@@ -51,6 +65,8 @@ AC_Player::AC_Player()
 	AimCamera = CreateDefaultSubobject<UCameraComponent>("AimCamera");
 	AimCamera->SetupAttachment(AimSpringArmTemp);
 
+	SceneCaptureComponent = CreateDefaultSubobject<USceneCaptureComponent2D>("SceneCaptureComponent");
+	//SceneCaptureComponent->bCaptureEveryFrame = false;
 }
 
 void AC_Player::BeginPlay()
@@ -71,8 +87,25 @@ void AC_Player::BeginPlay()
 		}
 	}
 
-	MainCamOriginLocalLocation = MainCamera->GetRelativeLocation();
-	MainCamOriginLocalRotation = MainCamera->GetRelativeRotation();
+	// AimPunching 돌아올 때 쓰일 Local 좌표들
+	MainCamOriginLocalLocation	= MainCamera->GetRelativeLocation();
+	MainCamOriginLocalRotation	= MainCamera->GetRelativeRotation();
+	MainCamPunchingDestLocation = MainCamOriginLocalLocation;
+	MainCamPunchingDestRotation = MainCamOriginLocalRotation;
+
+	AimCamOriginLocalLocation	= AimCamera->GetRelativeLocation();
+	AimCamOriginLocalRotation	= AimCamera->GetRelativeRotation();
+	AimCamPunchingDestLocation	= AimCamOriginLocalLocation;
+	AimCamPunchingDestRotation	= AimCamOriginLocalRotation;
+
+	// PostProcessVolume 초기화
+	TArray<AActor*> PPVolumes{};
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APostProcessVolume::StaticClass(), PPVolumes);
+
+	if (!PPVolumes.IsEmpty()) PostProcessVolume = Cast<APostProcessVolume>(PPVolumes[0]);
+	PostProcessInitialIntensity = PostProcessVolume->Settings.BloomIntensity;
+
+	ScreenShotWidget->AddToViewport();
 }
 
 void AC_Player::Tick(float DeltaTime)
@@ -83,7 +116,8 @@ void AC_Player::Tick(float DeltaTime)
 	HandleTurnInPlace();
 	HandleControllerRotation(DeltaTime);
 
-	HandleCameraAimPunching();
+	HandleCameraAimPunching(DeltaTime);
+	HandleFlashBangEffect(DeltaTime);
 
 	HandleAimPressCameraLocation();
 
@@ -181,59 +215,65 @@ void AC_Player::Sprint()
 void AC_Player::Crouch()
 {
 	if (!bCanMove) return;
+	if (bIsJumping || GetCharacterMovement()->IsFalling()) return;
 
-	if (PoseState == EPoseState::CROUCH)
+	switch (PoseState)
 	{
-		PoseState = EPoseState::STAND;
-		GetCharacterMovement()->MaxWalkSpeed = 600;
-
-	}
-	else
-	{
+	case EPoseState::STAND: // Stand to crouch (Pose transition 없이 바로 처리)
+		GetCharacterMovement()->MaxWalkSpeed = 200.f;
 		PoseState = EPoseState::CROUCH;
-		GetCharacterMovement()->MaxWalkSpeed = 200;
-		
-
+		return;
+	case EPoseState::CROUCH: // Crouch to stand (Pose transition 없이 바로 처리)
+		GetCharacterMovement()->MaxWalkSpeed = 600.f;
+		PoseState = EPoseState::STAND;
+		return;
+	case EPoseState::CRAWL: // Crawl to crouch
+		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToCrouch, EPoseState::CROUCH);
+		return;
+	case EPoseState::POSE_MAX: default:
+		UC_Util::Print("From AC_Player::Crouch : UnAuthorized current pose!");
+		return;
 	}
 }
 
 void AC_Player::Crawl()
 {
 	if (!bCanMove) return;
+	if (bIsJumping || GetCharacterMovement()->IsFalling()) return;
 
-	if (PoseState == EPoseState::CRAWL)
+	switch (PoseState)
 	{
-		PoseState = EPoseState::STAND;
-		GetCharacterMovement()->MaxWalkSpeed = 600;
-
-	}
-	else
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 100;
-
-		PoseState = EPoseState::CRAWL;
+	case EPoseState::STAND: // Stand to Crawl
+		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].StandToCrawl, EPoseState::CRAWL);
+		return;
+	case EPoseState::CROUCH: // Crouch to Crawl
+		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrouchToCrawl, EPoseState::CRAWL);
+		return;
+	case EPoseState::CRAWL: // Crawl to Stand
+		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToStand, EPoseState::STAND);
+		return;
+	case EPoseState::POSE_MAX: default:
+		UC_Util::Print("From AC_Player::Crawl : UnAuthorized current pose!");
+		return;
 	}
 }
 
 void AC_Player::OnJump()
 {
 	if (!bCanMove) return;
-
+	if (bIsJumping || GetCharacterMovement()->IsFalling()) return;
 	CancelTurnInPlaceMotion();
 
-	if (PoseState == EPoseState::CRAWL)
+	if (PoseState == EPoseState::CRAWL) // Crawl to crouch
 	{
-		PoseState = EPoseState::CROUCH;
-		GetCharacterMovement()->MaxWalkSpeed = 200;
-
+		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToCrouch, EPoseState::CROUCH);
 		return;
 	}
 
-	if (PoseState == EPoseState::CROUCH)
+	if (PoseState == EPoseState::CROUCH) // Crouch to stand
 	{
 		PoseState = EPoseState::STAND;
 		GetCharacterMovement()->MaxWalkSpeed = 600;
-
 		return;
 	}
 
@@ -244,25 +284,63 @@ void AC_Player::OnJump()
 
 void AC_Player::CancelTurnInPlaceMotion()
 {
-	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
+	//Turn In Place중 움직이면 Turn In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
 	UAnimMontage*  RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState].AnimMontage;
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
 	if (!IsValid(RightMontage)) return;
 
-	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(RightMontage))
-		AnimInstance->Montage_Stop(0.2f);
+	if (AnimInstance->Montage_IsPlaying(RightMontage))
+	{
+		SetStrafeRotationToIdleStop();
+		AnimInstance->Montage_Stop(0.2f, RightMontage);
+	}
 
 	UAnimMontage* LeftMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState].AnimMontage;
-
 	if (!IsValid(LeftMontage)) return;
 
-	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftMontage))
-		AnimInstance->Montage_Stop(0.2f);
+	if (AnimInstance->Montage_IsPlaying(LeftMontage))
+	{
+		SetStrafeRotationToIdleStop();
+		AnimInstance->Montage_Stop(0.2f, LeftMontage);
+	}
+
+	// Lower body part도 확인
+	if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
+
+	UAnimMontage* LowerRightMontage = LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState].AnimMontage;
+	if (!IsValid(LowerRightMontage)) return;
+
+	if (AnimInstance->Montage_IsPlaying(LowerRightMontage))
+	{
+		SetStrafeRotationToIdleStop();
+		AnimInstance->Montage_Stop(0.2f, LowerRightMontage);
+	}
+
+	UAnimMontage* LowerLeftMontage = LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState].AnimMontage;
+	if (!IsValid(LowerLeftMontage)) return;
+
+	if (AnimInstance->Montage_IsPlaying(LowerLeftMontage))
+	{
+		SetStrafeRotationToIdleStop();
+		AnimInstance->Montage_Stop(0.2f, LowerLeftMontage);
+	}
 }
 
 void AC_Player::HoldDirection()
 {
+	// 수류탄 던지는 process 중이라면 Alt키 중지
+
+	AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(EquippedComponent->GetCurWeapon());
+	if (ThrowingWeapon) 
+		if (ThrowingWeapon->GetIsOnThrowProcess())
+		{
+			bIsHoldDirection = false;
+			bIsAltPressed = false;
+
+			return;
+		}
+
 	bIsHoldDirection = true;
 	bIsAltPressed = false;
 	if (Controller)
@@ -523,6 +601,16 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 
 		PlayAnimMontage(RightPriorityMontage);
 
+		// Lower Body도 체크
+		if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
+
+		FPriorityAnimMontage LowerRightPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState];
+
+		if (!IsValid(LowerRightPriorityMontage.AnimMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerRightPriorityMontage.AnimMontage)) return;
+
+		PlayAnimMontage(LowerRightPriorityMontage);
+
 	}
 	else if (Delta < -90.f) // Left Turn in place motion
 	{
@@ -536,6 +624,16 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftPriorityMontage.AnimMontage)) return;
 		
 		PlayAnimMontage(LeftPriorityMontage);
+
+		// Lower Body도 체크
+		if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
+
+		FPriorityAnimMontage LowerLeftPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState];
+
+		if (!IsValid(LowerLeftPriorityMontage.AnimMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerLeftPriorityMontage.AnimMontage)) return;
+
+		PlayAnimMontage(LowerLeftPriorityMontage);
 	}
 
 }
@@ -552,7 +650,7 @@ void AC_Player::InitTurnAnimMontageMap()
 {
 	for (uint8 handState = 0; handState < static_cast<uint8>(EHandState::HANDSTATE_MAX); handState++)
 	{
-		FPoseAnimMontage CurrenteHandStateTurnInPlaces{};
+		FPoseTurnInPlaceAnimMontage CurrenteHandStateTurnInPlaces{};
 
 		for (uint8 poseState = 0; poseState < static_cast<uint8>(EPoseState::POSE_MAX); poseState++)
 		{
@@ -599,18 +697,165 @@ void AC_Player::InitTurnAnimMontageMap()
 }
 
 
-void AC_Player::HandleCameraAimPunching()
+void AC_Player::HandleCameraAimPunching(float DeltaTime)
 {
+	FVector		MainCamPos = MainCamera->GetRelativeLocation();
+	FVector		AimCamPos  = AimCamera->GetRelativeLocation();
+	FRotator	MainCamRot = MainCamera->GetRelativeRotation();
+	FRotator	AimCamRot  = AimCamera->GetRelativeRotation();
+
+	if (FVector::Dist(MainCamPos, MainCamPunchingDestLocation) < 0.1f) // Destination으로 도달했다고 판단
+	{
+		// 다시금 원위치로 조정
+		MainCamPunchingDestLocation = MainCamOriginLocalLocation;
+		MainCamPunchingDestRotation.Roll = MainCamOriginLocalRotation.Roll;
+	}
+
+	if (FVector::Dist(AimCamPos, AimCamPunchingDestLocation) < 0.1f)
+	{
+		AimCamPunchingDestLocation = AimCamOriginLocalLocation;
+		AimCamPunchingDestRotation.Roll = AimCamOriginLocalRotation.Roll;
+	}
+
+	//if (FMath::Abs(MainCamRot.Roll - MainCamPunchingDestRotation.Roll) < 0.1f)
+	//if (FMath::Abs(AimCamRot.Roll - AimCamPunchingDestRotation.Roll) < 0.1f)
+
+	MainCamPos = FMath::Lerp(MainCamPos, MainCamPunchingDestLocation, PunchingLerpFactor * DeltaTime);
+	AimCamPos = FMath::Lerp(AimCamPos, AimCamPunchingDestLocation, PunchingLerpFactor * DeltaTime);
+
+	MainCamRot.Roll = FMath::Lerp(MainCamRot.Roll, MainCamPunchingDestRotation.Roll, PunchingLerpFactor * DeltaTime);
+	AimCamRot.Roll = FMath::Lerp(AimCamRot.Roll, AimCamPunchingDestRotation.Roll, PunchingLerpFactor * DeltaTime);
+
+	MainCamera->SetRelativeLocation(MainCamPos);
+	AimCamera->SetRelativeLocation(AimCamPos);
+	MainCamera->SetRelativeRotation(MainCamRot);
+	AimCamera->SetRelativeRotation(AimCamRot);
 }
 
-void AC_Player::ExecuteCameraAimPunching(FVector CamPunchingDirection, float CamPunchIntensity, float CamRotationPunchingXDelta)
+void AC_Player::ExecuteCameraAimPunching
+(
+	FVector CamPunchingDirection,
+	float CamPunchIntensity,
+	float CamRotationPunchingXDelta,
+	float InPunchingLerpFactor
+)
 {
 	// TODO : 현재 AimDownSight이면 다르게 처리 (Character Animation으로 처리해야 할 듯)
-	// TODO : Aim Down일 때도 Aim Camera와 구분을 지어줘야 함
+	// TODO : Aim Down일 때와 Main Camera는 동일하게 모두 일괄 처리 (자세 바뀔 때도 다음 카메라 또한 에임 펀칭이 일어나는 중으로 해줘야 함)
 
-	IsAimPunching = true;
+	CamPunchingDirection.Normalize();
 
-	//CamPunchingDestLocation = 
+	MainCamPunchingDestLocation			= MainCamOriginLocalLocation + CamPunchingDirection * CamPunchIntensity;
+	AimCamPunchingDestLocation			= AimCamOriginLocalLocation + CamPunchingDirection * CamPunchIntensity;
+
+	MainCamPunchingDestRotation.Roll	= MainCamOriginLocalRotation.Roll + CamRotationPunchingXDelta;
+	AimCamPunchingDestRotation.Roll		= AimCamOriginLocalRotation.Roll + CamRotationPunchingXDelta;
+
+	PunchingLerpFactor = InPunchingLerpFactor;
+}
+
+void AC_Player::ExecuteCameraShake(float ShakeScale)
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+
+	if (PlayerController && PlayerController->PlayerCameraManager && CameraShakeClass)
+		PlayerController->PlayerCameraManager->StartCameraShake(CameraShakeClass, ShakeScale);
+}
+
+void AC_Player::HandleFlashBangEffect(float DeltaTime)
+{
+	FlashBangEffectDuration -= DeltaTime;
+
+	// End of Effect
+	if (FlashBangEffectDuration <= 0.f)
+	{
+		FlashBangEffectDuration = 0.f;
+
+		PostProcessVolume->Settings.BloomIntensity = FMath::Lerp(PostProcessVolume->Settings.BloomIntensity, PostProcessInitialIntensity, DeltaTime * 10.f);
+
+		// TODO : Capture된 잔상 남기기
+
+		return;
+	}
+
+	PostProcessVolume->Settings.BloomIntensity = 1000.f;
+	//PostProcessVolume->Settings.BloomIntensity = 500.f;
+}
+
+void AC_Player::CaptureScene()
+{
+	if (!SceneCaptureComponent)
+	{
+		UC_Util::Print("From AC_Player::CaptureScene : SceneCaptureComponent not initialized!", FColor::Red, 5.f);
+		return;
+	}
+	if (!RenderTarget)
+	{
+		UC_Util::Print("From AC_Player::CaptureScene : RenderTarget not initialized!", FColor::Red, 5.f);
+		return;
+	}
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+
+	if (!IsValid(PlayerController))
+	{
+		UC_Util::Print("From AC_Player::CaptureScene : PlayerController Invalid!", FColor::Red, 5.f);
+		return;
+	}
+
+	AActor* ViewTarget = PlayerController->PlayerCameraManager->GetViewTarget();
+	if (!IsValid(ViewTarget))
+	{
+		UC_Util::Print("From AC_Player::CaptureScene : ViewTarget Invalid!", FColor::Red, 5.f);
+		return;
+	}
+
+	UCameraComponent* CameraComponent = ViewTarget->FindComponentByClass<UCameraComponent>();
+
+	if (!CameraComponent)
+	{
+		UC_Util::Print("From AC_Player::CaptrueScene : Camera Component not found!", FColor::Red, 5.f);
+		return;
+	}
+
+	SceneCaptureComponent->SetWorldTransform(CameraComponent->GetComponentTransform());
+	SceneCaptureComponent->FOVAngle = CameraComponent->FieldOfView;
+	
+	SceneCaptureComponent->TextureTarget = RenderTarget;
+	SceneCaptureComponent->CaptureScene();
+
+	UTexture2D* NewTexture = RenderTarget->ConstructTexture2D(SceneCaptureComponent, TEXT("CapturedImage"), EObjectFlags::RF_NoFlags, CTF_DeferCompression);
+
+	if (!NewTexture)
+	{
+		UC_Util::Print("Texture not created!", FColor::Red, 5.f);
+		return;
+	}
+
+	// 필요에 따라 텍스쳐를 더 수정할 수 있음 (무슨 소린지 잘 모르겠음)
+	NewTexture->UpdateResource();
+
+	FSlateBrush Brush{};
+    Brush.SetResourceObject(NewTexture);
+	ScreenShotWidget->GetDisplayImage()->SetBrush(Brush);
+}
+
+void AC_Player::ExecuteFlashBangEffect(float Duration)
+{
+	// 현재의 남은 Duration 이하인 Duration이 들어왔다면 새로이 FlashBangEffect를 실행하지 않음
+	if (FlashBangEffectDuration >= Duration) return;
+
+	if (!IsValid(PostProcessVolume))
+	{
+		UC_Util::Print("From AC_Player::ExecuteFlashBangEffect : PostProcessVolume Invalid!", FColor::Cyan, 5.f);
+		return;
+	}
+	
+	FlashBangEffectDuration = Duration;
+
+	//CaptureScene();
+	//FString Temp{};
+	//FScreenshotRequest::RequestScreenshot(Temp, false, false);
 }
 
 

@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "C_BasicCharacter.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FDele_PoseTransitionFin);
+
 UENUM(BlueprintType)
 enum class EHandState : uint8
 {
@@ -28,10 +30,11 @@ enum class EPoseState : uint8
 UENUM(BlueprintType)
 enum class EMontagePriority : uint8
 {
-	TURN_IN_PLACE,
-	ATTACK,
-	DRAW_SHEATH_WEAPON,
-	THROW_THROWABLE,		// 실질적으로 던지는 자세일 때
+	TURN_IN_PLACE,			// Default Full body + Sub Lower
+	ATTACK,					// Default Upper body
+	DRAW_SHEATH_WEAPON,		// Default Upper body
+	POSE_TRANSITION,		// Sub Full body
+	THROW_THROWABLE,		// 실질적으로 던지는 자세일 때, Default Upper body
 	PRIORITY_MAX
 };
 
@@ -79,6 +82,29 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	EMontagePriority Priority{};
 
+};
+
+/// <summary>
+/// 자세 별 전환 사이를 매꿀 Anim Montage들
+/// </summary>
+USTRUCT(BlueprintType)
+struct FPoseTransitionMontages
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FPriorityAnimMontage StandToCrawl{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FPriorityAnimMontage CrawlToStand{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FPriorityAnimMontage CrouchToCrawl{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FPriorityAnimMontage CrawlToCrouch{};
 };
 
 
@@ -177,15 +203,66 @@ public: // Getters and setters
 
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
 
+	bool GetIsPoseTransitioning() const { return bIsPoseTransitioning; }
+
+public:
+
+	/// <summary>
+	/// Pose Transition montage가 진행 중인 중간에 Callback되는 함수
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void OnPoseTransitionGoing();
+
+	/// <summary>
+	/// Pose Transition Montage가 끝나고 Callback되는 함수
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void OnPoseTransitionFinish();
+
+protected:
+
+	/// <summary>
+	///  Pose Transition 모션 실행하기
+	/// </summary>
+	/// <param name="CurrentPoseState"> : 현재 자세 </param>
+	/// <param name="InNextPoseState"> : 다음 자세 </param>
+	/// <returns> Pose transition action이 제대로 실행되었다면 return true </returns>
+	
+	
+	/// <summary>
+	/// Pose Transition 모션 실행하기
+	/// </summary>
+	/// <param name="TransitionMontage"> : Pose Transition motion </param>
+	/// <param name="InNextPoseState"> : 다음 자세 </param>
+	/// <returns> Pose transition motion이 제대로 실행되었다면 return true </returns>
+	bool ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState);
+
 protected:
 
 	// Current hand state
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EHandState HandState{};
 
-	// Current post state 
+	// Current pose state 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPoseState PoseState{};
+
+protected: // 자세 변환 Transition 관련
+	
+	// 자세 전환을 할 시에, 다음으로 전환될 Pose State
+	UPROPERTY(BlueprintReadOnly)
+	EPoseState NextPoseState{};
+
+	// Crawl 자세에 관련한 전환 자세만 취할 것임 -> Crouch to stand, stand to crouch는 그냥 전환해도 어색하지 않음
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EHandState, FPoseTransitionMontages> PoseTransitionMontages{};
+
+	// 현재 Pose Transition 모션이 진행중인지
+	bool bIsPoseTransitioning{};
+
+public:
+	// OnTransitionFinish에서 호출될 Multicast Delegate
+	FDele_PoseTransitionFin Delegate_OnPoseTransitionFin;
 
 protected: // Camera
 
@@ -222,11 +299,20 @@ public:
 	UC_InvenComponent* BPC_InvenSystemInstance;
 
 
-protected:
+protected: // PriorityAnimMontage 관련
 
-	// 현재 재생 중인, 또는 직전에 재생한 PriorityAnimMontage
+	// 현재 재생 중인, 또는 직전에 재생한 PriorityAnimMontage |<GroupName, AnimMontage>
 	UPROPERTY(BlueprintReadOnly)
-	FPriorityAnimMontage CurPriorityAnimMontage{};
+	TMap<FName, FPriorityAnimMontage> CurPriorityAnimMontageMap{};
+	
+private:
+
+	/// <summary>
+	/// <para> 현재 재생 중인 PriorityAnimMontage의 Priority에 상관 없이 가장 최상위로 재생시킬 때 사용 </para>
+	/// <para> 재생 시작 시 무조건 재생 & 재생 중일 때 다음 Montage 들어오지 못하도록 block </para>
+	/// </summary>
+	//bool bForcePlayCurrentMontage{};
+
 
 private:
 	// 피격 판정 부위 Mapping TPair<PhysicsAssetBoneName, EDamagingPartType>
