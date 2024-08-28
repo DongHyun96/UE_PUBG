@@ -111,7 +111,6 @@ void AC_Player::BeginPlay()
 void AC_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//AimCamera->SetWorldRotation(GetControlRotation());
 
 	HandleTurnInPlace();
 	HandleControllerRotation(DeltaTime);

@@ -30,6 +30,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UStaticMeshComponent* PlaneMesh{};
-
+	
 
 };
