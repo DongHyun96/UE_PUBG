@@ -30,7 +30,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Interaction(class AC_BasicCharacter* character) override;
+	virtual void Interaction(class AC_BasicCharacter* character) override;
 
 	uint8 GetLevel() { return Level; }
 protected:

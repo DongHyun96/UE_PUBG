@@ -42,11 +42,14 @@ public:
 	class AC_Weapon* GetCurWeapon() const { return Weapons[CurWeaponType]; }
 	
 	/// <summary>
-	/// 슬롯에 무기 장착하기 / 해제는 Weapon에 nullptr를 줄 것
+	/// 슬롯에 무기 장착하기 / 해제는 Weapon에 nullptr를 줄 것 -> 장착/해제는 이 함수를 통해서 무조건 할 것
 	/// </summary>
 	/// <param name="InSlot"> : 장착할 슬롯 </param>
 	/// <param name="Weapon"> : 장착할 무기 객체 / 장착 해제는 nullptr </param>
-	void SetSlotWeapon(EWeaponSlot InSlot, class AC_Weapon* Weapon) { Weapons[InSlot] = Weapon; }
+	void SetSlotWeapon(EWeaponSlot InSlot, class AC_Weapon* Weapon);
+
+	void SetNextWeaponType(EWeaponSlot InNextWeaponType) { NextWeaponType = InNextWeaponType; }
+	EWeaponSlot GetNextWeaponType() const { return NextWeaponType; }
 
 public:
 	/// <summary>

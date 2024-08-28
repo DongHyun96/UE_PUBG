@@ -20,6 +20,8 @@
 #include "Components/SplineComponent.h"
 
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
+
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_AnimBasicCharacter.h"
 
@@ -63,6 +65,10 @@ void AC_ThrowingWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	ProjectileMovement->Deactivate();
+
+	// Spawn actor를 실행한 다음에야 OwnerCharacter를 Setting하는중이라 시점이 안맞음
+	//if (OwnerCharacter)
+	//	OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(this, &AC_ThrowingWeapon::OnOwnerCharacterPoseTransitionFin);
 }
 
 void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -124,9 +130,7 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 	bIsCharging = false;
 	bIsOnThrowProcess = false;
 
-	UINT numOfGrenade =  ThrowablePool.Num() + 1;
-	FString DebugMessage = "Left Grenade Count : " + FString::FromInt(numOfGrenade);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *DebugMessage);
+	UC_Util::Print("Left Grenade Count : " + FString::FromInt(ThrowablePool.Num() + 1));
 
 	return AttachToComponent
 	(
@@ -151,6 +155,7 @@ void AC_ThrowingWeapon::InitTestPool(AC_BasicCharacter* InOwnerCharacter, UClass
 		if (ThrowWeapon)
 		{
 			ThrowWeapon->SetOwnerCharacter(InOwnerCharacter);
+			//ThrowWeapon->OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(ThrowWeapon, &AC_ThrowingWeapon::OnOwnerCharacterPoseTransitionFin);
 			ThrowablePool.Add(ThrowWeapon);
 		}
 	}
@@ -212,6 +217,8 @@ void AC_ThrowingWeapon::OnThrowThrowable()
 
 void AC_ThrowingWeapon::OnThrowProcessEnd()
 {
+	//UC_Util::Print("OnThrowProcessEnd", FColor::Cyan, 5.f);
+
 	bIsOnThrowProcess = false;
 
 	bIsCharging = false;
@@ -220,7 +227,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	ClearSpline();
 
 	// 현재 Throw AnimMontage 멈추기 (우선순위 때문에 멈춰야 함)
-	OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f);
+	OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, CurThrowProcessMontages.ThrowMontage.AnimMontage);
 
 	UC_EquippedComponent* OwnerEquippedComponent = OwnerCharacter->GetEquippedComponent();
 
@@ -228,7 +235,6 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	OwnerEquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
 
 	// TODO : 가방에 투척류 있는지 확인해서 바로 다음 무기 장착하기 (우선순위 - 같은 종류의 투척류)
-
 	if (!ThrowablePool.IsEmpty())
 	{
 		AC_ThrowingWeapon* ThrowWeapon = ThrowablePool[0];
@@ -236,20 +242,19 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 		OwnerEquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, ThrowWeapon);
 
 		// 가방에 있는 투척류 하나 지우기
+		// TODO : 실질적으로 가방에서 지우기
 		ThrowablePool.RemoveAt(0);
 
 		// 바로 다음 투척류 꺼내기
+		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
 		OwnerCharacter->PlayAnimMontage(ThrowWeapon->GetCurDrawMontage());
 
 		return;
 	}
 
-	/*
-	남아 있는 투척류가 없다면 주무기1, 주무기2 순으로 장착 시도, 없다면 UnArmed인 상태로 돌아가기
-	*/
-
-	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::MAIN_GUN)) return;
-	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::SUB_GUN)) return;
+	//남아 있는 투척류가 없다면 주무기1, 주무기2 순으로 장착 시도, 없다면 UnArmed인 상태로 돌아가기
+	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::MAIN_GUN))		return;
+	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::SUB_GUN))		return;
 
 	OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::NONE);
 
@@ -278,7 +283,7 @@ void AC_ThrowingWeapon::StartCooking()
 	bIsCooked = true;
 
 	// TODO : Ready 상태에서 Cooking 시작하면 남은 시간 HUD 띄우기
-	UC_Util::Print("Throwable Starts cooking");
+	//UC_Util::Print("Throwable Starts cooking");
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);
 }
@@ -342,10 +347,34 @@ FVector AC_ThrowingWeapon::GetPredictedThrowStartLocation()
 		OwnerMeshTemp->SetSkeletalMesh(OwnerCharacter->GetMesh()->SkeletalMesh);
 		OwnerMeshTemp->SetAnimInstanceClass(OwnerCharacter->GetMesh()->GetAnimInstance()->GetClass());
 		OwnerMeshTemp->SetWorldTransform(OwnerCharacter->GetMesh()->GetComponentTransform());
+	}
 
-		OwnerMeshTemp->GetAnimInstance()->Montage_Play(CurThrowProcessMontages.ThrowMontage.AnimMontage);
-		OwnerMeshTemp->GetAnimInstance()->Montage_SetPosition(CurThrowProcessMontages.ThrowMontage.AnimMontage, 0.33f);
-		OwnerMeshTemp->GetAnimInstance()->Montage_Pause();
+	// 자세에 맞는 Montage가 재생중이지 않다면, 해당 Montage로 변경 뒤에 멈추기
+	static EPoseState PredictedPoseState = EPoseState::POSE_MAX;
+
+	UAnimInstance* MeshAnimInstance = OwnerMeshTemp->GetAnimInstance();
+
+	// 현재 posing이 다르다면 예측 경로 시작점도 달라짐
+	
+	float ThrowThrowableTime{};
+
+	for (const FAnimNotifyEvent& NotifyEvent : CurThrowProcessMontages.ThrowMontage.AnimMontage->Notifies)
+	{
+		if (NotifyEvent.NotifyName == "AN_OnThrowThrowable_C")
+		{
+			ThrowThrowableTime = NotifyEvent.GetTime();
+			break;
+		}
+	}
+
+	if (PredictedPoseState != OwnerCharacter->GetPoseState() ||
+		MeshAnimInstance->Montage_GetPosition(CurThrowProcessMontages.ThrowMontage.AnimMontage) != ThrowThrowableTime)
+	{
+		PredictedPoseState = OwnerCharacter->GetPoseState();
+		
+		MeshAnimInstance->Montage_Play(CurThrowProcessMontages.ThrowMontage.AnimMontage);
+		MeshAnimInstance->Montage_SetPosition(CurThrowProcessMontages.ThrowMontage.AnimMontage, ThrowThrowableTime);
+		MeshAnimInstance->Montage_Pause();
 
 		OwnerMeshTemp->TickPose(GetWorld()->GetDeltaSeconds(), true);
 		OwnerMeshTemp->RefreshBoneTransforms();
@@ -457,8 +486,9 @@ void AC_ThrowingWeapon::DrawPredictedPath()
 
 void AC_ThrowingWeapon::HandlePredictedPath()
 {
-	// Projectile Path
-	// TODO : 플레이어일 경우에만 그리기 (추후, GameManager 멤버변수의 Player와 객체 대조해볼 것)
+	// 플레이어일 경우에만 그리기 (추후, GameManager 멤버변수의 Player와 객체 대조해볼 것)
+	AC_Player* Player = Cast<AC_Player>(OwnerCharacter);
+	if (!IsValid(Player)) return;
 
 	// 현재 OwnerCharacter의 손에 장착된 상황인지 확인
 	if (!IsValid(this->GetAttachParentActor()) || this->GetAttachParentSocketName() != EQUIPPED_SOCKET_NAME) return;
@@ -482,6 +512,25 @@ void AC_ThrowingWeapon::UpdateProjectileLaunchValues()
 	ProjStartLocation     = OwnerCharacter->GetMesh()->GetSocketLocation(THROW_START_SOCKET_NAME);
 	ProjLaunchVelocity    = Direction * Speed;
 	ProjLaunchVelocity.Z += UP_DIR_BOOST_OFFSET;
+}
+
+void AC_ThrowingWeapon::OnOwnerCharacterPoseTransitionFin()
+{
+	if (bIsCharging)
+	{
+		// 새로운 자세에 맞는 Anim Montage로 다시 재생
+		OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
+		return;
+	}
+
+
+	// OnThrowProcessEnd도 제대로 호출이 안되었을 시점에 들어오는듯?
+	// OnDrawEnd가 제대로 호출이 안되었을 경우
+	//if (OwnerCharacter->GetHandState() == EHandState::WEAPON_THROWABLE &&
+	//	OwnerCharacter->GetEquippedComponent()->GetNextWeaponType() != EWeaponSlot::NONE)
+	//{
+	//	OwnerCharacter->GetEquippedComponent()->OnDrawEnd();
+	//}
 }
 
 void AC_ThrowingWeapon::ClearSpline()

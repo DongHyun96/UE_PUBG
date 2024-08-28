@@ -171,4 +171,8 @@ bool AC_Gun::BackToMainCamera()
 	
 }
 
+void AC_Gun::OnOwnerCharacterPoseTransitionFin()
+{
+}
+
 
