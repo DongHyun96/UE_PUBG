@@ -1,0 +1,156 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "C_MagneticFieldManager.generated.h"
+
+UENUM(BlueprintType)
+enum class EMagneticFieldState : uint8
+{
+	IDLE,
+	SHRINK,
+	SHRINK_COMPLETED
+};
+
+USTRUCT(BlueprintType)
+struct FMagneticCircle
+{
+	GENERATED_BODY()
+
+	void SetRadiusByMeter(const float& InMeter) { Radius = InMeter * 100.f; }
+
+	FVector MidLocation{};
+	float	Radius{};
+};
+
+USTRUCT(BlueprintType)
+struct FPhaseInfo
+{
+	GENERATED_BODY()
+
+	FPhaseInfo() {}
+
+	FPhaseInfo(float _PhaseRadius, float _ShrinkDelayTime, float _ShrinkTotalTime)
+		:PhaseRadius(_PhaseRadius), ShrinkDelayTime(_ShrinkDelayTime), ShrinkTotalTime(_ShrinkTotalTime) {}
+	
+	// 현재 페이즈의 Radius 크기
+	float PhaseRadius{};
+	
+	// 자기장 다음 목표 지점으로 줄어들기 시작하기 전까지의 Holding time
+	float ShrinkDelayTime{};
+
+	// 줄어드는 총 시간
+	float ShrinkTotalTime{};
+
+public:
+
+	// 현재 Phase의 반지름 줄이는 속도값
+	float RadiusShrinkSpeed{};
+
+	// 현재 Phase의 중앙점 옮기는 속도값
+	float MidPointMoveSpeed{};
+
+	// 현재 Phase의 중앙점 옮기는 방향
+	FVector MidPointMoveDirection{};
+
+};
+
+UCLASS()
+class UE_PUBG_API AC_MagneticFieldManager : public AActor
+{
+	GENERATED_BODY()
+	
+public:	
+	AC_MagneticFieldManager();
+
+protected:
+	virtual void BeginPlay() override;
+
+public:	
+	virtual void Tick(float DeltaTime) override;
+
+private:
+
+	/// <summary>
+	/// 자기장 FSM 핸들링
+	/// </summary>
+	void HandleUpdateState(const float& DeltaTime);
+
+protected:
+
+	/// <summary>
+	/// 첫 자기장 Init, BluePrint Beginplay에서 호출될 예정
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void InitManager();
+
+	/// <summary>
+	/// 블루프린트 내에서 호출할 함수
+	/// </summary>
+	/// <returns></returns>
+	UFUNCTION(BlueprintCallable)
+	int32 GetSliceCount() const { return SLICE_COUNT; }
+
+private:
+
+	/// <summary>
+	/// 벽면 오브젝트들 새로 Update
+	/// </summary>
+	/// <param name="MidLocation"> : Update시킬 원의 중앙 위치 </param>
+	/// <param name="Radius"> : Update시킬 원의 반지름 </param>
+	void UpdateWalls(const FVector& MidLocation, const float& Radius);
+
+	void TestUpdateWalls(const FVector& MidLocation, const float& Radius);
+	
+	/// <summary>
+	/// Random한 다음 Next Circle 뽑기 & 줄어드는 속력 구해놓기 & 중앙점 옮기는 방향 구해놓기
+	/// </summary>
+	void SetRandomNextCircleAndSpeedDirection();
+
+protected:
+
+	// MainCircle을 In game 내에서 보여줄 오브젝트들
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TArray<class AC_MagneticWall*> MagneticWalls{};
+
+	// TODO : 이 변수 지울 것 (테스팅 용)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TArray<class AC_MagneticWall*> ManeticWallsTemp{};
+
+private:
+
+	EMagneticFieldState MagneticFieldState{};
+
+private:
+	
+	// 실질적인 자기장 영역 circle
+	FMagneticCircle MainCircle{};
+
+	// 다음 Phase로 줄어들 자기장 영역 circle 
+	FMagneticCircle NextCircle{};
+
+private:
+
+	// 현재 자기장 phase
+	int CurrentPhase = 1;
+
+	// TODO : 정확한 값으로 나중에 수정, 현재 Test 값
+	TMap<int, FPhaseInfo> PhaseInfos = 
+	{
+		{1, FPhaseInfo(15000.f, 10.f, 10.f)},	// 150m
+		{2, FPhaseInfo(7000.f, 10.f, 10.f)},	// 70m
+		{3, FPhaseInfo(3000.f, 10.f, 10.f)},	// 30m
+		{4, FPhaseInfo(1.f, 0.f, 0.f)}			// 제일 마지막 도착 지점 (전체 Phase보다 하나 더 많게끔 만들어놔야 정상 작동함)
+	};
+
+	// 시간 재기용
+	float Timer{};
+
+private:
+
+	const int SLICE_COUNT	= 100;
+	const int LAST_PHASE	= 3; // TODO : Last Phase 개수 수정
+	
+};

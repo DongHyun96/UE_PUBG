@@ -227,11 +227,23 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	ClearSpline();
 
 	// 현재 Throw AnimMontage 멈추기 (우선순위 때문에 멈춰야 함)
-	OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, CurThrowProcessMontages.ThrowMontage.AnimMontage);
+	//OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, CurThrowProcessMontages.ThrowMontage.AnimMontage);
+	for (uint8 p = 0; p < static_cast<uint8>(EPoseState::POSE_MAX); p++)
+	{
+		EPoseState		PoseState			= static_cast<EPoseState>(p);
+		UAnimMontage*	ThrowMontage		= ThrowProcessMontages[PoseState].ThrowMontage.AnimMontage;
+		UAnimInstance*	OwnerAnimInstance	= OwnerCharacter->GetMesh()->GetAnimInstance();
+
+		if (OwnerAnimInstance->Montage_IsPlaying(ThrowMontage))
+		{
+			OwnerAnimInstance->Montage_Stop(0.2f, ThrowMontage);
+			break;
+		}
+	}
 
 	UC_EquippedComponent* OwnerEquippedComponent = OwnerCharacter->GetEquippedComponent();
 
-	// 현재 투척류 장착 해제 바로 하기
+	// 현재 투척류 장착 해제 바로 하기 -> 이미 던진 무기에 대한 PoseTransitionEnd Delegate 해제 이루어짐
 	OwnerEquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
 
 	// TODO : 가방에 투척류 있는지 확인해서 바로 다음 무기 장착하기 (우선순위 - 같은 종류의 투척류)
@@ -239,6 +251,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	{
 		AC_ThrowingWeapon* ThrowWeapon = ThrowablePool[0];
 
+		// 새로 slot에 장착하면서 새로운 투척류 함수에 Delegate 등록 이루어짐
 		OwnerEquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, ThrowWeapon);
 
 		// 가방에 있는 투척류 하나 지우기
@@ -253,6 +266,8 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	}
 
 	//남아 있는 투척류가 없다면 주무기1, 주무기2 순으로 장착 시도, 없다면 UnArmed인 상태로 돌아가기
+	// TODO : MeleeWeapon 줄 지우기
+	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::MELEE_WEAPON)) return;
 	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::MAIN_GUN))		return;
 	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::SUB_GUN))		return;
 
@@ -524,13 +539,20 @@ void AC_ThrowingWeapon::OnOwnerCharacterPoseTransitionFin()
 	}
 
 
-	// OnThrowProcessEnd도 제대로 호출이 안되었을 시점에 들어오는듯?
-	// OnDrawEnd가 제대로 호출이 안되었을 경우
-	//if (OwnerCharacter->GetHandState() == EHandState::WEAPON_THROWABLE &&
-	//	OwnerCharacter->GetEquippedComponent()->GetNextWeaponType() != EWeaponSlot::NONE)
+	//CurDrawMontage = DrawMontages[OwnerCharacter->GetPoseState()];
+
+	//// ThrowProcessEnd 이후 OnDrawEnd가 제대로 호출이 안되었을 경우
+	//// 조건식이 안걸릴 때가 있음
+	//if (
+	//	OwnerCharacter->GetHandState() == EHandState::WEAPON_THROWABLE &&
+	//	OwnerCharacter->GetEquippedComponent()->GetNextWeaponType() != EWeaponSlot::NONE //&&
+	//	//!OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(CurDrawMontage.AnimMontage)
+	//	)
 	//{
+	//	UC_Util::Print("Call OnDrawEnd Manually", FColor::Cyan, 5.f);
 	//	OwnerCharacter->GetEquippedComponent()->OnDrawEnd();
 	//}
+
 }
 
 void AC_ThrowingWeapon::ClearSpline()

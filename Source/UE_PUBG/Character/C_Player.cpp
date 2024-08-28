@@ -140,7 +140,7 @@ void AC_Player::BeginPlay()
 void AC_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 
 	HandleTurnInPlace();
 	HandleTurnInPlaceWhileAiming();
@@ -188,6 +188,9 @@ void AC_Player::Move(const FInputActionValue& Value)
 
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
+	// Update Max walk speed
+	UpdateMaxWalkSpeed(MovementVector);
+
 	if (Controller != nullptr)
 	{
 		FRotator Rotation;
@@ -225,24 +228,6 @@ void AC_Player::Look(const FInputActionValue& Value)
 	}
 }
 
-void AC_Player::Walk(const FInputActionValue& Value)
-{
-	//StatComponent->bIsWalking = !StatComponent->bIsWalking;
-
-	//if (StatComponent->bIsWalking)
-	//{
-	//	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
-	//}
-	//else
-	//{
-	//	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
-	//}
-}
-
-void AC_Player::Sprint()
-{
-}
-
 void AC_Player::Crouch()
 {
 	if (!bCanMove) return;
@@ -251,14 +236,11 @@ void AC_Player::Crouch()
 	switch (PoseState)
 	{
 	case EPoseState::STAND: // Stand to crouch (Pose transition 없이 바로 처리)
-		GetCharacterMovement()->MaxWalkSpeed = 200.f;
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -32));
 		PoseState = EPoseState::CROUCH;
 		return;
 	case EPoseState::CROUCH: // Crouch to stand (Pose transition 없이 바로 처리)
-		GetCharacterMovement()->MaxWalkSpeed = 600.f;
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +32));
-
 		PoseState = EPoseState::STAND;
 		return;
 	case EPoseState::CRAWL: // Crawl to crouch
@@ -317,7 +299,6 @@ void AC_Player::OnJump()
 	if (PoseState == EPoseState::CROUCH) // Crouch to stand
 	{
 		PoseState = EPoseState::STAND;
-		GetCharacterMovement()->MaxWalkSpeed = 600;
 		return;
 	}
 
@@ -500,6 +481,26 @@ void AC_Player::OnMRBCompleted()
 	EquippedComponent->GetCurWeapon()->ExecuteMrb_Completed();
 }
 
+void AC_Player::OnSprintStarted()
+{
+	bIsSprinting = true;
+}
+
+void AC_Player::OnSprintReleased()
+{
+	bIsSprinting = false;
+}
+
+void AC_Player::OnWalkStarted()
+{
+	bIsWalking = true;
+}
+
+void AC_Player::OnWalkReleased()
+{
+	bIsWalking = false;
+}
+
 /// <summary>
 /// 상호작용(F)와 대응되는 키로 구상중.
 /// 봇도 상호작용함.
@@ -629,6 +630,7 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 	if (GetVelocity().Size() > 0.f) return;
 	if (bIsHoldDirection) return;
 
+	// 0 360
 	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;
 
 	if (Delta > 90.f) // Right Turn in place motion
@@ -925,6 +927,10 @@ void AC_Player::HandleCameraAimPunching(float DeltaTime)
 	AimCamera->SetRelativeLocation(AimCamPos);
 	MainCamera->SetRelativeRotation(MainCamRot);
 	AimCamera->SetRelativeRotation(AimCamRot);
+
+	//UC_Util::Print(float(AimCamera->GetRelativeRotation().Roll));
+	//UC_Util::Print(float(MainCamera->GetRelativeRotation().Roll));
+
 }
 
 void AC_Player::ExecuteCameraAimPunching
@@ -966,7 +972,7 @@ void AC_Player::HandleFlashBangEffect(float DeltaTime)
 	{
 		FlashBangEffectDuration = 0.f;
 
-		//PostProcessVolume->Settings.BloomIntensity = FMath::Lerp(PostProcessVolume->Settings.BloomIntensity, PostProcessInitialIntensity, DeltaTime * 10.f);
+		PostProcessVolume->Settings.BloomIntensity = FMath::Lerp(PostProcessVolume->Settings.BloomIntensity, PostProcessInitialIntensity, DeltaTime * 10.f);
 
 		// TODO : Capture된 잔상 남기기
 

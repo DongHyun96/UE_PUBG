@@ -239,7 +239,7 @@ protected:
 	// Testing 용, 배낭에 들어있는 것처럼 쓸 것임 / TODO : 이 멤버변수 지우기
 	static TArray<AC_ThrowingWeapon*> ThrowablePool;
 	
-	static const UINT TESTPOOLCNT = 20;
+	static const UINT TESTPOOLCNT = 2;
 
 private:
 

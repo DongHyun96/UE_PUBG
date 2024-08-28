@@ -178,6 +178,15 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser);
 
+protected:
+
+	/// <summary>
+	/// Pose와 캐릭터 이동방향에 따른 MaxWalkSpeed 조정
+	/// </summary>
+	/// <param name="MovementVector"> : Input action movement vector </param>
+	void UpdateMaxWalkSpeed(const FVector2D& MovementVector);
+
+
 public: // Getters and setters
 
 	EHandState GetHandState() const { return HandState; }
@@ -259,6 +268,11 @@ protected: // 자세 변환 Transition 관련
 
 	// 현재 Pose Transition 모션이 진행중인지
 	bool bIsPoseTransitioning{};
+
+protected: // Sprint walk state
+
+	bool bIsWalking{};
+	bool bIsSprinting{};
 
 public:
 	// OnTransitionFinish에서 호출될 Multicast Delegate
