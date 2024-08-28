@@ -19,6 +19,7 @@
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 
+#include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/Image.h"
@@ -106,14 +107,44 @@ void AC_Player::BeginPlay()
 	PostProcessInitialIntensity = PostProcessVolume->Settings.BloomIntensity;
 
 	ScreenShotWidget->AddToViewport();
+
+	//if (IsValid(C_MainSpringArm))
+	//{
+	//	//GetCapsuleComponent()
+	//	UPrimitiveComponent* MeshToIgnore = GetCapsuleComponent();
+	//	if (MeshToIgnore)
+	//	{
+	//		// 카메라 프로브 채널에 대해 특정 메쉬와 충돌 무시 설정
+	//		MeshToIgnore->SetCollisionResponseToChannel(C_MainSpringArm->ProbeChannel, ECR_Ignore);
+	//	}
+	//}
+
+
+
+	for (UActorComponent* Component : GetComponents())
+	{
+		UPrimitiveComponent* PrimitiveComp = Cast<UPrimitiveComponent>(Component);
+		if (PrimitiveComp)
+		{
+			if (IsValid(C_MainSpringArm))
+				PrimitiveComp->SetCollisionResponseToChannel(C_MainSpringArm->ProbeChannel, ECR_Ignore);
+			// Spring Arm의 ProbeChannel에 대한 충돌을 무시하도록 설정합니다.
+
+			// 필요에 따라 다른 채널도 무시하도록 설정할 수 있습니다.
+			// 예: PrimitiveComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+		}
+	}
+	
 }
 
 void AC_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	AimCamera->SetWorldRotation(GetControlRotation());
+	
 
 	HandleTurnInPlace();
+	HandleTurnInPlaceWhileAiming();
+	HandlePlayerRotationWhileAiming();
 	HandleControllerRotation(DeltaTime);
 
 	HandleCameraAimPunching(DeltaTime);
@@ -139,7 +170,7 @@ void AC_Player::Move(const FInputActionValue& Value)
 
 	// 움직일 땐 카메라가 바라보는 방향으로 몸체도 돌려버림 (수업 기본 StrafeOn 세팅)
 	//Alt 키 누를때아닐떄 구분해서 설정
-	if (bIsHoldDirection || bIsAltPressed)
+	if (bIsHoldDirection || bIsAltPressed || bIsAimDownSight)
 	{
 		GetCharacterMovement()->bUseControllerDesiredRotation = false;
 		GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -221,14 +252,19 @@ void AC_Player::Crouch()
 	{
 	case EPoseState::STAND: // Stand to crouch (Pose transition 없이 바로 처리)
 		GetCharacterMovement()->MaxWalkSpeed = 200.f;
+		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -32));
 		PoseState = EPoseState::CROUCH;
 		return;
 	case EPoseState::CROUCH: // Crouch to stand (Pose transition 없이 바로 처리)
 		GetCharacterMovement()->MaxWalkSpeed = 600.f;
+		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +32));
+
 		PoseState = EPoseState::STAND;
 		return;
 	case EPoseState::CRAWL: // Crawl to crouch
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToCrouch, EPoseState::CROUCH);
+		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +67));
+
 		return;
 	case EPoseState::POSE_MAX: default:
 		UC_Util::Print("From AC_Player::Crouch : UnAuthorized current pose!");
@@ -245,12 +281,20 @@ void AC_Player::Crawl()
 	{
 	case EPoseState::STAND: // Stand to Crawl
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].StandToCrawl, EPoseState::CRAWL);
+		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -99));
+
 		return;
 	case EPoseState::CROUCH: // Crouch to Crawl
+		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -67));
+
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrouchToCrawl, EPoseState::CRAWL);
+
 		return;
 	case EPoseState::CRAWL: // Crawl to Stand
+		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +99));
+
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToStand, EPoseState::STAND);
+
 		return;
 	case EPoseState::POSE_MAX: default:
 		UC_Util::Print("From AC_Player::Crawl : UnAuthorized current pose!");
@@ -372,11 +416,11 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 		Controller->SetControlRotation(FMath::Lerp(Controller->GetControlRotation(), CharacterMovingDirection, DeltaTime * 10.0f));
 	}
 	//일정각도 이하로 차이나면 캐릭터 로테이션으로 정해버리기(가끔 적용이 안되는데 이유를 아직 못찾음)
-	float DeltaYaw = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Yaw);
-	float DeltaPitch = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Pitch);
+	float DeltaYawTemp= FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Yaw);
+	float DeltaPitchTemp = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Pitch);
 
 
-	if (DeltaYaw < 5 && DeltaPitch< 5)
+	if (DeltaYawTemp < 5 && DeltaPitchTemp < 5)
 	{
 		Controller->SetControlRotation(CharacterMovingDirection);
 		bIsAltPressed = false;
@@ -638,6 +682,157 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 
 }
 
+void AC_Player::HandleTurnInPlaceWhileAiming()
+{
+	// 현재 멈춰있는 상황이 아니면 처리 x
+	
+	if (!bCanMove) return;
+	if (HandState != EHandState::WEAWPON_GUN) return;
+	if (!bIsAimDownSight)
+	{
+		AimingTurnInPlaceTimeCount = 0;
+		UAnimMontage* RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState].AnimMontage;
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+		FPriorityAnimMontage LowerRightPriorityMontage;
+		if (LowerBodyTurnAnimMontageMap[HandState].RightMontages.Contains(PoseState))
+			LowerRightPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState];
+		else
+			return;
+		if (!IsValid(LowerRightPriorityMontage.AnimMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerRightPriorityMontage.AnimMontage))
+		{
+			AnimInstance->Montage_Stop(0.1f, LowerRightPriorityMontage.AnimMontage);
+			GetCharacterMovement()->bUseControllerDesiredRotation = false;
+			GetCharacterMovement()->bOrientRotationToMovement = true;
+		}
+
+		FPriorityAnimMontage LowerLeftPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState];
+
+		if (!IsValid(LowerLeftPriorityMontage.AnimMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerLeftPriorityMontage.AnimMontage))
+		{
+			AnimInstance->Montage_Stop(0.1f, LowerLeftPriorityMontage.AnimMontage);
+			GetCharacterMovement()->bUseControllerDesiredRotation = false;
+			GetCharacterMovement()->bOrientRotationToMovement = true;
+		}
+		return;
+	}
+	if (GetVelocity().Size() > 0.f) return;
+	if (bIsHoldDirection) return;
+
+	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;
+	float ControlRotation = GetControlRotation().Yaw;
+	float CapsuleRotation = GetCapsuleComponent()->GetComponentRotation().Yaw;
+	if (AimingTurnInPlaceTimeCount <= 0)
+	{
+		SavedYaw = CapsuleRotation;
+	}
+	AimingTurnInPlaceTimeCount += GetWorld()->DeltaTimeSeconds;
+	DeltaYaw = CapsuleRotation - SavedYaw;
+	DeltaYaw = UKismetMathLibrary::FClamp(DeltaYaw, -90.0f, 90.0f);
+	//DeltaYaw = UKismetMathLibrary::Abs(DeltaYaw);
+	if (AimingTurnInPlaceTimeCount >= 0.5f)
+	{
+		//UKismetMathLibrary::Lerp(AimingTurnInPlaceTimeCount, -0.1, 0.5);
+		AimingTurnInPlaceTimeCount = 0;
+		UAnimMontage* RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState].AnimMontage;
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	
+
+		FPriorityAnimMontage LowerRightPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState];
+
+		if (!IsValid(LowerRightPriorityMontage.AnimMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerRightPriorityMontage.AnimMontage))
+		{
+			AnimInstance->Montage_Stop(0.1f, LowerRightPriorityMontage.AnimMontage);
+			GetCharacterMovement()->bUseControllerDesiredRotation = false;
+			GetCharacterMovement()->bOrientRotationToMovement = true;
+		}
+
+		FPriorityAnimMontage LowerLeftPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState];
+
+		if (!IsValid(LowerLeftPriorityMontage.AnimMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerLeftPriorityMontage.AnimMontage))
+		{
+			AnimInstance->Montage_Stop(0.1f, LowerLeftPriorityMontage.AnimMontage);
+			GetCharacterMovement()->bUseControllerDesiredRotation = false;
+			GetCharacterMovement()->bOrientRotationToMovement = true;
+		}
+		return;
+	}
+	if (DeltaYaw > 0.f) // Right Turn in place motion
+	{
+		// Controller
+		//GetCharacterMovement()->bUseControllerDesiredRotation = true;
+		//GetCharacterMovement()->bOrientRotationToMovement = false;
+
+		
+		if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
+
+		FPriorityAnimMontage LowerRightPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState];
+
+		if (!IsValid(LowerRightPriorityMontage.AnimMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerRightPriorityMontage.AnimMontage)) return;
+		float CurPlayRate = (DeltaYaw / 90.0f) * 2.0f / AimingTurnInPlaceTimeCount;
+		CurPlayRate = UKismetMathLibrary::FClamp(CurPlayRate, 0.5f, 1.5f);
+
+		UC_Util::Print(CurPlayRate);
+
+		PlayAnimMontage(LowerRightPriorityMontage, CurPlayRate);
+
+	}
+	if (DeltaYaw < 0.f) // Left Turn in place motion
+	{
+		//GetCharacterMovement()->bUseControllerDesiredRotation = true;
+		//GetCharacterMovement()->bOrientRotationToMovement = false;
+
+
+		// Lower Body도 체크
+		if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
+
+		FPriorityAnimMontage LowerLeftPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState];
+
+		if (!IsValid(LowerLeftPriorityMontage.AnimMontage)) return;
+		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerLeftPriorityMontage.AnimMontage)) return;
+		float CurPlayRate = (UKismetMathLibrary::Abs(DeltaYaw) * 2.0f / 90.0f) / AimingTurnInPlaceTimeCount;
+		CurPlayRate = UKismetMathLibrary::FClamp(CurPlayRate, 0.5f, 1.5f);
+		UC_Util::Print(CurPlayRate);
+		PlayAnimMontage(LowerLeftPriorityMontage, CurPlayRate);
+	}
+}
+
+void AC_Player::HandlePlayerRotationWhileAiming()
+{
+	if (!bIsAimDownSight) return;
+	//bUseControllerRotationYaw = true;
+
+
+	// 현재 캐릭터 회전
+	//if (FMath::Abs(GetActorRotation().Yaw - GetControlRotation().Yaw) <= 3.0f)
+	//{
+	//	bUseControllerRotationYaw = true;
+	//	return;
+	//}
+	//else
+	//	bUseControllerRotationYaw = false;
+
+	// 목표 회전값으로 Lerp
+	float DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(GetActorRotation(), GetControlRotation()).Yaw;
+
+	float LerpAlpha = UKismetMathLibrary::Abs(DeltaRotation);
+	UC_Util::Print(LerpAlpha,FColor::Blue);
+	LerpAlpha = UKismetMathLibrary::FClamp(LerpAlpha, 0.6, 1);
+
+	FRotator NewRotationTemp = UKismetMathLibrary::RLerp(GetActorRotation(), GetControlRotation(), GetWorld()->DeltaTimeSeconds * 15.f, true);
+	float NewRotationYaw = NewRotationTemp.Yaw;
+	// 캐릭터 회전 설정
+	FRotator NewRotation = FRotator(GetActorRotation().Pitch, NewRotationYaw, GetActorRotation().Roll);
+	SetActorRotation(NewRotation);
+	//UC_Util::Print(float(GetActorRotation().Yaw));
+}
+
 void AC_Player::SetStrafeRotationToIdleStop()
 {
 	GetCharacterMovement()->bUseControllerDesiredRotation	= false;
@@ -870,6 +1065,7 @@ void AC_Player::SetToAimDownSight()
 {
 	MainCamera->SetActive(false);
 	AimCamera->SetActive(false);
+
 	bIsAimDownSight = true;
 }
 
