@@ -181,14 +181,73 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FName DamagingPhyiscsAss
 	return TakeDamage(DamageAmount, DAMAGINGPARTS_MAP[DamagingPhyiscsAssetBoneName], DamageCauser);
 }
 
+void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
+{
+	//GetCharacterMovement()->MaxWalkSpeed =	(PoseState == EPoseState::STAND)  ? 370.f :
+	//										(PoseState == EPoseState::CROUCH) ? 200.f :
+	//										(PoseState == EPoseState::CRAWL)  ? 100.f : 600.f;
+	// TODO : 도핑 했을 시, 도핑 계수 곱해주기
+
+	switch (PoseState)
+	{
+	case EPoseState::STAND:
+		if (bIsWalking)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 170.f;
+			return;
+		}
+
+		if (MovementVector.X == 1.f) // 앞 , 앞 대각선
+		{
+			GetCharacterMovement()->MaxWalkSpeed = bIsSprinting ? 630.f : 470.f; 
+			return;
+		}
+		if (MovementVector.X != -1.f && MovementVector.Y != 0.f) // Left right side
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 400.f; 
+			return;
+		}
+
+		GetCharacterMovement()->MaxWalkSpeed = 350.f; // 뒷 방향
+		return;
+	case EPoseState::CROUCH:
+		if (bIsWalking)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 130.f;
+			return;
+		}
+		if (MovementVector.X == 1.f) // 앞 , 앞 대각선
+		{
+			GetCharacterMovement()->MaxWalkSpeed = bIsSprinting ? 480.f : 340.f;
+			return;
+		}
+		if (MovementVector.X != -1.f && MovementVector.Y != 0.f) // Left right side
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 290.f;
+			return;
+		}
+
+		GetCharacterMovement()->MaxWalkSpeed = 250.f; // 뒷 방향
+		return;
+	case EPoseState::CRAWL:
+		GetCharacterMovement()->MaxWalkSpeed = bIsWalking ? 60.f : 120.f;
+
+		return;
+	case EPoseState::POSE_MAX:
+		return;
+	default:
+		return;
+	}
+}
+
 void AC_BasicCharacter::OnPoseTransitionGoing()
 {
 	PoseState = NextPoseState;
 
 	// 최대속력 조절
-	GetCharacterMovement()->MaxWalkSpeed =	(PoseState == EPoseState::STAND)  ? 600.f :
-											(PoseState == EPoseState::CROUCH) ? 200.f :
-											(PoseState == EPoseState::CRAWL)  ? 100.f : 600.f;
+	//GetCharacterMovement()->MaxWalkSpeed =	(PoseState == EPoseState::STAND)  ? 600.f :
+	//										(PoseState == EPoseState::CROUCH) ? 200.f :
+	//										(PoseState == EPoseState::CRAWL)  ? 100.f : 600.f;
 }
 
 void AC_BasicCharacter::OnPoseTransitionFinish()

@@ -53,9 +53,6 @@ public: // Input mapped actions
 	void MoveEnd(const struct FInputActionValue& Value);
 
 	void Look(const struct FInputActionValue& Value);
-	void Walk(const struct FInputActionValue& Value);
-	void Sprint();
-
 
 	void Crouch();
 	void Crawl();
@@ -85,6 +82,12 @@ public: // Input mapped actions
 	void OnMRBStarted();
 	void OnMRBOnGoing();
 	void OnMRBCompleted();
+
+	void OnSprintStarted();
+	void OnSprintReleased();
+
+	void OnWalkStarted();
+	void OnWalkReleased();
 
 	//상호작용(F)
 	//오브젝트의 묶음별로 만들어야 할 수도?

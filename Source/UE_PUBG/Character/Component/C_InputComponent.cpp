@@ -76,6 +76,11 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 
 		EnhancedInputComponent->BindAction(Interaction, ETriggerEvent::Started, Player, &AC_Player::Interaction);
 
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, Player, &AC_Player::OnSprintStarted);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, Player, &AC_Player::OnSprintReleased);
+
+		EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Started, Player, &AC_Player::OnWalkStarted);
+		EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Completed, Player, &AC_Player::OnWalkReleased);
 	}
 }
 

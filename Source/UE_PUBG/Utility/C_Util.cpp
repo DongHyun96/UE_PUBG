@@ -30,3 +30,8 @@ void UC_Util::Print(const FTransform& data, const FColor& InColor, const float& 
 {
 	GEngine->AddOnScreenDebugMessage(-1, TimeToDisplay, InColor, *data.ToString());
 }
+
+void UC_Util::Print(const FRotator& data, const FColor& InColor, const float& TimeToDisplay)
+{
+	GEngine->AddOnScreenDebugMessage(-1, TimeToDisplay, InColor, *data.ToString());
+}
