@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Item/Equipment/C_EquipableItem.h"
+#include "GameFramework/Actor.h"
 #include "C_BackPack.generated.h"
 
 /**
@@ -31,6 +32,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interaction(class AC_BasicCharacter* character) override;
+
+	void AttachToSocket(class USceneComponent* InParent);
 
 	uint8 GetLevel() { return Level; }
 protected:
