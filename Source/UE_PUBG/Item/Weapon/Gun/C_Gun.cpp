@@ -12,6 +12,7 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/C_Player.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 
 
@@ -31,6 +32,7 @@ void AC_Gun::BeginPlay()
 {
 	Super::BeginPlay();
 	AimSightCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
+	AimSightSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("RifleSightSpringArm"));
 	//if(IsValid(AimSightCamera))
 	AimSightCamera->SetActive(false);
 	//블루프린트에서 할당한 Skeletal Mesh 찾아서 변수에 저장
@@ -74,6 +76,7 @@ void AC_Gun::Tick(float DeltaTime)
 		//FString TheFloatStr = FString::SanitizeFloat(LeftHandSocketLocation.GetLocation().X);
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	}
+	HandleSpringArmRotation();
 }
 
 bool AC_Gun::AttachToHolster(USceneComponent* InParent)
@@ -138,6 +141,7 @@ bool AC_Gun::SetAimingDown()
 	Cast<AC_Player>(OwnerCharacter)->SetToAimDownSight();
 	//CharacterMesh->HideBoneByName(FName("HeadBoneName"), EPhysBodyOp::PBO_None);
 
+	//OwnerCharacter->bUseControllerRotationYaw = true;
 
 	//AimDown 일 때 머리숨기기
 	//TODO : 내 카메라에만 안보이고 상대방 카메라에선 보이게 만들기
@@ -151,6 +155,8 @@ bool AC_Gun::SetAimingPress()
 {
 	Cast<AC_Player>(OwnerCharacter)->SetToAimKeyPress();
 	bIsAimPress = true;
+	//OwnerCharacter->bUseControllerRotationYaw = true;
+
 	return true;
 }
 
@@ -162,6 +168,7 @@ bool AC_Gun::BackToMainCamera()
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(OwnerCharacter, 0.2);
 	}
 	OwnerCharacter->GetMesh()->UnHideBoneByName(FName("Head"));
+	OwnerCharacter->bUseControllerRotationYaw = false;
 
 	Cast<AC_Player>(OwnerCharacter)->BackToMainCamera();
 	return true;
@@ -169,6 +176,15 @@ bool AC_Gun::BackToMainCamera()
 	//FString TheFloatStr = FString::SanitizeFloat(MrbPressTimeCount);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	
+}
+
+void AC_Gun::HandleSpringArmRotation()
+{
+	//if (!bIsAimPress) return;
+	FRotator ControlRotation = OwnerCharacter->GetControlRotation();
+	FRotator NewRotation = FRotator(ControlRotation.Pitch, ControlRotation.Yaw, 0);
+	AimSightSpringArm->SetWorldRotation(OwnerCharacter->GetControlRotation());
+	//AimSightSpringArm->SetWorldRotation(NewRotation);
 }
 
 void AC_Gun::OnOwnerCharacterPoseTransitionFin()

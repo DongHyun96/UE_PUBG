@@ -49,6 +49,9 @@ public:
 	bool BackToMainCamera();
 	void SetIsAimPress(bool InIsAimPress) { bIsAimPress = InIsAimPress; }
 	bool GetIsAimPress() { return bIsAimPress; }
+	void HandleSpringArmRotation();
+	EGunState GetCurrentWeaponState() { return CurState; }
+	TMap<EPoseState, FAnimationMontages> GetSheathMontages() { return SheathMontages; };
 	FTransform GetLeftHandSocketTransform() const { return LeftHandSocketLocation; }
 	class UCameraComponent* GetGunCamera() { return AimSightCamera; }
 
@@ -84,5 +87,5 @@ public:
 	FTransform LeftHandSocketLocation;
 
 	class UCameraComponent* AimSightCamera{};
-
+	class USpringArmComponent* AimSightSpringArm{};
 };

@@ -137,12 +137,24 @@ protected:
 	/// <para> 바라보는 방향의 각이 90도 이상이면, Turn In place로 캐릭터 조정 </para>
 	/// </summary>
 	void HandleTurnInPlace();
+
+	/// <summary>
+	/// <para> 캐릭터가 Aiming 중일 때,컨트롤러(카메라)방향 대로 Turn In place로 캐릭터 조정</para>
+	/// </summary>
+	void HandleTurnInPlaceWhileAiming();
+
+	void HandlePlayerRotationWhileAiming();
 	
 	/// <summary>
 	/// Turn in place가 끝났을 시 anim notify에 의해 호출, 멈춰 있을 때의 Rotation 세팅 값들로 돌아가기
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void SetStrafeRotationToIdleStop();
+
+protected:
+	float AimingTurnInPlaceTimeCount = 0.0f;
+	float SavedYaw = 0.0f;
+	float DeltaYaw = 0.0f;
 
 private:
 

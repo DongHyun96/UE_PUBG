@@ -160,8 +160,8 @@ protected:
 	(
 		float				DamageAmount,
 		FDamageEvent const& DamageEvent,
-		AController*		EventInstigator,
-		AActor*				DamageCauser
+		AController* EventInstigator,
+		AActor* DamageCauser
 	) override;
 
 public:
@@ -192,13 +192,13 @@ public: // Getters and setters
 	//class UC_InvenComponent* GetInvenComponent() const { return BPC_InvenSystemInstance; }
 	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
 
-	bool GetCanMove() const {return bCanMove;}
+	bool GetCanMove() const { return bCanMove; }
 	bool GetIsAimDown() { return bIsAimDownSight; }
 
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 
 	//class UC_InvenComponent* GetInvenComponent() { return BPC_InvenSystemInstance; }
-	
+
 	class UC_InvenComponent* GetInvenComponent() { return BPC_InvenSystemInstance; }
 
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
@@ -227,8 +227,8 @@ protected:
 	/// <param name="CurrentPoseState"> : 현재 자세 </param>
 	/// <param name="InNextPoseState"> : 다음 자세 </param>
 	/// <returns> Pose transition action이 제대로 실행되었다면 return true </returns>
-	
-	
+
+
 	/// <summary>
 	/// Pose Transition 모션 실행하기
 	/// </summary>
@@ -248,7 +248,7 @@ protected:
 	EPoseState PoseState{};
 
 protected: // 자세 변환 Transition 관련
-	
+
 	// 자세 전환을 할 시에, 다음으로 전환될 Pose State
 	UPROPERTY(BlueprintReadOnly)
 	EPoseState NextPoseState{};
@@ -269,6 +269,9 @@ protected: // Camera
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	class UCameraComponent* MainCamera{};
 
+	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+	class USpringArmComponent* C_MainSpringArm{};
+
 protected:
 
 	// AnimCharacter에서 참조할 Speed의 다음 Lerp destination 값
@@ -279,6 +282,7 @@ protected:
 	bool bIsAltPressed = false;
 
 	bool bIsAimDownSight = false;
+	bool bIsAimingRifle = false;
 	FRotator CharacterMovingDirection;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

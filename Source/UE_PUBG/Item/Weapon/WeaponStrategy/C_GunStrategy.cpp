@@ -55,9 +55,15 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurSheathMontage().AnimMontage)) return false;
 	if (CurWeapon->GetIsAimPress())
 	{
-		FString TheFloatStr = "AimingOn";
-		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+		//FString TheFloatStr = "AimingOn";
+		//WeaponUser->bUseControllerRotationYaw = true;
+		//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 		return false;
+	}
+	if (bIsAimDownSight)
+	{
+		//WeaponUser->bUseControllerRotationYaw = true;
+
 	}
 	MrbPressTimeCount += WeaponUser->GetWorld()->GetDeltaSeconds();
 	//FString TheFloatStr = FString::SanitizeFloat(MrbPressTimeCount);

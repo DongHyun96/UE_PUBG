@@ -84,6 +84,9 @@ void AC_BasicCharacter::BeginPlay()
 	}
 
 	MainCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
+	C_MainSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("MainSpringArm"));
+
+
 }
 
 // Called every frame
