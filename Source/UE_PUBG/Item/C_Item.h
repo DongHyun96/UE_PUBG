@@ -54,6 +54,8 @@ public:
 
 	virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction;);
 
+
+
 private:
 	uint8 Volume;
 

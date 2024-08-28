@@ -68,9 +68,11 @@ bool UC_InvenComponent::CheckVolume(uint16 volume)
 bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 {
 	//
+	//backpack->Destroy
 	if (backpack == nullptr)
 	{
 		CurBackPackLevel = EBackPackLevel::LV0;
+		backpack->AttachToSocket(OwnerCharacter->GetMesh());
 		return true;
 	}
 
@@ -94,6 +96,7 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 
 		//가방도 내 아이템 리스트에 포함하는 함수. 현재는 고려중.
 		//MyItem.Add(backpack);
+		backpack->AttachToSocket(OwnerCharacter->GetMesh());
 
 		return true;
 	}
@@ -112,6 +115,7 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 			MaxVolume = NextVolume;
 			CurBackPackLevel = PreBackPackLevel;
 			MyBackPack = backpack;
+			backpack->AttachToSocket(OwnerCharacter->GetMesh());
 			return true;
 		}
 		else if (CurVolume > NextVolume)
@@ -120,6 +124,7 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 			GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Black, TheStr2);
 			//현재 용량이 다음 용량보다 크다면 배낭 변경이 불가능.
 			//해당 상황에 대한 문구 출력.
+
 			return false;
 		}
 		else
@@ -129,7 +134,7 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 
 			//현재 용량과 다음 용량이 같으므로 가방의 변경이 가능.
 			MyBackPack = backpack;
-
+			backpack->AttachToSocket(OwnerCharacter->GetMesh());
 			return true;
 		}
 	}
@@ -142,7 +147,7 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 
 		//현재 가방과 다음 가방의 레벨이 같으면 가방 변경 가능
 		MyBackPack = backpack;
-
+		backpack->AttachToSocket(OwnerCharacter->GetMesh());
 		return true;
 	}
 }
@@ -231,6 +236,22 @@ uint16 UC_InvenComponent::CheckBackPackVolume(EBackPackLevel backpacklevel)
 		break;
 	}
 }
+
+void UC_InvenComponent::DroppingItem(AC_Item* myitem)
+{
+	
+}
+
+void UC_InvenComponent::RemoveBackPack()
+{
+	MaxVolume -= CheckBackPackVolume(MyBackPack->GetLevel());
+
+	MyBackPack = nullptr;
+
+	CurBackPackLevel = EBackPackLevel::LV0;
+}
+
+
 
 
  

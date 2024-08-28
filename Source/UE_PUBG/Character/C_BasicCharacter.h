@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Component/C_InvenComponent.h"
 #include "C_BasicCharacter.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FDele_PoseTransitionFin);
@@ -207,8 +208,8 @@ public: // Getters and setters
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 
 	//class UC_InvenComponent* GetInvenComponent() { return BPC_InvenSystemInstance; }
-
-	class UC_InvenComponent* GetInvenComponent() { return BPC_InvenSystemInstance; }
+	
+	class UC_InvenComponent* GetInvenComponent() { return Inventory; }
 
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
 
@@ -217,7 +218,7 @@ public: // Getters and setters
 public:
 
 	/// <summary>
-	/// Pose Transition montage가 진행 중인 중간에 Callback되는 함수
+	/// Pose Transition montage가 진행 중인 중간에 Call	되는 함수
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnPoseTransitionGoing();
@@ -310,11 +311,12 @@ protected:
 	class UC_EquippedComponent* EquippedComponent{};
 
 public:
-	UPROPERTY(BlueprintReadonly, Category = "InvenSystem", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UC_InvenComponent> BPC_InvenSystem;
-	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UC_InvenComponent* BPC_InvenSystemInstance;
+	UC_InvenComponent* Inventory;
+	
+	//UClass* InvenSystemClass;
+
+	//UC_InvenComponent* Inventory;
 
 
 protected: // PriorityAnimMontage 관련

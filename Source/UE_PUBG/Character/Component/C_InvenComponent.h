@@ -57,6 +57,11 @@ public:
 	uint16 CheckBackPackVolume(uint32 backpacklevel);
 	uint16 CheckBackPackVolume(EBackPackLevel backpacklevel);
 
+	UFUNCTION(BlueprintCallable)
+	void DroppingItem(AC_Item* myitem);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveBackPack();
 
 public://Getter and Seter
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; }
@@ -67,6 +72,8 @@ public://Getter and Seter
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
+
+	
 
 	TArray<class AC_Item*>& GetNearItems() { return NearItems; }
 
@@ -96,6 +103,7 @@ protected:
 protected:
 	
 private:
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_BackPack* MyBackPack {};
 
 

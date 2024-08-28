@@ -31,3 +31,7 @@ void AC_Item::Tick(float DeltaTime)
 
 }
 
+void AttachToSocket(USceneComponent* InParent)
+{
+
+}

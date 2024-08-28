@@ -4,6 +4,7 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 #include "Components/SphereComponent.h"
+#include "Utility/C_Util.h"
 #include "Character/Component/C_InvenComponent.h"
 
 
@@ -31,4 +32,25 @@ void AC_BackPack::Tick(float DeltaTime)
 void AC_BackPack::Interaction(AC_BasicCharacter* character)
 {
 	character->GetInvenComponent()->ChackMyBackPack(this);	
+
+}
+
+void AC_BackPack::AttachToSocket(USceneComponent* InParent)
+{
+	FName SocketName = "BackPackSocket";
+
+	//UStaticMeshComponent* BackpackMesh = this->FindComponentByClass<UStaticMeshComponent>();
+	//
+	//BackpackMesh->SetMobility(EComponentMobility::Movable);
+
+
+
+	bool Attached = AttachToComponent
+	(
+		InParent,
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		SocketName
+	);
+
+	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);
 }
