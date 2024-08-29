@@ -68,7 +68,7 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	MrbPressTimeCount += WeaponUser->GetWorld()->GetDeltaSeconds();
 	//FString TheFloatStr = FString::SanitizeFloat(MrbPressTimeCount);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
-	if (MrbPressTimeCount >= 0.2)
+	if (MrbPressTimeCount >= 0.2 && !bIsAimDownSight)
 	{
 		CurWeapon->SetAimingPress();
 		
