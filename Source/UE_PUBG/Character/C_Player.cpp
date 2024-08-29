@@ -780,7 +780,7 @@ void AC_Player::HandleTurnInPlaceWhileAiming()
 		float CurPlayRate = (DeltaYaw / 90.0f) * 2.0f / AimingTurnInPlaceTimeCount;
 		CurPlayRate = UKismetMathLibrary::FClamp(CurPlayRate, 0.5f, 1.5f);
 
-		UC_Util::Print(CurPlayRate);
+		//UC_Util::Print(CurPlayRate);
 
 		PlayAnimMontage(LowerRightPriorityMontage, CurPlayRate);
 
@@ -800,7 +800,7 @@ void AC_Player::HandleTurnInPlaceWhileAiming()
 		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerLeftPriorityMontage.AnimMontage)) return;
 		float CurPlayRate = (UKismetMathLibrary::Abs(DeltaYaw) * 2.0f / 90.0f) / AimingTurnInPlaceTimeCount;
 		CurPlayRate = UKismetMathLibrary::FClamp(CurPlayRate, 0.5f, 1.5f);
-		UC_Util::Print(CurPlayRate);
+		//UC_Util::Print(CurPlayRate);
 		PlayAnimMontage(LowerLeftPriorityMontage, CurPlayRate);
 	}
 }
@@ -824,7 +824,7 @@ void AC_Player::HandlePlayerRotationWhileAiming()
 	float DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(GetActorRotation(), GetControlRotation()).Yaw;
 
 	float LerpAlpha = UKismetMathLibrary::Abs(DeltaRotation);
-	UC_Util::Print(LerpAlpha,FColor::Blue);
+	//UC_Util::Print(LerpAlpha,FColor::Blue);
 	LerpAlpha = UKismetMathLibrary::FClamp(LerpAlpha, 0.6, 1);
 
 	FRotator NewRotationTemp = UKismetMathLibrary::RLerp(GetActorRotation(), GetControlRotation(), GetWorld()->DeltaTimeSeconds * 15.f, true);

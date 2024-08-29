@@ -157,10 +157,10 @@ void UC_AnimBasicCharacter::SetAimOfssetRotation()
 	float RotatorSizeY = LerpAlphaRotater.Pitch * LerpAlphaRotater.Pitch / 8100.f;
 	float RotatorSizeZ = LerpAlphaRotater.Yaw   * LerpAlphaRotater.Yaw   / 8100.f;
 	float Size = 10* UKismetMathLibrary::Sqrt(RotatorSizeX + RotatorSizeY + RotatorSizeZ);
-	UC_Util::Print(Size, FColor::Green);
+	//UC_Util::Print(Size, FColor::Green);
 
 	float LerpAlpha = UKismetMathLibrary::FClamp(Size, 0.3, 1);
-	UC_Util::Print(float(LerpAlpha));
+	//UC_Util::Print(float(LerpAlpha));
 
 	//CCurrentAimOffsetRotation = CAimOffsetRotation;
 	FRotator::ZeroRotator;

@@ -72,7 +72,12 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 	if (backpack == nullptr)
 	{
 		CurBackPackLevel = EBackPackLevel::LV0;
+
+		
+
 		backpack->AttachToSocket(OwnerCharacter->GetMesh());
+
+		//backpack->Destroy();
 		return true;
 	}
 
@@ -92,10 +97,14 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 		}
 
 		CurBackPackLevel = PreBackPackLevel;
+
+		MyBackPack->DetachToSocket(this->OwnerCharacter);
+
 		MyBackPack = backpack;
 
 		//가방도 내 아이템 리스트에 포함하는 함수. 현재는 고려중.
 		//MyItem.Add(backpack);
+		//backpack->Destroy();
 		backpack->AttachToSocket(OwnerCharacter->GetMesh());
 
 		return true;
@@ -114,7 +123,9 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 			//현재 용량보다 다음 용량이 크다면 배낭을 변경.
 			MaxVolume = NextVolume;
 			CurBackPackLevel = PreBackPackLevel;
+			//MyBackPack->DetachToSocket(this->OwnerCharacter);
 			MyBackPack = backpack;
+			//backpack->Destroy();
 			backpack->AttachToSocket(OwnerCharacter->GetMesh());
 			return true;
 		}
@@ -133,7 +144,9 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 			GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Black, TheStr3);
 
 			//현재 용량과 다음 용량이 같으므로 가방의 변경이 가능.
+			//MyBackPack->DetachToSocket(this->OwnerCharacter);
 			MyBackPack = backpack;
+			//backpack->Destroy();
 			backpack->AttachToSocket(OwnerCharacter->GetMesh());
 			return true;
 		}
@@ -144,9 +157,10 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Black, TheStr4);
 		
 		UC_Util::Print((float)MaxVolume);
-
+		//MyBackPack->DetachToSocket(this->OwnerCharacter);
 		//현재 가방과 다음 가방의 레벨이 같으면 가방 변경 가능
 		MyBackPack = backpack;
+		//backpack->Destroy();
 		backpack->AttachToSocket(OwnerCharacter->GetMesh());
 		return true;
 	}
@@ -244,6 +258,8 @@ void UC_InvenComponent::DroppingItem(AC_Item* myitem)
 
 void UC_InvenComponent::RemoveBackPack()
 {
+	if (!MyBackPack)
+		return;
 	MaxVolume -= CheckBackPackVolume(MyBackPack->GetLevel());
 
 	MyBackPack = nullptr;

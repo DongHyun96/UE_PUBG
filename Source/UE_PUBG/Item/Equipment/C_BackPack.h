@@ -35,8 +35,16 @@ public:
 
 	void AttachToSocket(class USceneComponent* InParent);
 
+	void DetachToSocket(class AC_BasicCharacter* character);
 	uint8 GetLevel() { return Level; }
+
+	// Skeletal mesh for the backpack
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USkeletalMeshComponent* BackpackMesh;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	uint8 Level;
+
+private:
 };
