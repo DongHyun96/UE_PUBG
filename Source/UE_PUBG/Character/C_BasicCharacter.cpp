@@ -12,6 +12,8 @@
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 
+#include "Component/C_StatComponent.h"
+
 #include "Utility/C_Util.h"
 
 
@@ -28,7 +30,7 @@ AC_BasicCharacter::AC_BasicCharacter()
 	Inventory = CreateDefaultSubobject<UC_InvenComponent>("C_Inventory");
 	Inventory->SetOwnerCharacter(this);
 
-
+	StatComponent = CreateDefaultSubobject<UC_StatComponent>("StatComponent");
 }
 
 // Called when the game starts or when spawned

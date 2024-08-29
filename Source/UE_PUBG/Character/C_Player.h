@@ -303,4 +303,9 @@ protected: // Flash Bang 피격 Effect 관련
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_ScreenShotWidget* ScreenShotWidget{};
 
+protected:
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_HUDComponent* HUDComponent{};
+
 };

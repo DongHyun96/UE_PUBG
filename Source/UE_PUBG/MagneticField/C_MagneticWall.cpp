@@ -35,5 +35,12 @@ void AC_MagneticWall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UpdateMaterialVTiling();
+}
+
+void AC_MagneticWall::UpdateMaterialVTiling()
+{
+	if (UMaterialInstanceDynamic* MatInstance = PlaneMesh->CreateAndSetMaterialInstanceDynamic(0))
+		MatInstance->SetScalarParameterValue(FName("VTiling"), GetActorScale3D().Y);
 }
 

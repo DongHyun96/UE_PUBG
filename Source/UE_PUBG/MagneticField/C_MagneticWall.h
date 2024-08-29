@@ -23,10 +23,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-protected:
+	void UpdateMaterialVTiling();
 
-	//APlane* PlaneWall{};
-	FPlane Plane{};
+protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UStaticMeshComponent* PlaneMesh{};

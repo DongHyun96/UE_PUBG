@@ -310,6 +310,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_EquippedComponent* EquippedComponent{};
 
+	// Stat°ü·Ã Component (ex HP)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_StatComponent* StatComponent{};
+
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UC_InvenComponent* Inventory;
