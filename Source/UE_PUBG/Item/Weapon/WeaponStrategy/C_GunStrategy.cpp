@@ -10,6 +10,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Animation/AnimMontage.h"
 #include "Character/C_BasicCharacter.h"
+#include "Utility/C_Util.h"
+
 #include "Character/C_Player.h"
 
 
@@ -41,6 +43,9 @@ bool AC_GunStrategy::UseMlb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
 	MrbPressTimeCount = 0;
+	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
+
+	CurWeapon->SetAimingPress();
 
 
 
@@ -53,25 +58,25 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurDrawMontage().AnimMontage)) return false;
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurSheathMontage().AnimMontage)) return false;
-	if (CurWeapon->GetIsAimPress())
-	{
-		//FString TheFloatStr = "AimingOn";
-		//WeaponUser->bUseControllerRotationYaw = true;
-		//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
-		return false;
-	}
+	MrbPressTimeCount += WeaponUser->GetWorld()->GetDeltaSeconds();
+	//UC_Util::Print(MrbPressTimeCount);
+	//if (CurWeapon->GetIsAimPress())
+	//{
+	//	//FString TheFloatStr = "AimingOn";
+	//	//WeaponUser->bUseControllerRotationYaw = true;
+	//	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+	//	return false;
+	//}
 	if (bIsAimDownSight)
 	{
 		//WeaponUser->bUseControllerRotationYaw = true;
 
 	}
-	MrbPressTimeCount += WeaponUser->GetWorld()->GetDeltaSeconds();
 	//FString TheFloatStr = FString::SanitizeFloat(MrbPressTimeCount);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
-	if (MrbPressTimeCount >= 0.2 && !bIsAimDownSight)
+	if (MrbPressTimeCount >= 0.2)
 	{
-		CurWeapon->SetAimingPress();
-		
+		bIsAimDownSight = false;
 		return true;
 	}
 

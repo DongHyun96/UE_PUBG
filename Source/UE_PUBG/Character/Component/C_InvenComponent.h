@@ -64,7 +64,7 @@ public:
 	void RemoveBackPack();
 
 public://Getter and Seter
-	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; }
+	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; } 
 	//EBackPackLevel SetCurBackPackLevel(uint8 level) { CurBackPackLevel = (EBackPackLevel)level; }
 
 	uint32 GetMaxVolume() { return MaxVolume; }

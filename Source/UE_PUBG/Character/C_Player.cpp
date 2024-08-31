@@ -2,7 +2,7 @@
 
 
 #include "Character/C_Player.h"
-
+#include "Components/TimelineComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
@@ -34,6 +34,7 @@
 #include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Curves/CurveFloat.h"
 
 #include "Engine/PostProcessVolume.h"
 #include "Engine/TextureRenderTarget2D.h"
@@ -71,6 +72,8 @@ AC_Player::AC_Player()
 	//SceneCaptureComponent->bCaptureEveryFrame = false;
 
 	HUDComponent = CreateDefaultSubobject<UC_HUDComponent>("HUDComponent");
+	SetTimeLineComponentForMovingCamera();
+
 }
 
 void AC_Player::BeginPlay()
@@ -137,13 +140,13 @@ void AC_Player::BeginPlay()
 			// 예: PrimitiveComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 		}
 	}
-	
+
 }
 
 void AC_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	//UC_Util::Print(CurveFloatForSwitchCamera->GetFloatValue(GetWorld()->GetDeltaSeconds()));
 
 	HandleTurnInPlace();
 	HandleTurnInPlaceWhileAiming();
@@ -154,7 +157,7 @@ void AC_Player::Tick(float DeltaTime)
 	HandleFlashBangEffect(DeltaTime);
 
 	HandleAimPressCameraLocation();
-
+	//ClampControllerRotationPitchWhileAimDownSight();
 }
 
 void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -228,6 +231,19 @@ void AC_Player::Look(const FInputActionValue& Value)
 	{
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+		//TODO : Aim Down Sight 일 때 메쉬 숨기기
+		//if (PoseState == EPoseState::CRAWL)
+		//{
+		//if (GetControlRotation().Pitch >= 350.f && GetControlRotation().Pitch < 360.f)
+		//	{
+		//		GetMesh()->SetOwnerNoSee(true);
+		//		UC_Util::Print(float(GetControlRotation().Pitch));
+		//	}
+		//	else
+		//		GetMesh()->SetOwnerNoSee(false);
+
+
+		//}
 	}
 }
 
@@ -247,6 +263,7 @@ void AC_Player::Crouch()
 		PoseState = EPoseState::STAND;
 		return;
 	case EPoseState::CRAWL: // Crawl to crouch
+		ClampControllerRotationPitchWhileCrawl(PoseState);
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToCrouch, EPoseState::CROUCH);
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +67));
 
@@ -265,17 +282,23 @@ void AC_Player::Crawl()
 	switch (PoseState)
 	{
 	case EPoseState::STAND: // Stand to Crawl
+		ClampControllerRotationPitchWhileCrawl(PoseState);
+
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].StandToCrawl, EPoseState::CRAWL);
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -99));
 
 		return;
 	case EPoseState::CROUCH: // Crouch to Crawl
+		ClampControllerRotationPitchWhileCrawl(PoseState);
+
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -67));
 
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrouchToCrawl, EPoseState::CRAWL);
 
 		return;
 	case EPoseState::CRAWL: // Crawl to Stand
+		ClampControllerRotationPitchWhileCrawl(PoseState);
+
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +99));
 
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToStand, EPoseState::STAND);
@@ -295,12 +318,19 @@ void AC_Player::OnJump()
 
 	if (PoseState == EPoseState::CRAWL) // Crawl to crouch
 	{
+		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +67));
+
+		ClampControllerRotationPitchWhileCrawl(PoseState);
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToCrouch, EPoseState::CROUCH);
 		return;
 	}
 
 	if (PoseState == EPoseState::CROUCH) // Crouch to stand
 	{
+		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +32));
+
+		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +67));
+
 		PoseState = EPoseState::STAND;
 		return;
 	}
@@ -838,6 +868,49 @@ void AC_Player::HandlePlayerRotationWhileAiming()
 	//UC_Util::Print(float(GetActorRotation().Yaw));
 }
 
+void AC_Player::ClampControllerRotationPitchWhileCrawl(EPoseState InCurrentState)
+{
+	APlayerCameraManager* Camera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+
+	switch (InCurrentState)
+	{
+	case EPoseState::STAND:
+		Camera->ViewPitchMax = 30;
+		Camera->ViewPitchMin = -10;
+		break;
+	case EPoseState::CROUCH:
+		Camera->ViewPitchMax = 30;
+		Camera->ViewPitchMin = -10;
+		break;
+	case EPoseState::CRAWL:
+		Camera->ViewPitchMax = 90;
+		Camera->ViewPitchMin = -90;
+		break;
+	case EPoseState::POSE_MAX:
+		Camera->ViewPitchMax = 90;
+		Camera->ViewPitchMin = -90;
+		break;
+	default:
+		break;
+	}
+
+	//FRotator NewRotation = GetController()->GetControlRotation();
+	//if (PoseState == EPoseState::CRAWL)
+	//{
+	//	APlayerCameraManager* Camera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+	//	Camera->ViewPitchMax = 30;
+	//	Camera->ViewPitchMin = -10;
+
+	//	//AimCamera->GetCameraView();
+	//	if (NewRotation.Pitch > 180.f)
+	//		NewRotation.Pitch -= 360.0f;
+	//	NewRotation.Pitch = UKismetMathLibrary::FClamp(NewRotation.Pitch, -10, 30);
+	//	GetController()->SetControlRotation(NewRotation);
+	//}
+
+
+}
+
 void AC_Player::SetStrafeRotationToIdleStop()
 {
 	GetCharacterMovement()->bUseControllerDesiredRotation	= false;
@@ -1063,12 +1136,6 @@ void AC_Player::ExecuteFlashBangEffect(float Duration)
 }
 
 
-void AC_Player::SetToAimKeyPress()
-{
-	MainCamera->SetActive(false);
-	AimCamera->SetActive(true);
-	bIsAimDownSight = true;
-}
 
 void AC_Player::SetToAimDownSight()
 {
@@ -1080,7 +1147,123 @@ void AC_Player::SetToAimDownSight()
 
 void AC_Player::BackToMainCamera()
 {
-	AimCamera->SetActive(false);
-	MainCamera->SetActive(true);
-	bIsAimDownSight = false;
+	//AimCamera->SetActive(false);
+	//MainCamera->SetActive(true);
+	InitialCameraLocation = AimCamera->GetComponentLocation();
+	InitialCameraRotation = AimCamera->GetComponentRotation();
+
+	if (CameraTransitionTimeline)
+	{
+		bIsAimDownSight = false;
+
+		CameraTransitionTimeline->PlayFromStart();
+		//UC_Util::Print(CameraTransitionTimeline->IsPlaying());
+	}
+	//bIsAimDownSight = false;
+}
+
+void AC_Player::SetToAimKeyPress()
+{
+
+	InitialCameraLocation = MainCamera->GetComponentLocation();
+	InitialCameraRotation = MainCamera->GetComponentRotation();
+
+	// 타임라인 실행
+	if (CameraTransitionTimeline)
+	{
+		bIsAimDownSight = true;
+
+		CameraTransitionTimeline->PlayFromStart();
+		//UC_Util::Print(CameraTransitionTimeline->IsPlaying());
+	}
+	//CameraTransitionTimeline->Get
+	//AimCamera->SetActive(true);
+	//MainCamera->SetActive(false);
+	//bIsAimDownSight = true;
+}
+void AC_Player::HandleInterpolation(float Value)
+{
+	FVector  NewLocation;
+	FRotator NewRotation;
+	if (bIsAimDownSight)
+	{
+		NewLocation = FMath::Lerp(InitialCameraLocation, AimCamera->GetComponentLocation(), Value);
+		NewRotation = FMath::Lerp(InitialCameraRotation, AimCamera->GetComponentRotation(), Value);
+		MainCamera->SetWorldLocation(NewLocation);
+		MainCamera->SetWorldRotation(NewRotation);
+	}
+	else
+	{
+		NewLocation = FMath::Lerp(InitialCameraLocation, MainCamera->GetComponentLocation(), Value);
+		NewRotation = FMath::Lerp(InitialCameraRotation, MainCamera->GetComponentRotation(), Value);
+		AimCamera->SetWorldLocation(NewLocation);
+		AimCamera->SetWorldRotation(NewRotation);
+		UC_Util::Print(Value);
+	}
+}
+
+void AC_Player::OnTimelineFinished()
+{
+	UC_Util::Print("Finished");
+	if (bIsAimDownSight)
+	{
+		AimCamera->SetActive(true);
+		MainCamera->SetActive(false);
+	}
+	else
+	{
+		AimCamera->SetActive(false);
+		MainCamera->SetActive(true);
+	}
+	MainCamera->SetRelativeLocation(FVector(0));
+	MainCamera->SetRelativeRotation(FQuat(0));
+	AimCamera->SetRelativeLocation(FVector(0));
+	AimCamera->SetRelativeRotation(FQuat(0));
+	
+}
+
+void AC_Player::SetTimeLineComponentForMovingCamera()
+{
+	CameraTransitionTimeline = NewObject<UTimelineComponent>(this, FName("CameraTransitionTimeline"));
+	CameraTransitionTimeline->CreationMethod = EComponentCreationMethod::UserConstructionScript;
+	this->BlueprintCreatedComponents.Add(CameraTransitionTimeline);
+	CameraTransitionTimeline->SetNetAddressable();  // 리플리케이션 가능
+	//FName name = "CF_CameraMoving";
+	
+	//CurveFloatForSwitchCamera = CreateCurveFloatForSwitchCamera();
+	//CurveFloatForSwitchCameraChange = Cast<UCurveFloat>(GetWorld()->GetDefaultSubobjectByName(name));
+	CurveFloatForSwitchCameraChange = LoadObject<UCurveFloat>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/CameraMoving/CF_CameraMoving"));
+	// 타임라인 초기화
+	if (CameraTransitionTimeline && CurveFloatForSwitchCameraChange)
+	{
+		//CurveFloatForSwitchCamera->Get
+		UC_Util::Print("Success");
+		InterpFunction.BindUFunction(this, FName("HandleInterpolation"));
+		TimelineFinished.BindUFunction(this, FName("OnTimelineFinished"));
+		CameraTransitionTimeline->AddInterpFloat(CurveFloatForSwitchCameraChange, InterpFunction);
+		CameraTransitionTimeline->SetTimelineFinishedFunc(TimelineFinished);
+		CameraTransitionTimeline->SetPlayRate(1.0f);  // 재생 속도 설정
+		CameraTransitionTimeline->SetLooping(false);  // 반복하지 않도록 설정
+		CameraTransitionTimeline->SetTimelineLength(0.2f);
+		UC_Util::Print("Timeline Length: " + FString::SanitizeFloat(CameraTransitionTimeline->GetTimelineLength()));
+	
+	}
+
+}
+
+UCurveFloat* AC_Player::CreateCurveFloatForSwitchCamera()
+{
+	UCurveFloat* NewCurve = NewObject<UCurveFloat>();
+
+	// 커브의 KeyFrame을 설정합니다.
+	if (NewCurve)
+	{
+		FRichCurve& Curve = NewCurve->FloatCurve;
+
+		// 커브의 키프레임 추가 (예: 0초에 0, 1초에 1)
+		Curve.AddKey(0.0f, 0.0f);
+		Curve.AddKey(0.2f, 1.0f);
+	}
+
+	return NewCurve;
 }

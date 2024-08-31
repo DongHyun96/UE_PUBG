@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 //#include "GameFramework/Character.h"
+#include "Components/TimelineComponent.h"
 #include "Character/C_BasicCharacter.h"
 #include "C_Player.generated.h"
 
@@ -147,6 +148,8 @@ protected:
 	void HandleTurnInPlaceWhileAiming();
 
 	void HandlePlayerRotationWhileAiming();
+
+	void ClampControllerRotationPitchWhileCrawl(EPoseState InCurrentState);
 	
 	/// <summary>
 	/// Turn in place가 끝났을 시 anim notify에 의해 호출, 멈춰 있을 때의 Rotation 세팅 값들로 돌아가기
@@ -222,8 +225,30 @@ public:
 	/// </summary>
 	void SetToAimKeyPress();
 	void SetToAimDownSight();
-	void BackToMainCamera();
 
+	void BackToMainCamera();
+	UPROPERTY()
+	class UTimelineComponent* CameraTransitionTimeline;
+
+	//TimeLine 진행중일 때 호출 되는 함수포인터
+	FOnTimelineFloat InterpFunction{};
+	//TimeLine 이 끝나면 호출 되는 함수포인터
+	FOnTimelineEvent TimelineFinished{};
+	UFUNCTION(CallInEditor)
+	void HandleInterpolation(float Value);
+
+	UFUNCTION()
+	void OnTimelineFinished();
+
+	FVector InitialCameraLocation;
+	FRotator InitialCameraRotation;
+
+	void SetTimeLineComponentForMovingCamera();
+
+	class UCurveFloat* CreateCurveFloatForSwitchCamera();
+
+	UPROPERTY(EditDefaultsOnly)
+	UCurveFloat* CurveFloatForSwitchCameraChange{};
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly) 
@@ -307,5 +332,8 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_HUDComponent* HUDComponent{};
+
+
+
 
 };

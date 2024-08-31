@@ -153,7 +153,9 @@ bool AC_Gun::SetAimingDown()
 //견착 조준만할 때 Player AimKePress함수로 메인카메라에서 에임 카메라로 바꿔주기
 bool AC_Gun::SetAimingPress()
 {
-	Cast<AC_Player>(OwnerCharacter)->SetToAimKeyPress();
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	if (OwnerPlayer->GetIsAimDown()) return false;
+	OwnerPlayer->SetToAimKeyPress();
 	bIsAimPress = true;
 	//OwnerCharacter->bUseControllerRotationYaw = true;
 

@@ -52,11 +52,18 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		RifleLeftHandSocket = CurrentWeapon->GetLeftHandSocketTransform();
 		UAnimMontage* RifleSheathMontage = CurrentWeapon->GetSheathMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentWeapon->GetCurrentWeaponState()].AnimMontage;
-		
-		bCharacterIsSheathing = OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(RifleSheathMontage);
+		if (IsValid(RifleSheathMontage))
+		{
+			bCharacterIsSheathing = OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(RifleSheathMontage);
+		}
+		else
+			bCharacterIsSheathing = false;
 	}
 	else
+	{
 		bCharacterIsSheathing = true;
+		//UC_Util::Print("Sheating!");
+	}
 	ControlHeadRotation();
 	SetAimOfssetRotation();
 	SetAimingTurnInPlaceRotation();
