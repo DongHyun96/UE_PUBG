@@ -264,7 +264,7 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 		SetPhysicsAssetColliderEnabled(Character, ColliderBoneName, false);
 	}
 
-	//UC_Util::Print("Total Damage : " + FString::SanitizeFloat(TotalDamage), FColor::Red, 5.f);
+	UC_Util::Print("Total Damage : " + FString::SanitizeFloat(TotalDamage), FColor::Red, 5.f);
 	//UC_Util::Print("Total Damage part count : " + FString::FromInt(HitCount), FColor::Red, 5.f);
 
 	return Hitted;

@@ -226,6 +226,61 @@ public:
 
 protected:
 
+	// 블루프린트 쪽에서 사용할 Function, HP Bar 업데이트를 시켜야 할 때 호출
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateHPOnHUD();
+
+protected:
+
+	/// <summary>
+	/// UGameplayStatics::ApplyDamage를 통해 Damage를 받는 함수
+	/// </summary>
+	/// <param name="DamageAmount"> : Damage 양 </param>
+	/// <param name="DamageEvent"></param>
+	/// <param name="EventInstigator"></param>
+	/// <param name="DamageCauser"></param>
+	/// <returns> : The amount of damage actually applied. </returns>
+	float TakeDamage
+	(
+		float				DamageAmount,
+		FDamageEvent const& DamageEvent,
+		AController*		EventInstigator,
+		AActor*				DamageCauser
+	) override;
+
+public:
+
+	/// <summary>
+	/// <para> 자체로 만든 TakeDamage 함수, 부위별 Damage를 줄 때 사용 </para>
+	/// <para> 주의 : 이 함수는 Armor가 적용된 부위의 데미지 감소만 구현, 실질적인 부위별 Damage량은 외부호출에서 처리 </para>
+	/// </summary>
+	/// <param name="DamageAmount">		: Damage 양 </param>
+	/// <param name="DamagingPartType"> : Damage를 줄 부위 </param>
+	/// <param name="DamageCauser">		: Damage를 주는 Actor </param>
+	/// <returns> : The amount of damage actually applied. </returns>
+	float TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser) override;
+
+	float TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser) override;
+
+protected:
+
+	/// <summary>
+	/// 힐 적용
+	/// </summary>
+	/// <param name="HealAmount"> : 더할 힐량 </param>
+	/// <returns> 적용된 힐량 </returns>
+	float ApplyHeal(float HealAmount) override;
+
+public:
+
+	/// <summary>
+	/// CurHP 바로 적용 시키기, 의료용 키트 같은 것 사용할 때 사용 예정
+	/// </summary>
+	/// <param name="InCurHP"> : Setting할 CurHP 양 </param>
+	void SetCurHP(float InCurHP) override;
+
+protected:
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly) 
 	class UC_InputComponent* MyInputComponent{};
 
@@ -307,5 +362,17 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_HUDComponent* HUDComponent{};
+
+protected:
+	// Consumable Item Testing
+	// TODO : 지우기
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class AC_ConsumableItem* ConsumableItem{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TSubclassOf<class AC_ConsumableItem> ConsumableItemClass{};
+
+private:
+	void SpawnConsumableItemForTesting();
 
 };

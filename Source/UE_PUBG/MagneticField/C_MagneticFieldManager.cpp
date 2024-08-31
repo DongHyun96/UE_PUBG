@@ -24,7 +24,7 @@ void AC_MagneticFieldManager::Tick(float DeltaTime)
 
 	Timer += DeltaTime;
 
-	UC_Util::Print(CurrentPhase);
+	//UC_Util::Print(CurrentPhase);
 
 	HandleUpdateState(DeltaTime);
 }
@@ -119,7 +119,7 @@ void AC_MagneticFieldManager::UpdateWalls(const FVector& MidLocation, const floa
 	WallWidth *= 0.01f; // 기본 단위가 1m로 맞춰져 있음
 
 	MagneticWalls[0]->SetActorScale3D(FVector(100.f, WallWidth, 1.f));
-	//MagneticWalls[0]->UpdateMaterialVTiling();
+	MagneticWalls[0]->UpdateMaterialVTiling();
 
 	for (int i = 1; i < SLICE_COUNT; i++)
 	{
@@ -134,7 +134,7 @@ void AC_MagneticFieldManager::UpdateWalls(const FVector& MidLocation, const floa
 		FVector CurrentPos = FVector(MidLocation.X + XPos, MidLocation.Y + YPos, MidLocation.Z);
 
 		MagneticWalls[i]->SetActorLocation(CurrentPos);
-		//MagneticWalls[i]->UpdateMaterialVTiling();
+		MagneticWalls[i]->UpdateMaterialVTiling();
 	}
 }
 

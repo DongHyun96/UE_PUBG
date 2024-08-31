@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Component/C_InvenComponent.h"
+
+#include "Component/C_StatComponent.h"
+
 #include "C_BasicCharacter.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FDele_PoseTransitionFin);
@@ -161,8 +164,8 @@ protected:
 	(
 		float				DamageAmount,
 		FDamageEvent const& DamageEvent,
-		AController* EventInstigator,
-		AActor* DamageCauser
+		AController*		EventInstigator,
+		AActor*				DamageCauser
 	) override;
 
 public:
@@ -178,6 +181,23 @@ public:
 	virtual float TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser);
 
 	virtual float TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser);
+
+public:
+
+	/// <summary>
+	/// 힐 적용
+	/// </summary>
+	/// <param name="HealAmount"> : 더할 힐량 </param>
+	/// <returns> 적용된 힐량 </returns>
+	virtual float ApplyHeal(float HealAmount);
+
+public:
+
+	/// <summary>
+	/// CurHP 바로 적용 시키기, 의료용 키트 같은 것 사용할 때 사용 예정
+	/// </summary>
+	/// <param name="InCurHP"> : Setting할 CurHP 양 </param>
+	virtual void SetCurHP(float InCurHP);
 
 protected:
 
@@ -214,6 +234,8 @@ public: // Getters and setters
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
 
 	bool GetIsPoseTransitioning() const { return bIsPoseTransitioning; }
+
+	UC_StatComponent* GetStatComponent() const { return StatComponent; }
 
 public:
 
@@ -305,6 +327,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsJumping = false;
+
 protected:
 	// 장착된 무기 및 장구류 component
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

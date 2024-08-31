@@ -34,8 +34,6 @@ void AC_MagneticWall::BeginPlay()
 void AC_MagneticWall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	UpdateMaterialVTiling();
 }
 
 void AC_MagneticWall::UpdateMaterialVTiling()

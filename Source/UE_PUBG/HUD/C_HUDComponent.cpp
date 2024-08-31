@@ -3,7 +3,8 @@
 
 #include "HUD/C_HUDComponent.h"
 
-#include "Components/WidgetComponent.h"
+//#include "Components/WidgetComponent.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values for this component's properties
 UC_HUDComponent::UC_HUDComponent()
