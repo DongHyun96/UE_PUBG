@@ -48,10 +48,12 @@
 
 #include "HUD/C_HUDComponent.h"
 
+#include "Item/ConsumableItem/Healing/C_FirstAidKit.h"
+
 AC_Player::AC_Player()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	MyInputComponent = CreateDefaultSubobject<UC_InputComponent>("MyInputComponent");
 
 	InitTurnAnimMontageMap();
@@ -72,7 +74,9 @@ AC_Player::AC_Player()
 	//SceneCaptureComponent->bCaptureEveryFrame = false;
 
 	HUDComponent = CreateDefaultSubobject<UC_HUDComponent>("HUDComponent");
+
 	SetTimeLineComponentForMovingCamera();
+
 
 }
 
@@ -140,6 +144,9 @@ void AC_Player::BeginPlay()
 			// 예: PrimitiveComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 		}
 	}
+
+	SpawnConsumableItemForTesting();
+
 
 }
 
@@ -463,11 +470,17 @@ void AC_Player::OnNum5()
 
 void AC_Player::OnXKey()
 {
+	// Testing 용 Damage 주기 TODO : 이 라인 지우기
+	//TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor * DamageCauser);
+	TakeDamage(15.f, EDamagingPartType::HEAD, this);
 	EquippedComponent->ToggleArmed();
 }
 
 void AC_Player::OnBKey()
 {
+	// Testing 용 Heal 주기 TODO : 이 라인 지우기
+	ConsumableItem->StartUsingConsumableItem(this);
+
 	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
 	EquippedComponent->GetCurWeapon()->ExecuteBKey();
 }
@@ -1266,4 +1279,54 @@ UCurveFloat* AC_Player::CreateCurveFloatForSwitchCamera()
 	}
 
 	return NewCurve;
+}
+
+float AC_Player::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float Result = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	UpdateHPOnHUD();
+
+	return Result;
+}
+
+float AC_Player::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser)
+{
+	float Result = Super::TakeDamage(DamageAmount, DamagingPartType, DamageCauser);
+
+	UpdateHPOnHUD();
+
+	return Result;
+}
+
+float AC_Player::TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser)
+{
+	float Result = Super::TakeDamage(DamageAmount, DamagingPhyiscsAssetBoneName, DamageCauser);
+
+	UpdateHPOnHUD();
+
+	return Result;
+
+}
+
+float AC_Player::ApplyHeal(float HealAmount)
+{
+	float Result = Super::ApplyHeal(HealAmount);
+
+	UpdateHPOnHUD();
+
+	return Result;
+}
+
+void AC_Player::SetCurHP(float InCurHP)
+{
+	Super::SetCurHP(InCurHP);
+	UpdateHPOnHUD();
+}
+
+void AC_Player::SpawnConsumableItemForTesting()
+{
+	FActorSpawnParameters Param{};
+	Param.Owner = this;
+	ConsumableItem = GetWorld()->SpawnActor<AC_FirstAidKit>(ConsumableItemClass, Param);
 }

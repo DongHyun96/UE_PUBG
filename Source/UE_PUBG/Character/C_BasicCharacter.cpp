@@ -114,7 +114,9 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 
 	UC_Util::Print(Str, FColor::Cyan, 3.f);
 
-	return 0.0f;
+	StatComponent->TakeDamage(DamageAmount);
+
+	return DamageAmount;
 }
 
 float AC_BasicCharacter::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser)
@@ -125,7 +127,8 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, EDamagingPartType Damagi
 	// TODO : Armor 확인해서 Armor 부분이라면 Damage 감소 적용
 	// TODO : Armor 또한 피 깎기
 
-	// TODO : 실질적인 피해량 return 시키기
+	StatComponent->TakeDamage(DamageAmount);
+
 	return DamageAmount;
 }
 
@@ -139,7 +142,20 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FName DamagingPhyiscsAss
 
 	//UC_Util::Print(DamagingPhyiscsAssetBoneName.ToString() + " Parts damaged! Amount : " + FString::SanitizeFloat(DamageAmount));
 
-	return TakeDamage(DamageAmount, DAMAGINGPARTS_MAP[DamagingPhyiscsAssetBoneName], DamageCauser);
+	StatComponent->TakeDamage(DamageAmount);
+
+	return DamageAmount;
+}
+
+float AC_BasicCharacter::ApplyHeal(float HealAmount)
+{
+	StatComponent->ApplyHeal(HealAmount);
+	return HealAmount;
+}
+
+void AC_BasicCharacter::SetCurHP(float InCurHP)
+{
+	StatComponent->SetCurHP(InCurHP);
 }
 
 void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
