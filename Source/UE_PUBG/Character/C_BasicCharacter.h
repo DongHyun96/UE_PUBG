@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Component/C_InvenComponent.h"
+
+#include "Component/C_StatComponent.h"
+
 #include "C_BasicCharacter.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FDele_PoseTransitionFin);
@@ -178,6 +182,32 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser);
 
+public:
+
+	/// <summary>
+	/// 힐 적용
+	/// </summary>
+	/// <param name="HealAmount"> : 더할 힐량 </param>
+	/// <returns> 적용된 힐량 </returns>
+	virtual float ApplyHeal(float HealAmount);
+
+public:
+
+	/// <summary>
+	/// CurHP 바로 적용 시키기, 의료용 키트 같은 것 사용할 때 사용 예정
+	/// </summary>
+	/// <param name="InCurHP"> : Setting할 CurHP 양 </param>
+	virtual void SetCurHP(float InCurHP);
+
+protected:
+
+	/// <summary>
+	/// Pose와 캐릭터 이동방향에 따른 MaxWalkSpeed 조정
+	/// </summary>
+	/// <param name="MovementVector"> : Input action movement vector </param>
+	void UpdateMaxWalkSpeed(const FVector2D& MovementVector);
+
+
 public: // Getters and setters
 
 	EHandState GetHandState() const { return HandState; }
@@ -192,23 +222,25 @@ public: // Getters and setters
 	//class UC_InvenComponent* GetInvenComponent() const { return BPC_InvenSystemInstance; }
 	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
 
-	bool GetCanMove() const {return bCanMove;}
+	bool GetCanMove() const { return bCanMove; }
 	bool GetIsAimDown() { return bIsAimDownSight; }
 
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 
 	//class UC_InvenComponent* GetInvenComponent() { return BPC_InvenSystemInstance; }
 	
-	class UC_InvenComponent* GetInvenComponent() { return BPC_InvenSystemInstance; }
+	class UC_InvenComponent* GetInvenComponent() { return Inventory; }
 
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
 
 	bool GetIsPoseTransitioning() const { return bIsPoseTransitioning; }
 
+	UC_StatComponent* GetStatComponent() const { return StatComponent; }
+
 public:
 
 	/// <summary>
-	/// Pose Transition montage가 진행 중인 중간에 Callback되는 함수
+	/// Pose Transition montage가 진행 중인 중간에 Call	되는 함수
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnPoseTransitionGoing();
@@ -227,8 +259,8 @@ protected:
 	/// <param name="CurrentPoseState"> : 현재 자세 </param>
 	/// <param name="InNextPoseState"> : 다음 자세 </param>
 	/// <returns> Pose transition action이 제대로 실행되었다면 return true </returns>
-	
-	
+
+
 	/// <summary>
 	/// Pose Transition 모션 실행하기
 	/// </summary>
@@ -248,7 +280,7 @@ protected:
 	EPoseState PoseState{};
 
 protected: // 자세 변환 Transition 관련
-	
+
 	// 자세 전환을 할 시에, 다음으로 전환될 Pose State
 	UPROPERTY(BlueprintReadOnly)
 	EPoseState NextPoseState{};
@@ -260,6 +292,11 @@ protected: // 자세 변환 Transition 관련
 	// 현재 Pose Transition 모션이 진행중인지
 	bool bIsPoseTransitioning{};
 
+protected: // Sprint walk state
+
+	bool bIsWalking{};
+	bool bIsSprinting{};
+
 public:
 	// OnTransitionFinish에서 호출될 Multicast Delegate
 	FDele_PoseTransitionFin Delegate_OnPoseTransitionFin;
@@ -268,6 +305,9 @@ protected: // Camera
 
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	class UCameraComponent* MainCamera{};
+
+	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+	class USpringArmComponent* C_MainSpringArm{};
 
 protected:
 
@@ -279,6 +319,7 @@ protected:
 	bool bIsAltPressed = false;
 
 	bool bIsAimDownSight = false;
+	bool bIsAimingRifle = false;
 	FRotator CharacterMovingDirection;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -286,17 +327,23 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsJumping = false;
+
 protected:
 	// 장착된 무기 및 장구류 component
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_EquippedComponent* EquippedComponent{};
 
+	// Stat관련 Component (ex HP)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_StatComponent* StatComponent{};
+
 public:
-	UPROPERTY(BlueprintReadonly, Category = "InvenSystem", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UC_InvenComponent> BPC_InvenSystem;
-	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UC_InvenComponent* BPC_InvenSystemInstance;
+	UC_InvenComponent* Inventory;
+	
+	//UClass* InvenSystemClass;
+
+	//UC_InvenComponent* Inventory;
 
 
 protected: // PriorityAnimMontage 관련

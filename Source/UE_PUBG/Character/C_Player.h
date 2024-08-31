@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 //#include "GameFramework/Character.h"
+#include "Components/TimelineComponent.h"
 #include "Character/C_BasicCharacter.h"
 #include "C_Player.generated.h"
 
@@ -53,9 +54,6 @@ public: // Input mapped actions
 	void MoveEnd(const struct FInputActionValue& Value);
 
 	void Look(const struct FInputActionValue& Value);
-	void Walk(const struct FInputActionValue& Value);
-	void Sprint();
-
 
 	void Crouch();
 	void Crawl();
@@ -85,6 +83,12 @@ public: // Input mapped actions
 	void OnMRBStarted();
 	void OnMRBOnGoing();
 	void OnMRBCompleted();
+
+	void OnSprintStarted();
+	void OnSprintReleased();
+
+	void OnWalkStarted();
+	void OnWalkReleased();
 
 	//상호작용(F)
 	//오브젝트의 묶음별로 만들어야 할 수도?
@@ -137,12 +141,26 @@ protected:
 	/// <para> 바라보는 방향의 각이 90도 이상이면, Turn In place로 캐릭터 조정 </para>
 	/// </summary>
 	void HandleTurnInPlace();
+
+	/// <summary>
+	/// <para> 캐릭터가 Aiming 중일 때,컨트롤러(카메라)방향 대로 Turn In place로 캐릭터 조정</para>
+	/// </summary>
+	void HandleTurnInPlaceWhileAiming();
+
+	void HandlePlayerRotationWhileAiming();
+
+	void ClampControllerRotationPitchWhileCrawl(EPoseState InCurrentState);
 	
 	/// <summary>
 	/// Turn in place가 끝났을 시 anim notify에 의해 호출, 멈춰 있을 때의 Rotation 세팅 값들로 돌아가기
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void SetStrafeRotationToIdleStop();
+
+protected:
+	float AimingTurnInPlaceTimeCount = 0.0f;
+	float SavedYaw = 0.0f;
+	float DeltaYaw = 0.0f;
 
 private:
 
@@ -207,7 +225,85 @@ public:
 	/// </summary>
 	void SetToAimKeyPress();
 	void SetToAimDownSight();
+
 	void BackToMainCamera();
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UTimelineComponent* CameraTransitionTimeline;
+
+	//TimeLine 진행중일 때 호출 되는 함수포인터
+	FOnTimelineFloat InterpFunction{};
+	//TimeLine 이 끝나면 호출 되는 함수포인터
+	FOnTimelineEvent TimelineFinished{};
+	UFUNCTION(CallInEditor)
+	void HandleInterpolation(float Value);
+
+	UFUNCTION()
+	void OnTimelineFinished();
+
+	FVector InitialCameraLocation;
+	FRotator InitialCameraRotation;
+
+	void SetTimeLineComponentForMovingCamera();
+
+	class UCurveFloat* CreateCurveFloatForSwitchCamera();
+
+	UPROPERTY(EditDefaultsOnly)
+	UCurveFloat* CurveFloatForSwitchCameraChange{};
+protected:
+
+	// 블루프린트 쪽에서 사용할 Function, HP Bar 업데이트를 시켜야 할 때 호출
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateHPOnHUD();
+
+protected:
+
+	/// <summary>
+	/// UGameplayStatics::ApplyDamage를 통해 Damage를 받는 함수
+	/// </summary>
+	/// <param name="DamageAmount"> : Damage 양 </param>
+	/// <param name="DamageEvent"></param>
+	/// <param name="EventInstigator"></param>
+	/// <param name="DamageCauser"></param>
+	/// <returns> : The amount of damage actually applied. </returns>
+	float TakeDamage
+	(
+		float				DamageAmount,
+		FDamageEvent const& DamageEvent,
+		AController*		EventInstigator,
+		AActor*				DamageCauser
+	) override;
+
+public:
+
+	/// <summary>
+	/// <para> 자체로 만든 TakeDamage 함수, 부위별 Damage를 줄 때 사용 </para>
+	/// <para> 주의 : 이 함수는 Armor가 적용된 부위의 데미지 감소만 구현, 실질적인 부위별 Damage량은 외부호출에서 처리 </para>
+	/// </summary>
+	/// <param name="DamageAmount">		: Damage 양 </param>
+	/// <param name="DamagingPartType"> : Damage를 줄 부위 </param>
+	/// <param name="DamageCauser">		: Damage를 주는 Actor </param>
+	/// <returns> : The amount of damage actually applied. </returns>
+	float TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser) override;
+
+	float TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser) override;
+
+protected:
+
+	/// <summary>
+	/// 힐 적용
+	/// </summary>
+	/// <param name="HealAmount"> : 더할 힐량 </param>
+	/// <returns> 적용된 힐량 </returns>
+	float ApplyHeal(float HealAmount) override;
+
+public:
+
+	/// <summary>
+	/// CurHP 바로 적용 시키기, 의료용 키트 같은 것 사용할 때 사용 예정
+	/// </summary>
+	/// <param name="InCurHP"> : Setting할 CurHP 양 </param>
+	void SetCurHP(float InCurHP) override;
 
 protected:
 
@@ -287,5 +383,23 @@ protected: // Flash Bang 피격 Effect 관련
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_ScreenShotWidget* ScreenShotWidget{};
+
+protected:
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_HUDComponent* HUDComponent{};
+
+
+protected:
+	// Consumable Item Testing
+	// TODO : 지우기
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class AC_ConsumableItem* ConsumableItem{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TSubclassOf<class AC_ConsumableItem> ConsumableItemClass{};
+
+private:
+	void SpawnConsumableItemForTesting();
 
 };

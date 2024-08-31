@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Item/Equipment/C_EquipableItem.h"
+#include "GameFramework/Actor.h"
 #include "C_BackPack.generated.h"
 
 /**
@@ -32,8 +33,18 @@ public:
 
 	virtual void Interaction(class AC_BasicCharacter* character) override;
 
+	void AttachToSocket(class USceneComponent* InParent);
+
+	void DetachToSocket(class AC_BasicCharacter* character);
 	uint8 GetLevel() { return Level; }
+
+	// Skeletal mesh for the backpack
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USkeletalMeshComponent* BackpackMesh;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	uint8 Level;
+
+private:
 };

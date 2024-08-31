@@ -168,7 +168,7 @@ void UC_EquippedComponent::OnDrawEnd()
 {
 	if (NextWeaponType == EWeaponSlot::NONE) return;
 
-	UC_Util::Print("OnDrawEnd");
+	UC_Util::Print("OnDrawEnd", FColor::Cyan, 5.f);
 
 	Weapons[NextWeaponType]->AttachToHand(OwnerCharacter->GetMesh());
 	CurWeaponType = NextWeaponType;

@@ -57,22 +57,31 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FRotator CAimOffsetRotation = FRotator(0);
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FRotator CCurrentAimOffsetRotation = FRotator(0);
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FQuat CHeadLookAtRotation = FQuat(0);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FQuat CHeadLookAtRotation= FQuat(0);
+	FTransform RifleLeftHandSocket{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanCharacterMove = true;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bCharacterIsSheathing = false;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsHoldDirection = false;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsAimingRifle = false;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EHandState HandState{};
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPoseState PoseState{};
+
+
 	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
 	void AnimNotify_OnStartTransition_Stand_To_Falling();
 
@@ -91,4 +100,16 @@ protected:
 	void RilfeLeftHandIK();
 
 	void SetAimOfssetRotation();
+
+	void SetAimingTurnInPlaceRotation();
+
+
+protected:
+	float AimingTurnInPlaceTimeCount = 0.0f;
+	float SavedYaw = 0.0f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float DeltaYaw = 0.0f;
+
+	float AimOffsetLerpDelayTime = 0.0f;
 };
