@@ -131,19 +131,19 @@ void AC_Player::BeginPlay()
 
 
 
-	for (UActorComponent* Component : GetComponents())
-	{
-		UPrimitiveComponent* PrimitiveComp = Cast<UPrimitiveComponent>(Component);
-		if (PrimitiveComp)
-		{
-			if (IsValid(C_MainSpringArm))
-				PrimitiveComp->SetCollisionResponseToChannel(C_MainSpringArm->ProbeChannel, ECR_Ignore);
-			// Spring Arm의 ProbeChannel에 대한 충돌을 무시하도록 설정합니다.
+	//for (UActorComponent* Component : GetComponents())
+	//{
+	//	UPrimitiveComponent* PrimitiveComp = Cast<UPrimitiveComponent>(Component);
+	//	if (PrimitiveComp)
+	//	{
+	//		if (IsValid(C_MainSpringArm))
+	//			PrimitiveComp->SetCollisionResponseToChannel(C_MainSpringArm->ProbeChannel, ECR_Ignore);
+	//		// Spring Arm의 ProbeChannel에 대한 충돌을 무시하도록 설정합니다.
 
-			// 필요에 따라 다른 채널도 무시하도록 설정할 수 있습니다.
-			// 예: PrimitiveComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
-		}
-	}
+	//		// 필요에 따라 다른 채널도 무시하도록 설정할 수 있습니다.
+	//		// 예: PrimitiveComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+	//	}
+	//}
 
 	SpawnConsumableItemForTesting();
 
@@ -1187,7 +1187,7 @@ void AC_Player::SetToAimKeyPress()
 		bIsAimDownSight = true;
 
 		CameraTransitionTimeline->PlayFromStart();
-		//UC_Util::Print(CameraTransitionTimeline->IsPlaying());
+		UC_Util::Print(CameraTransitionTimeline->IsPlaying());
 	}
 	//CameraTransitionTimeline->Get
 	//AimCamera->SetActive(true);
@@ -1237,9 +1237,9 @@ void AC_Player::OnTimelineFinished()
 
 void AC_Player::SetTimeLineComponentForMovingCamera()
 {
-	CameraTransitionTimeline = NewObject<UTimelineComponent>(this, FName("CameraTransitionTimeline"));
-	CameraTransitionTimeline->CreationMethod = EComponentCreationMethod::UserConstructionScript;
-	this->BlueprintCreatedComponents.Add(CameraTransitionTimeline);
+	CameraTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(FName("CameraTransitionTimeline"));
+	//CameraTransitionTimeline->CreationMethod = EComponentCreationMethod::UserConstructionScript;
+	//this->BlueprintCreatedComponents.Add(CameraTransitionTimeline);
 	CameraTransitionTimeline->SetNetAddressable();  // 리플리케이션 가능
 	//FName name = "CF_CameraMoving";
 	
@@ -1250,7 +1250,7 @@ void AC_Player::SetTimeLineComponentForMovingCamera()
 	if (CameraTransitionTimeline && CurveFloatForSwitchCameraChange)
 	{
 		//CurveFloatForSwitchCamera->Get
-		UC_Util::Print("Success");
+		//UC_Util::Print("Success");
 		InterpFunction.BindUFunction(this, FName("HandleInterpolation"));
 		TimelineFinished.BindUFunction(this, FName("OnTimelineFinished"));
 		CameraTransitionTimeline->AddInterpFloat(CurveFloatForSwitchCameraChange, InterpFunction);
@@ -1258,7 +1258,7 @@ void AC_Player::SetTimeLineComponentForMovingCamera()
 		CameraTransitionTimeline->SetPlayRate(1.0f);  // 재생 속도 설정
 		CameraTransitionTimeline->SetLooping(false);  // 반복하지 않도록 설정
 		CameraTransitionTimeline->SetTimelineLength(0.2f);
-		UC_Util::Print("Timeline Length: " + FString::SanitizeFloat(CameraTransitionTimeline->GetTimelineLength()));
+		//UC_Util::Print("Timeline Length: " + FString::SanitizeFloat(CameraTransitionTimeline->GetTimelineLength()));
 	
 	}
 
