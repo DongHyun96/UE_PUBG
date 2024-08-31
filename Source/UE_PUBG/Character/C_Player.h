@@ -227,7 +227,8 @@ public:
 	void SetToAimDownSight();
 
 	void BackToMainCamera();
-	UPROPERTY()
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UTimelineComponent* CameraTransitionTimeline;
 
 	//TimeLine 진행중일 때 호출 되는 함수포인터
