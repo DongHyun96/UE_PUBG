@@ -479,7 +479,7 @@ void AC_Player::OnXKey()
 void AC_Player::OnBKey()
 {
 	// Testing 용 Heal 주기 TODO : 이 라인 지우기
-	ConsumableItem->StartUsingConsumableItem(this);
+	if (IsValid(ConsumableItem)) ConsumableItem->StartUsingConsumableItem(this);
 
 	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
 	EquippedComponent->GetCurWeapon()->ExecuteBKey();
