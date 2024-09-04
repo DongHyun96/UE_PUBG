@@ -63,6 +63,7 @@ AC_Player::AC_Player()
 	DetectionSphere->InitSphereRadius(100.0f); // 탐지 반경 설정
 	DetectionSphere->SetupAttachment(RootComponent);
 
+	//DetectionSphere->SetGenerateOverlapEvents(true);
 	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &AC_Player::OnOverlapBegin);
 	DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &AC_Player::OnOverlapEnd);
 	AimSpringArmTemp = CreateDefaultSubobject<USpringArmComponent>("AimSpringArm");

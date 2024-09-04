@@ -33,14 +33,23 @@ public:
 
 	virtual void Interaction(class AC_BasicCharacter* character) override;
 
-	void AttachToSocket(class USceneComponent* InParent);
+	void AttachToSocket(class AC_BasicCharacter* InParent);
 
+	/// <summary>
+	/// 장착중인 가방을 내려놓음.
+	/// 내려 놓는 위치는 발정도.
+	/// </summary>
+	/// <param name="character"></param>
+	UFUNCTION(BlueprintCallable)
 	void DetachToSocket(class AC_BasicCharacter* character);
+
 	uint8 GetLevel() { return Level; }
 
 	// Skeletal mesh for the backpack
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* BackpackMesh;
+
+	
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

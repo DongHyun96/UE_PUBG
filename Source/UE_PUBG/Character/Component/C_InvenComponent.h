@@ -49,7 +49,8 @@ public:
 	//uint16은 해당 매크로가 지원하지 않는다. uint8, uint32는 지원한다.
 	bool CheckVolume(uint16 volume);
 
-	bool ChackMyBackPack(class AC_BackPack* backpack);
+	UFUNCTION(BlueprintCallable)
+	bool CheckMyBackPack(class AC_BackPack* backpack);
 
 	//UFUNCTION(BlueprintCallable)
 	void Interaction(class AC_Item* wilditem);
@@ -62,6 +63,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveBackPack();
+
+	UFUNCTION(BlueprintCallable)
+	void EquippedBackPack(AC_BackPack* backpack);
 
 public://Getter and Seter
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; } 
@@ -102,10 +106,10 @@ protected:
 	TArray<AC_Item*> NearItems;
 protected:
 	
-private:
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_BackPack* MyBackPack {};
 
+private:
 
 	
 };

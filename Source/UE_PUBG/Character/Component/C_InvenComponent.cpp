@@ -65,7 +65,7 @@ bool UC_InvenComponent::CheckVolume(uint16 volume)
 /// backpack이 nullptr일 때(가방을 버리고자 할 때) CurBackPacklevel을 0으로 만든다.
 /// bool 반환함수로 만들어서 가방을 바꿀 수 있을때 true를 아니라면 false를 반환하도록 하도록 하였음.
 /// </summary>
-bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
+bool UC_InvenComponent::CheckMyBackPack(AC_BackPack* backpack)
 {
 	//
 	//backpack->Destroy
@@ -75,8 +75,8 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 
 		
 
-		backpack->AttachToSocket(OwnerCharacter->GetMesh());
-
+		//backpack->AttachToSocket(OwnerCharacter);
+		EquippedBackPack(backpack);
 		//backpack->Destroy();
 		return true;
 	}
@@ -105,8 +105,8 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 		//가방도 내 아이템 리스트에 포함하는 함수. 현재는 고려중.
 		//MyItem.Add(backpack);
 		//backpack->Destroy();
-		backpack->AttachToSocket(OwnerCharacter->GetMesh());
-
+		//backpack->AttachToSocket(OwnerCharacter);
+		EquippedBackPack(backpack);
 		return true;
 	}
 	else if (CurBackPackLevel > PreBackPackLevel)
@@ -123,10 +123,8 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 			//현재 용량보다 다음 용량이 크다면 배낭을 변경.
 			MaxVolume = NextVolume;
 			CurBackPackLevel = PreBackPackLevel;
-			//MyBackPack->DetachToSocket(this->OwnerCharacter);
-			MyBackPack = backpack;
-			//backpack->Destroy();
-			backpack->AttachToSocket(OwnerCharacter->GetMesh());
+			MyBackPack->DetachToSocket(this->OwnerCharacter);
+			EquippedBackPack(backpack);
 			return true;
 		}
 		else if (CurVolume > NextVolume)
@@ -144,10 +142,8 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 			GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Black, TheStr3);
 
 			//현재 용량과 다음 용량이 같으므로 가방의 변경이 가능.
-			//MyBackPack->DetachToSocket(this->OwnerCharacter);
-			MyBackPack = backpack;
-			//backpack->Destroy();
-			backpack->AttachToSocket(OwnerCharacter->GetMesh());
+			MyBackPack->DetachToSocket(this->OwnerCharacter);
+			EquippedBackPack(backpack);
 			return true;
 		}
 	}
@@ -156,12 +152,10 @@ bool UC_InvenComponent::ChackMyBackPack(AC_BackPack* backpack)
 		FString TheStr4 = TEXT("same backpack level");
 		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Black, TheStr4);
 		
-		UC_Util::Print((float)MaxVolume);
-		//MyBackPack->DetachToSocket(this->OwnerCharacter);
 		//현재 가방과 다음 가방의 레벨이 같으면 가방 변경 가능
-		MyBackPack = backpack;
-		//backpack->Destroy();
-		backpack->AttachToSocket(OwnerCharacter->GetMesh());
+		UC_Util::Print((float)MaxVolume);
+		MyBackPack->DetachToSocket(this->OwnerCharacter);
+		EquippedBackPack(backpack);
 		return true;
 	}
 }
@@ -258,13 +252,21 @@ void UC_InvenComponent::DroppingItem(AC_Item* myitem)
 
 void UC_InvenComponent::RemoveBackPack()
 {
-	if (!MyBackPack)
-		return;
+	if (!MyBackPack) return;
+
 	MaxVolume -= CheckBackPackVolume(MyBackPack->GetLevel());
 
 	MyBackPack = nullptr;
 
 	CurBackPackLevel = EBackPackLevel::LV0;
+}
+
+void UC_InvenComponent::EquippedBackPack(AC_BackPack* backpack)
+{
+	backpack->AttachToSocket(OwnerCharacter);
+	MyBackPack = backpack;
+	//원래 장착하면 OverlapEnd로 인해 자동으로 없어져야 한다고 생각하는데 안사라져서 강제로 지웠음.
+	NearItems.Remove(backpack);
 }
 
 
