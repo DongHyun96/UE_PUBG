@@ -47,9 +47,11 @@ public:
 	bool SetAimingDown();
 	bool SetAimingPress();
 	bool BackToMainCamera();
-	void SetIsAimPress(bool InIsAimPress) { bIsAimPress = InIsAimPress; }
-	bool GetIsAimPress() { return bIsAimPress; }
+	void SetIsAimPress(bool InIsAimDown) { bIsAimDown = InIsAimDown; }
+	bool GetIsAimPress() { return bIsAimDown; }
 	void HandleSpringArmRotation();
+	void GetPlayerIsAimDownOrNot();
+
 	EGunState GetCurrentWeaponState() { return CurState; }
 	TMap<EPoseState, FAnimationMontages> GetSheathMontages() { return SheathMontages; };
 	FTransform GetLeftHandSocketTransform() const { return LeftHandSocketLocation; }
@@ -68,7 +70,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)	
 	TMap<EPoseState, FAnimationMontages> SheathMontages{};
 
-	
+	class UCanvasPanelSlot* AimImage;
+	float MilitaryOperationArea;
+	FVector2D PanelSize;
 private:
 	const FName SUB_HOLSTER_SOCKET_NAME = "SubGunSocket_NoBag"; // 무기집 socket 이름
 	const FName MAIN_HOLSTER_SOCKET_NAME = "MainGunSocket_NoBag"; // 무기집 socket 이름
@@ -76,7 +80,7 @@ private:
 	//const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
 	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // 무기가 손에 부착될 socket 이름
 	EGunState CurState = EGunState::SUB_GUN;
-	bool bIsAimPress = false;
+	bool bIsAimDown = false;
 
 private:
 	//블루프린트에서 할당한 스켈레탈 메쉬를 저장하는 변수
@@ -85,6 +89,8 @@ private:
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FTransform LeftHandSocketLocation;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	bool bIsPlayerAimDownPress = false;
 
 	class UCameraComponent* AimSightCamera{};
 	class USpringArmComponent* AimSightSpringArm{};

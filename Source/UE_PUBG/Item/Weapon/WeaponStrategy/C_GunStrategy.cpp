@@ -27,6 +27,31 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 
 bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	UC_Util::Print("Mlb Clicked");
+	FHitResult HitResult;
+	
+	AController* Controller = WeaponUser->GetController();
+	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+	FVector StartLocation = PlayerCamera->GetCameraLocation();
+	FRotator CameraRotation = PlayerCamera->GetCameraRotation();
+	
+	FVector ForwardVector = CameraRotation.Vector().GetSafeNormal() * 10000;
+	FVector DestLocation = StartLocation + ForwardVector;
+	FCollisionQueryParams CollisionParams{};
+	CollisionParams.AddIgnoredActor(Weapon);
+	CollisionParams.AddIgnoredActor(WeaponUser);
+	CollisionParams.AddIgnoredActor(PlayerCamera);
+
+	HitResult = {};
+	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECC_Visibility, CollisionParams);
+	FVector WorldLocation, WorldDirection;
+	APlayerController* WolrdContorller = GetWorld()->GetFirstPlayerController();
+	WolrdContorller->DeprojectScreenPositionToWorld(0.5, 0.5, WorldLocation,WorldDirection);
+	//Controller->ActorLineTraceSingle(HitResult, StartLocation, StartLocation + ForwardVector, ECollisionChannel::ECC_Visibility,FCollisionQueryParams::DefaultQueryParam);
+	UC_Util::Print(HitResult.Distance);
+	UC_Util::Print(WorldLocation);
+	DrawDebugSphere(GetWorld(), HitResult.Location, 10.0f, 12, FColor::Red, true);
+	//Controller->ActorLineTraceSingle(nullptr, ),)
 	return false;
 }
 
@@ -46,6 +71,7 @@ bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 
 	CurWeapon->SetAimingPress();
+	UC_Util::Print("Mrb Clicked");
 
 
 
@@ -59,24 +85,10 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurDrawMontage().AnimMontage)) return false;
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurSheathMontage().AnimMontage)) return false;
 	MrbPressTimeCount += WeaponUser->GetWorld()->GetDeltaSeconds();
-	UC_Util::Print(MrbPressTimeCount);
-	//if (CurWeapon->GetIsAimPress())
-	//{
-	//	//FString TheFloatStr = "AimingOn";
-	//	//WeaponUser->bUseControllerRotationYaw = true;
-	//	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
-	//	return false;
-	//}
-	if (bIsAimDownSight)
-	{
-		//WeaponUser->bUseControllerRotationYaw = true;
-
-	}
-	//FString TheFloatStr = FString::SanitizeFloat(MrbPressTimeCount);
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	if (MrbPressTimeCount >= 0.2)
 	{
-		bIsAimDownSight = false;
+		CurWeapon->SetIsAimPress(false);
+		//UC_Util::Print("False");
 		return true;
 	}
 
@@ -92,25 +104,26 @@ bool AC_GunStrategy::UseMrb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurSheathMontage().AnimMontage)) return false;
 	AC_Player* CurUser = Cast<AC_Player>(WeaponUser);
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	
-	if (!bIsAimDownSight && MrbPressTimeCount < 0.2)
+	if (!IsValid(CurUser))   return false;
+	if (!IsValid(CurWeapon)) return false;
+
+	if (!CurWeapon->GetIsAimPress() && MrbPressTimeCount < 0.2)
 	{
 		CurWeapon->SetAimingDown();
-		bIsAimDownSight = true;
 		return true;
 
 	}
-	if (bIsAimDownSight)
+	if (CurWeapon->GetIsAimPress())
 	{
+		
 		CurWeapon->BackToMainCamera();
 
-		bIsAimDownSight = false;
 		return true;
 
 	}
 	CurWeapon->BackToMainCamera();
 	CurWeapon->SetIsAimPress(false);
 
-	CurUser->BackToMainCamera();
+	//CurUser->BackToMainCamera();
 	return true;
 }

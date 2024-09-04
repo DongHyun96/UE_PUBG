@@ -114,7 +114,6 @@ protected:
 	class AC_BasicCharacter* OwnerCharacter{};
 
 protected:
-
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
 	FPriorityAnimMontage CurDrawMontage{}; // 현재 무기 위치에 해당하는 무기 뽑기 Anim montage
 

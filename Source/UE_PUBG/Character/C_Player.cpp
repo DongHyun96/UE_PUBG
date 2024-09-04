@@ -28,6 +28,7 @@
 #include "Item/Equipment/C_EquipableItem.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Weapon/C_Weapon.h"
+#include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
 
@@ -219,6 +220,7 @@ void AC_Player::Move(const FInputActionValue& Value)
 		AddMovementInput(RightDirection, MovementVector.Y);
 
 		NextSpeed = GetCharacterMovement()->MaxWalkSpeed; // AnimCharacter에서 Speed Lerp할 값 setting
+		//UC_Util::Print("Moving");
 	}
 
 }
@@ -264,15 +266,20 @@ void AC_Player::Crouch()
 	case EPoseState::STAND: // Stand to crouch (Pose transition 없이 바로 처리)
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -32));
 		PoseState = EPoseState::CROUCH;
+		UC_Util::Print("Stand to crouch ");
+
 		return;
 	case EPoseState::CROUCH: // Crouch to stand (Pose transition 없이 바로 처리)
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +32));
 		PoseState = EPoseState::STAND;
+		UC_Util::Print(" Crouch to stand ");
+
 		return;
 	case EPoseState::CRAWL: // Crawl to crouch
 		ClampControllerRotationPitchWhileCrawl(PoseState);
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToCrouch, EPoseState::CROUCH);
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +67));
+		UC_Util::Print(" Crawl to crouch ");
 
 		return;
 	case EPoseState::POSE_MAX: default:
@@ -293,7 +300,7 @@ void AC_Player::Crawl()
 
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].StandToCrawl, EPoseState::CRAWL);
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -99));
-
+		UC_Util::Print("Stand To Crawl");
 		return;
 	case EPoseState::CROUCH: // Crouch to Crawl
 		ClampControllerRotationPitchWhileCrawl(PoseState);
@@ -301,6 +308,7 @@ void AC_Player::Crawl()
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -67));
 
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrouchToCrawl, EPoseState::CRAWL);
+		UC_Util::Print("Crouch to Crawl");
 
 		return;
 	case EPoseState::CRAWL: // Crawl to Stand
@@ -309,6 +317,7 @@ void AC_Player::Crawl()
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +99));
 
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToStand, EPoseState::STAND);
+		UC_Util::Print("Crawl to Stand");
 
 		return;
 	case EPoseState::POSE_MAX: default:
@@ -341,7 +350,15 @@ void AC_Player::OnJump()
 		PoseState = EPoseState::STAND;
 		return;
 	}
-
+	if (bIsAimDownSight)
+	{
+		AC_Gun* CurGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
+		if (IsValid(CurGun))
+		{
+			CurGun->BackToMainCamera();
+			bIsAimDownSight = false;
+		}
+	}
 	bPressedJump = true;
 	bIsJumping = true;
 	JumpKeyHoldTime = 0.0f;
@@ -1187,7 +1204,7 @@ void AC_Player::SetToAimKeyPress()
 		bIsAimDownSight = true;
 
 		CameraTransitionTimeline->PlayFromStart();
-		UC_Util::Print(CameraTransitionTimeline->IsPlaying());
+		//UC_Util::Print(CameraTransitionTimeline->IsPlaying());
 	}
 	//CameraTransitionTimeline->Get
 	//AimCamera->SetActive(true);
@@ -1211,7 +1228,7 @@ void AC_Player::HandleInterpolation(float Value)
 		NewRotation = FMath::Lerp(InitialCameraRotation, MainCamera->GetComponentRotation(), Value);
 		AimCamera->SetWorldLocation(NewLocation);
 		AimCamera->SetWorldRotation(NewRotation);
-		UC_Util::Print(Value);
+		//UC_Util::Print(Value);
 	}
 }
 
@@ -1229,7 +1246,9 @@ void AC_Player::OnTimelineFinished()
 		MainCamera->SetActive(true);
 	}
 	MainCamera->SetRelativeLocation(FVector(0));
-	MainCamera->SetRelativeRotation(FQuat(0));
+	
+	MainCamera->SetRelativeRotation(InitialMainCameraRelativeRotation);
+	//UC_Util::Print(MainCamera->GetRelativeRotation());
 	AimCamera->SetRelativeLocation(FVector(0));
 	AimCamera->SetRelativeRotation(FQuat(0));
 	

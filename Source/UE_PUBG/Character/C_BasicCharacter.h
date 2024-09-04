@@ -309,6 +309,8 @@ protected: // Camera
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	class USpringArmComponent* C_MainSpringArm{};
 
+	FQuat InitialMainCameraRelativeRotation;
+
 protected:
 
 	// AnimCharacter에서 참조할 Speed의 다음 Lerp destination 값

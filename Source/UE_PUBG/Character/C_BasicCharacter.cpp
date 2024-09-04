@@ -40,8 +40,8 @@ void AC_BasicCharacter::BeginPlay()
 
 
 	MainCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
-
-	C_MainSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("MainSpringArm"));
+	InitialMainCameraRelativeRotation = MainCamera->GetRelativeRotation().Quaternion();
+	C_MainSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("MainSpringArm")); 
 
 
 
