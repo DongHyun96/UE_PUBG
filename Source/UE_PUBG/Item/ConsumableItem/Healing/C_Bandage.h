@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Item/ConsumableItem/C_ConsumableItem.h"
+#include "Item/ConsumableItem/C_HealItem.h"
 #include "C_Bandage.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API AC_Bandage : public AC_ConsumableItem
+class UE_PUBG_API AC_Bandage : public AC_HealItem
 {
 	GENERATED_BODY()
 
@@ -26,19 +26,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	bool StartUsingConsumableItem(class AC_BasicCharacter* InItemUser) override;
-	
-	void HandleActivatingState()		override;
-	void HandleActivateCompletedState() override;
 
-private:
+	void HandleActivatingState() override;
+	void InitStartVariables() override;
 
-	const float ONE_BLOCK_HEAL_AMOUNT = 2.5f;
-	const float ONE_BLOCK_TIME		  = 0.375f;
-	const UINT	TOTAL_USING_BLOCK_CNT = 4;
-
-private:
-
-	// รั ภฬฟ๋ Block
-	UINT BlockUsed{};
 };

@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Item/ConsumableItem/C_ConsumableItem.h"
+#include "Item/ConsumableItem/C_HealItem.h"
 #include "C_FirstAidKit.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API AC_FirstAidKit : public AC_ConsumableItem
+class UE_PUBG_API AC_FirstAidKit : public AC_HealItem
 {
 	GENERATED_BODY()
 
@@ -27,20 +27,7 @@ public:
 
 private:
 
-	bool StartUsingConsumableItem(class AC_BasicCharacter* InItemUser) override;
 	void HandleActivatingState() override;
-	void HandleActivateCompletedState() override; // Hook Method
-
-private:
-	
-	//0.24초씩 -> +15 : 총 5번 해서 총 2초에 최대 75만큼 힐
-	const float ONE_BLOCK_HEAL_AMOUNT	= 15.f;
-	const float ONE_BLOCK_TIME			= 0.24f;
-	const UINT	TOTAL_USING_BLOCK_CNT	= 5;
-
-private:
-
-	// 총 이용 Block
-	UINT BlockUsed{};
+	void InitStartVariables() override;
 
 };

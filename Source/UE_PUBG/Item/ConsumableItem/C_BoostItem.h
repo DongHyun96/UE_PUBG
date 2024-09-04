@@ -14,4 +14,26 @@ class UE_PUBG_API AC_BoostItem : public AC_ConsumableItem
 {
 	GENERATED_BODY()
 	
+public:
+
+	AC_BoostItem();
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	virtual void Tick(float DeltaTime) override;
+
+private:
+
+	bool IsAvailableToStartUsing(class AC_BasicCharacter* InItemUser) override;
+
+	void HandleActivatingState() override;
+
+	void HandleActivateCompletedState() override;
+
+protected:
+
+	float BoostAmount{};
+
 };

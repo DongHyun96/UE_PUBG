@@ -44,13 +44,25 @@ public:
 	/// </summary>
 	/// <param name="ItemUser"> : 아이템 사용 Character </param>
 	/// <returns> : 사용 시작이 적절히 되었다면 return true </returns>
-	virtual bool StartUsingConsumableItem(class AC_BasicCharacter* InItemUser) PURE_VIRTUAL(AC_ConsumableItem::StartUsingConsumableItem, return false;);
+	bool StartUsingConsumableItem(class AC_BasicCharacter* InItemUser);
 
 	/// <summary>
 	/// 사용 활성화 시도 중 Item 사용 취소 시도
 	/// </summary>
 	/// <returns> : 정상적으로 취소되었다면 return true </returns>
 	bool CancelActivating();
+
+protected:
+
+	/// <summary>
+	/// 각 아이템 별 사용 시작 가능한 조건인지 check
+	/// </summary>
+	virtual bool IsAvailableToStartUsing(class AC_BasicCharacter* InItemUser) PURE_VIRTUAL(AC_ConsumableItem::IsAvailableToStartUsing, return false;);
+
+	/// <summary>
+	/// 각 아이템 별 사용 시작 시 초기화 시킬 멤버변수 초기화시키기
+	/// </summary>
+	virtual void InitStartVariables() PURE_VIRTUAL(AC_ConsumableItem::InitStartVariables, );
 
 protected:
 

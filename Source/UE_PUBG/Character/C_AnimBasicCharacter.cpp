@@ -47,11 +47,11 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bCanCharacterMove = OwnerCharacter->GetCanMove();
 	bIsHoldDirection  = OwnerCharacter->GetIsHoldDirection();
 	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
-	AC_Gun* CurrentWeapon = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
-	if (IsValid(CurrentWeapon))
+	AC_Gun* CurrentGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
+	if (IsValid(CurrentGun))
 	{
-		RifleLeftHandSocket = CurrentWeapon->GetLeftHandSocketTransform();
-		UAnimMontage* RifleSheathMontage = CurrentWeapon->GetSheathMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentWeapon->GetCurrentWeaponState()].AnimMontage;
+		RifleLeftHandSocket = CurrentGun->GetLeftHandSocketTransform();
+		UAnimMontage* RifleSheathMontage = CurrentGun->GetSheathMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentGun->GetCurrentWeaponState()].AnimMontage;
 		if (IsValid(RifleSheathMontage))
 		{
 			bCharacterIsSheathing = OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(RifleSheathMontage);

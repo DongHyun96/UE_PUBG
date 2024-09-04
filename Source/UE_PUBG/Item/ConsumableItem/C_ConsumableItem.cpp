@@ -5,6 +5,7 @@
 #include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Item/Weapon/C_Weapon.h"
+#include "Item/Weapon/Gun/C_Gun.h"
 #include "Utility/C_Util.h"
 
 AC_ConsumableItem::AC_ConsumableItem()
@@ -84,6 +85,43 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 	}
 }
 
+bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
+{
+	if (!IsAvailableToStartUsing(InItemUser)) return false; // Template Method(IsAvaliableToStartUsing())
+	if (ConsumableItemState != EConsumableItemState::IDLE) return false;
+
+	ItemUser = InItemUser;
+
+	if (!UsingMontageMap.Contains(ItemUser->GetPoseState()))    return false;
+	if (!UsingMontageMap[ItemUser->GetPoseState()].AnimMontage) return false;
+
+	float PlayTime = ItemUser->PlayAnimMontage(UsingMontageMap[ItemUser->GetPoseState()]);
+
+	// 다른 Montage에 의해 방해 받았을 때
+	if (PlayTime == 0.f) return false;
+
+	// 사용 시작하기
+	ConsumableItemState = EConsumableItemState::ACTIVATING;
+	InitStartVariables(); // Template method
+
+
+	// 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기
+	if (AC_Weapon* UserWeapon = ItemUser->GetEquippedComponent()->GetCurWeapon())
+	{
+		UserWeapon->AttachToHolster(ItemUser->GetMesh());
+		ItemUser->SetHandState(EHandState::UNARMED);
+
+		// 총기류 예외처리
+		//if (AC_Gun* Gun = Cast<AC_Gun>(UserWeapon)) // 현재 들고 있는 무기가 총기라면
+		//	Gun->SetIsAimPress(false);				//총을 들고 Aiming 중일 때 카메라 다시 원래대로 전환
+	}
+
+	// 사용자의 bIsActivatingConsumableItem 세팅
+	ItemUser->SetIsActivatingConsumableItem(true);
+
+	return true;
+}
+
 bool AC_ConsumableItem::CancelActivating()
 {
 	if (ConsumableItemState != EConsumableItemState::ACTIVATING) return false;
@@ -102,11 +140,10 @@ bool AC_ConsumableItem::CancelActivating()
 		}
 	}
 
-	//OwnerCharacter->PlayAnimMontage(ThrowWeapon->GetCurDrawMontage());
 	if (ItemUser->GetEquippedComponent()->GetCurWeapon()) // 착용 중인 무기가 있었을 때
 	{
 		UC_EquippedComponent* UserEquippedComponent = ItemUser->GetEquippedComponent();
-
+		
 		ItemUser->GetEquippedComponent()->SetNextWeaponType(UserEquippedComponent->GetCurWeaponType());
 		FPriorityAnimMontage DrawMontage = UserEquippedComponent->GetCurWeapon()->GetCurDrawMontage();
 		ItemUser->PlayAnimMontage(DrawMontage);
