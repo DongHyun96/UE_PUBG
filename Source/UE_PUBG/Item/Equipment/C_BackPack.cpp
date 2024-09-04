@@ -20,6 +20,11 @@ AC_BackPack::AC_BackPack()
 	BackpackMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BackPackMesh"));
 	RootComponent = BackpackMesh;
 
+	static ConstructorHelpers::FObjectFinder<UTexture2D> ImageTexture(TEXT("/Game/Project_PUBG/Common/InventoryUI/Icons/Item/Equipment/Backpack/Item_Back_BlueBlocker.Item_Back_BlueBlocker"));
+	ItemIcon = ImageTexture.Object;
+
+	ItemName = TEXT("BackPack");
+
 }
 
 void AC_BackPack::BeginPlay()
@@ -34,11 +39,10 @@ void AC_BackPack::Tick(float DeltaTime)
 
 void AC_BackPack::Interaction(AC_BasicCharacter* character)
 {
-	character->GetInvenComponent()->ChackMyBackPack(this);	
-
+	character->GetInvenComponent()->CheckMyBackPack(this);	
 }
 
-void AC_BackPack::AttachToSocket(USceneComponent* InParent)
+void AC_BackPack::AttachToSocket(AC_BasicCharacter* character)
 {
 	FName SocketName = "BackPackSocket";
 
@@ -47,11 +51,10 @@ void AC_BackPack::AttachToSocket(USceneComponent* InParent)
 
 	bool Attached = AttachToComponent
 	(
-		InParent,
+		character->GetMesh(),
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		SocketName
 	);
-
 	//BackpackMesh->SetVisibility(true);
 
 	//DrawDebugSphere(GetWorld(), InParent->GetSocketLocation(SocketName), 10.f, 12, FColor::Red, false, 10.f);
@@ -62,26 +65,33 @@ void AC_BackPack::AttachToSocket(USceneComponent* InParent)
 void AC_BackPack::DetachToSocket(AC_BasicCharacter* character)
 {
 	//가방 해제.
-	if (character->GetInvenComponent()->GetMyBackPack())
+
+	if (!character->GetInvenComponent()->GetMyBackPack()) return;
+
+	//USkeletalMeshComponent* backpackMesh = this->FindComponentByClass<USkeletalMeshComponent>();
+	BackpackMesh = FindComponentByClass<USkeletalMeshComponent>();
+	if (BackpackMesh)
 	{
-		UStaticMeshComponent* backpackMesh = character->GetInvenComponent()->GetMyBackPack()->FindComponentByClass<UStaticMeshComponent>();
-		if (backpackMesh)
-		{
-			backpackMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-		}
-	}
-	else
-	{
-		return;
+		// 캐릭터에서 가방을 분리
+		BackpackMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+
+		// 가방이 보이지 않게 설정
+		BackpackMesh->SetVisibility(false);
+		//충돌을 여기서 꺼주고 SetLocation 이후에 다시 켜주면 OverlappedBegin이벤트가 작동함.
+		SetActorEnableCollision(false);
 	}
 
-	// 가방을 바닥에 스폰할 위치 계산.
-	FVector DropLocation = character->GetActorLocation() + FVector(0.f, 0.f, -100.f); // 캐릭터 발 아래 위치 조정
-	FRotator DropRotation = character->GetActorRotation();                            // 캐릭터의 현재 회전을 기준으로 설정
+	// 가방을 캐릭터의 발 아래로 이동시킴
+	FVector DropLocation = character->GetActorLocation() + FVector(0.f, 0.f, -75.f);
+	FRotator DropRotation = character->GetActorRotation() + FRotator(0.f, 0.f, -90.f);
+	SetActorLocation(DropLocation);
+	SetActorRotation(DropRotation);
 
-	// 가방 스폰.
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	//SetActorLocation으로 꺼져버린 충돌을 다시 켜줌.
+	this->SetActorEnableCollision(true);
+	// 가방이 다시 보이게 설정
+	BackpackMesh->SetSimulatePhysics(true);
+	BackpackMesh->SetEnableGravity(true);
+	BackpackMesh->SetVisibility(true);
 
-	this->GetWorld()->SpawnActor<AC_BackPack>(this->GetClass(), DropLocation, DropRotation, SpawnParams);
 }

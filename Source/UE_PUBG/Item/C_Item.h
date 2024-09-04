@@ -1,10 +1,26 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "C_Item.generated.h"
+/// <summary>
+/// 현재 제대로 사용하지는 않고 있음.
+/// </summary>
+USTRUCT(BlueprintType)
+struct FItemData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	FString ItemName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	UTexture2D* ItemIcon;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	uint8 ItemNums;
+};
 /// <summary>
 /// 아이템의 타입을 정해줘서 인벤토리에서 장착할때 알맞는 UI에 찾아가도록 하고자함.
 /// NONE은 돌발상황을 대비해서 만들어둠.
@@ -54,12 +70,24 @@ public:
 
 	virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction;);
 
-
+	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 private:
 	uint8 Volume;
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	EItemTypes MyItemType;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	FString ItemName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	UTexture2D* ItemIcon;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	uint8 ItemNums;
+
+	class AC_BasicCharacter* OwnerCharacter{};
 };
+// Fill out your copyright notice in the Description page of Project Settings.
