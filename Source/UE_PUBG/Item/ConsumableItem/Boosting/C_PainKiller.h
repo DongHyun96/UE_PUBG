@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Item/ConsumableItem/C_ConsumableItem.h"
+#include "Item/ConsumableItem/C_BoostItem.h"
 #include "C_PainKiller.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API AC_PainKiller : public AC_ConsumableItem
+class UE_PUBG_API AC_PainKiller : public AC_BoostItem
 {
 	GENERATED_BODY()
 
@@ -26,8 +26,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	bool StartUsingConsumableItem(class AC_BasicCharacter* InItemUser) override;
 
-	void HandleActivatingState() override;
-	void HandleActivateCompletedState() override;
+	void InitStartVariables() override;
+
 };

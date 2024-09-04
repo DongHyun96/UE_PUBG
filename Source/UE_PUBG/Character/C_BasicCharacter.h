@@ -35,6 +35,7 @@ UENUM(BlueprintType)
 enum class EMontagePriority : uint8
 {
 	TURN_IN_PLACE,			// Default Full body + Sub Lower
+	USE_CONSUMABLE,			// Default Upper body
 	ATTACK,					// Default Upper body
 	DRAW_SHEATH_WEAPON,		// Default Upper body
 	POSE_TRANSITION,		// Sub Full body
@@ -181,24 +182,7 @@ public:
 	virtual float TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser);
 
 	virtual float TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser);
-
-public:
-
-	/// <summary>
-	/// 힐 적용
-	/// </summary>
-	/// <param name="HealAmount"> : 더할 힐량 </param>
-	/// <returns> 적용된 힐량 </returns>
-	virtual float ApplyHeal(float HealAmount);
-
-public:
-
-	/// <summary>
-	/// CurHP 바로 적용 시키기, 의료용 키트 같은 것 사용할 때 사용 예정
-	/// </summary>
-	/// <param name="InCurHP"> : Setting할 CurHP 양 </param>
-	virtual void SetCurHP(float InCurHP);
-
+	
 protected:
 
 	/// <summary>
@@ -237,6 +221,11 @@ public: // Getters and setters
 
 	UC_StatComponent* GetStatComponent() const { return StatComponent; }
 
+	void SetBoostingSpeedFactor(const float& InBoostingSpeedFactor) { BoostingSpeedFactor = InBoostingSpeedFactor; }
+
+	void SetIsActivatingConsumableItem(bool InIsActivatingConsumableItem) { bIsActivatingConsumableItem = InIsActivatingConsumableItem; }
+	bool GetIsActivatingConsumableItem() const { return bIsActivatingConsumableItem; }
+
 public:
 
 	/// <summary>
@@ -252,14 +241,6 @@ public:
 	void OnPoseTransitionFinish();
 
 protected:
-
-	/// <summary>
-	///  Pose Transition 모션 실행하기
-	/// </summary>
-	/// <param name="CurrentPoseState"> : 현재 자세 </param>
-	/// <param name="InNextPoseState"> : 다음 자세 </param>
-	/// <returns> Pose transition action이 제대로 실행되었다면 return true </returns>
-
 
 	/// <summary>
 	/// Pose Transition 모션 실행하기
@@ -308,6 +289,8 @@ protected: // Camera
 
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	class USpringArmComponent* C_MainSpringArm{};
+
+	FQuat InitialMainCameraRelativeRotation;
 
 protected:
 
@@ -384,5 +367,12 @@ private:
 		{"RightArm",	EDamagingPartType::RIGHT_ARM},
 		{"RightHand",	EDamagingPartType::RIGHT_HAND}
 	};
+
+protected: // Consumable 관련
+	
+	float BoostingSpeedFactor = 1.f;
+	
+	// 현재 Consumable Item Activating 중인 상태인지
+	bool bIsActivatingConsumableItem{};
 
 };

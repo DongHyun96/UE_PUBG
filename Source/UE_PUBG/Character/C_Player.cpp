@@ -28,6 +28,7 @@
 #include "Item/Equipment/C_EquipableItem.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Weapon/C_Weapon.h"
+#include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
 
@@ -62,6 +63,7 @@ AC_Player::AC_Player()
 	DetectionSphere->InitSphereRadius(100.0f); // 탐지 반경 설정
 	DetectionSphere->SetupAttachment(RootComponent);
 
+	//DetectionSphere->SetGenerateOverlapEvents(true);
 	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &AC_Player::OnOverlapBegin);
 	DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &AC_Player::OnOverlapEnd);
 	AimSpringArmTemp = CreateDefaultSubobject<USpringArmComponent>("AimSpringArm");
@@ -83,6 +85,9 @@ AC_Player::AC_Player()
 void AC_Player::BeginPlay()
 {
 	Super::BeginPlay();
+
+	StatComponent->SetOwnerPlayer(this);
+
 	AimCamera->SetActive(false);
 
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -219,6 +224,7 @@ void AC_Player::Move(const FInputActionValue& Value)
 		AddMovementInput(RightDirection, MovementVector.Y);
 
 		NextSpeed = GetCharacterMovement()->MaxWalkSpeed; // AnimCharacter에서 Speed Lerp할 값 setting
+		//UC_Util::Print("Moving");
 	}
 
 }
@@ -264,15 +270,22 @@ void AC_Player::Crouch()
 	case EPoseState::STAND: // Stand to crouch (Pose transition 없이 바로 처리)
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -32));
 		PoseState = EPoseState::CROUCH;
+		UC_Util::Print("Stand to crouch ");
+
 		return;
 	case EPoseState::CROUCH: // Crouch to stand (Pose transition 없이 바로 처리)
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +32));
 		PoseState = EPoseState::STAND;
+		UC_Util::Print(" Crouch to stand ");
+
 		return;
 	case EPoseState::CRAWL: // Crawl to crouch
+		if (bIsActivatingConsumableItem) return; // TODO : 일어설 수 없습니다 UI 띄우기
+
 		ClampControllerRotationPitchWhileCrawl(PoseState);
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToCrouch, EPoseState::CROUCH);
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +67));
+		UC_Util::Print(" Crawl to crouch ");
 
 		return;
 	case EPoseState::POSE_MAX: default:
@@ -289,26 +302,31 @@ void AC_Player::Crawl()
 	switch (PoseState)
 	{
 	case EPoseState::STAND: // Stand to Crawl
+		if (bIsActivatingConsumableItem) return; // TODO : 없드릴 수 없습니다 UI 띄우기
 		ClampControllerRotationPitchWhileCrawl(PoseState);
 
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].StandToCrawl, EPoseState::CRAWL);
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -99));
-
+		UC_Util::Print("Stand To Crawl");
 		return;
 	case EPoseState::CROUCH: // Crouch to Crawl
+		if (bIsActivatingConsumableItem) return; // TODO : 없드릴 수 없습니다 UI 띄우기
 		ClampControllerRotationPitchWhileCrawl(PoseState);
 
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -67));
 
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrouchToCrawl, EPoseState::CRAWL);
+		UC_Util::Print("Crouch to Crawl");
 
 		return;
 	case EPoseState::CRAWL: // Crawl to Stand
+		if (bIsActivatingConsumableItem) return; // TODO : 일어설 수 없습니다 UI 띄우기
 		ClampControllerRotationPitchWhileCrawl(PoseState);
 
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +99));
 
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToStand, EPoseState::STAND);
+		UC_Util::Print("Crawl to Stand");
 
 		return;
 	case EPoseState::POSE_MAX: default:
@@ -325,6 +343,8 @@ void AC_Player::OnJump()
 
 	if (PoseState == EPoseState::CRAWL) // Crawl to crouch
 	{
+		if (bIsActivatingConsumableItem) return; // TODO UI 띄우기
+
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +67));
 
 		ClampControllerRotationPitchWhileCrawl(PoseState);
@@ -341,7 +361,15 @@ void AC_Player::OnJump()
 		PoseState = EPoseState::STAND;
 		return;
 	}
-
+	if (bIsAimDownSight)
+	{
+		AC_Gun* CurGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
+		if (IsValid(CurGun))
+		{
+			CurGun->BackToMainCamera();
+			bIsAimDownSight = false;
+		}
+	}
 	bPressedJump = true;
 	bIsJumping = true;
 	JumpKeyHoldTime = 0.0f;
@@ -455,6 +483,9 @@ void AC_Player::OnNum1()
 
 void AC_Player::OnNum2()
 {
+	// Testing 용 Boosting TODO : 이 라인 지우기
+	StatComponent->AddBoost(40.f);
+
 	EquippedComponent->ChangeCurWeapon(EWeaponSlot::SUB_GUN);
 }
 
@@ -472,7 +503,7 @@ void AC_Player::OnXKey()
 {
 	// Testing 용 Damage 주기 TODO : 이 라인 지우기
 	//TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor * DamageCauser);
-	TakeDamage(15.f, EDamagingPartType::HEAD, this);
+	TakeDamage(10.f, EDamagingPartType::HEAD, this);
 	EquippedComponent->ToggleArmed();
 }
 
@@ -487,6 +518,9 @@ void AC_Player::OnBKey()
 
 void AC_Player::OnRKey()
 {
+	// Testing용 ConsumableItem 작동 취소 TODO : 이 라인 지우기
+	if (IsValid(ConsumableItem)) ConsumableItem->CancelActivating();
+
 	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
 	EquippedComponent->GetCurWeapon()->ExecuteRKey();
 }
@@ -1187,7 +1221,7 @@ void AC_Player::SetToAimKeyPress()
 		bIsAimDownSight = true;
 
 		CameraTransitionTimeline->PlayFromStart();
-		UC_Util::Print(CameraTransitionTimeline->IsPlaying());
+		//UC_Util::Print(CameraTransitionTimeline->IsPlaying());
 	}
 	//CameraTransitionTimeline->Get
 	//AimCamera->SetActive(true);
@@ -1211,7 +1245,7 @@ void AC_Player::HandleInterpolation(float Value)
 		NewRotation = FMath::Lerp(InitialCameraRotation, MainCamera->GetComponentRotation(), Value);
 		AimCamera->SetWorldLocation(NewLocation);
 		AimCamera->SetWorldRotation(NewRotation);
-		UC_Util::Print(Value);
+		//UC_Util::Print(Value);
 	}
 }
 
@@ -1221,7 +1255,7 @@ void AC_Player::OnTimelineFinished()
 	if (bIsAimDownSight)
 	{
 		AimCamera->SetActive(true);
-		MainCamera->SetActive(false);
+		MainCamera->SetActive(false);   
 	}
 	else
 	{
@@ -1229,7 +1263,9 @@ void AC_Player::OnTimelineFinished()
 		MainCamera->SetActive(true);
 	}
 	MainCamera->SetRelativeLocation(FVector(0));
-	MainCamera->SetRelativeRotation(FQuat(0));
+	
+	MainCamera->SetRelativeRotation(InitialMainCameraRelativeRotation);
+	//UC_Util::Print(MainCamera->GetRelativeRotation());
 	AimCamera->SetRelativeLocation(FVector(0));
 	AimCamera->SetRelativeRotation(FQuat(0));
 	
@@ -1281,52 +1317,11 @@ UCurveFloat* AC_Player::CreateCurveFloatForSwitchCamera()
 	return NewCurve;
 }
 
-float AC_Player::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	float Result = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
-	UpdateHPOnHUD();
-
-	return Result;
-}
-
-float AC_Player::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser)
-{
-	float Result = Super::TakeDamage(DamageAmount, DamagingPartType, DamageCauser);
-
-	UpdateHPOnHUD();
-
-	return Result;
-}
-
-float AC_Player::TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser)
-{
-	float Result = Super::TakeDamage(DamageAmount, DamagingPhyiscsAssetBoneName, DamageCauser);
-
-	UpdateHPOnHUD();
-
-	return Result;
-
-}
-
-float AC_Player::ApplyHeal(float HealAmount)
-{
-	float Result = Super::ApplyHeal(HealAmount);
-
-	UpdateHPOnHUD();
-
-	return Result;
-}
-
-void AC_Player::SetCurHP(float InCurHP)
-{
-	Super::SetCurHP(InCurHP);
-	UpdateHPOnHUD();
-}
-
 void AC_Player::SpawnConsumableItemForTesting()
 {
 	FActorSpawnParameters Param{};
 	Param.Owner = this;
-	ConsumableItem = GetWorld()->SpawnActor<AC_FirstAidKit>(ConsumableItemClass, Param);
+	//ConsumableItem = GetWorld()->SpawnActor<AC_FirstAidKit>(ConsumableItemClass, Param);
+	ConsumableItem = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClass, Param);
+
 }

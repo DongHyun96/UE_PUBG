@@ -1,6 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Item/Weapon/Gun/C_Gun.h"
+#include "Components/Image.h"
+#include "Components/Widget.h"
+#include "Blueprint/UserWidget.h"
+
+
+#include "Components/PanelWidget.h"
+#include "Components/NamedSlotInterface.h"
+
+#include "Components/CanvasPanelSlot.h"
 #include "Character/C_BasicCharacter.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "GameFramework/Actor.h"
@@ -39,7 +48,11 @@ void AC_Gun::BeginPlay()
 	GunMesh = FindComponentByClass<USkeletalMeshComponent>();
 	GunMesh->SetupAttachment(RootComponent);
 	//AimSightCamera->SetupAttachment(GunMesh);
+	//CurveFloatForSwitchCameraChange = LoadObject<UCurveFloat>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/CameraMoving/CF_CameraMoving"));
 
+	UUserWidget* AimWidget = LoadObject<UUserWidget>(nullptr,TEXT("/All/Game/Project_PUBG/Hyunho/TempWidget/WBP_CrossHair"));
+	
+	//UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>
 	
 
 	//if (IsValid(MyMesh))
@@ -77,6 +90,8 @@ void AC_Gun::Tick(float DeltaTime)
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	}
 	HandleSpringArmRotation();
+	GetPlayerIsAimDownOrNot();
+
 }
 
 bool AC_Gun::AttachToHolster(USceneComponent* InParent)
@@ -148,15 +163,18 @@ bool AC_Gun::SetAimingDown()
 	OwnerCharacter->GetMesh()->HideBoneByName(FName("Head"), EPhysBodyOp::PBO_None);
 	AimSightCamera->SetActive(true);
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(this, 0.2);
+	bIsAimDown = true;
+
 	return true;
 }
 //견착 조준만할 때 Player AimKePress함수로 메인카메라에서 에임 카메라로 바꿔주기
 bool AC_Gun::SetAimingPress()
 {
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	if (!IsValid(OwnerPlayer)) return false;
 	if (OwnerPlayer->GetIsAimDown()) return false;
 	OwnerPlayer->SetToAimKeyPress();
-	bIsAimPress = true;
+	//bIsAimDown = true;
 	//OwnerCharacter->bUseControllerRotationYaw = true;
 
 	return true;
@@ -171,7 +189,7 @@ bool AC_Gun::BackToMainCamera()
 	}
 	OwnerCharacter->GetMesh()->UnHideBoneByName(FName("Head"));
 	OwnerCharacter->bUseControllerRotationYaw = false;
-
+	bIsAimDown = false;
 	Cast<AC_Player>(OwnerCharacter)->BackToMainCamera();
 	return true;
 	
@@ -187,6 +205,15 @@ void AC_Gun::HandleSpringArmRotation()
 	FRotator NewRotation = FRotator(ControlRotation.Pitch, ControlRotation.Yaw, 0);
 	AimSightSpringArm->SetWorldRotation(OwnerCharacter->GetControlRotation());
 	//AimSightSpringArm->SetWorldRotation(NewRotation);
+}
+
+void AC_Gun::GetPlayerIsAimDownOrNot()
+{
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	if (IsValid(OwnerPlayer))
+	{
+		bIsPlayerAimDownPress = OwnerPlayer->GetIsAimDown();
+	}
 }
 
 void AC_Gun::OnOwnerCharacterPoseTransitionFin()

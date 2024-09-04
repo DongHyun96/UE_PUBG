@@ -75,9 +75,19 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 
 		CurrentPhase++;
 
-		// Random한 Next Circle 뽑기
-		SetRandomNextCircleAndSpeedDirection();
+		// 마지막 자기장의 줄어드는 곳은 정 가운데
+		if (CurrentPhase == LAST_PHASE)
+		{
+			NextCircle.MidLocation = MainCircle.MidLocation;
+			NextCircle.Radius = PhaseInfos[CurrentPhase + 1].PhaseRadius;
 
+			// 속력 세팅
+			float RadiusDifference = MainCircle.Radius - NextCircle.Radius;
+			PhaseInfos[CurrentPhase].RadiusShrinkSpeed = RadiusDifference / PhaseInfos[CurrentPhase].ShrinkTotalTime;
+			PhaseInfos[CurrentPhase].MidPointMoveSpeed = 0.f;
+		}
+		else SetRandomNextCircleAndSpeedDirection(); // Random한 Next Circle 뽑기
+			
 		TestUpdateWalls(NextCircle.MidLocation, NextCircle.Radius);
 
 		MagneticFieldState = EMagneticFieldState::IDLE;
