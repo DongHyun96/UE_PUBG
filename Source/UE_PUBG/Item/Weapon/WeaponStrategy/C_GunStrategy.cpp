@@ -59,7 +59,7 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurDrawMontage().AnimMontage)) return false;
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurSheathMontage().AnimMontage)) return false;
 	MrbPressTimeCount += WeaponUser->GetWorld()->GetDeltaSeconds();
-	UC_Util::Print(MrbPressTimeCount);
+	//UC_Util::Print(MrbPressTimeCount);
 	//if (CurWeapon->GetIsAimPress())
 	//{
 	//	//FString TheFloatStr = "AimingOn";

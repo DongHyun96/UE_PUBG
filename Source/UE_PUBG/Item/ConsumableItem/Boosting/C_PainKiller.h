@@ -30,4 +30,8 @@ private:
 
 	void HandleActivatingState() override;
 	void HandleActivateCompletedState() override;
+
+private:
+	const float BOOST_AMOUNT = 60.f;
+
 };

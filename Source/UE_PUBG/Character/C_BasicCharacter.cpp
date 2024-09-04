@@ -43,7 +43,7 @@ void AC_BasicCharacter::BeginPlay()
 
 	C_MainSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("MainSpringArm"));
 
-
+	StatComponent->SetOwnerCharacter(this);
 
 }
 
@@ -147,17 +147,6 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FName DamagingPhyiscsAss
 	return DamageAmount;
 }
 
-float AC_BasicCharacter::ApplyHeal(float HealAmount)
-{
-	StatComponent->ApplyHeal(HealAmount);
-	return HealAmount;
-}
-
-void AC_BasicCharacter::SetCurHP(float InCurHP)
-{
-	StatComponent->SetCurHP(InCurHP);
-}
-
 void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 {
 	//GetCharacterMovement()->MaxWalkSpeed =	(PoseState == EPoseState::STAND)  ? 370.f :
@@ -168,53 +157,55 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 	switch (PoseState)
 	{
 	case EPoseState::STAND:
-		if (bIsWalking)
+		if (bIsWalking || bIsActivatingConsumableItem)
 		{
 			GetCharacterMovement()->MaxWalkSpeed = 170.f;
-			return;
+			break;
 		}
 
 		if (MovementVector.X == 1.f) // 앞 , 앞 대각선
 		{
 			GetCharacterMovement()->MaxWalkSpeed = bIsSprinting ? 630.f : 470.f; 
-			return;
+			break;
 		}
 		if (MovementVector.X != -1.f && MovementVector.Y != 0.f) // Left right side
 		{
 			GetCharacterMovement()->MaxWalkSpeed = 400.f; 
-			return;
+			break;
 		}
 
 		GetCharacterMovement()->MaxWalkSpeed = 350.f; // 뒷 방향
-		return;
+		break;
 	case EPoseState::CROUCH:
-		if (bIsWalking)
+		if (bIsWalking || bIsActivatingConsumableItem)
 		{
 			GetCharacterMovement()->MaxWalkSpeed = 130.f;
-			return;
+			break;
 		}
 		if (MovementVector.X == 1.f) // 앞 , 앞 대각선
 		{
 			GetCharacterMovement()->MaxWalkSpeed = bIsSprinting ? 480.f : 340.f;
-			return;
+			break;
 		}
 		if (MovementVector.X != -1.f && MovementVector.Y != 0.f) // Left right side
 		{
 			GetCharacterMovement()->MaxWalkSpeed = 290.f;
-			return;
+			break;
 		}
 
 		GetCharacterMovement()->MaxWalkSpeed = 250.f; // 뒷 방향
-		return;
+		break;
 	case EPoseState::CRAWL:
-		GetCharacterMovement()->MaxWalkSpeed = bIsWalking ? 60.f : 120.f;
-
-		return;
+		GetCharacterMovement()->MaxWalkSpeed =	bIsActivatingConsumableItem ? 0.f :
+												bIsWalking ? 60.f : 120.f;
+		break;
 	case EPoseState::POSE_MAX:
-		return;
+		break;
 	default:
-		return;
+		break;
 	}
+
+	GetCharacterMovement()->MaxWalkSpeed *= BoostingSpeedFactor;
 }
 
 void AC_BasicCharacter::OnPoseTransitionGoing()

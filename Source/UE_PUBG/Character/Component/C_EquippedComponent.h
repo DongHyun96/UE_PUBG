@@ -50,6 +50,8 @@ public:
 
 	void SetNextWeaponType(EWeaponSlot InNextWeaponType) { NextWeaponType = InNextWeaponType; }
 	EWeaponSlot GetNextWeaponType() const { return NextWeaponType; }
+	
+	EWeaponSlot GetCurWeaponType() const { return CurWeaponType; }
 
 public:
 	/// <summary>

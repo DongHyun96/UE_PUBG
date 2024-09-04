@@ -28,6 +28,17 @@ public:
 private:
 	bool StartUsingConsumableItem(class AC_BasicCharacter* InItemUser) override;
 	
-	void HandleActivatingState() override;
+	void HandleActivatingState()		override;
 	void HandleActivateCompletedState() override;
+
+private:
+
+	const float ONE_BLOCK_HEAL_AMOUNT = 2.5f;
+	const float ONE_BLOCK_TIME		  = 0.375f;
+	const UINT	TOTAL_USING_BLOCK_CNT = 4;
+
+private:
+
+	// รั ภฬฟ๋ Block
+	UINT BlockUsed{};
 };

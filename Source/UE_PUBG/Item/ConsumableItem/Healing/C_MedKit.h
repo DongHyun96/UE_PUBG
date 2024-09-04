@@ -31,4 +31,15 @@ private:
 
 	void HandleActivatingState() override;
 	void HandleActivateCompletedState() override;
+
+private:
+
+	const float ONE_BLOCK_HEAL_AMOUNT = 100.f;
+	const float ONE_BLOCK_TIME = 0.3f;
+	const UINT	TOTAL_USING_BLOCK_CNT = 1;
+
+private:
+
+	// รั ภฬฟ๋ Block
+	UINT BlockUsed{};
 };

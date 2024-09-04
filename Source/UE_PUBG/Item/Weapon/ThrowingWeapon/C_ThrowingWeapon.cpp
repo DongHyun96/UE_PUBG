@@ -228,11 +228,13 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 
 	// ÇöÀç Throw AnimMontage ¸ØÃß±â (¿ì¼±¼øÀ§ ¶§¹®¿¡ ¸ØÃç¾ß ÇÔ)
 	//OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, CurThrowProcessMontages.ThrowMontage.AnimMontage);
+
+	UAnimInstance* OwnerAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+
 	for (uint8 p = 0; p < static_cast<uint8>(EPoseState::POSE_MAX); p++)
 	{
-		EPoseState		PoseState			= static_cast<EPoseState>(p);
-		UAnimMontage*	ThrowMontage		= ThrowProcessMontages[PoseState].ThrowMontage.AnimMontage;
-		UAnimInstance*	OwnerAnimInstance	= OwnerCharacter->GetMesh()->GetAnimInstance();
+		EPoseState	  PoseState	   = static_cast<EPoseState>(p);
+		UAnimMontage* ThrowMontage = ThrowProcessMontages[PoseState].ThrowMontage.AnimMontage;
 
 		if (OwnerAnimInstance->Montage_IsPlaying(ThrowMontage))
 		{
