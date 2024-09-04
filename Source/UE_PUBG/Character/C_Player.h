@@ -250,60 +250,66 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	UCurveFloat* CurveFloatForSwitchCameraChange{};
-protected:
 
-	// 블루프린트 쪽에서 사용할 Function, HP Bar 업데이트를 시켜야 할 때 호출
+public: // HP HUD event 관련
+
+	/// <summary>
+	/// 블루프린트 쪽에서 구현한 Event Function, HP Bar 업데이트를 시켜야 할 때 호출
+	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateHPOnHUD();
 
-protected:
+public: // HUD event 관련
 
 	/// <summary>
-	/// UGameplayStatics::ApplyDamage를 통해 Damage를 받는 함수
+	/// 블루프린트 쪽에서 구현한 Event Function
 	/// </summary>
-	/// <param name="DamageAmount"> : Damage 양 </param>
-	/// <param name="DamageEvent"></param>
-	/// <param name="EventInstigator"></param>
-	/// <param name="DamageCauser"></param>
-	/// <returns> : The amount of damage actually applied. </returns>
-	float TakeDamage
-	(
-		float				DamageAmount,
-		FDamageEvent const& DamageEvent,
-		AController*		EventInstigator,
-		AActor*				DamageCauser
-	) override;
-
-public:
+	/// <param name="HealUpDestHPValue"> : 현재 Heal up block의 Dest Value </param>
+	/// <param name="TimeRemain"> : 발동까지 남은 시간 </param>
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnActivatingHealUp(float HealUpDestHPValue, float UsageTime, float UsingTimer);
+	//Player->OnActivatingHealUp(HealUpDestHPValue, UsageTime, UsingTimer);
 
 	/// <summary>
-	/// <para> 자체로 만든 TakeDamage 함수, 부위별 Damage를 줄 때 사용 </para>
-	/// <para> 주의 : 이 함수는 Armor가 적용된 부위의 데미지 감소만 구현, 실질적인 부위별 Damage량은 외부호출에서 처리 </para>
+	/// 블루프린트 쪽에서 구현한 Event Function
 	/// </summary>
-	/// <param name="DamageAmount">		: Damage 양 </param>
-	/// <param name="DamagingPartType"> : Damage를 줄 부위 </param>
-	/// <param name="DamageCauser">		: Damage를 주는 Actor </param>
-	/// <returns> : The amount of damage actually applied. </returns>
-	float TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser) override;
-
-	float TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser) override;
-
-protected:
+	/// <param name="TimeRemain"> : 발동까지 남은 시간 </param>
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnActivatingBooster(float UsageTime, float UsingTimer);
 
 	/// <summary>
-	/// 힐 적용
+	/// 블루프린트 쪽에서 구현한 Event Function, Activating 시간이 다 찼을 때 호출 예정인 Event
 	/// </summary>
-	/// <param name="HealAmount"> : 더할 힐량 </param>
-	/// <returns> 적용된 힐량 </returns>
-	float ApplyHeal(float HealAmount) override;
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnConsumableItemActivatingEnd();
 
-public:
 
 	/// <summary>
-	/// CurHP 바로 적용 시키기, 의료용 키트 같은 것 사용할 때 사용 예정
+	/// 블루프린트에서 구현한 Event Function, Heal Consumable item 쪽 ActivateCompleted State tick에서 호출할 Event
 	/// </summary>
-	/// <param name="InCurHP"> : Setting할 CurHP 양 </param>
-	void SetCurHP(float InCurHP) override;
+	/// <param name="BlockDestHP"> : 현재 Block의 피 채우기 총량 Destination HP </param>
+	/// <param name="BlockTimeRemainRate"> : 현재 Heal up block의 시간 남은 비율(0.f ~ 1.f) </param>
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnActivateHealUpCompletedTick(float BlockDestHP, float BlockTimeRemainRate);
+
+	/// <summary>
+	/// 블루프린트에서 구현한 Event Function, consumable item 쪽 Used에서 호출할 Event
+	/// </summary>
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnConsumableUsed();
+
+
+	/// <summary>
+	/// 블루프린트에서 구현한 Event Function, consumable item 쪽 CancelActivating에서 호출할 Event
+	/// </summary>
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnCancelActivatingConsumableItem();
+
+	/// <summary>
+	/// 블루프린트에서 구현한 Event Function, 부스트 량 업데이트 시 적용될 Event
+	/// </summary>
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnUpdateBoostingHUD(float CurBoosting);
 
 protected:
 

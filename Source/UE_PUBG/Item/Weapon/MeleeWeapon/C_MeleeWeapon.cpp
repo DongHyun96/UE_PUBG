@@ -46,8 +46,6 @@ void AC_MeleeWeapon::Tick(float DeltaTime)
 	{
 		CurDrawMontage   = DrawMontages[OwnerCharacter->GetPoseState()];
 		CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()];
-
-		// TODO : CurDrawMontage 등등이 재생 중일 때, OwnerCharacter가 자세를 바꾸는 문제
 	}
 
 }

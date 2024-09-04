@@ -85,6 +85,7 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurDrawMontage().AnimMontage)) return false;
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurSheathMontage().AnimMontage)) return false;
 	MrbPressTimeCount += WeaponUser->GetWorld()->GetDeltaSeconds();
+
 	if (MrbPressTimeCount >= 0.2)
 	{
 		CurWeapon->SetIsAimPress(false);

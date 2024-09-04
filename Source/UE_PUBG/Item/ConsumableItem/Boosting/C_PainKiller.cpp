@@ -2,10 +2,21 @@
 
 
 #include "Item/ConsumableItem/Boosting/C_PainKiller.h"
+#include "Utility/C_Util.h"
+
+#include "Character/C_Player.h"
+#include "Character/C_BasicCharacter.h"
+
+#include "Character/Component/C_EquippedComponent.h"
+
+#include "Item/Weapon/C_Weapon.h"
 
 AC_PainKiller::AC_PainKiller()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	UsageTime = 6.f;
+	BoostAmount = 60.f;
 }
 
 void AC_PainKiller::BeginPlay()
@@ -18,15 +29,10 @@ void AC_PainKiller::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-bool AC_PainKiller::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
+void AC_PainKiller::InitStartVariables()
 {
-	return false;
-}
-
-void AC_PainKiller::HandleActivatingState()
-{
-}
-
-void AC_PainKiller::HandleActivateCompletedState()
-{
+	UsingTimer = 0.f;
+	UsageTime  = 6.f;
+	BoostAmount = 60.f;
+	UC_Util::Print("Starts to use PainKiller!");
 }

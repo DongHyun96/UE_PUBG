@@ -84,6 +84,9 @@ AC_Player::AC_Player()
 void AC_Player::BeginPlay()
 {
 	Super::BeginPlay();
+
+	StatComponent->SetOwnerPlayer(this);
+
 	AimCamera->SetActive(false);
 
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -276,6 +279,8 @@ void AC_Player::Crouch()
 
 		return;
 	case EPoseState::CRAWL: // Crawl to crouch
+		if (bIsActivatingConsumableItem) return; // TODO : 일어설 수 없습니다 UI 띄우기
+
 		ClampControllerRotationPitchWhileCrawl(PoseState);
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToCrouch, EPoseState::CROUCH);
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +67));
@@ -296,6 +301,7 @@ void AC_Player::Crawl()
 	switch (PoseState)
 	{
 	case EPoseState::STAND: // Stand to Crawl
+		if (bIsActivatingConsumableItem) return; // TODO : 없드릴 수 없습니다 UI 띄우기
 		ClampControllerRotationPitchWhileCrawl(PoseState);
 
 		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].StandToCrawl, EPoseState::CRAWL);
@@ -303,6 +309,7 @@ void AC_Player::Crawl()
 		UC_Util::Print("Stand To Crawl");
 		return;
 	case EPoseState::CROUCH: // Crouch to Crawl
+		if (bIsActivatingConsumableItem) return; // TODO : 없드릴 수 없습니다 UI 띄우기
 		ClampControllerRotationPitchWhileCrawl(PoseState);
 
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -67));
@@ -312,6 +319,7 @@ void AC_Player::Crawl()
 
 		return;
 	case EPoseState::CRAWL: // Crawl to Stand
+		if (bIsActivatingConsumableItem) return; // TODO : 일어설 수 없습니다 UI 띄우기
 		ClampControllerRotationPitchWhileCrawl(PoseState);
 
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +99));
@@ -334,6 +342,8 @@ void AC_Player::OnJump()
 
 	if (PoseState == EPoseState::CRAWL) // Crawl to crouch
 	{
+		if (bIsActivatingConsumableItem) return; // TODO UI 띄우기
+
 		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +67));
 
 		ClampControllerRotationPitchWhileCrawl(PoseState);
@@ -472,6 +482,9 @@ void AC_Player::OnNum1()
 
 void AC_Player::OnNum2()
 {
+	// Testing 용 Boosting TODO : 이 라인 지우기
+	StatComponent->AddBoost(40.f);
+
 	EquippedComponent->ChangeCurWeapon(EWeaponSlot::SUB_GUN);
 }
 
@@ -489,7 +502,7 @@ void AC_Player::OnXKey()
 {
 	// Testing 용 Damage 주기 TODO : 이 라인 지우기
 	//TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor * DamageCauser);
-	TakeDamage(15.f, EDamagingPartType::HEAD, this);
+	TakeDamage(10.f, EDamagingPartType::HEAD, this);
 	EquippedComponent->ToggleArmed();
 }
 
@@ -504,6 +517,9 @@ void AC_Player::OnBKey()
 
 void AC_Player::OnRKey()
 {
+	// Testing용 ConsumableItem 작동 취소 TODO : 이 라인 지우기
+	if (IsValid(ConsumableItem)) ConsumableItem->CancelActivating();
+
 	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
 	EquippedComponent->GetCurWeapon()->ExecuteRKey();
 }
@@ -1238,7 +1254,7 @@ void AC_Player::OnTimelineFinished()
 	if (bIsAimDownSight)
 	{
 		AimCamera->SetActive(true);
-		MainCamera->SetActive(false);
+		MainCamera->SetActive(false);   
 	}
 	else
 	{
@@ -1300,52 +1316,11 @@ UCurveFloat* AC_Player::CreateCurveFloatForSwitchCamera()
 	return NewCurve;
 }
 
-float AC_Player::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	float Result = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
-	UpdateHPOnHUD();
-
-	return Result;
-}
-
-float AC_Player::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser)
-{
-	float Result = Super::TakeDamage(DamageAmount, DamagingPartType, DamageCauser);
-
-	UpdateHPOnHUD();
-
-	return Result;
-}
-
-float AC_Player::TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser)
-{
-	float Result = Super::TakeDamage(DamageAmount, DamagingPhyiscsAssetBoneName, DamageCauser);
-
-	UpdateHPOnHUD();
-
-	return Result;
-
-}
-
-float AC_Player::ApplyHeal(float HealAmount)
-{
-	float Result = Super::ApplyHeal(HealAmount);
-
-	UpdateHPOnHUD();
-
-	return Result;
-}
-
-void AC_Player::SetCurHP(float InCurHP)
-{
-	Super::SetCurHP(InCurHP);
-	UpdateHPOnHUD();
-}
-
 void AC_Player::SpawnConsumableItemForTesting()
 {
 	FActorSpawnParameters Param{};
 	Param.Owner = this;
-	ConsumableItem = GetWorld()->SpawnActor<AC_FirstAidKit>(ConsumableItemClass, Param);
+	//ConsumableItem = GetWorld()->SpawnActor<AC_FirstAidKit>(ConsumableItemClass, Param);
+	ConsumableItem = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClass, Param);
+
 }
