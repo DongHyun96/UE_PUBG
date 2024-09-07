@@ -8,7 +8,9 @@
 #include "Character/C_BasicCharacter.h"
 
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_ConsumableUsageMeshComponent.h"
 #include "Item/Weapon/C_Weapon.h"
+
 
 AC_EnergyDrink::AC_EnergyDrink()
 {
@@ -28,10 +30,22 @@ void AC_EnergyDrink::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AC_EnergyDrink::InitStartVariables()
+void AC_EnergyDrink::OnStartUsing()
 {
 	UsingTimer = 0.f;
 	UsageTime  = 4.f;
 	BoostAmount = 40.f;
 	UC_Util::Print("Starts to use EnergyDrink!");
+
+	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::DRINK, true);
+}
+
+void AC_EnergyDrink::OnActivatingFinish()
+{
+	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::DRINK, false);
+}
+
+void AC_EnergyDrink::OnCancelActivating()
+{
+	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::DRINK, false);
 }

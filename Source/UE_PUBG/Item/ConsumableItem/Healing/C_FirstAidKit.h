@@ -27,7 +27,9 @@ public:
 
 private:
 
-	void HandleActivatingState() override;
-	void InitStartVariables() override;
+	void HandleActivatingState()	override;
+	void OnStartUsing()				override;
+	void OnActivatingFinish()		override;
 
+	void OnCancelActivating()		override;
 };
