@@ -42,13 +42,13 @@ void UC_EquippedComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* Weapon)
 {
-	// 들어온 슬롯의 이전 무기에 대한 PoseTransitionEnd 델리게이트 해제
+	// ?�어???�롯???�전 무기???�??PoseTransitionEnd ?�리게이???�제
 	if (Weapons[InSlot]) 
 		OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(Weapons[InSlot]);
 
 	Weapons[InSlot] = Weapon;
 
-	// 새로 장착된 무기에 대한 PoseTransitionEnd 델리게이트 callback 걸기
+	// ?�로 ?�착??무기???�??PoseTransitionEnd ?�리게이??callback 걸기
 	if (Weapons[InSlot]) 
 		OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(Weapons[InSlot], &AC_Weapon::OnOwnerCharacterPoseTransitionFin);
 }
@@ -57,7 +57,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 {
 	if (IsValid(Weapons[CurWeaponType]))
 	{
-		// 현재 무기의 Sheath나 Draw animation montage가 이미 재생 중이라면 return
+		// ?�재 무기??Sheath??Draw animation montage가 ?��? ?�생 중이?�면 return
 		if (OwnerCharacter->GetMesh()->GetAnimInstance()
 			->Montage_IsPlaying(Weapons[CurWeaponType]->GetCurDrawMontage().AnimMontage)) 
 			return false;
@@ -69,15 +69,15 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
 	NextWeaponType = InChangeTo;
 
-	if (CurWeaponType == NextWeaponType) return false; // 현재 무기와 다음 무기가 같을 때 무기를 굳이 다시 꺼내지 않음
+	if (CurWeaponType == NextWeaponType) return false; // ?�재 무기?� ?�음 무기가 같을 ??무기�?굳이 ?�시 꺼내지 ?�음
 
-	// NextWeaponType이 None이 아니고, 바꾸려는 무기 슬롯에 무기가 없을 때
+	// NextWeaponType??None???�니�? 바꾸?�는 무기 ?�롯??무기가 ?�을 ??
 	if (NextWeaponType != EWeaponSlot::NONE && !IsValid(Weapons[NextWeaponType])) return false;
 
-	// 현재 무기를 착용중이지 않을 때 (UnArmed 상태), 또는 현재 슬롯에 장착된 무기가 없을 때 다음 무기 Draw만 재생
+	// ?�재 무기�?착용중이지 ?�을 ??(UnArmed ?�태), ?�는 ?�재 ?�롯???�착??무기가 ?�을 ???�음 무기 Draw�??�생
 	if (CurWeaponType == EWeaponSlot::NONE || !IsValid(GetCurWeapon()))
 	{
-		// 만약 다음에 바꿀 무기가 None이거나 다음에 바꿀 무기 슬롯에 무기가 없을 때 
+		// 만약 ?�음??바�? 무기가 None?�거???�음??바�? 무기 ?�롯??무기가 ?�을 ??
 		if (NextWeaponType == EWeaponSlot::NONE || !IsValid(Weapons[NextWeaponType]))
 		{
 			CurWeaponType = EWeaponSlot::NONE;
@@ -86,25 +86,25 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 			return false;
 		}
 
-		 // 다음 무기가 있을 때
+		 // ?�음 무기가 ?�을 ??
 		OwnerCharacter->PlayAnimMontage(Weapons[NextWeaponType]->GetCurDrawMontage());
 		return true;
 	}
 	
-	// 현재 무기를 착용중인 상황
+	// ?�재 무기�?착용중인 ?�황
 
-	// 투척류 예외처리
+	// ?�척�??�외처리
 	if (CurWeaponType == EWeaponSlot::THROWABLE_WEAPON)
 	{
 		AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(GetCurWeapon());
 		if (IsValid(ThrowingWeapon))
 		{
-			// 이미 쿠킹이 시작되었고, 아직 손에서 떠나지 않은 투척류라면 땅에 떨굼
+			// ?��? 쿠킹???�작?�었�? ?�직 ?�에???�나지 ?��? ?�척류라�??�에 ?�굼
 			if (ThrowingWeapon->GetIsCooked() && ThrowingWeapon->GetAttachParentActor())
 				return ThrowingWeapon->ReleaseOnGround();
 		}
 	}
-	//총을 들고 Aiming 중일 때 카메라 다시 원래대로 전환
+	//총을 ?�고 Aiming 중일 ??카메???�시 ?�래?��??�환
 	if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
 	{
 		AC_Gun* TempWeapon = Cast<AC_Gun>(Weapons[CurWeaponType]);
@@ -112,16 +112,16 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 			TempWeapon->BackToMainCamera();
 	}
 
-	OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
+	OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // ??무기 집어?�는 ?�작??Notify?�수 걸어???�음 무기�??�환
 	return true;
 }
 
 bool UC_EquippedComponent::ToggleArmed()
 {
-	// 현재 무기도 장착하지 않았고 이전에 들고 있었던 무기도 없을 때 (초기 상태)
+	// ?�재 무기???�착?��? ?�았�??�전???�고 ?�었??무기???�을 ??(초기 ?�태)
 	if (CurWeaponType == EWeaponSlot::NONE && PrevWeaponType == EWeaponSlot::NONE) return false;
 	
-	// 현재 들고 있는 무기가 있을 때
+	// ?�재 ?�고 ?�는 무기가 ?�을 ??
 	if (CurWeaponType != EWeaponSlot::NONE && IsValid(GetCurWeapon()))
 	{
 		PrevWeaponType = CurWeaponType;
@@ -130,16 +130,16 @@ bool UC_EquippedComponent::ToggleArmed()
 		return ChangeCurWeapon(EWeaponSlot::NONE);
 	}
 
-	// 현재 들고 있는 무기가 없을 때
+	// ?�재 ?�고 ?�는 무기가 ?�을 ??
 	return ChangeCurWeapon(PrevWeaponType);
 }
 
 void UC_EquippedComponent::OnSheathEnd()
 {
-	// 현재 무기 무기집에 붙이기
+	// ?�재 무기 무기집에 붙이�?
 	GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
 
-	// 총기류 예외처리
+	// 총기�??�외처리
 	if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
 	{
 		AC_Gun* TempWeapon = Cast<AC_Gun>(Weapons[CurWeaponType]);
@@ -177,7 +177,7 @@ void UC_EquippedComponent::OnDrawEnd()
 
 void UC_EquippedComponent::SpawnWeaponsForTesting()
 {
-	// Test용 weapon spawn들
+	// Test??weapon spawn??
 	FActorSpawnParameters Param{};
 	Param.Owner = OwnerCharacter;
 	AC_MeleeWeapon* MeleeTemp = GetWorld()->SpawnActor<AC_MeleeWeapon>(WeaponClasses[EWeaponSlot::MELEE_WEAPON], Param);
