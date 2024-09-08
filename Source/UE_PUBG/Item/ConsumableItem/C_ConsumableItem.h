@@ -60,10 +60,15 @@ protected:
 	virtual bool IsAvailableToStartUsing(class AC_BasicCharacter* InItemUser) PURE_VIRTUAL(AC_ConsumableItem::IsAvailableToStartUsing, return false;);
 
 	/// <summary>
-	/// 각 아이템 별 사용 시작 시 초기화 시킬 멤버변수 초기화시키기
+	/// 각 아이템 별 사용 시작 시 호출될 Template method
 	/// </summary>
-	virtual void InitStartVariables() PURE_VIRTUAL(AC_ConsumableItem::InitStartVariables, );
+	virtual void OnStartUsing() PURE_VIRTUAL(AC_ConsumableItem::OnStartUsing, );
 
+	/// <summary>
+	/// 각 아이템 별 Activating이 끝났을 시 호출될 Template method
+	/// </summary>
+	virtual void OnActivatingFinish() PURE_VIRTUAL(AC_ConsumableItem::OnActivatingFinish, );
+	
 protected:
 
 	/// <summary>
@@ -75,6 +80,11 @@ protected:
 	/// 아이템 사용 시간까지 방해 받지 않고 모두 시간을 소모했다면, 사용하기 적용(Tick ActivatedCompleted Template method)
 	/// </summary>
 	virtual void HandleActivateCompletedState() PURE_VIRTUAL(AC_ConsumableItem::HandleActivateCompletedState, );
+
+	/// <summary>
+	/// 아이템 발동 이전에 Cancel 당했을 시 호출될 Template method
+	/// </summary>
+	virtual void OnCancelActivating() PURE_VIRTUAL(AC_ConsumableItem::OnCancelActivating, );
 
 public: // getters and setters
 

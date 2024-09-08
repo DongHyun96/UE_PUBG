@@ -44,62 +44,31 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-public: // Input mapped actions
+private:
 
-	void Move(const struct FInputActionValue& Value);
-	
-	/// <summary>
-	/// Move가 끝날 때 호출됨, AnimCharacter에서 Speed Lerp할 값 setting 및 Turn in place 동작 초기 setting 
-	/// </summary>
-	void MoveEnd(const struct FInputActionValue& Value);
-
-	void Look(const struct FInputActionValue& Value);
-
-	void Crouch();
-	void Crawl();
-
-	void OnJump();
-	void CancelTurnInPlaceMotion();
-	//Alt 키 누를때 이름 추천부탁
-	void HoldDirection();
-	void ReleaseDirection();
 	void HandleControllerRotation(float DeltaTime);
 
-	// Number input mappings
-	void OnNum1();
-	void OnNum2();
-	void OnNum4();
-	void OnNum5();
+	/// <summary>
+	/// MainSpringArm 로컬 위치 Dest변수값으로 계속 Lerp 시키기
+	/// </summary>
+	void HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime);
 
-	void OnXKey();
-	void OnBKey();
-	void OnRKey();
+public: // Getters and setters
 
-	// TODO : 무기에 대한 마우스 버튼 클릭 처리만 해둠, 다른 처리도 필요할 예정
-	void OnMLBStarted();
-	void OnMLBOnGoing();
-	void OnMLBCompleted();
+	//TMap<EHandState, FPoseTurnInPlaceAnimMontage> TurnAnimMontageMap{};
+	FPoseTurnInPlaceAnimMontage& GetPoseTurnAnimMontage(EHandState InHandState) { return TurnAnimMontageMap[InHandState]; }
 
-	void OnMRBStarted();
-	void OnMRBOnGoing();
-	void OnMRBCompleted();
+	TMap<EHandState, FPoseTurnInPlaceAnimMontage>& GetLowerBodyTurnAnimMontageMap() { return LowerBodyTurnAnimMontageMap; }
+	FPoseTurnInPlaceAnimMontage& GetLowerPoseTurnAnimMontage(EHandState InHandState) { return LowerBodyTurnAnimMontageMap[InHandState]; }
 
-	void OnSprintStarted();
-	void OnSprintReleased();
+	void SetSpringArmRelativeLocationDest(EPoseState InNextPoseState) { MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
 
-	void OnWalkStarted();
-	void OnWalkReleased();
-
-	//상호작용(F)
-	//오브젝트의 묶음별로 만들어야 할 수도?
-	//아니면 그냥 UObject로 만들기
-	void Interaction();
-
-/// <summary>
-/// 아이템 상호작용을 위한 변수와 함수.
-/// 구를 통해 아이템과의 충동을 감지하는 함수.
-/// </summary>
 protected:
+
+	/// <summary>
+	/// 아이템 상호작용을 위한 변수와 함수.
+	/// 구를 통해 아이템과의 충동을 감지하는 함수.
+	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* DetectionSphere;
 
@@ -109,17 +78,13 @@ protected:
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-public:
-
-	class UC_InputComponent* GetInputComponent() { return MyInputComponent; }//부모 클래스에 존재
-
-
-public:
+protected:
 	//Aim Press Camera
 	UPROPERTY(EditDefaultsOnly)
 	class UCameraComponent* AimCamera;
 	UPROPERTY(EditDefaultsOnly)
 	class USpringArmComponent* AimSpringArmTemp;
+
 protected:
 	//Aim Press Camera 위치 조정 함수
 	void HandleAimPressCameraLocation();
@@ -149,8 +114,12 @@ protected:
 
 	void HandlePlayerRotationWhileAiming();
 
+public:
+
 	void ClampControllerRotationPitchWhileCrawl(EPoseState InCurrentState);
 	
+public:
+
 	/// <summary>
 	/// Turn in place가 끝났을 시 anim notify에 의해 호출, 멈춰 있을 때의 Rotation 세팅 값들로 돌아가기
 	/// </summary>
@@ -311,6 +280,9 @@ public: // HUD event 관련
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnUpdateBoostingHUD(float CurBoosting);
 
+private:
+	void SpawnConsumableItemForTesting();
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly) 
@@ -396,7 +368,7 @@ protected:
 	class UC_HUDComponent* HUDComponent{};
 
 
-protected:
+public:
 	// Consumable Item Testing
 	// TODO : 지우기
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -406,6 +378,8 @@ protected:
 	TSubclassOf<class AC_ConsumableItem> ConsumableItemClass{};
 
 private:
-	void SpawnConsumableItemForTesting();
+
+	TMap<EPoseState, FVector> MainSpringArmRelativeLocationByPoseMap{};
+	FVector MainSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
 
 };

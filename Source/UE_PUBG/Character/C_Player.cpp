@@ -114,6 +114,12 @@ void AC_Player::BeginPlay()
 	AimCamPunchingDestLocation	= AimCamOriginLocalLocation;
 	AimCamPunchingDestRotation	= AimCamOriginLocalRotation;
 
+	// 자세별 MainSpringArm 위치 초기화
+	MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::STAND, C_MainSpringArm->GetRelativeLocation());
+	MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CROUCH, C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -32));
+	MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CRAWL, C_MainSpringArm->GetRelativeLocation()  + FVector(0, 0, -99));
+	MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[EPoseState::STAND];
+
 	// PostProcessVolume 초기화
 	TArray<AActor*> PPVolumes{};
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APostProcessVolume::StaticClass(), PPVolumes);
@@ -170,6 +176,8 @@ void AC_Player::Tick(float DeltaTime)
 
 	HandleAimPressCameraLocation();
 	//ClampControllerRotationPitchWhileAimDownSight();
+
+	HandleLerpMainSpringArmToDestRelativeLocation(DeltaTime);
 }
 
 void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -177,280 +185,6 @@ void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	MyInputComponent->BindAction(PlayerInputComponent, this);
-
-}
-
-void AC_Player::Move(const FInputActionValue& Value)
-{
-	if (!bCanMove) return;
-	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
-	CancelTurnInPlaceMotion();
-
-	// 움직일 땐 카메라가 바라보는 방향으로 몸체도 돌려버림 (수업 기본 StrafeOn 세팅)
-	//Alt 키 누를때아닐떄 구분해서 설정
-	if (bIsHoldDirection || bIsAltPressed || bIsAimDownSight)
-	{
-		GetCharacterMovement()->bUseControllerDesiredRotation = false;
-		GetCharacterMovement()->bOrientRotationToMovement = false;
-
-		bUseControllerRotationYaw = false;
-
-	}
-	else
-	{
-
-		bUseControllerRotationYaw = true; 
-		GetCharacterMovement()->bUseControllerDesiredRotation = false;
-		GetCharacterMovement()->bOrientRotationToMovement = false;
-	}
-
-	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	// Update Max walk speed
-	UpdateMaxWalkSpeed(MovementVector);
-
-	if (Controller != nullptr)
-	{
-		FRotator Rotation;
-
-		Rotation = GetActorRotation();
-
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		const FVector   RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		AddMovementInput(ForwardDirection, MovementVector.X);
-		AddMovementInput(RightDirection, MovementVector.Y);
-
-		NextSpeed = GetCharacterMovement()->MaxWalkSpeed; // AnimCharacter에서 Speed Lerp할 값 setting
-		//UC_Util::Print("Moving");
-	}
-
-}
-
-void AC_Player::MoveEnd(const FInputActionValue& Value)
-{
-	NextSpeed = 0.f;
-
-	SetStrafeRotationToIdleStop();
-}
-
-void AC_Player::Look(const FInputActionValue& Value)
-{
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
-	{
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
-		//TODO : Aim Down Sight 일 때 메쉬 숨기기
-		//if (PoseState == EPoseState::CRAWL)
-		//{
-		//if (GetControlRotation().Pitch >= 350.f && GetControlRotation().Pitch < 360.f)
-		//	{
-		//		GetMesh()->SetOwnerNoSee(true);
-		//		UC_Util::Print(float(GetControlRotation().Pitch));
-		//	}
-		//	else
-		//		GetMesh()->SetOwnerNoSee(false);
-
-
-		//}
-	}
-}
-
-void AC_Player::Crouch()
-{
-	if (!bCanMove) return;
-	if (bIsJumping || GetCharacterMovement()->IsFalling()) return;
-
-	switch (PoseState)
-	{
-	case EPoseState::STAND: // Stand to crouch (Pose transition 없이 바로 처리)
-		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -32));
-		PoseState = EPoseState::CROUCH;
-		UC_Util::Print("Stand to crouch ");
-
-		return;
-	case EPoseState::CROUCH: // Crouch to stand (Pose transition 없이 바로 처리)
-		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +32));
-		PoseState = EPoseState::STAND;
-		UC_Util::Print(" Crouch to stand ");
-
-		return;
-	case EPoseState::CRAWL: // Crawl to crouch
-		if (bIsActivatingConsumableItem) return; // TODO : 일어설 수 없습니다 UI 띄우기
-
-		ClampControllerRotationPitchWhileCrawl(PoseState);
-		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToCrouch, EPoseState::CROUCH);
-		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +67));
-		UC_Util::Print(" Crawl to crouch ");
-
-		return;
-	case EPoseState::POSE_MAX: default:
-		UC_Util::Print("From AC_Player::Crouch : UnAuthorized current pose!");
-		return;
-	}
-}
-
-void AC_Player::Crawl()
-{
-	if (!bCanMove) return;
-	if (bIsJumping || GetCharacterMovement()->IsFalling()) return;
-
-	switch (PoseState)
-	{
-	case EPoseState::STAND: // Stand to Crawl
-		if (bIsActivatingConsumableItem) return; // TODO : 없드릴 수 없습니다 UI 띄우기
-		ClampControllerRotationPitchWhileCrawl(PoseState);
-
-		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].StandToCrawl, EPoseState::CRAWL);
-		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -99));
-		UC_Util::Print("Stand To Crawl");
-		return;
-	case EPoseState::CROUCH: // Crouch to Crawl
-		if (bIsActivatingConsumableItem) return; // TODO : 없드릴 수 없습니다 UI 띄우기
-		ClampControllerRotationPitchWhileCrawl(PoseState);
-
-		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -67));
-
-		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrouchToCrawl, EPoseState::CRAWL);
-		UC_Util::Print("Crouch to Crawl");
-
-		return;
-	case EPoseState::CRAWL: // Crawl to Stand
-		if (bIsActivatingConsumableItem) return; // TODO : 일어설 수 없습니다 UI 띄우기
-		ClampControllerRotationPitchWhileCrawl(PoseState);
-
-		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +99));
-
-		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToStand, EPoseState::STAND);
-		UC_Util::Print("Crawl to Stand");
-
-		return;
-	case EPoseState::POSE_MAX: default:
-		UC_Util::Print("From AC_Player::Crawl : UnAuthorized current pose!");
-		return;
-	}
-}
-
-void AC_Player::OnJump()
-{
-	if (!bCanMove) return;
-	if (bIsJumping || GetCharacterMovement()->IsFalling()) return;
-	CancelTurnInPlaceMotion();
-
-	if (PoseState == EPoseState::CRAWL) // Crawl to crouch
-	{
-		if (bIsActivatingConsumableItem) return; // TODO UI 띄우기
-
-		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +67));
-
-		ClampControllerRotationPitchWhileCrawl(PoseState);
-		ExecutePoseTransitionAction(PoseTransitionMontages[HandState].CrawlToCrouch, EPoseState::CROUCH);
-		return;
-	}
-
-	if (PoseState == EPoseState::CROUCH) // Crouch to stand
-	{
-		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +32));
-
-		C_MainSpringArm->SetRelativeLocation(C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, +67));
-
-		PoseState = EPoseState::STAND;
-		return;
-	}
-	if (bIsAimDownSight)
-	{
-		AC_Gun* CurGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
-		if (IsValid(CurGun))
-		{
-			CurGun->BackToMainCamera();
-			bIsAimDownSight = false;
-		}
-	}
-	bPressedJump = true;
-	bIsJumping = true;
-	JumpKeyHoldTime = 0.0f;
-}
-
-void AC_Player::CancelTurnInPlaceMotion()
-{
-	//Turn In Place중 움직이면 Turn In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
-	UAnimMontage*  RightMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState].AnimMontage;
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-
-	if (!IsValid(RightMontage)) return;
-
-	if (AnimInstance->Montage_IsPlaying(RightMontage))
-	{
-		SetStrafeRotationToIdleStop();
-		AnimInstance->Montage_Stop(0.2f, RightMontage);
-	}
-
-	UAnimMontage* LeftMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState].AnimMontage;
-	if (!IsValid(LeftMontage)) return;
-
-	if (AnimInstance->Montage_IsPlaying(LeftMontage))
-	{
-		SetStrafeRotationToIdleStop();
-		AnimInstance->Montage_Stop(0.2f, LeftMontage);
-	}
-
-	// Lower body part도 확인
-	if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
-
-	UAnimMontage* LowerRightMontage = LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState].AnimMontage;
-	if (!IsValid(LowerRightMontage)) return;
-
-	if (AnimInstance->Montage_IsPlaying(LowerRightMontage))
-	{
-		SetStrafeRotationToIdleStop();
-		AnimInstance->Montage_Stop(0.2f, LowerRightMontage);
-	}
-
-	UAnimMontage* LowerLeftMontage = LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState].AnimMontage;
-	if (!IsValid(LowerLeftMontage)) return;
-
-	if (AnimInstance->Montage_IsPlaying(LowerLeftMontage))
-	{
-		SetStrafeRotationToIdleStop();
-		AnimInstance->Montage_Stop(0.2f, LowerLeftMontage);
-	}
-}
-
-void AC_Player::HoldDirection()
-{
-	// 수류탄 던지는 process 중이라면 Alt키 중지
-
-	AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(EquippedComponent->GetCurWeapon());
-	if (ThrowingWeapon) 
-		if (ThrowingWeapon->GetIsOnThrowProcess())
-		{
-			bIsHoldDirection = false;
-			bIsAltPressed = false;
-
-			return;
-		}
-
-	bIsHoldDirection = true;
-	bIsAltPressed = false;
-	if (Controller)
-	{
-		//FRotator NewRotation;
-		CharacterMovingDirection.Yaw = GetActorRotation().Yaw;
-		CharacterMovingDirection.Pitch = GetActorRotation().Pitch;
-		CharacterMovingDirection.Roll = Controller->GetControlRotation().Roll;
-		//Controller->SetControlRotation(NewRotation);	
-	}
-}
-
-void AC_Player::ReleaseDirection()
-{
-	bIsHoldDirection = false;
-
-	bIsAltPressed = true;
 
 }
 
@@ -476,144 +210,19 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 	}
 }
 
-void AC_Player::OnNum1()
+void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime)
 {
-	EquippedComponent->ChangeCurWeapon(EWeaponSlot::MAIN_GUN);
+	C_MainSpringArm->SetRelativeLocation
+	(
+		FMath::Lerp
+		(
+			C_MainSpringArm->GetRelativeLocation(),
+			MainSpringArmRelativeLocationDest,
+			DeltaTime * 5.f
+		)
+	);
 }
 
-void AC_Player::OnNum2()
-{
-	// Testing 용 Boosting TODO : 이 라인 지우기
-	StatComponent->AddBoost(40.f);
-
-	EquippedComponent->ChangeCurWeapon(EWeaponSlot::SUB_GUN);
-}
-
-void AC_Player::OnNum4()
-{
-	EquippedComponent->ChangeCurWeapon(EWeaponSlot::MELEE_WEAPON);
-}
-
-void AC_Player::OnNum5()
-{
-	EquippedComponent->ChangeCurWeapon(EWeaponSlot::THROWABLE_WEAPON);
-}
-
-void AC_Player::OnXKey()
-{
-	// Testing 용 Damage 주기 TODO : 이 라인 지우기
-	//TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor * DamageCauser);
-	TakeDamage(10.f, EDamagingPartType::HEAD, this);
-	EquippedComponent->ToggleArmed();
-}
-
-void AC_Player::OnBKey()
-{
-	// Testing 용 Heal 주기 TODO : 이 라인 지우기
-	if (IsValid(ConsumableItem)) ConsumableItem->StartUsingConsumableItem(this);
-
-	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
-	EquippedComponent->GetCurWeapon()->ExecuteBKey();
-}
-
-void AC_Player::OnRKey()
-{
-	// Testing용 ConsumableItem 작동 취소 TODO : 이 라인 지우기
-	if (IsValid(ConsumableItem)) ConsumableItem->CancelActivating();
-
-	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
-	EquippedComponent->GetCurWeapon()->ExecuteRKey();
-}
-
-void AC_Player::OnMLBStarted()
-{
-	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
-	EquippedComponent->GetCurWeapon()->ExecuteMlb_Started();
-}
-
-void AC_Player::OnMLBOnGoing()
-{
-	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
-	EquippedComponent->GetCurWeapon()->ExecuteMlb_OnGoing();
-}
-
-void AC_Player::OnMLBCompleted()
-{
-	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
-	EquippedComponent->GetCurWeapon()->ExecuteMlb_Completed();
-}
-
-void AC_Player::OnMRBStarted()
-{
-	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
-	EquippedComponent->GetCurWeapon()->ExecuteMrb_Started();
-}
-
-void AC_Player::OnMRBOnGoing()
-{
-	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
-	EquippedComponent->GetCurWeapon()->ExecuteMrb_OnGoing();
-}
-
-void AC_Player::OnMRBCompleted()
-{
-	if (!IsValid(EquippedComponent->GetCurWeapon())) return;
-	EquippedComponent->GetCurWeapon()->ExecuteMrb_Completed();
-}
-
-void AC_Player::OnSprintStarted()
-{
-	bIsSprinting = true;
-}
-
-void AC_Player::OnSprintReleased()
-{
-	bIsSprinting = false;
-}
-
-void AC_Player::OnWalkStarted()
-{
-	bIsWalking = true;
-}
-
-void AC_Player::OnWalkReleased()
-{
-	bIsWalking = false;
-}
-
-/// <summary>
-/// 상호작용(F)와 대응되는 키로 구상중.
-/// 봇도 상호작용함.
-/// </summary>
-void AC_Player::Interaction()
-{
- 	UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), this->Inventory->GetMaxVolume());
-	FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetMaxVolume());
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
-
-	FString TheFloatStr1 = FString::SanitizeFloat((float)this->Inventory->GetCurBackPackLevel());
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr1);
-
-	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
-
-
-	if (Inventory->GetNearItems().Num() > 0)
-	{
-		//AC_Item* Item = *NearInventory.CreateIterator();
-		AC_Item* item = Inventory->GetNearItems()[0];
-	
-		//NearInventory.Add(Item);
-		item->Interaction(this);
-		//item->SetActorHiddenInGame(true); // Hide item from the world
-		item->SetActorEnableCollision(false); // Disable collision
-		Inventory->GetNearItems().Remove(item);
-		
-	}
-	else
-	{
-		UC_Util::Print("NONE");
-	}
-}
 /// <summary>
 /// 아이템이 캐릭터의 근처에 있을 때.
 /// </summary>

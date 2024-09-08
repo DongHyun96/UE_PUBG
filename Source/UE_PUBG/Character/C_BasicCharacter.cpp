@@ -13,6 +13,7 @@
 #include "Character/Component/C_InvenComponent.h"
 
 #include "Component/C_StatComponent.h"
+#include "Component/C_ConsumableUsageMeshComponent.h"
 
 #include "Utility/C_Util.h"
 
@@ -31,6 +32,9 @@ AC_BasicCharacter::AC_BasicCharacter()
 	Inventory->SetOwnerCharacter(this);
 
 	StatComponent = CreateDefaultSubobject<UC_StatComponent>("StatComponent");
+
+	ConsumableUsageMeshComponent = CreateDefaultSubobject<UC_ConsumableUsageMeshComponent>("ConsumableUsageMeshComponent");
+	ConsumableUsageMeshComponent->SetOwnerCharacter(this);
 }
 
 // Called when the game starts or when spawned
@@ -64,9 +68,12 @@ float AC_BasicCharacter::PlayAnimMontage(UAnimMontage* AnimMontage, float InPlay
 {
 	// Deprecated in UE_PUBG Project
 	// Do Nothing
-
-	FString DebugMessage = "In AC_BasicCharacter::PlayAnimMontage : This function is deprecated. Use AC_PriorityAnimMontage instead.";
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *DebugMessage);
+	UC_Util::Print
+	(
+		"From AC_BasicCharacter:PlayAnimMontage : This function is deprecated. Use PriorityAnimMontage parameter function instead",
+		FColor::Cyan,
+		10.f
+	);
 
 	return 0.0f;
 }
@@ -113,34 +120,6 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	FString Str = "Character Damaged! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
 
 	UC_Util::Print(Str, FColor::Cyan, 3.f);
-
-	StatComponent->TakeDamage(DamageAmount);
-
-	return DamageAmount;
-}
-
-float AC_BasicCharacter::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser)
-{
-	//FString Str = "Character Damaged on certain damaging part! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
-	//UC_Util::Print(Str, FColor::Cyan, 3.f);
-
-	// TODO : Armor 확인해서 Armor 부분이라면 Damage 감소 적용
-	// TODO : Armor 또한 피 깎기
-
-	StatComponent->TakeDamage(DamageAmount);
-
-	return DamageAmount;
-}
-
-float AC_BasicCharacter::TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser)
-{
-	if (!DAMAGINGPARTS_MAP.Contains(DamagingPhyiscsAssetBoneName))
-	{
-		UC_Util::Print("From AC_BasicCharacter::TakeDamage : No Such PhysicsAsset Bone Name exists!");
-		return 0.f;
-	}
-
-	//UC_Util::Print(DamagingPhyiscsAssetBoneName.ToString() + " Parts damaged! Amount : " + FString::SanitizeFloat(DamageAmount));
 
 	StatComponent->TakeDamage(DamageAmount);
 
@@ -211,11 +190,6 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 void AC_BasicCharacter::OnPoseTransitionGoing()
 {
 	PoseState = NextPoseState;
-
-	// 최대속력 조절
-	//GetCharacterMovement()->MaxWalkSpeed =	(PoseState == EPoseState::STAND)  ? 600.f :
-	//										(PoseState == EPoseState::CROUCH) ? 200.f :
-	//										(PoseState == EPoseState::CRAWL)  ? 100.f : 600.f;
 }
 
 void AC_BasicCharacter::OnPoseTransitionFinish()

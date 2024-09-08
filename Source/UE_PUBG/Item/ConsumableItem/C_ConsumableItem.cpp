@@ -2,8 +2,12 @@
 
 
 #include "Item/ConsumableItem/C_ConsumableItem.h"
+
+#include "GameFramework/CharacterMovementComponent.h"
+
 #include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_ConsumableUsageMeshComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Utility/C_Util.h"
@@ -31,16 +35,21 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		return;
 	case EConsumableItemState::ACTIVATING:
 	{
-
 		if (UsingTimer < UsageTime)
 		{
 			HandleActivatingState(); // Pure virtual Template method
 
 			//방해 받았는지 체크해서 방해를 받았다면 Activating Cancel 시키기
+
+			if (ItemUser->GetCharacterMovement()->IsFalling())
+			{
+				CancelActivating();
+				return;
+			}
+
 			UAnimInstance* UserAnimInstance = ItemUser->GetMesh()->GetAnimInstance();
 
-			for (auto& Pair : UsingMontageMap)
-				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) return;
+			for (auto& Pair : UsingMontageMap) if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) return;
 
 			// 방해를 받음
 			CancelActivating();
@@ -65,6 +74,8 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			ItemUser->PlayAnimMontage(DrawMontage);
 		}
 
+		OnActivatingFinish(); // Template method
+
 		ItemUser->SetIsActivatingConsumableItem(false);
 	}
 		return;
@@ -75,7 +86,8 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 	{
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser)) Player->OnConsumableUsed();
 
-		// TODO : 아이템 삭제
+		// TODO : 아이템 삭제 (몇 초 뒤에 삭제처리해야함) -> 붕대의 UsageMesh 없애는 시간까지는 기다려야 함
+		// TODO : Inventory UI에서 지우기
 		// TODO : 이 라인 지우기
 		ConsumableItemState = EConsumableItemState::IDLE;
 	}
@@ -102,7 +114,7 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 
 	// 사용 시작하기
 	ConsumableItemState = EConsumableItemState::ACTIVATING;
-	InitStartVariables(); // Template method
+	OnStartUsing(); // Template method
 
 
 	// 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기
@@ -150,10 +162,11 @@ bool AC_ConsumableItem::CancelActivating()
 	}
 
 	ItemUser->SetIsActivatingConsumableItem(false);
+	OnCancelActivating();
 
 	ConsumableItemState = EConsumableItemState::IDLE;
 	UsingTimer			= 0.f;
-	ItemUser			= nullptr;
+	//ItemUser			= nullptr;
 
 	return true;
 }
