@@ -9,6 +9,7 @@
 #include "Character/Component/C_StatComponent.h"
 
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_ConsumableUsageMeshComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 
 AC_MedKit::AC_MedKit()
@@ -31,6 +32,11 @@ void AC_MedKit::BeginPlay()
 void AC_MedKit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//if (ConsumableItemState == EConsumableItemState::ACTIVATING)
+	//{
+	//
+	//}
 }
 
 void AC_MedKit::HandleActivatingState()
@@ -39,11 +45,45 @@ void AC_MedKit::HandleActivatingState()
 		Player->OnActivatingHealUp(100.f, UsageTime, UsingTimer);
 }
 
-void AC_MedKit::InitStartVariables()
+void AC_MedKit::OnStartUsing()
 {
 	UsingTimer	= 0.f;
 	UsageTime	= 8.f;
 	BlockUsed	= 0;
 
 	UC_Util::Print("Starts to use MedKit!");
+
+	//ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::, true);
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_MedKit::SwitchingBandageToSyringe, SWITCHING_TIME, false);
+}
+
+void AC_MedKit::OnActivatingFinish()
+{
+	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, false);
+}
+
+void AC_MedKit::OnCancelActivating()
+{
+	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::BANDAGE, false);
+	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, false);
+}
+
+void AC_MedKit::SwitchingBandageToSyringe()
+{
+	if (ConsumableItemState != EConsumableItemState::ACTIVATING)
+	{
+		ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::BANDAGE, false);
+		ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, false);
+		return;
+	}
+
+	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::BANDAGE, true);
+	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, true);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_MedKit::HideBandageMesh, BAND_USAGE_MESH_SHOW_TIME, false);
+}
+
+void AC_MedKit::HideBandageMesh()
+{
+	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::BANDAGE, false);
 }

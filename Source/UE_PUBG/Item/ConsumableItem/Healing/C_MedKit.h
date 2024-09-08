@@ -28,7 +28,19 @@ public:
 
 private:
 
-	void HandleActivatingState() override;
-	void InitStartVariables() override;
+	void HandleActivatingState()	override;
+	void OnStartUsing()				override;
+	void OnActivatingFinish()		override;
+	void OnCancelActivating()		override;
 
+private:
+
+	void SwitchingBandageToSyringe();
+	void HideBandageMesh();
+
+private:
+
+	struct FTimerHandle TimerHandle {};
+	const float SWITCHING_TIME = 3.2f;
+	const float BAND_USAGE_MESH_SHOW_TIME = 10.f;
 };

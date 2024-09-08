@@ -59,6 +59,32 @@ bool UC_StatComponent::TakeDamage(const float& Damage)
 	return true;
 }
 
+float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser)
+{
+	//FString Str = "Character Damaged on certain damaging part! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
+	//UC_Util::Print(Str, FColor::Cyan, 3.f);
+
+	// TODO : Armor 확인해서 Armor 부분이라면 Damage 감소 적용
+	// TODO : Armor 또한 피 깎기
+
+	TakeDamage(DamageAmount);
+	return DamageAmount;
+}
+
+float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser)
+{
+	if (!DAMAGINGPARTS_MAP.Contains(DamagingPhyiscsAssetBoneName))
+	{
+		UC_Util::Print("From UC_StatComponent::TakeDamage : No Such PhysicsAsset Bone Name exists!");
+		return 0.f;
+	}
+
+	//UC_Util::Print(DamagingPhyiscsAssetBoneName.ToString() + " Parts damaged! Amount : " + FString::SanitizeFloat(DamageAmount));
+
+	TakeDamage(DamageAmount);
+	return DamageAmount;
+}
+
 bool UC_StatComponent::ApplyHeal(const float& HealAmount)
 {
 	if (CurHP >= MAX_HP)  return false; // 이미 체력이 모두 찼을 때

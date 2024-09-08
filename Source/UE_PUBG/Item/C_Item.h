@@ -69,7 +69,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	uint8 GetVolume() { return Volume; }
 
-	virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction;);
+	virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction, );
 
 	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }

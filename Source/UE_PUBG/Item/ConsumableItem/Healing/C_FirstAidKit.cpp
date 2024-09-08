@@ -8,6 +8,7 @@
 #include "Character/Component/C_StatComponent.h"
 
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_ConsumableUsageMeshComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 
 #include "Utility/C_Util.h"
@@ -42,10 +43,21 @@ void AC_FirstAidKit::HandleActivatingState()
 		Player->OnActivatingHealUp(75.f, UsageTime, UsingTimer);
 }
 
-void AC_FirstAidKit::InitStartVariables()
+void AC_FirstAidKit::OnStartUsing()
 {
 	UsingTimer	= 0.f;
 	UsageTime	= 6.f;
 	BlockUsed	= 0;
 	UC_Util::Print("Starts to use FirstAidKit!");
+	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, true);
+}
+
+void AC_FirstAidKit::OnActivatingFinish()
+{
+	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, false);
+}
+
+void AC_FirstAidKit::OnCancelActivating()
+{
+	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, false);
 }

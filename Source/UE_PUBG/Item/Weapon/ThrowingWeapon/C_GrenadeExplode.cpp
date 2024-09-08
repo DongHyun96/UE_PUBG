@@ -7,13 +7,12 @@
 
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
+#include "Character/Component/C_StatComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
-//#include "Components/SkeletalMeshComponent.h"
-//#include "Components/PrimitiveComponent.h"
 
 #include "Utility/C_Util.h"
 
@@ -252,7 +251,7 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 		float DamageAmount = DAMAGE_BASE * (ExplosionRad - HitResult.Distance) / ExplosionRad; // 거리 비례 Damage base
 		DamageAmount *= BodyPartsDamageRate[HitResult.BoneName]; // 신체부위별 데미지 감소 적용
 
-		TotalDamage += Character->TakeDamage(DamageAmount, HitResult.BoneName, ThrowingWeapon);
+		TotalDamage += Character->GetStatComponent()->TakeDamage(DamageAmount, HitResult.BoneName, ThrowingWeapon);
 
 		//UC_Util::Print("Hitted Bone : " + HitResult.BoneName.ToString(), FColor::Red, 5.f);
 		//UC_Util::Print("Bone Damaged : " + FString::SanitizeFloat(DamageAmount), FColor::Red, 5.f);
