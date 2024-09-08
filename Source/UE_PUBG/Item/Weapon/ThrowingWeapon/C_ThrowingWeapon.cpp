@@ -90,7 +90,7 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AC_ThrowingWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+			
 	if (!IsValid(OwnerCharacter))
 		return;
 
