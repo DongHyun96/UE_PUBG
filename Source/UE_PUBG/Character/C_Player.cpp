@@ -629,36 +629,15 @@ void AC_Player::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Othe
 	FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetCurVolume());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
 
-
-	//AC_BackPack* OverlappedItem = Cast<AC_BackPack>(OtherActor);
-	//AC_Item* OverlappedItem = CastChecked<AC_Item>(OtherActor);
 	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
 	
-	//UC_Util::Print(*OverlappedItem->GetName());
-
-
-	//UE_LOG(LogTemp, Log, TEXT("Overlapped actor class: %s"), *OverlappedItem->GetClass()->GetName());
-	//if (OverlappedItem == nullptr || OverlappedItem->GetClass() != AC_Item::StaticClass())
-	//	return;
 	
-	if (IsValid(OverlappedItem))
+	if (IsValid(OverlappedItem) && !OverlappedItem->GetOwnerCharacter())
 	{
-	
-		//NearInventory.Add(OverlappedItem);
-		//OverlappedItem->Interaction(this);
 		UC_Util::Print("OverlappedItem");
 		//UC_Util::Print(*OverlappedItem->GetName());
 	
-		//GetInvenComponent()->GetNearItems().Add(OverlappedItem);
-		//TArray<AC_Item*> TestNearItems = GetInvenComponent()->GetNearItems();
-		//TestNearItems.Add(OverlappedItem);
 		Inventory->GetNearItems().Add(OverlappedItem);
-		//AC_BackPack* TestBackPack = Cast<AC_BackPack>(OverlappedItem);
-		//BPC_InvenSystemInstance->GetNearItems().Add(TestBackPack);
-		//NearInventory.Add(TestBackPack);
-		//TLqkf dho dksemfdjrksirh TLdldldldldldldldldlldlQKf
-		//if (IsValid(InvenComponent->GetNearItems()[0]))
-		//	UC_Util::Print(InvenComponent->GetNearItems()[0]->GetName());
 	}
 	else
 	{

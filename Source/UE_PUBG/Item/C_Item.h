@@ -66,12 +66,13 @@ public:
 	//UFUNCTION()
 	//virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION(BlueprintCallable)
 	uint8 GetVolume() { return Volume; }
 
 	virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction;);
 
 	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
-
+	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 private:
 	uint8 Volume;
 
@@ -88,6 +89,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	uint8 ItemNums;
 
-	class AC_BasicCharacter* OwnerCharacter{};
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	AC_BasicCharacter* OwnerCharacter{};
 };
 // Fill out your copyright notice in the Description page of Project Settings.

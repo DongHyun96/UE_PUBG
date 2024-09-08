@@ -72,12 +72,7 @@ bool UC_InvenComponent::CheckMyBackPack(AC_BackPack* backpack)
 	if (backpack == nullptr)
 	{
 		CurBackPackLevel = EBackPackLevel::LV0;
-
-		
-
-		//backpack->AttachToSocket(OwnerCharacter);
 		EquippedBackPack(backpack);
-		//backpack->Destroy();
 		return true;
 	}
 

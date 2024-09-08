@@ -94,5 +94,7 @@ void AC_BackPack::DetachToSocket(AC_BasicCharacter* character)
 	BackpackMesh->SetEnableGravity(true);
 	BackpackMesh->SetVisibility(true);
 
+	this->SetOwnerCharacter(nullptr);
+
 
 }
