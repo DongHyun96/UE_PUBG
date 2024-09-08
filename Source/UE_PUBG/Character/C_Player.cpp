@@ -632,7 +632,7 @@ void AC_Player::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Othe
 	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
 	
 	
-	if (IsValid(OverlappedItem) && !OverlappedItem->GetOwnerCharacter())
+	if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
 	{
 		UC_Util::Print("OverlappedItem");
 		//UC_Util::Print(*OverlappedItem->GetName());
