@@ -8,6 +8,7 @@
 
 #include "Components/PanelWidget.h"
 #include "Components/NamedSlotInterface.h"
+#include "Utility/C_Util.h"
 
 #include "Components/CanvasPanelSlot.h"
 #include "Character/C_BasicCharacter.h"
@@ -185,6 +186,7 @@ bool AC_Gun::BackToMainCamera()
 	AimSightCamera->SetActive(false);
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() == this)
 	{
+		UC_Util::Print("Fuck");
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(OwnerCharacter, 0.2);
 	}
 	OwnerCharacter->GetMesh()->UnHideBoneByName(FName("Head"));
