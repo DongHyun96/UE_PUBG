@@ -2,7 +2,8 @@
 
 
 #include "Character/Component/C_StatComponent.h"
-#include "Character/C_Player.h"
+#include "Character/C_BasicCharacter.h"
+#include "HUD/C_HUDWidget.h"
 #include "Utility/C_Util.h"	
 
 UC_StatComponent::UC_StatComponent()
@@ -29,13 +30,13 @@ void UC_StatComponent::SetCurHP(const float& InCurHP)
 {
 	CurHP = InCurHP;
 
-	if (OwnerPlayer) OwnerPlayer->UpdateHPOnHUD();
+	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
 }
 
 void UC_StatComponent::SetCurBoosting(const float& InCurBoosting)
 {
 	CurBoosting = InCurBoosting;
-	if (OwnerPlayer) OwnerPlayer->OnUpdateBoostingHUD(CurBoosting);
+	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
 }
 
 bool UC_StatComponent::TakeDamage(const float& Damage)
@@ -47,7 +48,7 @@ bool UC_StatComponent::TakeDamage(const float& Damage)
 	
 	if (CurHP < 0.f) CurHP = 0.f;
 
-	if (OwnerPlayer) OwnerPlayer->UpdateHPOnHUD();
+	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
 
 	// »ç¸Á
 	if (CurHP <= 0.f)
@@ -94,7 +95,7 @@ bool UC_StatComponent::ApplyHeal(const float& HealAmount)
 
 	if (CurHP > MAX_HP) CurHP = MAX_HP;
 
-	if (OwnerPlayer) OwnerPlayer->UpdateHPOnHUD();
+	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
 
 	return true;
 }
@@ -108,7 +109,7 @@ bool UC_StatComponent::AddBoost(const float& BoostAmount)
 
 	if (CurBoosting > MAX_BOOSTING) CurBoosting = MAX_BOOSTING;
 
-	if (OwnerPlayer) OwnerPlayer->OnUpdateBoostingHUD(CurBoosting);
+	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
 
 	return true;
 }
@@ -136,7 +137,7 @@ void UC_StatComponent::UpdateBoostEffect(const float& DeltaTime)
 	CurBoosting -= BOOST_ONE_BLOCK_AMOUNT;
 	if (CurBoosting <= 0.5f) CurBoosting = 0.f;
 
-	if (OwnerPlayer) OwnerPlayer->OnUpdateBoostingHUD(CurBoosting);
+	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
 }
 
 FBoostingEffectFactor UC_StatComponent::GetBoostingEffectFactorByCurBoostingAmount() const

@@ -12,6 +12,8 @@
 #include "Character/Component/C_ConsumableUsageMeshComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 
+#include "HUD/C_HUDWidget.h"
+
 AC_Bandage::AC_Bandage()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -39,7 +41,7 @@ void AC_Bandage::HandleActivatingState()
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 	{
 		float HealUpDestHPValue = FMath::Clamp(Player->GetStatComponent()->GetCurHP() + 10.f, 0.f, 75.f);
-		Player->OnActivatingHealUp(HealUpDestHPValue, UsageTime, UsingTimer);
+		Player->GetHUDWidget()->OnActivatingHealUp(HealUpDestHPValue, UsageTime, UsingTimer);
 	}
 }
 

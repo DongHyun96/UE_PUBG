@@ -78,6 +78,8 @@ private:
 	//아니면 그냥 UObject로 만들기
 	void OnFKey();
 
+	void OnNKey();
+
 private:
 
 	class AC_Player* Player{};
@@ -145,4 +147,7 @@ public:
 	//상호작용키(F)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* Interaction{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* NKeyAction{};
 };

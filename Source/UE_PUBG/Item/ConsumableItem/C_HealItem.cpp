@@ -4,6 +4,7 @@
 #include "Item/ConsumableItem/C_HealItem.h"
 
 #include "Character/C_Player.h"
+#include "HUD/C_HUDWidget.h"
 
 AC_HealItem::AC_HealItem()
 {
@@ -31,7 +32,7 @@ void AC_HealItem::HandleActivateCompletedState()
 	if (UsingTimer < OneBlockTime)
 	{
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser))
-			Player->OnActivateHealUpCompletedTick(NewHP, UsingTimer / OneBlockTime);
+			Player->GetHUDWidget()->OnActivateHealUpCompletedTick(NewHP, UsingTimer / OneBlockTime);
 		return;
 	}
 

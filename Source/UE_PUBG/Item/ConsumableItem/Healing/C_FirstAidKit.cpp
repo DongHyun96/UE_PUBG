@@ -11,6 +11,8 @@
 #include "Character/Component/C_ConsumableUsageMeshComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 
+#include "HUD/C_HUDWidget.h"
+
 #include "Utility/C_Util.h"
 
 AC_FirstAidKit::AC_FirstAidKit()
@@ -40,7 +42,7 @@ void AC_FirstAidKit::Tick(float DeltaTime)
 void AC_FirstAidKit::HandleActivatingState()
 {
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser)) 
-		Player->OnActivatingHealUp(75.f, UsageTime, UsingTimer);
+		Player->GetHUDWidget()->OnActivatingHealUp(75.f, UsageTime, UsingTimer);
 }
 
 void AC_FirstAidKit::OnStartUsing()

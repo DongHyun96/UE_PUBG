@@ -47,7 +47,7 @@
 #include "Styling/SlateBrush.h"
 #include "Engine/Texture2D.h"
 
-#include "HUD/C_HUDComponent.h"
+#include "HUD/C_HUDWidget.h"
 
 #include "Item/ConsumableItem/Healing/C_FirstAidKit.h"
 
@@ -75,10 +75,7 @@ AC_Player::AC_Player()
 	SceneCaptureComponent = CreateDefaultSubobject<USceneCaptureComponent2D>("SceneCaptureComponent");
 	//SceneCaptureComponent->bCaptureEveryFrame = false;
 
-	HUDComponent = CreateDefaultSubobject<UC_HUDComponent>("HUDComponent");
-
 	SetTimeLineComponentForMovingCamera();
-
 
 }
 
@@ -86,7 +83,11 @@ void AC_Player::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StatComponent->SetOwnerPlayer(this);
+	if (HUDWidget)
+	{
+		HUDWidget->AddToViewport();
+		StatComponent->SetOwnerHUDWidget(HUDWidget);
+	}
 
 	AimCamera->SetActive(false);
 
@@ -910,6 +911,9 @@ void AC_Player::SpawnConsumableItemForTesting()
 	FActorSpawnParameters Param{};
 	Param.Owner = this;
 	//ConsumableItem = GetWorld()->SpawnActor<AC_FirstAidKit>(ConsumableItemClass, Param);
-	ConsumableItem = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClass, Param);
+	//ConsumableItem = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClass, Param);
+
+	for (auto& ItemClass : ConsumableItemClasses)
+		ConsumableItems.Add(GetWorld()->SpawnActor<AC_ConsumableItem>(ItemClass, Param));
 
 }

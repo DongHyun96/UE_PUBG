@@ -12,6 +12,8 @@
 #include "Character/Component/C_ConsumableUsageMeshComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 
+#include "HUD/C_HUDWidget.h"
+
 AC_MedKit::AC_MedKit()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -42,7 +44,7 @@ void AC_MedKit::Tick(float DeltaTime)
 void AC_MedKit::HandleActivatingState()
 {
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser)) 
-		Player->OnActivatingHealUp(100.f, UsageTime, UsingTimer);
+		Player->GetHUDWidget()->OnActivatingHealUp(100.f, UsageTime, UsingTimer);
 }
 
 void AC_MedKit::OnStartUsing()

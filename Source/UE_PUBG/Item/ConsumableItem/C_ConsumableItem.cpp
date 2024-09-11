@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "Character/C_Player.h"
+#include "HUD/C_HUDWidget.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_ConsumableUsageMeshComponent.h"
 #include "Item/Weapon/C_Weapon.h"
@@ -60,7 +61,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		// Activating end
 
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser))
-			Player->OnConsumableItemActivatingEnd();
+			Player->GetHUDWidget()->OnConsumableItemActivatingEnd();
 
 		ConsumableItemState = EConsumableItemState::ACTIVATE_COMPLETED;
 		UsingTimer = 0.f;
@@ -84,7 +85,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		return;
 	case EConsumableItemState::USED:
 	{
-		if (AC_Player* Player = Cast<AC_Player>(ItemUser)) Player->OnConsumableUsed();
+		if (AC_Player* Player = Cast<AC_Player>(ItemUser)) Player->GetHUDWidget()->OnConsumableUsed();
 
 		// TODO : 아이템 삭제 (몇 초 뒤에 삭제처리해야함) -> 붕대의 UsageMesh 없애는 시간까지는 기다려야 함
 		// TODO : Inventory UI에서 지우기
@@ -104,6 +105,7 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 
 	ItemUser = InItemUser;
 
+	if (ItemUser->GetIsActivatingConsumableItem())				return false;
 	if (!UsingMontageMap.Contains(ItemUser->GetPoseState()))    return false;
 	if (!UsingMontageMap[ItemUser->GetPoseState()].AnimMontage) return false;
 
@@ -136,10 +138,12 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 
 bool AC_ConsumableItem::CancelActivating()
 {
+	// TODO : 한 캐릭터 안에서 통용된 CancelActivating으로 수정해야 함
+
 	if (ConsumableItemState != EConsumableItemState::ACTIVATING) return false;
 
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
-		Player->OnCancelActivatingConsumableItem();
+		Player->GetHUDWidget()->OnCancelActivatingConsumableItem();
 
 	UAnimInstance* UserAnimInstance = ItemUser->GetMesh()->GetAnimInstance();
 
