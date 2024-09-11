@@ -59,6 +59,8 @@ void AC_BackPack::AttachToSocket(AC_BasicCharacter* character)
 
 	//DrawDebugSphere(GetWorld(), InParent->GetSocketLocation(SocketName), 10.f, 12, FColor::Red, false, 10.f);
 
+	SetOwnerCharacter(character);
+
 	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);
 }
 
@@ -80,6 +82,7 @@ void AC_BackPack::DetachToSocket(AC_BasicCharacter* character)
 		//충돌을 여기서 꺼주고 SetLocation 이후에 다시 켜주면 OverlappedBegin이벤트가 작동함.
 		SetActorEnableCollision(false);
 	}
+	SetOwnerCharacter(nullptr);
 
 	// 가방을 캐릭터의 발 아래로 이동시킴
 	FVector DropLocation = character->GetActorLocation() + FVector(0.f, 0.f, -75.f);
@@ -88,13 +91,12 @@ void AC_BackPack::DetachToSocket(AC_BasicCharacter* character)
 	SetActorRotation(DropRotation);
 
 	//SetActorLocation으로 꺼져버린 충돌을 다시 켜줌.
-	this->SetActorEnableCollision(true);
+	SetActorEnableCollision(true);
 	// 가방이 다시 보이게 설정
 	BackpackMesh->SetSimulatePhysics(true);
 	BackpackMesh->SetEnableGravity(true);
 	BackpackMesh->SetVisibility(true);
 
-	this->SetOwnerCharacter(nullptr);
 
 
 }

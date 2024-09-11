@@ -84,7 +84,7 @@ protected:
 	FString ItemName;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	UTexture2D* ItemIcon;
+	UTexture2D* ItemIcon;		
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	uint8 ItemNums;
