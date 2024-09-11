@@ -13,5 +13,5 @@ UCLASS()
 class UE_PUBG_API UC_EquipSlot : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 };

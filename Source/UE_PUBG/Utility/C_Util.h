@@ -20,6 +20,7 @@ public:
 	static void Print(const int& data, const FColor& InColor = FColor::Red, const float& TimeToDisplay = 1.f);
 	static void Print(const float& data, const FColor& InColor = FColor::Red, const float& TimeToDisplay = 1.f);
 	static void Print(const FVector& data, const FColor& InColor = FColor::Red, const float& TimeToDisplay = 1.f);
+	static void Print(const FVector2D& data, const FColor& InColor = FColor::Red, const float& TimeToDisplay = 1.f);
 	static void Print(const FTransform& data, const FColor& InColor = FColor::Red, const float& TimeToDisplay = 1.f);
 	static void Print(const FRotator& data, const FColor& InColor = FColor::Red, const float& TimeToDisplay = 1.f);
 

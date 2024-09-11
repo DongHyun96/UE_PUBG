@@ -5,6 +5,7 @@
 
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
+#include "HUD/C_HUDWidget.h"
 
 
 AC_BoostItem::AC_BoostItem()
@@ -30,7 +31,7 @@ bool AC_BoostItem::IsAvailableToStartUsing(AC_BasicCharacter* InItemUser)
 void AC_BoostItem::HandleActivatingState()
 {
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
-		Player->OnActivatingBooster(UsageTime, UsingTimer);
+		Player->GetHUDWidget()->OnActivatingBooster(UsageTime, UsingTimer);
 }
 
 void AC_BoostItem::HandleActivateCompletedState()

@@ -26,6 +26,12 @@ void UC_Util::Print(const FVector& data, const FColor& InColor, const float& Tim
 	GEngine->AddOnScreenDebugMessage(-1, TimeToDisplay, InColor, *str);
 }
 
+void UC_Util::Print(const FVector2D& data, const FColor& InColor, const float& TimeToDisplay)
+{
+	FString str = data.ToString();
+	GEngine->AddOnScreenDebugMessage(-1, TimeToDisplay, InColor, *str);
+}
+
 void UC_Util::Print(const FTransform& data, const FColor& InColor, const float& TimeToDisplay)
 {
 	GEngine->AddOnScreenDebugMessage(-1, TimeToDisplay, InColor, *data.ToString());

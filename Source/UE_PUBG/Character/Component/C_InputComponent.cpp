@@ -3,6 +3,8 @@
 
 #include "Character/Component/C_InputComponent.h"
 
+#include "HUD/C_HUDWidget.h"
+
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_StatComponent.h"
 
@@ -93,6 +95,8 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 
 		EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Started, this, &UC_InputComponent::OnWalkStarted);
 		EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Completed, this, &UC_InputComponent::OnWalkReleased);
+
+		EnhancedInputComponent->BindAction(NKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnNKey);
 	}
 }
 
@@ -391,7 +395,8 @@ void UC_InputComponent::OnXKey()
 void UC_InputComponent::OnBKey()
 {
 	// Testing 용 Heal 주기 TODO : 이 라인 지우기
-	if (IsValid(Player->ConsumableItem)) Player->ConsumableItem->StartUsingConsumableItem(Player);
+	if (IsValid(Player->ConsumableItems[Player->ConsumableIterator])) 
+		Player->ConsumableItems[Player->ConsumableIterator]->StartUsingConsumableItem(Player);
 
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteBKey();
@@ -400,7 +405,8 @@ void UC_InputComponent::OnBKey()
 void UC_InputComponent::OnRKey()
 {
 	// Testing용 ConsumableItem 작동 취소 TODO : 이 라인 지우기
-	if (IsValid(Player->ConsumableItem)) Player->ConsumableItem->CancelActivating();
+	if (IsValid(Player->ConsumableItems[Player->ConsumableIterator]))
+		Player->ConsumableItems[Player->ConsumableIterator]->CancelActivating();
 
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteRKey();
@@ -426,6 +432,13 @@ void UC_InputComponent::OnMLBCompleted()
 
 void UC_InputComponent::OnMRBStarted()
 {
+	UC_Util::Print("Switching Consumable");
+
+	// Test용 Consumable switching
+	if (Player->ConsumableIterator >= Player->ConsumableItems.Num() - 1) Player->ConsumableIterator = 0;
+	else Player->ConsumableIterator++;
+		
+	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMrb_Started();
 }
@@ -494,6 +507,11 @@ void UC_InputComponent::OnFKey()
 	{
 		UC_Util::Print("NONE");
 	}
+}
+
+void UC_InputComponent::OnNKey()
+{
+	Player->GetHUDWidget()->ToggleMiniMapEnlarged();
 }
 
 

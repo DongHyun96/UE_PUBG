@@ -57,7 +57,8 @@ public:
 public: // Getters and setters
 
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
-	void SetOwnerPlayer(class AC_Player* InOwnerPlayer) { OwnerPlayer = InOwnerPlayer; }
+	//void SetOwnerPlayer(class AC_Player* InOwnerPlayer) { OwnerPlayer = InOwnerPlayer; }
+	void SetOwnerHUDWidget(class UC_HUDWidget* InHUDWidget) { OwnerHUDWidget = InHUDWidget; }
 
 	UFUNCTION(BlueprintCallable)
 	float GetCurHP() const { return CurHP; }
@@ -113,6 +114,7 @@ protected:
 
 	class AC_BasicCharacter*	OwnerCharacter{};
 	class AC_Player*			OwnerPlayer{};
+	class UC_HUDWidget*			OwnerHUDWidget{};
 
 private:
 
@@ -133,9 +135,7 @@ private:
 
 	float BoostTimer{};
 
-	// TODO 원래 8초
-	//const float BOOST_ONE_BLOCK_EFFECT_TIME = 8.f;
-	const float BOOST_ONE_BLOCK_EFFECT_TIME = 2.f;
+	const float BOOST_ONE_BLOCK_EFFECT_TIME = 8.f;
 	const float BOOST_ONE_BLOCK_AMOUNT		= 2.631f; // 한 블록 당 줄어드는 Boost 량
 
 	// 20 40 30 10
