@@ -1,6 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/Image.h"
+#include "Engine/Engine.h"
+#include "Engine/GameViewportClient.h"
 #include "GameFramework/Actor.h"
 #include "Character/C_BasicCharacter.h"
 #include "Item/Weapon/C_Weapon.h"
@@ -11,7 +16,7 @@
 #include "Animation/AnimMontage.h"
 #include "Character/C_BasicCharacter.h"
 #include "Utility/C_Util.h"
-
+#include "UMG.h"
 #include "Character/C_Player.h"
 
 
@@ -27,36 +32,23 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 
 bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
-	UC_Util::Print("Mlb Clicked");
-	FHitResult HitResult;
+	//UC_Util::Print("Mlb Clicked");
+	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
+	MlbPressTimeCount = 0;
 	
-	AController* Controller = WeaponUser->GetController();
-	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
-	FVector StartLocation = PlayerCamera->GetCameraLocation();
-	FRotator CameraRotation = PlayerCamera->GetCameraRotation();
-	
-	FVector ForwardVector = CameraRotation.Vector().GetSafeNormal() * 10000;
-	FVector DestLocation = StartLocation + ForwardVector;
-	FCollisionQueryParams CollisionParams{};
-	CollisionParams.AddIgnoredActor(Weapon);
-	CollisionParams.AddIgnoredActor(WeaponUser);
-	CollisionParams.AddIgnoredActor(PlayerCamera);
-
-	HitResult = {};
-	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECC_Visibility, CollisionParams);
-	FVector WorldLocation, WorldDirection;
-	APlayerController* WolrdContorller = GetWorld()->GetFirstPlayerController();
-	WolrdContorller->DeprojectScreenPositionToWorld(0.5, 0.5, WorldLocation,WorldDirection);
-	//Controller->ActorLineTraceSingle(HitResult, StartLocation, StartLocation + ForwardVector, ECollisionChannel::ECC_Visibility,FCollisionQueryParams::DefaultQueryParam);
-	UC_Util::Print(HitResult.Distance);
-	UC_Util::Print(WorldLocation);
-	DrawDebugSphere(GetWorld(), HitResult.Location, 10.0f, 12, FColor::Red, true);
-	//Controller->ActorLineTraceSingle(nullptr, ),)
-	return false;
+	return CurWeapon->FireBullet();
 }
 
 bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
+
+	MlbPressTimeCount += WeaponUser->GetWorld()->GetDeltaSeconds();
+	if (MlbPressTimeCount > 0.1)
+	{
+		MlbPressTimeCount -= 0.1;
+		CurWeapon->FireBullet();
+	}
 	return false;
 }
 

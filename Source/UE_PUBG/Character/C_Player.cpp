@@ -129,16 +129,16 @@ void AC_Player::BeginPlay()
 
 	ScreenShotWidget->AddToViewport();
 
-	if (IsValid(C_MainSpringArm))
-	{
-		//GetCapsuleComponent()
-		UPrimitiveComponent* MeshToIgnore = GetCapsuleComponent();
-		if (MeshToIgnore)
-		{
-			// 카메라 프로브 채널에 대해 특정 메쉬와 충돌 무시 설정
-			MeshToIgnore->SetCollisionResponseToChannel(C_MainSpringArm->ProbeChannel, ECR_Ignore);
-		}
-	}
+	//if (IsValid(C_MainSpringArm))
+	//{
+	//	//GetCapsuleComponent()
+	//	UPrimitiveComponent* MeshToIgnore = GetCapsuleComponent();
+	//	if (MeshToIgnore)
+	//	{
+	//		// 카메라 프로브 채널에 대해 특정 메쉬와 충돌 무시 설정
+	//		MeshToIgnore->SetCollisionResponseToChannel(C_MainSpringArm->ProbeChannel, ECR_Ignore);
+	//	}
+	//}
 
 
 
