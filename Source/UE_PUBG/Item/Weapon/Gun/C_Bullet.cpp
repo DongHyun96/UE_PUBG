@@ -59,7 +59,7 @@ void AC_Bullet::BeginPlay()
 void AC_Bullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UC_Util::Print(float(GetActorLocation().X));
+	//UC_Util::Print(float(GetActorLocation().X));
 	//UC_Util::Print(float(BulletProjectileMovement->Velocity.X));
 	//UC_Util::Print(float(BulletProjectileMovement->Velocity.Y));
 	//UC_Util::Print(float(BulletProjectileMovement->Velocity.Z));
