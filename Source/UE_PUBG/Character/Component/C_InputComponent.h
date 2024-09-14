@@ -79,7 +79,7 @@ private:
 	void OnFKey();
 
 	void OnNKey();
-
+	void OnMKey();
 private:
 
 	class AC_Player* Player{};
@@ -150,4 +150,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* NKeyAction{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* MKeyAction{};
+
+private:
+	class AC_Weapon* ChangeTestWeapon{};
 };

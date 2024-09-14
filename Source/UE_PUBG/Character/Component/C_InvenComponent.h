@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "C_InvenComponent.generated.h"
-
 UENUM(BlueprintType)
 enum class EBackPackLevel : uint8
 {

@@ -93,6 +93,9 @@ void AC_Gun::BeginPlay()
 void AC_Gun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!OwnerCharacter) return;
+
 	CurDrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState];
 	CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurState];
 	//GunMesh->SetWorldRotation(OwnerCharacter->GetControlRotation());
@@ -160,7 +163,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 			SUB_DRAW_SOCKET_NAME
 		);
 	}
-	OwnerCharacter->SetHandState(EHandState::WEAWPON_GUN);
+	OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
 	
 	
 	return AttachToComponent

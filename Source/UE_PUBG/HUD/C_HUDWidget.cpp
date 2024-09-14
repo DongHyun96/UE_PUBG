@@ -11,6 +11,4 @@ void UC_HUDWidget::ToggleMiniMapEnlarged()
 
 	MiniMapLerpSizeDest = (bIsMiniMapEnlarged) ? MINIMAP_ENLARGED_SIZE : MINIMAP_MINIMIZED_SIZE;
 	MiniMapLerpPosDest	= (bIsMiniMapEnlarged) ? MINIMAP_ENLARGED_POS  : MINIMAP_MINIMIZED_POS;
-
-	UC_Util::Print(MiniMapLerpSizeDest, FColor::Cyan);
 }

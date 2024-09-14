@@ -246,6 +246,8 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	UC_EquippedComponent* OwnerEquippedComponent = OwnerCharacter->GetEquippedComponent();
 
 	// 현재 투척류 장착 해제 바로 하기 -> 이미 던진 무기에 대한 PoseTransitionEnd Delegate 해제 이루어짐
+	AC_BasicCharacter* PrevOwnerCharacter = OwnerCharacter;
+
 	OwnerEquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
 
 	// TODO : 가방에 투척류 있는지 확인해서 바로 다음 무기 장착하기 (우선순위 - 같은 종류의 투척류)
@@ -262,7 +264,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 
 		// 바로 다음 투척류 꺼내기
 		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
-		OwnerCharacter->PlayAnimMontage(ThrowWeapon->GetCurDrawMontage());
+		PrevOwnerCharacter->PlayAnimMontage(ThrowWeapon->GetCurDrawMontage());
 
 		return;
 	}

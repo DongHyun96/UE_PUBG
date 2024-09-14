@@ -78,8 +78,13 @@ public:
 
 	void ToggleMiniMapEnlarged();
 
-protected:
+public:
 
+	class UC_MapWidget* GetMiniMapWidget() const { return MiniMapWidget; }
+	class UBorder* GetMiniMapBorder() const { return MiniMapBorder; }
+	class UC_MainMapWidget* GetMainMapWidget() const { return MainMapWidget; }
+
+protected:
 
 	const FVector2D MINIMAP_MINIMIZED_SIZE	= { 300.f, 300.f };
 	const FVector2D MINIMAP_MINIMIZED_POS	= { -175.921875f, -175.921875f };
@@ -92,6 +97,17 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	FVector2D MiniMapLerpPosDest = MINIMAP_MINIMIZED_POS;
+
+protected: // Map ฐüทร
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_MapWidget* MiniMapWidget{};
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UBorder* MiniMapBorder{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_MainMapWidget* MainMapWidget{};
 
 private:
 

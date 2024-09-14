@@ -6,6 +6,13 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Utility/C_Util.h"
 
+#include "Singleton/C_GameSceneManager.h"
+
+#include "Character/C_Player.h"
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_MapWidget.h"
+#include "HUD/C_MainMapWidget.h"
+
 
 AC_MagneticFieldManager::AC_MagneticFieldManager()
 {
@@ -16,6 +23,7 @@ void AC_MagneticFieldManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//GAMESCENE_MANAGER->SetMagneticFieldManager(this);
 }
 
 void AC_MagneticFieldManager::Tick(float DeltaTime)
@@ -50,6 +58,7 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 		if (Timer > PhaseInfos[CurrentPhase].ShrinkTotalTime)
 		{
 			UpdateWalls(MainCircle.MidLocation, MainCircle.Radius);
+			UpdateMainCircleInfoOnMapUI();
 			Timer = 0.f;
 			MagneticFieldState = EMagneticFieldState::SHRINK_COMPLETED;
 			return;
@@ -63,6 +72,7 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 									DeltaTime;
 
 		UpdateWalls(MainCircle.MidLocation, MainCircle.Radius);
+		UpdateMainCircleInfoOnMapUI();
 
 		return;
 	case EMagneticFieldState::SHRINK_COMPLETED:
@@ -87,9 +97,9 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 			PhaseInfos[CurrentPhase].MidPointMoveSpeed = 0.f;
 		}
 		else SetRandomNextCircleAndSpeedDirection(); // Random한 Next Circle 뽑기
+		
+		UpdateNextCircleInfoOnMapUI();
 			
-		TestUpdateWalls(NextCircle.MidLocation, NextCircle.Radius);
-
 		MagneticFieldState = EMagneticFieldState::IDLE;
 
 		Timer = 0.f;
@@ -110,14 +120,22 @@ void AC_MagneticFieldManager::InitManager()
 	MagneticFieldState	= EMagneticFieldState::IDLE;
 	Timer				= 0.f;
 	
-	MainCircle.MidLocation	= { 0.f, 0.f, 0.f }; // TODO : 맵의 중점으로 setting
+	MainCircle.MidLocation	= { 0.f, 0.f, WALL_Z_LOCATION }; // 맵의 중점으로 setting
 	MainCircle.Radius		= PhaseInfos[1].PhaseRadius;
 
 	// Next Circle 설정해주기
 	SetRandomNextCircleAndSpeedDirection();
 
+	// TODO : 비행기 경로 도달 모두 끝낸 뒤 페이즈 시작
+
 	UpdateWalls(MainCircle.MidLocation, MainCircle.Radius);
-	TestUpdateWalls(NextCircle.MidLocation, NextCircle.Radius);
+
+	FTimerHandle TimerHandle{};
+	FTimerHandle TimerHandle2{};
+	//UpdateNextCircleInfoOnMapUI();
+	//UpdateMainCircleInfoOnMapUI();
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_MagneticFieldManager::UpdateMainCircleInfoOnMapUI, 2.f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle2, this, &AC_MagneticFieldManager::UpdateNextCircleInfoOnMapUI, 2.f, false);
 }
 
 void AC_MagneticFieldManager::UpdateWalls(const FVector& MidLocation, const float& Radius)
@@ -148,32 +166,6 @@ void AC_MagneticFieldManager::UpdateWalls(const FVector& MidLocation, const floa
 	}
 }
 
-void AC_MagneticFieldManager::TestUpdateWalls(const FVector& MidLocation, const float& Radius)
-{
-	FVector FirstPos = FVector(MidLocation.X + Radius, MidLocation.Y, MidLocation.Z);
-	ManeticWallsTemp[0]->SetActorLocation(FirstPos);
-
-	float WallWidth = 2 * PI * Radius / float(SLICE_COUNT);
-	WallWidth *= 0.01f; // 기본 단위가 1m로 맞춰져 있음
-
-	ManeticWallsTemp[0]->SetActorScale3D(FVector(100.f, WallWidth, 1.f));
-
-	for (int i = 1; i < SLICE_COUNT; i++)
-	{
-		ManeticWallsTemp[i]->SetActorScale3D(FVector(100.f, WallWidth, 1.f));
-
-		float DegTheta = 360.f * i / SLICE_COUNT;
-		ManeticWallsTemp[i]->SetActorRotation(FRotator(90.f, DegTheta, 0.f));
-
-		float XPos = Radius * FMath::Cos(2 * PI * i / SLICE_COUNT);
-		float YPos = Radius * FMath::Sin(2 * PI * i / SLICE_COUNT);
-
-		FVector CurrentPos = FVector(MidLocation.X + XPos, MidLocation.Y + YPos, MidLocation.Z);
-
-		ManeticWallsTemp[i]->SetActorLocation(CurrentPos);
-	}
-}
-
 void AC_MagneticFieldManager::SetRandomNextCircleAndSpeedDirection()
 {
 	// Next random circle setting
@@ -201,6 +193,34 @@ void AC_MagneticFieldManager::SetRandomNextCircleAndSpeedDirection()
 	// Direction setting
 	PhaseInfos[CurrentPhase].MidPointMoveDirection = NextCircle.MidLocation - MainCircle.MidLocation;
 	PhaseInfos[CurrentPhase].MidPointMoveDirection.Normalize();
+}
+
+void AC_MagneticFieldManager::UpdateMainCircleInfoOnMapUI()
+{
+	UC_MapWidget* MiniMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget();
+	UC_MapWidget* MainMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMainMapWidget();
+
+	// 중점과 반지름 UV 좌표계로 변환
+	float U		=  MainCircle.MidLocation.Y * MAP_LENGTH_TO_UV_FACTOR + 0.5f;
+	float V		= -MainCircle.MidLocation.X * MAP_LENGTH_TO_UV_FACTOR + 0.5f;
+	float Rad	=  MainCircle.Radius * MAP_LENGTH_TO_UV_FACTOR;
+
+	MiniMapWidget->SetMainCircleInfo(U, V, Rad);
+	MainMapWidget->SetMainCircleInfo(U, V, Rad);
+}
+
+void AC_MagneticFieldManager::UpdateNextCircleInfoOnMapUI()
+{
+	UC_MapWidget* MiniMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget();
+	UC_MapWidget* MainMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMainMapWidget();
+
+	// 중점과 반지름 UV 좌표계로 변환
+	float U		=  NextCircle.MidLocation.Y * MAP_LENGTH_TO_UV_FACTOR + 0.5f;
+	float V		= -NextCircle.MidLocation.X * MAP_LENGTH_TO_UV_FACTOR + 0.5f;
+	float Rad	=  NextCircle.Radius * MAP_LENGTH_TO_UV_FACTOR;
+
+	MiniMapWidget->SetNextCircleInfo(U, V, Rad);
+	MainMapWidget->SetNextCircleInfo(U, V, Rad);
 }
 
 

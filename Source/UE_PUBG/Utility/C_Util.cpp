@@ -41,3 +41,9 @@ void UC_Util::Print(const FRotator& data, const FColor& InColor, const float& Ti
 {
 	GEngine->AddOnScreenDebugMessage(-1, TimeToDisplay, InColor, *data.ToString());
 }
+
+void UC_Util::Print(AActor* Actor, const FColor& InColor, const float& TimeToDisplay)
+{
+	FString AddressString = FString::Printf(TEXT("%p"), Actor);
+	GEngine->AddOnScreenDebugMessage(-1, TimeToDisplay, InColor, AddressString);
+}

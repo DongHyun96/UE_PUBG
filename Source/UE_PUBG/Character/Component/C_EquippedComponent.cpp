@@ -39,17 +39,47 @@ void UC_EquippedComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
     // ...
 }
 
-void UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* Weapon)
+AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* Weapon)
 {
-    // 들어온 슬롯의 이전 무기에 대한 PoseTransitionEnd 델리게이트 해제
-    if (Weapons[InSlot])
-        OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(Weapons[InSlot]);
+    AC_Weapon* PrevSlotWeapon = Weapons[InSlot];
 
-    Weapons[InSlot] = Weapon;
+    // 들어온 슬롯의 이전 무기가 존재할 때 이전 무기 해제
+    if (PrevSlotWeapon)
+    {
+        // 현재 들고 있는 무기의 slot에 새로운 무기로 바꿔버리려 할 때
+        if (GetCurWeapon() == PrevSlotWeapon)
+        {
+            OwnerCharacter->SetHandState(EHandState::UNARMED);
+            if (!Weapon) CurWeaponType = EWeaponSlot::NONE;
+        }
+
+        // 이전 무기 해제에 대한 PoseTransitionEnd 델리게이트 해제
+        OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(PrevSlotWeapon);
+
+        PrevSlotWeapon->SetOwnerCharacter(nullptr);
+
+        /// 이 부분
+        //PrevSlotWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+        //
+        //// OwnerCharacter의 발 아래로 적용
+        //PrevSlotWeapon->SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
+        //PrevSlotWeapon->SetActorRotation(FRotator(0.f, 0.f, -90.f));
+    }
+
+    Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
+    
+    if (!Weapons[InSlot]) return PrevSlotWeapon; // Slot에 새로 지정한 무기가 nullptr -> early return
+    
+    Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
+
+    // Attach to Holster 하기 전에 Local transform 초기화
+    Weapons[InSlot]->SetActorRelativeTransform(FTransform::Identity);
+    Weapons[InSlot]->AttachToHolster(OwnerCharacter->GetMesh());
 
     // 새로 장착된 무기에 대한 PoseTransitionEnd 델리게이트 callback 걸기
-    if (Weapons[InSlot])
-        OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(Weapons[InSlot], &AC_Weapon::OnOwnerCharacterPoseTransitionFin);
+    OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(Weapons[InSlot], &AC_Weapon::OnOwnerCharacterPoseTransitionFin);
+
+    return PrevSlotWeapon;
 }
 
 bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)

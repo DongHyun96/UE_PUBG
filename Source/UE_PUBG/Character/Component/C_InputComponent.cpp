@@ -4,6 +4,7 @@
 #include "Character/Component/C_InputComponent.h"
 
 #include "HUD/C_HUDWidget.h"
+#include "HUD/C_MainMapWidget.h"
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_StatComponent.h"
@@ -97,6 +98,7 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 		EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Completed, this, &UC_InputComponent::OnWalkReleased);
 
 		EnhancedInputComponent->BindAction(NKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnNKey);
+		EnhancedInputComponent->BindAction(MKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnMKey);
 	}
 }
 
@@ -511,7 +513,19 @@ void UC_InputComponent::OnFKey()
 
 void UC_InputComponent::OnNKey()
 {
+	static bool Flag{};
+	
+	if (!Flag) ChangeTestWeapon = Player->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
+	else Player->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MAIN_GUN, ChangeTestWeapon);
+	
+	Flag = !Flag;
+
 	Player->GetHUDWidget()->ToggleMiniMapEnlarged();
+}
+
+void UC_InputComponent::OnMKey()
+{
+	Player->GetHUDWidget()->GetMainMapWidget()->OnMKey();
 }
 
 

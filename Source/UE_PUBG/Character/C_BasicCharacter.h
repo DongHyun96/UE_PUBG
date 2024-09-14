@@ -16,7 +16,7 @@ UENUM(BlueprintType)
 enum class EHandState : uint8
 {
 	UNARMED,
-	WEAWPON_GUN,
+	WEAPON_GUN,
 	WEAPON_MELEE,
 	WEAPON_THROWABLE,
 	HANDSTATE_MAX

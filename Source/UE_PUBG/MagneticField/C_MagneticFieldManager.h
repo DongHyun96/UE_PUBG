@@ -102,22 +102,28 @@ private:
 	/// <param name="Radius"> : Update시킬 원의 반지름 </param>
 	void UpdateWalls(const FVector& MidLocation, const float& Radius);
 
-	void TestUpdateWalls(const FVector& MidLocation, const float& Radius);
-	
 	/// <summary>
 	/// Random한 다음 Next Circle 뽑기 & 줄어드는 속력 구해놓기 & 중앙점 옮기는 방향 구해놓기
 	/// </summary>
 	void SetRandomNextCircleAndSpeedDirection();
+
+private:
+
+	/// <summary>
+	/// UI Map의 Main Circle 정보 업데이트
+	/// </summary>
+	void UpdateMainCircleInfoOnMapUI();
+
+	/// <summary>
+	/// UI Map의 Next Circle 정보 업데이트
+	/// </summary>
+	void UpdateNextCircleInfoOnMapUI();
 
 protected:
 
 	// MainCircle을 In game 내에서 보여줄 오브젝트들
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TArray<class AC_MagneticWall*> MagneticWalls{};
-
-	// TODO : 이 변수 지울 것 (테스팅 용)
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TArray<class AC_MagneticWall*> ManeticWallsTemp{};
 
 private:
 
@@ -137,12 +143,15 @@ private:
 	int CurrentPhase = 1;
 
 	// TODO : 정확한 값으로 나중에 수정, 현재 Test 값
+	// FPhaseInfo(해당 Phase때 줄어들 자기장 rad | 줄어들기까지 대기시간 | 줄어드는 총 시간)
 	TMap<int, FPhaseInfo> PhaseInfos = 
 	{
-		{1, FPhaseInfo(15000.f, 10.f, 10.f)},	// 150m
-		{2, FPhaseInfo(7000.f, 10.f, 10.f)},	// 70m
-		{3, FPhaseInfo(3000.f, 10.f, 10.f)},	// 30m
-		{4, FPhaseInfo(1.f, 0.f, 0.f)}			// 제일 마지막 도착 지점 (전체 Phase보다 하나 더 많게끔 만들어놔야 정상 작동함)
+		{1, FPhaseInfo(71300.f, 5.f, 20.f)},	// 713m
+		{2, FPhaseInfo(40000.f, 5.f, 20.f)},	// 400m
+		{3, FPhaseInfo(20000.f, 5.f, 20.f)},	// 200m
+		{4, FPhaseInfo(10000.f, 5.f, 20.f)},	// 100m
+		{5, FPhaseInfo(5000.f, 5.f, 20.f)},		// 50m
+		{6, FPhaseInfo(0.f, 0.f, 0.f)}			// 제일 마지막 도착 지점 (전체 Phase보다 하나 더 많게끔 만들어놔야 정상 작동함)
 	};
 
 	// 시간 재기용
@@ -150,7 +159,10 @@ private:
 
 private:
 
-	const int SLICE_COUNT	= 100;
-	const int LAST_PHASE	= 3; // TODO : Last Phase 개수 수정
-	
+	const int	SLICE_COUNT		= 100;
+	//const int	LAST_PHASE		= 3; // TODO : Last Phase 개수 수정
+	const int	LAST_PHASE		= PhaseInfos.Num() - 1; // TODO : Last Phase 개수 수정
+	const float WALL_Z_LOCATION = 3500.f;
+	const float MAP_LENGTH		= 100000.f;
+	const float MAP_LENGTH_TO_UV_FACTOR = 0.00001f;
 };

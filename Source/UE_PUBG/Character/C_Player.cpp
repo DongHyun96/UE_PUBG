@@ -51,6 +51,8 @@
 
 #include "Item/ConsumableItem/Healing/C_FirstAidKit.h"
 
+#include "Singleton/C_GameSceneManager.h"
+
 AC_Player::AC_Player()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -82,6 +84,8 @@ AC_Player::AC_Player()
 void AC_Player::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//GAMESCENE_MANAGER->SetPlayer(this);
 
 	if (HUDWidget)
 	{
@@ -358,7 +362,7 @@ void AC_Player::HandleTurnInPlaceWhileAiming()
 	// 현재 멈춰있는 상황이 아니면 처리 x
 	
 	if (!bCanMove) return;
-	if (HandState != EHandState::WEAWPON_GUN) return;
+	if (HandState != EHandState::WEAPON_GUN) return;
 	if (!bIsAimDownSight)
 	{
 		AimingTurnInPlaceTimeCount = 0;
