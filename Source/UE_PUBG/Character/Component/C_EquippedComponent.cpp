@@ -73,7 +73,8 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
     Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
 
     // Attach to Holster 하기 전에 Local transform 초기화
-    Weapons[InSlot]->SetActorRelativeTransform(FTransform::Identity);
+    //Weapons[InSlot]->SetActorRelativeTransform(FTransform::Identity);
+    Weapons[InSlot]->SetRelativeTranformToInitial();
     Weapons[InSlot]->AttachToHolster(OwnerCharacter->GetMesh());
 
     // 새로 장착된 무기에 대한 PoseTransitionEnd 델리게이트 callback 걸기
@@ -165,13 +166,30 @@ bool UC_EquippedComponent::ToggleArmed()
 
 void UC_EquippedComponent::OnSheathEnd()
 {
+    // 무기를 바꾸는 도중에 SlotWeapon 장착 해제 예외 처리
+    if (!GetCurWeapon())
+    {
+        CurWeaponType = NextWeaponType;
+
+        if (!IsValid(GetCurWeapon())) // 다음으로 바꿀 무기가 NONE일 때(UNARMED일 때)
+        {
+            OwnerCharacter->SetHandState(EHandState::UNARMED);
+            CurWeaponType   = EWeaponSlot::NONE;
+            NextWeaponType  = EWeaponSlot::NONE;
+            return;
+        }
+
+        OwnerCharacter->PlayAnimMontage(GetCurWeapon()->GetCurDrawMontage());
+        return;
+    }
+
     // 현재 무기 무기집에 붙이기
     GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
 
     // 총기류 예외처리
     if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
     {
-        AC_Gun* TempWeapon = Cast<AC_Gun>(Weapons[CurWeaponType]);
+        AC_Gun* TempWeapon = Cast<AC_Gun>(GetCurWeapon());
         if (IsValid(TempWeapon))
             TempWeapon->SetIsAimPress(false);
     }
@@ -189,6 +207,16 @@ void UC_EquippedComponent::OnSheathEnd()
 
 void UC_EquippedComponent::OnDrawStart()
 {
+    // 무기를 바꾸는 도중에 SlotWeapon 장착 해제 예외 처리 -> 바꿔들 무기가 사라졌을 때
+    if (!Weapons[NextWeaponType])
+    {
+        //OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, GetCurWeapon()->GetCurDrawMontage().AnimMontage);
+        NextWeaponType  = EWeaponSlot::NONE;
+        CurWeaponType   = EWeaponSlot::NONE;
+        OwnerCharacter->SetHandState(EHandState::UNARMED);
+        return;
+    }
+
     Weapons[NextWeaponType]->AttachToHand(OwnerCharacter->GetMesh());
     //GetCurWeapon()->AttachToHand(OwnerCharacter->GetMesh());
 }
@@ -196,6 +224,16 @@ void UC_EquippedComponent::OnDrawStart()
 void UC_EquippedComponent::OnDrawEnd()
 {
     if (NextWeaponType == EWeaponSlot::NONE) return;
+
+    // 무기를 바꾸는 도중에 SlotWeapon 장착 해제 예외 처리 -> 바꿔들 무기가 사라졌을 때
+    if (!Weapons[NextWeaponType])
+    {
+        //OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, GetCurWeapon()->GetCurDrawMontage().AnimMontage);
+        NextWeaponType  = EWeaponSlot::NONE;
+        CurWeaponType   = EWeaponSlot::NONE;
+        OwnerCharacter->SetHandState(EHandState::UNARMED);
+        return;
+    }
 
     UC_Util::Print("OnDrawEnd", FColor::Cyan, 5.f);
 

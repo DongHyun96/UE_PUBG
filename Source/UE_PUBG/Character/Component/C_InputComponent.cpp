@@ -515,8 +515,8 @@ void UC_InputComponent::OnNKey()
 {
 	static bool Flag{};
 	
-	if (!Flag) ChangeTestWeapon = Player->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
-	else Player->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MAIN_GUN, ChangeTestWeapon);
+	if (!Flag) ChangeTestWeapon = Player->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
+	else Player->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, ChangeTestWeapon);
 	
 	Flag = !Flag;
 
