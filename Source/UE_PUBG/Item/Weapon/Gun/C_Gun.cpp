@@ -263,10 +263,6 @@ bool AC_Gun::FireBullet()
 	HitResult = {};
 	FVector WorldLocation, WorldDirection;
 	APlayerController* WolrdContorller = GetWorld()->GetFirstPlayerController();
-	//WolrdContorller->DeprojectScreenPositionToWorld(0.5, 0.5, WorldLocation,WorldDirection);
-	//Controller->ActorLineTraceSingle(HitResult, StartLocation, StartLocation + ForwardVector, ECollisionChannel::ECC_Visibility,FCollisionQueryParams::DefaultQueryParam);
-	//UC_Util::Print(HitResult.Distance);
-	//UC_Util::Print(WorldLocation);
 	TArray<UUserWidget*> FoundWidgets;
 	UUserWidget* MyWidget;
 	UImage* MyImage;
@@ -285,72 +281,54 @@ bool AC_Gun::FireBullet()
 	FVector2D RandomPoint;
 	if (IsValid(MyImage))
 	{
-		//UC_Util::Print("FoundImage");
 
 		ImageSlot = Cast<UCanvasPanelSlot>(MyImage->Slot);
 		if (ImageSlot)
 		{
 			// 이때, Cast<UPanelSlot>(ImageSlot)으로 다른 타입으로 캐스팅할 수 있음
 			FVector2D ImageSize = ImageSlot->GetSize();
-
-			// 이미지 크기 확인
-			//UC_Util::Print("FoundImage");
-			//UC_Util::Print(float(ImageSize.X));
-			//UC_Util::Print(float(ImageSize.Y));
 			RandomPoint = FMath::RandPointInCircle(ImageSize.X / 2.0f);
-			//UC_Util::Print(float(RandomPoint.X));
-			//UC_Util::Print(float(RandomPoint.Y));
-			//UE_LOG(LogTemp, Log, TEXT("Image Size: X = %f, Y = %f"), ImageSize.X, ImageSize.Y);
+
 		}
 		else
 			return false;
 	}
 	else
 		return false;
-	//UC_Util::Print(float(RandomPoint.X));
-	//UC_Util::Print(float(RandomPoint.Y));
 	FVector2D ViewportSize;
 	GEngine->GameViewport->GetViewportSize(ViewportSize);
-	//UC_Util::Print(float(ViewportSize.X));
-	//UC_Util::Print(float(ViewportSize.Y));
-
 	FVector2D RandomPointOnScreen;
 	RandomPointOnScreen.X = (0.5 * ViewportSize.X + RandomPoint.X);
 	RandomPointOnScreen.Y = (0.5 * ViewportSize.Y + RandomPoint.Y);
 
-	//UC_Util::Print(float(RandomPointOnScreen.X));
-	//UC_Util::Print(float(RandomPointOnScreen.Y));
-
 	WolrdContorller->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, WorldLocation, WorldDirection);
-	//WolrdContorller->DeprojectScreenPositionToWorld(0.5, 0.5, WorldLocation, WorldDirection);
-	//UC_Util::Print(float(WorldDirection.X));
-	//UC_Util::Print(float(WorldDirection.Y));
-	//UC_Util::Print(float(WorldDirection.Z));
-	FVector DestLocation = WorldLocation + WorldDirection * 10000;
 
-	//UC_Util::Print(float(WorldLocation.X));
-	//UC_Util::Print(float(WorldLocation.Y));
-	//UC_Util::Print(float(WorldLocation.Z));
+	FVector DestLocation = WorldLocation + WorldDirection * 10000;
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, DestLocation, ECC_Visibility, CollisionParams);
 
 	DrawDebugSphere(GetWorld(), HitResult.Location, 10.0f, 12, FColor::Red, true);
 	UC_Util::Print(float(HitResult.Distance));
+	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+	FVector FireDirection;
+
+	if (HasHit)
+	{
+		FireDirection = HitResult.Location - FireLocation;
+		FireDirection = FireDirection.GetSafeNormal();
+		UC_Util::Print(FireDirection);
+	}
+	else
+	{
+		FireDirection = DestLocation - FireLocation;
+		FireDirection = FireDirection.GetSafeNormal();
+		UC_Util::Print(FireDirection, FColor::Blue);
+
+	}
+	FireDirection *= 100;
+	FireDirection *= 620;	
 	//UC_Util::Print(float(HitResult.Location.Y));
 	//Controller->ActorLineTraceSingle(nullptr, ),)
-	if (IsValid(Bullet))
-	{
-		//UC_Util::Print("FindBullet");
-
-		UProjectileMovementComponent* ProjectileMovement = Bullet->BulletProjectileMovement;
-		if (ProjectileMovement)
-		{
-			UC_Util::Print("Fire!");
-			Bullet->SetActorLocation(this->GetActorLocation());
-			//ProjectileMovement->Velocity = WorldDirection * ProjectileMovement->InitialSpeed;
-			Bullet->BulletProjectileMovement->Velocity = WorldDirection * 10;
-			Bullet->BulletProjectileMovement->SetActive(true);
-		}
-	}
+	Bullet->Fire(this, FireLocation, FireDirection);
 	return true;
 }
 
@@ -358,8 +336,9 @@ void AC_Gun::SpawnBulletForTest()
 {
 
 	FActorSpawnParameters Param2{};
-	Param2.Owner = OwnerCharacter;
-	Bullet = GetWorld()->SpawnActor<AC_Bullet>(AC_Bullet::StaticClass(), Param2);
+	Param2.Owner = this;
+	UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
+	Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
 	if (IsValid(Bullet))
 		UC_Util::Print("Created Bullet");
 

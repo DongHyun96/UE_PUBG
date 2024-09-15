@@ -327,4 +327,10 @@ protected: // Consumable °ü·Ã
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_ConsumableUsageMeshComponent* ConsumableUsageMeshComponent{};
+
+
+protected: // ÃÑ¾Ë Object Pooling
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<AC_Item*> Bullets;
+
 };

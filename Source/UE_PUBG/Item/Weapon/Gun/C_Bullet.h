@@ -24,8 +24,17 @@ public:
 	virtual void Tick(float DeltaTime) override;
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* BulletMesh;
+	class UStaticMeshComponent* BulletMesh;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UProjectileMovementComponent* BulletProjectileMovement;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class USphereComponent* SphereCollider;
+	void SetMeshVisiblility(bool InBool) { BulletMesh->SetVisibility(InBool);}
+
+	bool Fire(class AC_Gun* OwnerGun, FVector InLocation, FVector InDirection);
+
+	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	//bool bBulletIsActive() { return BulletProjectileMovement->IsActive(); }
 };
