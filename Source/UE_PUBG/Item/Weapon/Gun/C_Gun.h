@@ -60,7 +60,7 @@ public:
 	bool GetIsAimPress() { return bIsAimDown; }
 	void HandleSpringArmRotation();
 	void GetPlayerIsAimDownOrNot();
-
+	USkeletalMeshComponent* GetGunMesh() { return GunMesh; }
 	EGunState GetCurrentWeaponState() { return CurState; }
 	TMap<EPoseState, FAnimationMontages> GetSheathMontages() { return SheathMontages; };
 	FTransform GetLeftHandSocketTransform() const { return LeftHandSocketLocation; }
