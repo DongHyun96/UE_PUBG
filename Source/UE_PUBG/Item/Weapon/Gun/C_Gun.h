@@ -17,6 +17,15 @@ enum class EGunState : uint8
 	SUB_GUN
 };
 
+
+UENUM(BlueprintType)
+enum class EShootingMode : uint8
+{
+	FULL_AUTO,
+	SEMI_AUTO,
+	BURST		
+};
+
 USTRUCT(BlueprintType)
 struct FAnimationMontages
 {
@@ -94,4 +103,27 @@ public:
 
 	class UCameraComponent* AimSightCamera{};
 	class USpringArmComponent* AimSightSpringArm{};
+
+public:
+	/// <summary>
+	/// 총알 발사 관련 변수들
+	/// </summary>
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int CurBulletCount;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int MaxBulletCount;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float BulletSpeed;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float FullAutoTime;
+
+	bool FireBullet();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class AC_Bullet* Bullet;
+
+	void SpawnBulletForTest();
+
 };

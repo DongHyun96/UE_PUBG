@@ -16,7 +16,7 @@ UENUM(BlueprintType)
 enum class EHandState : uint8
 {
 	UNARMED,
-	WEAWPON_GUN,
+	WEAPON_GUN,
 	WEAPON_MELEE,
 	WEAPON_THROWABLE,
 	HANDSTATE_MAX
@@ -42,32 +42,6 @@ enum class EMontagePriority : uint8
 	THROW_THROWABLE,		// 실질적으로 던지는 자세일 때, Default Upper body
 	PRIORITY_MAX
 };
-
-/// <summary>
-/// 피격 판정 부위
-/// </summary>
-UENUM(BlueprintType)
-enum class EDamagingPartType : uint8
-{
-	HEAD,			// Physics Asset Neck
-
-	HIPS,
-
-	LEFT_ARM,
-	LEFT_HAND,
-	RIGHT_ARM,
-	RIGHT_HAND,
-
-	LEFT_LEG,
-	LEFT_FOOT,
-	RIGHT_LEG,
-	RIGHT_FOOT,
-
-	SHOULDER,		// Physics Asset spine2
-	UPPER_STOMACH,	// Physics Asset spine1
-	LOWER_STOMACH	// Phyiscs Asset spine
-};
-
 
 USTRUCT(BlueprintType)
 struct FPriorityAnimMontage : public FTableRowBase
@@ -154,7 +128,8 @@ public:
 protected:
 
 	/// <summary>
-	/// UGameplayStatics::ApplyDamage를 통해 Damage를 받는 함수
+	/// <para> UGameplayStatics::ApplyDamage를 통해 Damage를 받는 함수 </para>
+	/// <para> 부위별 피격 처리 시도를 하려면 StatComponent의 TakeDamage함수 참고 </para>
 	/// </summary>
 	/// <param name="DamageAmount"> : Damage 양 </param>
 	/// <param name="DamageEvent"></param>
@@ -168,22 +143,8 @@ protected:
 		AController*		EventInstigator,
 		AActor*				DamageCauser
 	) override;
-
-public:
-
-	/// <summary>
-	/// <para> 자체로 만든 TakeDamage 함수, 부위별 Damage를 줄 때 사용 </para>
-	/// <para> 주의 : 이 함수는 Armor가 적용된 부위의 데미지 감소만 구현, 실질적인 부위별 Damage량은 외부호출에서 처리 </para>
-	/// </summary>
-	/// <param name="DamageAmount">		: Damage 양 </param>
-	/// <param name="DamagingPartType"> : Damage를 줄 부위 </param>
-	/// <param name="DamageCauser">		: Damage를 주는 Actor </param>
-	/// <returns> : The amount of damage actually applied. </returns>
-	virtual float TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser);
-
-	virtual float TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser);
 	
-protected:
+public:
 
 	/// <summary>
 	/// Pose와 캐릭터 이동방향에 따른 MaxWalkSpeed 조정
@@ -197,6 +158,7 @@ public: // Getters and setters
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }
+	void SetPoseState(EPoseState InPoseState) { PoseState = InPoseState; }
 
 	float GetNextSpeed() const { return NextSpeed; }
 	void SetNextSpeed(float InNextSpeed) { NextSpeed = InNextSpeed; }
@@ -208,6 +170,7 @@ public: // Getters and setters
 
 	bool GetCanMove() const { return bCanMove; }
 	bool GetIsAimDown() { return bIsAimDownSight; }
+	void SetIsAimDown(bool InIsAimDownSight) { bIsAimDownSight = InIsAimDownSight; }
 
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 
@@ -215,6 +178,7 @@ public: // Getters and setters
 	
 	class UC_InvenComponent* GetInvenComponent() { return Inventory; }
 
+	void SetIsHoldDirection(bool InIsHoldDirection) { bIsHoldDirection = InIsHoldDirection; }
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
 
 	bool GetIsPoseTransitioning() const { return bIsPoseTransitioning; }
@@ -225,6 +189,23 @@ public: // Getters and setters
 
 	void SetIsActivatingConsumableItem(bool InIsActivatingConsumableItem) { bIsActivatingConsumableItem = InIsActivatingConsumableItem; }
 	bool GetIsActivatingConsumableItem() const { return bIsActivatingConsumableItem; }
+
+	void SetIsAltPressed(bool InIsAltPressed) { bIsAltPressed = InIsAltPressed; }
+	bool GetIsAltPressed() const { return bIsAltPressed; }
+
+	FPoseTransitionMontages GetPoseTransitionMontagesByHandState(EHandState InHandState) { return PoseTransitionMontages[InHandState]; }
+
+	FRotator GetCharacterMovingDirection() const { return CharacterMovingDirection; }
+	void SetCharacterMovingDirection(FRotator InCharacterMovingDirection) { CharacterMovingDirection = InCharacterMovingDirection; }
+
+	bool GetIsWalking() const { return bIsWalking; }
+	void SetIsWalking(bool InIsWalking) { bIsWalking = InIsWalking; }
+	bool GetIsSprinting() const { return bIsSprinting; }
+	void SetIsSprinting(bool InIsSprinting) { bIsSprinting = InIsSprinting; }
+
+	UC_InvenComponent* GetInventory() const { return Inventory; }
+
+	class UC_ConsumableUsageMeshComponent* GetConsumableUsageMeshComponent() const { return ConsumableUsageMeshComponent; }
 
 public:
 
@@ -240,7 +221,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnPoseTransitionFinish();
 
-protected:
+public:
 
 	/// <summary>
 	/// Pose Transition 모션 실행하기
@@ -335,44 +316,15 @@ protected: // PriorityAnimMontage 관련
 	UPROPERTY(BlueprintReadOnly)
 	TMap<FName, FPriorityAnimMontage> CurPriorityAnimMontageMap{};
 	
-private:
-
-	/// <summary>
-	/// <para> 현재 재생 중인 PriorityAnimMontage의 Priority에 상관 없이 가장 최상위로 재생시킬 때 사용 </para>
-	/// <para> 재생 시작 시 무조건 재생 & 재생 중일 때 다음 Montage 들어오지 못하도록 block </para>
-	/// </summary>
-	//bool bForcePlayCurrentMontage{};
-
-
-private:
-	// 피격 판정 부위 Mapping TPair<PhysicsAssetBoneName, EDamagingPartType>
-	const TMap<FName, EDamagingPartType> DAMAGINGPARTS_MAP =	
-	{
-		{"Neck",		EDamagingPartType::HEAD},
-
-		{"Hips",		EDamagingPartType::HIPS},
-
-		{"LeftUpLeg",	EDamagingPartType::LEFT_LEG},
-		{"LeftFoot",	EDamagingPartType::LEFT_FOOT},
-		{"RightUpLeg",	EDamagingPartType::RIGHT_LEG},
-		{"RightFoot",	EDamagingPartType::RIGHT_FOOT},
-
-		{"Spine",		EDamagingPartType::LOWER_STOMACH},
-		{"Spine1",		EDamagingPartType::UPPER_STOMACH},
-		{"Spine2",		EDamagingPartType::SHOULDER},
-
-		{"LeftArm",		EDamagingPartType::LEFT_ARM},
-		{"LeftHand",	EDamagingPartType::LEFT_HAND},
-
-		{"RightArm",	EDamagingPartType::RIGHT_ARM},
-		{"RightHand",	EDamagingPartType::RIGHT_HAND}
-	};
 
 protected: // Consumable 관련
 	
+	// Boosting에 따른 캐릭터 속력 조절 factor
 	float BoostingSpeedFactor = 1.f;
 	
 	// 현재 Consumable Item Activating 중인 상태인지
 	bool bIsActivatingConsumableItem{};
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_ConsumableUsageMeshComponent* ConsumableUsageMeshComponent{};
 };

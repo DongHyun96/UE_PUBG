@@ -44,62 +44,33 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-public: // Input mapped actions
+private:
 
-	void Move(const struct FInputActionValue& Value);
-	
-	/// <summary>
-	/// Move가 끝날 때 호출됨, AnimCharacter에서 Speed Lerp할 값 setting 및 Turn in place 동작 초기 setting 
-	/// </summary>
-	void MoveEnd(const struct FInputActionValue& Value);
-
-	void Look(const struct FInputActionValue& Value);
-
-	void Crouch();
-	void Crawl();
-
-	void OnJump();
-	void CancelTurnInPlaceMotion();
-	//Alt 키 누를때 이름 추천부탁
-	void HoldDirection();
-	void ReleaseDirection();
 	void HandleControllerRotation(float DeltaTime);
 
-	// Number input mappings
-	void OnNum1();
-	void OnNum2();
-	void OnNum4();
-	void OnNum5();
+	/// <summary>
+	/// MainSpringArm 로컬 위치 Dest변수값으로 계속 Lerp 시키기
+	/// </summary>
+	void HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime);
 
-	void OnXKey();
-	void OnBKey();
-	void OnRKey();
+public: // Getters and setters
 
-	// TODO : 무기에 대한 마우스 버튼 클릭 처리만 해둠, 다른 처리도 필요할 예정
-	void OnMLBStarted();
-	void OnMLBOnGoing();
-	void OnMLBCompleted();
+	//TMap<EHandState, FPoseTurnInPlaceAnimMontage> TurnAnimMontageMap{};
+	FPoseTurnInPlaceAnimMontage& GetPoseTurnAnimMontage(EHandState InHandState) { return TurnAnimMontageMap[InHandState]; }
 
-	void OnMRBStarted();
-	void OnMRBOnGoing();
-	void OnMRBCompleted();
+	TMap<EHandState, FPoseTurnInPlaceAnimMontage>& GetLowerBodyTurnAnimMontageMap() { return LowerBodyTurnAnimMontageMap; }
+	FPoseTurnInPlaceAnimMontage& GetLowerPoseTurnAnimMontage(EHandState InHandState) { return LowerBodyTurnAnimMontageMap[InHandState]; }
 
-	void OnSprintStarted();
-	void OnSprintReleased();
+	void SetSpringArmRelativeLocationDest(EPoseState InNextPoseState) { MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
 
-	void OnWalkStarted();
-	void OnWalkReleased();
+	class UC_HUDWidget* GetHUDWidget() const { return HUDWidget; }
 
-	//상호작용(F)
-	//오브젝트의 묶음별로 만들어야 할 수도?
-	//아니면 그냥 UObject로 만들기
-	void Interaction();
-
-/// <summary>
-/// 아이템 상호작용을 위한 변수와 함수.
-/// 구를 통해 아이템과의 충동을 감지하는 함수.
-/// </summary>
 protected:
+
+	/// <summary>
+	/// 아이템 상호작용을 위한 변수와 함수.
+	/// 구를 통해 아이템과의 충동을 감지하는 함수.
+	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* DetectionSphere;
 
@@ -109,17 +80,13 @@ protected:
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-public:
-
-	class UC_InputComponent* GetInputComponent() { return MyInputComponent; }//부모 클래스에 존재
-
-
-public:
+protected:
 	//Aim Press Camera
 	UPROPERTY(EditDefaultsOnly)
 	class UCameraComponent* AimCamera;
 	UPROPERTY(EditDefaultsOnly)
 	class USpringArmComponent* AimSpringArmTemp;
+
 protected:
 	//Aim Press Camera 위치 조정 함수
 	void HandleAimPressCameraLocation();
@@ -149,8 +116,12 @@ protected:
 
 	void HandlePlayerRotationWhileAiming();
 
+public:
+
 	void ClampControllerRotationPitchWhileCrawl(EPoseState InCurrentState);
 	
+public:
+
 	/// <summary>
 	/// Turn in place가 끝났을 시 anim notify에 의해 호출, 멈춰 있을 때의 Rotation 세팅 값들로 돌아가기
 	/// </summary>
@@ -251,65 +222,8 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	UCurveFloat* CurveFloatForSwitchCameraChange{};
 
-public: // HP HUD event 관련
-
-	/// <summary>
-	/// 블루프린트 쪽에서 구현한 Event Function, HP Bar 업데이트를 시켜야 할 때 호출
-	/// </summary>
-	UFUNCTION(BlueprintImplementableEvent)
-	void UpdateHPOnHUD();
-
-public: // HUD event 관련
-
-	/// <summary>
-	/// 블루프린트 쪽에서 구현한 Event Function
-	/// </summary>
-	/// <param name="HealUpDestHPValue"> : 현재 Heal up block의 Dest Value </param>
-	/// <param name="TimeRemain"> : 발동까지 남은 시간 </param>
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnActivatingHealUp(float HealUpDestHPValue, float UsageTime, float UsingTimer);
-	//Player->OnActivatingHealUp(HealUpDestHPValue, UsageTime, UsingTimer);
-
-	/// <summary>
-	/// 블루프린트 쪽에서 구현한 Event Function
-	/// </summary>
-	/// <param name="TimeRemain"> : 발동까지 남은 시간 </param>
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnActivatingBooster(float UsageTime, float UsingTimer);
-
-	/// <summary>
-	/// 블루프린트 쪽에서 구현한 Event Function, Activating 시간이 다 찼을 때 호출 예정인 Event
-	/// </summary>
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnConsumableItemActivatingEnd();
-
-
-	/// <summary>
-	/// 블루프린트에서 구현한 Event Function, Heal Consumable item 쪽 ActivateCompleted State tick에서 호출할 Event
-	/// </summary>
-	/// <param name="BlockDestHP"> : 현재 Block의 피 채우기 총량 Destination HP </param>
-	/// <param name="BlockTimeRemainRate"> : 현재 Heal up block의 시간 남은 비율(0.f ~ 1.f) </param>
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnActivateHealUpCompletedTick(float BlockDestHP, float BlockTimeRemainRate);
-
-	/// <summary>
-	/// 블루프린트에서 구현한 Event Function, consumable item 쪽 Used에서 호출할 Event
-	/// </summary>
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnConsumableUsed();
-
-
-	/// <summary>
-	/// 블루프린트에서 구현한 Event Function, consumable item 쪽 CancelActivating에서 호출할 Event
-	/// </summary>
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnCancelActivatingConsumableItem();
-
-	/// <summary>
-	/// 블루프린트에서 구현한 Event Function, 부스트 량 업데이트 시 적용될 Event
-	/// </summary>
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnUpdateBoostingHUD(float CurBoosting);
+private:
+	void SpawnConsumableItemForTesting();
 
 protected:
 
@@ -329,26 +243,6 @@ protected: // Turn in place 애님 몽타주 관련
 	/// </summary>
 	UPROPERTY(BluePrintReadWrite, EditDefaultsOnly)
 	TMap<EHandState, FPoseTurnInPlaceAnimMontage> LowerBodyTurnAnimMontageMap{};
-
-	/*
-	UENUM(BlueprintType)
-	enum class EHandState : uint8
-	{
-		UNARMED,
-		WEAWPON_GUN,
-		WEAPON_MELEE,
-		WEAPON_THROWABLE
-	};
-	*/
-	
-	/*
-	enum class EPoseState : uint8
-	{
-		STAND,
-		CROUCH,
-		CRAWL
-	};
-	*/
 
 private: // Camera Aim Punching 관련
 	
@@ -393,19 +287,28 @@ protected: // Flash Bang 피격 Effect 관련
 protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_HUDComponent* HUDComponent{};
+	class UC_HUDWidget* HUDWidget{};
 
 
-protected:
-	// Consumable Item Testing
-	// TODO : 지우기
+public: // Consumable Item Testing
+	
+	//// TODO : 지우기
+	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	//class AC_ConsumableItem* ConsumableItem{};
+	//
+	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	//TSubclassOf<class AC_ConsumableItem> ConsumableItemClass{};
+	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class AC_ConsumableItem* ConsumableItem{};
+	TArray<TSubclassOf<class AC_ConsumableItem>> ConsumableItemClasses{};
+	
+	int ConsumableIterator{};
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSubclassOf<class AC_ConsumableItem> ConsumableItemClass{};
+	TArray<class AC_ConsumableItem*> ConsumableItems{};
 
 private:
-	void SpawnConsumableItemForTesting();
+
+	TMap<EPoseState, FVector> MainSpringArmRelativeLocationByPoseMap{};
+	FVector MainSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
 
 };

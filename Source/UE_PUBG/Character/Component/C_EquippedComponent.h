@@ -46,7 +46,9 @@ public:
 	/// </summary>
 	/// <param name="InSlot"> : 장착할 슬롯 </param>
 	/// <param name="Weapon"> : 장착할 무기 객체 / 장착 해제는 nullptr </param>
-	void SetSlotWeapon(EWeaponSlot InSlot, class AC_Weapon* Weapon);
+	/// <returns> : 해당 slot의 이전 무기 (없었다면 return nullptr) </returns>
+	UFUNCTION(BlueprintCallable)
+	AC_Weapon* SetSlotWeapon(EWeaponSlot InSlot, class AC_Weapon* Weapon);
 
 	void SetNextWeaponType(EWeaponSlot InNextWeaponType) { NextWeaponType = InNextWeaponType; }
 	EWeaponSlot GetNextWeaponType() const { return NextWeaponType; }

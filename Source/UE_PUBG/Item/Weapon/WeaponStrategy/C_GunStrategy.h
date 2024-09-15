@@ -32,6 +32,7 @@ public:
 
 private:
 	float MrbPressTimeCount = 0;
+	float MlbPressTimeCount = 0;
 	bool bIsAimDownSight = false;
 	bool bIsAimPress = false;
 };

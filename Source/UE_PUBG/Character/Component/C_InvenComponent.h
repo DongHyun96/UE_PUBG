@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "C_InvenComponent.generated.h"
-
 UENUM(BlueprintType)
 enum class EBackPackLevel : uint8
 {
@@ -71,8 +70,11 @@ public://Getter and Seter
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; } 
 	//EBackPackLevel SetCurBackPackLevel(uint8 level) { CurBackPackLevel = (EBackPackLevel)level; }
 
-	uint32 GetMaxVolume() { return MaxVolume; }
-	uint32 GetCurVolume() { return CurVolume; }
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	int32 GetMaxVolume() { return MaxVolume; }
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	int32 GetCurVolume() { return CurVolume; }
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
@@ -84,8 +86,11 @@ public://Getter and Seter
 protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
-	uint32 MaxVolume = 70;
-	uint32 CurVolume =  0;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int32 MaxVolume = 70;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int32 CurVolume =  0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EBackPackLevel CurBackPackLevel = EBackPackLevel::LV0;

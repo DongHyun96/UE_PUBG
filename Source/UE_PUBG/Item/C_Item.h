@@ -4,6 +4,21 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "C_Item.generated.h"
+
+/// <summary>
+/// AttachableItem PartsName Enum class
+/// C_Gun에서 부착 가능 부위
+/// </summary>
+UENUM(BlueprintType)
+enum class EPartsName : uint8
+{
+	NONE,
+	SCOPE,
+	MUZZLE,
+	GRIP,
+	MAGAZINE,
+	GUNSTOCK
+};
 /// <summary>
 /// 현재 제대로 사용하지는 않고 있음.
 /// </summary>
@@ -39,7 +54,6 @@ enum class EItemTypes : uint8
 	ATTACHMENT,
 	CONSUMPTIONITEM
 };
-
 /// <summary>
 /// 소모아이템분류를 위한 상위 클래스.
 /// 가방에 들어가는 아이템을 위한 클래스.
@@ -66,12 +80,13 @@ public:
 	//UFUNCTION()
 	//virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION(BlueprintCallable)
 	uint8 GetVolume() { return Volume; }
 
-	virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction;);
+	virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction, );
 
 	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
-
+	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 private:
 	uint8 Volume;
 
@@ -83,11 +98,12 @@ protected:
 	FString ItemName;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	UTexture2D* ItemIcon;
+	UTexture2D* ItemIcon;		
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	uint8 ItemNums;
 
-	class AC_BasicCharacter* OwnerCharacter{};
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	AC_BasicCharacter* OwnerCharacter{};
 };
 // Fill out your copyright notice in the Description page of Project Settings.

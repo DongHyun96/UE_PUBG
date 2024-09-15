@@ -105,6 +105,10 @@ public:
 	/// </summary>
 	virtual void OnOwnerCharacterPoseTransitionFin() PURE_VIRTUAL(AC_Weapon::OnOwnerCharacterPoseTransitionFin, );
 
+public:
+
+	void SetRelativeTranformToInitial() { SetActorRelativeTransform(InitialRelativeTransform); }
+
 protected:
 
 	// 무기에 따른 각 버튼에 대한 strategy 알고리즘 객체
@@ -119,5 +123,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
 	FPriorityAnimMontage CurSheathMontage{}; // 현재 무기 위치에 해당하는 무기 집어넣기 Anim montage
+
+private:
+	
+	FTransform InitialRelativeTransform{};
 
 };

@@ -27,6 +27,8 @@ public:
 
 private:
 
-	void InitStartVariables() override;
+	void OnStartUsing()		  override;
+	void OnActivatingFinish() override;
+	void OnCancelActivating() override;
 
 };

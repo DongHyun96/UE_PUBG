@@ -5,9 +5,15 @@
 #include "Components/Widget.h"
 #include "Blueprint/UserWidget.h"
 
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/Image.h"
+#include "UMG.h"
+
 
 #include "Components/PanelWidget.h"
 #include "Components/NamedSlotInterface.h"
+#include "Utility/C_Util.h"
 
 #include "Components/CanvasPanelSlot.h"
 #include "Character/C_BasicCharacter.h"
@@ -24,6 +30,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 
+#include "Item/Weapon/Gun/C_Bullet.h"
+
 
 // Sets default values
 AC_Gun::AC_Gun()
@@ -33,6 +41,7 @@ AC_Gun::AC_Gun()
 
 	WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
 
+	Bullet = LoadObject<AC_Bullet>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet"));
 	//ItemType 설정.
 	MyItemType = EItemTypes::MAINGUN;
 }
@@ -40,6 +49,7 @@ AC_Gun::AC_Gun()
 void AC_Gun::BeginPlay()
 {
 	Super::BeginPlay();
+	SpawnBulletForTest();
 	AimSightCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
 	AimSightSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("RifleSightSpringArm"));
 	//if(IsValid(AimSightCamera))
@@ -51,7 +61,18 @@ void AC_Gun::BeginPlay()
 	//CurveFloatForSwitchCameraChange = LoadObject<UCurveFloat>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/CameraMoving/CF_CameraMoving"));
 
 	UUserWidget* AimWidget = LoadObject<UUserWidget>(nullptr,TEXT("/All/Game/Project_PUBG/Hyunho/TempWidget/WBP_CrossHair"));
-	
+	//Bullet = LoadObject<AC_Bullet>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet"));
+	if (IsValid(Bullet))
+	{
+		UC_Util::Print("FindBullet");
+
+		UProjectileMovementComponent* ProjectileMovement = Bullet->FindComponentByClass<UProjectileMovementComponent>();
+		if (ProjectileMovement)
+		{
+			ProjectileMovement->InitialSpeed = BulletSpeed;
+
+		}
+	}
 	//UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>
 	
 
@@ -72,6 +93,9 @@ void AC_Gun::BeginPlay()
 void AC_Gun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!OwnerCharacter) return;
+
 	CurDrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState];
 	CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurState];
 	//GunMesh->SetWorldRotation(OwnerCharacter->GetControlRotation());
@@ -139,7 +163,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 			SUB_DRAW_SOCKET_NAME
 		);
 	}
-	OwnerCharacter->SetHandState(EHandState::WEAWPON_GUN);
+	OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
 	
 	
 	return AttachToComponent
@@ -185,6 +209,7 @@ bool AC_Gun::BackToMainCamera()
 	AimSightCamera->SetActive(false);
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() == this)
 	{
+		UC_Util::Print("Fuck");
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(OwnerCharacter, 0.2);
 	}
 	OwnerCharacter->GetMesh()->UnHideBoneByName(FName("Head"));
@@ -218,6 +243,126 @@ void AC_Gun::GetPlayerIsAimDownOrNot()
 
 void AC_Gun::OnOwnerCharacterPoseTransitionFin()
 {
+}
+
+bool AC_Gun::FireBullet()
+{
+	FHitResult HitResult;
+
+	AController* Controller = OwnerCharacter->GetController();
+	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+	FVector StartLocation = PlayerCamera->GetCameraLocation();
+	FRotator CameraRotation = PlayerCamera->GetCameraRotation();
+
+	FVector ForwardVector = CameraRotation.Vector().GetSafeNormal() * 10000;
+	FCollisionQueryParams CollisionParams{};
+	CollisionParams.AddIgnoredActor(this);
+	CollisionParams.AddIgnoredActor(OwnerCharacter);
+	CollisionParams.AddIgnoredActor(PlayerCamera);
+
+	HitResult = {};
+	FVector WorldLocation, WorldDirection;
+	APlayerController* WolrdContorller = GetWorld()->GetFirstPlayerController();
+	//WolrdContorller->DeprojectScreenPositionToWorld(0.5, 0.5, WorldLocation,WorldDirection);
+	//Controller->ActorLineTraceSingle(HitResult, StartLocation, StartLocation + ForwardVector, ECollisionChannel::ECC_Visibility,FCollisionQueryParams::DefaultQueryParam);
+	//UC_Util::Print(HitResult.Distance);
+	//UC_Util::Print(WorldLocation);
+	TArray<UUserWidget*> FoundWidgets;
+	UUserWidget* MyWidget;
+	UImage* MyImage;
+	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(GetWorld(), FoundWidgets, UUserWidget::StaticClass(), true);
+	if (FoundWidgets.Num() > 0)
+	{
+		MyWidget = FoundWidgets[0];  // 첫 번째 위젯 가져오기
+		//UC_Util::Print("FoundWidget");
+
+	}
+	else 
+		return false;
+
+	MyImage = Cast<UImage>(MyWidget->WidgetTree->FindWidget(FName("Image_53")));
+	UCanvasPanelSlot* ImageSlot;
+	FVector2D RandomPoint;
+	if (IsValid(MyImage))
+	{
+		//UC_Util::Print("FoundImage");
+
+		ImageSlot = Cast<UCanvasPanelSlot>(MyImage->Slot);
+		if (ImageSlot)
+		{
+			// 이때, Cast<UPanelSlot>(ImageSlot)으로 다른 타입으로 캐스팅할 수 있음
+			FVector2D ImageSize = ImageSlot->GetSize();
+
+			// 이미지 크기 확인
+			//UC_Util::Print("FoundImage");
+			//UC_Util::Print(float(ImageSize.X));
+			//UC_Util::Print(float(ImageSize.Y));
+			RandomPoint = FMath::RandPointInCircle(ImageSize.X / 2.0f);
+			//UC_Util::Print(float(RandomPoint.X));
+			//UC_Util::Print(float(RandomPoint.Y));
+			//UE_LOG(LogTemp, Log, TEXT("Image Size: X = %f, Y = %f"), ImageSize.X, ImageSize.Y);
+		}
+		else
+			return false;
+	}
+	else
+		return false;
+	//UC_Util::Print(float(RandomPoint.X));
+	//UC_Util::Print(float(RandomPoint.Y));
+	FVector2D ViewportSize;
+	GEngine->GameViewport->GetViewportSize(ViewportSize);
+	//UC_Util::Print(float(ViewportSize.X));
+	//UC_Util::Print(float(ViewportSize.Y));
+
+	FVector2D RandomPointOnScreen;
+	RandomPointOnScreen.X = (0.5 * ViewportSize.X + RandomPoint.X);
+	RandomPointOnScreen.Y = (0.5 * ViewportSize.Y + RandomPoint.Y);
+
+	//UC_Util::Print(float(RandomPointOnScreen.X));
+	//UC_Util::Print(float(RandomPointOnScreen.Y));
+
+	WolrdContorller->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, WorldLocation, WorldDirection);
+	//WolrdContorller->DeprojectScreenPositionToWorld(0.5, 0.5, WorldLocation, WorldDirection);
+	//UC_Util::Print(float(WorldDirection.X));
+	//UC_Util::Print(float(WorldDirection.Y));
+	//UC_Util::Print(float(WorldDirection.Z));
+	FVector DestLocation = WorldLocation + WorldDirection * 10000;
+
+	//UC_Util::Print(float(WorldLocation.X));
+	//UC_Util::Print(float(WorldLocation.Y));
+	//UC_Util::Print(float(WorldLocation.Z));
+	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, DestLocation, ECC_Visibility, CollisionParams);
+
+	DrawDebugSphere(GetWorld(), HitResult.Location, 10.0f, 12, FColor::Red, true);
+	UC_Util::Print(float(HitResult.Distance));
+	//UC_Util::Print(float(HitResult.Location.Y));
+	//Controller->ActorLineTraceSingle(nullptr, ),)
+	if (IsValid(Bullet))
+	{
+		//UC_Util::Print("FindBullet");
+
+		UProjectileMovementComponent* ProjectileMovement = Bullet->BulletProjectileMovement;
+		if (ProjectileMovement)
+		{
+			UC_Util::Print("Fire!");
+			Bullet->SetActorLocation(this->GetActorLocation());
+			//ProjectileMovement->Velocity = WorldDirection * ProjectileMovement->InitialSpeed;
+			Bullet->BulletProjectileMovement->Velocity = WorldDirection * 10;
+			Bullet->BulletProjectileMovement->SetActive(true);
+		}
+	}
+	return true;
+}
+
+void AC_Gun::SpawnBulletForTest()
+{
+
+	FActorSpawnParameters Param2{};
+	Param2.Owner = OwnerCharacter;
+	Bullet = GetWorld()->SpawnActor<AC_Bullet>(AC_Bullet::StaticClass(), Param2);
+	if (IsValid(Bullet))
+		UC_Util::Print("Created Bullet");
+
 }
 
 

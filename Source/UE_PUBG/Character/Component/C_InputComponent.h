@@ -25,7 +25,65 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void BindAction(UInputComponent* PlayerInputComponent, class AC_Player* Player);
+	void BindAction(UInputComponent* PlayerInputComponent, class AC_Player* InPlayer);
+
+private:
+
+
+	void Move(const struct FInputActionValue& Value);
+
+	/// <summary>
+	/// Move가 끝날 때 호출됨, AnimCharacter에서 Speed Lerp할 값 setting 및 Turn in place 동작 초기 setting 
+	/// </summary>
+	void MoveEnd(const struct FInputActionValue& Value);
+
+	void Look(const struct FInputActionValue& Value);
+
+	void Crouch();
+	void Crawl();
+
+	void OnJump();
+	void CancelTurnInPlaceMotion();
+	//Alt 키 누를때 이름 추천부탁
+	void HoldDirection();
+	void ReleaseDirection();
+
+	// Number input mappings
+	void OnNum1();
+	void OnNum2();
+	void OnNum4();
+	void OnNum5();
+
+	void OnXKey();
+	void OnBKey();
+	void OnRKey();
+
+	// TODO : 무기에 대한 마우스 버튼 클릭 처리만 해둠, 다른 처리도 필요할 예정
+	void OnMLBStarted();
+	void OnMLBOnGoing();
+	void OnMLBCompleted();
+
+	void OnMRBStarted();
+	void OnMRBOnGoing();
+	void OnMRBCompleted();
+
+	void OnSprintStarted();
+	void OnSprintReleased();
+
+	void OnWalkStarted();
+	void OnWalkReleased();
+
+	//상호작용(F)
+	//오브젝트의 묶음별로 만들어야 할 수도?
+	//아니면 그냥 UObject로 만들기
+	void OnFKey();
+
+	void OnNKey();
+	void OnMKey();
+private:
+
+	class AC_Player* Player{};
+	class UCharacterMovementComponent* PlayerMovement{};
 
 public:
 
@@ -89,4 +147,13 @@ public:
 	//상호작용키(F)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* Interaction{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* NKeyAction{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* MKeyAction{};
+
+private:
+	class AC_Weapon* ChangeTestWeapon{};
 };
