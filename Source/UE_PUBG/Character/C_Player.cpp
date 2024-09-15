@@ -48,6 +48,7 @@
 #include "Engine/Texture2D.h"
 
 #include "HUD/C_HUDWidget.h"
+#include "HUD/C_MainMapWidget.h"
 
 #include "Item/ConsumableItem/Healing/C_FirstAidKit.h"
 
@@ -132,7 +133,7 @@ void AC_Player::BeginPlay()
 	if (!PPVolumes.IsEmpty()) PostProcessVolume = Cast<APostProcessVolume>(PPVolumes[0]);
 	PostProcessInitialIntensity = PostProcessVolume->Settings.BloomIntensity;
 
-	ScreenShotWidget->AddToViewport();
+	//ScreenShotWidget->AddToViewport();
 
 	//if (IsValid(C_MainSpringArm))
 	//{
@@ -752,9 +753,9 @@ void AC_Player::CaptureScene()
 	// 필요에 따라 텍스쳐를 더 수정할 수 있음 (무슨 소린지 잘 모르겠음)
 	NewTexture->UpdateResource();
 
-	FSlateBrush Brush{};
-    Brush.SetResourceObject(NewTexture);
-	ScreenShotWidget->GetDisplayImage()->SetBrush(Brush);
+	//FSlateBrush Brush{};
+    //Brush.SetResourceObject(NewTexture);
+	//ScreenShotWidget->GetDisplayImage()->SetBrush(Brush);
 }
 
 void AC_Player::ExecuteFlashBangEffect(float Duration)

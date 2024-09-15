@@ -18,7 +18,8 @@ AC_Weapon::AC_Weapon()
 void AC_Weapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	InitialRelativeTransform = RootComponent->GetRelativeTransform();
 }
 
 // Called every frame
