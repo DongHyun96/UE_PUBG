@@ -6,6 +6,8 @@
 #include "Item/C_Item.h"
 #include "C_AttachableItem.generated.h"
 
+
+
 /**
  * 
  */
@@ -14,4 +16,6 @@ class UE_PUBG_API AC_AttachableItem : public AC_Item
 {
 	GENERATED_BODY()
 	
+private:
+	EPartsName Name;
 };

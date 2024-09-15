@@ -59,11 +59,11 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
         PrevSlotWeapon->SetOwnerCharacter(nullptr);
 
         /// 이 부분
-        //PrevSlotWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+        PrevSlotWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
         //
-        //// OwnerCharacter의 발 아래로 적용
-        //PrevSlotWeapon->SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
-        //PrevSlotWeapon->SetActorRotation(FRotator(0.f, 0.f, -90.f));
+        // OwnerCharacter의 발 아래로 적용
+        PrevSlotWeapon->SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
+        PrevSlotWeapon->SetActorRotation(FRotator(0.f, 0.f, -90.f));
     }
 
     Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
