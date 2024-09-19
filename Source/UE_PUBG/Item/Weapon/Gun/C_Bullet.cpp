@@ -45,7 +45,7 @@ AC_Bullet::AC_Bullet()
 	//}
 	BulletProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("BulletProjectileMovement");
 	BulletProjectileMovement->MaxSpeed = 620 * 100.0f;
-	//BulletProjectileMovement->ProjectileGravityScale = 1.0;
+	BulletProjectileMovement->ProjectileGravityScale = 1.0;
 
 	
 }
@@ -81,15 +81,15 @@ void AC_Bullet::Tick(float DeltaTime)
 
 		//UC_Util::Print(BulletProjectileMovement->Velocity);
 
-		//float DragCoefficient = 0.1;
-		//FVector CurrentVelocity = BulletProjectileMovement->Velocity;
-		//FVector AirResistance = -DragCoefficient * CurrentVelocity.Size() * CurrentVelocity;
-		//FVector NewVelocity = CurrentVelocity + AirResistance * DeltaTime;
+		float DragCoefficient = 0.3;
+		FVector CurrentVelocity = BulletProjectileMovement->Velocity;
+		FVector AirResistance = -DragCoefficient * CurrentVelocity;
+		FVector NewVelocity = CurrentVelocity + AirResistance * DeltaTime;
 
-		//// 货 加档 利侩
-		//BulletProjectileMovement->Velocity = NewVelocity;	
-		////BulletProjectileMovement->UpdateComponentVelocity();
-		//UC_Util::Print(float(BulletProjectileMovement->Velocity.Size()));
+		// 货 加档 利侩
+		BulletProjectileMovement->Velocity = NewVelocity;	
+		BulletProjectileMovement->UpdateComponentVelocity();
+		UC_Util::Print(float(BulletProjectileMovement->Velocity.Size()));
 	}
 	//UC_Util::Print(PrimaryActorTick.bCanEverTick);
 

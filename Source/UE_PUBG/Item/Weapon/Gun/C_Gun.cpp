@@ -300,6 +300,8 @@ bool AC_Gun::FireBullet()
 	FVector2D RandomPointOnScreen;
 	RandomPointOnScreen.X = (0.5 * ViewportSize.X + RandomPoint.X);
 	RandomPointOnScreen.Y = (0.5 * ViewportSize.Y + RandomPoint.Y);
+	RandomPointOnScreen.X = (0.5 * ViewportSize.X );
+	RandomPointOnScreen.Y = (0.5 * ViewportSize.Y );
 
 	WolrdContorller->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, WorldLocation, WorldDirection);
 
