@@ -3,6 +3,7 @@
 
 #include "Item/C_Item.h"
 
+#include "Character/C_BasicCharacter.h"
 
 #include "Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
 #include "Weapon/WeaponStrategy/C_GunStrategy.h"
@@ -14,6 +15,7 @@ AC_Item::AC_Item()
 	PrimaryActorTick.bCanEverTick = true;
     //WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
 
+	//OwnerCharacter = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -28,6 +30,22 @@ void AC_Item::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AC_Item::DetachmentItem()
+{
+	if (!OwnerCharacter) return;
+	
+	DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+
+	SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
+	SetActorRotation(FRotator(0.f, 0.f, -90.f));
+
+	SetOwnerCharacter(nullptr);
+
+	//«—π¯ ≤Ø¥Ÿ ≤®¡‡æﬂ OverlapBegin¿Ã ¿€µø
+	SetActorEnableCollision(false);
+	SetActorEnableCollision(true);
 }
 
 void AttachToSocket(USceneComponent* InParent)

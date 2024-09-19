@@ -80,12 +80,17 @@ public:
 	//UFUNCTION()
 	//virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction, );
+
+	//æ∆¿Ã≈€¿« ¿Â¬¯¿ª «ÿ¡¶«œ∞Ì ∂•ø° ∂≥±∏∞‘ «ÿ¡‹.
+	UFUNCTION(BlueprintCallable)
+	virtual void DetachmentItem();
+
+	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+
 	UFUNCTION(BlueprintCallable)
 	uint8 GetVolume() { return Volume; }
 
-	virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction, );
-
-	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 private:
 	uint8 Volume;
