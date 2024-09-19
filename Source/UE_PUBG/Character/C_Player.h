@@ -65,6 +65,8 @@ public: // Getters and setters
 
 	class UC_HUDWidget* GetHUDWidget() const { return HUDWidget; }
 
+	class UC_PingSystemComponent* GetPingSystemComponent() const { return PingSystemComponent; }
+
 protected:
 
 	/// <summary>
@@ -288,6 +290,11 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_HUDWidget* HUDWidget{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_PingSystemComponent* PingSystemComponent{};
 
 
 public: // Consumable Item Testing

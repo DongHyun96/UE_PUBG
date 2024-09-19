@@ -18,6 +18,7 @@
 #include "Character/Component/C_InputComponent.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_PingSystemComponent.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -78,6 +79,8 @@ AC_Player::AC_Player()
 	SceneCaptureComponent = CreateDefaultSubobject<USceneCaptureComponent2D>("SceneCaptureComponent");
 	//SceneCaptureComponent->bCaptureEveryFrame = false;
 
+	PingSystemComponent = CreateDefaultSubobject<UC_PingSystemComponent>("PingSystemComponent");
+
 	SetTimeLineComponentForMovingCamera();
 
 }
@@ -92,6 +95,8 @@ void AC_Player::BeginPlay()
 	{
 		HUDWidget->AddToViewport();
 		StatComponent->SetOwnerHUDWidget(HUDWidget);
+		PingSystemComponent->SetOwnerPlayer(this);
+		HUDWidget->GetMainMapWidget()->SetPlayer(this);
 	}
 
 	AimCamera->SetActive(false);
