@@ -67,6 +67,8 @@ private:
 	void OnMRBOnGoing();
 	void OnMRBCompleted();
 
+	void OnMMBStarted();
+
 	void OnSprintStarted();
 	void OnSprintReleased();
 
@@ -143,6 +145,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* MRBAction{};
+
+	// 가운데 마우스 버튼 처리
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* MMBAction{}; 
 	
 	//상호작용키(F)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

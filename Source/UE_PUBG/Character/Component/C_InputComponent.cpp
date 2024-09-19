@@ -8,6 +8,7 @@
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_StatComponent.h"
+#include "Character/Component/C_PingSystemComponent.h"
 
 #include "Components/ActorComponent.h"
 
@@ -88,6 +89,8 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 		EnhancedInputComponent->BindAction(MRBAction, ETriggerEvent::Started,   this, &UC_InputComponent::OnMRBStarted);
 		EnhancedInputComponent->BindAction(MRBAction, ETriggerEvent::Ongoing,   this, &UC_InputComponent::OnMRBOnGoing);
 		EnhancedInputComponent->BindAction(MRBAction, ETriggerEvent::Completed, this, &UC_InputComponent::OnMRBCompleted);
+
+		EnhancedInputComponent->BindAction(MMBAction, ETriggerEvent::Started, this, &UC_InputComponent::OnMMBStarted);
 
 		EnhancedInputComponent->BindAction(Interaction, ETriggerEvent::Started, this, &UC_InputComponent::OnFKey);
 
@@ -455,6 +458,11 @@ void UC_InputComponent::OnMRBCompleted()
 {
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMrb_Completed();
+}
+
+void UC_InputComponent::OnMMBStarted()
+{
+	Player->GetPingSystemComponent()->OnMMBStarted();
 }
 
 void UC_InputComponent::OnSprintStarted()
