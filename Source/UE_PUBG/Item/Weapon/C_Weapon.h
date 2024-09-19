@@ -115,7 +115,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TScriptInterface<class II_WeaponButtonStrategy> WeaponButtonStrategy{};
 
-	class AC_BasicCharacter* OwnerCharacter{};
+	//class AC_BasicCharacter* OwnerCharacter{};
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)

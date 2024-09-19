@@ -57,17 +57,10 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
         OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(PrevSlotWeapon);
 
         PrevSlotWeapon->SetOwnerCharacter(nullptr);
-
-        /// 이 부분
-        PrevSlotWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-        //
-        // OwnerCharacter의 발 아래로 적용
-        PrevSlotWeapon->SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
-        PrevSlotWeapon->SetActorRotation(FRotator(0.f, 0.f, -90.f));
     }
-
-    Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
     
+    Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
+
     if (!Weapons[InSlot]) return PrevSlotWeapon; // Slot에 새로 지정한 무기가 nullptr -> early return
     
     Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
@@ -81,6 +74,22 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
     OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(Weapons[InSlot], &AC_Weapon::OnOwnerCharacterPoseTransitionFin);
 
     return PrevSlotWeapon;
+}
+
+
+void UC_EquippedComponent::DetachmentWeapon(EWeaponSlot InSlot)
+{
+    AC_Weapon* curWeapon = Weapons[InSlot];
+    
+    //아이템이 없다면 종료
+    if (!curWeapon) return;
+    
+    curWeapon->SetOwnerCharacter(nullptr);
+
+    curWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+
+    curWeapon->SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
+    curWeapon->SetActorRotation(FRotator(0.f, 0.f, -90.f));
 }
 
 bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)

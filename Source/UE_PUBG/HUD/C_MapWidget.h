@@ -34,5 +34,48 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetNextCircleInfo(float PosU, float PosV, float UVRad);
 
-	
+protected:
+
+	/// <summary>
+	/// World에서 찍은 핑 마커 Spawn 처리 시키기
+	/// </summary>
+	/// <param name="WorldPingLocation"> : World에 찍힌 핑의 위치 </param>
+	/// <returns> : Spawn이 제대로 이루어졌다면 return true </returns>
+	UFUNCTION(BlueprintImplementableEvent)
+	bool SpawnPingImageWithWorldPingLocation(FVector WorldPingLocation);
+
+	/// <summary>
+	/// MainMap 지도 상의 위치(MousePos)에 찍은 핑 마커 Spawn 처리 시키기
+	/// </summary>
+	/// <param name="MousePos"> : 찍었던 마우스 포인터 위치</param>
+	/// <returns> : Spawn이 제대로 이루어졌다면 return true </returns>
+	UFUNCTION(BlueprintImplementableEvent)
+	bool SpawnPingImageWithMousePos(FVector2D MousePos);
+
+public:
+
+	/// <summary>
+	/// 핑 마커 Cancel 처리되었을 때 불려질 Callback Event
+	/// </summary>
+	/// <returns> : Ping Marker Cancel(Hidden)이 제대로 처리되었다면 return true </returns>
+	UFUNCTION(BlueprintImplementableEvent)
+	bool OnCancelPingMarker();
+
+public:
+
+	/// <summary>
+	/// World에서 찍은 핑 마커 Spawn 처리 시키기
+	/// </summary>
+	/// <param name="WorldPingLocation"> : World에 찍힌 핑의 위치 </param>
+	/// <returns> : Spawn이 제대로 이루어졌다면 return true </returns>
+	virtual bool SpawnPingImage(FVector WorldPingLocation);
+
+	/// <summary>
+	/// MainMap 지도 상의 위치(MousePos)에 찍은 핑 마커 Spawn 처리 시키기
+	/// </summary>
+	/// <param name="MousePos"> : 찍었던 마우스 포인터 위치</param>
+	/// <returns> : Spawn이 제대로 이루어졌다면 return true </returns>
+	virtual bool SpawnPingImage(FVector2D MousePos);
+
+
 };
