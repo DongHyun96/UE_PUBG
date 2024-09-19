@@ -50,6 +50,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	AC_Weapon* SetSlotWeapon(EWeaponSlot InSlot, class AC_Weapon* Weapon);
 
+	/// <summary>
+	/// 슬롯에 장착된 무기를 떨구기.
+	/// </summary>
+	/// <param name="InSlot"> : 떨구고 싶은 아이템이 있는 슬롯 </param>
+	UFUNCTION(BlueprintCallable)
+	void DetachmentWeapon(EWeaponSlot InSlot);
+
 	void SetNextWeaponType(EWeaponSlot InNextWeaponType) { NextWeaponType = InNextWeaponType; }
 	EWeaponSlot GetNextWeaponType() const { return NextWeaponType; }
 	

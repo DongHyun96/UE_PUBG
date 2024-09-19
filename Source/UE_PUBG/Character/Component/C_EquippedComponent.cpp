@@ -56,18 +56,23 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
         // 이전 무기 해제에 대한 PoseTransitionEnd 델리게이트 해제
         OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(PrevSlotWeapon);
 
-        PrevSlotWeapon->SetOwnerCharacter(nullptr);
-
-        /// 이 부분
-        PrevSlotWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+        // 인벤(MyItemList의 투척류와 장착된 투척류를 교체할 때, 장착하고있던 투척류가 버려지지 않도록 임시조치.
+        // 상연:이 부분을 밖으로 꺼내서 함수로 만들예정, 아마 C_Item에 Detach함수 만들수도
+        //if (InSlot == EWeaponSlot::THROWABLE_WEAPON && !Weapon)
+        //{
+        //    PrevSlotWeapon->SetOwnerCharacter(nullptr);
         //
-        // OwnerCharacter의 발 아래로 적용
-        PrevSlotWeapon->SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
-        PrevSlotWeapon->SetActorRotation(FRotator(0.f, 0.f, -90.f));
+        //    /// 이 부분
+        //    PrevSlotWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+        //    //
+        //    // OwnerCharacter의 발 아래로 적용
+        //    PrevSlotWeapon->SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
+        //    PrevSlotWeapon->SetActorRotation(FRotator(0.f, 0.f, -90.f));
+        //}
     }
 
     Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
-    
+
     if (!Weapons[InSlot]) return PrevSlotWeapon; // Slot에 새로 지정한 무기가 nullptr -> early return
     
     Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
@@ -81,6 +86,22 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
     OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(Weapons[InSlot], &AC_Weapon::OnOwnerCharacterPoseTransitionFin);
 
     return PrevSlotWeapon;
+}
+
+
+void UC_EquippedComponent::DetachmentWeapon(EWeaponSlot InSlot)
+{
+    AC_Weapon* curWeapon = Weapons[InSlot];
+    
+    //아이템이 없다면 종료
+    if (!curWeapon) return;
+    
+    curWeapon->SetOwnerCharacter(nullptr);
+
+    curWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+
+    curWeapon->SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
+    curWeapon->SetActorRotation(FRotator(0.f, 0.f, -90.f));
 }
 
 bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
