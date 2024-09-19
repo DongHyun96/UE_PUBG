@@ -18,7 +18,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		if (AC_Player* P = Cast<AC_Player>(*Actor))
 		{
 			Player = P;
-			UC_Util::Print(Player, FColor::Red, 10.f);
+			//UC_Util::Print(Player, FColor::Red, 10.f);
 		}
 
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;
