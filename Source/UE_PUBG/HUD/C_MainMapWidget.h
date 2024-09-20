@@ -40,7 +40,18 @@ private:
 
 public:
 
+	/// <summary>
+	/// 외부에서(World에서 핑을 찍었을 때) MainMapWidget에서만 SpawnPingImage 처리 시키기
+	/// </summary>
+	/// <param name="WorldPingLocation"> : Spawn된 WorldPing 위치 </param>
+	/// <returns> : 제대로 Spawn 되었다면 return true </returns>
 	bool SpawnPingImage(FVector WorldPingLocation) override;
+
+	/// <summary>
+	/// MainMap 이미지 내에서 Ping Marker를 Spawn시켰을 때의 처리(다른 곳에도 Ping Marker 스폰시키기)
+	/// </summary>
+	/// <param name="MousePos"> : Button down 된 마우스 포인터 위치</param>
+	/// <returns> : 제대로 Spawn 되었다면 return true </returns>
 	bool SpawnPingImage(FVector2D MousePos) override;
 
 protected:
@@ -96,15 +107,15 @@ private:
 
 private:
 
-	const float		MAP_SCALE_MAX		= 5.f;
-	const float		SCROLL_DELTA_STEP	= 0.5f;
-	const float		CANVAS_SIZE			= 1080.f;
-	const FVector2D MID_POINT			= {960.f, 540.f};
-	const float		WORLD_MAP_SIZE		= 100000.f;
+	const float		MAP_SCALE_MAX			= 5.f;
+	const float		SCROLL_DELTA_STEP		= 0.5f;
+	const float		CANVAS_SIZE				= 1080.f;
+	const FVector2D MID_POINT				= {960.f, 540.f};
+	const float		WORLD_MAP_SIZE			= 100000.f;
 
 	const float		FIXED_LANDSCAPE_HEIGHT	= 3400.f;
 
-	const float		PING_BORDER_SIZE	= 30.f;
+	const float		PING_BORDER_SIZE		= 30.f;
 
 private:
 

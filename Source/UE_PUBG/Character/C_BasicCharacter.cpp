@@ -15,6 +15,8 @@
 #include "Component/C_StatComponent.h"
 #include "Component/C_ConsumableUsageMeshComponent.h"
 
+#include "Components/CapsuleComponent.h"
+
 #include "Utility/C_Util.h"
 
 
@@ -26,7 +28,6 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	EquippedComponent = CreateDefaultSubobject<UC_EquippedComponent>("EquippedComponent");
 	EquippedComponent->SetOwnerCharacter(this);
-
 
 	Inventory = CreateDefaultSubobject<UC_InvenComponent>("C_Inventory");
 	Inventory->SetOwnerCharacter(this);
