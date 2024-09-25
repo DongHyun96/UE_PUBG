@@ -41,7 +41,7 @@ AC_Gun::AC_Gun()
 
 	WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
 
-	Bullet = LoadObject<AC_Bullet>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet"));
+	//Bullet = LoadObject<AC_Bullet>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet"));
 	//ItemType 설정.
 	MyItemType = EItemTypes::MAINGUN;
 }
@@ -49,7 +49,8 @@ AC_Gun::AC_Gun()
 void AC_Gun::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnBulletForTest();
+	SetBulletSpeed();
+
 	AimSightCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
 	AimSightSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("RifleSightSpringArm"));
 	//if(IsValid(AimSightCamera))
@@ -62,17 +63,7 @@ void AC_Gun::BeginPlay()
 
 	UUserWidget* AimWidget = LoadObject<UUserWidget>(nullptr,TEXT("/All/Game/Project_PUBG/Hyunho/TempWidget/WBP_CrossHair"));
 	//Bullet = LoadObject<AC_Bullet>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet"));
-	if (IsValid(Bullet))
-	{
-		UC_Util::Print("FindBullet");
 
-		UProjectileMovementComponent* ProjectileMovement = Bullet->FindComponentByClass<UProjectileMovementComponent>();
-		if (ProjectileMovement)
-		{
-			ProjectileMovement->InitialSpeed = BulletSpeed;
-
-		}
-	}
 	//UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>
 	
 
@@ -245,6 +236,7 @@ void AC_Gun::OnOwnerCharacterPoseTransitionFin()
 {
 }
 
+
 bool AC_Gun::FireBullet()
 {
 	FHitResult HitResult;
@@ -259,6 +251,7 @@ bool AC_Gun::FireBullet()
 	CollisionParams.AddIgnoredActor(this);
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
 	CollisionParams.AddIgnoredActor(PlayerCamera);
+	//CollisionParams.AddIgnoredActor(Bullet);
 
 	HitResult = {};
 	FVector WorldLocation, WorldDirection;
@@ -298,8 +291,8 @@ bool AC_Gun::FireBullet()
 	FVector2D ViewportSize;
 	GEngine->GameViewport->GetViewportSize(ViewportSize);
 	FVector2D RandomPointOnScreen;
-	RandomPointOnScreen.X = (0.5 * ViewportSize.X + RandomPoint.X);
-	RandomPointOnScreen.Y = (0.5 * ViewportSize.Y + RandomPoint.Y);
+	//RandomPointOnScreen.X = (0.5 * ViewportSize.X + RandomPoint.X);
+	//RandomPointOnScreen.Y = (0.5 * ViewportSize.Y + RandomPoint.Y);
 	RandomPointOnScreen.X = (0.5 * ViewportSize.X );
 	RandomPointOnScreen.Y = (0.5 * ViewportSize.Y );
 
@@ -317,33 +310,88 @@ bool AC_Gun::FireBullet()
 	{
 		FireDirection = HitResult.Location - FireLocation;
 		FireDirection = FireDirection.GetSafeNormal();
-		UC_Util::Print(FireDirection);
+		UC_Util::Print(HitResult.Location, FColor::Emerald);
+		UC_Util::Print(HitResult.Distance, FColor::Cyan);
 	}
 	else
 	{
 		FireDirection = DestLocation - FireLocation;
 		FireDirection = FireDirection.GetSafeNormal();
-		UC_Util::Print(FireDirection, FColor::Blue);
+		//UC_Util::Print(FireDirection, FColor::Blue);
 
 	}
+	//FRotator LocalRotation(0, 0, 5.6);  
+
+	float RadianValue = FMath::DegreesToRadians(0.06f);
+
+	// 기존 벡터의 크기를 저장
+	float OriginalLength = FireDirection.Size();
+
+	// Z 값을 변화시키기 위해 현재 XY 평면에서의 크기를 유지
+	FireDirection.Z += FMath::Tan(RadianValue);
+
+	// 벡터를 다시 정규화하여 크기를 유지
+	FireDirection = FireDirection.GetSafeNormal();
+	UC_Util::Print(FireDirection, FColor::Blue);
+
 	FireDirection *= 100;
-	FireDirection *= 620;	
+	FireDirection *= 940;	
 	//UC_Util::Print(float(HitResult.Location.Y));
 	//Controller->ActorLineTraceSingle(nullptr, ),)
-	Bullet->Fire(this, FireLocation, FireDirection);
-	return true;
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	int BulletCount = 0;
+	for (auto& Bullet : OwnerPlayer->GetBullets())
+	{
+		if (Bullet->GetIsActive())
+		{
+			//UC_Util::Print("Can't fire");
+			continue;
+		}
+		BulletCount++;
+		//UC_Util::Print("FIRE!!!!!!!");
+
+		//return Bullet->Fire(this, FireLocation, FireDirection);
+		Bullet->Fire(this, FireLocation, FireDirection);
+		if (BulletCount > 100)
+			return true;
+	}
+	UC_Util::Print("No More Bullets in Pool");
+	return false;
 }
 
-void AC_Gun::SpawnBulletForTest()
+void AC_Gun::SetBulletSpeed()
 {
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	if (!IsValid(OwnerPlayer))
+	{
+		return;
+	}
+	for (auto& Bullet : OwnerPlayer->GetBullets())
+	{
+		if (IsValid(Bullet))
+		{
+			UC_Util::Print("FindBullet");
 
-	FActorSpawnParameters Param2{};
-	Param2.Owner = this;
-	UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
-	Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
-	if (IsValid(Bullet))
-		UC_Util::Print("Created Bullet");
+			UProjectileMovementComponent* ProjectileMovement = Bullet->FindComponentByClass<UProjectileMovementComponent>();
+			if (ProjectileMovement)
+			{
+				ProjectileMovement->InitialSpeed = BulletSpeed;
 
+			}
+		}
+	}
 }
+
+//void AC_Gun::SpawnBulletForTest()
+//{
+//
+//	//FActorSpawnParameters Param2{};
+//	//Param2.Owner = this;
+//	//UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
+//	//Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
+//	//if (IsValid(Bullet))
+//	//	UC_Util::Print("Created Bullet");
+//
+//}
 
 

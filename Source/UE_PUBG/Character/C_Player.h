@@ -318,4 +318,19 @@ private:
 	TMap<EPoseState, FVector> MainSpringArmRelativeLocationByPoseMap{};
 	FVector MainSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
 
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TArray<class AC_Bullet*> PooledBullets;
+
+	void PoolingBullets();
+
+	FCollisionQueryParams LineTraceCollisionParams{};
+
+	void SetLineTraceCollisionIgnore();
+
+public:
+	TArray<AC_Bullet*>& GetBullets() { return PooledBullets; }
+
+	FCollisionQueryParams& GetLineTraceCollisionParams() { return LineTraceCollisionParams; }
 };
