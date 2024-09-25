@@ -56,7 +56,8 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
         // 이전 무기 해제에 대한 PoseTransitionEnd 델리게이트 해제
         OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(PrevSlotWeapon);
 
-        PrevSlotWeapon->SetOwnerCharacter(nullptr);
+        //C_Item의 detachment에서 처리중, 혹시몰라 남겨둠.
+        //PrevSlotWeapon->SetOwnerCharacter(nullptr);
     }
     
     Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
