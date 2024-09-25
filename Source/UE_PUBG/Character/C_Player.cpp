@@ -52,7 +52,7 @@
 #include "HUD/C_MainMapWidget.h"
 
 #include "Item/ConsumableItem/Healing/C_FirstAidKit.h"
-
+#include "Item/Weapon/Gun/C_Bullet.h"
 #include "Singleton/C_GameSceneManager.h"
 
 AC_Player::AC_Player()
@@ -168,7 +168,7 @@ void AC_Player::BeginPlay()
 	//}
 
 	SpawnConsumableItemForTesting();
-
+	PoolingBullets();
 
 }
 
@@ -189,6 +189,17 @@ void AC_Player::Tick(float DeltaTime)
 	//ClampControllerRotationPitchWhileAimDownSight();
 
 	HandleLerpMainSpringArmToDestRelativeLocation(DeltaTime);
+
+	int TestCount = 0;
+
+	for (auto& Bullet : PooledBullets)
+	{
+		if (Bullet->GetIsActive())
+		{
+			TestCount++;
+		}
+	}
+	UC_Util::Print(TestCount);
 }
 
 void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -928,4 +939,38 @@ void AC_Player::SpawnConsumableItemForTesting()
 	for (auto& ItemClass : ConsumableItemClasses)
 		ConsumableItems.Add(GetWorld()->SpawnActor<AC_ConsumableItem>(ItemClass, Param));
 
+}
+
+void AC_Player::PoolingBullets()
+{
+
+	FActorSpawnParameters Param2{};
+	Param2.Owner = this;
+	for (int i = 0; i < 1000; i++)
+	{
+		UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
+		AC_Bullet* Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
+
+		
+		if (IsValid(Bullet))
+		{
+
+			UC_Util::Print("Created Bullet");
+			PooledBullets.Add(Bullet);
+		}
+	}
+	
+}
+
+void AC_Player::SetLineTraceCollisionIgnore()
+{
+	LineTraceCollisionParams.AddIgnoredActor(this);
+	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+
+	//LineTraceCollisionParams.AddIgnoredActor(OwnerCharacter);
+	LineTraceCollisionParams.AddIgnoredActor(PlayerCamera);
+	for (auto& Bullet : Bullets)
+	{
+		LineTraceCollisionParams.AddIgnoredActor(Bullet);
+	}
 }

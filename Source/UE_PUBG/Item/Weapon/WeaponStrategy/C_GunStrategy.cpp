@@ -42,7 +42,8 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-
+	//총알 연발
+	//TODO: 총알의 연사율 받아와서 적용 + 총알 발사 모드에 따라 작동못하게 하기
 	MlbPressTimeCount += WeaponUser->GetWorld()->GetDeltaSeconds();
 	if (MlbPressTimeCount > 0.1)
 	{

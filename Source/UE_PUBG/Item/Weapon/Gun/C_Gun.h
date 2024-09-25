@@ -90,7 +90,6 @@ private:
 	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // 무기가 손에 부착될 socket 이름
 	EGunState CurState = EGunState::SUB_GUN;
 	bool bIsAimDown = false;
-
 private:
 	//블루프린트에서 할당한 스켈레탈 메쉬를 저장하는 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -121,9 +120,9 @@ public:
 
 	bool FireBullet();
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class AC_Bullet* Bullet;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//class AC_Bullet* Bullet;
 
-	void SpawnBulletForTest();
-
+	//void SpawnBulletForTest();
+	void SetBulletSpeed();
 };
