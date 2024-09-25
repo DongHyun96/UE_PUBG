@@ -190,16 +190,16 @@ void AC_Player::Tick(float DeltaTime)
 
 	HandleLerpMainSpringArmToDestRelativeLocation(DeltaTime);
 
-	int TestCount = 0;
+	//int TestCount = 0;
 
-	for (auto& Bullet : PooledBullets)
-	{
-		if (Bullet->GetIsActive())
-		{
-			TestCount++;
-		}
-	}
-	UC_Util::Print(TestCount);
+	//for (auto& Bullet : PooledBullets)
+	//{
+	//	if (Bullet->GetIsActive())
+	//	{
+	//		TestCount++;
+	//	}
+	//}
+	//UC_Util::Print(TestCount);
 }
 
 void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -946,7 +946,7 @@ void AC_Player::PoolingBullets()
 
 	FActorSpawnParameters Param2{};
 	Param2.Owner = this;
-	for (int i = 0; i < 1000; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
 		AC_Bullet* Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
