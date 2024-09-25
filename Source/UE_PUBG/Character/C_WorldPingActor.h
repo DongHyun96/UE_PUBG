@@ -26,6 +26,8 @@ public:
 
 	const float GetWorldPingDistanceLimit() const { return WORLD_PING_DISTANCE_LIMIT; }
 
+	//bool IsActive() const {return !}
+
 private:
 
 	void HandleUpdateWorldPingScale();

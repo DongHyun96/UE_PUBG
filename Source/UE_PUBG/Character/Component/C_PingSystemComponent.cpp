@@ -58,6 +58,7 @@ void UC_PingSystemComponent::OnMMBStarted()
 
 	OwnerPlayer->GetHUDWidget()->GetMiniMapWidget()->SpawnPingImage(HitResult.ImpactPoint);
 	OwnerPlayer->GetHUDWidget()->GetMainMapWidget()->SpawnPingImage(HitResult.ImpactPoint);
+	OwnerPlayer->GetHUDWidget()->SpawnCompassBarPingMarker(HitResult.ImpactPoint);
 }
 
 bool UC_PingSystemComponent::SpawnWorldPingActor(FVector SpawnPos)

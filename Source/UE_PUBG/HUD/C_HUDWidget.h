@@ -76,6 +76,14 @@ public: // HUD event ฐüทร
 
 public:
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SpawnCompassBarPingMarker(FVector WorldPingMarkerLocation);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void HideCompassBarPingMarker();
+
+public:
+
 	void ToggleMiniMapEnlarged();
 
 public:

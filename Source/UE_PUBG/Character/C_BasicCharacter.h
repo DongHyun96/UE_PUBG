@@ -158,7 +158,7 @@ public: // Getters and setters
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }
-	void SetPoseState(EPoseState InPoseState) { PoseState = InPoseState; }
+	void SetPoseState(EPoseState InPoseState);
 
 	float GetNextSpeed() const { return NextSpeed; }
 	void SetNextSpeed(float InNextSpeed) { NextSpeed = InNextSpeed; }
@@ -207,6 +207,8 @@ public: // Getters and setters
 
 	class UC_ConsumableUsageMeshComponent* GetConsumableUsageMeshComponent() const { return ConsumableUsageMeshComponent; }
 
+	void SetColliderByPoseState(EPoseState InPoseState);
+
 public:
 
 	/// <summary>
@@ -231,6 +233,16 @@ public:
 	/// <returns> Pose transition motion이 제대로 실행되었다면 return true </returns>
 	bool ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState);
 
+public:
+
+	/// <summary>
+	/// 현재 주변환경에서 플레이어 캐릭터가 자세를 바꿀 수 있는지 체크
+	/// </summary>
+	/// <param name="InChangeTo"> : 바꾸려고 하는 자세 </param>
+	/// <returns> : 바꿀 수 있다면 return true </returns>
+	bool CanChangePoseOnCurrentSurroundEnvironment(EPoseState InChangeTo);
+
+
 protected:
 
 	// Current hand state
@@ -240,6 +252,39 @@ protected:
 	// Current pose state 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPoseState PoseState{};
+
+// Body Collider 관련
+protected: 
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UCapsuleComponent* CrawlCollider{};
+
+private:
+
+	// 자세별 CrouchCrawl Collider 높이와 Radius
+	const TMap<EPoseState, TPair<float, float>> POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS =
+	{
+		{EPoseState::STAND,		{88.f, 34.f}},
+		{EPoseState::CROUCH,	{67.f, 34.f}},
+		{EPoseState::CRAWL,		{20.f, 20.f}}
+		//{EPoseState::CRAWL,		{1.f, 1.f}}
+
+	};
+
+	const TMap<EPoseState, float> POSE_BY_MESH_Z_POS =
+	{
+		{EPoseState::STAND,		-90.f},
+		{EPoseState::CROUCH,	-64.f},
+		{EPoseState::CRAWL,		-20.f}
+	};
+	// Crawl일 때 35+
+
+private:
+	//const float	CROUCH_TO_STAND_RAYCAST_DIST = 
+	const float CROUCH_TO_STAND_RAYCAST_CHECK_DIST	= 70.f;
+	const float CRAWL_TO_CROUCH_RAYCAST_CHECK_DIST	= 120.f;
+	const float CRAWL_TO_STAND_RAYCAST_CHECK_DIST	= 160.f;
+
 
 protected: // 자세 변환 Transition 관련
 
