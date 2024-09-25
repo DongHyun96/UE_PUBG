@@ -220,6 +220,7 @@ void AC_BasicCharacter::SetColliderByPoseState(EPoseState InPoseState)
 		GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, POSE_BY_MESH_Z_POS[InPoseState]));
 		
 		CrawlCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		GetCapsuleComponent()->SetSimulatePhysics(false);
 
 		return;
@@ -236,7 +237,10 @@ void AC_BasicCharacter::SetColliderByPoseState(EPoseState InPoseState)
 		GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, POSE_BY_MESH_Z_POS[InPoseState]));
 
 		CrawlCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		GetCapsuleComponent()->SetSimulatePhysics(false);
+
+		//DrawDebugLine(GetWorld(), GetMesh()->GetBoneLocation("Neck"), Get)
 
 		/*
 		On input action Prone 1 - capsule component - set simulate physics = true, 2 - ProneCollider's Collision enabled = Collision enabled, 3 - capsule component - set simulate physics = false.
@@ -255,8 +259,8 @@ void AC_BasicCharacter::SetColliderByPoseState(EPoseState InPoseState)
 
 		GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, POSE_BY_MESH_Z_POS[InPoseState]));
 
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		CrawlCollider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		GetCapsuleComponent()->SetSimulatePhysics(false);
 
 		return;
@@ -297,4 +301,68 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 	bIsPoseTransitioning	= true;
 
 	return true;
+}
+
+bool AC_BasicCharacter::CanChangePoseOnCurrentSurroundEnvironment(EPoseState InChangeTo)
+{
+	if (PoseState == InChangeTo) return false;
+
+	switch (InChangeTo)
+	{
+	case EPoseState::STAND:
+	{
+
+		if (PoseState == EPoseState::CROUCH) // Crouch to Stand
+		{
+			FVector HeadLocation = GetMesh()->GetBoneLocation("Neck");
+			FVector DestLocation = HeadLocation + FVector::UnitZ() * CROUCH_TO_STAND_RAYCAST_CHECK_DIST;
+
+			FCollisionQueryParams CollisionParams{};
+			CollisionParams.AddIgnoredActor(this);
+			FHitResult HitResult{};
+
+			bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, HeadLocation, DestLocation, ECC_Visibility, CollisionParams);
+			DrawDebugLine(GetWorld(), HeadLocation, DestLocation, FColor::Red, true);
+
+			return !HasHit;
+		}
+
+		// Crawl to Stand
+		FVector ActorLocation = GetActorLocation();
+		FVector DestLocation = ActorLocation + FVector::UnitZ() * CRAWL_TO_STAND_RAYCAST_CHECK_DIST;
+
+		FCollisionQueryParams CollisionParams{};
+		CollisionParams.AddIgnoredActor(this);
+		FHitResult HitResult{};
+
+		bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, ActorLocation, DestLocation, ECC_Visibility, CollisionParams);
+		DrawDebugLine(GetWorld(), ActorLocation, DestLocation, FColor::Red, true);
+
+		return !HasHit;
+	}
+		return false;
+	case EPoseState::CROUCH: // Crawl to Crouch만 확인 하면 됨
+	{
+		if (PoseState == EPoseState::STAND) return true; // Stand to crouch -> 언제든 자세를 바꿀 수 있음
+
+		FVector ActorLocation = GetActorLocation();
+		FVector DestLocation = ActorLocation + FVector::UnitZ() * CRAWL_TO_CROUCH_RAYCAST_CHECK_DIST;
+
+		FCollisionQueryParams CollisionParams{};
+		CollisionParams.AddIgnoredActor(this);
+		FHitResult HitResult{};
+
+		bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, ActorLocation, DestLocation, ECC_Visibility, CollisionParams);
+		DrawDebugLine(GetWorld(), ActorLocation, DestLocation, FColor::Red, true);
+
+		return !HasHit;
+	}
+		return true;
+	case EPoseState::CRAWL: // TODO : 지형 경사도 확인 & Crawl 충돌체가 충분히 들어갈 수 있는 상황인지 확인
+
+		return true;
+	case EPoseState::POSE_MAX: default: return false;
+	}
+
+	return false;
 }

@@ -82,6 +82,7 @@ private:
 
 	void OnNKey();
 	void OnMKey();
+
 private:
 
 	class AC_Player* Player{};
