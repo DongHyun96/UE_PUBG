@@ -158,7 +158,7 @@ public: // Getters and setters
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }
-	void SetPoseState(EPoseState InPoseState) { PoseState = InPoseState; }
+	void SetPoseState(EPoseState InPoseState);
 
 	float GetNextSpeed() const { return NextSpeed; }
 	void SetNextSpeed(float InNextSpeed) { NextSpeed = InNextSpeed; }
@@ -207,6 +207,8 @@ public: // Getters and setters
 
 	class UC_ConsumableUsageMeshComponent* GetConsumableUsageMeshComponent() const { return ConsumableUsageMeshComponent; }
 
+	void SetColliderByPoseState(EPoseState InPoseState);
+
 public:
 
 	/// <summary>
@@ -231,6 +233,11 @@ public:
 	/// <returns> Pose transition motion이 제대로 실행되었다면 return true </returns>
 	bool ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState);
 
+private:
+
+
+
+
 protected:
 
 	// Current hand state
@@ -240,6 +247,31 @@ protected:
 	// Current pose state 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPoseState PoseState{};
+
+// Body Collider 관련
+protected: 
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UCapsuleComponent* CrawlCollider{};
+
+private:
+
+	// 자세별 CrouchCrawl Collider 높이와 Radius
+	const TMap<EPoseState, TPair<float, float>> POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS =
+	{
+		{EPoseState::STAND,		{88.f, 34.f}},
+		{EPoseState::CROUCH,	{67.f, 34.f}},
+		{EPoseState::CRAWL,		{20.f, 20.f}}
+	};
+
+	const TMap<EPoseState, float> POSE_BY_MESH_Z_POS =
+	{
+		{EPoseState::STAND,		-90.f},
+		{EPoseState::CROUCH,	-64.f},
+		{EPoseState::CRAWL,		-35.f}
+	};
+	// Crawl일 때 35+
+
 
 protected: // 자세 변환 Transition 관련
 

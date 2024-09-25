@@ -147,6 +147,10 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		const FVector   RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
+		// TODO : Stand Crouch는 Character Movement 경사면 설정으로 적절히 처리가 알아서 됨
+		// Crawl의 경우 RootCapsuleComponent의 크기를 줄여서 배의 한가운데 쪽으로 위치가 잡힘
+		// Crawl 전용 경사면 예외처리를 해주어야 함
+
 		Player->AddMovementInput(ForwardDirection, MovementVector.X);
 		Player->AddMovementInput(RightDirection, MovementVector.Y);
 

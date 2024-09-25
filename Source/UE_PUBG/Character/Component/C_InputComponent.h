@@ -41,8 +41,8 @@ private:
 
 	void Crouch();
 	void Crawl();
-
 	void OnJump();
+
 	void CancelTurnInPlaceMotion();
 	//Alt 키 누를때 이름 추천부탁
 	void HoldDirection();

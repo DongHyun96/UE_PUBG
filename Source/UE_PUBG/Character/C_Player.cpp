@@ -618,6 +618,8 @@ void AC_Player::InitTurnAnimMontageMap()
 
 void AC_Player::HandleCameraAimPunching(float DeltaTime)
 {
+	if (!IsValid(MainCamera) || !IsValid(AimCamera)) return;
+
 	FVector		MainCamPos = MainCamera->GetRelativeLocation();
 	FVector		AimCamPos  = AimCamera->GetRelativeLocation();
 	FRotator	MainCamRot = MainCamera->GetRelativeRotation();

@@ -36,6 +36,12 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	ConsumableUsageMeshComponent = CreateDefaultSubobject<UC_ConsumableUsageMeshComponent>("ConsumableUsageMeshComponent");
 	ConsumableUsageMeshComponent->SetOwnerCharacter(this);
+
+	CrawlCollider = CreateDefaultSubobject<UCapsuleComponent>("CrawlCollider");
+	CrawlCollider->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	//CrawlCollider->SetupAttachment(GetMesh());
+
+	//CharacterMeshComponent->SetRelativeLocation();
 }
 
 // Called when the game starts or when spawned
@@ -43,13 +49,14 @@ void AC_BasicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 	MainCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
 	InitialMainCameraRelativeRotation = MainCamera->GetRelativeRotation().Quaternion();
 	C_MainSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("MainSpringArm")); 
 
 	StatComponent->SetOwnerCharacter(this);
 
+	CrawlCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetSimulatePhysics(false);
 }
 
 // Called every frame
@@ -188,9 +195,82 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 	GetCharacterMovement()->MaxWalkSpeed *= BoostingSpeedFactor;
 }
 
+void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
+{
+	PoseState = InPoseState;
+	SetColliderByPoseState(PoseState);
+}
+
+void AC_BasicCharacter::SetColliderByPoseState(EPoseState InPoseState)
+{
+	FVector MeshLocation = GetMesh()->GetRelativeTransform().GetLocation();
+
+	switch (InPoseState)
+	{
+	case EPoseState::STAND:
+
+		GetCapsuleComponent()->SetSimulatePhysics(true);
+
+		GetCapsuleComponent()->SetCapsuleSize
+		(
+			POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[InPoseState].Value,
+			POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[InPoseState].Key
+		);
+		
+		GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, POSE_BY_MESH_Z_POS[InPoseState]));
+		
+		CrawlCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCapsuleComponent()->SetSimulatePhysics(false);
+
+		return;
+	case EPoseState::CROUCH:
+
+		GetCapsuleComponent()->SetSimulatePhysics(true);
+
+		GetCapsuleComponent()->SetCapsuleSize
+		(
+			POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[InPoseState].Value,
+			POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[InPoseState].Key
+		);
+
+		GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, POSE_BY_MESH_Z_POS[InPoseState]));
+
+		CrawlCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCapsuleComponent()->SetSimulatePhysics(false);
+
+		/*
+		On input action Prone 1 - capsule component - set simulate physics = true, 2 - ProneCollider's Collision enabled = Collision enabled, 3 - capsule component - set simulate physics = false.
+		*/
+
+		return;
+	case EPoseState::CRAWL:
+
+		GetCapsuleComponent()->SetSimulatePhysics(true);
+
+		GetCapsuleComponent()->SetCapsuleSize
+		(
+			POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[InPoseState].Value,
+			POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[InPoseState].Key
+		);
+
+		GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, POSE_BY_MESH_Z_POS[InPoseState]));
+
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		CrawlCollider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		GetCapsuleComponent()->SetSimulatePhysics(false);
+
+		return;
+	case EPoseState::POSE_MAX:
+		return;
+	default:
+		return;
+	}
+}
+
 void AC_BasicCharacter::OnPoseTransitionGoing()
 {
 	PoseState = NextPoseState;
+	SetColliderByPoseState(PoseState);
 }
 
 void AC_BasicCharacter::OnPoseTransitionFinish()
