@@ -279,12 +279,16 @@ private:
 	};
 	// Crawl일 때 35+
 
-private:
-	//const float	CROUCH_TO_STAND_RAYCAST_DIST = 
-	const float CROUCH_TO_STAND_RAYCAST_CHECK_DIST	= 70.f;
-	const float CRAWL_TO_CROUCH_RAYCAST_CHECK_DIST	= 120.f;
-	const float CRAWL_TO_STAND_RAYCAST_CHECK_DIST	= 160.f;
+private: // ChangePose Sweep testing constants
 
+	const float SWEEP_SPHERE_RAD			= 34.f;
+	const float CROUCH_TO_STAND_SWEEP_DIST	= (POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[EPoseState::STAND].Key -
+											   POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[EPoseState::CROUCH].Key) * 2.f;
+	const float CRAWL_TO_STAND_SWEEP_DIST	= 105.f;
+	const float CRAWL_TO_CROUCH_SWEEP_DIST	= 60.f;
+
+	const float CRAWL_LINETRACE_TEST_DIST	= 500.f;
+	const float CRAWL_DEGREE_LIMIT			= 30.f; // 30도 이상 경사도 기어갈 수 없게 처리
 
 protected: // 자세 변환 Transition 관련
 
