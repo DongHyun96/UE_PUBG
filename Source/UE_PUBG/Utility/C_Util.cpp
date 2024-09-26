@@ -20,6 +20,12 @@ void UC_Util::Print(const float& data, const FColor& InColor, const float& TimeT
 	GEngine->AddOnScreenDebugMessage(-1, TimeToDisplay, InColor, *str);
 }
 
+void UC_Util::Print(const double& data, const FColor& InColor, const float& TimeToDisplay)
+{
+	FString str = FString::SanitizeFloat(data);
+	GEngine->AddOnScreenDebugMessage(-1, TimeToDisplay, InColor, *str);
+}
+
 void UC_Util::Print(const FVector& data, const FColor& InColor, const float& TimeToDisplay)
 {
 	FString str = data.ToString();

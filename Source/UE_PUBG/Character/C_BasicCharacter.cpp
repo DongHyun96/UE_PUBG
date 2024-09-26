@@ -63,6 +63,9 @@ void AC_BasicCharacter::BeginPlay()
 void AC_BasicCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//UC_Util::Print(GetCharacterMovement()->GetMovementName());
+	//UC_Util::Print(GetActorLocation().Z);
 }
 
 // Called to bind functionality to input
@@ -199,6 +202,7 @@ void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
 {
 	PoseState = InPoseState;
 	SetColliderByPoseState(PoseState);
+	if (InPoseState == EPoseState::CRAWL) GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 }
 
 void AC_BasicCharacter::SetColliderByPoseState(EPoseState InPoseState)
@@ -307,62 +311,123 @@ bool AC_BasicCharacter::CanChangePoseOnCurrentSurroundEnvironment(EPoseState InC
 {
 	if (PoseState == InChangeTo) return false;
 
+	const float CRAWL_START_OFFSET = 20.f;
+
 	switch (InChangeTo)
 	{
 	case EPoseState::STAND:
 	{
-
-		if (PoseState == EPoseState::CROUCH) // Crouch to Stand
-		{
-			FVector HeadLocation = GetMesh()->GetBoneLocation("Neck");
-			FVector DestLocation = HeadLocation + FVector::UnitZ() * CROUCH_TO_STAND_RAYCAST_CHECK_DIST;
-
-			FCollisionQueryParams CollisionParams{};
-			CollisionParams.AddIgnoredActor(this);
-			FHitResult HitResult{};
-
-			bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, HeadLocation, DestLocation, ECC_Visibility, CollisionParams);
-			DrawDebugLine(GetWorld(), HeadLocation, DestLocation, FColor::Red, true);
-
-			return !HasHit;
-		}
-
-		// Crawl to Stand
-		FVector ActorLocation = GetActorLocation();
-		FVector DestLocation = ActorLocation + FVector::UnitZ() * CRAWL_TO_STAND_RAYCAST_CHECK_DIST;
+		// Crouch to stand or Crawl to Stand
+		FVector StartLocation	 = GetActorLocation();
+		StartLocation.Z			+= (PoseState == EPoseState::CROUCH) ? POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[EPoseState::CROUCH].Key - SWEEP_SPHERE_RAD : CRAWL_START_OFFSET;
+		FVector DestLocation	 = StartLocation + FVector::UnitZ() * ((PoseState == EPoseState::CROUCH) ? CROUCH_TO_STAND_SWEEP_DIST : CRAWL_TO_STAND_SWEEP_DIST);
 
 		FCollisionQueryParams CollisionParams{};
 		CollisionParams.AddIgnoredActor(this);
+		
+		TArray<AActor*> AttachedActors{};
+		GetAttachedActors(AttachedActors);
+		CollisionParams.AddIgnoredActors(AttachedActors);
+
 		FHitResult HitResult{};
 
-		bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, ActorLocation, DestLocation, ECC_Visibility, CollisionParams);
-		DrawDebugLine(GetWorld(), ActorLocation, DestLocation, FColor::Red, true);
+		bool HasHit = GetWorld()->SweepSingleByChannel
+		(
+			HitResult,
+			StartLocation,
+			DestLocation,
+			FQuat::Identity,
+			ECC_Visibility,
+			FCollisionShape::MakeSphere(SWEEP_SPHERE_RAD),
+			CollisionParams
+		);
+
+		if (HasHit) UC_Util::Print(HitResult.GetActor()->GetName());
+		
+		DrawDebugSphere(GetWorld(), StartLocation, SWEEP_SPHERE_RAD, 10, FColor::Red, true);
+		DrawDebugSphere(GetWorld(), DestLocation,  SWEEP_SPHERE_RAD, 10, FColor::Red, true);
 
 		return !HasHit;
 	}
-		return false;
 	case EPoseState::CROUCH: // Crawl to Crouch만 확인 하면 됨
 	{
 		if (PoseState == EPoseState::STAND) return true; // Stand to crouch -> 언제든 자세를 바꿀 수 있음
 
-		FVector ActorLocation = GetActorLocation();
-		FVector DestLocation = ActorLocation + FVector::UnitZ() * CRAWL_TO_CROUCH_RAYCAST_CHECK_DIST;
+		// Crawl to Crouch test
+
+		FVector StartLocation	 = GetActorLocation();
+		StartLocation.Z			+= CRAWL_START_OFFSET;
+		FVector DestLocation	 = StartLocation + FVector::UnitZ() * CRAWL_TO_CROUCH_SWEEP_DIST;
 
 		FCollisionQueryParams CollisionParams{};
 		CollisionParams.AddIgnoredActor(this);
+
+		TArray<AActor*> AttachedActors{};
+		GetAttachedActors(AttachedActors);
+		CollisionParams.AddIgnoredActors(AttachedActors);
+
 		FHitResult HitResult{};
 
-		bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, ActorLocation, DestLocation, ECC_Visibility, CollisionParams);
-		DrawDebugLine(GetWorld(), ActorLocation, DestLocation, FColor::Red, true);
+		bool HasHit = GetWorld()->SweepSingleByChannel
+		(
+			HitResult,
+			StartLocation,
+			DestLocation,
+			FQuat::Identity,
+			ECC_Visibility,
+			FCollisionShape::MakeSphere(SWEEP_SPHERE_RAD),
+			CollisionParams
+		);
 
+		if (HasHit) UC_Util::Print(HitResult.GetActor()->GetName());
+
+		DrawDebugSphere(GetWorld(), StartLocation, SWEEP_SPHERE_RAD, 10, FColor::Red, true);
+		DrawDebugSphere(GetWorld(), DestLocation,  SWEEP_SPHERE_RAD, 10, FColor::Red, true);
+		
 		return !HasHit;
 	}
-		return true;
 	case EPoseState::CRAWL: // TODO : 지형 경사도 확인 & Crawl 충돌체가 충분히 들어갈 수 있는 상황인지 확인
+	{
+		FVector HeadStartLocation	= GetActorLocation() + GetActorForwardVector() * 75.f;
+		FVector HeadDestLocation	= HeadStartLocation - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
+		FVector PelvisStartLocation = GetActorLocation();
+		FVector PelvisDestLocation	= PelvisStartLocation - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
 
-		return true;
+		FCollisionQueryParams CollisionParams{};
+		CollisionParams.AddIgnoredActor(this);
+
+		TArray<AActor*> AttachedActors{};
+		GetAttachedActors(AttachedActors);
+		CollisionParams.AddIgnoredActors(AttachedActors);
+
+		FHitResult HeadHitResult{};
+		FHitResult PelvisHitResult{};
+
+		bool HasHeadHit		= GetWorld()->LineTraceSingleByChannel(HeadHitResult, HeadStartLocation, HeadDestLocation, ECC_Visibility, CollisionParams);
+		bool HasPelvisHit	= GetWorld()->LineTraceSingleByChannel(PelvisHitResult, PelvisStartLocation, PelvisDestLocation, ECC_Visibility, CollisionParams);
+
+		UC_Util::Print(HeadHitResult.ImpactPoint);
+		DrawDebugLine(GetWorld(), HeadStartLocation, HeadHitResult.ImpactPoint, FColor::Red, true);
+		DrawDebugLine(GetWorld(), PelvisStartLocation, PelvisHitResult.ImpactPoint, FColor::Red, true);
+
+		if (!HasHeadHit || !HasPelvisHit) return false;
+		// TODO : Length 체크
+		//if (HeadHitResult.ImpactPoint.Length() )
+
+		// 경사도 체크
+		//HeadHitResult.ImpactPoint
+		float A				= (HeadHitResult.ImpactPoint - PelvisHitResult.ImpactPoint).Length();
+		float B				= FMath::Abs(HeadHitResult.ImpactPoint.Z - PelvisHitResult.ImpactPoint.Z);
+		float SlopeDegree	= FMath::RadiansToDegrees(FMath::Asin(B / A));
+
+		UC_Util::Print(SlopeDegree);
+
+		//FRotator CrawlRelativeRotation = CrawlCollider->GetRelativeRotation();
+		//CrawlRelativeRotation.Pitch += SlopeDegree;
+		//CrawlCollider->SetRelativeRotation(CrawlRelativeRotation);
+
+		return SlopeDegree < CRAWL_DEGREE_LIMIT;
+	}
 	case EPoseState::POSE_MAX: default: return false;
 	}
-
-	return false;
 }
