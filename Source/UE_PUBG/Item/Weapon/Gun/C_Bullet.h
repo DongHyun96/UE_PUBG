@@ -34,6 +34,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class USphereComponent* SphereCollider;
+
+	void DeactivateInstance();
+	void ActivateInstance();
 	bool GetIsActive() { return IsActive; }
 	//void SetMeshVisiblility(bool InBool) { BulletMesh->SetVisibility(InBool);}
 
@@ -46,6 +49,9 @@ public:
 
 	int TestTickCount = 0;
 	float TestTimeCount = 0;
+
+public:
+	void SetInstanceNum(int InNum) { InstanceNum = InNum; }
 protected:
 	float Drag_Coefficient = 0.0165;
 	float Air_Density = 1.225;// # kg / m ^ 3
@@ -60,4 +66,6 @@ protected:
 	//bool bBulletIsActive() { return BulletProjectileMovement->IsActive(); }
 
 	void CalculateTravelDistanceAndDeactivate(float DeltaTime);
+
+	int InstanceNum;
 };

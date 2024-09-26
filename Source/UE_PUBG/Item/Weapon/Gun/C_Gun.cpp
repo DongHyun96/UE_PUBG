@@ -27,6 +27,8 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/C_Player.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 #include "GameFramework/SpringArmComponent.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 
@@ -106,7 +108,7 @@ void AC_Gun::Tick(float DeltaTime)
 	}
 	HandleSpringArmRotation();
 	GetPlayerIsAimDownOrNot();
-
+	CheckPlayerIsRunning();
 }
 
 bool AC_Gun::AttachToHolster(USceneComponent* InParent)
@@ -138,21 +140,27 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 
 bool AC_Gun::AttachToHand(USceneComponent* InParent)
 {
-	UAnimMontage* DrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[EGunState::SUB_GUN].AnimMontage;
+	UAnimMontage* DrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
 	//UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 
 	//if (!IsValid(DrawMontage)) return false;
 	// 만일 SUB_GUN의 Draw가 실행된다면 왼손으로 먼저 Attach
 	//현재 왼손으로 옮겨지고 있다면 다시 어태치 하지 않고 If문 밑으로 진행
 	FName CurSocketName = GetAttachParentSocketName();
+
 	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(DrawMontage) && CurSocketName != SUB_DRAW_SOCKET_NAME)
 	{
-		return AttachToComponent
-		(
-			InParent,
-			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
-			SUB_DRAW_SOCKET_NAME
-		);
+
+		//Crawl일 때는 모션이 달라 왼손에 어태치 안함
+		if (CurState == EGunState::SUB_GUN && OwnerCharacter->GetPoseState() != EPoseState::CRAWL)
+		{
+			return AttachToComponent
+			(
+				InParent,
+				FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+				SUB_DRAW_SOCKET_NAME
+			);
+		}
 	}
 	OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
 	
@@ -168,6 +176,10 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 
 bool AC_Gun::SetAimingDown()
 {
+
+	//스프린트 중이라면 Return
+	if (OwnerCharacter->GetNextSpeed() > 600)
+		return false;
 	Cast<AC_Player>(OwnerCharacter)->SetToAimDownSight();
 	//CharacterMesh->HideBoneByName(FName("HeadBoneName"), EPhysBodyOp::PBO_None);
 
@@ -185,6 +197,10 @@ bool AC_Gun::SetAimingDown()
 //견착 조준만할 때 Player AimKePress함수로 메인카메라에서 에임 카메라로 바꿔주기
 bool AC_Gun::SetAimingPress()
 {
+	//스프린트 중이라면 Return
+	if (OwnerCharacter->GetNextSpeed() > 600)
+		return false;
+
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 	if (!IsValid(OwnerPlayer)) return false;
 	if (OwnerPlayer->GetIsAimDown()) return false;
@@ -234,6 +250,18 @@ void AC_Gun::GetPlayerIsAimDownOrNot()
 
 void AC_Gun::OnOwnerCharacterPoseTransitionFin()
 {
+}
+
+void AC_Gun::CheckPlayerIsRunning()
+{
+	//Aim Press 혹은 Aim Down 상태일 때 스프린트 실행하면 다시 main 카메라로 돌아가기
+	float NextSpeed = OwnerCharacter->GetNextSpeed();
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+
+	if (NextSpeed > 600 && OwnerPlayer->GetIsAimDown())
+		BackToMainCamera();
+
+
 }
 
 

@@ -62,20 +62,15 @@ void AC_Bullet::BeginPlay()
 	InstancedBulletMesh = FindComponentByClass<UInstancedStaticMeshComponent>();
 	SphereCollider = FindComponentByClass<USphereComponent>();
 	
-	if (IsValid(SphereCollider))
-		UC_Util::Print("Found Collider");
+	//if (IsValid(SphereCollider))
+	//	UC_Util::Print("Found Collider");
 	if (IsValid(InstancedBulletMesh))
 	{
 		InstancedBulletMesh->SetupAttachment(RootComponent);
-		UC_Util::Print("Found Mesh");
+		//UC_Util::Print("Found Mesh");
 		
 	}
-	SetActorHiddenInGame(true);
-	BulletProjectileMovement->SetActive(false, true);
-	BulletProjectileMovement->SetComponentTickEnabled(false);
-	SphereCollider->SetActive(false);
-
-	BulletProjectileMovement->Velocity = FVector(0);
+	//DeactivateInstance();
 		
 }
 
@@ -85,6 +80,51 @@ void AC_Bullet::Tick(float DeltaTime)
 	CalculateTravelDistanceAndDeactivate(DeltaTime);
 
 
+}
+
+void AC_Bullet::DeactivateInstance()
+{
+
+	FString Message = "Deactivated" + FString::FromInt(InstanceNum);
+	UC_Util::Print(Message);
+
+	InstancedBulletMesh->SetActive(false);
+	InstancedBulletMesh->SetComponentTickEnabled(false);
+	//	InstancedBulletMesh->SetVisibility(false);
+	
+	SetActorHiddenInGame(true);
+	SetActorTickEnabled(false);
+	SetActorEnableCollision(false);
+
+	BulletProjectileMovement->Velocity = FVector(0);
+	BulletProjectileMovement->SetActive(false);
+	BulletProjectileMovement->SetComponentTickEnabled(false);
+
+	SphereCollider->SetActive(false);
+	SphereCollider->SetComponentTickEnabled(false);
+	IsActive = false;
+
+}
+
+void AC_Bullet::ActivateInstance()
+{
+
+	InstancedBulletMesh->SetActive(true);
+	InstancedBulletMesh->SetVisibility(true);
+	InstancedBulletMesh->SetComponentTickEnabled(true);
+
+
+
+	SetActorTickEnabled(true);
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
+
+	SphereCollider->SetActive(true);
+	SphereCollider->SetComponentTickEnabled(true);
+
+	BulletProjectileMovement->SetActive(true, true);
+	BulletProjectileMovement->SetComponentTickEnabled(true);
+	IsActive = true;
 }
 
 bool AC_Bullet::Fire(AC_Gun* OwnerGun, FVector InLocation, FVector InDirection)
@@ -105,16 +145,8 @@ bool AC_Bullet::Fire(AC_Gun* OwnerGun, FVector InLocation, FVector InDirection)
 		{
 			BulletProjectileMovement->SetUpdatedComponent(RootComponent);
 		}
-		SetActorTickEnabled(true);
-		SetActorHiddenInGame(false);
-		SphereCollider->SetActive(true);
 
-			//UC_Util::Print("FUCK");
-		BulletProjectileMovement->SetActive(true, true);
-		BulletProjectileMovement->SetComponentTickEnabled(true);
-		//BulletProjectileMovement->SetUpdatedComponent(RootComponent);	
-		// 
-		//BulletProjectileMovement->Get
+		ActivateInstance();
 		UC_Util::Print(BulletProjectileMovement->InitialSpeed);
 		USkeletalMeshComponent* GunMesh = OwnerGun->GetGunMesh();
 
@@ -198,6 +230,7 @@ void AC_Bullet::CustomPhysics(float DeltaTime)
 
 void AC_Bullet::CalculateTravelDistanceAndDeactivate(float DeltaTime)
 {
+
 	if (!IsValid(BulletProjectileMovement))
 		return;
 	IsActive = BulletProjectileMovement->IsActive();
@@ -207,14 +240,7 @@ void AC_Bullet::CalculateTravelDistanceAndDeactivate(float DeltaTime)
 		float TravelDistance = (GetActorLocation() - FireLocation).Size();
 		if (TravelDistance > 100000.0f)
 		{
-			UC_Util::Print("Deactivated");
-			SetActorHiddenInGame(true);
-			SetActorTickEnabled(false);
-			BulletProjectileMovement->Velocity = FVector(0);
-			BulletProjectileMovement->SetActive(false, true);
-			BulletProjectileMovement->SetComponentTickEnabled(false);
-			SphereCollider->SetActive(false);
-			IsActive = false;
+			DeactivateInstance();
 		}
 	}
 }
