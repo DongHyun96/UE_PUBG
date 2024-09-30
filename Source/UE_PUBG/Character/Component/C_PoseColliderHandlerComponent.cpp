@@ -128,12 +128,12 @@ bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(
 		
 		return !HasHit;
 	}
-	case EPoseState::CRAWL: // TODO : 지형 경사도 확인 & Crawl 충돌체가 충분히 들어갈 수 있는 상황인지 확인
+	case EPoseState::CRAWL:
 	{
-		float SlopeDegree = FMath::Abs(GetCrawlSlopeDegree());
-
-		UC_Util::Print(SlopeDegree);
-		return SlopeDegree < CRAWL_DEGREE_LIMIT;
+		// 높낮이가 높다하면 이미 떨어지는 상태이므로 Crawl 자체의 처리를 하지 않음 -> 높이 말고 경사도만 체크를 해주면 됨
+		TPair<float, float> ImpactDistances{};
+		float SlopeDegree = GetCrawlSlopeDegree(ImpactDistances, true);
+		return FMath::Abs(SlopeDegree) < CRAWL_DEGREE_LIMIT;
 	}
 	case EPoseState::POSE_MAX: default: return false;
 	}
@@ -189,20 +189,51 @@ void UC_PoseColliderHandlerComponent::HandleLerpBodySizeByPose(const float& Delt
 
 void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& DeltaTime)
 {
-	static const float LERP_SPEED = 20.f;
+	if (OwnerCharacter->GetIsPoseTransitioning()) return;
+
+	static const float LERP_SPEED		= 20.f;
+	static const float HEIGHT_OFFSET	= 50.f;
+	TPair<float, float> ImpactDistances{};
 
 	if (OwnerCharacter->GetPoseState() != EPoseState::CRAWL) return;
 
-	FRotator CrawlRelativeRotation = CrawlCapsuleComponent->GetRelativeRotation();
-	float SlopeDegree = GetCrawlSlopeDegree();
+	FRotator CrawlRelativeRotation	= CrawlCapsuleComponent->GetRelativeRotation();
+	float SlopeDegree				= GetCrawlSlopeDegree(ImpactDistances, HEIGHT_OFFSET, true);
+
+	//UC_Util::Print(SlopeDegree);
+	if (!CanCrawlOnSlope(SlopeDegree, ImpactDistances))
+	{
+		// 자세 전환 시도하기
+		if (OwnerCharacter->SetPoseState(EPoseState::CRAWL, EPoseState::STAND))		return;
+		if (OwnerCharacter->SetPoseState(EPoseState::CRAWL, EPoseState::CROUCH))	return;
+	}
+
 	CrawlCapsuleComponent->SetRelativeRotation(FRotator(90.f + SlopeDegree, 0.f, 0.f));
 }
 
-float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree()
+float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree(OUT TPair<float, float>& ImpactDistances, const float& HeightOffset, const bool& EnableDebugLine)
 {
-	FVector HeadStartLocation	= OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorForwardVector() * 75.f;
-	FVector HeadDestLocation	= HeadStartLocation - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
-	FVector PelvisStartLocation = OwnerCharacter->GetActorLocation();
+	FVector HeadStartLocation	= OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorForwardVector() * 75.f + FVector::UnitZ() * HeightOffset;
+	//FVector HeadStartLocation	= OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorForwardVector() * 75.f;
+	FVector PelvisStartLocation = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * HeightOffset;
+	//FVector PelvisStartLocation = OwnerCharacter->GetActorLocation() + FVector::UnitZ();
+
+	float SlopeDegree = GetCrawlSlopeDegree(HeadStartLocation, PelvisStartLocation, ImpactDistances, EnableDebugLine);
+	ImpactDistances.Key		-= HeightOffset;
+	ImpactDistances.Value	-= HeightOffset;
+
+	return SlopeDegree;
+}
+
+float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree
+(
+	const FVector&				HeadStartLocation,
+	const FVector&				PelvisStartLocation,
+	OUT TPair<float, float>&	ImpactDistances,
+	const bool&					EnableDebugLine
+)
+{
+	FVector HeadDestLocation	= HeadStartLocation   - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
 	FVector PelvisDestLocation	= PelvisStartLocation - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
 
 	FCollisionQueryParams CollisionParams{};
@@ -218,8 +249,11 @@ float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree()
 	bool HasHeadHit		= GetWorld()->LineTraceSingleByChannel(HeadHitResult, HeadStartLocation, HeadDestLocation, ECC_Visibility, CollisionParams);
 	bool HasPelvisHit	= GetWorld()->LineTraceSingleByChannel(PelvisHitResult, PelvisStartLocation, PelvisDestLocation, ECC_Visibility, CollisionParams);
 
-	//DrawDebugLine(GetWorld(), HeadStartLocation, HeadHitResult.ImpactPoint, FColor::Red, true);
-	//DrawDebugLine(GetWorld(), PelvisStartLocation, PelvisHitResult.ImpactPoint, FColor::Red, true);
+	if (EnableDebugLine)
+	{
+		DrawDebugLine(GetWorld(), HeadStartLocation, HeadHitResult.ImpactPoint, FColor::Red, true);
+		DrawDebugLine(GetWorld(), PelvisStartLocation, PelvisHitResult.ImpactPoint, FColor::Red, true);
+	}
 
 	if (!HasHeadHit || !HasPelvisHit) return false;
 	// TODO : Length 체크
@@ -233,12 +267,27 @@ float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree()
 
 	// 부호 지정
 	SlopeDegree = (HeadHitResult.Distance <= PelvisHitResult.Distance) ? SlopeDegree : -SlopeDegree;
+
+	ImpactDistances = { HeadHitResult.Distance, PelvisHitResult.Distance };
+
 	return SlopeDegree;
 }
 
-float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree(const FVector& HeadLocation, const FVector& PelvisLocation)
+bool UC_PoseColliderHandlerComponent::CanCrawlOnSlope(const FVector& HeadStartLocation, const FVector& PelvisStartLocation)
 {
-	UC_Util::Print("From UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree : NOT IMPLEMENTED");
-	return 0.0f;
+	TPair<float, float> ImpactDistances{};
+
+	float SlopeDegree = FMath::Abs(GetCrawlSlopeDegree(HeadStartLocation, PelvisStartLocation, ImpactDistances));
+
+	return FMath::Abs(SlopeDegree)	< CRAWL_DEGREE_LIMIT &&
+		ImpactDistances.Key			< CRAWL_GROUND_DIST_LIMIT &&
+		ImpactDistances.Value		< CRAWL_GROUND_DIST_LIMIT;
+}
+
+bool UC_PoseColliderHandlerComponent::CanCrawlOnSlope(const float& SlopeDegree, TPair<float, float>& ImpactDistances)
+{
+	return FMath::Abs(SlopeDegree)	< CRAWL_DEGREE_LIMIT &&
+		ImpactDistances.Key			< CRAWL_GROUND_DIST_LIMIT &&
+		ImpactDistances.Value		< CRAWL_GROUND_DIST_LIMIT;
 }
 

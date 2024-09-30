@@ -196,6 +196,13 @@ void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
 	PoseColliderHandlerComponent->SetColliderByPoseState(PoseState);
 }
 
+bool AC_BasicCharacter::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
+{
+	// TODO : Enemy 캐릭터에 대한 자세 변환 적용
+
+	return false;
+}
+
 void AC_BasicCharacter::OnPoseTransitionGoing()
 {
 	PoseState = NextPoseState;

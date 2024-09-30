@@ -150,8 +150,17 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		const FVector   RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 		// TODO : Stand Crouch는 Character Movement 경사면 설정으로 적절히 처리가 알아서 됨
-		// Crawl의 경우 RootCapsuleComponent의 크기를 줄여서 배의 한가운데 쪽으로 위치가 잡힘
-		// Crawl 전용 경사면 예외처리를 해주어야 함
+		// Crawl 경사면 예외처리
+		/*if (Player->GetPoseState() == EPoseState::CRAWL)
+		{
+			static const float START_OFFSET_AMOUNT = 1.f;
+			FVector StartOffset = ForwardDirection * START_OFFSET_AMOUNT;
+		
+			FVector HeadStartLocation		= (Player->GetActorLocation() + ForwardDirection * 75.f) + StartOffset;
+			FVector PelvisStartLocation		= Player->GetActorLocation() + StartOffset;
+			
+			if (!Player->GetPoseColliderHandlerComponent()->CanCrawlOnSlope(HeadStartLocation, PelvisStartLocation)) return;
+		}*/
 
 		Player->AddMovementInput(ForwardDirection, MovementVector.X);
 		Player->AddMovementInput(RightDirection, MovementVector.Y);
@@ -194,31 +203,16 @@ void UC_InputComponent::Look(const FInputActionValue& Value)
 
 void UC_InputComponent::Crouch()
 {
-	if (!Player->GetCanMove()) return;
-	if (Player->GetIsJumping() || PlayerMovement->IsFalling()) return;
-
 	switch (Player->GetPoseState())
 	{
 	case EPoseState::STAND: // Stand to crouch (Pose transition 없이 바로 처리)
-		if (!Player->GetPoseColliderHandlerComponent()->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return;
-
-		Player->SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
-		Player->SetPoseState(EPoseState::CROUCH);
+		Player->SetPoseState(EPoseState::STAND, EPoseState::CROUCH);
 		return;
 	case EPoseState::CROUCH: // Crouch to stand (Pose transition 없이 바로 처리)
-
-		if (!Player->GetPoseColliderHandlerComponent()->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return;
-
-		Player->SetSpringArmRelativeLocationDest(EPoseState::STAND);
-		Player->SetPoseState(EPoseState::STAND);
+		Player->SetPoseState(EPoseState::CROUCH, EPoseState::STAND);
 		return;
 	case EPoseState::CRAWL: // Crawl to crouch
-		if (Player->GetIsActivatingConsumableItem()) return; // TODO : 일어설 수 없습니다 UI 띄우기
-		if (!Player->GetPoseColliderHandlerComponent()->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return;
-
-		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
-		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).CrawlToCrouch, EPoseState::CROUCH);
-		Player->SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
+		Player->SetPoseState(EPoseState::CRAWL, EPoseState::CROUCH);
 		return;
 	case EPoseState::POSE_MAX: default:
 		UC_Util::Print("From AC_Player::Crouch : UnAuthorized current pose!");
@@ -228,34 +222,16 @@ void UC_InputComponent::Crouch()
 
 void UC_InputComponent::Crawl()
 {
-	if (!Player->GetCanMove()) return;
-	if (Player->GetIsJumping() || PlayerMovement->IsFalling()) return;
-
 	switch (Player->GetPoseState())
 	{
 	case EPoseState::STAND: // Stand to Crawl
-		if (Player->GetIsActivatingConsumableItem()) return; // TODO : 없드릴 수 없습니다 UI 띄우기
-		if (!Player->GetPoseColliderHandlerComponent()->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return;
-		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
-
-		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).StandToCrawl, EPoseState::CRAWL);
-		Player->SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
+		Player->SetPoseState(EPoseState::STAND, EPoseState::CRAWL);
 		return;
 	case EPoseState::CROUCH: // Crouch to Crawl
-		if (Player->GetIsActivatingConsumableItem()) return; // TODO : 없드릴 수 없습니다 UI 띄우기
-		if (!Player->GetPoseColliderHandlerComponent()->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return;
-		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
-		Player->SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
-		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).CrouchToCrawl, EPoseState::CRAWL);
-
+		Player->SetPoseState(EPoseState::CROUCH, EPoseState::CRAWL);
 		return;
 	case EPoseState::CRAWL: // Crawl to Stand
-		if (Player->GetIsActivatingConsumableItem()) return; // TODO : 일어설 수 없습니다 UI 띄우기
-		if (!Player->GetPoseColliderHandlerComponent()->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return;
-		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
-		Player->SetSpringArmRelativeLocationDest(EPoseState::STAND);
-		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).CrawlToStand, EPoseState::STAND);
-
+		Player->SetPoseState(EPoseState::CRAWL, EPoseState::STAND);
 		return;
 	case EPoseState::POSE_MAX: default:
 		UC_Util::Print("From AC_Player::Crawl : UnAuthorized current pose!");
@@ -271,22 +247,13 @@ void UC_InputComponent::OnJump()
 
 	if (Player->GetPoseState() == EPoseState::CRAWL) // Crawl to crouch
 	{
-		if (Player->GetIsActivatingConsumableItem()) return; // TODO UI 띄우기
-		if (!Player->GetPoseColliderHandlerComponent()->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return;
-
-		Player->SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
-
-		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
-		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).CrawlToCrouch, EPoseState::CROUCH);
+		Player->SetPoseState(EPoseState::CRAWL, EPoseState::CROUCH);
 		return;
 	}
 
 	if (Player->GetPoseState() == EPoseState::CROUCH) // Crouch to stand
 	{
-		if (!Player->GetPoseColliderHandlerComponent()->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return;
-
-		Player->SetSpringArmRelativeLocationDest(EPoseState::STAND);
-		Player->SetPoseState(EPoseState::STAND);
+		Player->SetPoseState(EPoseState::CROUCH, EPoseState::STAND);
 		return;
 	}
 	if (Player->GetIsAimDown()) // bIsAimDownSight

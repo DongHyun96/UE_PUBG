@@ -158,7 +158,18 @@ public: // Getters and setters
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }
+
+protected:
 	void SetPoseState(EPoseState InPoseState);
+
+public:
+	/// <summary>
+	/// 자세 바꾸기 통합 처리
+	/// </summary>
+	/// <param name="InChangeFrom"> : 바꾸기 전 자세 </param>
+	/// <param name="InChangeTo"> : 바꿀 자세 </param>
+	/// <returns> : 제대로 바꾸었다면 return true </returns>
+	virtual bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo);
 
 	float GetNextSpeed() const { return NextSpeed; }
 	void SetNextSpeed(float InNextSpeed) { NextSpeed = InNextSpeed; }

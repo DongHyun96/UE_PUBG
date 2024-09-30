@@ -55,16 +55,48 @@ private:
 
 private:
 
-	// TODO : Parameter로 Start와 Dest Location 가져오기 -> 다른 곳에서도 사용 예정
-	float GetCrawlSlopeDegree();
+	// TODO : Parameter로 Start와 Dest Location 가져오기
+
+	/// <summary>
+	/// 캐릭터 현재 위치의 경사도 구하기
+	/// </summary>
+	/// <param name="ImpactDistances"> : Head Pelvis 순 LineTrace Impact 거리 </param>
+	 /// <param name="HeightOffset"> : LineTrace Start Height(Z) Offset </param>
+	/// <param name="EnableDebugLine"> : DebugLine을 그릴지 </param>
+	/// <returns> : 경사도 </returns>
+	float GetCrawlSlopeDegree(OUT TPair<float, float>& ImpactDistances, const float& HeightOffset = 0.f, const bool& EnableDebugLine = false);
+
+//public:
 
 	/// <summary>
 	/// 임의의 HeadLocation과 PelvisLocation이 주어질 때, 해당 위치의 경사도 구하기
 	/// </summary>
-	/// <param name="HeadLocation"> : 임의의 Head Location </param>
-	/// <param name="PelvisLocation"> : 임의의 Pelvis Location </param>
+	/// <param name="HeadLocation"> : 임의의 Head Location LineTrace 시작점 </param>
+	/// <param name="PelvisLocation"> : 임의의 Pelvis Location LineTrace 시작점 </param>
+	/// <param name="ImpactDistances"> : Head Pelvis 순 LineTrace Impact 거리 </param>
+	/// <param name="EnableDebugLine"> : DebugLine을 그릴지 </param>
 	/// <returns> : 경사도 </returns>
-	float GetCrawlSlopeDegree(const FVector& HeadLocation, const FVector& PelvisLocation);
+	float GetCrawlSlopeDegree(const FVector& HeadStartLocation, const FVector& PelvisStartLocation, OUT TPair<float, float>& ImpactDistances, const bool& EnableDebugLine = false);
+
+public:
+
+	/// <summary>
+	/// 해당 위치에서 캐릭터가 엎드릴 수 있는지 체크
+	/// </summary>
+	/// <param name="HeadStartLocation"> : Line Trace Head 위치 시작점 </param>
+	/// <param name="PelvisStartLocation"> : Line Trace Pelvis 위치 시작점 </param>
+	/// <returns> : 엎드릴 수 있다면 return true </returns>
+	bool CanCrawlOnSlope(const FVector& HeadStartLocation, const FVector& PelvisStartLocation);
+
+
+	/// <summary>
+	/// 해당 위치에서 캐릭터가 엎드릴 수 있는지 체크
+	/// </summary>
+	/// <param name="SlopeDegree"></param>
+	/// <param name="ImpactDistances"></param>
+	/// <returns></returns>
+	bool CanCrawlOnSlope(const float& SlopeDegree, TPair<float, float>& ImpactDistances);
+
 
 private:
 	
@@ -112,7 +144,8 @@ private: // ChangePose Sweep testing constants
 	const float CRAWL_TO_CROUCH_SWEEP_DIST	= 60.f;
 
 	const float CRAWL_LINETRACE_TEST_DIST	= 500.f;
-	const float CRAWL_DEGREE_LIMIT			= 30.f; // 30도 이상 경사도 기어갈 수 없게 처리
+	const float CRAWL_DEGREE_LIMIT			= 35.f; // 기어갈 수 없는 경사도 Limit
+	const float CRAWL_GROUND_DIST_LIMIT		= 50.f;
 
 private: // Crawl Collider Rotation Lerp 관련
 

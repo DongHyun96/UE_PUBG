@@ -19,6 +19,7 @@
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_PingSystemComponent.h"
+#include "Character/Component/C_PoseColliderHandlerComponent.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -247,6 +248,87 @@ void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime)
 	);
 }
 
+bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
+{
+	if (!bCanMove)											return false;
+	if (bIsJumping || GetCharacterMovement()->IsFalling())	return false;
+	if (InChangeFrom == InChangeTo)							return false;
+
+	switch (InChangeTo)
+	{
+	case EPoseState::STAND:
+		switch (InChangeFrom)
+		{
+		case EPoseState::CROUCH: // Crouch To Stand (Pose transition 없이 바로 처리)
+
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
+
+			SetSpringArmRelativeLocationDest(EPoseState::STAND);
+			SetPoseState(EPoseState::STAND);
+			return true;
+
+		case EPoseState::CRAWL: // Crawl To Stand
+
+			if (bIsActivatingConsumableItem) return false; // TODO : 일어설 수 없습니다 UI 띄우기
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
+			ClampControllerRotationPitchWhileCrawl(PoseState);
+			SetSpringArmRelativeLocationDest(EPoseState::STAND);
+			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToStand, EPoseState::STAND);
+			return true;
+
+		case EPoseState::POSE_MAX: default: return false;
+		}
+	case EPoseState::CROUCH:
+		switch (InChangeFrom)
+		{
+		case EPoseState::STAND: // Stand To Crouch
+
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
+
+			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
+			SetPoseState(EPoseState::CROUCH);
+			return true;
+
+		case EPoseState::CRAWL: // Crawl To Crouch
+
+			if (bIsActivatingConsumableItem) return false; // TODO : 일어설 수 없습니다 UI 띄우기
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
+
+			ClampControllerRotationPitchWhileCrawl(PoseState);
+			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToCrouch, EPoseState::CROUCH);
+			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
+			return true;
+
+		case EPoseState::POSE_MAX: default: return false;
+		}
+	case EPoseState::CRAWL:
+		switch (InChangeFrom)
+		{
+		case EPoseState::STAND: // Stand to Crawl
+
+			if (bIsActivatingConsumableItem) return false; // TODO : 없드릴 수 없습니다 UI 띄우기
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
+			ClampControllerRotationPitchWhileCrawl(PoseState);
+
+			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).StandToCrawl, EPoseState::CRAWL);
+			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
+			return true;
+
+		case EPoseState::CROUCH: // Crouch to Crawl
+
+			if (bIsActivatingConsumableItem) return false; // TODO : 없드릴 수 없습니다 UI 띄우기
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
+			ClampControllerRotationPitchWhileCrawl(PoseState);
+			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
+			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrouchToCrawl, EPoseState::CRAWL);
+			return true;
+
+		case EPoseState::POSE_MAX: default: return false;
+		}
+	case EPoseState::POSE_MAX: default: return false;
+	}
+}
+
 /// <summary>
 /// 아이템이 캐릭터의 근처에 있을 때.
 /// </summary>
@@ -325,55 +407,47 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 	// 0 360
 	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;
 
-	if (Delta > 90.f) // Right Turn in place motion
+	if (-90.f <= Delta && Delta <= 90.f) return;
+
+	// Crawl Slope 예외처리
+	if (PoseState == EPoseState::CRAWL)
 	{
-		// Controller
-		GetCharacterMovement()->bUseControllerDesiredRotation	= true;
-		GetCharacterMovement()->bOrientRotationToMovement		= false;
+		//UC_Util::Print(Controller->GetControlRotation());
+		FRotator ControlRotation	= Controller->GetControlRotation();
+		ControlRotation				= FRotator(0.f, ControlRotation.Yaw, 0.f);
+		FQuat ControlRotQuat		= FQuat(ControlRotation);
+		FVector RotatedDirection	= ControlRotQuat * FVector::UnitX();
 
-		// HandState와 PoseState에 따른 Right Montage Animation
-		FPriorityAnimMontage RightPriorityMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState];
+		FVector HeadStartLocation   = GetActorLocation() + RotatedDirection * 75.f;
+		FVector PelvisStartLocation = GetActorLocation();
 
-		if (!IsValid(RightPriorityMontage.AnimMontage)) return;
-		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(RightPriorityMontage.AnimMontage)) return;
+		DrawDebugLine(GetWorld(), PelvisStartLocation, HeadStartLocation, FColor::Red, true);
 
-		PlayAnimMontage(RightPriorityMontage);
-
-		// Lower Body도 체크
-		if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
-
-		FPriorityAnimMontage LowerRightPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState];
-
-		if (!IsValid(LowerRightPriorityMontage.AnimMontage)) return;
-		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerRightPriorityMontage.AnimMontage)) return;
-
-		PlayAnimMontage(LowerRightPriorityMontage);
-
-	}
-	else if (Delta < -90.f) // Left Turn in place motion
-	{
-		GetCharacterMovement()->bUseControllerDesiredRotation	= true;
-		GetCharacterMovement()->bOrientRotationToMovement		= false;
-
-		// HandState와 PoseState에 따른 Left Montage Animation
-		FPriorityAnimMontage LeftPriorityMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState];
-
-		if (!IsValid(LeftPriorityMontage.AnimMontage)) return;
-		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftPriorityMontage.AnimMontage)) return;
-		
-		PlayAnimMontage(LeftPriorityMontage);
-
-		// Lower Body도 체크
-		if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
-
-		FPriorityAnimMontage LowerLeftPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState];
-
-		if (!IsValid(LowerLeftPriorityMontage.AnimMontage)) return;
-		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerLeftPriorityMontage.AnimMontage)) return;
-
-		PlayAnimMontage(LowerLeftPriorityMontage);
+		if (!PoseColliderHandlerComponent->CanCrawlOnSlope(HeadStartLocation, PelvisStartLocation)) return;
 	}
 
+	// Controller
+	GetCharacterMovement()->bUseControllerDesiredRotation	= true;
+	GetCharacterMovement()->bOrientRotationToMovement		= false;
+
+	FPriorityAnimMontage TurnInPlaceMontage = (Delta > 90.f) ? TurnAnimMontageMap[HandState].RightMontages[PoseState] :
+															   TurnAnimMontageMap[HandState].LeftMontages[PoseState];
+
+	if (!IsValid(TurnInPlaceMontage.AnimMontage))											return;
+	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(TurnInPlaceMontage.AnimMontage))	return;
+
+	PlayAnimMontage(TurnInPlaceMontage);
+
+	// Lower Body도 체크
+	if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
+
+	FPriorityAnimMontage LowerMontage = (Delta > 90.f) ? LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState] :
+														 LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState];
+
+	if (!IsValid(LowerMontage.AnimMontage))											return;
+	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerMontage.AnimMontage))	return;
+
+	PlayAnimMontage(LowerMontage);
 }
 
 void AC_Player::HandleTurnInPlaceWhileAiming()

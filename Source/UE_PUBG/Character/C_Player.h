@@ -67,6 +67,18 @@ public: // Getters and setters
 
 	class UC_PingSystemComponent* GetPingSystemComponent() const { return PingSystemComponent; }
 
+private:
+	void SetPoseState(EPoseState InPoseState) { Super::SetPoseState(InPoseState); }
+
+public:
+	/// <summary>
+	/// 자세 바꾸기 통합 처리
+	/// </summary>
+	/// <param name="InChangeFrom"> : 바꾸기 전 자세 </param>
+	/// <param name="InChangeTo"> : 바꿀 자세 </param>
+	/// <returns> : 제대로 바꾸었다면 return true </returns>
+	bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) override;
+
 protected:
 
 	/// <summary>
