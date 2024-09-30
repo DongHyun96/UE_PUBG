@@ -12,6 +12,8 @@
 
 #include "Character/C_BasicCharacter.h"
 
+#include "Character/Component/C_PoseColliderHandlerComponent.h"
+
 void UC_AnimBasicCharacter::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
@@ -47,6 +49,9 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bCanCharacterMove = OwnerCharacter->GetCanMove();
 	bIsHoldDirection  = OwnerCharacter->GetIsHoldDirection();
 	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
+
+	CrawlRotationAngle = OwnerCharacter->GetPoseColliderHandlerComponent()->GetCurrentCrawlSlopeAngleForRigControl();
+
 	AC_Gun* CurrentGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
 	if (IsValid(CurrentGun))
 	{

@@ -198,7 +198,8 @@ void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& D
 	if (OwnerCharacter->GetPoseState() != EPoseState::CRAWL) return;
 
 	FRotator CrawlRelativeRotation	= CrawlCapsuleComponent->GetRelativeRotation();
-	float SlopeDegree				= GetCrawlSlopeDegree(ImpactDistances, HEIGHT_OFFSET, true);
+	CrawlSlopeAngle					= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET);
+	float SlopeDegree				= FMath::RadiansToDegrees(CrawlSlopeAngle);
 
 	//UC_Util::Print(SlopeDegree);
 	if (!CanCrawlOnSlope(SlopeDegree, ImpactDistances))
@@ -211,21 +212,19 @@ void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& D
 	CrawlCapsuleComponent->SetRelativeRotation(FRotator(90.f + SlopeDegree, 0.f, 0.f));
 }
 
-float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree(OUT TPair<float, float>& ImpactDistances, const float& HeightOffset, const bool& EnableDebugLine)
+float UC_PoseColliderHandlerComponent::GetCrawlSlopeAngle(OUT TPair<float, float>& ImpactDistances, const float& HeightOffset, const bool& EnableDebugLine)
 {
 	FVector HeadStartLocation	= OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorForwardVector() * 75.f + FVector::UnitZ() * HeightOffset;
-	//FVector HeadStartLocation	= OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorForwardVector() * 75.f;
 	FVector PelvisStartLocation = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * HeightOffset;
-	//FVector PelvisStartLocation = OwnerCharacter->GetActorLocation() + FVector::UnitZ();
 
-	float SlopeDegree = GetCrawlSlopeDegree(HeadStartLocation, PelvisStartLocation, ImpactDistances, EnableDebugLine);
-	ImpactDistances.Key		-= HeightOffset;
-	ImpactDistances.Value	-= HeightOffset;
+	float SlopeAngle = GetCrawlSlopeAngle(HeadStartLocation, PelvisStartLocation, ImpactDistances, EnableDebugLine);
+	ImpactDistances.Key -= HeightOffset;
+	ImpactDistances.Value -= HeightOffset;
 
-	return SlopeDegree;
+	return SlopeAngle;
 }
 
-float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree
+float UC_PoseColliderHandlerComponent::GetCrawlSlopeAngle
 (
 	const FVector&				HeadStartLocation,
 	const FVector&				PelvisStartLocation,
@@ -263,14 +262,78 @@ float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree
 	//HeadHitResult.ImpactPoint
 	float A				= (HeadHitResult.ImpactPoint - PelvisHitResult.ImpactPoint).Length();
 	float B				= FMath::Abs(HeadHitResult.ImpactPoint.Z - PelvisHitResult.ImpactPoint.Z);
-	float SlopeDegree	= FMath::RadiansToDegrees(FMath::Asin(B / A));
+	float SlopeAngle	= FMath::Asin(B / A);
 
 	// 부호 지정
-	SlopeDegree = (HeadHitResult.Distance <= PelvisHitResult.Distance) ? SlopeDegree : -SlopeDegree;
+	SlopeAngle = (HeadHitResult.Distance <= PelvisHitResult.Distance) ? SlopeAngle : -SlopeAngle;
 
 	ImpactDistances = { HeadHitResult.Distance, PelvisHitResult.Distance };
 
+	return SlopeAngle;
+}
+
+float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree(OUT TPair<float, float>& ImpactDistances, const float& HeightOffset, const bool& EnableDebugLine)
+{
+	FVector HeadStartLocation	= OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorForwardVector() * 75.f + FVector::UnitZ() * HeightOffset;
+	//FVector HeadStartLocation	= OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorForwardVector() * 75.f;
+	FVector PelvisStartLocation = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * HeightOffset;
+	//FVector PelvisStartLocation = OwnerCharacter->GetActorLocation() + FVector::UnitZ();
+
+	float SlopeDegree = GetCrawlSlopeDegree(HeadStartLocation, PelvisStartLocation, ImpactDistances, EnableDebugLine);
+	ImpactDistances.Key		-= HeightOffset;
+	ImpactDistances.Value	-= HeightOffset;
+
 	return SlopeDegree;
+}
+
+float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree
+(
+	const FVector&				HeadStartLocation,
+	const FVector&				PelvisStartLocation,
+	OUT TPair<float, float>&	ImpactDistances,
+	const bool&					EnableDebugLine
+)
+{
+	float SlopeAngle = GetCrawlSlopeAngle(HeadStartLocation, PelvisStartLocation, ImpactDistances, EnableDebugLine);
+	return FMath::RadiansToDegrees(SlopeAngle);
+	//FVector HeadDestLocation	= HeadStartLocation   - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
+	//FVector PelvisDestLocation	= PelvisStartLocation - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
+
+	//FCollisionQueryParams CollisionParams{};
+	//CollisionParams.AddIgnoredActor(OwnerCharacter);
+
+	//TArray<AActor*> AttachedActors{};
+	//OwnerCharacter->GetAttachedActors(AttachedActors);
+	//CollisionParams.AddIgnoredActors(AttachedActors);
+
+	//FHitResult HeadHitResult{};
+	//FHitResult PelvisHitResult{};
+
+	//bool HasHeadHit		= GetWorld()->LineTraceSingleByChannel(HeadHitResult, HeadStartLocation, HeadDestLocation, ECC_Visibility, CollisionParams);
+	//bool HasPelvisHit	= GetWorld()->LineTraceSingleByChannel(PelvisHitResult, PelvisStartLocation, PelvisDestLocation, ECC_Visibility, CollisionParams);
+
+	//if (EnableDebugLine)
+	//{
+	//	DrawDebugLine(GetWorld(), HeadStartLocation, HeadHitResult.ImpactPoint, FColor::Red, true);
+	//	DrawDebugLine(GetWorld(), PelvisStartLocation, PelvisHitResult.ImpactPoint, FColor::Red, true);
+	//}
+
+	//if (!HasHeadHit || !HasPelvisHit) return false;
+	//// TODO : Length 체크
+	////if (HeadHitResult.ImpactPoint.Length() )
+
+	//// 경사도 체크
+	////HeadHitResult.ImpactPoint
+	//float A				= (HeadHitResult.ImpactPoint - PelvisHitResult.ImpactPoint).Length();
+	//float B				= FMath::Abs(HeadHitResult.ImpactPoint.Z - PelvisHitResult.ImpactPoint.Z);
+	//float SlopeDegree	= FMath::RadiansToDegrees(FMath::Asin(B / A));
+
+	//// 부호 지정
+	//SlopeDegree = (HeadHitResult.Distance <= PelvisHitResult.Distance) ? SlopeDegree : -SlopeDegree;
+
+	//ImpactDistances = { HeadHitResult.Distance, PelvisHitResult.Distance };
+
+	//return SlopeDegree;
 }
 
 bool UC_PoseColliderHandlerComponent::CanCrawlOnSlope(const FVector& HeadStartLocation, const FVector& PelvisStartLocation)

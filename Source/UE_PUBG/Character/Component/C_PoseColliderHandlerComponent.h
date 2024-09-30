@@ -30,6 +30,8 @@ public:
 
 	void SetColliderByPoseState(EPoseState InPoseState);
 
+	float GetCurrentCrawlSlopeAngleForRigControl() const { return CrawlSlopeAngle; }
+
 public:
 
 	/// <summary>
@@ -56,6 +58,26 @@ private:
 private:
 
 	// TODO : Parameter로 Start와 Dest Location 가져오기
+
+	/// <summary>
+	/// 캐릭터 현재 위치의 경사도 구하기 (Radian값)
+	/// </summary>
+	/// <param name="ImpactDistances"> : Head Pelvis 순 LineTrace Impact 거리 </param>
+	 /// <param name="HeightOffset"> : LineTrace Start Height(Z) Offset </param>
+	/// <param name="EnableDebugLine"> : DebugLine을 그릴지 </param>
+	/// <returns> : 경사도 </returns>
+	float GetCrawlSlopeAngle(OUT TPair<float, float>& ImpactDistances, const float& HeightOffset = 0.f, const bool& EnableDebugLine = false);
+
+
+	/// <summary>
+	/// 임의의 HeadLocation과 PelvisLocation이 주어질 때, 해당 위치의 경사도 구하기 (Radian값)
+	/// </summary>
+	/// <param name="HeadLocation"> : 임의의 Head Location LineTrace 시작점 </param>
+	/// <param name="PelvisLocation"> : 임의의 Pelvis Location LineTrace 시작점 </param>
+	/// <param name="ImpactDistances"> : Head Pelvis 순 LineTrace Impact 거리 </param>
+	/// <param name="EnableDebugLine"> : DebugLine을 그릴지 </param>
+	/// <returns> : 경사도 </returns>
+	float GetCrawlSlopeAngle(const FVector& HeadStartLocation, const FVector& PelvisStartLocation, OUT TPair<float, float>& ImpactDistances, const bool& EnableDebugLine = false);
 
 	/// <summary>
 	/// 캐릭터 현재 위치의 경사도 구하기
@@ -150,4 +172,9 @@ private: // ChangePose Sweep testing constants
 private: // Crawl Collider Rotation Lerp 관련
 
 	float CrawlColliderPitchLerpDest{};
+
+private:
+
+	float CrawlSlopeAngle{};
+
 };
