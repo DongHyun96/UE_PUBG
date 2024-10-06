@@ -40,9 +40,9 @@ void UC_InvenComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 /// </summary>
 /// <param name="volume"></param>
 /// <returns></returns>
-bool UC_InvenComponent::CheckVolume(uint16 volume)
+bool UC_InvenComponent::CheckVolume(AC_Item* item)
 {
-	if (MaxVolume > CurVolume + volume)
+	if (MaxVolume > CurVolume + item->GetVolume())
 	{
 		return true;
 	}
@@ -176,7 +176,7 @@ void UC_InvenComponent::Interaction(AC_Item* wilditem)
 	
 	wilditem->Interaction(OwnerCharacter);
 
-	if (CheckVolume(wilditem->GetVolume()))
+	if (CheckVolume(wilditem))
 	{
 		//상호작용된 아이템의 무게를 더해도 무게한도를 넘지 않는 경우.
 		CurVolume += wilditem->GetVolume();
@@ -262,6 +262,25 @@ void UC_InvenComponent::EquippedBackPack(AC_BackPack* backpack)
 	MyBackPack = backpack;
 	//원래 장착하면 OverlapEnd로 인해 자동으로 없어져야 한다고 생각하는데 안사라져서 강제로 지웠음.
 	NearItems.Remove(backpack);
+}
+
+bool UC_InvenComponent::AddItem(AC_Item* item)
+{
+	if (!item) return false;
+
+	if (CheckVolume(item))
+	{
+		CurVolume += item->GetVolume();
+
+		MyItems.Add(item);
+
+		item->SetOwnerCharacter(OwnerCharacter);
+		item->SetActorHiddenInGame(true);
+		item->SetActorEnableCollision(false);
+
+		return true;
+	}
+	return false;
 }
 
 

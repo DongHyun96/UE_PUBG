@@ -273,6 +273,9 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 	// Spawn MiniMap ping
 	Player->GetHUDWidget()->GetMiniMapWidget()->SpawnPingImage(WorldPingPos);
 
+	// Spawn Compass bar ping
+	Player->GetHUDWidget()->SpawnCompassBarPingMarker(WorldPingPos);
+
 	return true;
 }
 
@@ -289,6 +292,7 @@ bool UC_MainMapWidget::CancelPingMarker()
 
 	Player->GetHUDWidget()->GetMiniMapWidget()->OnCancelPingMarker();
 	Player->GetPingSystemComponent()->OnCancelWorldPing();
+	Player->GetHUDWidget()->HideCompassBarPingMarker();
 
 	return true;
 }

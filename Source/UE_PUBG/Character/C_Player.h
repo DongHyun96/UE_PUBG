@@ -67,6 +67,18 @@ public: // Getters and setters
 
 	class UC_PingSystemComponent* GetPingSystemComponent() const { return PingSystemComponent; }
 
+private:
+	void SetPoseState(EPoseState InPoseState) { Super::SetPoseState(InPoseState); }
+
+public:
+	/// <summary>
+	/// 자세 바꾸기 통합 처리
+	/// </summary>
+	/// <param name="InChangeFrom"> : 바꾸기 전 자세 </param>
+	/// <param name="InChangeTo"> : 바꿀 자세 </param>
+	/// <returns> : 제대로 바꾸었다면 return true </returns>
+	bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) override;
+
 protected:
 
 	/// <summary>
@@ -318,4 +330,28 @@ private:
 	TMap<EPoseState, FVector> MainSpringArmRelativeLocationByPoseMap{};
 	FVector MainSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
 
+
+protected:
+	//총알 Object Pooling (World에서 작업할 예정)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TArray<class AC_Bullet*> PooledBullets;
+
+	void PoolingBullets();
+
+	FCollisionQueryParams LineTraceCollisionParams{};
+
+	void SetLineTraceCollisionIgnore();
+
+public:
+	TArray<AC_Bullet*>& GetBullets() { return PooledBullets; }
+
+	FCollisionQueryParams& GetLineTraceCollisionParams() { return LineTraceCollisionParams; }
+
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	class UC_CrosshairWidgetComponent* CrosshairWidgetComponent{};
+
+public:
+	UC_CrosshairWidgetComponent* GetCrosshairWidgetComponent() { return CrosshairWidgetComponent; }
+	
 };

@@ -55,7 +55,7 @@ bool AC_MeleeWeapon::AttachToHolster(USceneComponent* InParent)
 	return AttachToComponent
 	(
 		InParent,
-		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		HOLSTER_SOCKET_NAME
 	);
 }

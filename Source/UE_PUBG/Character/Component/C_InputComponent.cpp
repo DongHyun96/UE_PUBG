@@ -9,8 +9,10 @@
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_StatComponent.h"
 #include "Character/Component/C_PingSystemComponent.h"
+#include "Character/Component/C_PoseColliderHandlerComponent.h"
 
 #include "Components/ActorComponent.h"
+#include "Components/CapsuleComponent.h"
 
 #include "UE_PUBG/Character/C_Player.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -22,6 +24,8 @@
 #include "EnhancedInputComponent.h"
 
 #include "Utility/C_Util.h"
+
+#include "GameFramework/PhysicsVolume.h"
 
 // Sets default values for this component's properties
 UC_InputComponent::UC_InputComponent()
@@ -147,6 +151,19 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		const FVector   RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
+		// TODO : Stand Crouch는 Character Movement 경사면 설정으로 적절히 처리가 알아서 됨
+		// Crawl 경사면 예외처리
+		/*if (Player->GetPoseState() == EPoseState::CRAWL)
+		{
+			static const float START_OFFSET_AMOUNT = 1.f;
+			FVector StartOffset = ForwardDirection * START_OFFSET_AMOUNT;
+		
+			FVector HeadStartLocation		= (Player->GetActorLocation() + ForwardDirection * 75.f) + StartOffset;
+			FVector PelvisStartLocation		= Player->GetActorLocation() + StartOffset;
+			
+			if (!Player->GetPoseColliderHandlerComponent()->CanCrawlOnSlope(HeadStartLocation, PelvisStartLocation)) return;
+		}*/
+
 		Player->AddMovementInput(ForwardDirection, MovementVector.X);
 		Player->AddMovementInput(RightDirection, MovementVector.Y);
 
@@ -188,24 +205,16 @@ void UC_InputComponent::Look(const FInputActionValue& Value)
 
 void UC_InputComponent::Crouch()
 {
-	if (!Player->GetCanMove()) return;
-	if (Player->GetIsJumping() || PlayerMovement->IsFalling()) return;
-
 	switch (Player->GetPoseState())
 	{
 	case EPoseState::STAND: // Stand to crouch (Pose transition 없이 바로 처리)
-		Player->SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
-		Player->SetPoseState(EPoseState::CROUCH);
+		Player->SetPoseState(EPoseState::STAND, EPoseState::CROUCH);
 		return;
 	case EPoseState::CROUCH: // Crouch to stand (Pose transition 없이 바로 처리)
-		Player->SetSpringArmRelativeLocationDest(EPoseState::STAND);
-		Player->SetPoseState(EPoseState::STAND);
+		Player->SetPoseState(EPoseState::CROUCH, EPoseState::STAND);
 		return;
 	case EPoseState::CRAWL: // Crawl to crouch
-		if (Player->GetIsActivatingConsumableItem()) return; // TODO : 일어설 수 없습니다 UI 띄우기
-		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
-		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).CrawlToCrouch, EPoseState::CROUCH);
-		Player->SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
+		Player->SetPoseState(EPoseState::CRAWL, EPoseState::CROUCH);
 		return;
 	case EPoseState::POSE_MAX: default:
 		UC_Util::Print("From AC_Player::Crouch : UnAuthorized current pose!");
@@ -215,31 +224,16 @@ void UC_InputComponent::Crouch()
 
 void UC_InputComponent::Crawl()
 {
-	if (!Player->GetCanMove()) return;
-	if (Player->GetIsJumping() || PlayerMovement->IsFalling()) return;
-
 	switch (Player->GetPoseState())
 	{
 	case EPoseState::STAND: // Stand to Crawl
-		if (Player->GetIsActivatingConsumableItem()) return; // TODO : 없드릴 수 없습니다 UI 띄우기
-		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
-
-		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).StandToCrawl, EPoseState::CRAWL);
-		Player->SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
+		Player->SetPoseState(EPoseState::STAND, EPoseState::CRAWL);
 		return;
 	case EPoseState::CROUCH: // Crouch to Crawl
-		if (Player->GetIsActivatingConsumableItem()) return; // TODO : 없드릴 수 없습니다 UI 띄우기
-		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
-		Player->SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
-		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).CrouchToCrawl, EPoseState::CRAWL);
-
+		Player->SetPoseState(EPoseState::CROUCH, EPoseState::CRAWL);
 		return;
 	case EPoseState::CRAWL: // Crawl to Stand
-		if (Player->GetIsActivatingConsumableItem()) return; // TODO : 일어설 수 없습니다 UI 띄우기
-		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
-		Player->SetSpringArmRelativeLocationDest(EPoseState::STAND);
-		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).CrawlToStand, EPoseState::STAND);
-
+		Player->SetPoseState(EPoseState::CRAWL, EPoseState::STAND);
 		return;
 	case EPoseState::POSE_MAX: default:
 		UC_Util::Print("From AC_Player::Crawl : UnAuthorized current pose!");
@@ -255,30 +249,17 @@ void UC_InputComponent::OnJump()
 
 	if (Player->GetPoseState() == EPoseState::CRAWL) // Crawl to crouch
 	{
-		if (Player->GetIsActivatingConsumableItem()) return; // TODO UI 띄우기
-
-		Player->SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
-
-		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
-		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).CrawlToCrouch, EPoseState::CROUCH);
+		SetToNonAimCamera();
+		Player->SetPoseState(EPoseState::CRAWL, EPoseState::CROUCH);
 		return;
 	}
 
 	if (Player->GetPoseState() == EPoseState::CROUCH) // Crouch to stand
 	{
-		Player->SetSpringArmRelativeLocationDest(EPoseState::STAND);
-		Player->SetPoseState(EPoseState::STAND);
+		Player->SetPoseState(EPoseState::CROUCH, EPoseState::STAND);
 		return;
 	}
-	if (Player->GetIsAimDown()) // bIsAimDownSight
-	{
-		AC_Gun* CurGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
-		if (IsValid(CurGun))
-		{
-			CurGun->BackToMainCamera();
-			Player->SetIsAimDown(false);
-		}
-	}
+	SetToNonAimCamera();
 	//Player->GetPressedJum
 	Player->bPressedJump = true;
 	Player->SetIsJumping(true);
@@ -366,6 +347,20 @@ void UC_InputComponent::ReleaseDirection()
 	Player->SetIsAltPressed(true);
 }
 
+void UC_InputComponent::SetToNonAimCamera()
+{
+
+	if (Player->GetIsAimDown()) // bIsAimDownSight
+	{
+		AC_Gun* CurGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
+		if (IsValid(CurGun))
+		{
+			CurGun->BackToMainCamera();
+			Player->SetIsAimDown(false);
+		}
+	}
+}
+
 void UC_InputComponent::OnNum1()
 {
 	Player->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::MAIN_GUN);
@@ -393,6 +388,28 @@ void UC_InputComponent::OnXKey()
 {
 	// Testing 용 Damage 주기 TODO : 이 라인 지우기
 	//TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor * DamageCauser);
+	//static bool SwimFlag = false;
+
+	/*
+	OwnerCharacter->GetPhysicsVolume()->bWaterVolume = true;
+
+	bIsSwimming = true;
+
+	OwnerCharacter->LaunchCharacter(OwnerCharacter->GetActorUpVector() * 0.005f, false, false);
+	*/
+
+	//if (!SwimFlag)
+	//{
+	//	Player->GetPhysicsVolume()->bWaterVolume = true;
+	//	Player->LaunchCharacter(Player->GetActorUpVector() * 0.005f, false, false);
+	//}
+	//else
+	//{
+	//	Player->GetPhysicsVolume()->bWaterVolume = false;
+	//}
+	//
+	//SwimFlag = !SwimFlag;
+	
 	Player->GetStatComponent()->TakeDamage(10.f, EDamagingPartType::HEAD, Player);
 	Player->GetEquippedComponent()->ToggleArmed();
 }
@@ -535,6 +552,4 @@ void UC_InputComponent::OnMKey()
 {
 	Player->GetHUDWidget()->GetMainMapWidget()->OnMKey();
 }
-
-
 

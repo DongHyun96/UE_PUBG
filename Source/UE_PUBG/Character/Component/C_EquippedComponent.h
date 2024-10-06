@@ -135,4 +135,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EWeaponSlot, TSubclassOf<class AC_Weapon>> WeaponClasses{};
 
+protected:
+	void SetMainGunOrSubGun(EWeaponSlot InSlot);
+
 };

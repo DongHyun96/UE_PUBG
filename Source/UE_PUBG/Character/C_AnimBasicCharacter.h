@@ -34,6 +34,7 @@ public:
 
 	FRotator GetCSpineRotation() const { return CSpineRotation; }
 
+	void SetCrawlRotationAngle(const float& Angle) { CrawlRotationAngle = Angle; }
 
 protected:
 
@@ -103,7 +104,7 @@ protected:
 
 	void SetAimingTurnInPlaceRotation();
 
-
+	void SetLeftHandIKOn();
 protected:
 	float AimingTurnInPlaceTimeCount = 0.0f;
 	float SavedYaw = 0.0f;
@@ -112,4 +113,11 @@ protected:
 	float DeltaYaw = 0.0f;
 
 	float AimOffsetLerpDelayTime = 0.0f;
+
+
+protected:
+
+	// Radian Crawl Rotation Angle
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	float CrawlRotationAngle{};
 };

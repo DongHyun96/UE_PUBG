@@ -27,7 +27,7 @@ void UC_EquippedComponent::BeginPlay()
 {
     Super::BeginPlay();
 
-    SpawnWeaponsForTesting();
+    //SpawnWeaponsForTesting();
 }
 
 
@@ -56,17 +56,23 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
         // 이전 무기 해제에 대한 PoseTransitionEnd 델리게이트 해제
         OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(PrevSlotWeapon);
 
-        PrevSlotWeapon->SetOwnerCharacter(nullptr);
+        //C_Item의 detachment에서 처리중, 혹시몰라 남겨둠.
+        //PrevSlotWeapon->SetOwnerCharacter(nullptr);
     }
     
     Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
 
     if (!Weapons[InSlot]) return PrevSlotWeapon; // Slot에 새로 지정한 무기가 nullptr -> early return
     
+
+    SetMainGunOrSubGun(InSlot);
+        
+
     Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
 
     // Attach to Holster 하기 전에 Local transform 초기화
     //Weapons[InSlot]->SetActorRelativeTransform(FTransform::Identity);
+ 
     Weapons[InSlot]->SetRelativeTranformToInitial();
     Weapons[InSlot]->AttachToHolster(OwnerCharacter->GetMesh());
 
@@ -228,7 +234,7 @@ void UC_EquippedComponent::OnDrawStart()
 
     Weapons[NextWeaponType]->AttachToHand(OwnerCharacter->GetMesh());
     //GetCurWeapon()->AttachToHand(OwnerCharacter->GetMesh());
-}
+}   
 
 void UC_EquippedComponent::OnDrawEnd()
 {
@@ -279,6 +285,22 @@ void UC_EquippedComponent::SpawnWeaponsForTesting()
     SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, ThrowTemp);
 
     AC_ThrowingWeapon::InitTestPool(OwnerCharacter, WeaponClasses[EWeaponSlot::THROWABLE_WEAPON], this);
+}
+
+void UC_EquippedComponent::SetMainGunOrSubGun(EWeaponSlot InSlot)
+{
+    if (InSlot == EWeaponSlot::MAIN_GUN || InSlot == EWeaponSlot::SUB_GUN)
+    {
+        AC_Gun* CurrentGun = Cast<AC_Gun>(Weapons[InSlot]);
+        if (IsValid(CurrentGun))
+        {
+            if (InSlot == EWeaponSlot::MAIN_GUN)
+                CurrentGun->SetMainOrSubSlot(EGunState::MAIN_GUN);
+            else
+                CurrentGun->SetMainOrSubSlot(EGunState::SUB_GUN);
+
+        }
+    }
 }
 
 

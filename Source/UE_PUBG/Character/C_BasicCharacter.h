@@ -158,7 +158,18 @@ public: // Getters and setters
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }
-	void SetPoseState(EPoseState InPoseState) { PoseState = InPoseState; }
+
+protected:
+	void SetPoseState(EPoseState InPoseState);
+
+public:
+	/// <summary>
+	/// 자세 바꾸기 통합 처리
+	/// </summary>
+	/// <param name="InChangeFrom"> : 바꾸기 전 자세 </param>
+	/// <param name="InChangeTo"> : 바꿀 자세 </param>
+	/// <returns> : 제대로 바꾸었다면 return true </returns>
+	virtual bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo);
 
 	float GetNextSpeed() const { return NextSpeed; }
 	void SetNextSpeed(float InNextSpeed) { NextSpeed = InNextSpeed; }
@@ -170,8 +181,9 @@ public: // Getters and setters
 
 	bool GetCanMove() const { return bCanMove; }
 	bool GetIsAimDown() { return bIsAimDownSight; }
+	bool GetIsWatchingSight() { return bIsWatchingSight; }
 	void SetIsAimDown(bool InIsAimDownSight) { bIsAimDownSight = InIsAimDownSight; }
-
+	void SetIsWatchingSight(bool InIsWatchingSight) { bIsWatchingSight = InIsWatchingSight; }
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 
 	//class UC_InvenComponent* GetInvenComponent() { return BPC_InvenSystemInstance; }
@@ -207,6 +219,8 @@ public: // Getters and setters
 
 	class UC_ConsumableUsageMeshComponent* GetConsumableUsageMeshComponent() const { return ConsumableUsageMeshComponent; }
 
+	class UC_PoseColliderHandlerComponent* GetPoseColliderHandlerComponent() const { return PoseColliderHandlerComponent; }
+
 public:
 
 	/// <summary>
@@ -240,6 +254,12 @@ protected:
 	// Current pose state 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPoseState PoseState{};
+
+protected:
+
+	// 자세별 Collider 위치, 크기 및 Mesh 위치 잡아주는 Component
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_PoseColliderHandlerComponent* PoseColliderHandlerComponent{};
 
 protected: // 자세 변환 Transition 관련
 
@@ -284,6 +304,7 @@ protected:
 
 	bool bIsAimDownSight = false;
 	bool bIsAimingRifle = false;
+	bool bIsWatchingSight = false;
 	FRotator CharacterMovingDirection;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -332,5 +353,10 @@ protected: // Consumable 관련
 protected: // 총알 Object Pooling
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<AC_Item*> Bullets;
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_SwimmingComponent* SwimmingComponent{};
 
 };

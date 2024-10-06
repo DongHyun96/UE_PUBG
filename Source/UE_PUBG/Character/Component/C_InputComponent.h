@@ -41,12 +41,13 @@ private:
 
 	void Crouch();
 	void Crawl();
-
 	void OnJump();
+
 	void CancelTurnInPlaceMotion();
 	//Alt 키 누를때 이름 추천부탁
 	void HoldDirection();
 	void ReleaseDirection();
+	void SetToNonAimCamera();
 
 	// Number input mappings
 	void OnNum1();
@@ -82,6 +83,7 @@ private:
 
 	void OnNKey();
 	void OnMKey();
+
 private:
 
 	class AC_Player* Player{};

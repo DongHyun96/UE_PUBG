@@ -14,6 +14,10 @@
 
 #include "Component/C_StatComponent.h"
 #include "Component/C_ConsumableUsageMeshComponent.h"
+#include "Component/C_PoseColliderHandlerComponent.h"
+#include "Component/C_SwimmingComponent.h"
+
+#include "Components/CapsuleComponent.h"
 
 #include "Utility/C_Util.h"
 
@@ -27,7 +31,6 @@ AC_BasicCharacter::AC_BasicCharacter()
 	EquippedComponent = CreateDefaultSubobject<UC_EquippedComponent>("EquippedComponent");
 	EquippedComponent->SetOwnerCharacter(this);
 
-
 	Inventory = CreateDefaultSubobject<UC_InvenComponent>("C_Inventory");
 	Inventory->SetOwnerCharacter(this);
 
@@ -35,6 +38,12 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	ConsumableUsageMeshComponent = CreateDefaultSubobject<UC_ConsumableUsageMeshComponent>("ConsumableUsageMeshComponent");
 	ConsumableUsageMeshComponent->SetOwnerCharacter(this);
+
+	PoseColliderHandlerComponent = CreateDefaultSubobject<UC_PoseColliderHandlerComponent>("PoseColliderHandlerComponent");
+	PoseColliderHandlerComponent->SetOwnerCharacter(this);
+
+	SwimmingComponent = CreateDefaultSubobject<UC_SwimmingComponent>("SwimmingComponent");
+	SwimmingComponent->SetOwnerCharacter(this);
 }
 
 // Called when the game starts or when spawned
@@ -42,13 +51,11 @@ void AC_BasicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 	MainCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
 	InitialMainCameraRelativeRotation = MainCamera->GetRelativeRotation().Quaternion();
 	C_MainSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("MainSpringArm")); 
 
 	StatComponent->SetOwnerCharacter(this);
-
 }
 
 // Called every frame
@@ -187,16 +194,30 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 	GetCharacterMovement()->MaxWalkSpeed *= BoostingSpeedFactor;
 }
 
+void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
+{
+	PoseState = InPoseState;
+	PoseColliderHandlerComponent->SetColliderByPoseState(PoseState);
+}
+
+bool AC_BasicCharacter::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
+{
+	// TODO : Enemy 캐릭터에 대한 자세 변환 적용
+
+	return false;
+}
+
 void AC_BasicCharacter::OnPoseTransitionGoing()
 {
 	PoseState = NextPoseState;
+	PoseColliderHandlerComponent->SetColliderByPoseState(PoseState);
 }
 
 void AC_BasicCharacter::OnPoseTransitionFinish()
 {
 	//UC_Util::Print("Transition pose finished!", FColor::Cyan, 5.f);
 	//PoseState = NextPoseState;
-	bCanMove = true;
+	//bCanMove = true; // PoseBySizeLerp가 끝난 뒤에 움직일 수 있도록 처리
 	bIsPoseTransitioning = false;
 
 	// Pose Transition이 끝난 뒤, Delegate call back 처리

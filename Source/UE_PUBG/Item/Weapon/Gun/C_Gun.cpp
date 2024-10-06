@@ -6,10 +6,11 @@
 #include "Blueprint/UserWidget.h"
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "UMG.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
-#include "UMG.h"
-
+#include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenComponent.h"
 
 #include "Components/PanelWidget.h"
 #include "Components/NamedSlotInterface.h"
@@ -27,12 +28,15 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/C_Player.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Character/Component/C_CrosshairWidgetComponent.h"
+
 #include "GameFramework/SpringArmComponent.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 
 #include "Item/Weapon/Gun/C_Bullet.h"
 
-
+//UCameraComponent* AC_Gun::AimSightCamera;
 // Sets default values
 AC_Gun::AC_Gun()
 {
@@ -40,42 +44,43 @@ AC_Gun::AC_Gun()
 	PrimaryActorTick.bCanEverTick = true;
 
 	WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
-
-	Bullet = LoadObject<AC_Bullet>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet"));
+	//AimSightSpringArm = CreateDefaultSubobject<USpringArmComponent>();
+	//Bullet = LoadObject<AC_Bullet>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet"));
 	//ItemType 설정.
+
 	MyItemType = EItemTypes::MAINGUN;
 }
 
 void AC_Gun::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnBulletForTest();
-	AimSightCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
-	AimSightSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("RifleSightSpringArm"));
+	SetBulletSpeed();
+	AimSightCamera = FindComponentByClass<UCameraComponent>();
+	//AimSightCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName(FName("Camera")));
+	//AimSightSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("RifleSightSpringArm"));
+	
+	AimSightSpringArm = FindComponentByClass<USpringArmComponent>(); 
 	//if(IsValid(AimSightCamera))
-	AimSightCamera->SetActive(false);
+	if (AimSightCamera)
+		AimSightCamera->SetActive(false);
 	//블루프린트에서 할당한 Skeletal Mesh 찾아서 변수에 저장
 	GunMesh = FindComponentByClass<USkeletalMeshComponent>();
 	GunMesh->SetupAttachment(RootComponent);
+	//SetAimSightWidget();
 	//AimSightCamera->SetupAttachment(GunMesh);
 	//CurveFloatForSwitchCameraChange = LoadObject<UCurveFloat>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/CameraMoving/CF_CameraMoving"));
 
-	UUserWidget* AimWidget = LoadObject<UUserWidget>(nullptr,TEXT("/All/Game/Project_PUBG/Hyunho/TempWidget/WBP_CrossHair"));
 	//Bullet = LoadObject<AC_Bullet>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet"));
-	if (IsValid(Bullet))
-	{
-		UC_Util::Print("FindBullet");
 
-		UProjectileMovementComponent* ProjectileMovement = Bullet->FindComponentByClass<UProjectileMovementComponent>();
-		if (ProjectileMovement)
-		{
-			ProjectileMovement->InitialSpeed = BulletSpeed;
-
-		}
-	}
 	//UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>
 	
+		//if (!AimWidget)
+	//{
 
+	//	AimWidget = LoadObject<UUserWidget>(nullptr, TEXT("/All/Game/Project_PUBG/Hyunho/TempWidget/WBP_CrossHair"));
+	//	AimWidget->AddToViewport();
+	//	AimWidget->SetVisibility(ESlateVisibility::Hidden);
+	//}
 	//if (IsValid(MyMesh))
 	//{
 	//	UE_LOG(LogTemp, Warning, TEXT("Skeletal Mesh: %s"), *MyMesh->GetName());
@@ -115,61 +120,106 @@ void AC_Gun::Tick(float DeltaTime)
 	}
 	HandleSpringArmRotation();
 	GetPlayerIsAimDownOrNot();
-
+	CheckPlayerIsRunning();
+	CheckBackPackLevelChange();
+	ShowAndHideWhileAiming();
 }
 
 bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 {
-	switch (CurState)
+
+	if (!IsValid(OwnerCharacter)) return false;
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::NORIFLE);
+
+	EBackPackLevel BackPackLevel = OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel();
+	if (BackPackLevel == EBackPackLevel::LV0)
 	{
-	case EGunState::MAIN_GUN:
-		return AttachToComponent
-		(
-			InParent,
-			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
-			MAIN_HOLSTER_SOCKET_NAME
-		);
-		break;
-	case EGunState::SUB_GUN:
-		return AttachToComponent
-		(
-			InParent,
-			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
-			SUB_HOLSTER_SOCKET_NAME
-		);
-		break;
-	default:
-		return false;
-		break;
+		switch (CurState)
+		{
+		case EGunState::MAIN_GUN:
+			return AttachToComponent
+			(
+				InParent,
+				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+				MAIN_HOLSTER_SOCKET_NAME
+			);
+			break;
+		case EGunState::SUB_GUN:
+			return AttachToComponent
+			(
+				InParent,
+				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+				SUB_HOLSTER_SOCKET_NAME
+			);
+			break;
+		default:
+			return false;
+			break;
+		}
 	}
+	else
+	{
+		switch (CurState)
+		{
+		case EGunState::MAIN_GUN:
+			return AttachToComponent
+			(
+				InParent,
+				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+				MAIN_HOLSTER_BAG_SOCKET_NAME
+			);
+			break;
+		case EGunState::SUB_GUN:
+			return AttachToComponent
+			(
+				InParent,
+				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+				SUB_HOLSTER_BAG_SOCKET_NAME
+			);
+			break;
+		default:
+			return false;
+			break;
+		}
+	}
+
+	
 
 }
 
 bool AC_Gun::AttachToHand(USceneComponent* InParent)
 {
-	UAnimMontage* DrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[EGunState::SUB_GUN].AnimMontage;
+	UAnimMontage* DrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
 	//UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 
 	//if (!IsValid(DrawMontage)) return false;
 	// 만일 SUB_GUN의 Draw가 실행된다면 왼손으로 먼저 Attach
 	//현재 왼손으로 옮겨지고 있다면 다시 어태치 하지 않고 If문 밑으로 진행
 	FName CurSocketName = GetAttachParentSocketName();
+
 	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(DrawMontage) && CurSocketName != SUB_DRAW_SOCKET_NAME)
 	{
-		return AttachToComponent
-		(
-			InParent,
-			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
-			SUB_DRAW_SOCKET_NAME
-		);
+
+		//Crawl일 때는 모션이 달라 왼손에 어태치 안함
+		if (CurState == EGunState::SUB_GUN && OwnerCharacter->GetPoseState() != EPoseState::CRAWL)
+		{
+			return AttachToComponent
+			(
+				InParent,
+				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+				SUB_DRAW_SOCKET_NAME
+			);
+		}
 	}
 	OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
-	
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
 	
 	return AttachToComponent
 	(
 		InParent,
-		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		EQUIPPED_SOCKET_NAME
 	);
 	
@@ -177,6 +227,10 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 
 bool AC_Gun::SetAimingDown()
 {
+
+	//스프린트 중이라면 Return
+	if (OwnerCharacter->GetNextSpeed() > 600)
+		return false;
 	Cast<AC_Player>(OwnerCharacter)->SetToAimDownSight();
 	//CharacterMesh->HideBoneByName(FName("HeadBoneName"), EPhysBodyOp::PBO_None);
 
@@ -194,6 +248,10 @@ bool AC_Gun::SetAimingDown()
 //견착 조준만할 때 Player AimKePress함수로 메인카메라에서 에임 카메라로 바꿔주기
 bool AC_Gun::SetAimingPress()
 {
+	//스프린트 중이라면 Return
+	if (OwnerCharacter->GetNextSpeed() > 600)
+		return false;
+
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 	if (!IsValid(OwnerPlayer)) return false;
 	if (OwnerPlayer->GetIsAimDown()) return false;
@@ -206,10 +264,12 @@ bool AC_Gun::SetAimingPress()
 
 bool AC_Gun::BackToMainCamera()
 {
+	//UC_Util::Print("Fuck333333333333333333333333");
+
 	AimSightCamera->SetActive(false);
-	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() == this)
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() != OwnerCharacter)
 	{
-		UC_Util::Print("Fuck");
+		//UC_Util::Print("Fuck333333333333333333333333");
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(OwnerCharacter, 0.2);
 	}
 	OwnerCharacter->GetMesh()->UnHideBoneByName(FName("Head"));
@@ -241,11 +301,144 @@ void AC_Gun::GetPlayerIsAimDownOrNot()
 	}
 }
 
+void AC_Gun::SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter)
+{
+	Super::SetOwnerCharacter(InOwnerCharacter);
+	if (!InOwnerCharacter)
+	{
+		if (AimWidget)
+		{
+			AimWidget->SetVisibility(ESlateVisibility::Hidden);
+			AimWidget = nullptr;
+		}
+		return;
+	}
+	SetAimSightWidget();
+
+}
+
 void AC_Gun::OnOwnerCharacterPoseTransitionFin()
 {
 }
 
+void AC_Gun::CheckPlayerIsRunning()
+{
+	//Aim Press 혹은 Aim Down 상태일 때 스프린트 실행하면 다시 main 카메라로 돌아가기
+	float NextSpeed = OwnerCharacter->GetNextSpeed();
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+
+	if (NextSpeed > 600 && OwnerPlayer->GetIsAimDown())
+	{
+		BackToMainCamera();
+		UC_Util::Print("Fuck");
+
+	}
+
+
+}
+
+void AC_Gun::CheckBackPackLevelChange()
+{
+	if (PrevBackPackLevel != OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel())
+	{
+		if(OwnerCharacter->GetEquippedComponent()->GetCurWeapon() != this)
+			AttachToHolster(OwnerCharacter->GetMesh());
+	}
+	PrevBackPackLevel = OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel();
+
+}
+
+
 bool AC_Gun::FireBullet()
+{
+	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
+	if (!OnScreen) return false;
+
+	if (CurBulletCount <= 0)
+	{
+		//TODO: 재장전 모션 실행 (총알이 Inven에 없으면 아무것도 못함)
+		ReloadBullet();
+		UC_Util::Print("Can't Fire");
+
+		return false;
+	}
+
+	//CollisionParams.AddIgnoredActor(Bullet);
+
+
+	//if (FoundWidgets.Num() > 0)
+	//{
+	//	MyWidget = FoundWidgets[0];  // 첫 번째 위젯 가져오기
+	//	//UC_Util::Print("FoundWidget");
+
+	//}
+	//else 
+	//	return false;
+
+	//TODO 캐릭터 상태, 상황에 따라 다른 위젯이미지 불러오기
+
+	//UC_Util::Print(float(HitResult.Location.Y));
+	//Controller->ActorLineTraceSingle(nullptr, ),)
+
+	FVector FireLocation;
+	FVector FireDirection;
+	bool HasHit;
+	if (!SetBulletDirection(FireLocation, FireDirection, HasHit)) return false;
+	UC_Util::Print(FireLocation);
+	UC_Util::Print(FireDirection);
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	bool ApplyGravity = OwnerPlayer->GetIsWatchingSight() || !HasHit;
+	int BulletCount = 0;
+	for (auto& Bullet : OwnerPlayer->GetBullets())
+	{
+		if (Bullet->GetIsActive())
+		{
+			//UC_Util::Print("Can't fire");
+			continue;
+		}
+		BulletCount++;
+		//UC_Util::Print("FIRE!!!!!!!");
+		CurBulletCount--;
+
+		return Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+		//Bullet->Fire(this, FireLocation, FireDirection);
+		//if (BulletCount > 100)
+		//	return true;
+	}
+	UC_Util::Print("No More Bullets in Pool");
+	return false;
+}
+
+bool AC_Gun::ReloadBullet()
+{
+	CurBulletCount = MaxBulletCount;
+	return true;
+}
+
+void AC_Gun::SetBulletSpeed()
+{
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	if (!IsValid(OwnerPlayer))
+	{
+		return;
+	}
+	for (auto& Bullet : OwnerPlayer->GetBullets())
+	{
+		if (IsValid(Bullet))
+		{
+			UC_Util::Print("FindBullet");
+
+			UProjectileMovementComponent* ProjectileMovement = Bullet->FindComponentByClass<UProjectileMovementComponent>();
+			if (ProjectileMovement)
+			{
+				ProjectileMovement->InitialSpeed = BulletSpeed;
+
+			}
+		}
+	}
+}
+
+bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, bool& OutHasHit)
 {
 	FHitResult HitResult;
 
@@ -264,19 +457,12 @@ bool AC_Gun::FireBullet()
 	FVector WorldLocation, WorldDirection;
 	APlayerController* WolrdContorller = GetWorld()->GetFirstPlayerController();
 	TArray<UUserWidget*> FoundWidgets;
-	UUserWidget* MyWidget;
+	UUserWidget* MyWidget = AimWidget;
 	UImage* MyImage;
 	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(GetWorld(), FoundWidgets, UUserWidget::StaticClass(), true);
-	if (FoundWidgets.Num() > 0)
-	{
-		MyWidget = FoundWidgets[0];  // 첫 번째 위젯 가져오기
-		//UC_Util::Print("FoundWidget");
 
-	}
-	else 
-		return false;
+	MyImage = Cast<UImage>(MyWidget->WidgetTree->FindWidget(FName("Crosshair_Base")));
 
-	MyImage = Cast<UImage>(MyWidget->WidgetTree->FindWidget(FName("Image_53")));
 	UCanvasPanelSlot* ImageSlot;
 	FVector2D RandomPoint;
 	if (IsValid(MyImage))
@@ -287,63 +473,128 @@ bool AC_Gun::FireBullet()
 		{
 			// 이때, Cast<UPanelSlot>(ImageSlot)으로 다른 타입으로 캐스팅할 수 있음
 			FVector2D ImageSize = ImageSlot->GetSize();
-			RandomPoint = FMath::RandPointInCircle(ImageSize.X / 2.0f);
-
+			RandomPoint = FMath::RandPointInCircle(ImageSize.X * 0.5f * 0.373f);
+			UC_Util::Print("Find Slot");
 		}
 		else
+		{
+			UC_Util::Print("Cant Find Slot");
+
 			return false;
+		}
 	}
 	else
 		return false;
 	FVector2D ViewportSize;
 	GEngine->GameViewport->GetViewportSize(ViewportSize);
 	FVector2D RandomPointOnScreen;
-	RandomPointOnScreen.X = (0.5 * ViewportSize.X + RandomPoint.X);
-	RandomPointOnScreen.Y = (0.5 * ViewportSize.Y + RandomPoint.Y);
-	RandomPointOnScreen.X = (0.5 * ViewportSize.X );
-	RandomPointOnScreen.Y = (0.5 * ViewportSize.Y );
+
+	//TODO: 캐릭터 상태에 따라 탄퍼짐 or 직선
+	if (OwnerCharacter->GetIsWatchingSight())
+	{
+		RandomPointOnScreen.X = (0.5 * ViewportSize.X );
+		RandomPointOnScreen.Y = (0.5 * ViewportSize.Y );
+	}
+	else
+	{
+		RandomPointOnScreen.X = (0.5 * ViewportSize.X + RandomPoint.X);
+		RandomPointOnScreen.Y = (0.5 * ViewportSize.Y + RandomPoint.Y);
+	}
 
 	WolrdContorller->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, WorldLocation, WorldDirection);
 
 	FVector DestLocation = WorldLocation + WorldDirection * 10000;
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, DestLocation, ECC_Visibility, CollisionParams);
 
-	DrawDebugSphere(GetWorld(), HitResult.Location, 10.0f, 12, FColor::Red, true);
+	DrawDebugSphere(GetWorld(), HitResult.Location, 1.0f, 12, FColor::Red, true);
 	UC_Util::Print(float(HitResult.Distance));
 	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+	//FVector FireLocation2 = GunMesh->GetSocketLocation(FName("MuzzleSocke"));
+	//UC_Util::Print(FireLocation);
+	//UC_Util::Print(FireLocation2, FColor::Blue);
 	FVector FireDirection;
 
 	if (HasHit)
 	{
 		FireDirection = HitResult.Location - FireLocation;
 		FireDirection = FireDirection.GetSafeNormal();
-		UC_Util::Print(FireDirection);
+		UC_Util::Print(HitResult.Location, FColor::Emerald);
+		UC_Util::Print(HitResult.Distance, FColor::Cyan);
 	}
 	else
 	{
 		FireDirection = DestLocation - FireLocation;
 		FireDirection = FireDirection.GetSafeNormal();
-		UC_Util::Print(FireDirection, FColor::Blue);
+		//UC_Util::Print(FireDirection, FColor::Blue);
 
 	}
+	//FRotator LocalRotation(0, 0, 5.6);  
+
+	float RadianValue = FMath::DegreesToRadians(0.06f);
+
+	// 기존 벡터의 크기를 저장
+	float OriginalLength = FireDirection.Size();
+
+	// Z 값을 변화시키기 위해 현재 XY 평면에서의 크기를 유지
+	FireDirection.Z += FMath::Tan(RadianValue);
+
+	// 벡터를 다시 정규화하여 크기를 유지
+	FireDirection = FireDirection.GetSafeNormal();
+	UC_Util::Print(FireDirection, FColor::Blue);
+
 	FireDirection *= 100;
-	FireDirection *= 620;	
-	//UC_Util::Print(float(HitResult.Location.Y));
-	//Controller->ActorLineTraceSingle(nullptr, ),)
-	Bullet->Fire(this, FireLocation, FireDirection);
+	FireDirection *= BulletSpeed;
+	OutLocation = FireLocation;
+	OutDirection = FireDirection;
+	OutHasHit = HasHit;
 	return true;
 }
 
-void AC_Gun::SpawnBulletForTest()
+void AC_Gun::SetAimSightWidget()
 {
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	if (OwnerPlayer)
+		AimWidget = OwnerPlayer->GetCrosshairWidgetComponent()->GetAimWidget();
+}
 
-	FActorSpawnParameters Param2{};
-	Param2.Owner = this;
-	UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
-	Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
-	if (IsValid(Bullet))
-		UC_Util::Print("Created Bullet");
+void AC_Gun::ShowAndHideWhileAiming()
+{
+	if (!OwnerCharacter) return;
+	if (OwnerCharacter->GetEquippedComponent()->GetCurWeapon() != this) return;
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	if (!OwnerPlayer->GetIsWatchingSight()) return;
+	FVector StartLocation = AimSightCamera->GetComponentLocation();
+	FVector ForwardVector = AimSightCamera->GetForwardVector() * 15;
+	FVector EndLocation = StartLocation + ForwardVector;
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(OwnerCharacter);
+	CollisionParams.AddIgnoredComponent(GunMesh);
+	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
+	if (HasHit)
+	{
+		AimWidget->SetVisibility(ESlateVisibility::Visible);
+		//UC_Util::Print("Hit");
+	}
+	else
+	{
+		AimWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	}
+		//UC_Util::Print("No Hit");
 
 }
+
+//void AC_Gun::SpawnBulletForTest()
+//{
+//
+//	//FActorSpawnParameters Param2{};
+//	//Param2.Owner = this;
+//	//UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
+//	//Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
+//	//if (IsValid(Bullet))
+//	//	UC_Util::Print("Created Bullet");
+//
+//}
 
 

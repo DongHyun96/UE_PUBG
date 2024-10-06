@@ -2,7 +2,7 @@
 
 
 #include "Item/C_Item.h"
-
+#include "Utility/C_Util.h"
 #include "Character/C_BasicCharacter.h"
 
 #include "Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
@@ -34,6 +34,7 @@ void AC_Item::Tick(float DeltaTime)
 
 void AC_Item::DetachmentItem()
 {
+	
 	if (!OwnerCharacter) return;
 	
 	DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
@@ -46,6 +47,8 @@ void AC_Item::DetachmentItem()
 	//«—π¯ ≤Ø¥Ÿ ≤®¡‡æﬂ OverlapBegin¿Ã ¿€µø
 	SetActorEnableCollision(false);
 	SetActorEnableCollision(true);
+
+	UC_Util::Print("Check");
 }
 
 void AttachToSocket(USceneComponent* InParent)

@@ -38,8 +38,8 @@ UCLASS()
 class UE_PUBG_API AC_Gun : public AC_Weapon
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	AC_Gun();
 protected:
 	// Called when the game starts or when spawned
@@ -50,19 +50,23 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	bool AttachToHolster(class USceneComponent* InParent) override;
-	bool AttachToHand(class USceneComponent* InParent) override;
-	void ChangeGunState(EGunState InGunState) { CurState = InGunState; }
-	bool SetAimingDown();
-	bool SetAimingPress();
-	bool BackToMainCamera();
-	void SetIsAimPress(bool InIsAimDown) { bIsAimDown = InIsAimDown; }
-	bool GetIsAimPress() { return bIsAimDown; }
-	void HandleSpringArmRotation();
-	void GetPlayerIsAimDownOrNot();
+	virtual bool AttachToHolster(class USceneComponent* InParent) override;
+	virtual bool AttachToHand(class USceneComponent* InParent) override;
+
+	virtual void ChangeGunState(EGunState InGunState) { CurState = InGunState; }
+	virtual bool SetAimingDown();
+	virtual bool SetAimingPress();
+	virtual bool BackToMainCamera();
+	virtual void SetIsAimPress(bool InIsAimDown) { bIsAimDown = InIsAimDown; }
+	virtual bool GetIsAimPress() { return bIsAimDown; }
+	virtual void HandleSpringArmRotation();
+	virtual void GetPlayerIsAimDownOrNot();
+	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter);
+
 	USkeletalMeshComponent* GetGunMesh() { return GunMesh; }
 	EGunState GetCurrentWeaponState() { return CurState; }
 	TMap<EPoseState, FAnimationMontages> GetSheathMontages() { return SheathMontages; };
+	TMap<EPoseState, FAnimationMontages > GetDrawMontages() { return DrawMontages; };
 	FTransform GetLeftHandSocketTransform() const { return LeftHandSocketLocation; }
 	class UCameraComponent* GetGunCamera() { return AimSightCamera; }
 
@@ -72,12 +76,19 @@ protected:
 	/// </summary>
 	void OnOwnerCharacterPoseTransitionFin() override;
 
+	void CheckPlayerIsRunning();
+
+	void CheckBackPackLevelChange();
 public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages > DrawMontages{};
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages> SheathMontages{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EPoseState, FAnimationMontages> ReloadMontages{};
+
 
 	class UCanvasPanelSlot* AimImage;
 	float MilitaryOperationArea;
@@ -85,26 +96,32 @@ public:
 private:
 	const FName SUB_HOLSTER_SOCKET_NAME = "SubGunSocket_NoBag"; // 무기집 socket 이름
 	const FName MAIN_HOLSTER_SOCKET_NAME = "MainGunSocket_NoBag"; // 무기집 socket 이름
+
+	const FName SUB_HOLSTER_BAG_SOCKET_NAME = "SubGunSocket_Bag"; // 무기집 socket 이름
+	const FName MAIN_HOLSTER_BAG_SOCKET_NAME = "MainGunSocket_Bag"; // 무기집 socket 이름
+
+
+	
 	const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
 	//const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
 	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // 무기가 손에 부착될 socket 이름
-	EGunState CurState = EGunState::SUB_GUN;
+	EGunState CurState = EGunState::MAIN_GUN;
 	bool bIsAimDown = false;
-
 private:
 	//블루프린트에서 할당한 스켈레탈 메쉬를 저장하는 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* GunMesh;
 public:
+	void SetMainOrSubSlot(EGunState InState) { CurState = InState; }
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FTransform LeftHandSocketLocation;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	bool bIsPlayerAimDownPress = false;
 
-	class UCameraComponent* AimSightCamera{};
+	UCameraComponent* AimSightCamera;
 	class USpringArmComponent* AimSightSpringArm{};
 
-public:
+protected:
 	/// <summary>
 	/// 총알 발사 관련 변수들
 	/// </summary>
@@ -117,13 +134,33 @@ public:
 	float BulletSpeed;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float FullAutoTime;
-
-	bool FireBullet();
+	float BulletRPM;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class AC_Bullet* Bullet;
+	float ReloadTime;
 
-	void SpawnBulletForTest();
+public:
+	virtual bool FireBullet();
+
+	virtual bool ReloadBullet();
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//class AC_Bullet* Bullet;
+
+	//void SpawnBulletForTest();
+	virtual void SetBulletSpeed();
+	virtual bool SetBulletDirection(FVector &OutLocation, FVector &OutDirection, bool&OutHasHit);
+
+	float GetBulletRPM() { return BulletRPM; }
+
+	EBackPackLevel PrevBackPackLevel;
+
+	void SetAimSightWidget();
+protected:
+	//Aim 위젯
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UUserWidget* AimWidget;
+	FName WidgetFilePath;
+	void ShowAndHideWhileAiming();
 
 };

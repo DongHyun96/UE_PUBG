@@ -19,6 +19,7 @@
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_PingSystemComponent.h"
+#include "Character/Component/C_PoseColliderHandlerComponent.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -44,15 +45,18 @@
 #include "Blueprint/UserWidget.h"
 
 #include "Utility/C_Util.h"
-
+#include "UMG.h"
 #include "Styling/SlateBrush.h"
 #include "Engine/Texture2D.h"
 
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
+#include "Character/Component/C_CrosshairWidgetComponent.h"
+
+
 
 #include "Item/ConsumableItem/Healing/C_FirstAidKit.h"
-
+#include "Item/Weapon/Gun/C_Bullet.h"
 #include "Singleton/C_GameSceneManager.h"
 
 AC_Player::AC_Player()
@@ -60,6 +64,8 @@ AC_Player::AC_Player()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	MyInputComponent = CreateDefaultSubobject<UC_InputComponent>("MyInputComponent");
+	CrosshairWidgetComponent = CreateDefaultSubobject<UC_CrosshairWidgetComponent>("CrosshairWidgetComponent");
+
 
 	InitTurnAnimMontageMap();
 
@@ -88,7 +94,6 @@ AC_Player::AC_Player()
 void AC_Player::BeginPlay()
 {
 	Super::BeginPlay();
-
 	//GAMESCENE_MANAGER->SetPlayer(this);
 
 	if (HUDWidget)
@@ -98,7 +103,8 @@ void AC_Player::BeginPlay()
 		PingSystemComponent->SetOwnerPlayer(this);
 		HUDWidget->GetMainMapWidget()->SetPlayer(this);
 	}
-
+	CrosshairWidgetComponent->AddToViewport();
+	CrosshairWidgetComponent->SetOwnerCharacter(this);
 	AimCamera->SetActive(false);
 
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -127,8 +133,10 @@ void AC_Player::BeginPlay()
 
 	// 자세별 MainSpringArm 위치 초기화
 	MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::STAND, C_MainSpringArm->GetRelativeLocation());
-	MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CROUCH, C_MainSpringArm->GetRelativeLocation() + FVector(0, 0, -32));
-	MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CRAWL, C_MainSpringArm->GetRelativeLocation()  + FVector(0, 0, -99));
+	MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CROUCH, C_MainSpringArm->GetRelativeLocation() + FVector(0.f, 0.f, -32.f));
+	//MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CRAWL, C_MainSpringArm->GetRelativeLocation()  + FVector(0.f, 0.f, -99.f));
+	MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CRAWL, C_MainSpringArm->GetRelativeLocation()  + FVector(0.f, 0.f, -20.f));
+
 	MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[EPoseState::STAND];
 
 	// PostProcessVolume 초기화
@@ -168,7 +176,7 @@ void AC_Player::BeginPlay()
 	//}
 
 	SpawnConsumableItemForTesting();
-
+	PoolingBullets();
 
 }
 
@@ -189,6 +197,17 @@ void AC_Player::Tick(float DeltaTime)
 	//ClampControllerRotationPitchWhileAimDownSight();
 
 	HandleLerpMainSpringArmToDestRelativeLocation(DeltaTime);
+
+	//int TestCount = 0;
+
+	//for (auto& Bullet : PooledBullets)
+	//{
+	//	if (Bullet->GetIsActive())
+	//	{
+	//		TestCount++;
+	//	}
+	//}
+	//UC_Util::Print(TestCount);
 }
 
 void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -232,6 +251,87 @@ void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime)
 			DeltaTime * 5.f
 		)
 	);
+}
+
+bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
+{
+	if (!bCanMove)											return false;
+	if (bIsJumping || GetCharacterMovement()->IsFalling())	return false;
+	if (InChangeFrom == InChangeTo)							return false;
+
+	switch (InChangeTo)
+	{
+	case EPoseState::STAND:
+		switch (InChangeFrom)
+		{
+		case EPoseState::CROUCH: // Crouch To Stand (Pose transition 없이 바로 처리)
+
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
+
+			SetSpringArmRelativeLocationDest(EPoseState::STAND);
+			SetPoseState(EPoseState::STAND);
+			return true;
+
+		case EPoseState::CRAWL: // Crawl To Stand
+
+			if (bIsActivatingConsumableItem) return false; // TODO : 일어설 수 없습니다 UI 띄우기
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
+			ClampControllerRotationPitchWhileCrawl(PoseState);
+			SetSpringArmRelativeLocationDest(EPoseState::STAND);
+			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToStand, EPoseState::STAND);
+			return true;
+
+		case EPoseState::POSE_MAX: default: return false;
+		}
+	case EPoseState::CROUCH:
+		switch (InChangeFrom)
+		{
+		case EPoseState::STAND: // Stand To Crouch
+
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
+
+			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
+			SetPoseState(EPoseState::CROUCH);
+			return true;
+
+		case EPoseState::CRAWL: // Crawl To Crouch
+
+			if (bIsActivatingConsumableItem) return false; // TODO : 일어설 수 없습니다 UI 띄우기
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
+
+			ClampControllerRotationPitchWhileCrawl(PoseState);
+			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToCrouch, EPoseState::CROUCH);
+			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
+			return true;
+
+		case EPoseState::POSE_MAX: default: return false;
+		}
+	case EPoseState::CRAWL:
+		switch (InChangeFrom)
+		{
+		case EPoseState::STAND: // Stand to Crawl
+
+			if (bIsActivatingConsumableItem) return false; // TODO : 없드릴 수 없습니다 UI 띄우기
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
+			ClampControllerRotationPitchWhileCrawl(PoseState);
+
+			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).StandToCrawl, EPoseState::CRAWL);
+			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
+			return true;
+
+		case EPoseState::CROUCH: // Crouch to Crawl
+
+			if (bIsActivatingConsumableItem) return false; // TODO : 없드릴 수 없습니다 UI 띄우기
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
+			ClampControllerRotationPitchWhileCrawl(PoseState);
+			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
+			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrouchToCrawl, EPoseState::CRAWL);
+			return true;
+
+		case EPoseState::POSE_MAX: default: return false;
+		}
+	case EPoseState::POSE_MAX: default: return false;
+	}
 }
 
 /// <summary>
@@ -312,55 +412,47 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 	// 0 360
 	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;
 
-	if (Delta > 90.f) // Right Turn in place motion
+	if (-90.f <= Delta && Delta <= 90.f) return;
+
+	// Crawl Slope 예외처리
+	if (PoseState == EPoseState::CRAWL)
 	{
-		// Controller
-		GetCharacterMovement()->bUseControllerDesiredRotation	= true;
-		GetCharacterMovement()->bOrientRotationToMovement		= false;
+		//UC_Util::Print(Controller->GetControlRotation());
+		FRotator ControlRotation	= Controller->GetControlRotation();
+		ControlRotation				= FRotator(0.f, ControlRotation.Yaw, 0.f);
+		FQuat ControlRotQuat		= FQuat(ControlRotation);
+		FVector RotatedDirection	= ControlRotQuat * FVector::UnitX();
 
-		// HandState와 PoseState에 따른 Right Montage Animation
-		FPriorityAnimMontage RightPriorityMontage = TurnAnimMontageMap[HandState].RightMontages[PoseState];
+		FVector HeadStartLocation   = GetActorLocation() + RotatedDirection * 75.f;
+		FVector PelvisStartLocation = GetActorLocation();
 
-		if (!IsValid(RightPriorityMontage.AnimMontage)) return;
-		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(RightPriorityMontage.AnimMontage)) return;
+		DrawDebugLine(GetWorld(), PelvisStartLocation, HeadStartLocation, FColor::Red, true);
 
-		PlayAnimMontage(RightPriorityMontage);
-
-		// Lower Body도 체크
-		if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
-
-		FPriorityAnimMontage LowerRightPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState];
-
-		if (!IsValid(LowerRightPriorityMontage.AnimMontage)) return;
-		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerRightPriorityMontage.AnimMontage)) return;
-
-		PlayAnimMontage(LowerRightPriorityMontage);
-
-	}
-	else if (Delta < -90.f) // Left Turn in place motion
-	{
-		GetCharacterMovement()->bUseControllerDesiredRotation	= true;
-		GetCharacterMovement()->bOrientRotationToMovement		= false;
-
-		// HandState와 PoseState에 따른 Left Montage Animation
-		FPriorityAnimMontage LeftPriorityMontage = TurnAnimMontageMap[HandState].LeftMontages[PoseState];
-
-		if (!IsValid(LeftPriorityMontage.AnimMontage)) return;
-		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LeftPriorityMontage.AnimMontage)) return;
-		
-		PlayAnimMontage(LeftPriorityMontage);
-
-		// Lower Body도 체크
-		if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
-
-		FPriorityAnimMontage LowerLeftPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState];
-
-		if (!IsValid(LowerLeftPriorityMontage.AnimMontage)) return;
-		if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerLeftPriorityMontage.AnimMontage)) return;
-
-		PlayAnimMontage(LowerLeftPriorityMontage);
+		if (!PoseColliderHandlerComponent->CanCrawlOnSlope(HeadStartLocation, PelvisStartLocation)) return;
 	}
 
+	// Controller
+	GetCharacterMovement()->bUseControllerDesiredRotation	= true;
+	GetCharacterMovement()->bOrientRotationToMovement		= false;
+
+	FPriorityAnimMontage TurnInPlaceMontage = (Delta > 90.f) ? TurnAnimMontageMap[HandState].RightMontages[PoseState] :
+															   TurnAnimMontageMap[HandState].LeftMontages[PoseState];
+
+	if (!IsValid(TurnInPlaceMontage.AnimMontage))											return;
+	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(TurnInPlaceMontage.AnimMontage))	return;
+
+	PlayAnimMontage(TurnInPlaceMontage);
+
+	// Lower Body도 체크
+	if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
+
+	FPriorityAnimMontage LowerMontage = (Delta > 90.f) ? LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState] :
+														 LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState];
+
+	if (!IsValid(LowerMontage.AnimMontage))											return;
+	if (GetMesh()->GetAnimInstance()->Montage_IsPlaying(LowerMontage.AnimMontage))	return;
+
+	PlayAnimMontage(LowerMontage);
 }
 
 void AC_Player::HandleTurnInPlaceWhileAiming()
@@ -618,6 +710,8 @@ void AC_Player::InitTurnAnimMontageMap()
 
 void AC_Player::HandleCameraAimPunching(float DeltaTime)
 {
+	if (!IsValid(MainCamera) || !IsValid(AimCamera)) return;
+
 	FVector		MainCamPos = MainCamera->GetRelativeLocation();
 	FVector		AimCamPos  = AimCamera->GetRelativeLocation();
 	FRotator	MainCamRot = MainCamera->GetRelativeRotation();
@@ -785,10 +879,12 @@ void AC_Player::ExecuteFlashBangEffect(float Duration)
 
 void AC_Player::SetToAimDownSight()
 {
+	CrosshairWidgetComponent->SetCrosshairState(ECrosshairState::RIFLEAIMDOWNSIGHT);
 	MainCamera->SetActive(false);
 	AimCamera->SetActive(false);
-
+	bIsWatchingSight = true;
 	bIsAimDownSight = true;
+	UC_Util::Print("AimDownNow");
 }
 
 void AC_Player::BackToMainCamera()
@@ -798,19 +894,21 @@ void AC_Player::BackToMainCamera()
 	InitialCameraLocation = AimCamera->GetComponentLocation();
 	InitialCameraRotation = AimCamera->GetComponentRotation();
 
+	CrosshairWidgetComponent->SetCrosshairState(ECrosshairState::RIFLE);
 	if (CameraTransitionTimeline)
 	{
-		bIsAimDownSight = false;
 
+		bIsAimDownSight = false;
+		bIsWatchingSight = false;
 		CameraTransitionTimeline->PlayFromStart();
-		//UC_Util::Print(CameraTransitionTimeline->IsPlaying());
+		UC_Util::Print(CameraTransitionTimeline->IsPlaying());
 	}
 	//bIsAimDownSight = false;
 }
 
 void AC_Player::SetToAimKeyPress()
 {
-
+	CrosshairWidgetComponent->SetCrosshairState(ECrosshairState::RIFLE);
 	InitialCameraLocation = MainCamera->GetComponentLocation();
 	InitialCameraRotation = MainCamera->GetComponentRotation();
 
@@ -818,6 +916,7 @@ void AC_Player::SetToAimKeyPress()
 	if (CameraTransitionTimeline)
 	{
 		bIsAimDownSight = true;
+		bIsWatchingSight = false;
 
 		CameraTransitionTimeline->PlayFromStart();
 		//UC_Util::Print(CameraTransitionTimeline->IsPlaying());
@@ -862,7 +961,6 @@ void AC_Player::OnTimelineFinished()
 		MainCamera->SetActive(true);
 	}
 	MainCamera->SetRelativeLocation(FVector(0));
-	
 	MainCamera->SetRelativeRotation(InitialMainCameraRelativeRotation);
 	//UC_Util::Print(MainCamera->GetRelativeRotation());
 	AimCamera->SetRelativeLocation(FVector(0));
@@ -880,6 +978,7 @@ void AC_Player::SetTimeLineComponentForMovingCamera()
 	
 	//CurveFloatForSwitchCamera = CreateCurveFloatForSwitchCamera();
 	//CurveFloatForSwitchCameraChange = Cast<UCurveFloat>(GetWorld()->GetDefaultSubobjectByName(name));
+	
 	CurveFloatForSwitchCameraChange = LoadObject<UCurveFloat>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/CameraMoving/CF_CameraMoving"));
 	// 타임라인 초기화
 	if (CameraTransitionTimeline && CurveFloatForSwitchCameraChange)
@@ -927,3 +1026,43 @@ void AC_Player::SpawnConsumableItemForTesting()
 		ConsumableItems.Add(GetWorld()->SpawnActor<AC_ConsumableItem>(ItemClass, Param));
 
 }
+
+void AC_Player::PoolingBullets()
+{
+
+	FActorSpawnParameters Param2{};
+	Param2.Owner = this;
+	for (int i = 0; i < 1000; i++)
+	{
+		UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
+		AC_Bullet* Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
+		Bullet->SetInstanceNum(i);
+		Bullet->DeactivateInstance();
+		if (IsValid(Bullet))
+		{
+
+			//UC_Util::Print("Created Bullet");
+			PooledBullets.Add(Bullet);
+		}
+	}
+	for (auto& Bullet : PooledBullets)
+	{
+		Bullet->ActivateInstance();
+		Bullet->DeactivateInstance();
+	}
+	
+}
+
+void AC_Player::SetLineTraceCollisionIgnore()
+{
+	LineTraceCollisionParams.AddIgnoredActor(this);
+	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+
+	//LineTraceCollisionParams.AddIgnoredActor(OwnerCharacter);
+	LineTraceCollisionParams.AddIgnoredActor(PlayerCamera);
+	for (auto& Bullet : Bullets)
+	{
+		LineTraceCollisionParams.AddIgnoredActor(Bullet);
+	}
+}
+
