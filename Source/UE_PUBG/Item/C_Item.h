@@ -106,7 +106,7 @@ protected:
 	UTexture2D* ItemIcon;		
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	uint8 ItemNums;
+	uint8 ItemNums;  // uint8 -> 0 ~ 255까지밖에 안됨 (탄 때문에 범위 더 늘려줘야 함)
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	AC_BasicCharacter* OwnerCharacter{};

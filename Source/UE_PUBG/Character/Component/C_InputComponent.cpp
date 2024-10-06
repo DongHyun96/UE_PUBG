@@ -25,6 +25,8 @@
 
 #include "Utility/C_Util.h"
 
+#include "GameFramework/PhysicsVolume.h"
+
 // Sets default values for this component's properties
 UC_InputComponent::UC_InputComponent()
 {
@@ -379,6 +381,28 @@ void UC_InputComponent::OnXKey()
 {
 	// Testing 용 Damage 주기 TODO : 이 라인 지우기
 	//TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor * DamageCauser);
+	static bool SwimFlag = false;
+
+	/*
+	OwnerCharacter->GetPhysicsVolume()->bWaterVolume = true;
+
+	bIsSwimming = true;
+
+	OwnerCharacter->LaunchCharacter(OwnerCharacter->GetActorUpVector() * 0.005f, false, false);
+	*/
+
+	if (!SwimFlag)
+	{
+		Player->GetPhysicsVolume()->bWaterVolume = true;
+		Player->LaunchCharacter(Player->GetActorUpVector() * 0.005f, false, false);
+	}
+	else
+	{
+		Player->GetPhysicsVolume()->bWaterVolume = false;
+	}
+
+	SwimFlag = !SwimFlag;
+	
 	Player->GetStatComponent()->TakeDamage(10.f, EDamagingPartType::HEAD, Player);
 	Player->GetEquippedComponent()->ToggleArmed();
 }

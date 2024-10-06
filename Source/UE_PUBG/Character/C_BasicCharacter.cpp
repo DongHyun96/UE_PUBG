@@ -15,6 +15,7 @@
 #include "Component/C_StatComponent.h"
 #include "Component/C_ConsumableUsageMeshComponent.h"
 #include "Component/C_PoseColliderHandlerComponent.h"
+#include "Component/C_SwimmingComponent.h"
 
 #include "Components/CapsuleComponent.h"
 
@@ -40,6 +41,9 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	PoseColliderHandlerComponent = CreateDefaultSubobject<UC_PoseColliderHandlerComponent>("PoseColliderHandlerComponent");
 	PoseColliderHandlerComponent->SetOwnerCharacter(this);
+
+	SwimmingComponent = CreateDefaultSubobject<UC_SwimmingComponent>("SwimmingComponent");
+	SwimmingComponent->SetOwnerCharacter(this);
 }
 
 // Called when the game starts or when spawned
