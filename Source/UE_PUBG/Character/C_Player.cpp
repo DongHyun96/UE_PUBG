@@ -44,12 +44,15 @@
 #include "Blueprint/UserWidget.h"
 
 #include "Utility/C_Util.h"
-
+#include "UMG.h"
 #include "Styling/SlateBrush.h"
 #include "Engine/Texture2D.h"
 
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
+#include "Character/Component/C_CrosshairWidgetComponent.h"
+
+
 
 #include "Item/ConsumableItem/Healing/C_FirstAidKit.h"
 #include "Item/Weapon/Gun/C_Bullet.h"
@@ -60,6 +63,8 @@ AC_Player::AC_Player()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	MyInputComponent = CreateDefaultSubobject<UC_InputComponent>("MyInputComponent");
+	CrosshairWidgetComponent = CreateDefaultSubobject<UC_CrosshairWidgetComponent>("CrosshairWidgetComponent");
+
 
 	InitTurnAnimMontageMap();
 
@@ -88,7 +93,6 @@ AC_Player::AC_Player()
 void AC_Player::BeginPlay()
 {
 	Super::BeginPlay();
-
 	//GAMESCENE_MANAGER->SetPlayer(this);
 
 	if (HUDWidget)
@@ -98,7 +102,8 @@ void AC_Player::BeginPlay()
 		PingSystemComponent->SetOwnerPlayer(this);
 		HUDWidget->GetMainMapWidget()->SetPlayer(this);
 	}
-
+	CrosshairWidgetComponent->AddToViewport();
+	CrosshairWidgetComponent->SetOwnerCharacter(this);
 	AimCamera->SetActive(false);
 
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -800,10 +805,12 @@ void AC_Player::ExecuteFlashBangEffect(float Duration)
 
 void AC_Player::SetToAimDownSight()
 {
+	CrosshairWidgetComponent->SetCrosshairState(ECrosshairState::RIFLEAIMDOWNSIGHT);
 	MainCamera->SetActive(false);
 	AimCamera->SetActive(false);
-
+	bIsWatchingSight = true;
 	bIsAimDownSight = true;
+	UC_Util::Print("AimDownNow");
 }
 
 void AC_Player::BackToMainCamera()
@@ -813,19 +820,21 @@ void AC_Player::BackToMainCamera()
 	InitialCameraLocation = AimCamera->GetComponentLocation();
 	InitialCameraRotation = AimCamera->GetComponentRotation();
 
+	CrosshairWidgetComponent->SetCrosshairState(ECrosshairState::RIFLE);
 	if (CameraTransitionTimeline)
 	{
-		bIsAimDownSight = false;
 
+		bIsAimDownSight = false;
+		bIsWatchingSight = false;
 		CameraTransitionTimeline->PlayFromStart();
-		//UC_Util::Print(CameraTransitionTimeline->IsPlaying());
+		UC_Util::Print(CameraTransitionTimeline->IsPlaying());
 	}
 	//bIsAimDownSight = false;
 }
 
 void AC_Player::SetToAimKeyPress()
 {
-
+	CrosshairWidgetComponent->SetCrosshairState(ECrosshairState::RIFLE);
 	InitialCameraLocation = MainCamera->GetComponentLocation();
 	InitialCameraRotation = MainCamera->GetComponentRotation();
 
@@ -833,6 +842,7 @@ void AC_Player::SetToAimKeyPress()
 	if (CameraTransitionTimeline)
 	{
 		bIsAimDownSight = true;
+		bIsWatchingSight = false;
 
 		CameraTransitionTimeline->PlayFromStart();
 		//UC_Util::Print(CameraTransitionTimeline->IsPlaying());
@@ -877,7 +887,6 @@ void AC_Player::OnTimelineFinished()
 		MainCamera->SetActive(true);
 	}
 	MainCamera->SetRelativeLocation(FVector(0));
-	
 	MainCamera->SetRelativeRotation(InitialMainCameraRelativeRotation);
 	//UC_Util::Print(MainCamera->GetRelativeRotation());
 	AimCamera->SetRelativeLocation(FVector(0));
@@ -895,6 +904,7 @@ void AC_Player::SetTimeLineComponentForMovingCamera()
 	
 	//CurveFloatForSwitchCamera = CreateCurveFloatForSwitchCamera();
 	//CurveFloatForSwitchCameraChange = Cast<UCurveFloat>(GetWorld()->GetDefaultSubobjectByName(name));
+	
 	CurveFloatForSwitchCameraChange = LoadObject<UCurveFloat>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/CameraMoving/CF_CameraMoving"));
 	// 타임라인 초기화
 	if (CameraTransitionTimeline && CurveFloatForSwitchCameraChange)
@@ -957,7 +967,7 @@ void AC_Player::PoolingBullets()
 		if (IsValid(Bullet))
 		{
 
-			UC_Util::Print("Created Bullet");
+			//UC_Util::Print("Created Bullet");
 			PooledBullets.Add(Bullet);
 		}
 	}
@@ -981,3 +991,4 @@ void AC_Player::SetLineTraceCollisionIgnore()
 		LineTraceCollisionParams.AddIgnoredActor(Bullet);
 	}
 }
+

@@ -47,6 +47,7 @@ private:
 	//Alt 키 누를때 이름 추천부탁
 	void HoldDirection();
 	void ReleaseDirection();
+	void SetToNonAimCamera();
 
 	// Number input mappings
 	void OnNum1();

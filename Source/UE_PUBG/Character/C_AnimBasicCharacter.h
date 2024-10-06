@@ -103,7 +103,7 @@ protected:
 
 	void SetAimingTurnInPlaceRotation();
 
-
+	void SetLeftHandIKOn();
 protected:
 	float AimingTurnInPlaceTimeCount = 0.0f;
 	float SavedYaw = 0.0f;
@@ -112,4 +112,5 @@ protected:
 	float DeltaYaw = 0.0f;
 
 	float AimOffsetLerpDelayTime = 0.0f;
+
 };

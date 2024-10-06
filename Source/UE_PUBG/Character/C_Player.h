@@ -320,6 +320,7 @@ private:
 
 
 protected:
+	//총알 Object Pooling (World에서 작업할 예정)
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TArray<class AC_Bullet*> PooledBullets;
 
@@ -333,4 +334,12 @@ public:
 	TArray<AC_Bullet*>& GetBullets() { return PooledBullets; }
 
 	FCollisionQueryParams& GetLineTraceCollisionParams() { return LineTraceCollisionParams; }
+
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	class UC_CrosshairWidgetComponent* CrosshairWidgetComponent{};
+
+public:
+	UC_CrosshairWidgetComponent* GetCrosshairWidgetComponent() { return CrosshairWidgetComponent; }
+	
 };

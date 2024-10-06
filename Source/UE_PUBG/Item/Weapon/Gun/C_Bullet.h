@@ -35,12 +35,13 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class USphereComponent* SphereCollider;
 
+	UFUNCTION(BlueprintCallable)
 	void DeactivateInstance();
 	void ActivateInstance();
 	bool GetIsActive() { return IsActive; }
 	//void SetMeshVisiblility(bool InBool) { BulletMesh->SetVisibility(InBool);}
 
-	bool Fire(class AC_Gun* OwnerGun, FVector InLocation, FVector InDirection);
+	bool Fire(class AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity = true);
 
 	void SubSteppingMovementPhysics(float SebStepDeltaTime);
 
@@ -68,4 +69,6 @@ protected:
 	void CalculateTravelDistanceAndDeactivate(float DeltaTime);
 
 	int InstanceNum;
+
+	float InstanceLifeTime = 0.0f;
 };

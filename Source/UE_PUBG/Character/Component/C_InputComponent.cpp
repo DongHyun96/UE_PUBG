@@ -218,6 +218,8 @@ void UC_InputComponent::Crouch()
 		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
 		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).CrawlToCrouch, EPoseState::CROUCH);
 		Player->SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
+		//SetToNonAimCamera();
+
 		return;
 	case EPoseState::POSE_MAX: default:
 		UC_Util::Print("From AC_Player::Crouch : UnAuthorized current pose!");
@@ -239,6 +241,8 @@ void UC_InputComponent::Crawl()
 
 		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).StandToCrawl, EPoseState::CRAWL);
 		Player->SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
+		//SetToNonAimCamera();
+
 		return;
 	case EPoseState::CROUCH: // Crouch to Crawl
 		if (Player->GetIsActivatingConsumableItem()) return; // TODO : 없드릴 수 없습니다 UI 띄우기
@@ -246,6 +250,7 @@ void UC_InputComponent::Crawl()
 		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
 		Player->SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
 		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).CrouchToCrawl, EPoseState::CRAWL);
+		//SetToNonAimCamera();
 
 		return;
 	case EPoseState::CRAWL: // Crawl to Stand
@@ -254,6 +259,7 @@ void UC_InputComponent::Crawl()
 		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
 		Player->SetSpringArmRelativeLocationDest(EPoseState::STAND);
 		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).CrawlToStand, EPoseState::STAND);
+		//SetToNonAimCamera();
 
 		return;
 	case EPoseState::POSE_MAX: default:
@@ -277,6 +283,8 @@ void UC_InputComponent::OnJump()
 
 		Player->ClampControllerRotationPitchWhileCrawl(Player->GetPoseState());
 		Player->ExecutePoseTransitionAction(Player->GetPoseTransitionMontagesByHandState(Player->GetHandState()).CrawlToCrouch, EPoseState::CROUCH);
+		SetToNonAimCamera();
+
 		return;
 	}
 
@@ -288,15 +296,7 @@ void UC_InputComponent::OnJump()
 		Player->SetPoseState(EPoseState::STAND);
 		return;
 	}
-	if (Player->GetIsAimDown()) // bIsAimDownSight
-	{
-		AC_Gun* CurGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
-		if (IsValid(CurGun))
-		{
-			CurGun->BackToMainCamera();
-			Player->SetIsAimDown(false);
-		}
-	}
+	SetToNonAimCamera();
 	//Player->GetPressedJum
 	Player->bPressedJump = true;
 	Player->SetIsJumping(true);
@@ -382,6 +382,20 @@ void UC_InputComponent::ReleaseDirection()
 {
 	Player->SetIsHoldDirection(false);
 	Player->SetIsAltPressed(true);
+}
+
+void UC_InputComponent::SetToNonAimCamera()
+{
+
+	if (Player->GetIsAimDown()) // bIsAimDownSight
+	{
+		AC_Gun* CurGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
+		if (IsValid(CurGun))
+		{
+			CurGun->BackToMainCamera();
+			Player->SetIsAimDown(false);
+		}
+	}
 }
 
 void UC_InputComponent::OnNum1()

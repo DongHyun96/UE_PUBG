@@ -53,9 +53,9 @@ AC_Bullet::AC_Bullet()
 void AC_Bullet::BeginPlay()
 {
 	Super::BeginPlay();
-	UC_Util::Print("NewBullet");
-	if (!RootComponent)
-		UC_Util::Print("NoRoot");
+	//UC_Util::Print("NewBullet");
+	//if (!RootComponent)
+	//	UC_Util::Print("NoRoot");
 	BulletProjectileMovement->SetUpdatedComponent(RootComponent);
 	BulletProjectileMovement->SetActive(false);
 	//BulletMesh = FindComponentByClass<UStaticMeshComponent>();
@@ -85,8 +85,8 @@ void AC_Bullet::Tick(float DeltaTime)
 void AC_Bullet::DeactivateInstance()
 {
 
-	FString Message = "Deactivated" + FString::FromInt(InstanceNum);
-	UC_Util::Print(Message);
+	//FString Message = "Deactivated" + FString::FromInt(InstanceNum);
+	//UC_Util::Print(Message);
 
 	InstancedBulletMesh->SetActive(false);
 	InstancedBulletMesh->SetComponentTickEnabled(false);
@@ -127,11 +127,16 @@ void AC_Bullet::ActivateInstance()
 	IsActive = true;
 }
 
-bool AC_Bullet::Fire(AC_Gun* OwnerGun, FVector InLocation, FVector InDirection)
+bool AC_Bullet::Fire(AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity)
 {
-	
+	if (EnableGravity)
+		BulletProjectileMovement->ProjectileGravityScale = 1.0f;
+	else
+		BulletProjectileMovement->ProjectileGravityScale = 0;
+
 	TestTickCount = 0;
 	TestTimeCount = 0;
+	InstanceLifeTime = 10.0f;
 	if (!RootComponent)
 	{
 		UC_Util::Print("No Root!");
@@ -204,7 +209,7 @@ void AC_Bullet::SubSteppingMovementPhysics(float SebStepDeltaTime)
 
 	// 최종 속도 적용
 	
-	BulletProjectileMovement->Velocity = NewVelocity;
+	BulletProjectileMovement->Velocity = NewVelocity;	
 
 	BulletProjectileMovement->UpdateComponentVelocity();
 
@@ -234,11 +239,18 @@ void AC_Bullet::CalculateTravelDistanceAndDeactivate(float DeltaTime)
 	if (!IsValid(BulletProjectileMovement))
 		return;
 	IsActive = BulletProjectileMovement->IsActive();
+	InstanceLifeTime -= DeltaTime;
+	if (InstanceLifeTime <= 0)
+	{
+		InstanceLifeTime = 0;
+		DeactivateInstance();
+	}
 	if (BulletProjectileMovement->IsActive())
 	{
 		CustomPhysics(DeltaTime);
+		UC_Util::Print(BulletProjectileMovement->Velocity.Size());
 		float TravelDistance = (GetActorLocation() - FireLocation).Size();
-		if (TravelDistance > 100000.0f)
+		if (TravelDistance > 1000000.0f)
 		{
 			DeactivateInstance();
 		}

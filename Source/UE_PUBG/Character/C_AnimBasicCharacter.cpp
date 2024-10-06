@@ -8,6 +8,8 @@
 #include "Character/Component/C_EquippedComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
+#include "Character/C_Player.h"
+
 #include "Utility/C_Util.h"
 
 #include "Character/C_BasicCharacter.h"
@@ -47,23 +49,7 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bCanCharacterMove = OwnerCharacter->GetCanMove();
 	bIsHoldDirection  = OwnerCharacter->GetIsHoldDirection();
 	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
-	AC_Gun* CurrentGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
-	if (IsValid(CurrentGun))
-	{
-		RifleLeftHandSocket = CurrentGun->GetLeftHandSocketTransform();
-		UAnimMontage* RifleSheathMontage = CurrentGun->GetSheathMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentGun->GetCurrentWeaponState()].AnimMontage;
-		if (IsValid(RifleSheathMontage))
-		{
-			bCharacterIsSheathing = OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(RifleSheathMontage);
-		}
-		else
-			bCharacterIsSheathing = false;
-	}
-	else
-	{
-		bCharacterIsSheathing = true;
-		//UC_Util::Print("Sheating!");
-	}
+	SetLeftHandIKOn();
 	ControlHeadRotation();
 	SetAimOfssetRotation();
 	SetAimingTurnInPlaceRotation();
@@ -178,9 +164,41 @@ void UC_AnimBasicCharacter::SetAimOfssetRotation()
 		FRotator TempRotator = UKismetMathLibrary::RLerp(CCurrentAimOffsetRotation, CAimOffsetRotation, DeltaTime * 15.f * LerpAlpha, true);
 		CCurrentAimOffsetRotation.Pitch = TempRotator.Pitch;
 		CCurrentAimOffsetRotation.Yaw = 0;
+
 	}
 	AimOffsetLerpDelayTime = 0;
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	AC_Gun* CurGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetCurWeapon());
+	if (OwnerPlayer->GetIsAimDown() && OwnerPlayer->GetPoseState() == EPoseState::CRAWL)
+	{
+		if (CCurrentAimOffsetRotation.Pitch < 0)
+		{
 
+			OwnerCharacter->GetMesh()->HideBoneByName(FName("LeftArm"), EPhysBodyOp::PBO_None);
+			OwnerCharacter->GetMesh()->HideBoneByName(FName("RightArm"), EPhysBodyOp::PBO_None);
+			CurGun->GetGunMesh()->SetVisibility(false,true);
+		}
+		else
+		{
+
+			OwnerCharacter->GetMesh()->UnHideBoneByName(FName("LeftArm"));
+			OwnerCharacter->GetMesh()->UnHideBoneByName(FName("RightArm"));
+			CurGun->GetGunMesh()->SetVisibility(true,true);
+
+		}
+
+
+	}
+	else
+	{
+		OwnerCharacter->GetMesh()->UnHideBoneByName(FName("LeftArm"));
+		OwnerCharacter->GetMesh()->UnHideBoneByName(FName("RightArm"));
+		if(IsValid(CurGun))
+			CurGun->GetGunMesh()->SetVisibility(true,true);
+
+
+
+	}
 	//UC_Util::Print(float(CCurrentAimOffsetRotation.Yaw),FColor::Blue);
 
 	//UC_Util::Print(float(CCurrentAimOffsetRotation.Yaw));
@@ -204,6 +222,35 @@ void UC_AnimBasicCharacter::SetAimingTurnInPlaceRotation()
 		//UKismetMathLibrary::Lerp(AimingTurnInPlaceTimeCount, -0.1, 0.5);
 		AimingTurnInPlaceTimeCount = 0;
 		return;
+	}
+}
+
+void UC_AnimBasicCharacter::SetLeftHandIKOn()
+{
+
+	AC_Gun* CurrentGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
+	if (IsValid(CurrentGun))
+	{
+		RifleLeftHandSocket = CurrentGun->GetLeftHandSocketTransform();
+		UAnimMontage* RifleSheathMontage = CurrentGun->GetSheathMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentGun->GetCurrentWeaponState()].AnimMontage;
+		UAnimMontage* RifleDrawMontage = CurrentGun->GetDrawMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentGun->GetCurrentWeaponState()].AnimMontage;
+
+		if (IsValid(RifleSheathMontage) || IsValid(RifleDrawMontage))
+		{
+			UAnimInstance* TempAnim = OwnerCharacter->GetMesh()->GetAnimInstance();
+			bool IsSheatOrDraw = (TempAnim->Montage_IsPlaying(RifleDrawMontage) || TempAnim->Montage_IsPlaying(RifleSheathMontage));
+			bCharacterIsSheathing = IsSheatOrDraw;
+			//if (IsSheatOrDraw)
+			//	UC_Util::Print("OK");
+			//else UC_Util::Print("No",FColor::Blue);
+		}
+		else
+			bCharacterIsSheathing = false;
+	}
+	else
+	{
+		bCharacterIsSheathing = true;
+		//UC_Util::Print("Sheating!");
 	}
 }
 

@@ -54,6 +54,20 @@ enum class EItemTypes : uint8
 	ATTACHMENT,
 	CONSUMPTIONITEM
 };
+
+UENUM(BlueprintType)
+enum class EItemNames : uint8
+{
+	NONE,
+	HELMET,
+	ARMORE,
+	BACKPACK,
+	MAINGUN,
+	MELEEWEAPON,
+	THROWABLE,
+	ATTACHMENT,
+	CONSUMPTIONITEM
+};
 /// <summary>
 /// 소모아이템분류를 위한 상위 클래스.
 /// 가방에 들어가는 아이템을 위한 클래스.
@@ -94,6 +108,7 @@ public:
 	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 private:
 	uint8 Volume;
+	
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
