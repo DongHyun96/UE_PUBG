@@ -158,7 +158,18 @@ public: // Getters and setters
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }
+
+protected:
 	void SetPoseState(EPoseState InPoseState);
+
+public:
+	/// <summary>
+	/// 자세 바꾸기 통합 처리
+	/// </summary>
+	/// <param name="InChangeFrom"> : 바꾸기 전 자세 </param>
+	/// <param name="InChangeTo"> : 바꿀 자세 </param>
+	/// <returns> : 제대로 바꾸었다면 return true </returns>
+	virtual bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo);
 
 	float GetNextSpeed() const { return NextSpeed; }
 	void SetNextSpeed(float InNextSpeed) { NextSpeed = InNextSpeed; }
@@ -208,7 +219,7 @@ public: // Getters and setters
 
 	class UC_ConsumableUsageMeshComponent* GetConsumableUsageMeshComponent() const { return ConsumableUsageMeshComponent; }
 
-	void SetColliderByPoseState(EPoseState InPoseState);
+	class UC_PoseColliderHandlerComponent* GetPoseColliderHandlerComponent() const { return PoseColliderHandlerComponent; }
 
 public:
 
@@ -234,16 +245,6 @@ public:
 	/// <returns> Pose transition motion이 제대로 실행되었다면 return true </returns>
 	bool ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState);
 
-public:
-
-	/// <summary>
-	/// 현재 주변환경에서 플레이어 캐릭터가 자세를 바꿀 수 있는지 체크
-	/// </summary>
-	/// <param name="InChangeTo"> : 바꾸려고 하는 자세 </param>
-	/// <returns> : 바꿀 수 있다면 return true </returns>
-	bool CanChangePoseOnCurrentSurroundEnvironment(EPoseState InChangeTo);
-
-
 protected:
 
 	// Current hand state
@@ -254,42 +255,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPoseState PoseState{};
 
-// Body Collider 관련
-protected: 
+protected:
 
+	// 자세별 Collider 위치, 크기 및 Mesh 위치 잡아주는 Component
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UCapsuleComponent* CrawlCollider{};
-
-private:
-
-	// 자세별 CrouchCrawl Collider 높이와 Radius
-	const TMap<EPoseState, TPair<float, float>> POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS =
-	{
-		{EPoseState::STAND,		{88.f, 34.f}},
-		{EPoseState::CROUCH,	{67.f, 34.f}},
-		{EPoseState::CRAWL,		{20.f, 20.f}}
-		//{EPoseState::CRAWL,		{1.f, 1.f}}
-
-	};
-
-	const TMap<EPoseState, float> POSE_BY_MESH_Z_POS =
-	{
-		{EPoseState::STAND,		-90.f},
-		{EPoseState::CROUCH,	-64.f},
-		{EPoseState::CRAWL,		-20.f}
-	};
-	// Crawl일 때 35+
-
-private: // ChangePose Sweep testing constants
-
-	const float SWEEP_SPHERE_RAD			= 34.f;
-	const float CROUCH_TO_STAND_SWEEP_DIST	= (POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[EPoseState::STAND].Key -
-											   POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[EPoseState::CROUCH].Key) * 2.f;
-	const float CRAWL_TO_STAND_SWEEP_DIST	= 105.f;
-	const float CRAWL_TO_CROUCH_SWEEP_DIST	= 60.f;
-
-	const float CRAWL_LINETRACE_TEST_DIST	= 500.f;
-	const float CRAWL_DEGREE_LIMIT			= 30.f; // 30도 이상 경사도 기어갈 수 없게 처리
+	class UC_PoseColliderHandlerComponent* PoseColliderHandlerComponent{};
 
 protected: // 자세 변환 Transition 관련
 
@@ -383,5 +353,10 @@ protected: // Consumable 관련
 protected: // 총알 Object Pooling
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<AC_Item*> Bullets;
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_SwimmingComponent* SwimmingComponent{};
 
 };

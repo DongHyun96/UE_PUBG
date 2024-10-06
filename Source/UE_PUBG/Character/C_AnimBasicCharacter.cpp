@@ -14,6 +14,8 @@
 
 #include "Character/C_BasicCharacter.h"
 
+#include "Character/Component/C_PoseColliderHandlerComponent.h"
+
 void UC_AnimBasicCharacter::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
@@ -50,6 +52,26 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bIsHoldDirection  = OwnerCharacter->GetIsHoldDirection();
 	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
 	SetLeftHandIKOn();
+
+	CrawlRotationAngle = OwnerCharacter->GetPoseColliderHandlerComponent()->GetCurrentCrawlSlopeAngleForRigControl();
+
+	AC_Gun* CurrentGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
+	if (IsValid(CurrentGun))
+	{
+		RifleLeftHandSocket = CurrentGun->GetLeftHandSocketTransform();
+		UAnimMontage* RifleSheathMontage = CurrentGun->GetSheathMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentGun->GetCurrentWeaponState()].AnimMontage;
+		if (IsValid(RifleSheathMontage))
+		{
+			bCharacterIsSheathing = OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(RifleSheathMontage);
+		}
+		else
+			bCharacterIsSheathing = false;
+	}
+	else
+	{
+		bCharacterIsSheathing = true;
+		//UC_Util::Print("Sheating!");
+	}
 	ControlHeadRotation();
 	SetAimOfssetRotation();
 	SetAimingTurnInPlaceRotation();

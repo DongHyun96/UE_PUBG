@@ -14,6 +14,8 @@
 
 #include "Component/C_StatComponent.h"
 #include "Component/C_ConsumableUsageMeshComponent.h"
+#include "Component/C_PoseColliderHandlerComponent.h"
+#include "Component/C_SwimmingComponent.h"
 
 #include "Components/CapsuleComponent.h"
 
@@ -37,11 +39,11 @@ AC_BasicCharacter::AC_BasicCharacter()
 	ConsumableUsageMeshComponent = CreateDefaultSubobject<UC_ConsumableUsageMeshComponent>("ConsumableUsageMeshComponent");
 	ConsumableUsageMeshComponent->SetOwnerCharacter(this);
 
-	CrawlCollider = CreateDefaultSubobject<UCapsuleComponent>("CrawlCollider");
-	CrawlCollider->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-	//CrawlCollider->SetupAttachment(GetMesh());
+	PoseColliderHandlerComponent = CreateDefaultSubobject<UC_PoseColliderHandlerComponent>("PoseColliderHandlerComponent");
+	PoseColliderHandlerComponent->SetOwnerCharacter(this);
 
-	//CharacterMeshComponent->SetRelativeLocation();
+	SwimmingComponent = CreateDefaultSubobject<UC_SwimmingComponent>("SwimmingComponent");
+	SwimmingComponent->SetOwnerCharacter(this);
 }
 
 // Called when the game starts or when spawned
@@ -54,18 +56,12 @@ void AC_BasicCharacter::BeginPlay()
 	C_MainSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("MainSpringArm")); 
 
 	StatComponent->SetOwnerCharacter(this);
-
-	CrawlCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetCapsuleComponent()->SetSimulatePhysics(false);
 }
 
 // Called every frame
 void AC_BasicCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//UC_Util::Print(GetCharacterMovement()->GetMovementName());
-	//UC_Util::Print(GetActorLocation().Z);
 }
 
 // Called to bind functionality to input
@@ -201,91 +197,27 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
 {
 	PoseState = InPoseState;
-	SetColliderByPoseState(PoseState);
-	if (InPoseState == EPoseState::CRAWL) GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	PoseColliderHandlerComponent->SetColliderByPoseState(PoseState);
 }
 
-void AC_BasicCharacter::SetColliderByPoseState(EPoseState InPoseState)
+bool AC_BasicCharacter::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 {
-	FVector MeshLocation = GetMesh()->GetRelativeTransform().GetLocation();
+	// TODO : Enemy 캐릭터에 대한 자세 변환 적용
 
-	switch (InPoseState)
-	{
-	case EPoseState::STAND:
-
-		GetCapsuleComponent()->SetSimulatePhysics(true);
-
-		GetCapsuleComponent()->SetCapsuleSize
-		(
-			POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[InPoseState].Value,
-			POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[InPoseState].Key
-		);
-		
-		GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, POSE_BY_MESH_Z_POS[InPoseState]));
-		
-		CrawlCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		GetCapsuleComponent()->SetSimulatePhysics(false);
-
-		return;
-	case EPoseState::CROUCH:
-
-		GetCapsuleComponent()->SetSimulatePhysics(true);
-
-		GetCapsuleComponent()->SetCapsuleSize
-		(
-			POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[InPoseState].Value,
-			POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[InPoseState].Key
-		);
-
-		GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, POSE_BY_MESH_Z_POS[InPoseState]));
-
-		CrawlCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		GetCapsuleComponent()->SetSimulatePhysics(false);
-
-		//DrawDebugLine(GetWorld(), GetMesh()->GetBoneLocation("Neck"), Get)
-
-		/*
-		On input action Prone 1 - capsule component - set simulate physics = true, 2 - ProneCollider's Collision enabled = Collision enabled, 3 - capsule component - set simulate physics = false.
-		*/
-
-		return;
-	case EPoseState::CRAWL:
-
-		GetCapsuleComponent()->SetSimulatePhysics(true);
-
-		GetCapsuleComponent()->SetCapsuleSize
-		(
-			POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[InPoseState].Value,
-			POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[InPoseState].Key
-		);
-
-		GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, POSE_BY_MESH_Z_POS[InPoseState]));
-
-		CrawlCollider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		GetCapsuleComponent()->SetSimulatePhysics(false);
-
-		return;
-	case EPoseState::POSE_MAX:
-		return;
-	default:
-		return;
-	}
+	return false;
 }
 
 void AC_BasicCharacter::OnPoseTransitionGoing()
 {
 	PoseState = NextPoseState;
-	SetColliderByPoseState(PoseState);
+	PoseColliderHandlerComponent->SetColliderByPoseState(PoseState);
 }
 
 void AC_BasicCharacter::OnPoseTransitionFinish()
 {
 	//UC_Util::Print("Transition pose finished!", FColor::Cyan, 5.f);
 	//PoseState = NextPoseState;
-	bCanMove = true;
+	//bCanMove = true; // PoseBySizeLerp가 끝난 뒤에 움직일 수 있도록 처리
 	bIsPoseTransitioning = false;
 
 	// Pose Transition이 끝난 뒤, Delegate call back 처리
@@ -305,129 +237,4 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 	bIsPoseTransitioning	= true;
 
 	return true;
-}
-
-bool AC_BasicCharacter::CanChangePoseOnCurrentSurroundEnvironment(EPoseState InChangeTo)
-{
-	if (PoseState == InChangeTo) return false;
-
-	const float CRAWL_START_OFFSET = 20.f;
-
-	switch (InChangeTo)
-	{
-	case EPoseState::STAND:
-	{
-		// Crouch to stand or Crawl to Stand
-		FVector StartLocation	 = GetActorLocation();
-		StartLocation.Z			+= (PoseState == EPoseState::CROUCH) ? POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[EPoseState::CROUCH].Key - SWEEP_SPHERE_RAD : CRAWL_START_OFFSET;
-		FVector DestLocation	 = StartLocation + FVector::UnitZ() * ((PoseState == EPoseState::CROUCH) ? CROUCH_TO_STAND_SWEEP_DIST : CRAWL_TO_STAND_SWEEP_DIST);
-
-		FCollisionQueryParams CollisionParams{};
-		CollisionParams.AddIgnoredActor(this);
-		
-		TArray<AActor*> AttachedActors{};
-		GetAttachedActors(AttachedActors);
-		CollisionParams.AddIgnoredActors(AttachedActors);
-
-		FHitResult HitResult{};
-
-		bool HasHit = GetWorld()->SweepSingleByChannel
-		(
-			HitResult,
-			StartLocation,
-			DestLocation,
-			FQuat::Identity,
-			ECC_Visibility,
-			FCollisionShape::MakeSphere(SWEEP_SPHERE_RAD),
-			CollisionParams
-		);
-
-		if (HasHit) UC_Util::Print(HitResult.GetActor()->GetName());
-		
-		DrawDebugSphere(GetWorld(), StartLocation, SWEEP_SPHERE_RAD, 10, FColor::Red, true);
-		DrawDebugSphere(GetWorld(), DestLocation,  SWEEP_SPHERE_RAD, 10, FColor::Red, true);
-
-		return !HasHit;
-	}
-	case EPoseState::CROUCH: // Crawl to Crouch만 확인 하면 됨
-	{
-		if (PoseState == EPoseState::STAND) return true; // Stand to crouch -> 언제든 자세를 바꿀 수 있음
-
-		// Crawl to Crouch test
-
-		FVector StartLocation	 = GetActorLocation();
-		StartLocation.Z			+= CRAWL_START_OFFSET;
-		FVector DestLocation	 = StartLocation + FVector::UnitZ() * CRAWL_TO_CROUCH_SWEEP_DIST;
-
-		FCollisionQueryParams CollisionParams{};
-		CollisionParams.AddIgnoredActor(this);
-
-		TArray<AActor*> AttachedActors{};
-		GetAttachedActors(AttachedActors);
-		CollisionParams.AddIgnoredActors(AttachedActors);
-
-		FHitResult HitResult{};
-
-		bool HasHit = GetWorld()->SweepSingleByChannel
-		(
-			HitResult,
-			StartLocation,
-			DestLocation,
-			FQuat::Identity,
-			ECC_Visibility,
-			FCollisionShape::MakeSphere(SWEEP_SPHERE_RAD),
-			CollisionParams
-		);
-
-		if (HasHit) UC_Util::Print(HitResult.GetActor()->GetName());
-
-		DrawDebugSphere(GetWorld(), StartLocation, SWEEP_SPHERE_RAD, 10, FColor::Red, true);
-		DrawDebugSphere(GetWorld(), DestLocation,  SWEEP_SPHERE_RAD, 10, FColor::Red, true);
-		
-		return !HasHit;
-	}
-	case EPoseState::CRAWL: // TODO : 지형 경사도 확인 & Crawl 충돌체가 충분히 들어갈 수 있는 상황인지 확인
-	{
-		FVector HeadStartLocation	= GetActorLocation() + GetActorForwardVector() * 75.f;
-		FVector HeadDestLocation	= HeadStartLocation - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
-		FVector PelvisStartLocation = GetActorLocation();
-		FVector PelvisDestLocation	= PelvisStartLocation - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
-
-		FCollisionQueryParams CollisionParams{};
-		CollisionParams.AddIgnoredActor(this);
-
-		TArray<AActor*> AttachedActors{};
-		GetAttachedActors(AttachedActors);
-		CollisionParams.AddIgnoredActors(AttachedActors);
-
-		FHitResult HeadHitResult{};
-		FHitResult PelvisHitResult{};
-
-		bool HasHeadHit		= GetWorld()->LineTraceSingleByChannel(HeadHitResult, HeadStartLocation, HeadDestLocation, ECC_Visibility, CollisionParams);
-		bool HasPelvisHit	= GetWorld()->LineTraceSingleByChannel(PelvisHitResult, PelvisStartLocation, PelvisDestLocation, ECC_Visibility, CollisionParams);
-
-		UC_Util::Print(HeadHitResult.ImpactPoint);
-		DrawDebugLine(GetWorld(), HeadStartLocation, HeadHitResult.ImpactPoint, FColor::Red, true);
-		DrawDebugLine(GetWorld(), PelvisStartLocation, PelvisHitResult.ImpactPoint, FColor::Red, true);
-
-		if (!HasHeadHit || !HasPelvisHit) return false;
-		// TODO : Length 체크
-		//if (HeadHitResult.ImpactPoint.Length() )
-
-		// 경사도 체크
-		//HeadHitResult.ImpactPoint
-		float A				= (HeadHitResult.ImpactPoint - PelvisHitResult.ImpactPoint).Length();
-		float B				= FMath::Abs(HeadHitResult.ImpactPoint.Z - PelvisHitResult.ImpactPoint.Z);
-		float SlopeDegree	= FMath::RadiansToDegrees(FMath::Asin(B / A));
-
-		UC_Util::Print(SlopeDegree);
-
-		//FRotator CrawlRelativeRotation = CrawlCollider->GetRelativeRotation();
-		//CrawlRelativeRotation.Pitch += SlopeDegree;
-		//CrawlCollider->SetRelativeRotation(CrawlRelativeRotation);
-
-		return SlopeDegree < CRAWL_DEGREE_LIMIT;
-	}
-	case EPoseState::POSE_MAX: default: return false;
-	}
 }
