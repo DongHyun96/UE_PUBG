@@ -77,9 +77,15 @@ void UC_SwimmingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
 
 	if (OwnerPlayer->Controller)
 	{
-		const FRotator Rotation = OwnerPlayer->GetController()->GetControlRotation();
+		FRotator Rotation = OwnerPlayer->GetController()->GetControlRotation();
 
-		//UC_Util::Print(Rotation.Pitch);
+		if (SwimmingState == ESwimmingState::SWIMMING_SURFACE)
+		{
+			if (Rotation.Pitch < 90.f) // 위로 가는 회전 제거
+				Rotation = FRotator(0.f, Rotation.Yaw, Rotation.Roll);
+			else if (Rotation.Pitch < 290.f) // SwimmingSurface 해제 임계치
+				SwimmingState = ESwimmingState::SWIMMING_UNDER;
+		}
 
 		const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
 		const FVector   RightDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
@@ -127,8 +133,6 @@ void UC_SwimmingComponent::HandleSwimmingState()
 	
 	SwimmingState = (WaterDepth - GetCharacterDepth() < SURFACE_SWIM_DELTA_LIMIT) ? 
 					 ESwimmingState::SWIMMING_SURFACE : ESwimmingState::SWIMMING_UNDER;
-
-	UC_Util::Print(GetCharacterDepth());
 
 	// // 표면에서 수영중인지 아니면 Under인지는 Movement에서 역으로 체크
 }
@@ -179,6 +183,7 @@ void UC_SwimmingComponent::StartSwimming()
 	OwnerCharacter->GetPhysicsVolume()->bWaterVolume = true;
 	OwnerCharacter->SetCanMove(true);
 	OwnerCharacter->SetPoseState(OwnerCharacter->GetPoseState(), EPoseState::STAND);
+	OwnerCharacter->LaunchCharacter(OwnerCharacter->GetActorUpVector() * 0.005f, false, false);
 
 	SwimmingState = ESwimmingState::SWIMMING_SURFACE;
 }
@@ -224,8 +229,6 @@ float UC_SwimmingComponent::GetCharacterDepth()
 	FVector DestLocation		= FVector(StartLocation.X, StartLocation.Y, StartLocation.Z - 10000.f); // 100m 밑까지 수심 체크
 
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECC_Visibility, CollisionParams);
-
-	DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, FColor::Red, true);
 
 	return (!HasHit) ? 0.f : HitResult.Distance;
 
