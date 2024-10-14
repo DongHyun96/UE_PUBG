@@ -46,6 +46,10 @@ public:
 
 private:
 
+	/// <summary>
+	/// AltŰ (Hold Direction) Handling
+	/// </summary>
+	/// <param name="DeltaTime"></param>
 	void HandleControllerRotation(float DeltaTime);
 
 	/// <summary>

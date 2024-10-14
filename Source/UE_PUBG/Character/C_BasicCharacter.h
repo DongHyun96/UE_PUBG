@@ -221,6 +221,8 @@ public:
 
 	class UC_PoseColliderHandlerComponent* GetPoseColliderHandlerComponent() const { return PoseColliderHandlerComponent; }
 
+	class UC_SwimmingComponent* GetSwimmingComponent() const { return SwimmingComponent; }
+
 public:
 
 	/// <summary>

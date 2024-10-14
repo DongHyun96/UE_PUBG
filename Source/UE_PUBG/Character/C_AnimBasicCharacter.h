@@ -8,6 +8,7 @@
 
 enum class EHandState : uint8;
 enum class EPoseState : uint8;
+enum class ESwimmingState : uint8;
 
 /**
  * 
@@ -76,6 +77,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsAimingRifle = false;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	ESwimmingState SwimmingState{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EHandState HandState{};

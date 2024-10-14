@@ -15,6 +15,7 @@
 #include "Character/C_BasicCharacter.h"
 
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
+#include "Character/Component/C_SwimmingComponent.h"
 
 void UC_AnimBasicCharacter::NativeBeginPlay()
 {
@@ -51,8 +52,20 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bCanCharacterMove = OwnerCharacter->GetCanMove();
 	bIsHoldDirection  = OwnerCharacter->GetIsHoldDirection();
 	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
+	SwimmingState	  = OwnerCharacter->GetSwimmingComponent()->GetSwimmingState();
+	//switch (SwimmingState)
+	//{
+	//case ESwimmingState::ON_GROUND:
+	//	UC_Util::Print("OnGround");
+	//	break;
+	//case ESwimmingState::SWIMMING_SURFACE: case ESwimmingState::SWIMMING_UNDER:
+	//	UC_Util::Print("Swimming");
+	//	break;
+	//default:
+	//	break;
+	//}
 	SetLeftHandIKOn();
-
+	
 	CrawlRotationAngle = OwnerCharacter->GetPoseColliderHandlerComponent()->GetCurrentCrawlSlopeAngleForRigControl();
 
 	AC_Gun* CurrentGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());

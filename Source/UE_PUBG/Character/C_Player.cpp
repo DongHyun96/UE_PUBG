@@ -20,6 +20,7 @@
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_PingSystemComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
+#include "Character/Component/C_SwimmingComponent.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -224,6 +225,13 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 		// Debugging
 
 	if (!bIsAltPressed) return;
+
+	//if (GetCharacterMovement()->IsSwimming())
+	//{
+	//	GetCharacterMovement()->bUseControllerDesiredRotation	= false;
+	//	GetCharacterMovement()->bOrientRotationToMovement		= true;
+	//}
+
 	if (Controller)
 	{
 		Controller->SetControlRotation(FMath::Lerp(Controller->GetControlRotation(), CharacterMovingDirection, DeltaTime * 10.0f));
@@ -278,6 +286,13 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
 			ClampControllerRotationPitchWhileCrawl(PoseState);
 			SetSpringArmRelativeLocationDest(EPoseState::STAND);
+
+			if (SwimmingComponent->GetSwimmingState() != ESwimmingState::ON_GROUND)
+			{
+				SetPoseState(EPoseState::STAND);
+				return true;
+			}
+
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToStand, EPoseState::STAND);
 			return true;
 
@@ -404,10 +419,10 @@ void AC_Player::HandleAimPressCameraLocation()
 void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되어서 버그가 있는듯?
 {
 	// 현재 멈춰있는 상황이 아니면 처리 x
-	if (!bCanMove) return;
-
-	if (GetVelocity().Size() > 0.f) return;
-	if (bIsHoldDirection) return;
+	if (!bCanMove)								return;
+	if (GetCharacterMovement()->IsSwimming())	return;
+	if (GetVelocity().Size() > 0.f)				return;
+	if (bIsHoldDirection)						return;
 
 	// 0 360
 	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;

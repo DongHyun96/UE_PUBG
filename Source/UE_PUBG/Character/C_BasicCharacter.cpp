@@ -8,6 +8,7 @@
 
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/PhysicsVolume.h"
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
@@ -55,6 +56,7 @@ void AC_BasicCharacter::BeginPlay()
 	InitialMainCameraRelativeRotation = MainCamera->GetRelativeRotation().Quaternion();
 	C_MainSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("MainSpringArm")); 
 
+	GetPhysicsVolume()->FluidFriction = 2.5f;
 	StatComponent->SetOwnerCharacter(this);
 }
 
@@ -139,6 +141,11 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 	//										(PoseState == EPoseState::CROUCH) ? 200.f :
 	//										(PoseState == EPoseState::CRAWL)  ? 100.f : 600.f;
 	// TODO : 도핑 했을 시, 도핑 계수 곱해주기
+	if (SwimmingComponent->IsSwimming())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		return;
+	}
 
 	switch (PoseState)
 	{
