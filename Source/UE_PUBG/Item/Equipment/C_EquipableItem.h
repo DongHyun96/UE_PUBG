@@ -28,4 +28,6 @@ public:
 	
 	virtual void Interaction(class AC_BasicCharacter* character) override;
 
+	//void SetRelativeTranformToInitial() { SetActorRelativeTransform(InitialRelativeTransform); }
+
 };

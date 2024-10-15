@@ -16,6 +16,17 @@
 #include "Component/C_ConsumableUsageMeshComponent.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Components/Image.h"
+
+#include "Item/C_Item.h"
+#include "Item/Equipment/C_EquipableItem.h"
+#include "Item/Equipment/C_BackPack.h"
+#include "Item/Weapon/C_Weapon.h"
+#include "Item/Weapon/Gun/C_Gun.h"
+#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
 
 #include "Utility/C_Util.h"
 
@@ -39,6 +50,14 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	CrawlCollider = CreateDefaultSubobject<UCapsuleComponent>("CrawlCollider");
 	CrawlCollider->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
+	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
+	DetectionSphere->InitSphereRadius(100.0f); // 탐지 반경 설정
+	DetectionSphere->SetupAttachment(RootComponent);
+
+	//DetectionSphere->SetGenerateOverlapEvents(true);
+	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &AC_BasicCharacter::OnOverlapBegin);
+	DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &AC_BasicCharacter::OnOverlapEnd);
 	//CrawlCollider->SetupAttachment(GetMesh());
 
 	//CharacterMeshComponent->SetRelativeLocation();
@@ -88,7 +107,57 @@ float AC_BasicCharacter::PlayAnimMontage(UAnimMontage* AnimMontage, float InPlay
 
 	return 0.0f;
 }
+/// <summary>
+/// 아이템이 캐릭터의 근처에 있을 때.
+/// </summary>
+/// <param name="OverlappedComp"></param>
+/// <param name="OtherActor"></param>
+/// <param name="OtherComp"></param>
+/// <param name="OtherBodyIndex"></param>
+/// <param name="bFromSweep"></param>
+/// <param name="SweepResult"></param>
+void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
 
+	FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetCurVolume());
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
+
+	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+
+
+	if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
+	{
+		UC_Util::Print("OverlappedItem");
+		//UC_Util::Print(*OverlappedItem->GetName());
+
+		//Inventory->GetNearItems().Add(OverlappedItem);
+		Inventory->AddItemToAroundList(OverlappedItem);
+	}
+	else
+	{
+		UC_Util::Print("No item");
+
+		return;
+	}
+}
+
+/// <summary>
+/// 아이템이 캐릭터의 감지범위를 벗어났을 때.
+/// </summary>
+/// <param name="OverlappedComp"></param>
+/// <param name="OtherActor"></param>
+/// <param name="OtherComp"></param>
+/// <param name="OtherBodyIndex"></param>
+void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+
+	if (OverlappedItem)
+	{
+		//Inventory->GetNearItems().Remove(OverlappedItem);
+		Inventory->RemoveItemToAroundList(OverlappedItem);
+	}
+}
 float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate, FName StartSectionName)
 {
 	if (!IsValid(PAnimMontage.AnimMontage)) return 0.f;

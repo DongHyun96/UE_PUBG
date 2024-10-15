@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Item/C_Item.h"
 #include "C_InvenComponent.generated.h"
 UENUM(BlueprintType)
 enum class EBackPackLevel : uint8
@@ -12,6 +13,14 @@ enum class EBackPackLevel : uint8
 	LV1,
 	LV2,
 	LV3
+};
+
+UENUM(BlueprintType)
+enum class EEquipSlot : uint8
+{
+	HELMET,
+	BACKPACK,
+	VEST
 };
 
 /// <summary>
@@ -48,12 +57,14 @@ public:
 	//uint16은 해당 매크로가 지원하지 않는다. uint8, uint32는 지원한다.
 	bool CheckVolume(class AC_Item* item);
 
+	//가방과 용량을 검사해서 가방 교체 및 장착.
 	UFUNCTION(BlueprintCallable)
 	bool CheckMyBackPack(class AC_BackPack* backpack);
 
 	//UFUNCTION(BlueprintCallable)
 	void Interaction(AC_Item* wilditem);
 
+	//가방의 용량을 반환
 	uint16 CheckBackPackVolume(uint32 backpacklevel);
 	uint16 CheckBackPackVolume(EBackPackLevel backpacklevel);
 
@@ -67,14 +78,40 @@ public:
 	void EquippedBackPack(AC_BackPack* backpack);
 
 	/// <summary>
-	/// 
+	/// 아이템을 내 인벤에 추가하는 함수.
+	/// item->OwnerCharacter = this->OwnerCharacter
+	/// item->HiddeninGame = ture;
+	/// item->SetActorEnableCollision = false; 상태로 전환
+	/// 인벤토리 공간체크후 아이템을 습득하는 과정을 거침.
 	/// </summary>
 	/// <param name="item"></param>
 	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
 	bool AddItem(AC_Item* item);
 
-public://Getter and Seter
+	UFUNCTION(BlueprintCallable)
+	class AC_EquipableItem* SetSlotEquipment(EEquipSlot InSlot, AC_EquipableItem* EquipItem);
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="item">찾고자 하는 아이템</param>
+	/// <returns>찾고자 하는 아이템. (없다면 nullptr 반환)</returns>
+	UFUNCTION(BlueprintCallable)
+	AC_Item* FindMyItem(AC_Item* item);
+
+	void AddItemToMyList(AC_Item* item) { testMyItems.Add(item->GetItemDatas().ItemName, item); }
+
+	void RemoveItemToMyList(AC_Item* item) { testMyItems.Remove(item->GetItemDatas().ItemName); }
+
+	void AddItemToAroundList(AC_Item* item) { testAroundItems.Add(item->GetItemDatas().ItemName, item); }
+
+	void RemoveItemToAroundList(AC_Item* item) { testAroundItems.Remove(item->GetItemDatas().ItemName); }
+
+	UFUNCTION(BlueprintCallable)
+	void GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values);
+	//Getter and Seter
+public:
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; } 
 	//EBackPackLevel SetCurBackPackLevel(uint8 level) { CurBackPackLevel = (EBackPackLevel)level; }
 
@@ -87,10 +124,14 @@ public://Getter and Seter
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
 
-	
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	TMap<EEquipSlot, AC_EquipableItem*> GetEquipmentItems() { return EquipmentItems; }
+
 
 	TArray<class AC_Item*>& GetNearItems() { return NearItems; }
 
+protected:
+	void InitMyitems();
 protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
@@ -117,6 +158,18 @@ protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "NearItmes Array")
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<AC_Item*> NearItems;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<FString, AC_Item*> testMyItems;
+
+	//TMap<FString, AC_Item*> testMyItems;
+
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<FString, AC_Item*> testAroundItems;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<EEquipSlot, AC_EquipableItem*> EquipmentItems;
 protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

@@ -100,3 +100,22 @@ void AC_BackPack::DetachToSocket(AC_BasicCharacter* character)
 
 
 }
+
+void AC_BackPack::PickUpItem(AC_BasicCharacter* Character)
+{
+	//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
+	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
+	AC_BackPack* curBackPack = nullptr;
+	curBackPack = InvenComp->GetMyBackPack();
+
+	int32 curVolume = InvenComp->GetCurVolume();
+	int32 preMaxVolume = 70 + InvenComp->CheckBackPackVolume(this->GetLevel());
+
+	if (curVolume > preMaxVolume) return;
+
+	if (curBackPack) 
+		curBackPack->DetachmentItem();
+	
+	InvenComp->EquippedBackPack(this);
+
+}

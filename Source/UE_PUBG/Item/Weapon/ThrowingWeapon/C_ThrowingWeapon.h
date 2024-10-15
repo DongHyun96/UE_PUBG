@@ -60,6 +60,22 @@ public:
 
 	bool AttachToHand(class USceneComponent* InParent) override;
 
+
+	//UFUNCTION(BlueprintCallable)
+	void PickUpItem(AC_BasicCharacter* Character) override;
+
+	void DropItem(AC_BasicCharacter* Character) override;
+
+	void SetItemStack(uint8 AddItemStack) override;
+
+	void EquipToCharacter(AC_BasicCharacter* Character);
+
+	bool MoveToInven(AC_BasicCharacter* Character) override;
+
+	bool MoveToAround(AC_BasicCharacter* Character) override;
+
+	bool MoveToSlot(AC_BasicCharacter* Character) override;
+
 public:
 
 	/// <summary>

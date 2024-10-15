@@ -50,6 +50,7 @@ public:
 	USkeletalMeshComponent* BackpackMesh;
 
 	
+	void PickUpItem(AC_BasicCharacter* Character) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

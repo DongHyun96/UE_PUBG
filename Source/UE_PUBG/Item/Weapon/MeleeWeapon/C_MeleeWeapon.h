@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Item/Weapon/C_Weapon.h"
+#include "UE_PUBG/Character/C_BasicCharacter.h"
 #include "C_MeleeWeapon.generated.h"
 
 /**
@@ -31,6 +32,8 @@ public:
 	bool AttachToHolster(class USceneComponent* InParent) override;
 
 	bool AttachToHand(class USceneComponent* InParent) override;
+
+	void PickUpItem(class AC_BasicCharacter* Character) override;
 
 public:
 

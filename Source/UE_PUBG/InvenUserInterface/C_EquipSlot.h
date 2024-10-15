@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "UE_PUBG/Character/C_BasicCharacter.h"
+
 #include "C_EquipSlot.generated.h"
 
 /**
@@ -13,5 +15,7 @@ UCLASS()
 class UE_PUBG_API UC_EquipSlot : public UUserWidget
 {
 	GENERATED_BODY()
-
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class AC_BasicCharacter* OwnerCharacter;
 };
