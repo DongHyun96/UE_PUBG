@@ -243,8 +243,10 @@ void UC_InputComponent::Crawl()
 
 void UC_InputComponent::OnJump()
 {
-	if (!Player->GetCanMove()) return;
-	if (Player->GetIsJumping() || PlayerMovement->IsFalling()) return;
+	if (!Player->GetCanMove())									return;
+	if (Player->GetIsJumping() || PlayerMovement->IsFalling())	return;
+	if (Player->GetSwimmingComponent()->IsSwimming())			return;
+
 	CancelTurnInPlaceMotion();
 
 	if (Player->GetPoseState() == EPoseState::CRAWL) // Crawl to crouch

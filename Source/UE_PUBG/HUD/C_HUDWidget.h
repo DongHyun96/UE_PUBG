@@ -117,6 +117,12 @@ protected: // Map ฐüทร
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_MainMapWidget* MainMapWidget{};
 
+protected: // Oxygen Widget
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_OxygenWidget* OxygenWidget{};
+
+
 private:
 
 	bool bIsMiniMapEnlarged{};

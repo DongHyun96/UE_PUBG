@@ -184,6 +184,8 @@ FReply UC_MainMapWidget::NativeOnMouseWheel(const FGeometry& InGeometry, const F
 		return FReply::Unhandled();
 	}
 
+	UC_Util::Print("OnMouseWheel");
+
 	float ScrollDelta = InMouseEvent.GetWheelDelta();
 
 	// +가 위로 올림

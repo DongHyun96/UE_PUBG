@@ -9,6 +9,7 @@
 
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
+#include "Character/Component/C_EquippedComponent.h"
 
 #include "Utility/C_Util.h"
 
@@ -52,7 +53,7 @@ void UC_SwimmingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 	HandleSwimmingState();
 
-	switch (SwimmingState)
+	/*switch (SwimmingState)
 	{
 	case ESwimmingState::ON_GROUND:			UC_Util::Print("OnGround");
 		break;
@@ -64,7 +65,7 @@ void UC_SwimmingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		break;
 	default:
 		break;
-	}
+	}*/
 }
 
 void UC_SwimmingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
@@ -95,14 +96,6 @@ void UC_SwimmingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
 
 		OwnerPlayer->SetNextSpeed(OwnerPlayer->GetCharacterMovement()->MaxWalkSpeed); // AnimCharacter에서 Speed Lerp할 값 setting
 	}
-
-	// Surface or Under check
-	//const float SURFACE_SWIM_DELTA_LIMIT = 20.f;
-	//
-	//if (GetWaterDepth(OwnerCharacter->GetActorLocation()) - GetCharacterDepth() < SURFACE_SWIM_DELTA_LIMIT)
-	//	 SwimmingState = ESwimmingState::SWIMMING_SURFACE;
-	//else SwimmingState = ESwimmingState::SWIMMING_UNDER;
-
 }
 
 void UC_SwimmingComponent::SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter)
@@ -119,7 +112,9 @@ void UC_SwimmingComponent::HandleSwimmingState()
 {
 	if (SwimmingState == ESwimmingState::ON_GROUND) return;
 
-	float WaterDepth = GetWaterDepth(OwnerCharacter->GetActorLocation());
+	FVector CharacterLocation = OwnerCharacter->GetActorLocation();
+
+	float WaterDepth = GetWaterDepth(CharacterLocation);
 
 	// 수영 가능한 깊이인지 check
 	if ( WaterDepth <= CAN_WALK_DEPTH_LIMIT)
@@ -131,8 +126,20 @@ void UC_SwimmingComponent::HandleSwimmingState()
 	// Surface or under check
 	const float SURFACE_SWIM_DELTA_LIMIT = 20.f;
 	
-	SwimmingState = (WaterDepth - GetCharacterDepth() < SURFACE_SWIM_DELTA_LIMIT) ? 
+	SwimmingState = (FMath::Abs(WaterDepth - GetCharacterDepth()) < SURFACE_SWIM_DELTA_LIMIT) ? 
 					 ESwimmingState::SWIMMING_SURFACE : ESwimmingState::SWIMMING_UNDER;
+
+	// Surface에서 수영중이고 멈춰있을 때 처리
+	if (SwimmingState == ESwimmingState::SWIMMING_SURFACE && OwnerCharacter->GetNextSpeed() == 0.f)
+	{
+		float DetectionColliderZ = WaterDetectionCollider->GetComponentLocation().Z;
+
+		CharacterLocation += (DetectionColliderZ < EnteredWaterZ) ? 
+							  FVector::UnitZ() * (EnteredWaterZ - DetectionColliderZ) :
+							 -FVector::UnitZ() * (DetectionColliderZ - EnteredWaterZ);
+
+		OwnerCharacter->SetActorLocation(CharacterLocation);
+	}
 
 	// // 표면에서 수영중인지 아니면 Under인지는 Movement에서 역으로 체크
 }
@@ -184,6 +191,7 @@ void UC_SwimmingComponent::StartSwimming()
 	OwnerCharacter->SetCanMove(true);
 	OwnerCharacter->SetPoseState(OwnerCharacter->GetPoseState(), EPoseState::STAND);
 	OwnerCharacter->LaunchCharacter(OwnerCharacter->GetActorUpVector() * 0.005f, false, false);
+	OwnerCharacter->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::NONE);
 
 	SwimmingState = ESwimmingState::SWIMMING_SURFACE;
 }

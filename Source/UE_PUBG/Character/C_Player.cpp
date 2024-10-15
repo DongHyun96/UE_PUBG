@@ -266,6 +266,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 	if (!bCanMove)											return false;
 	if (bIsJumping || GetCharacterMovement()->IsFalling())	return false;
 	if (InChangeFrom == InChangeTo)							return false;
+	if (SwimmingComponent->IsSwimming())					return false;
 
 	switch (InChangeTo)
 	{

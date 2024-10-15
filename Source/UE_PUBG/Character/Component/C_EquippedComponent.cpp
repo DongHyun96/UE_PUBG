@@ -9,6 +9,8 @@
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 
+#include "Character/Component/C_SwimmingComponent.h"
+
 #include "Utility/C_Util.h"
 
 // Sets default values for this component's properties
@@ -100,6 +102,8 @@ void UC_EquippedComponent::DetachmentWeapon(EWeaponSlot InSlot)
 
 bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 {
+    if (OwnerCharacter->GetSwimmingComponent()->IsSwimming()) return false;
+
     if (IsValid(Weapons[CurWeaponType]))
     {
         // 현재 무기의 Sheath나 Draw animation montage가 이미 재생 중이라면 return
@@ -163,6 +167,9 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
 bool UC_EquippedComponent::ToggleArmed()
 {
+    // Swimming 중이라면 return false
+    if (OwnerCharacter->GetSwimmingComponent()->IsSwimming()) return false;
+
     // 현재 무기도 장착하지 않았고 이전에 들고 있었던 무기도 없을 때 (초기 상태)
     if (CurWeaponType == EWeaponSlot::NONE && PrevWeaponType == EWeaponSlot::NONE) return false;
 
