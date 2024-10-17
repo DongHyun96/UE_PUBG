@@ -49,6 +49,12 @@ private:
 
 	void HandleSwimmingState();
 
+	/// <summary>
+	/// OxygenAmount Handling го╠Б
+	/// </summary>
+	/// <param name="DeltaTime"></param>
+	void UpdateOxygenAmount(const float& DeltaTime);
+
 private:
 
 	UFUNCTION()

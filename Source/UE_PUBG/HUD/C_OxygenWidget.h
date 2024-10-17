@@ -13,5 +13,14 @@ UCLASS()
 class UE_PUBG_API UC_OxygenWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+
+public:
+
+	/// <summary>
+	/// Set ProgressBar Percent 
+	/// </summary>
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetOxygenPercent(float InPercent);
 	
 };

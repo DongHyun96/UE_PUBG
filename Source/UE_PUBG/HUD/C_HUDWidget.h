@@ -91,6 +91,7 @@ public:
 	class UC_MapWidget* GetMiniMapWidget() const { return MiniMapWidget; }
 	class UBorder* GetMiniMapBorder() const { return MiniMapBorder; }
 	class UC_MainMapWidget* GetMainMapWidget() const { return MainMapWidget; }
+	class UC_OxygenWidget* GetOxygenWidget() const { return OxygenWidget; }
 
 protected:
 

@@ -123,16 +123,17 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
+	if (Player->GetSwimmingComponent()->IsSwimming())
+	{
+		Player->GetSwimmingComponent()->HandlePlayerMovement(MovementVector);
+		return;
+	}
+
 	if (Player->GetIsHoldDirection() || Player->GetIsAltPressed() || Player->GetIsAimDown()) //GetIsAimDown() -> bIsAimDownSight
 	{
 		PlayerMovement->bUseControllerDesiredRotation	= false;
 		PlayerMovement->bOrientRotationToMovement		= false;
 		Player->bUseControllerRotationYaw				= false;
-	}
-	else if (Player->GetSwimmingComponent()->IsSwimming()) // Swimming
-	{
-		Player->GetSwimmingComponent()->HandlePlayerMovement(MovementVector);
-		return;
 	}
 	else
 	{
