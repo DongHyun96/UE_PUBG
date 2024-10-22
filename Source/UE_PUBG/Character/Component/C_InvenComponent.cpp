@@ -15,6 +15,7 @@ UC_InvenComponent::UC_InvenComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+
 	// ...
 }
 
@@ -23,7 +24,9 @@ UC_InvenComponent::UC_InvenComponent()
 void UC_InvenComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	PlayerController = GetWorld()->GetFirstPlayerController();
+	InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
+	InvenUI->SetOwnerCharacter(OwnerCharacter);
 	// ...
 }
 
@@ -178,7 +181,10 @@ void UC_InvenComponent::Interaction(AC_Item* wilditem)
 {
 	//AC_BasicCharacter* player = OwnerCharacter;
 	
-	wilditem->Interaction(OwnerCharacter);
+	//wilditem->Interaction(OwnerCharacter);
+
+	wilditem->Interaction();
+
 
 	if (CheckVolume(wilditem))
 	{
@@ -287,7 +293,7 @@ bool UC_InvenComponent::AddItem(AC_Item* item)
 		case EItemTypes::NONE:
 			break;
 		case EItemTypes::HELMET:
-		case EItemTypes::ARMORE:
+		case EItemTypes::ARMOR:
 		case EItemTypes::BACKPACK:
 		case EItemTypes::MAINGUN:
 		case EItemTypes::MELEEWEAPON:
@@ -380,6 +386,44 @@ void UC_InvenComponent::GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<
 {
 	Map.GenerateValueArray(Values);
 
+}
+
+void UC_InvenComponent::OpenInvenUI()
+{
+	UC_Util::Print("Down I Key");
+
+	
+	if (InvenUI)
+	{
+
+		if (InvenUI->IsVisible())
+		{
+			UC_Util::Print("Hidden Inven UI");
+			InvenUI->SetVisibility(ESlateVisibility::Hidden);
+			InvenUI->RemoveFromViewport();
+			//InvenUI = nullptr;
+			PlayerController->bShowMouseCursor = false;
+		}
+		else
+		{
+			UC_Util::Print("Visible Inven UI");
+			PlayerController->bShowMouseCursor = true;
+			InvenUI->SetVisibility(ESlateVisibility::Visible);
+			InvenUI->AddToViewport();
+		}
+	}
+	else
+	{
+		UC_Util::Print("No InvenUI");
+
+	}
+
+}
+
+void UC_InvenComponent::InitInvenUI()
+{
+	if (!InvenUI) return;
+	InvenUI->InitListView();
 }
 
 

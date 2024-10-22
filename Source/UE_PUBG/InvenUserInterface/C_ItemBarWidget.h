@@ -26,6 +26,8 @@ public:
     // ListView에서 항목 객체가 설정될 때 호출되는 함수
     virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
+    virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
     void NativeConstruct();
 
 	UFUNCTION(BlueprintCallable)
@@ -41,18 +43,20 @@ public:
 
 public:
     // UI에 바인딩할 변수 선언 (Blueprint에서 연결)
-    UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (BindWidget))
-    class UImage* ItemImage;
+    //UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (BindWidget))
 
-    UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (BindWidget))
-    class UTextBlock* ItemName;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+    class UImage* ItemImage1;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+    class UTextBlock* ItemName1;
 
     //현재 UI에서 바인딩하지 않음.
-    UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (BindWidget))
-    class UTextBlock* ItemStackBlock;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+    class UTextBlock* ItemStackBlock1;
 
     //uint8 ItemStack;
-    UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (BindWidget))
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
     EItemTypes ItemType{};
 
     // C++에서 처리할 아이템

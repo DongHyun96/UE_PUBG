@@ -37,10 +37,10 @@ void AC_BackPack::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AC_BackPack::Interaction(AC_BasicCharacter* character)
-{
-	character->GetInvenComponent()->CheckMyBackPack(this);	
-}
+//void AC_BackPack::Interaction(AC_BasicCharacter* character)
+//{
+//	character->GetInvenComponent()->CheckMyBackPack(this);	
+//}
 
 void AC_BackPack::AttachToSocket(AC_BasicCharacter* character)
 {

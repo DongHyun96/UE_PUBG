@@ -33,7 +33,7 @@ enum class EItemTypes : uint8
 {
 	NONE,
 	HELMET,
-	ARMORE,
+	ARMOR,
 	BACKPACK,
 	MAINGUN,
 	MELEEWEAPON,
@@ -62,6 +62,8 @@ struct FItemData
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	uint8 ItemVolume = 0;
 };	
+
+
 /// <summary>
 /// 소모아이템분류를 위한 상위 클래스.
 /// 가방에 들어가는 아이템을 위한 클래스.
@@ -88,15 +90,25 @@ public:
 	//UFUNCTION()
 	//virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction, );
+	//virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction, );
 
 	//아이템의 장착을 해제하고 땅에 떨구게 해줌.
 	UFUNCTION(BlueprintCallable)
 	virtual void DetachmentItem();
 
-	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+	virtual void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
-	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
+	/// <summary>
+	/// ItemBar에서 우클릭으로 사용하는 기본 상호작용.
+	/// 자식단계에서 오버라이드해서 사용.
+	/// 아이템의 OwnerCharacter가 있는지 없는지를 기본으로 판단하고 경우에 따라 다른 기능을 실행할 예정.
+	/// 이름을 상호작용(Interaction으로 바꿀까도 고민중)
+	/// 상호작용으로 바꾼다면. OwnerCharcter의 여부에 따라, 아이템에 따라 UseItem의 이름을 다른 범용적인 함수에 사용가능.
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	virtual bool Interaction() PURE_VIRTUAL(AC_Item::Interaction, return false;);
+
+	virtual bool UseItem() PURE_VIRTUAL(AC_Item::UseItem, return false;);
 
 	/// <summary>
 	/// 플레이어가 아이템을 습득할때 사용되는 함수.
@@ -144,6 +156,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	uint8 GetVolume() { return Volume; }
+
+	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 
 private:
 	uint8 Volume;

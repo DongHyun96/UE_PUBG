@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Item/C_Item.h"
+#include "InvenUserInterface/C_InvenUiWidget.h"
 #include "C_InvenComponent.generated.h"
 UENUM(BlueprintType)
 enum class EBackPackLevel : uint8
@@ -110,6 +111,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values);
+
+	void OpenInvenUI();
+
+	void InitInvenUI();
+
 	//Getter and Seter
 public:
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; } 
@@ -126,6 +132,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	TMap<EEquipSlot, AC_EquipableItem*> GetEquipmentItems() { return EquipmentItems; }
+
+
+	const TMap<FString, class AC_Item*>& GetTestMyItems() { return testMyItems; }
+
+	TMap<FString, class AC_Item*>& GetTestAroundItems() { return testAroundItems; }
 
 
 	TArray<class AC_Item*>& GetNearItems() { return NearItems; }
@@ -170,6 +181,13 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EEquipSlot, AC_EquipableItem*> EquipmentItems;
+
+	UC_InvenUiWidget* InvenUI;
+
+	APlayerController* PlayerController;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UUserWidget> InvenUiClass;
 protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

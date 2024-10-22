@@ -17,6 +17,10 @@ class UE_PUBG_API UC_CustomListView : public UListView
 {
 	GENERATED_BODY()
 protected:
+
+	void Init();
+
+protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class AC_BasicCharacter* OwnerCharacter;
 };

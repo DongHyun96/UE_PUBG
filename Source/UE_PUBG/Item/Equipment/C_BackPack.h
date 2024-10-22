@@ -31,7 +31,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Interaction(class AC_BasicCharacter* character) override;
+	//virtual void Interaction(class AC_BasicCharacter* character) override;
+
+	//virtual bool Interaction() override;
+
 
 	void AttachToSocket(class AC_BasicCharacter* InParent);
 
@@ -41,7 +44,7 @@ public:
 	/// </summary>
 	/// <param name="character"></param>
 	UFUNCTION(BlueprintCallable)
-	void DetachToSocket(class AC_BasicCharacter* character);
+	void DetachToSocket(AC_BasicCharacter* character);
 
 	uint8 GetLevel() { return Level; }
 

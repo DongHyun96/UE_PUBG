@@ -4,45 +4,35 @@
 #include "InvenUserInterface/C_ItemBarWidget.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Blueprint/UserWidget.h"
+#include "Blueprint/WidgetTree.h"
 #include "Item/C_Item.h"
 #include "Utility/C_Util.h"
-
-//void UC_ItemBarWidget::OnListItemObjectSet(UObject* ListItemObject)
-//{
-//    if (AC_Item* Item = Cast<AC_Item>(ListItemObject))
-//    {
-//        // 캐시된 아이템 설정
-//        CachedItem = Item;
-//
-//        // 아이템 이름 설정
-//        if (ItemNameText)
-//        {
-//            FText ItemName = FText::FromString(Item->GetItemDatas().ItemName); // ItemName은 AC_Item에 존재하는 변수라고 가정
-//            ItemNameText->SetText(ItemName);
-//        }
-//
-//        // 아이템 이미지 설정
-//        if (ItemImage && Item->GetItemDatas().ItemIcon) // ItemTexture는 AC_Item에 정의된 텍스처 변수라고 가정
-//        {
-//            UTexture2D* Texture = Item->GetItemDatas().ItemIcon;
-//            ItemImage->SetBrushFromTexture(Texture);
-//        }
-//    }
-//}
 
 void UC_ItemBarWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	// 위젯을 WidgetTree에서 가져오기
+	//ItemImage = Cast<UImage>(GetWidgetFromName(FName("ItemImage1")));
+	//ItemName = Cast<UTextBlock>(GetWidgetFromName(FName("ItemName1")));
+	//ItemStackBlock = Cast<UTextBlock>(GetWidgetFromName(FName("ItemStackBlock1")));
+
+	//ItemImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), FName("ItemImage1"));
+	//ItemName = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), FName("ItemName1"));
+	//ItemStackBlock = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), FName("ItemStackBlock1"));
 
 	// 바인딩된 위젯들이 null인지 확인
-	if (!ItemImage)
-	{
-		UC_Util::Print("ItemImage is not bound correctly!",FColor::Red,10.f); 
-	}
-
-	if (!ItemName)
+	if (!ItemImage1)
 	{
 		UC_Util::Print("ItemImage is not bound correctly!", FColor::Red, 10.f);
+	}
+	if (!ItemName1)
+	{
+		UC_Util::Print("ItemName is not bound correctly!", FColor::Red, 10.f);
+	}
+	if (!ItemStackBlock1)
+	{
+		UC_Util::Print("ItemStackBlock is not bound correctly!", FColor::Red, 10.f);
 	}
 }
 
@@ -50,70 +40,61 @@ void UC_ItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 	// ListItemObject를 UC_Item 클래스로 캐스팅하여 아이템 데이터 사용
-	AC_Item* Item = Cast<AC_Item>(ListItemObject);
-	if (Item)
+	CachedItem = Cast<AC_Item>(ListItemObject);
+
+	if (!CachedItem) return;
+
+	InitBar(CachedItem);
+}
+
+FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	// 우클릭인지 체크
+	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		UC_Util::Print("true");
-		CachedItem = Item;
+		if (CachedItem)
+		{   // 우클릭 이벤트 실행
+			CachedItem->Interaction();
 
-		ItemType = Item->GetItemDatas().ItemType;
-
-		// 아이템 이름을 텍스트 블록에 설정
-		ItemName->SetText(FText::FromString(Item->GetItemDatas().ItemName));
-		//ItemNameText->SetText(FText::FromString(Item->GetName()));
-		
-		ItemImage->SetBrushFromTexture(Item->GetItemDatas().ItemIcon);
-
-		ItemStackBlock->SetText(FText::AsNumber(Item->GetItemDatas().ItemStack));
-
-		ItemType = Item->GetItemDatas().ItemType;
+			//NativeOnListItemObjectSet에서의 호출과 중복으로 일단 주석처리, 다만 이벤트시에 초기화가 필요하면 사용해야 할 수 있음.
+			//InitBar();
+			return FReply::Handled();
+		}
 	}
 	else
 	{
-		UC_Util::Print("false");
-
+		UC_Util::Print("No cached item to interact with!", FColor::Red, 5.0f);
 	}
+	// 다른 버튼 클릭 처리
+	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
 void UC_ItemBarWidget::InitBar(AC_Item* item)
 {
-	//if (CachedItem)
-	//{
 
-	//	ItemType = CachedItem->GetItemDatas().ItemType;
 
-	//	ItemName->SetText(FText::FromString(CachedItem->GetItemDatas().ItemName));
+	//ItemImage = Cast<UImage>(GetWidgetFromName(FName("ItemImage1")));
+	//ItemName = Cast<UTextBlock>(GetWidgetFromName(FName("ItemName1")));
+	//ItemStackBlock = Cast<UTextBlock>(GetWidgetFromName(FName("ItemStackBlock1")));
 
-	//	ItemImage->SetBrushFromTexture(CachedItem->GetItemDatas().ItemIcon);
-
-	//	ItemStackBlock->SetText(FText::AsNumber(CachedItem->GetItemDatas().ItemStack));
-
-	//	ItemType = CachedItem->GetItemDatas().ItemType;
-
-	//	SetVisibility(ESlateVisibility::Visible);
-	//}
-	//else
-	//{
-	//	SetVisibility(ESlateVisibility::Hidden);
-	//}
 	if (item)
 	{
+		ItemImage1->SetBrushFromTexture(item->GetItemDatas().ItemIcon);
 
 		ItemType = item->GetItemDatas().ItemType;
 
-		ItemName->SetText(FText::FromString(item->GetItemDatas().ItemName));
+		ItemName1->SetText(FText::FromString(item->GetItemDatas().ItemName));
 
-		ItemImage->SetBrushFromTexture(item->GetItemDatas().ItemIcon);
-
-		ItemStackBlock->SetText(FText::AsNumber(item->GetItemDatas().ItemStack));
-
-		ItemType = item->GetItemDatas().ItemType;
-
+		ItemStackBlock1->SetText(FText::AsNumber(item->GetItemDatas().ItemStack));
+		//AddToViewport();
 		SetVisibility(ESlateVisibility::Visible);
+
 	}
 	else
 	{
-		//SetVisibility(ESlateVisibility::Hidden);
+		UC_Util::Print("NO CachedItem!!", FColor::Red, 5.0f);
+		SetVisibility(ESlateVisibility::Hidden);
+		//RemoveFromViewport();
 		UC_Util::Print("Visibility::Hidden");
 	}
 }

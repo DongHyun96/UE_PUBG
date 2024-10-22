@@ -6,13 +6,13 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/ListView.h"
 #include "UE_PUBG/Character/C_BasicCharacter.h"
-#include "C_ItemListWidget.generated.h"
+#include "C_MyItemListWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_ItemListWidget : public UUserWidget
+class UE_PUBG_API UC_MyItemListWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -22,10 +22,17 @@ protected:
 public:
     UFUNCTION(BlueprintCallable)
     void AddTMapItem(TMap<FString, AC_Item*> itemlist);
+
+    // 아이템 바 위젯을 생성하고 리스트에 추가하는 함수
+    UFUNCTION(BlueprintCallable)
+    void PopulateItemList(const TMap<FString, AC_Item*>& itemList);
+
 public:
 
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-    UListView* ItemListBar;
+    //UPROPERTY(BlueprintReadWrite, EditAnywhere)
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    UListView* ItemListBar = nullptr;
 
 
 

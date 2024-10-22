@@ -26,7 +26,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
-	virtual void Interaction(class AC_BasicCharacter* character) override;
+	//virtual void Interaction(class AC_BasicCharacter* character) override;
+
+	virtual bool Interaction() override;
+
 
 	//void SetRelativeTranformToInitial() { SetActorRelativeTransform(InitialRelativeTransform); }
 

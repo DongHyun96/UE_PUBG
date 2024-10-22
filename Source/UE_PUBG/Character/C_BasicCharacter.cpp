@@ -132,6 +132,7 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 
 		//Inventory->GetNearItems().Add(OverlappedItem);
 		Inventory->AddItemToAroundList(OverlappedItem);
+		Inventory->InitInvenUI();
 	}
 	else
 	{
@@ -156,6 +157,7 @@ void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor
 	{
 		//Inventory->GetNearItems().Remove(OverlappedItem);
 		Inventory->RemoveItemToAroundList(OverlappedItem);
+		Inventory->InitInvenUI();
 	}
 }
 float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate, FName StartSectionName)
