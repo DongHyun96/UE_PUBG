@@ -4,6 +4,7 @@
 #include "Character/Component/C_StatComponent.h"
 #include "Character/C_BasicCharacter.h"
 #include "HUD/C_HUDWidget.h"
+#include "HUD/C_OxygenWidget.h"
 #include "Utility/C_Util.h"	
 
 UC_StatComponent::UC_StatComponent()
@@ -24,6 +25,7 @@ void UC_StatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	UpdateBoostEffect(DeltaTime);
 	//UC_Util::Print("CurHP : " + FString::SanitizeFloat(CurHP));
+	HandleOxygenExhausted(DeltaTime);
 }
 
 void UC_StatComponent::SetCurHP(const float& InCurHP)
@@ -114,6 +116,14 @@ bool UC_StatComponent::AddBoost(const float& BoostAmount)
 	return true;
 }
 
+void UC_StatComponent::AddOxygen(const float& OxygenAmount)
+{
+	CurOxygen += OxygenAmount;
+	CurOxygen  = FMath::Clamp(CurOxygen, 0.f, MAX_OXYGEN_HP);
+
+	if (OwnerHUDWidget) OwnerHUDWidget->GetOxygenWidget()->SetOxygenPercent(CurOxygen * 0.01f);
+}
+
 void UC_StatComponent::UpdateBoostEffect(const float& DeltaTime)
 {
 	// Boost 게이지가 없거나 이미 사망 처리되었을 때
@@ -138,6 +148,22 @@ void UC_StatComponent::UpdateBoostEffect(const float& DeltaTime)
 	if (CurBoosting <= 0.5f) CurBoosting = 0.f;
 
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
+}
+
+void UC_StatComponent::HandleOxygenExhausted(const float& DeltaTime)
+{
+	if (CurOxygen > 0.f)
+	{
+		OxygenExhaustedTimer = 0.f;
+		return;
+	}
+	if (OxygenExhaustedTimer >= 1.f)
+	{
+		OxygenExhaustedTimer -= 1.f;
+		TakeDamage(OXYGEN_EXHAUSTED_DAMAGE_PER_SEC);
+		return;
+	}
+	OxygenExhaustedTimer += DeltaTime;
 }
 
 FBoostingEffectFactor UC_StatComponent::GetBoostingEffectFactorByCurBoostingAmount() const

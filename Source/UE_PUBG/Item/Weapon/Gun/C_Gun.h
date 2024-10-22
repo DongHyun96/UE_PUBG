@@ -21,8 +21,8 @@ enum class EGunState : uint8
 UENUM(BlueprintType)
 enum class EShootingMode : uint8
 {
-	FULL_AUTO,
 	SEMI_AUTO,
+	FULL_AUTO,
 	BURST		
 };
 
@@ -68,6 +68,7 @@ public:
 	TMap<EPoseState, FAnimationMontages> GetSheathMontages() { return SheathMontages; };
 	TMap<EPoseState, FAnimationMontages > GetDrawMontages() { return DrawMontages; };
 	FTransform GetLeftHandSocketTransform() const { return LeftHandSocketLocation; }
+	EShootingMode GetCurrentShootingMode() { return CurrentShootingMode; }
 	class UCameraComponent* GetGunCamera() { return AimSightCamera; }
 
 protected:
@@ -79,6 +80,8 @@ protected:
 	void CheckPlayerIsRunning();
 
 	void CheckBackPackLevelChange();
+
+
 public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages > DrawMontages{};
@@ -89,7 +92,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages> ReloadMontages{};
 
-
+	bool GetIsPlayingMontagesOfAny();
+	bool GetCanGunAction();
+	void ChangeCurShootingMode();
+	void ExecuteReloadMontage();
 	class UCanvasPanelSlot* AimImage;
 	float MilitaryOperationArea;
 	FVector2D PanelSize;
@@ -139,7 +145,19 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float ReloadTime;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float BaseBulletSpreadDegree;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float RecoilFactorVertical;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+
+	float RecoilFactorHorizontal;
+
+	EShootingMode CurrentShootingMode = EShootingMode::FULL_AUTO;
 public:
+	FVector2D GetRecoilFactors() { return FVector2D(RecoilFactorHorizontal, RecoilFactorVertical); }
+	float GetBulletRPM() { return BulletRPM; }
 	virtual bool FireBullet();
 
 	virtual bool ReloadBullet();
@@ -151,11 +169,12 @@ public:
 	virtual void SetBulletSpeed();
 	virtual bool SetBulletDirection(FVector &OutLocation, FVector &OutDirection, bool&OutHasHit);
 
-	float GetBulletRPM() { return BulletRPM; }
 
 	EBackPackLevel PrevBackPackLevel;
 
 	void SetAimSightWidget();
+
+	float GetBaseBulletSpreadDegree() { return BaseBulletSpreadDegree; }
 protected:
 	//Aim À§Á¬
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

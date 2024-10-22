@@ -91,6 +91,7 @@ public:
 	class UC_MapWidget* GetMiniMapWidget() const { return MiniMapWidget; }
 	class UBorder* GetMiniMapBorder() const { return MiniMapBorder; }
 	class UC_MainMapWidget* GetMainMapWidget() const { return MainMapWidget; }
+	class UC_OxygenWidget* GetOxygenWidget() const { return OxygenWidget; }
 
 protected:
 
@@ -116,6 +117,12 @@ protected: // Map ฐüทร
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_MainMapWidget* MainMapWidget{};
+
+protected: // Oxygen Widget
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_OxygenWidget* OxygenWidget{};
+
 
 private:
 

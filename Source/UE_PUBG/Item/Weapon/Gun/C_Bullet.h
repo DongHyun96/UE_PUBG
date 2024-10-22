@@ -15,6 +15,7 @@ class UE_PUBG_API AC_Bullet : public AC_Item
 	GENERATED_BODY()
 public:
 	AC_Bullet();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

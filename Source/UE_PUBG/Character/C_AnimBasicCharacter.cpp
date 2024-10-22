@@ -15,6 +15,7 @@
 #include "Character/C_BasicCharacter.h"
 
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
+#include "Character/Component/C_SwimmingComponent.h"
 
 void UC_AnimBasicCharacter::NativeBeginPlay()
 {
@@ -51,7 +52,23 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bCanCharacterMove = OwnerCharacter->GetCanMove();
 	bIsHoldDirection  = OwnerCharacter->GetIsHoldDirection();
 	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
+
+	SwimmingState	  = OwnerCharacter->GetSwimmingComponent()->GetSwimmingState();
+	//switch (SwimmingState)
+	//{
+	//case ESwimmingState::ON_GROUND:
+	//	UC_Util::Print("OnGround");
+	//	break;
+	//case ESwimmingState::SWIMMING_SURFACE: case ESwimmingState::SWIMMING_UNDER:
+	//	UC_Util::Print("Swimming");
+	//	break;
+	//default:
+	//	break;
+	//}
+	bCharacterIsWatchingSight = OwnerCharacter->GetIsWatchingSight();
 	SetLeftHandIKOn();
+	SetCanUseAimOffset();
+	SetIsLeftHandIKOn();
 
 	CrawlRotationAngle = OwnerCharacter->GetPoseColliderHandlerComponent()->GetCurrentCrawlSlopeAngleForRigControl();
 
@@ -92,6 +109,15 @@ void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_RunningJump_To_Falling(
 	FString TheFloatStr = "Start Transition";
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	UE_LOG(LogTemp, Warning, TEXT("Transition Started"));
+	//Cast<AC_Player>(OwnerCharacter)->BackToMainCamera();
+	if (OwnerCharacter->GetIsAimDown())
+	{
+		AC_Gun* CurGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
+		if (IsValid(CurGun))
+		{
+			CurGun->BackToMainCamera();
+		}
+	}
 	OwnerCharacter->SetCanMove(false);
 
 }
@@ -191,7 +217,7 @@ void UC_AnimBasicCharacter::SetAimOfssetRotation()
 	AimOffsetLerpDelayTime = 0;
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 	AC_Gun* CurGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetCurWeapon());
-	if (OwnerPlayer->GetIsAimDown() && OwnerPlayer->GetPoseState() == EPoseState::CRAWL)
+	if (OwnerPlayer->GetIsWatchingSight() && OwnerPlayer->GetPoseState() == EPoseState::CRAWL)
 	{
 		if (CCurrentAimOffsetRotation.Pitch < 0)
 		{
@@ -274,5 +300,31 @@ void UC_AnimBasicCharacter::SetLeftHandIKOn()
 		bCharacterIsSheathing = true;
 		//UC_Util::Print("Sheating!");
 	}
+}
+
+void UC_AnimBasicCharacter::SetCanUseAimOffset()
+{
+	bool Condition0 = !bCanCharacterMove && !bIsAimDownSight;
+	bool Condition1 = bIsFalling || Condition0;
+	bool Condition2 = bCharacterIsSheathing || Condition1;
+	bool Condition3 = (Speed >= 480) || Condition2;
+	bool Condition4 = OwnerCharacter->GetIsReloadingBullet() || Condition3;
+	bCanUseAimOffset = Condition4;
+
+}
+
+void UC_AnimBasicCharacter::SetIsLeftHandIKOn()
+{
+	//if (HandState != EHandState::WEAPON_GUN) 
+	//{
+	//	bIsLeftHandIKOn = false;
+	//	return;
+	//}
+	bool Condition0 = bCanCharacterMove && !bIsFalling;
+	bool Condition1 = Condition0 && (HandState == EHandState::WEAPON_GUN);
+	bool Condition2 = !bCharacterIsSheathing && Condition1;
+	bool Condition3 = !OwnerCharacter->GetIsReloadingBullet() && Condition1;
+
+	bIsLeftHandIKOn = Condition3;
 }
 

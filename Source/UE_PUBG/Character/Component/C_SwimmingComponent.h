@@ -7,6 +7,15 @@
 #include "C_SwimmingComponent.generated.h"
 
 
+UENUM(BlueprintType)
+enum class ESwimmingState : uint8
+{
+	ON_GROUND,
+	SWIMMING_SURFACE,
+	SWIMMING_UNDER,
+	MAX
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_SwimmingComponent : public UActorComponent
 {
@@ -26,7 +35,25 @@ public:
 
 public:
 
+	void HandlePlayerMovement(const FVector2D& MovementVector);
+
+public:
+
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter);
+
+	ESwimmingState GetSwimmingState() const { return SwimmingState; }
+
+	bool IsSwimming() const { return SwimmingState != ESwimmingState::ON_GROUND; }
+
+private:
+
+	void HandleSwimmingState();
+
+	/// <summary>
+	/// OxygenAmount Handling 하기
+	/// </summary>
+	/// <param name="DeltaTime"></param>
+	void UpdateOxygenAmount(const float& DeltaTime);
 
 private:
 
@@ -52,7 +79,26 @@ private:
 
 private:
 
-	class AC_BasicCharacter* OwnerCharacter{};
+	void StartSwimming();
+	void StopSwimming();
+
+	/// <summary>
+	/// 해당 위치의 수심 구하기
+	/// </summary>
+	/// <param name="Position"> : 수심을 구할 위치 </param>
+	/// <returns> : 수심 </returns>
+	float GetWaterDepth(const FVector& Position);
+
+	/// <summary>
+	/// WaterDetectionCollider로부터 물 바닥면까지의 깊이 구하기
+	/// </summary>
+	/// <returns> : 깊이 </returns>
+	float GetCharacterDepth();
+
+private:
+
+	class AC_BasicCharacter*	OwnerCharacter{};
+	class AC_Player*			OwnerPlayer{};
 
 protected:
 
@@ -61,6 +107,13 @@ protected:
 
 private:
 
-	bool bIsSwimming{};
-		
+	ESwimmingState SwimmingState{};
+
+	// 현재 헤엄치고 있는 수면의 z값
+	float EnteredWaterZ{};
+
+private:
+
+	const float CAN_WALK_DEPTH_LIMIT = 100.f;
+	
 };

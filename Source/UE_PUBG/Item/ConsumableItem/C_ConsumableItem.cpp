@@ -9,6 +9,7 @@
 #include "HUD/C_HUDWidget.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_ConsumableUsageMeshComponent.h"
+#include "Character/Component/C_SwimmingComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Utility/C_Util.h"
@@ -42,7 +43,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 			//방해 받았는지 체크해서 방해를 받았다면 Activating Cancel 시키기
 
-			if (ItemUser->GetCharacterMovement()->IsFalling())
+			if (ItemUser->GetCharacterMovement()->IsFalling() || ItemUser->GetSwimmingComponent()->IsSwimming())
 			{
 				CancelActivating();
 				return;
@@ -100,8 +101,9 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 {
-	if (!IsAvailableToStartUsing(InItemUser)) return false; // Template Method(IsAvaliableToStartUsing())
-	if (ConsumableItemState != EConsumableItemState::IDLE) return false;
+	if (!IsAvailableToStartUsing(InItemUser))				return false; // Template Method(IsAvaliableToStartUsing())
+	if (InItemUser->GetSwimmingComponent()->IsSwimming())	return false;
+	if (ConsumableItemState != EConsumableItemState::IDLE)	return false;
 
 	ItemUser = InItemUser;
 

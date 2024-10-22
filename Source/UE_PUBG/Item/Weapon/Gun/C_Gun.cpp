@@ -348,6 +348,40 @@ void AC_Gun::CheckBackPackLevelChange()
 
 }
 
+bool AC_Gun::GetIsPlayingMontagesOfAny()
+{
+	UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+	UAnimMontage* DrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+	//UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+	UAnimMontage* SheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+	bool IsPlayingMontagesOfAny = CurAnimInstance->Montage_IsPlaying(DrawMontage) || CurAnimInstance->Montage_IsPlaying(SheathMontage);
+	return IsPlayingMontagesOfAny;
+}
+
+bool AC_Gun::GetCanGunAction()
+{
+	bool CanAim = OwnerCharacter->GetCharacterMovement()->IsFalling();
+	return CanAim;
+}
+
+void AC_Gun::ChangeCurShootingMode()
+{
+	int CurMode = int(CurrentShootingMode);
+	++CurMode %= 3;
+	CurrentShootingMode = EShootingMode(CurMode);
+	UC_Util::Print(CurMode);
+}
+
+void AC_Gun::ExecuteReloadMontage()
+{
+	AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
+	if (CurBulletCount == MaxBulletCount) return;
+	if (!CurPlayer->GetCanMove()) return;
+	if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return;
+	OwnerCharacter->SetIsReloadingBullet(true);
+	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
+}
+
 
 bool AC_Gun::FireBullet()
 {
@@ -357,7 +391,7 @@ bool AC_Gun::FireBullet()
 	if (CurBulletCount <= 0)
 	{
 		//TODO: 재장전 모션 실행 (총알이 Inven에 없으면 아무것도 못함)
-		ReloadBullet();
+		ExecuteReloadMontage();
 		UC_Util::Print("Can't Fire");
 
 		return false;
@@ -399,7 +433,7 @@ bool AC_Gun::FireBullet()
 		BulletCount++;
 		//UC_Util::Print("FIRE!!!!!!!");
 		CurBulletCount--;
-
+		OwnerPlayer->RecoilController();
 		return Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
 		//Bullet->Fire(this, FireLocation, FireDirection);
 		//if (BulletCount > 100)
@@ -411,6 +445,7 @@ bool AC_Gun::FireBullet()
 
 bool AC_Gun::ReloadBullet()
 {
+	OwnerCharacter->SetIsReloadingBullet(false);
 	CurBulletCount = MaxBulletCount;
 	return true;
 }

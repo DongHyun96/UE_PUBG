@@ -10,6 +10,7 @@
 #include "Character/Component/C_StatComponent.h"
 #include "Character/Component/C_PingSystemComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
+#include "Character/Component/C_SwimmingComponent.h"
 
 #include "Components/ActorComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -82,7 +83,7 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 		EnhancedInputComponent->BindAction(Num5Action, ETriggerEvent::Started, this, &UC_InputComponent::OnNum5);
 
 		EnhancedInputComponent->BindAction(XAction, ETriggerEvent::Started,     this, &UC_InputComponent::OnXKey);
-																			    
+																	    
 		EnhancedInputComponent->BindAction(BAction, ETriggerEvent::Started,		this, &UC_InputComponent::OnBKey);
 		EnhancedInputComponent->BindAction(RAction, ETriggerEvent::Started,     this, &UC_InputComponent::OnRKey);
 
@@ -111,6 +112,7 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 
 void UC_InputComponent::Move(const FInputActionValue& Value)
 {
+	if (Player->GetSwimmingComponent()->IsSwimming()) Player->SetCanMove(true);
 	if (!Player->GetCanMove()) return;
 
 	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
@@ -119,37 +121,36 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 	// 움직일 땐 카메라가 바라보는 방향으로 몸체도 돌려버림 (수업 기본 StrafeOn 세팅)
 	//Alt 키 누를때아닐떄 구분해서 설정
 
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	if (Player->GetSwimmingComponent()->IsSwimming())
+	{
+		Player->GetSwimmingComponent()->HandlePlayerMovement(MovementVector);
+		return;
+	}
+
 	if (Player->GetIsHoldDirection() || Player->GetIsAltPressed() || Player->GetIsAimDown()) //GetIsAimDown() -> bIsAimDownSight
 	{
-		PlayerMovement->bUseControllerDesiredRotation = false;
-		PlayerMovement->bOrientRotationToMovement = false;
-
-		Player->bUseControllerRotationYaw = false;
-
+		PlayerMovement->bUseControllerDesiredRotation	= false;
+		PlayerMovement->bOrientRotationToMovement		= false;
+		Player->bUseControllerRotationYaw				= false;
 	}
 	else
 	{
-
-		Player->bUseControllerRotationYaw = true;
-		PlayerMovement->bUseControllerDesiredRotation = false;
-		PlayerMovement->bOrientRotationToMovement = false;
+		Player->bUseControllerRotationYaw				= true;
+		PlayerMovement->bUseControllerDesiredRotation	= false;
+		PlayerMovement->bOrientRotationToMovement		= false;
 	}
-
-	FVector2D MovementVector = Value.Get<FVector2D>();
 
 	// Update Max walk speed
 	Player->UpdateMaxWalkSpeed(MovementVector);
 
 	if (Player->Controller != nullptr)
 	{
-		FRotator Rotation;
+		const FRotator Rotation = FRotator(0, Player->GetActorRotation().Yaw, 0);
 
-		Rotation = Player->GetActorRotation();
-
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		const FVector   RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
+		const FVector   RightDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
 
 		// TODO : Stand Crouch는 Character Movement 경사면 설정으로 적절히 처리가 알아서 됨
 		// Crawl 경사면 예외처리
@@ -243,8 +244,10 @@ void UC_InputComponent::Crawl()
 
 void UC_InputComponent::OnJump()
 {
-	if (!Player->GetCanMove()) return;
-	if (Player->GetIsJumping() || PlayerMovement->IsFalling()) return;
+	if (!Player->GetCanMove())									return;
+	if (Player->GetIsJumping() || PlayerMovement->IsFalling())	return;
+	if (Player->GetSwimmingComponent()->IsSwimming())			return;
+
 	CancelTurnInPlaceMotion();
 
 	if (Player->GetPoseState() == EPoseState::CRAWL) // Crawl to crouch

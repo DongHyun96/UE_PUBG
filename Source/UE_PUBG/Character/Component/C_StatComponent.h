@@ -70,6 +70,8 @@ public: // Getters and setters
 
 	const float GetHealUpLimit() const { return HEAL_UP_LIMIT; }
 
+	float GetCurOxygen() const { return CurOxygen; }
+
 public:
 
 	/// <summary>
@@ -104,9 +106,21 @@ public:
 
 	bool AddBoost(const float& BoostAmount);
 
+	/// <summary>
+	/// Oxygen량 더하고 빼기 통합
+	/// </summary>
+	/// <param name="OxygenAmount"> : 더할 Oxygen 량 </param>
+	void AddOxygen(const float& OxygenAmount);
+
 private:
 
 	void UpdateBoostEffect(const float& DeltaTime);
+
+	/// <summary>
+	/// 산소 고갈 시 Damage 주기 담당, 1초에 피해량 20씩 주기
+	/// </summary>
+	/// <param name="DeltaTime"></param>
+	void HandleOxygenExhausted(const float& DeltaTime);
 
 	FBoostingEffectFactor GetBoostingEffectFactorByCurBoostingAmount() const;
 
@@ -123,6 +137,8 @@ private:
 
 	const float HEAL_UP_LIMIT = 75.f; // 구급상자, 붕대로 채울 수 있는 총 힐량 limit
 
+	const float MAX_OXYGEN_HP = 100.f; // 숨 HP Max
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly)
@@ -130,6 +146,9 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly)
 	float CurBoosting{}; // 현재 캐릭터의 실제 부스팅 량
+
+	UPROPERTY(BlueprintReadOnly)
+	float CurOxygen = 100.f;
 
 private:
 
@@ -147,6 +166,11 @@ private:
 		{3.f, 1.025f},	// 3페이즈
 		{4.f, 1.0625f}	// 4페이즈
 	};
+
+private: // Oxygen Exhausted 관련
+
+	const float OXYGEN_EXHAUSTED_DAMAGE_PER_SEC = 20.f;
+	float OxygenExhaustedTimer{};
 
 private:
 	// 피격 판정 부위 Mapping TPair<PhysicsAssetBoneName, EDamagingPartType>

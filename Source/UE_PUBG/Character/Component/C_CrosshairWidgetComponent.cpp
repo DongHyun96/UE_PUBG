@@ -79,17 +79,17 @@ void UC_CrosshairWidgetComponent::SetVisibileOfCrosshairBorder(bool InIsVisible)
 {
 	if (InIsVisible)
 	{
-		CrosshairTop->SetVisibility(ESlateVisibility::Visible);
-		CrosshairBottom->SetVisibility(ESlateVisibility::Visible);
-		CrosshairLeft->SetVisibility(ESlateVisibility::Visible);
-		CrosshairRight->SetVisibility(ESlateVisibility::Visible);
+		CrosshairTop->SetVisibility(   ESlateVisibility::SelfHitTestInvisible);
+		CrosshairBottom->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		CrosshairLeft->SetVisibility(  ESlateVisibility::SelfHitTestInvisible);
+		CrosshairRight->SetVisibility( ESlateVisibility::SelfHitTestInvisible);
 	}
 	else
 	{
-		CrosshairTop->SetVisibility(ESlateVisibility::Hidden);
+		CrosshairTop->SetVisibility(   ESlateVisibility::Hidden);
 		CrosshairBottom->SetVisibility(ESlateVisibility::Hidden);
-		CrosshairLeft->SetVisibility(ESlateVisibility::Hidden);
-		CrosshairRight->SetVisibility(ESlateVisibility::Hidden);
+		CrosshairLeft->SetVisibility(  ESlateVisibility::Hidden);
+		CrosshairRight->SetVisibility( ESlateVisibility::Hidden);
 	}
 
 }
@@ -100,23 +100,23 @@ void UC_CrosshairWidgetComponent::SetCrosshairState(ECrosshairState InState)
 	{
 		return;
 	}
-	RedDotImage->SetVisibility(ESlateVisibility::Hidden);
+	RedDotImage->SetVisibility(       ESlateVisibility::Hidden);
 	BaseCrosshairImage->SetVisibility(ESlateVisibility::Hidden);
-	GrayDotImage->SetVisibility(ESlateVisibility::Hidden);
+	GrayDotImage->SetVisibility(      ESlateVisibility::Hidden);
 	SetVisibileOfCrosshairBorder(false);
 	switch (InState)
 	{
 	case ECrosshairState::NORIFLE:
 		//BaseCrosshairImage->SetVisibility(ESlateVisibility::Visible);
-		GrayDotImage->SetVisibility(ESlateVisibility::Visible);
+		GrayDotImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		break;
 	case ECrosshairState::RIFLE:
 		//BaseCrosshairImage->SetVisibility(ESlateVisibility::Visible);
 		SetVisibileOfCrosshairBorder(true);
-		GrayDotImage->SetVisibility(ESlateVisibility::Visible);
+		GrayDotImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		break;
 	case ECrosshairState::RIFLEAIMDOWNSIGHT:
-		RedDotImage->SetVisibility(ESlateVisibility::Visible);
+		RedDotImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		break;
 	case ECrosshairState::RIFLECRAWLMOVING:
 		break;
@@ -127,13 +127,17 @@ void UC_CrosshairWidgetComponent::SetCrosshairState(ECrosshairState InState)
 
 void UC_CrosshairWidgetComponent::ToggleWidgetVisibility(bool InOnOff)
 {
+	bool bIsCharacterMoving = (OwnerCharacter->GetNextSpeed() > 10);
+	bool bIsCharacterCrawling = (OwnerCharacter->GetPoseState() == EPoseState::CRAWL);
 	if (InOnOff)
-		AimSightWidget->SetVisibility(ESlateVisibility::Visible);
-	else
 	{
-		AimSightWidget->SetVisibility(ESlateVisibility::Hidden);
-		//UC_Util::Print("WTF?");
+		if (bIsCharacterCrawling && bIsCharacterMoving)
+			AimSightWidget->SetVisibility(ESlateVisibility::Hidden);
+		else
+			AimSightWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
+	else
+		AimSightWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UC_CrosshairWidgetComponent::ManageAimWidgetImages()
@@ -149,12 +153,44 @@ void UC_CrosshairWidgetComponent::ManageAimWidgetImages()
 
 void UC_CrosshairWidgetComponent::UpdateImageSize()
 {
-	float CurPlayerSpeed = OwnerCharacter->GetMovementComponent()->Velocity.Size() / 170;
-	float SizeMultiplier = FMath::Max(1.0f, CurPlayerSpeed);
+
+	float SizeMultOnPose = 1.0f;
+	float SizeMultOnAiming = 1.0f;
+	float BaseStandardValue = 270;
+	if (OwnerCharacter->GetIsAimDown())
+		SizeMultOnAiming = 0.7;
+	EPoseState CurPose = OwnerCharacter->GetPoseState();
+	switch (CurPose)
+	{
+	case EPoseState::STAND:
+		break;
+	case EPoseState::CROUCH:
+		SizeMultOnPose = 0.7;
+		BaseStandardValue = 170;
+		break;
+	case EPoseState::CRAWL:
+		SizeMultOnPose = 0.5;
+		break;
+	case EPoseState::POSE_MAX:
+		break;
+	default:
+		break;
+	}
+
+	float CurPlayerSpeed = OwnerCharacter->GetMovementComponent()->Velocity.Size() / 270;
+	float SizeMultiplier = FMath::Max(1, CurPlayerSpeed);
+	AC_Gun* CurGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
+	float BaseSize = 1.0f;
+	if (IsValid(CurGun))
+	{
+		BaseSize = CurGun->GetBaseBulletSpreadDegree();
+	}
 	UCanvasPanelSlot* ImageSlot = Cast<UCanvasPanelSlot>(BaseCrosshairImage->Slot);
 	if (!ImageSlot) return;
 	//UC_Util::Print(InitialBaseCrosshairImageSlotSize);
-	FVector2D NewSize = FVector2D(100,100) * SizeMultiplier;
+	//UC_Util::Print(BaseSize);
+
+	FVector2D NewSize = FVector2D(100,100) * SizeMultiplier * BaseSize * SizeMultOnPose * SizeMultOnAiming;
 	//UC_Util::Print(NewSize, FColor::Blue);
 
 	ImageSlot->SetSize(NewSize);		
