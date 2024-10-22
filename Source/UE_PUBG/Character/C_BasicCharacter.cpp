@@ -51,9 +51,6 @@ void AC_BasicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MainCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
-	InitialMainCameraRelativeRotation = MainCamera->GetRelativeRotation().Quaternion();
-	C_MainSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("MainSpringArm")); 
 
 	StatComponent->SetOwnerCharacter(this);
 }

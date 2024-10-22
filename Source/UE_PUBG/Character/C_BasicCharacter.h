@@ -214,7 +214,8 @@ public:
 	void SetIsWalking(bool InIsWalking) { bIsWalking = InIsWalking; }
 	bool GetIsSprinting() const { return bIsSprinting; }
 	void SetIsSprinting(bool InIsSprinting) { bIsSprinting = InIsSprinting; }
-
+	bool GetIsReloadingBullet() { return bIsReloadingBullet; }
+	void SetIsReloadingBullet(bool bInIsReloading) { bIsReloadingBullet = bInIsReloading; }
 	UC_InvenComponent* GetInventory() const { return Inventory; }
 
 	class UC_ConsumableUsageMeshComponent* GetConsumableUsageMeshComponent() const { return ConsumableUsageMeshComponent; }
@@ -283,15 +284,8 @@ public:
 	// OnTransitionFinish에서 호출될 Multicast Delegate
 	FDele_PoseTransitionFin Delegate_OnPoseTransitionFin;
 
-protected: // Camera
 
-	UPROPERTY(BluePrintReadWrite, EditAnywhere)
-	class UCameraComponent* MainCamera{};
 
-	UPROPERTY(BluePrintReadWrite, EditAnywhere)
-	class USpringArmComponent* C_MainSpringArm{};
-
-	FQuat InitialMainCameraRelativeRotation;
 
 protected:
 
@@ -305,6 +299,7 @@ protected:
 	bool bIsAimDownSight = false;
 	bool bIsAimingRifle = false;
 	bool bIsWatchingSight = false;
+	bool bIsReloadingBullet = false;
 	FRotator CharacterMovingDirection;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

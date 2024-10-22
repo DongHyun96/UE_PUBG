@@ -97,6 +97,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnDrawEnd();
 
+	UFUNCTION(BlueprintCallable)
+	void OnReloadEnd();
+
 private:
 
 	/// <summary>
