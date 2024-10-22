@@ -52,9 +52,6 @@ void AC_BasicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MainCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
-	InitialMainCameraRelativeRotation = MainCamera->GetRelativeRotation().Quaternion();
-	C_MainSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("MainSpringArm")); 
 
 	GetPhysicsVolume()->FluidFriction = 2.5f;
 	StatComponent->SetOwnerCharacter(this);

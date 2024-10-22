@@ -50,6 +50,8 @@ AC_Bullet::AC_Bullet()
 	
 }
 
+
+
 void AC_Bullet::BeginPlay()
 {
 	Super::BeginPlay();
@@ -152,14 +154,14 @@ bool AC_Bullet::Fire(AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, 
 		}
 
 		ActivateInstance();
-		UC_Util::Print(BulletProjectileMovement->InitialSpeed);
+		//UC_Util::Print(BulletProjectileMovement->InitialSpeed);
 		USkeletalMeshComponent* GunMesh = OwnerGun->GetGunMesh();
 
 		SetActorLocation(InLocation);
 		BulletProjectileMovement->Velocity = InDirection;
 		//BulletProjectileMovement->UpdateComponentVelocity();
 		float BulletSpeedCheck = BulletProjectileMovement->Velocity.Size();
-		UC_Util::Print(BulletSpeedCheck, FColor::Blue);
+		//UC_Util::Print(BulletSpeedCheck, FColor::Blue);
 
 		//Bullet->BulletProjectileMovement->SetActive(true);
 		return true;
@@ -248,9 +250,9 @@ void AC_Bullet::CalculateTravelDistanceAndDeactivate(float DeltaTime)
 	if (BulletProjectileMovement->IsActive())
 	{
 		CustomPhysics(DeltaTime);
-		UC_Util::Print(BulletProjectileMovement->Velocity.Size());
+		//UC_Util::Print(BulletProjectileMovement->Velocity.Size());
 		float TravelDistance = (GetActorLocation() - FireLocation).Size();
-		if (TravelDistance > 1000000.0f)
+		if (TravelDistance > 1000000.0f || GetActorLocation().Z < -900)
 		{
 			DeactivateInstance();
 		}

@@ -69,6 +69,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanCharacterMove = true;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bCharacterIsWatchingSight = false;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCharacterIsSheathing = false;
@@ -80,6 +82,10 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ESwimmingState SwimmingState{};
+
+	bool bCanUseAimOffset = false;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsLeftHandIKOn = false;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EHandState HandState{};
@@ -109,6 +115,9 @@ protected:
 	void SetAimingTurnInPlaceRotation();
 
 	void SetLeftHandIKOn();
+
+	void SetCanUseAimOffset();
+	void SetIsLeftHandIKOn();
 protected:
 	float AimingTurnInPlaceTimeCount = 0.0f;
 	float SavedYaw = 0.0f;

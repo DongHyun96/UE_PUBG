@@ -66,9 +66,10 @@ public: // Getters and setters
 	FPoseTurnInPlaceAnimMontage& GetLowerPoseTurnAnimMontage(EHandState InHandState) { return LowerBodyTurnAnimMontageMap[InHandState]; }
 
 	void SetSpringArmRelativeLocationDest(EPoseState InNextPoseState) { MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
+	void SetAimingSpringArmRelativeLocationDest(EPoseState InNextPoseState) { AimingSpringArmRelativeLocationDest = AimingSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
 
 	class UC_HUDWidget* GetHUDWidget() const { return HUDWidget; }
-
+	 
 	class UC_PingSystemComponent* GetPingSystemComponent() const { return PingSystemComponent; }
 
 private:
@@ -101,13 +102,25 @@ protected:
 protected:
 	//Aim Press Camera
 	UPROPERTY(EditDefaultsOnly)
-	class UCameraComponent* AimCamera;
+	class UCameraComponent* AimCamera{};
 	UPROPERTY(EditDefaultsOnly)
-	class USpringArmComponent* AimSpringArmTemp;
+	class USpringArmComponent* AimSpringArmTemp{};
 
+protected: // Camera
+
+	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+	class UCameraComponent* MainCamera{};
+
+	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+	class USpringArmComponent* C_MainSpringArm{};
+
+	FQuat InitialMainCameraRelativeRotation;
+
+public:
+	UCameraComponent* GetMainCamera() { return MainCamera; }
 protected:
 	//Aim Press Camera 위치 조정 함수
-	void HandleAimPressCameraLocation();
+	void SetAimPressCameraLocation();
 
 protected:
 
@@ -209,6 +222,7 @@ public:
 
 
 public:
+
 	/// <summary>
 	/// 조준에 따른 카메라 변경
 	/// </summary>
@@ -216,30 +230,37 @@ public:
 	void SetToAimDownSight();
 
 	void BackToMainCamera();
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UTimelineComponent* CameraTransitionTimeline;
-
-	//TimeLine 진행중일 때 호출 되는 함수포인터
-	FOnTimelineFloat InterpFunction{};
-	//TimeLine 이 끝나면 호출 되는 함수포인터
-	FOnTimelineEvent TimelineFinished{};
+	void HandleStatesWhileMovingCrawl();
+	class UC_TimelineUtility* CameraTransitionTimelineComponent;
+	float PrevMoveSpeed = 0;
 	UFUNCTION(CallInEditor)
-	void HandleInterpolation(float Value);
+	void HandleCameraTransitionInterpolation(float Value);
 
 	UFUNCTION()
-	void OnTimelineFinished();
+	void OnCameraTransitionTimelineFinished();
 
 	FVector InitialCameraLocation;
 	FRotator InitialCameraRotation;
 
 	void SetTimeLineComponentForMovingCamera();
 
-	class UCurveFloat* CreateCurveFloatForSwitchCamera();
+public:
+	/// <summary>
+	/// 조준에 따른 카메라 변경
+	/// </summary>
 
-	UPROPERTY(EditDefaultsOnly)
-	UCurveFloat* CurveFloatForSwitchCameraChange{};
+	void RecoilController();
+	class UC_TimelineUtility* RecoilTimeline;
 
+	UFUNCTION(CallInEditor)
+	void HandleRecoilInterpolation(float Value);
+
+	UFUNCTION()
+	void OnRecoilTimelineFinished();
+
+	void SetRecoilTimeLineComponent();
+
+	void SetRecoilTimelineValues();
 private:
 	void SpawnConsumableItemForTesting();
 
@@ -333,6 +354,9 @@ private:
 
 	TMap<EPoseState, FVector> MainSpringArmRelativeLocationByPoseMap{};
 	FVector MainSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
+
+	TMap<EPoseState, FVector> AimingSpringArmRelativeLocationByPoseMap{};
+	FVector AimingSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
 
 
 protected:

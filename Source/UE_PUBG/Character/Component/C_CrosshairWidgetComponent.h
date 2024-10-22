@@ -25,7 +25,7 @@ struct FAimDownSightImages
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TMap<EWeaponSightState, class UImage*> Images;
+	TMap<EWeaponSightState, class UImage*> Images{};
 };
 UCLASS()
 class UE_PUBG_API UC_CrosshairWidgetComponent : public UUserWidget
@@ -53,19 +53,19 @@ protected:
 	void InitializeAimSightWidget();
 
 	//À§Á¬¿¡ ¶ç¿ï ÀÌ¹ÌÁö º¯¼ö
-	FAimDownSightImages AimDownSightImages;
+	FAimDownSightImages AimDownSightImages{};
 
-	class UImage* BaseCrosshairImage;
-	UImage* RedDotImage;
-	UImage* GrayDotImage;
-	UImage* UnarmedRifleDotImage;
-	FVector2D InitialBaseCrosshairImageSlotSize;
-	ECrosshairState CurState;
+	class UImage* BaseCrosshairImage{};
+	UImage* RedDotImage{};
+	UImage* GrayDotImage{};
+	UImage* UnarmedRifleDotImage{};
+	FVector2D InitialBaseCrosshairImageSlotSize{};
+	ECrosshairState CurState{};
 
-	class UBorder* CrosshairTop;
-	UBorder* CrosshairBottom;
-	UBorder* CrosshairLeft;
-	UBorder* CrosshairRight;
+	class UBorder* CrosshairTop{};
+	UBorder* CrosshairBottom{};
+	UBorder* CrosshairLeft{};
+	UBorder* CrosshairRight{};
 
 	void SetVisibileOfCrosshairBorder(bool InIsVisible);
 

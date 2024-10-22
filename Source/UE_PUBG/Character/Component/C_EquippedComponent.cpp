@@ -264,6 +264,15 @@ void UC_EquippedComponent::OnDrawEnd()
     NextWeaponType = EWeaponSlot::NONE;
 }
 
+void UC_EquippedComponent::OnReloadEnd()
+{
+    AC_Gun* CurGun = Cast<AC_Gun>(Weapons[CurWeaponType]);
+    if (IsValid(CurGun))
+    {
+        CurGun->ReloadBullet();
+    }
+}
+
 void UC_EquippedComponent::SpawnWeaponsForTesting()
 {
     // Test¿ë weapon spawnµé
