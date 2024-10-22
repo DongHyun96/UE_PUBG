@@ -201,6 +201,8 @@ void UC_SwimmingComponent::OnWaterDetectionColliderBeginOverlap
 )
 {
 	UC_Util::Print("Swimming Collider Begin Overlap");
+	UC_Util::Print(OtherActor->GetName(), FColor::Cyan, 10.f);
+
 
 	// PostProcessVolume의 위치와 크기 정보를 가져옴
 	FVector PostProcessLocation = OtherActor->GetActorLocation();

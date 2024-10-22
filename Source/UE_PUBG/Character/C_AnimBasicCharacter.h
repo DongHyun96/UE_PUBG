@@ -82,7 +82,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ESwimmingState SwimmingState{};
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanUseAimOffset = false;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsLeftHandIKOn = false;
