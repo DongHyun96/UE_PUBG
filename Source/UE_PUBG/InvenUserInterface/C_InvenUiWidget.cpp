@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "InvenUserInterface/C_InvenUiWidget.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/TextBlock.h"
 #include "Components/ListView.h"
@@ -8,7 +9,6 @@
 
 #include "Components/CanvasPanel.h"
 
-#include "InvenUserInterface/C_InvenUiWidget.h"
 #include "InvenUserInterface/C_ItemBarWidget.h"
 
 #include "Utility/C_Util.h"
