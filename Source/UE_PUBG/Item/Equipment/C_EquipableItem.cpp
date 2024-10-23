@@ -19,7 +19,7 @@ void AC_EquipableItem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-bool AC_EquipableItem::Interaction()
+bool AC_EquipableItem::Interaction(AC_BasicCharacter* Character)
 {
 	return false;
 }

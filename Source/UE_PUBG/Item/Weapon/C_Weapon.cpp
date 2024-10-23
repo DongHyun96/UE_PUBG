@@ -127,3 +127,12 @@ void AC_Weapon::PickUpItem(AC_BasicCharacter* Character)
 	}
 }
 
+bool AC_Weapon::Interaction(AC_BasicCharacter* Character)
+{
+	if (Character)
+	{
+		PickUpItem(Character);
+		return true;
+	}
+	return false;
+}

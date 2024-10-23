@@ -15,6 +15,8 @@ UCLASS()
 class UE_PUBG_API UC_EquipSlot : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+	void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class AC_BasicCharacter* OwnerCharacter;

@@ -1,6 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InvenUserInterface/C_InvenUiWidget.h"
+<<<<<<< Updated upstream
+=======
+#include "InvenUserInterface/C_ItemBarWidget.h"
+#include "InvenUserInterface/C_MainGunWidget.h"
+#include "InvenUserInterface/C_ThrowableWidget.h"
+#include "InvenUserInterface/C_EquipSlot.h"
+
+>>>>>>> Stashed changes
 #include "Blueprint/WidgetTree.h"
 #include "Components/TextBlock.h"
 #include "Components/ListView.h"
@@ -9,7 +17,10 @@
 
 #include "Components/CanvasPanel.h"
 
+<<<<<<< Updated upstream
 #include "InvenUserInterface/C_ItemBarWidget.h"
+=======
+>>>>>>> Stashed changes
 
 #include "Utility/C_Util.h"
 
@@ -24,18 +35,7 @@ void UC_InvenUiWidget::NativeConstruct()
         
     }
 
-    MyItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("MyItemListWidget1")));
-    AroundItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("AroundItemListWidget1")));
-
-    MyItemListView = Cast<UListView>(GetWidgetFromName(FName("MyItemList")));
-    AroundItemListView = Cast<UListView>(GetWidgetFromName(FName("AroundItemList")));
-
-    //MyItemListView->ItemFromEntryWidget
-
-    if (ItemBarClass)
-    {
-        ItemBarInstance = CreateWidget<UC_ItemBarWidget>(GetWorld(), ItemBarClass);
-    }
+    InitWidget();
 
     InitListView();
 
@@ -80,6 +80,42 @@ void UC_InvenUiWidget::NativeConstruct()
     //}
 }
 
+void UC_InvenUiWidget::InitWidget()
+{
+    MyItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("MyItemListWidget1")));
+    
+    AroundItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("AroundItemListWidget1")));
+
+    MyItemListView = Cast<UListView>(GetWidgetFromName(FName("MyItemList")));
+
+    AroundItemListView = Cast<UListView>(GetWidgetFromName(FName("AroundItemList")));
+
+    MainGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_MainGun")));
+    MainGunSlot->SetWeaponBoxNum(1);
+    MainGunSlot->Init();
+
+    SubGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_SubGun")));
+    SubGunSlot->SetWeaponBoxNum(2);
+    SubGunSlot->Init();
+
+    MeleeSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Melee")));
+    MeleeSlot->SetWeaponBoxNum(4);
+
+    ThrowableSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Throwble")));
+    ThrowableSlot->SetWeaponBoxNum(5);
+
+    SetWidgetsOwner(OwnerCharacter);
+
+}
+
+void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
+{
+    MainGunSlot  ->SetOwnerCharacter(Character);
+    SubGunSlot   ->SetOwnerCharacter(Character);
+    MeleeSlot    ->SetOwnerCharacter(Character);
+    ThrowableSlot->SetOwnerCharacter(Character);
+}
+
 void UC_InvenUiWidget::InitListView()
 {
     //     아이템 리스트 위젯 초기화 및 데이터 추가
@@ -99,7 +135,6 @@ void UC_InvenUiWidget::InitListView()
         AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
 
         PopulateItemList(AroundItemListView, AroundItems);
-
     }
 }
 
@@ -113,17 +148,7 @@ void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_
         AC_Item* Item = ItemPair.Value; // TMap에서 아이템 가져오기
         if (Item)
         {
-            // UC_ItemBarWidget 인스턴스 생성
-            //UC_ItemBarWidget* NewItemBarWidget = CreateWidget<UC_ItemBarWidget>(GetWorld(), UC_ItemBarWidget::StaticClass());
-            list->GetEntryWidgetClass();
             list->AddItem(Item);
-            //UC_ItemBarWidget* NewItemBarWidget = Cast<UC_ItemBarWidget>(GetWidgetFromName(FName("WBP_ItemBarWidget")));
-            //if (ItemBarInstance)
-            //{
-            //    // 아이템 데이터 초기화
-            //    ItemBarInstance->InitBar(Item); // InitBar 메서드를 통해 아이템 정보를 설정
-            //    list->AddItem(ItemBarInstance); // 리스트뷰에 아이템 추가
-            //}
         }
     }
 }

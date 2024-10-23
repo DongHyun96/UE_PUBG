@@ -97,6 +97,8 @@ public:
 	/// <param name="Character"></param>
 	virtual void PickUpItem(class AC_BasicCharacter* Character) override;
 
+	virtual bool Interaction(AC_BasicCharacter* Character) override;
+
 public:
 
 	void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }

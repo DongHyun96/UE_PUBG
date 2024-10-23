@@ -28,7 +28,7 @@ public:
 	
 	//virtual void Interaction(class AC_BasicCharacter* character) override;
 
-	virtual bool Interaction() override;
+	virtual bool Interaction(AC_BasicCharacter* Character) override;
 
 
 	//void SetRelativeTranformToInitial() { SetActorRelativeTransform(InitialRelativeTransform); }

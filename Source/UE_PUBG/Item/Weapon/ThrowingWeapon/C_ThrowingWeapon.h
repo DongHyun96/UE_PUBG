@@ -76,6 +76,8 @@ public:
 
 	bool MoveToSlot(AC_BasicCharacter* Character) override;
 
+	bool Interaction(AC_BasicCharacter* Character) override;
+
 public:
 
 	/// <summary>

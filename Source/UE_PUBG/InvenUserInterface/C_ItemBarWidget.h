@@ -28,7 +28,7 @@ public:
 
     virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
-    void NativeConstruct();
+    void NativeConstruct() override;
 
 	UFUNCTION(BlueprintCallable)
     void InitBar(AC_Item* item);
@@ -40,6 +40,8 @@ public:
     AC_Item* DropItem(AC_Item* myItem);
 
     //두 기능을 합친 SetItem생각
+
+    void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 public:
     // UI에 바인딩할 변수 선언 (Blueprint에서 연결)

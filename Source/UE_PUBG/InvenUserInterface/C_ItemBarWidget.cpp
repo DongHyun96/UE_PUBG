@@ -21,6 +21,13 @@ void UC_ItemBarWidget::NativeConstruct()
 	//ItemName = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), FName("ItemName1"));
 	//ItemStackBlock = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), FName("ItemStackBlock1"));
 
+	if (!OwnerCharacter)
+	{
+		OwnerCharacter = Cast<AC_BasicCharacter>(GetOwningPlayerPawn());
+	}
+
+
+
 	// 바인딩된 위젯들이 null인지 확인
 	if (!ItemImage1)
 	{
@@ -54,7 +61,7 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 	{
 		if (CachedItem)
 		{   // 우클릭 이벤트 실행
-			CachedItem->Interaction();
+			CachedItem->Interaction(OwnerCharacter);
 
 			//NativeOnListItemObjectSet에서의 호출과 중복으로 일단 주석처리, 다만 이벤트시에 초기화가 필요하면 사용해야 할 수 있음.
 			//InitBar();
@@ -79,6 +86,8 @@ void UC_ItemBarWidget::InitBar(AC_Item* item)
 
 	if (item)
 	{
+		CachedItem = item;
+
 		ItemImage1->SetBrushFromTexture(item->GetItemDatas().ItemIcon);
 
 		ItemType = item->GetItemDatas().ItemType;

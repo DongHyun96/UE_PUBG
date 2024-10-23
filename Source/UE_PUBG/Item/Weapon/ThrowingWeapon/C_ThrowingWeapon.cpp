@@ -353,6 +353,17 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 	return true;
 }
 
+bool AC_ThrowingWeapon::Interaction(AC_BasicCharacter* Character)
+{
+	if (Character)
+	{
+		MoveToSlot(Character);
+	}
+	MoveToSlot(Character);
+
+	return false;
+}
+
 void AC_ThrowingWeapon::InitTestPool(AC_BasicCharacter* InOwnerCharacter, UClass* Class, UC_EquippedComponent* EquippedComponent)
 {
 	ThrowablePool.Empty();

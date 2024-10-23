@@ -18,11 +18,17 @@ class UE_PUBG_API UC_InvenUiWidget : public UUserWidget
 public:
 	void SetOwnerCharacter(class AC_BasicCharacter* Character) { OwnerCharacter = Character; }
 
+	UFUNCTION(BlueprintCallable)
+	void SetWidgetsOwner(AC_BasicCharacter* Character);
+
+
 	void InitListView();
 protected:
+	//void PreConstruct(bool IsDesignTime) override;
+
 	virtual void NativeConstruct() override;
 
-	//virtual void PreConstruct() override;
+	void InitWidget();
 
 	void PopulateItemList(class UListView* list, const TMap<FString, class AC_Item*>& itemList);
 
@@ -37,16 +43,20 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UC_MyItemListWidget* AroundItemListWidget = nullptr; // 아이템 리스트 위젯
 
+	//ListViewWidget
 	class UListView* MyItemListView = nullptr;
 
 	UListView* AroundItemListView = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<class UC_ItemBarWidget> ItemBarClass;
+	//EquipWidget
+	class UC_MainGunWidget* MainGunSlot = nullptr;
 
-	UC_ItemBarWidget* ItemBarInstance = nullptr;
+	UC_MainGunWidget* SubGunSlot = nullptr;
 
-	UUserWidget* widget = nullptr;
+	class UC_ThrowableWidget* MeleeSlot = nullptr;
+
+	UC_ThrowableWidget* ThrowableSlot = nullptr;
+
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

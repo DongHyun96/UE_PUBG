@@ -183,7 +183,7 @@ void UC_InvenComponent::Interaction(AC_Item* wilditem)
 	
 	//wilditem->Interaction(OwnerCharacter);
 
-	wilditem->Interaction();
+	wilditem->Interaction(OwnerCharacter);
 
 
 	if (CheckVolume(wilditem))

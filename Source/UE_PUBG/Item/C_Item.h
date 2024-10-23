@@ -106,7 +106,7 @@ public:
 	/// 상호작용으로 바꾼다면. OwnerCharcter의 여부에 따라, 아이템에 따라 UseItem의 이름을 다른 범용적인 함수에 사용가능.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	virtual bool Interaction() PURE_VIRTUAL(AC_Item::Interaction, return false;);
+	virtual bool Interaction(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item::Interaction, return false;);
 
 	virtual bool UseItem() PURE_VIRTUAL(AC_Item::UseItem, return false;);
 
