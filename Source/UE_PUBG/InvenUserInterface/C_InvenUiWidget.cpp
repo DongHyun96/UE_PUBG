@@ -1,14 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InvenUserInterface/C_InvenUiWidget.h"
-<<<<<<< Updated upstream
-=======
+
 #include "InvenUserInterface/C_ItemBarWidget.h"
 #include "InvenUserInterface/C_MainGunWidget.h"
 #include "InvenUserInterface/C_ThrowableWidget.h"
 #include "InvenUserInterface/C_EquipSlot.h"
 
->>>>>>> Stashed changes
+
 #include "Blueprint/WidgetTree.h"
 #include "Components/TextBlock.h"
 #include "Components/ListView.h"
@@ -17,10 +16,8 @@
 
 #include "Components/CanvasPanel.h"
 
-<<<<<<< Updated upstream
+
 #include "InvenUserInterface/C_ItemBarWidget.h"
-=======
->>>>>>> Stashed changes
 
 #include "Utility/C_Util.h"
 
