@@ -88,20 +88,24 @@ void UC_InvenUiWidget::InitWidget()
     AroundItemListView = Cast<UListView>(GetWidgetFromName(FName("AroundItemList")));
 
     MainGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_MainGun")));
-    MainGunSlot->SetWeaponBoxNum(1);
-    MainGunSlot->Init();
 
     SubGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_SubGun")));
-    SubGunSlot->SetWeaponBoxNum(2);
-    SubGunSlot->Init();
 
     MeleeSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Melee")));
-    MeleeSlot->SetWeaponBoxNum(4);
 
     ThrowableSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Throwble")));
-    ThrowableSlot->SetWeaponBoxNum(5);
 
     SetWidgetsOwner(OwnerCharacter);
+    
+    MainGunSlot->SetWeaponBoxNum(1);
+    
+    MainGunSlot->Init();
+    SubGunSlot->SetWeaponBoxNum(2);
+    SubGunSlot->Init();
+    
+    MeleeSlot->SetWeaponBoxNum(4);
+    
+    ThrowableSlot->SetWeaponBoxNum(5);
 
 }
 

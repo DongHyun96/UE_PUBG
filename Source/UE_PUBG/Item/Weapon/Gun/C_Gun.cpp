@@ -259,17 +259,17 @@ void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
 		break;
 	case EWeaponSlot::MAIN_GUN:
 		//Main Gun Slot에 총이 없다면 실행
-		if (!EquippedComponent->GetWeapons().Find(Slot))
+		if (!EquippedComponent->GetWeapons()[EWeaponSlot::MAIN_GUN])
 		{
-			EquippedComponent->SetSlotWeapon(Slot, this);
+			EquippedComponent->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
 			return;
 		}
 		//Slot = EWeaponSlot::SUB_GUN;
 	case EWeaponSlot::SUB_GUN:
 		//Sub Gun Slot에 총이 없다면 실행
-		if (!EquippedComponent->GetWeapons().Find(Slot))
+		if (!EquippedComponent->GetWeapons()[EWeaponSlot::SUB_GUN])
 		{
-			EquippedComponent->SetSlotWeapon(Slot, this);
+			EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
 			return;
 		}
 		break;

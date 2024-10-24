@@ -21,14 +21,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetsOwner(AC_BasicCharacter* Character);
 
-
+	/// <summary>
+	/// 아이템리스트(ListView)초기화
+	/// </summary>
 	void InitListView();
+	void InitWidget();
 protected:
 	//void PreConstruct(bool IsDesignTime) override;
 
 	virtual void NativeConstruct() override;
 
-	void InitWidget();
+	/// <summary>
+	/// 위젯 초기화
+	/// </summary>
+
 
 	void PopulateItemList(class UListView* list, const TMap<FString, class AC_Item*>& itemList);
 

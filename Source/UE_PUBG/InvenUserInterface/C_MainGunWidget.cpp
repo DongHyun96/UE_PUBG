@@ -2,6 +2,7 @@
 
 
 #include "InvenUserInterface/C_MainGunWidget.h"
+//#include "Item/C_Item.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -20,7 +21,7 @@ void UC_MainGunWidget::Init()
 {
 	if (IsValid(OwnerCharacter))
 	{
-		Weapon = OwnerCharacter->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN];
+		Weapon = OwnerCharacter->GetEquippedComponent()->GetWeapons()[WeaponType];
 	}
 
 	if (IsValid(Weapon))
@@ -46,4 +47,17 @@ void UC_MainGunWidget::SetWeapon(AC_Item* item)
 void UC_MainGunWidget::SetWeaponBoxNum(uint8 Num)
 {
 	WeaponNum->SetText(FText::FromString(FString::FromInt(Num)));
+	WeaponNum->SetVisibility(ESlateVisibility::Visible);
+
+	switch (Num)
+	{
+	case 1:
+		WeaponType = EWeaponSlot::MAIN_GUN;
+		break;
+	case 2:
+		WeaponType = EWeaponSlot::SUB_GUN;
+		break;
+	default:
+		break;
+	}
 }

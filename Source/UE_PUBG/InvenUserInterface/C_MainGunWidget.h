@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UE_PUBG/Character/C_BasicCharacter.h"
 #include "Components/TextBlock.h"
+#include "Character/Component/C_EquippedComponent.h"
 
 #include "C_MainGunWidget.generated.h"
 
@@ -48,4 +49,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_Weapon* Weapon = nullptr;
+
+	EWeaponSlot WeaponType{};
 };

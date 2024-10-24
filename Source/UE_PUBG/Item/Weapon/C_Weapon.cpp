@@ -114,13 +114,13 @@ void AC_Weapon::PickUpItem(AC_BasicCharacter* Character)
 	switch (Type)
 	{
 	case EItemTypes::MAINGUN:
-		PickUpItem(OwnerCharacter);
+		PickUpItem(Character);
 		break;
 	case EItemTypes::MELEEWEAPON:
-		PickUpItem(OwnerCharacter);
+		PickUpItem(Character);
 		break;
 	case EItemTypes::THROWABLE:
-		PickUpItem(OwnerCharacter);
+		PickUpItem(Character);
 		break;
 	default:
 		break;
