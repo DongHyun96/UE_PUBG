@@ -73,22 +73,25 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	CrawlRotationAngle = OwnerCharacter->GetPoseColliderHandlerComponent()->GetCurrentCrawlSlopeAngleForRigControl();
 
 	AC_Gun* CurrentGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
-	if (IsValid(CurrentGun))
-	{
-		RifleLeftHandSocket = CurrentGun->GetLeftHandSocketTransform();
-		UAnimMontage* RifleSheathMontage = CurrentGun->GetSheathMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentGun->GetCurrentWeaponState()].AnimMontage;
-		if (IsValid(RifleSheathMontage))
-		{
-			bCharacterIsSheathing = OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(RifleSheathMontage);
-		}
-		else
-			bCharacterIsSheathing = false;
-	}
-	else
-	{
-		bCharacterIsSheathing = true;
-		//UC_Util::Print("Sheating!");
-	}
+	//if (IsValid(CurrentGun))
+	//{
+	//	RifleLeftHandSocket = CurrentGun->GetLeftHandSocketTransform();
+	//	UAnimMontage* RifleDrawMontage = CurrentGun->GetDrawMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentGun->GetCurrentWeaponState()].AnimMontage;
+
+	//	UAnimMontage* RifleSheathMontage = CurrentGun->GetSheathMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentGun->GetCurrentWeaponState()].AnimMontage;
+	//	if (IsValid(RifleSheathMontage)||IsValid(RifleDrawMontage))
+	//	{
+	//		UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+	//		bCharacterIsSheathing = CurAnimInstance->Montage_IsPlaying(RifleSheathMontage)|| CurAnimInstance->Montage_IsPlaying(RifleDrawMontage);
+	//	}
+	//	else
+	//		bCharacterIsSheathing = false;
+	//}
+	//else
+	//{
+	//	bCharacterIsSheathing = true;
+	//	//UC_Util::Print("Sheating!");
+	//}
 	ControlHeadRotation();
 	SetAimOfssetRotation();
 	SetAimingTurnInPlaceRotation();
@@ -321,9 +324,9 @@ void UC_AnimBasicCharacter::SetIsLeftHandIKOn()
 	//	return;
 	//}
 	bool Condition0 = bCanCharacterMove && !bIsFalling;
-	bool Condition1 = Condition0 && (HandState == EHandState::WEAPON_GUN);
+	bool Condition1 = Condition0 && (HandState == EHandState::WEAPON_GUN);	
 	bool Condition2 = !bCharacterIsSheathing && Condition1;
-	bool Condition3 = !OwnerCharacter->GetIsReloadingBullet() && Condition1;
+	bool Condition3 = !OwnerCharacter->GetIsReloadingBullet() && Condition2;
 
 	bIsLeftHandIKOn = Condition3;
 }

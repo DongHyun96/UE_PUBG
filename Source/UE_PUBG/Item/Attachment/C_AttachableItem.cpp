@@ -4,4 +4,7 @@
 
 #include "Item/Attachment/C_AttachableItem.h"
 
+AC_AttachableItem::AC_AttachableItem()
+{
 
+}

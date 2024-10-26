@@ -33,6 +33,7 @@
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
+#include "Item/Attachment/C_AttachableItem.h"
 
 #include "Item/Weapon/Gun/C_Bullet.h"
 
@@ -44,11 +45,11 @@ AC_Gun::AC_Gun()
 	PrimaryActorTick.bCanEverTick = true;
 
 	WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
-	//AimSightSpringArm = CreateDefaultSubobject<USpringArmComponent>();
-	//Bullet = LoadObject<AC_Bullet>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet"));
 	//ItemType 설정.
+	//Magazine = LoadObject<AC_AttachableItem>(nullptr, TEXT("/Game/Project_PUBG/Common/Weapon/GunWeapon/Magazine/BPC_Magazine.BPC_Magazine"));
 
 	MyItemType = EItemTypes::MAINGUN;
+
 }
 
 void AC_Gun::BeginPlay()
@@ -56,48 +57,50 @@ void AC_Gun::BeginPlay()
 	Super::BeginPlay();
 	SetBulletSpeed();
 	AimSightCamera = FindComponentByClass<UCameraComponent>();
-	//AimSightCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName(FName("Camera")));
-	//AimSightSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("RifleSightSpringArm"));
-	
-	AimSightSpringArm = FindComponentByClass<USpringArmComponent>(); 
+	AimSightSpringArm = FindComponentByClass<USpringArmComponent>();
+
 	//if(IsValid(AimSightCamera))
 	if (AimSightCamera)
 		AimSightCamera->SetActive(false);
 	//블루프린트에서 할당한 Skeletal Mesh 찾아서 변수에 저장
 	GunMesh = FindComponentByClass<USkeletalMeshComponent>();
 	GunMesh->SetupAttachment(RootComponent);
-	//SetAimSightWidget();
-	//AimSightCamera->SetupAttachment(GunMesh);
-	//CurveFloatForSwitchCameraChange = LoadObject<UCurveFloat>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/CameraMoving/CF_CameraMoving"));
-
-	//Bullet = LoadObject<AC_Bullet>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet"));
-
-	//UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>
-	
-		//if (!AimWidget)
+	//Magazine = CreateDefaultSubobject<AC_AttachableItem>("Magazine");
+	//if (IsValid(Magazine))
 	//{
 
-	//	AimWidget = LoadObject<UUserWidget>(nullptr, TEXT("/All/Game/Project_PUBG/Hyunho/TempWidget/WBP_CrossHair"));
-	//	AimWidget->AddToViewport();
-	//	AimWidget->SetVisibility(ESlateVisibility::Hidden);
+	//	Magazine->AttachToComponent
+	//	(
+	//		GunMesh,
+	//		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+	//		MAGAZINE_SOCKET_NAME
+	//	);
 	//}
-	//if (IsValid(MyMesh))
+	//if (IsValid(Magazine))
 	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Skeletal Mesh: %s"), *MyMesh->GetName());
-	//	FString TheFloatStr = "Found Mesh";
-	//	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
-	//	// 추가적인 논리로 스켈레탈 메쉬를 처리합니다.
+	//	UC_Util::Print("Magazine Is Created", FColor::Blue, 10.0f);
 	//}
-	//else
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Skeletal Mesh not found!"));
-	//}
-	
+	LoadMagazine();
+
+	if (IsValid(Magazine))
+	{
+
+		Magazine->AttachToComponent(
+			GunMesh,
+			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+			MAGAZINE_SOCKET_NAME
+		);
+	}
 }
 
 void AC_Gun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//if (IsValid(Magazine))
+	//{
+	//	UC_Util::Print(Magazine->GetActorLocation());	
+	//}
 
 	if (!OwnerCharacter) return;
 
@@ -264,12 +267,10 @@ bool AC_Gun::SetAimingPress()
 
 bool AC_Gun::BackToMainCamera()
 {
-	//UC_Util::Print("Fuck333333333333333333333333");
 
 	AimSightCamera->SetActive(false);
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() != OwnerCharacter)
 	{
-		//UC_Util::Print("Fuck333333333333333333333333");
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(OwnerCharacter, 0.2);
 	}
 	OwnerCharacter->GetMesh()->UnHideBoneByName(FName("Head"));
@@ -380,6 +381,7 @@ void AC_Gun::ExecuteReloadMontage()
 	if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return;
 	OwnerCharacter->SetIsReloadingBullet(true);
 	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
+	BackToMainCamera();	
 }
 
 
@@ -618,6 +620,41 @@ void AC_Gun::ShowAndHideWhileAiming()
 	}
 		//UC_Util::Print("No Hit");
 
+}
+
+void AC_Gun::LoadMagazine()
+{
+	FString ClassPath = TEXT("/Game/Project_PUBG/Common/Weapon/GunWeapon/Magazine/BPC_Magazine.BPC_Magazine_C");
+	//Magazine = LoadObject<AC_AttachableItem>(nullptr, ));
+
+	// UClass로 불러오기
+	UClass* MagazineClass = LoadObject<UClass>(nullptr, *ClassPath);
+	//if (MagazineClass)
+	//{
+	//	// 인스턴스 생성
+	FActorSpawnParameters Param{};
+	Param.Owner = this;
+	//ConsumableItem = GetWorld()->SpawnActor<AC_FirstAidKit>(ConsumableItemClass, Param);
+	Magazine = GetWorld()->SpawnActor<AC_AttachableItem>(MagazineClass, Param);
+	if (IsValid(Magazine))
+	{
+		// 인스턴스를 GunMesh에 Attach
+			
+
+		UC_Util::Print("Success To Load Magazine", FColor::Blue, 10.0f);
+
+	}
+	else
+	{
+		UC_Util::Print("Failed To Load Magazine", FColor::Blue, 10.0f);
+
+		}
+//	}
+//	else
+//	{
+//		UC_Util::Print("Fail To Load Magazine Class", FColor::Blue, 10.0f);
+//
+//	}
 }
 
 //void AC_Gun::SpawnBulletForTest()

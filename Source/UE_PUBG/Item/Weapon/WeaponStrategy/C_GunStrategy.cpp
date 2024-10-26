@@ -30,6 +30,8 @@ bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 
 bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
+	CurWeapon->ExecuteReloadMontage();
 	return false;
 }
 
