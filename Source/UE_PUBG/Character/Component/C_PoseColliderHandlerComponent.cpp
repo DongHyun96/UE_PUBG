@@ -45,6 +45,13 @@ void UC_PoseColliderHandlerComponent::SetColliderByPoseState(EPoseState InPoseSt
 	PoseBySizeLerpFlag = true;
 }
 
+void UC_PoseColliderHandlerComponent::SetColliderBySwimmingMovingState(const bool& IsMoving)
+{
+	RootColliderHeightRadiusLerpDest	= POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[IsMoving ? EPoseState::CRAWL : EPoseState::STAND];
+	MeshZPosLerpDest					= POSE_BY_MESH_Z_POS[EPoseState::STAND];
+	PoseBySizeLerpFlag					= true;
+}
+
 bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(EPoseState InChangeTo)
 {
 	if (OwnerCharacter->GetPoseState() == InChangeTo) return false;

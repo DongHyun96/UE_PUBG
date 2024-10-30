@@ -224,6 +224,9 @@ public:
 
 	class UC_SwimmingComponent* GetSwimmingComponent() const { return SwimmingComponent; }
 
+	UFUNCTION(BlueprintGetter)
+	class UC_SkyDivingComponent* GetSkyDivingComponent() const { return SkyDivingComponent; }
+
 public:
 
 	/// <summary>
@@ -355,5 +358,10 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_SwimmingComponent* SwimmingComponent{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_SkyDivingComponent* SkyDivingComponent{};
 
 };

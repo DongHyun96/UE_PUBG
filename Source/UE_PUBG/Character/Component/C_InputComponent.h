@@ -40,8 +40,13 @@ private:
 	void Look(const struct FInputActionValue& Value);
 
 	void Crouch();
+	void OnSwimmingCrouch();
+
 	void Crawl();
 	void OnJump();
+	void OnSwimmingJump();
+
+	void OnSwimmingJumpCrouchEnd();
 
 	void CancelTurnInPlaceMotion();
 	//Alt 키 누를때 이름 추천부탁

@@ -17,6 +17,7 @@
 #include "Component/C_ConsumableUsageMeshComponent.h"
 #include "Component/C_PoseColliderHandlerComponent.h"
 #include "Component/C_SwimmingComponent.h"
+#include "Component/C_SkyDivingComponent.h"
 
 #include "Components/CapsuleComponent.h"
 
@@ -45,6 +46,9 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	SwimmingComponent = CreateDefaultSubobject<UC_SwimmingComponent>("SwimmingComponent");
 	SwimmingComponent->SetOwnerCharacter(this);
+
+	SkyDivingComponent = CreateDefaultSubobject<UC_SkyDivingComponent>("SkyDivingComponent");
+	SkyDivingComponent->SetOwnerCharcter(this);
 }
 
 // Called when the game starts or when spawned

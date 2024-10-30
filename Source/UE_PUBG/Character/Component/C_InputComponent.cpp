@@ -67,13 +67,20 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 	if (IsValid(EnhancedInputComponent))
 	{
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &UC_InputComponent::OnJump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Ongoing, this, &UC_InputComponent::OnSwimmingJump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &UC_InputComponent::OnSwimmingJumpCrouchEnd);
 
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &UC_InputComponent::Move);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &UC_InputComponent::MoveEnd);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &UC_InputComponent::Look);
 
 		EnhancedInputComponent->BindAction(CrawlAction, ETriggerEvent::Started, this, &UC_InputComponent::Crawl);
-		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &UC_InputComponent::Crouch);
+
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started,   this, &UC_InputComponent::Crouch);
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Ongoing,   this, &UC_InputComponent::OnSwimmingCrouch);
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &UC_InputComponent::OnSwimmingJumpCrouchEnd);
+
+
 		EnhancedInputComponent->BindAction(HoldDirectionAction, ETriggerEvent::Triggered, this, &UC_InputComponent::HoldDirection);
 		EnhancedInputComponent->BindAction(HoldDirectionAction, ETriggerEvent::Completed, this, &UC_InputComponent::ReleaseDirection);
 
@@ -178,6 +185,10 @@ void UC_InputComponent::MoveEnd(const FInputActionValue& Value)
 	Player->SetNextSpeed(0.f);
 
 	Player->SetStrafeRotationToIdleStop();
+
+	UC_SwimmingComponent* PlayerSwimmingComp = Player->GetSwimmingComponent();
+	if (PlayerSwimmingComp->IsSwimming())
+		PlayerSwimmingComp->OnSwimmingMoveEnd();
 }
 
 void UC_InputComponent::Look(const FInputActionValue& Value)
@@ -206,6 +217,8 @@ void UC_InputComponent::Look(const FInputActionValue& Value)
 
 void UC_InputComponent::Crouch()
 {
+	if (Player->GetSwimmingComponent()->IsSwimming()) return;
+
 	switch (Player->GetPoseState())
 	{
 	case EPoseState::STAND: // Stand to crouch (Pose transition 없이 바로 처리)
@@ -221,6 +234,12 @@ void UC_InputComponent::Crouch()
 		UC_Util::Print("From AC_Player::Crouch : UnAuthorized current pose!");
 		return;
 	}
+}
+
+void UC_InputComponent::OnSwimmingCrouch()
+{
+	if (!Player->GetSwimmingComponent()->IsSwimming()) return;
+	Player->GetSwimmingComponent()->OnSwimmingCKey();
 }
 
 void UC_InputComponent::Crawl()
@@ -267,6 +286,18 @@ void UC_InputComponent::OnJump()
 	Player->bPressedJump = true;
 	Player->SetIsJumping(true);
 	Player->JumpKeyHoldTime = 0.0f;
+}
+
+void UC_InputComponent::OnSwimmingJump()
+{
+	if (!Player->GetSwimmingComponent()->IsSwimming()) return;
+	Player->GetSwimmingComponent()->OnSwimmingSpaceBarKey();
+}
+
+void UC_InputComponent::OnSwimmingJumpCrouchEnd()
+{
+	if (!Player->GetSwimmingComponent()->IsSwimming()) return;
+	MoveEnd(0.f);
 }
 
 void UC_InputComponent::CancelTurnInPlaceMotion()

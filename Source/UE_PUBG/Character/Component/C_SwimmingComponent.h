@@ -37,6 +37,18 @@ public:
 
 	void HandlePlayerMovement(const FVector2D& MovementVector);
 
+	/// <summary>
+	/// Swimming吝 C 虐 Input 贸府
+	/// </summary>
+	void OnSwimmingCKey();
+
+	/// <summary>
+	/// Swimming 吝 Spacebar 虐 Input 贸府
+	/// </summary>
+	void OnSwimmingSpaceBarKey();
+
+	void OnSwimmingMoveEnd();
+
 public:
 
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter);
@@ -115,5 +127,9 @@ private:
 private:
 
 	const float CAN_WALK_DEPTH_LIMIT = 100.f;
+
+private:
+
+	bool bIsHandlingPlayerMovementOnCurrentTick{};
 	
 };

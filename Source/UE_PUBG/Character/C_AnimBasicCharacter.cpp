@@ -16,6 +16,7 @@
 
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
+#include "Character/Component/C_SkyDivingComponent.h"
 
 void UC_AnimBasicCharacter::NativeBeginPlay()
 {
@@ -24,7 +25,6 @@ void UC_AnimBasicCharacter::NativeBeginPlay()
 	OwnerCharacter = Cast<AC_BasicCharacter>(TryGetPawnOwner());
 	//CSpineRotation = FRotator(0);
 	//CHeadLookAtRotation = FQuat(0);
-
 }
 
 void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
@@ -54,6 +54,7 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
 
 	SwimmingState	  = OwnerCharacter->GetSwimmingComponent()->GetSwimmingState();
+	SkyDivingState	  = OwnerCharacter->GetSkyDivingComponent()->GetSkyDivingState();
 	//switch (SwimmingState)
 	//{
 	//case ESwimmingState::ON_GROUND:

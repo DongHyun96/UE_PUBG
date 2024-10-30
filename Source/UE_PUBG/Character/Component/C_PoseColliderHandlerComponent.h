@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-
 #include "Character/C_BasicCharacter.h"
+#include "C_SwimmingComponent.h"
 
 #include "C_PoseColliderHandlerComponent.generated.h"
 
@@ -29,6 +29,12 @@ public:
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter);
 
 	void SetColliderByPoseState(EPoseState InPoseState);
+
+	/// <summary>
+	/// Swimming 중이고 움직이는 중인지 아닌지에 따른 Collider 조정시키기
+	/// </summary>
+	/// <param name="IsMoving"> : true if currently moving on the water </param>
+	void SetColliderBySwimmingMovingState(const bool& IsMoving);
 
 	float GetCurrentCrawlSlopeAngleForRigControl() const { return CrawlSlopeAngle; }
 

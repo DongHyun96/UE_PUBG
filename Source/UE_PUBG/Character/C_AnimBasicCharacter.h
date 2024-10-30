@@ -9,6 +9,7 @@
 enum class EHandState : uint8;
 enum class EPoseState : uint8;
 enum class ESwimmingState : uint8;
+enum class ESkyDivingState : uint8;
 
 /**
  * 
@@ -133,4 +134,10 @@ protected:
 	// Radian Crawl Rotation Angle
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	float CrawlRotationAngle{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	ESkyDivingState SkyDivingState{};
+
 };
