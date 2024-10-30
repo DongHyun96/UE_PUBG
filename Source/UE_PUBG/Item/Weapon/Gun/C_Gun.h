@@ -71,6 +71,8 @@ public:
 	EShootingMode GetCurrentShootingMode() { return CurrentShootingMode; }
 	class UCameraComponent* GetGunCamera() { return AimSightCamera; }
 
+	void PickUpItem(AC_BasicCharacter* Character) override;
+
 protected:
 	/// <summary>
 	/// OwnerCharacter의 Pose Transition 모션이 끝났을 때 Delegate를 통해 call back을 받는 함수 (현재 캐릭터의 slot에 장착된 무기만 call back 될 예정) 

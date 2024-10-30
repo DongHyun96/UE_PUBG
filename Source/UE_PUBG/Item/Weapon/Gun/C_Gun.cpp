@@ -302,7 +302,8 @@ void AC_Gun::GetPlayerIsAimDownOrNot()
 	}
 }
 
-void AC_Gun::SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter)
+
+void AC_Gun::SetOwnerCharacter(AC_BasicCharacter * InOwnerCharacter)
 {
 	Super::SetOwnerCharacter(InOwnerCharacter);
 	if (!InOwnerCharacter)
@@ -315,6 +316,57 @@ void AC_Gun::SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter)
 		return;
 	}
 	SetAimSightWidget();
+}
+
+void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
+{
+	UC_EquippedComponent* EquippedComponent = Character->GetEquippedComponent();
+	EWeaponSlot Slot = EWeaponSlot::MAIN_GUN;
+
+	switch (Slot)
+	{
+	case EWeaponSlot::NONE:
+		break;
+	case EWeaponSlot::MAIN_GUN:
+		//Main Gun Slot에 총이 없다면 실행
+		if (!EquippedComponent->GetWeapons()[EWeaponSlot::MAIN_GUN])
+		{
+			EquippedComponent->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
+			return;
+		}
+		//Slot = EWeaponSlot::SUB_GUN;
+	case EWeaponSlot::SUB_GUN:
+		//Sub Gun Slot에 총이 없다면 실행
+		if (!EquippedComponent->GetWeapons()[EWeaponSlot::SUB_GUN])
+		{
+			EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+			return;
+		}
+		break;
+	case EWeaponSlot::MELEE_WEAPON:
+		break;
+	case EWeaponSlot::THROWABLE_WEAPON:
+		break;
+	default:
+		break;
+	}
+
+	//Main, Sub 모두 총이 있는 경우.
+	EHandState HandState = Character->GetHandState();
+	AC_Weapon* DropGun = nullptr;
+	if (HandState == EHandState::WEAPON_GUN)
+	{
+		EWeaponSlot curSlot = EquippedComponent->GetCurWeaponType();
+		
+		//제대로 총을 바꾸는지 확인해야함, SetSlotWeapon과 DetachmentItem의 순서를 바꿔야 할 수 도 있음.
+		DropGun = EquippedComponent->SetSlotWeapon(curSlot, this);
+		DropGun->DetachmentItem();
+	}
+	else
+	{
+		DropGun = EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+		DropGun->DetachmentItem();
+	}
 
 }
 

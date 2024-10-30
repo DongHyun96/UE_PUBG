@@ -7,6 +7,7 @@
 
 #include "Character/C_BasicCharacter.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenComponent.h"
 
 #include "Components/ShapeComponent.h"
 
@@ -70,6 +71,21 @@ bool AC_MeleeWeapon::AttachToHand(USceneComponent* InParent)
 		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 		EQUIPPED_SOCKET_NAME
 	);
+}
+
+void AC_MeleeWeapon::PickUpItem(AC_BasicCharacter* Character)
+{
+	if (!Character->GetInvenComponent()->CheckVolume(this))
+	{
+		//공간이 없으면 실행, 근접칸에 아무것도 없다면 실행해서 장착.
+		if (!Character->GetEquippedComponent()->GetWeapons().Find(EWeaponSlot::MELEE_WEAPON))
+			Character->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MELEE_WEAPON, this);
+		return;  //근접칸에도 뭔가 있다면 리턴.
+	}
+	 
+	SetOwnerCharacter(Character);
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
 }
 
 void AC_MeleeWeapon::SetAttackColliderEnabled(const bool& Enabled)

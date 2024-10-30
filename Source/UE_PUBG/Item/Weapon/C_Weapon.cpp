@@ -3,6 +3,12 @@
 
 
 #include "Item/Weapon/C_Weapon.h"
+#include "UE_PUBG/Item/C_Item.h"
+#include "Character/Component/C_EquippedComponent.h"
+#include "Character/C_BasicCharacter.h"
+#include "Gun/C_Gun.h"
+#include "MeleeWeapon/C_MeleeWeapon.h"
+#include "ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Item/Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
 
 
@@ -26,7 +32,7 @@ void AC_Weapon::BeginPlay()
 void AC_Weapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
 bool AC_Weapon::ExecuteBKey()
@@ -99,4 +105,34 @@ bool AC_Weapon::ExecuteMrb_Completed()
 {
 	if (!WeaponButtonStrategy) return false;
 	return WeaponButtonStrategy->UseMrb_CompletedStrategy(OwnerCharacter, this);
+}
+
+void AC_Weapon::PickUpItem(AC_BasicCharacter* Character)
+{
+	EItemTypes Type = ItemDatas.ItemType;
+
+	switch (Type)
+	{
+	case EItemTypes::MAINGUN:
+		PickUpItem(Character);
+		break;
+	case EItemTypes::MELEEWEAPON:
+		PickUpItem(Character);
+		break;
+	case EItemTypes::THROWABLE:
+		PickUpItem(Character);
+		break;
+	default:
+		break;
+	}
+}
+
+bool AC_Weapon::Interaction(AC_BasicCharacter* Character)
+{
+	if (Character)
+	{
+		PickUpItem(Character);
+		return true;
+	}
+	return false;
 }

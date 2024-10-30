@@ -62,6 +62,8 @@ public:
 	
 	EWeaponSlot GetCurWeaponType() const { return CurWeaponType; }
 
+	UFUNCTION(BlueprintCallable)
+	TMap<EWeaponSlot, AC_Weapon*> GetWeapons() { return Weapons; }
 public:
 	/// <summary>
 	/// 현재 손에 든 무기 바꾸기
