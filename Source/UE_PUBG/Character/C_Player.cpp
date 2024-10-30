@@ -201,6 +201,8 @@ void AC_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//UC_Util::Print(CurveFloatForSwitchCamera->GetFloatValue(GetWorld()->GetDeltaSeconds()));
+	//UC_Util::Print(AimCamera->IsActive());
+	//UC_Util::Print(MainCamera->IsActive());
 
 	HandleTurnInPlace();
 	HandleTurnInPlaceWhileAiming();
