@@ -39,6 +39,8 @@ public:
     UFUNCTION(BlueprintCallable)
     AC_Item* DropItem(AC_Item* myItem);
 
+    UFUNCTION(BlueprintCallable)
+    void InitInvenUIWidget();
     //두 기능을 합친 SetItem생각
 
     void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }

@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "UE_PUBG/Character/C_BasicCharacter.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
+
+#include "Character/Component/C_EquippedComponent.h"
 
 #include "C_ThrowableWidget.generated.h"
 
@@ -19,6 +22,10 @@ UCLASS()
 class UE_PUBG_API UC_ThrowableWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	void Init();
+
 public:
 	
 	void SetWeapon(class AC_Item* item);
@@ -32,6 +39,9 @@ protected:
 	class AC_BasicCharacter* OwnerCharacter;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UImage* ItemIcon = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UTextBlock* WeaponNum = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
@@ -39,5 +49,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_Weapon* Weapon = nullptr;
+
+	EWeaponSlot WeaponSlotType{};
 
 };

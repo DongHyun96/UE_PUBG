@@ -358,6 +358,7 @@ bool AC_ThrowingWeapon::Interaction(AC_BasicCharacter* Character)
 	if (Character)
 	{
 		MoveToSlot(Character);
+		return true;
 	}
 	MoveToSlot(Character);
 

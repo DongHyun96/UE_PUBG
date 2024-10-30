@@ -27,7 +27,8 @@ public:
 	void InitListView();
 	void InitWidget();
 protected:
-	//void PreConstruct(bool IsDesignTime) override;
+	
+	//virtual void PreConstruct(bool IsDesignTime) override;
 
 	virtual void NativeConstruct() override;
 
@@ -35,8 +36,11 @@ protected:
 	/// ¿ß¡¨ √ ±‚»≠
 	/// </summary>
 
-
+	UFUNCTION(BlueprintCallable)
 	void PopulateItemList(class UListView* list, const TMap<FString, class AC_Item*>& itemList);
+
+	UFUNCTION(BlueprintCallable)
+	void test(class UListView* list, const TMap<FString, AC_Item*>& itemList);
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

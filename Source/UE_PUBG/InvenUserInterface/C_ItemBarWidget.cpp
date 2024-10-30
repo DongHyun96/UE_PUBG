@@ -8,6 +8,7 @@
 #include "Blueprint/WidgetTree.h"
 #include "Item/C_Item.h"
 #include "InvenUserInterface/C_InvenUiWidget.h"
+#include "TimerManager.h"
 #include "Utility/C_Util.h"
 
 void UC_ItemBarWidget::NativeConstruct()
@@ -27,7 +28,9 @@ void UC_ItemBarWidget::NativeConstruct()
 		OwnerCharacter = Cast<AC_BasicCharacter>(GetOwningPlayerPawn());
 	}
 
+	if (!CachedItem) return;
 
+	InitBar(CachedItem);
 
 	// 바인딩된 위젯들이 null인지 확인
 	if (!ItemImage1)
@@ -64,22 +67,20 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 		{   // 우클릭 이벤트 실행
 			CachedItem->Interaction(OwnerCharacter);
 
-			if (UC_InvenUiWidget* InvenUiWidget = GetTypedOuter<UC_InvenUiWidget>())
-			{
-				if (
-						CachedItem->GetItemDatas().ItemType == EItemTypes::CONSUMPTIONITEM
-						|| CachedItem->GetItemDatas().ItemType == EItemTypes::THROWABLE
-						|| CachedItem->GetItemDatas().ItemType == EItemTypes::MELEEWEAPON
-						|| CachedItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT
-				   )
-				{
-					InvenUiWidget->InitListView();
-				}
-				
-				InvenUiWidget->InitWidget();
-			}
+			FTimerDelegate TimerDelegate;
+			FTimerHandle TimerHandle;
+			//TimerDelegate.BindUFunction(this, FName("InitInvenUIWidget"));
+			//SetVisibility(ESlateVisibility::Hidden);
+
+			//GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.1f, false);
+			InitInvenUIWidget();
+			
 			//NativeOnListItemObjectSet에서의 호출과 중복으로 일단 주석처리, 다만 이벤트시에 초기화가 필요하면 사용해야 할 수 있음.
-			//InitBar();
+			//if (!CachedItem) return;
+			
+			InitBar(CachedItem);
+			SetVisibility(ESlateVisibility::Visible);
+			
 			return FReply::Handled();
 		}
 	}
@@ -131,5 +132,23 @@ AC_Item* UC_ItemBarWidget::GetItem(AC_Item* nearItem)
 AC_Item* UC_ItemBarWidget::DropItem(AC_Item* myItem)
 {
 	return nullptr;
+}
+
+void UC_ItemBarWidget::InitInvenUIWidget()
+{
+	if (UC_InvenUiWidget* InvenUiWidget = GetTypedOuter<UC_InvenUiWidget>())
+	{
+		if (
+			CachedItem->GetItemDatas().ItemType == EItemTypes::CONSUMPTIONITEM
+			|| CachedItem->GetItemDatas().ItemType == EItemTypes::THROWABLE
+			|| CachedItem->GetItemDatas().ItemType == EItemTypes::MELEEWEAPON
+			|| CachedItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT
+			)
+		{
+			InvenUiWidget->InitListView();
+		}
+
+		InvenUiWidget->InitWidget();
+	}
 }
 
