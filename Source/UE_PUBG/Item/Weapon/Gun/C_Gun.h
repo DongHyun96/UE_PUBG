@@ -105,7 +105,7 @@ private:
 
 	const FName SUB_HOLSTER_BAG_SOCKET_NAME = "SubGunSocket_Bag"; // 무기집 socket 이름
 	const FName MAIN_HOLSTER_BAG_SOCKET_NAME = "MainGunSocket_Bag"; // 무기집 socket 이름
-
+	const FName MAGAZINE_SOCKET_NAME = "Magazine_Socket";
 
 	
 	const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
@@ -177,9 +177,15 @@ public:
 	float GetBaseBulletSpreadDegree() { return BaseBulletSpreadDegree; }
 protected:
 	//Aim 위젯
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)	
 	UUserWidget* AimWidget;
 	FName WidgetFilePath;
 	void ShowAndHideWhileAiming();
+protected:
+	//탄창
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
+	class AC_AttachableItem* Magazine{};
+
+	void LoadMagazine();
 };
