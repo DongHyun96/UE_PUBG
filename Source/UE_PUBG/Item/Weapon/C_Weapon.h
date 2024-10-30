@@ -91,12 +91,21 @@ public:
 	/// <returns> 무기를 손에 붙이지 못하였다면 return false </returns>
 	virtual bool AttachToHand(class USceneComponent* InParent) PURE_VIRTUAL(AC_Weapon::AttachToHand, return false;);
 
+	/// <summary>
+	/// 다형성에 의해서 어차피 알아서 자식클래스의 PickUpItem을 사용한다고함.
+	/// </summary>
+	/// <param name="Character"></param>
+	virtual void PickUpItem(class AC_BasicCharacter* Character) override;
+
+	virtual bool Interaction(AC_BasicCharacter* Character) override;
+
 public:
 
-	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+	void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 	FPriorityAnimMontage GetCurDrawMontage() const { return CurDrawMontage; }
 	FPriorityAnimMontage GetCurSheathMontage() const { return CurSheathMontage; }
+
 
 public:
 

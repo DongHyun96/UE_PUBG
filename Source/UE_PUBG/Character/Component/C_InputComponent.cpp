@@ -114,6 +114,9 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 
 		EnhancedInputComponent->BindAction(NKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnNKey);
 		EnhancedInputComponent->BindAction(MKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnMKey);
+
+		EnhancedInputComponent->BindAction(IKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnIKey);
+
 	}
 }
 
@@ -558,7 +561,7 @@ void UC_InputComponent::OnFKey()
 		AC_Item* item = Player->GetInventory()->GetNearItems()[0];
 
 		//NearInventory.Add(Item);
-		item->Interaction(Player);
+		//item->Interaction(Player);
 		//item->SetActorHiddenInGame(true); // Hide item from the world
 		item->SetActorEnableCollision(false); // Disable collision
 		Player->GetInventory()->GetNearItems().Remove(item);
@@ -585,5 +588,10 @@ void UC_InputComponent::OnNKey()
 void UC_InputComponent::OnMKey()
 {
 	Player->GetHUDWidget()->GetMainMapWidget()->OnMKey();
+}
+
+void UC_InputComponent::OnIKey()
+{
+	Player->GetInvenComponent()->OpenInvenUI();
 }
 

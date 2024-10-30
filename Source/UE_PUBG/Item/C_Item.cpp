@@ -22,7 +22,6 @@ AC_Item::AC_Item()
 void AC_Item::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
