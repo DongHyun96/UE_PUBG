@@ -243,6 +243,8 @@ public:
 	UFUNCTION(BlueprintGetter)
 	class UC_SkyDivingComponent* GetSkyDivingComponent() const { return SkyDivingComponent; }
 
+	class UC_InvenSystem* GetInvenSystem() { return InvenSystem; }
+
 public:
 
 	/// <summary>
@@ -338,9 +340,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_StatComponent* StatComponent{};
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_InvenSystem* InvenSystem{};
+
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UC_InvenComponent* Inventory;
+	UC_InvenComponent* Inventory{};
 	
 	//UClass* InvenSystemClass;
 

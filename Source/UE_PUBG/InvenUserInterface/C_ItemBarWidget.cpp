@@ -9,6 +9,9 @@
 #include "Item/C_Item.h"
 #include "InvenUserInterface/C_InvenUiWidget.h"
 #include "TimerManager.h"
+
+#include "Character/Component/C_InvenSystem.h"
+
 #include "Utility/C_Util.h"
 
 void UC_ItemBarWidget::NativeConstruct()
@@ -79,7 +82,7 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 			//if (!CachedItem) return;
 			
 			InitBar(CachedItem);
-			SetVisibility(ESlateVisibility::Visible);
+			//SetVisibility(ESlateVisibility::Visible);
 			
 			return FReply::Handled();
 		}
@@ -90,6 +93,20 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 	}
 	// 다른 버튼 클릭 처리
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+}
+
+FReply UC_ItemBarWidget::NativeOnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
+{
+	// Tab 키가 눌렸는지 확인
+	if (InKeyEvent.GetKey() == EKeys::Tab)
+	{
+		// Tab 키 입력을 처리하고 더 이상 전파되지 않도록 함
+		OwnerCharacter->GetInvenSystem()->OpenInvenUI();
+		return FReply::Handled();
+	}
+
+	// 다른 키 입력은 기본 처리로 넘어감
+	return Super::NativeOnKeyDown(MyGeometry, InKeyEvent);
 }
 
 void UC_ItemBarWidget::InitBar(AC_Item* item)
@@ -122,6 +139,14 @@ void UC_ItemBarWidget::InitBar(AC_Item* item)
 		//RemoveFromViewport();
 		UC_Util::Print("Visibility::Hidden");
 	}
+
+	FInputModeGameAndUI InputMode;
+	InputMode.SetWidgetToFocus(nullptr);
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	InputMode.SetHideCursorDuringCapture(true);
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	PlayerController->SetInputMode(InputMode);
 }
 
 AC_Item* UC_ItemBarWidget::GetItem(AC_Item* nearItem)

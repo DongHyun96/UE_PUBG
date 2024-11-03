@@ -18,6 +18,7 @@
 #include "Component/C_PoseColliderHandlerComponent.h"
 #include "Component/C_SwimmingComponent.h"
 #include "Component/C_SkyDivingComponent.h"
+#include "Component/C_InvenSystem.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -46,6 +47,9 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	Inventory = CreateDefaultSubobject<UC_InvenComponent>("C_Inventory");
 	Inventory->SetOwnerCharacter(this);
+
+	InvenSystem = CreateDefaultSubobject<UC_InvenSystem>("C_InvenSystem");
+	InvenSystem->SetOwnerCharacter(this);
 
 	StatComponent = CreateDefaultSubobject<UC_StatComponent>("StatComponent");
 
@@ -133,7 +137,9 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 
 		//Inventory->GetNearItems().Add(OverlappedItem);
 		Inventory->AddItemToAroundList(OverlappedItem);
-		Inventory->InitInvenUI();
+		//Inventory->InitInvenUI();
+		if (!InvenSystem) return;
+		InvenSystem->InitializeList();
 	}
 	else
 	{
@@ -158,7 +164,9 @@ void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor
 	{
 		//Inventory->GetNearItems().Remove(OverlappedItem);
 		Inventory->RemoveItemToAroundList(OverlappedItem);
-		Inventory->InitInvenUI();
+		//Inventory->InitInvenUI();
+		if (!InvenSystem) return;
+		InvenSystem->InitializeList();
 	}
 }
 float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate, FName StartSectionName)

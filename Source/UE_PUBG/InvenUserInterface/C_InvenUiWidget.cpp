@@ -33,7 +33,7 @@ void UC_InvenUiWidget::NativeConstruct()
         
     }
 
-    InitWidget();
+    InitListView();
 
 
     // 아이템 리스트 위젯 초기화 및 데이터 추가
@@ -109,7 +109,6 @@ void UC_InvenUiWidget::InitWidget()
     ThrowableSlot->SetWeaponBoxNum(5);
     ThrowableSlot->Init();
 
-    InitListView();
 
 
 }
@@ -124,7 +123,9 @@ void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
 
 void UC_InvenUiWidget::InitListView()
 {
-    //     아이템 리스트 위젯 초기화 및 데이터 추가
+    InitWidget();
+
+    //아이템 리스트 위젯 초기화 및 데이터 추가
     if (MyItemListView)
     { 
         //MyItemListView->AddToViewport();
@@ -161,7 +162,7 @@ void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_
 {
     list->ClearListItems(); // 기존 아이템 삭제
     
-    for (const auto& ItemPair : itemList)
+   for (const auto& ItemPair : itemList)
     {
         AC_Item* Item = ItemPair.Value; // TMap에서 아이템 가져오기
         if (Item)
@@ -175,7 +176,6 @@ void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_
     }
 
     list->RequestRefresh();
-
 }
 
 void UC_InvenUiWidget::test(UListView* list, const TMap<FString, AC_Item*>& itemList)
