@@ -11,6 +11,7 @@
 #include "Character/Component/C_PingSystemComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
+#include "Character/Component/C_SkyDivingComponent.h"
 
 #include "Components/ActorComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -139,6 +140,7 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		return;
 	}
 
+
 	if (Player->GetIsHoldDirection() || Player->GetIsAltPressed() || Player->GetIsAimDown()) //GetIsAimDown() -> bIsAimDownSight
 	{
 		PlayerMovement->bUseControllerDesiredRotation	= false;
@@ -152,6 +154,12 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		PlayerMovement->bOrientRotationToMovement		= false;
 	}
 
+	if (Player->GetMainState() == EMainState::SKYDIVING)
+	{
+		Player->GetSkyDivingComponent()->HandlePlayerMovement(MovementVector);
+		return;
+	}
+
 	// Update Max walk speed
 	Player->UpdateMaxWalkSpeed(MovementVector);
 
@@ -162,24 +170,10 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
 		const FVector   RightDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
 
-		// TODO : Stand Crouch는 Character Movement 경사면 설정으로 적절히 처리가 알아서 됨
-		// Crawl 경사면 예외처리
-		/*if (Player->GetPoseState() == EPoseState::CRAWL)
-		{
-			static const float START_OFFSET_AMOUNT = 1.f;
-			FVector StartOffset = ForwardDirection * START_OFFSET_AMOUNT;
-		
-			FVector HeadStartLocation		= (Player->GetActorLocation() + ForwardDirection * 75.f) + StartOffset;
-			FVector PelvisStartLocation		= Player->GetActorLocation() + StartOffset;
-			
-			if (!Player->GetPoseColliderHandlerComponent()->CanCrawlOnSlope(HeadStartLocation, PelvisStartLocation)) return;
-		}*/
-
 		Player->AddMovementInput(ForwardDirection, MovementVector.X);
 		Player->AddMovementInput(RightDirection, MovementVector.Y);
 
 		Player->SetNextSpeed(PlayerMovement->MaxWalkSpeed); // AnimCharacter에서 Speed Lerp할 값 setting
-		//UC_Util::Print("Moving");
 	}
 }
 
@@ -189,9 +183,11 @@ void UC_InputComponent::MoveEnd(const FInputActionValue& Value)
 
 	Player->SetStrafeRotationToIdleStop();
 
-	UC_SwimmingComponent* PlayerSwimmingComp = Player->GetSwimmingComponent();
-	if (PlayerSwimmingComp->IsSwimming())
-		PlayerSwimmingComp->OnSwimmingMoveEnd();
+	if (Player->GetSwimmingComponent()->IsSwimming())
+		Player->GetSwimmingComponent()->OnSwimmingMoveEnd();
+
+	if (Player->GetMainState() == EMainState::SKYDIVING)
+		Player->GetSkyDivingComponent()->OnSkyMoveEnd();
 }
 
 void UC_InputComponent::Look(const FInputActionValue& Value)
@@ -556,6 +552,13 @@ void UC_InputComponent::OnFKey()
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr1);
 
 	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
+
+	// 비행기 F키
+	if (Player->GetMainState() == EMainState::SKYDIVING && Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
+	{
+		Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING);
+		return;
+	}
 
 
 	if (Player->GetInventory()->GetNearItems().Num() > 0)

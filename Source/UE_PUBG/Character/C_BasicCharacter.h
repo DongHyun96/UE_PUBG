@@ -13,6 +13,15 @@
 DECLARE_MULTICAST_DELEGATE(FDele_PoseTransitionFin);
 
 UENUM(BlueprintType)
+enum class EMainState : uint8
+{
+	IDLE,
+	SKYDIVING,
+	DEAD,
+	MAX
+};
+
+UENUM(BlueprintType)
 enum class EHandState : uint8
 {
 	UNARMED,
@@ -171,6 +180,9 @@ public:
 
 public: // Getters and setters
 
+	void SetMainState(EMainState InMainState) { MainState = InMainState; }
+	EMainState GetMainState() const { return MainState; }
+
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }
@@ -270,6 +282,9 @@ public:
 	bool ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState);
 
 protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	EMainState MainState{};
 
 	// Current hand state
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

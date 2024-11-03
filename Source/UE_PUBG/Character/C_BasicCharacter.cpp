@@ -77,6 +77,9 @@ void AC_BasicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// For Testing
+	//MainState = EMainState::SKYDIVING;
+	//SkyDivingComponent->SetSkyDivingState(ESkyDivingState::READY);
 
 	GetPhysicsVolume()->FluidFriction = 2.5f;
 	StatComponent->SetOwnerCharacter(this);
@@ -214,7 +217,6 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 	//GetCharacterMovement()->MaxWalkSpeed =	(PoseState == EPoseState::STAND)  ? 370.f :
 	//										(PoseState == EPoseState::CROUCH) ? 200.f :
 	//										(PoseState == EPoseState::CRAWL)  ? 100.f : 600.f;
-	// TODO : 도핑 했을 시, 도핑 계수 곱해주기
 	if (SwimmingComponent->IsSwimming())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
@@ -283,7 +285,7 @@ void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
 
 bool AC_BasicCharacter::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 {
-	// TODO : Enemy 캐릭터에 대한 자세 변환 적용
+	// TODO : Enemy 캐릭터에 대한 자세 변환 적용 - Player는 작성 완료 BasicCharacter 작성 필요
 
 	return false;
 }

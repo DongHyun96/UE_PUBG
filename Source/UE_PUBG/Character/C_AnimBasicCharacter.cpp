@@ -44,6 +44,8 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 
 	//FString TheFloatStr = FString::SanitizeFloat(Direction);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+
+	MainState		  = OwnerCharacter->GetMainState();
 	HandState         = OwnerCharacter->GetHandState();
 	PoseState         = OwnerCharacter->GetPoseState();
 	bIsFalling        = OwnerCharacter->GetCharacterMovement()->IsFalling();
@@ -110,7 +112,7 @@ void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_Stand_To_Falling()
 void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_RunningJump_To_Falling()
 {
 	// Start Transition 시 수행할 로직 추가
-	FString TheFloatStr = "Start Transition";
+	FString TheFloatStr = "Start RunningJump To Falling Transition";
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	UE_LOG(LogTemp, Warning, TEXT("Transition Started"));
 	//Cast<AC_Player>(OwnerCharacter)->BackToMainCamera();
