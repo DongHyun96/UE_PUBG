@@ -91,6 +91,7 @@ private:
 
 	void OnIKey();
 
+	void OnTabKey();
 private:
 
 	class AC_Player* Player{};
@@ -172,6 +173,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* IKeyAction{};
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* TabKeyAction{};
 private:
 	class AC_Weapon* ChangeTestWeapon{};
 };

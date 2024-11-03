@@ -28,6 +28,8 @@ public:
 
     virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
+    virtual FReply NativeOnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent) override;
+
     void NativeConstruct() override;
 
 	UFUNCTION(BlueprintCallable)

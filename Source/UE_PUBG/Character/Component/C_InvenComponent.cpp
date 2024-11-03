@@ -392,10 +392,8 @@ void UC_InvenComponent::OpenInvenUI()
 {
 	UC_Util::Print("Down I Key");
 
-	
 	if (InvenUI)
 	{
-
 		if (InvenUI->IsVisible())
 		{
 			UC_Util::Print("Hidden Inven UI");
@@ -423,6 +421,7 @@ void UC_InvenComponent::OpenInvenUI()
 void UC_InvenComponent::InitInvenUI()
 {
 	if (!InvenUI) return;
+
 	InvenUI->InitListView();
 }
 

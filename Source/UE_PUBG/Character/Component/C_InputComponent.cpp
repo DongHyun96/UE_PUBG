@@ -12,6 +12,7 @@
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_SkyDivingComponent.h"
+#include "Character/Component/C_InvenSystem.h"
 
 #include "Components/ActorComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -118,8 +119,10 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 
 		EnhancedInputComponent->BindAction(IKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnIKey);
 
+		EnhancedInputComponent->BindAction(TabKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnTabKey);	
+
 	}
-}
+}	
 
 void UC_InputComponent::Move(const FInputActionValue& Value)
 {
@@ -598,6 +601,12 @@ void UC_InputComponent::OnMKey()
 
 void UC_InputComponent::OnIKey()
 {
-	Player->GetInvenComponent()->OpenInvenUI();
+	//Player->GetInvenComponent()->OpenInvenUI();
+	Player->GetInvenSystem()->OpenInvenUI();
+}
+
+void UC_InputComponent::OnTabKey()
+{
+	Player->GetInvenSystem()->OpenInvenUI();
 }
 
