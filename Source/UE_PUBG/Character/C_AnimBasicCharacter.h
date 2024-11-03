@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "C_AnimBasicCharacter.generated.h"
 
+enum class EMainState : uint8;
 enum class EHandState : uint8;
 enum class EPoseState : uint8;
 enum class ESwimmingState : uint8;
@@ -87,6 +88,9 @@ protected:
 	bool bCanUseAimOffset = false;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsLeftHandIKOn = false;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EMainState MainState{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EHandState HandState{};

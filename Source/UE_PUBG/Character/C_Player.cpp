@@ -464,6 +464,8 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 {
 	// 현재 멈춰있는 상황이 아니면 처리 x
 	if (!bCanMove)								return;
+
+	//if (MainState != EMainState::IDLE)			return;
 	if (GetCharacterMovement()->IsSwimming())	return;
 	if (GetVelocity().Size() > 0.f)				return;
 	if (bIsHoldDirection)						return;
