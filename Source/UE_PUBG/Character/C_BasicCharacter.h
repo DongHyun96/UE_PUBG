@@ -198,6 +198,8 @@ public:
 	bool GetCanMove() const { return bCanMove; }
 	bool GetIsAimDown() { return bIsAimDownSight; }
 	bool GetIsWatchingSight() { return bIsWatchingSight; }
+	bool GetIsFiringBullet() { return bIsFiringBullet; }
+	bool GetCanFireBullet() { return bCanFireBullet; }
 	void SetIsAimDown(bool InIsAimDownSight) { bIsAimDownSight = InIsAimDownSight; }
 	void SetIsWatchingSight(bool InIsWatchingSight) { bIsWatchingSight = InIsWatchingSight; }
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
@@ -316,11 +318,12 @@ protected:
 	bool bIsHoldDirection = false;
 	// Alt키 눌렸었는지 체크
 	bool bIsAltPressed = false;
-
+	bool bCanFireBullet = true;
 	bool bIsAimDownSight = false;
 	bool bIsAimingRifle = false;
 	bool bIsWatchingSight = false;
 	bool bIsReloadingBullet = false;
+	bool bIsFiringBullet = false;
 	FRotator CharacterMovingDirection;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

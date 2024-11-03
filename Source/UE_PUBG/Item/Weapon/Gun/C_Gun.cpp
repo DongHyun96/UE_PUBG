@@ -1,3 +1,5 @@
+
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Item/Weapon/Gun/C_Gun.h"
@@ -65,21 +67,7 @@ void AC_Gun::BeginPlay()
 	//블루프린트에서 할당한 Skeletal Mesh 찾아서 변수에 저장
 	GunMesh = FindComponentByClass<USkeletalMeshComponent>();
 	GunMesh->SetupAttachment(RootComponent);
-	//Magazine = CreateDefaultSubobject<AC_AttachableItem>("Magazine");
-	//if (IsValid(Magazine))
-	//{
 
-	//	Magazine->AttachToComponent
-	//	(
-	//		GunMesh,
-	//		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-	//		MAGAZINE_SOCKET_NAME
-	//	);
-	//}
-	//if (IsValid(Magazine))
-	//{
-	//	UC_Util::Print("Magazine Is Created", FColor::Blue, 10.0f);
-	//}
 	LoadMagazine();
 
 	if (IsValid(Magazine))
@@ -407,7 +395,12 @@ bool AC_Gun::GetIsPlayingMontagesOfAny()
 	UAnimMontage* DrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
 	//UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 	UAnimMontage* SheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
-	bool IsPlayingMontagesOfAny = CurAnimInstance->Montage_IsPlaying(DrawMontage) || CurAnimInstance->Montage_IsPlaying(SheathMontage);
+	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+	bool IsPlayingMontagesOfAny = 
+		CurAnimInstance->Montage_IsPlaying(DrawMontage)   || 
+		CurAnimInstance->Montage_IsPlaying(SheathMontage) ||
+		CurAnimInstance->Montage_IsPlaying(ReloadMontage);
+
 	return IsPlayingMontagesOfAny;
 }
 
@@ -431,6 +424,7 @@ void AC_Gun::ExecuteReloadMontage()
 	if (CurBulletCount == MaxBulletCount) return;
 	if (!CurPlayer->GetCanMove()) return;
 	if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return;
+	SetMagazineVisibility(false);
 	OwnerCharacter->SetIsReloadingBullet(true);
 	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
 	BackToMainCamera();	
@@ -681,32 +675,41 @@ void AC_Gun::LoadMagazine()
 
 	// UClass로 불러오기
 	UClass* MagazineClass = LoadObject<UClass>(nullptr, *ClassPath);
-	//if (MagazineClass)
-	//{
-	//	// 인스턴스 생성
-	FActorSpawnParameters Param{};
-	Param.Owner = this;
-	//ConsumableItem = GetWorld()->SpawnActor<AC_FirstAidKit>(ConsumableItemClass, Param);
-	Magazine = GetWorld()->SpawnActor<AC_AttachableItem>(MagazineClass, Param);
+	if (MagazineClass)
+	{
+		//	// 인스턴스 생성
+		FActorSpawnParameters Param{};
+		Param.Owner = this;
+		//ConsumableItem = GetWorld()->SpawnActor<AC_FirstAidKit>(ConsumableItemClass, Param);
+		Magazine = GetWorld()->SpawnActor<AC_AttachableItem>(MagazineClass, Param);
+	}
 	if (IsValid(Magazine))
 	{
 		// 인스턴스를 GunMesh에 Attach
-			
-
+		Magazine->SetOwnerCharacter(OwnerCharacter);
+		Magazine->SetIsAttached(true);
 		UC_Util::Print("Success To Load Magazine", FColor::Blue, 10.0f);
 
 	}
 	else
 	{
 		UC_Util::Print("Failed To Load Magazine", FColor::Blue, 10.0f);
+	}
 
-		}
-//	}
 //	else
 //	{
 //		UC_Util::Print("Fail To Load Magazine Class", FColor::Blue, 10.0f);
 //
 //	}
+}
+
+void AC_Gun::SetMagazineVisibility(bool InIsVisible)
+{
+	if (IsValid(Magazine))
+	{
+		Magazine->SetMeshVisibility(InIsVisible);
+		//UC_Util::Print("ASDaisujdfhaiseuehfaiesuhfaweiufh");
+	}
 }
 
 //void AC_Gun::SpawnBulletForTest()

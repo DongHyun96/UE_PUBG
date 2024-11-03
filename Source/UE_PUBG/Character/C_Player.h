@@ -75,6 +75,8 @@ public: // Getters and setters
 private:
 	void SetPoseState(EPoseState InPoseState) { Super::SetPoseState(InPoseState); }
 
+	void SetCanFireWhileCrawl();
+
 public:
 	/// <summary>
 	/// 자세 바꾸기 통합 처리
@@ -261,6 +263,8 @@ public:
 	void SetRecoilTimeLineComponent();
 
 	void SetRecoilTimelineValues();
+	void SetRecoilFactorByPose();
+	float PlayerRecoilFactorByPose = 1.0f;
 private:
 	void SpawnConsumableItemForTesting();
 

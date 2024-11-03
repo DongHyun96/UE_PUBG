@@ -17,7 +17,16 @@ class UE_PUBG_API AC_AttachableItem : public AC_Item
 	GENERATED_BODY()
 public:
 	AC_AttachableItem();
+
+
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
+
+	void SetIsAttached(bool InIsAttachedToWeapon);
+	void SetMeshVisibility(bool InIsVisible);
 private:
 	EPartsName Name;
 	class UCapsuleComponent* CapsuleCollider{};
+	class USkeletalMeshComponent* AttachableItemMesh{};
 };

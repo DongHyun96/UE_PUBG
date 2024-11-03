@@ -352,6 +352,7 @@ void UC_InputComponent::CancelTurnInPlaceMotion()
 void UC_InputComponent::HoldDirection()
 {
 	// 수류탄 던지는 process 중이라면 Alt키 중지
+	if (Player->GetIsFiringBullet()) return;
 
 	AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(Player->GetEquippedComponent()->GetCurWeapon());
 	if (ThrowingWeapon)
@@ -380,6 +381,8 @@ void UC_InputComponent::HoldDirection()
 
 void UC_InputComponent::ReleaseDirection()
 {
+	if (Player->GetIsFiringBullet()) return;
+
 	Player->SetIsHoldDirection(false);
 	Player->SetIsAltPressed(true);
 }

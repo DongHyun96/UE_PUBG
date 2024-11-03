@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class UE_PUBG_API AC_Bullet : public AC_Item
+class UE_PUBG_API AC_Bullet : public AActor
 {
 	GENERATED_BODY()
 public:
@@ -72,4 +72,9 @@ protected:
 	int InstanceNum;
 
 	float InstanceLifeTime = 0.0f;
+
+	AC_BasicCharacter* OwnerCharacter{};
+public:
+	virtual void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+
 };

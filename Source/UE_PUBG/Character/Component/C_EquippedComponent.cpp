@@ -270,6 +270,7 @@ void UC_EquippedComponent::OnReloadEnd()
     if (IsValid(CurGun))
     {
         CurGun->ReloadBullet();
+        CurGun->SetMagazineVisibility(true);
     }
 }
 

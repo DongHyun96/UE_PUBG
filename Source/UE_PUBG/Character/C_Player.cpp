@@ -216,7 +216,7 @@ void AC_Player::Tick(float DeltaTime)
 
 	HandleLerpMainSpringArmToDestRelativeLocation(DeltaTime);
 	HandleStatesWhileMovingCrawl();
-
+	SetCanFireWhileCrawl();
 	//int TestCount = 0;
 
 	//for (auto& Bullet : PooledBullets)
@@ -287,6 +287,26 @@ void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime)
 			DeltaTime * 5.f
 		)
 	);
+}
+
+//void AC_Player::SetCanFireWhileCrawl()
+//{
+//	float ControllerPitchAngle = 360 - GetControlRotation().Pitch;
+//	if (ControllerPitchAngle >= 0 && ControllerPitchAngle <= 10 && PoseState == EPoseState::CRAWL)
+//		bCanFireBullet = false;
+//	else
+//		bCanFireBullet = true;
+//
+//	
+//}
+
+void AC_Player::SetCanFireWhileCrawl()
+{
+	float ControllerPitchAngle = 360 - GetControlRotation().Pitch;
+	if (ControllerPitchAngle >= 0 && ControllerPitchAngle <= 10 && PoseState == EPoseState::CRAWL)
+		bCanFireBullet = false;
+	else
+		bCanFireBullet = true;
 }
 
 bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
@@ -1074,13 +1094,14 @@ void AC_Player::HandleRecoilInterpolation(float Value)
 	//UC_Util::Print("Recoiling!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 	//UC_Util::Print(Value);
 	float TestFloat = CurGun->GetRecoilFactors().Y;
-	float RecoilFactor = 1;
+	SetRecoilFactorByPose();
+	float RecoilFactor = 1 * PlayerRecoilFactorByPose;
 	AddControllerPitchInput(-Value * RecoilFactor);
 }
 
 void AC_Player::OnRecoilTimelineFinished()
 {
-	
+	bIsFiringBullet = false;
 }
 
 void AC_Player::SetRecoilTimeLineComponent()
@@ -1106,8 +1127,9 @@ void AC_Player::RecoilController()
 {
 	UC_Util::Print("Start Recoil");
 	RecoilTimeline->PlayFromStart();
+	bIsFiringBullet = true;
 	//ControllerRecoilTimeline->PlayFromStart();
-	float Value = FMath::FRandRange(-1.0, 1.0);
+	float Value = FMath::FRandRange(-1.0, 1.0) * PlayerRecoilFactorByPose;
 	AddControllerYawInput(Value);
 
 
@@ -1123,6 +1145,28 @@ void AC_Player::SetRecoilTimelineValues()
 	RecoilTimeline->SetTimelinePlayRate(PlayRate);
 	//CameraTransitionTimeline->SetPlayRate(PlayRate);  // 재생 속도 설정
 	//CameraTransitionTimeline->SetLooping(false);  // 반복하지 않도록 설정
+}
+
+void AC_Player::SetRecoilFactorByPose()
+{
+	switch (PoseState)
+	{
+	case EPoseState::STAND:
+		PlayerRecoilFactorByPose = 1;
+		break;
+	case EPoseState::CROUCH:
+		PlayerRecoilFactorByPose = 0.5;
+
+		break;
+	case EPoseState::CRAWL:
+		PlayerRecoilFactorByPose = 0.3;
+
+		break;
+	case EPoseState::POSE_MAX:
+		break;
+	default:
+		break;
+	}
 }
 
 void AC_Player::SpawnConsumableItemForTesting()
@@ -1150,7 +1194,7 @@ void AC_Player::PoolingBullets()
 		Bullet->DeactivateInstance();
 		if (IsValid(Bullet))
 		{
-
+			Bullet->SetOwnerCharacter(this);
 			//UC_Util::Print("Created Bullet");
 			PooledBullets.Add(Bullet);
 		}

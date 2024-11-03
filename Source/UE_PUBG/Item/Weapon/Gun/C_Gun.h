@@ -190,4 +190,7 @@ protected:
 	class AC_AttachableItem* Magazine{};
 
 	void LoadMagazine();
+
+public:
+	void SetMagazineVisibility(bool InIsVisible);
 };
