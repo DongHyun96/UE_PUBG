@@ -47,7 +47,6 @@ void UC_MainGunWidget::SetWeapon(AC_Item* item)
 void UC_MainGunWidget::SetWeaponBoxNum(uint8 Num)
 {
 	WeaponNum->SetText(FText::FromString(FString::FromInt(Num)));
-	WeaponNum->SetVisibility(ESlateVisibility::Visible);
 
 	switch (Num)
 	{
@@ -60,4 +59,8 @@ void UC_MainGunWidget::SetWeaponBoxNum(uint8 Num)
 	default:
 		break;
 	}
+
+	WeaponNum->SetVisibility(ESlateVisibility::Visible);
+
+	Init();
 }

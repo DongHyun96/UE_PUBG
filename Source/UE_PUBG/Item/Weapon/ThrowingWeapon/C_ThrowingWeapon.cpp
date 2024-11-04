@@ -206,8 +206,8 @@ void AC_ThrowingWeapon::EquipToCharacter(AC_BasicCharacter* Character)
 		{
 			//교체당한 아이템이 인벤에 존재한다면. 인벤의 아이템의 스택을 + 1.
 			inItem->AddItemStack();
-			//unEquipItem->SetActorHiddenInGame(true);
-			//unEquipItem->SetActorEnableCollision(false);
+			unEquipItem->SetActorHiddenInGame(true);
+			unEquipItem->SetActorEnableCollision(false);
 			unEquipItem->Destroy();
 		}
 		else
@@ -280,6 +280,10 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 		equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
 		UC_Util::Print("No Throwable");
 
+		//나중에 꺼낼때 안보인다면 조정해줘야함.
+		SetActorHiddenInGame(true);
+		SetActorEnableCollision(false);
+
 		return true; //투척류가 빈슬롯에 장착됬으므로 return true;
 	}
 
@@ -338,8 +342,8 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 	{
 		//교체당한 아이템이 인벤에 존재한다면. 인벤의 아이템의 스택을 + 1.
 		inItem->AddItemStack();
-		//unEquipItem->SetActorHiddenInGame(true);
-		//unEquipItem->SetActorEnableCollision(false);
+		unEquipItem->SetActorHiddenInGame(true);
+		unEquipItem->SetActorEnableCollision(false);
 		unEquipItem->Destroy();
 	}
 	else
@@ -360,7 +364,7 @@ bool AC_ThrowingWeapon::Interaction(AC_BasicCharacter* Character)
 		MoveToSlot(Character);
 		return true;
 	}
-	MoveToSlot(Character);
+	//MoveToSlot(Character);
 
 	return false;
 }

@@ -320,6 +320,13 @@ void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
 		if (!EquippedComponent->GetWeapons()[EWeaponSlot::MAIN_GUN])
 		{
 			EquippedComponent->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
+			
+			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
+			SetActorHiddenInGame(true);
+			SetActorEnableCollision(false);
+
+			SetActorHiddenInGame(false);
+			SetActorEnableCollision(true);
 			return;
 		}
 		//Slot = EWeaponSlot::SUB_GUN;
@@ -328,6 +335,14 @@ void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
 		if (!EquippedComponent->GetWeapons()[EWeaponSlot::SUB_GUN])
 		{
 			EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+
+			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
+			SetActorHiddenInGame(true);
+			SetActorEnableCollision(false);
+
+			SetActorHiddenInGame(false);
+			SetActorEnableCollision(true);
+
 			return;
 		}
 		break;

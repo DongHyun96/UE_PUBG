@@ -105,6 +105,11 @@ public:
 
 	void RemoveItemToMyList(AC_Item* item) { testMyItems.Remove(item->GetItemDatas().ItemName); }
 
+	//
+	void AddItemToNearList(AC_Item* item) { NearItems.Add(item); }
+	void RemoveItemNearList(AC_Item* item) { NearItems.Remove(item); }
+	//
+
 	void AddItemToAroundList(AC_Item* item) { testAroundItems.Add(item->GetItemDatas().ItemName, item); }
 
 	void RemoveItemToAroundList(AC_Item* item) { testAroundItems.Remove(item->GetItemDatas().ItemName); }

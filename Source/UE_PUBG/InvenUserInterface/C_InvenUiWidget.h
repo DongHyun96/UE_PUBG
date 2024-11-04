@@ -40,7 +40,7 @@ protected:
 	void PopulateItemList(class UListView* list, const TMap<FString, class AC_Item*>& itemList);
 
 	UFUNCTION(BlueprintCallable)
-	void test(class UListView* list, const TMap<FString, AC_Item*>& itemList);
+	void testAroundItemList(class UListView* list, const TArray<AC_Item*>& AroundAtemList);
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

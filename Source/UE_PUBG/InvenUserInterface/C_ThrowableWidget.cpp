@@ -58,4 +58,6 @@ void UC_ThrowableWidget::SetWeaponBoxNum(uint8 Num)
 	default:
 		break;
 	}
+
+	Init();
 }

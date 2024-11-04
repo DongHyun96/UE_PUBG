@@ -79,35 +79,44 @@ void UC_InvenUiWidget::NativeConstruct()
 
 void UC_InvenUiWidget::InitWidget()
 {
-    MyItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("MyItemListWidget1")));
+    if (!IsValid(MyItemListWidget))
+        MyItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("MyItemListWidget1")));
+    
+    if (!IsValid(AroundItemListWidget))
+        AroundItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("AroundItemListWidget1")));
 
-    AroundItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("AroundItemListWidget1")));
+    if (!IsValid(MyItemListView))
+        MyItemListView = Cast<UListView>(GetWidgetFromName(FName("MyItemList")));
 
-    MyItemListView = Cast<UListView>(GetWidgetFromName(FName("MyItemList")));
+    if (!IsValid(AroundItemListView))
+        AroundItemListView = Cast<UListView>(GetWidgetFromName(FName("AroundItemList")));
 
-    AroundItemListView = Cast<UListView>(GetWidgetFromName(FName("AroundItemList")));
+    if (!IsValid(MainGunSlot))
+        MainGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_MainGun")));
 
-    MainGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_MainGun")));
+    if (!IsValid(SubGunSlot))
+        SubGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_SubGun")));
 
-    SubGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_SubGun")));
+    if (!IsValid(MeleeSlot))
+        MeleeSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Melee")));
 
-    MeleeSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Melee")));
-
-    ThrowableSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Throwble")));
+    if (!IsValid(ThrowableSlot))
+        ThrowableSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Throwble")));
+        
 
     SetWidgetsOwner(OwnerCharacter);
     
     MainGunSlot->SetWeaponBoxNum(1);
-    MainGunSlot->Init();
+    //MainGunSlot->Init();
     
     SubGunSlot->SetWeaponBoxNum(2);
-    SubGunSlot->Init();
+    //SubGunSlot->Init();
     
     MeleeSlot->SetWeaponBoxNum(4);
-    MeleeSlot->Init();
+    //MeleeSlot->Init();
     
     ThrowableSlot->SetWeaponBoxNum(5);
-    ThrowableSlot->Init();
+    //ThrowableSlot->Init();
 
 
 
@@ -149,9 +158,11 @@ void UC_InvenUiWidget::InitListView()
         //AroundItemListView->ClearListItems();
         TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
         AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
+        TArray<AC_Item*> TestAroundItemList;
+        TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetNearItems();
 
-        PopulateItemList(AroundItemListView, AroundItems);
-
+        //PopulateItemList(AroundItemListView, AroundItems);
+        testAroundItemList(AroundItemListView, TestAroundItemList);
         //AroundItemListView->RequestRefresh();
 
         AroundItemListView->SetVisibility(ESlateVisibility::Visible);
@@ -178,19 +189,20 @@ void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_
     list->RequestRefresh();
 }
 
-void UC_InvenUiWidget::test(UListView* list, const TMap<FString, AC_Item*>& itemList)
+void UC_InvenUiWidget::testAroundItemList(UListView* list, const TArray<AC_Item*>& AroundItemList)
 {
-    for (const auto& ItemPair : itemList)
+    list->ClearListItems(); // 기존 아이템 삭제
+
+    for (auto& AroundItem : AroundItemList)
     {
-        AC_Item* Item = ItemPair.Value; // TMap에서 아이템 가져오기
+        AC_Item* Item = AroundItem;
         if (Item)
         {
             list->AddItem(Item);
         }
-        //ItemBar갱신.
         UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListView->GetEntryWidgetFromItem(Item));
         if (EntryWidget)
             EntryWidget->InitBar(Item);
     }
-
 }
+
