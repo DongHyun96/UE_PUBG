@@ -128,8 +128,7 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 		ItemUser->SetHandState(EHandState::UNARMED);
 
 		// 총기류 예외처리
-		//if (AC_Gun* Gun = Cast<AC_Gun>(UserWeapon)) // 현재 들고 있는 무기가 총기라면
-		//	Gun->SetIsAimPress(false);				//총을 들고 Aiming 중일 때 카메라 다시 원래대로 전환
+		if (AC_Gun* Gun = Cast<AC_Gun>(UserWeapon)) Gun->BackToMainCamera();
 	}
 
 	// 사용자의 bIsActivatingConsumableItem 세팅

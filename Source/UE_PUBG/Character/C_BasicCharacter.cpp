@@ -72,8 +72,8 @@ AC_BasicCharacter::AC_BasicCharacter()
 	SwimmingComponent = CreateDefaultSubobject<UC_SwimmingComponent>("SwimmingComponent");
 	SwimmingComponent->SetOwnerCharacter(this);
 
-	SkyDivingComponent = CreateDefaultSubobject<UC_SkyDivingComponent>("SkyDivingComponent");
-	SkyDivingComponent->SetOwnerCharcter(this);
+	SkyDiveComponent = CreateDefaultSubobject<UC_SkyDivingComponent>("SkyDivingComponent");
+	SkyDiveComponent->SetOwnerCharcter(this);
 }
 
 // Called when the game starts or when spawned
@@ -83,7 +83,7 @@ void AC_BasicCharacter::BeginPlay()
 
 	// For Testing
 	//MainState = EMainState::SKYDIVING;
-	//SkyDivingComponent->SetSkyDivingState(ESkyDivingState::READY);
+	//SkyDiveComponent->SetSkyDivingState(ESkyDivingState::READY);
 
 	GetPhysicsVolume()->FluidFriction = 2.5f;
 	StatComponent->SetOwnerCharacter(this);
@@ -177,6 +177,8 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 	if (!IsValid(PAnimMontage.AnimMontage)) return 0.f;
 
 	FName TargetGroup = PAnimMontage.AnimMontage->GetGroupName();
+
+	UC_Util::Print(TargetGroup.ToString(), FColor::Red, 5.f);
 
 	// 자신의 group내의 anim montage가 한번도 재생된 적 없을 땐 바로 재생
 	if (!CurPriorityAnimMontageMap.Contains(TargetGroup))

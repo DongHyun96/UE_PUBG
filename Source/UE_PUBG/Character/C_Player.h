@@ -72,6 +72,8 @@ public: // Getters and setters
 	 
 	class UC_PingSystemComponent* GetPingSystemComponent() const { return PingSystemComponent; }
 
+	class USpringArmComponent* GetMainSpringArm() const { return C_MainSpringArm; }
+
 private:
 	void SetPoseState(EPoseState InPoseState) { Super::SetPoseState(InPoseState); }
 
