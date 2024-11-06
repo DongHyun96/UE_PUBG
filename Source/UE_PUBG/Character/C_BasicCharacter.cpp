@@ -178,8 +178,6 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 	FName TargetGroup = PAnimMontage.AnimMontage->GetGroupName();
 
-	UC_Util::Print(TargetGroup.ToString(), FColor::Red, 5.f);
-
 	// 자신의 group내의 anim montage가 한번도 재생된 적 없을 땐 바로 재생
 	if (!CurPriorityAnimMontageMap.Contains(TargetGroup))
 	{
