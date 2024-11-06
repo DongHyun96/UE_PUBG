@@ -268,6 +268,9 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 
 void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime)
 {
+	// SkyDiving & Parachuting 중에서의 Lerp Destination 적용
+
+
 	C_MainSpringArm->SetRelativeLocation
 	(
 		FMath::Lerp

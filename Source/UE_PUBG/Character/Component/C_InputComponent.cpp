@@ -556,13 +556,15 @@ void UC_InputComponent::OnFKey()
 
 	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
 
-	// 비행기 F키
-	if (Player->GetMainState() == EMainState::SKYDIVING && Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
+	// SkyDiving 관련 F키
+	if (Player->GetMainState() == EMainState::SKYDIVING)
 	{
-		Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING);
+		if (Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
+			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING);
+		else if (Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::SKYDIVING)
+			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING);
 		return;
 	}
-
 
 	if (Player->GetInventory()->GetNearItems().Num() > 0)
 	{

@@ -49,7 +49,8 @@ enum class EMontagePriority : uint8
 	DRAW_SHEATH_WEAPON,		// Default Upper body
 	POSE_TRANSITION,		// Sub Full body
 	THROW_THROWABLE,		// 실질적으로 던지는 자세일 때, Default Upper body
-	PRIORITY_MAX
+	PRIORITY_MAX,
+	MAX
 };
 
 USTRUCT(BlueprintType)
@@ -255,7 +256,7 @@ public:
 	class UC_SwimmingComponent* GetSwimmingComponent() const { return SwimmingComponent; }
 
 	UFUNCTION(BlueprintGetter)
-	class UC_SkyDivingComponent* GetSkyDivingComponent() const { return SkyDivingComponent; }
+	class UC_SkyDivingComponent* GetSkyDivingComponent() const { return SkyDiveComponent; }
 
 	class UC_InvenSystem* GetInvenSystem() { return InvenSystem; }
 
@@ -401,6 +402,6 @@ protected:
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_SkyDivingComponent* SkyDivingComponent{};
+	class UC_SkyDivingComponent* SkyDiveComponent{};
 
 };
