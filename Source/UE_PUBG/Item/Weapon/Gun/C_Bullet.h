@@ -41,8 +41,11 @@ public:
 	void ActivateInstance();
 	bool GetIsActive() { return IsActive; }
 	//void SetMeshVisiblility(bool InBool) { BulletMesh->SetVisibility(InBool);}
-
-	bool Fire(class AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity = true);
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FVector InitialVelocityNormalized{};
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FVector LineTraceHitLocation{};
+	bool Fire(class AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity = true, FVector InHitLocation = FVector(0));
 
 	void SubSteppingMovementPhysics(float SebStepDeltaTime);
 

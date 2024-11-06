@@ -54,7 +54,7 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bCanCharacterMove = OwnerCharacter->GetCanMove();
 	bIsHoldDirection  = OwnerCharacter->GetIsHoldDirection();
 	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
-
+	
 	SwimmingState	  = OwnerCharacter->GetSwimmingComponent()->GetSwimmingState();
 	SkyDivingState	  = OwnerCharacter->GetSkyDivingComponent()->GetSkyDivingState();
 	//switch (SwimmingState)
@@ -76,27 +76,13 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	CrawlRotationAngle = OwnerCharacter->GetPoseColliderHandlerComponent()->GetCurrentCrawlSlopeAngleForRigControl();
 
 	AC_Gun* CurrentGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
-	//if (IsValid(CurrentGun))
-	//{
-	//	RifleLeftHandSocket = CurrentGun->GetLeftHandSocketTransform();
-	//	UAnimMontage* RifleDrawMontage = CurrentGun->GetDrawMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentGun->GetCurrentWeaponState()].AnimMontage;
 
-	//	UAnimMontage* RifleSheathMontage = CurrentGun->GetSheathMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentGun->GetCurrentWeaponState()].AnimMontage;
-	//	if (IsValid(RifleSheathMontage)||IsValid(RifleDrawMontage))
-	//	{
-	//		UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
-	//		bCharacterIsSheathing = CurAnimInstance->Montage_IsPlaying(RifleSheathMontage)|| CurAnimInstance->Montage_IsPlaying(RifleDrawMontage);
-	//	}
-	//	else
-	//		bCharacterIsSheathing = false;
-	//}
-	//else
-	//{
-	//	bCharacterIsSheathing = true;
-	//	//UC_Util::Print("Sheating!");
-	//}
 	ControlHeadRotation();
 	SetAimOfssetRotation();
+	if (IsValid(CurrentGun))
+	{
+		bGunHasGrip = CurrentGun->GetGunHasGrip();
+	}
 	SetAimingTurnInPlaceRotation();
 }
 
@@ -223,6 +209,7 @@ void UC_AnimBasicCharacter::SetAimOfssetRotation()
 	AimOffsetLerpDelayTime = 0;
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 	AC_Gun* CurGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetCurWeapon());
+
 	if (OwnerPlayer->GetIsWatchingSight() && OwnerPlayer->GetPoseState() == EPoseState::CRAWL)
 	{
 		if (CCurrentAimOffsetRotation.Pitch < 0)

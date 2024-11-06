@@ -142,7 +142,7 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 		Inventory->AddItemToAroundList(OverlappedItem);
 		//Inventory->InitInvenUI();
 		if (!InvenSystem) return;
-		InvenSystem->InitializeList();
+	    //InvenSystem->InitializeList();
 	}
 	else
 	{
@@ -169,7 +169,7 @@ void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor
 		Inventory->RemoveItemToAroundList(OverlappedItem);
 		//Inventory->InitInvenUI();
 		if (!InvenSystem) return;
-		InvenSystem->InitializeList();
+		//InvenSystem->InitializeList();
 	}
 }
 float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate, FName StartSectionName)

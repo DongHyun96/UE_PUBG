@@ -68,7 +68,9 @@ protected:
 	UBorder* CrosshairRight{};
 
 	void SetVisibileOfCrosshairBorder(bool InIsVisible);
-
+	float FullAutoFiringTime = 0;
+	float FullAutoSpreadRate = 0;
+	void CountFullAutoFiringTime(float InDeltaTime);
 public:
 	void SetCrosshairState(ECrosshairState InState);
 	UUserWidget* GetAimWidget() { return AimSightWidget; }

@@ -123,7 +123,7 @@ void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
 
 void UC_InvenUiWidget::InitListView()
 {
-    InitWidget();
+    //dnseInitWidget();
 
     //아이템 리스트 위젯 초기화 및 데이터 추가
     if (MyItemListView)

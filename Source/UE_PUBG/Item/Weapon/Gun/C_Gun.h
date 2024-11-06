@@ -109,7 +109,7 @@ private:
 	const FName MAIN_HOLSTER_BAG_SOCKET_NAME = "MainGunSocket_Bag"; // 무기집 socket 이름
 	const FName MAGAZINE_SOCKET_NAME = "Magazine_Socket";
 
-	
+
 	const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
 	//const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
 	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // 무기가 손에 부착될 socket 이름
@@ -169,7 +169,7 @@ public:
 
 	//void SpawnBulletForTest();
 	virtual void SetBulletSpeed();
-	virtual bool SetBulletDirection(FVector &OutLocation, FVector &OutDirection, bool&OutHasHit);
+	virtual bool SetBulletDirection(FVector& OutLocation, FVector& OutDirection, FVector& OutHitLocation, bool& OutHasHit);
 
 
 	EBackPackLevel PrevBackPackLevel;
@@ -179,7 +179,7 @@ public:
 	float GetBaseBulletSpreadDegree() { return BaseBulletSpreadDegree; }
 protected:
 	//Aim 위젯
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UUserWidget* AimWidget;
 	FName WidgetFilePath;
 	void ShowAndHideWhileAiming();
@@ -193,4 +193,11 @@ protected:
 
 public:
 	void SetMagazineVisibility(bool InIsVisible);
+	TArray<EPartsName> GetAttachableParts() { return AttachableParts; }
+	bool GetGunHasGrip();
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<EPartsName> AttachableParts{};
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<EPartsName, class UMeshComponent*> AttachedParts;
 };

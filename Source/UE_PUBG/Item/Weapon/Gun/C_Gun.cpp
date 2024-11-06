@@ -52,13 +52,17 @@ AC_Gun::AC_Gun()
 
 	MyItemType = EItemTypes::MAINGUN;
 
+
+
 }
 
 void AC_Gun::BeginPlay()
 {
 	Super::BeginPlay();
+	//Add Grip for Test
+	AttachedParts[EPartsName::GRIP] = Cast<UStaticMeshComponent>(GetDefaultSubobjectByName("VertgripMesh"));
 	SetBulletSpeed();
-	AimSightCamera = FindComponentByClass<UCameraComponent>();
+	AimSightCamera   = FindComponentByClass<UCameraComponent>();
 	AimSightSpringArm = FindComponentByClass<USpringArmComponent>();
 
 	//if(IsValid(AimSightCamera))
@@ -67,7 +71,7 @@ void AC_Gun::BeginPlay()
 	//블루프린트에서 할당한 Skeletal Mesh 찾아서 변수에 저장
 	GunMesh = FindComponentByClass<USkeletalMeshComponent>();
 	GunMesh->SetupAttachment(RootComponent);
-
+	
 	LoadMagazine();
 
 	if (IsValid(Magazine))
@@ -97,12 +101,22 @@ void AC_Gun::Tick(float DeltaTime)
 	//GunMesh->SetWorldRotation(OwnerCharacter->GetControlRotation());
 	if (IsValid(GunMesh))
 	{
-		FTransform TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
 		FVector OutLocation{};
 		FRotator OutRotation{};
+		FTransform TempVec{};
+		FRotator AdditionalRotation = FRotator(0, 0, 0); // Yaw를 45도 회전시키는 예제
+
+		if (IsValid(AttachedParts[EPartsName::GRIP]))
+			TempVec = AttachedParts[EPartsName::GRIP]->GetSocketTransform("LeftHandSocket");
+		else
+			TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
+		//TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
+
 		OwnerCharacter->GetMesh()->TransformToBoneSpace("RightHand", TempVec.GetLocation(), TempVec.GetRotation().Rotator(), OutLocation, OutRotation);
 		LeftHandSocketLocation.SetLocation(OutLocation);
 		LeftHandSocketLocation.SetRotation(OutRotation.Quaternion());
+		//LeftHandSocketLocation.ConcatenateRotation(AdditionalRotation.Quaternion());
+
 		//FTransform RootTrasnform = OwnerCharacter->GetMesh()->GetSocketTransform("SpineGunSocket");
 		//
 		//LeftHandSocketLocation = TempVec.GetRelativeTransform(RootTrasnform);
@@ -464,8 +478,9 @@ bool AC_Gun::FireBullet()
 
 	FVector FireLocation;
 	FVector FireDirection;
+	FVector HitLocation;
 	bool HasHit;
-	if (!SetBulletDirection(FireLocation, FireDirection, HasHit)) return false;
+	if (!SetBulletDirection(FireLocation, FireDirection,HitLocation, HasHit)) return false;
 	UC_Util::Print(FireLocation);
 	UC_Util::Print(FireDirection);
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
@@ -482,7 +497,11 @@ bool AC_Gun::FireBullet()
 		//UC_Util::Print("FIRE!!!!!!!");
 		CurBulletCount--;
 		OwnerPlayer->RecoilController();
-		return Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+		if (HasHit)
+			return Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity, HitLocation);
+		else
+			return Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+
 		//Bullet->Fire(this, FireLocation, FireDirection);
 		//if (BulletCount > 100)
 		//	return true;
@@ -521,7 +540,7 @@ void AC_Gun::SetBulletSpeed()
 	}
 }
 
-bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, bool& OutHasHit)
+bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVector &OutHitLocation, bool& OutHasHit)
 {
 	FHitResult HitResult;
 
@@ -576,7 +595,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, boo
 	if (OwnerCharacter->GetIsWatchingSight())
 	{
 		RandomPointOnScreen.X = (0.5 * ViewportSize.X );
-		RandomPointOnScreen.Y = (0.5 * ViewportSize.Y );
+		RandomPointOnScreen.Y = (0.4 * ViewportSize.Y );
 	}
 	else
 	{
@@ -586,7 +605,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, boo
 
 	WolrdContorller->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, WorldLocation, WorldDirection);
 
-	FVector DestLocation = WorldLocation + WorldDirection * 10000;
+	FVector DestLocation = WorldLocation + WorldDirection * 100000;
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, DestLocation, ECC_Visibility, CollisionParams);
 
 	DrawDebugSphere(GetWorld(), HitResult.Location, 1.0f, 12, FColor::Red, true);
@@ -597,10 +616,11 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, boo
 	//UC_Util::Print(FireLocation2, FColor::Blue);
 	FVector FireDirection;
 
-	if (HasHit)
+	if (HitResult.Distance <= 1000 && HitResult.Distance >0)
 	{
 		FireDirection = HitResult.Location - FireLocation;
 		FireDirection = FireDirection.GetSafeNormal();
+		
 		UC_Util::Print(HitResult.Location, FColor::Emerald);
 		UC_Util::Print(HitResult.Distance, FColor::Cyan);
 	}
@@ -630,6 +650,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, boo
 	OutLocation = FireLocation;
 	OutDirection = FireDirection;
 	OutHasHit = HasHit;
+	OutHitLocation = HitResult.Location;
 	return true;
 }
 
@@ -710,6 +731,11 @@ void AC_Gun::SetMagazineVisibility(bool InIsVisible)
 		Magazine->SetMeshVisibility(InIsVisible);
 		//UC_Util::Print("ASDaisujdfhaiseuehfaiesuhfaweiufh");
 	}
+}
+
+bool AC_Gun::GetGunHasGrip()
+{
+	return 	IsValid(AttachedParts[EPartsName::GRIP]);
 }
 
 //void AC_Gun::SpawnBulletForTest()

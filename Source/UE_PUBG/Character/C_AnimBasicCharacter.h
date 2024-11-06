@@ -49,6 +49,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsJumping{};
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bGunHasGrip{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float Direction{}; // Direction Angle
