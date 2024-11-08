@@ -56,6 +56,15 @@ bool UC_InvenComponent::CheckVolume(AC_Item* item)
 
 	return false;
 }
+uint8 UC_InvenComponent::LoopCheckVolume(AC_Item* item)
+{
+	for (uint8 i = item->GetItemDatas().ItemStack; i > 0; i--)
+	{
+		if (MaxVolume > CurVolume + item->GetVolume() * i) 
+			return i;
+	}
+	return 0;
+}
 /// <summary>
 /// 1. Holster가 nullptr이면 maxVolume+= volume을 해준다.
 /// Holster가 ture면 가방의 레벨을 비교. 
@@ -380,6 +389,25 @@ AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 {
 	AC_Item** FoundItem = testMyItems.Find(item->GetItemDatas().ItemName);
 	return FoundItem ? *FoundItem : nullptr;
+}
+
+void UC_InvenComponent::AddItemToMyList(AC_Item* item)
+{
+	testMyItems.Add(item->GetItemDatas().ItemName, item);
+	if (IsValid(OwnerCharacter))
+	{
+		item->SetOwnerCharacter(OwnerCharacter);
+	}
+	item->SetItemPlace(EItemPlace::INVEN);
+	item->SetActorHiddenInGame(true);
+	item->SetActorEnableCollision(false);
+}
+
+void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
+{
+	testMyItems.Remove(item->GetItemDatas().ItemName);
+	//Add와 달리 슬롯으로 가는 경우를 대비하여 OwnerCharacter의 설정을 건드리지 않았음.
+	item->SetItemPlace(EItemPlace::AROUND);
 }
 
 void UC_InvenComponent::GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values)

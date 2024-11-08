@@ -66,6 +66,8 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
     if (!Weapons[InSlot]) return PrevSlotWeapon; // Slot에 새로 지정한 무기가 nullptr -> early return
     
+    //아이템의 위치 변경,1108 상연
+    Weapons[InSlot]->SetItemPlace(EItemPlace::SLOT);
 
     SetMainGunOrSubGun(InSlot);
         

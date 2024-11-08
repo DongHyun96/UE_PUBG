@@ -58,6 +58,8 @@ public:
 	//uint16은 해당 매크로가 지원하지 않는다. uint8, uint32는 지원한다.
 	bool CheckVolume(class AC_Item* item);
 
+	uint8 LoopCheckVolume(AC_Item* item);
+
 	//가방과 용량을 검사해서 가방 교체 및 장착.
 	UFUNCTION(BlueprintCallable)
 	bool CheckMyBackPack(class AC_BackPack* backpack);
@@ -101,9 +103,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	AC_Item* FindMyItem(AC_Item* item);
 
-	void AddItemToMyList(AC_Item* item) { testMyItems.Add(item->GetItemDatas().ItemName, item); }
+	void AddItemToMyList(AC_Item* item); //{ testMyItems.Add(item->GetItemDatas().ItemName, item); }
 
-	void RemoveItemToMyList(AC_Item* item) { testMyItems.Remove(item->GetItemDatas().ItemName); }
+	void RemoveItemToMyList(AC_Item* item);// { testMyItems.Remove(item->GetItemDatas().ItemName); }
 
 	//
 	void AddItemToNearList(AC_Item* item) { NearItems.Add(item); }
