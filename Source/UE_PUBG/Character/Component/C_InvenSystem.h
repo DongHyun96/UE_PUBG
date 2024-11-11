@@ -31,6 +31,7 @@ public:
 
 	void InitializeList();
 
+	UFUNCTION(BlueprintCallable)
 	void OpenInvenUI();
 protected:
 	class UC_InvenUiWidget* InvenUI;

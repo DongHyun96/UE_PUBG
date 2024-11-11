@@ -448,7 +448,6 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 				{
 					invenComp->RemoveItemToMyList(this); //클릭된 인벤의 투척류는 슬롯으로 가므로 MyList에서 제거.
 					MoveToInvenItem = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
-
 				}
 				else
 				{
@@ -478,6 +477,7 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 				{
 					//존재하지 않는다면 교체한 아이템을 그대로 추가.
 					invenComp->AddItemToMyList(MoveToInvenItem);
+					return true;
 				}
 			}
 		}

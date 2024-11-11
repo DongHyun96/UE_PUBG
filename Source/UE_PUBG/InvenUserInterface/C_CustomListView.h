@@ -16,6 +16,9 @@ UCLASS()
 class UE_PUBG_API UC_CustomListView : public UListView
 {
 	GENERATED_BODY()
+public:
+	UC_CustomListView(const FObjectInitializer& Initializer);
+
 protected:
 
 	void Init();

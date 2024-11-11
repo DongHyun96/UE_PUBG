@@ -16,6 +16,7 @@ void UC_MyItemListWidget::NativeConstruct()
         //ItemListBar->EntryWidgetClass = UC_ItemBarWidget::StaticClass();
         
     }
+    
     ItemListBar = Cast<UListView>(GetWidgetFromName(FName("AroundItemList")));
 }
 

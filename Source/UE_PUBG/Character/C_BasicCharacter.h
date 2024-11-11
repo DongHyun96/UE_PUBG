@@ -257,6 +257,7 @@ public:
 	UFUNCTION(BlueprintGetter)
 	class UC_SkyDivingComponent* GetSkyDivingComponent() const { return SkyDivingComponent; }
 
+	UFUNCTION(BlueprintCallable)
 	class UC_InvenSystem* GetInvenSystem() { return InvenSystem; }
 
 public:

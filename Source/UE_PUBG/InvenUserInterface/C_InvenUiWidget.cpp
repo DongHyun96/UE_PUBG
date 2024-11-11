@@ -32,7 +32,7 @@ void UC_InvenUiWidget::NativeConstruct()
     {
         
     }
-
+    
     InitListView();
 
 
@@ -44,17 +44,22 @@ void UC_InvenUiWidget::NativeConstruct()
         MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
 
         MyItemListWidget->AddTMapItem(MyItems); // 아이템 리스트 추가
-        MyItemListWidget->AddToViewport();
+        PopulateItemList(MyItemListWidget->ItemListBar, MyItems);
+        //MyItemListWidget->AddToViewport();
     }
 
     if (AroundItemListWidget)
     {
-        TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
-        AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
+        //TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
+        //AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
+
+        TArray<AC_Item*> TestAroundItemList;
+        TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetNearItems();
         AroundItemListWidget->SetVisibility(ESlateVisibility::Visible);
 
-        AroundItemListWidget->AddTMapItem(AroundItems);
-        AroundItemListWidget->AddToViewport();
+        //AroundItemListWidget->AddTMapItem(TestAroundItemList);
+        testAroundItemList(AroundItemListWidget->ItemListBar, TestAroundItemList);
+       //AroundItemListWidget->AddToViewport();
     }
 
     // 아이템 리스트 위젯 초기화 및 데이터 추가
@@ -80,10 +85,10 @@ void UC_InvenUiWidget::NativeConstruct()
 void UC_InvenUiWidget::InitWidget()
 {
     if (!IsValid(MyItemListWidget))
-        MyItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("MyItemListWidget1")));
+        //MyItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("MyItemListWidget1")));
     
     if (!IsValid(AroundItemListWidget))
-        AroundItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("AroundItemListWidget1")));
+        //AroundItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("AroundItemListWidget1")));
 
     if (!IsValid(MyItemListView))
         MyItemListView = Cast<UListView>(GetWidgetFromName(FName("MyItemList")));
@@ -102,7 +107,6 @@ void UC_InvenUiWidget::InitWidget()
 
     if (!IsValid(ThrowableSlot))
         ThrowableSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Throwble")));
-        
 
     SetWidgetsOwner(OwnerCharacter);
     
@@ -182,6 +186,8 @@ void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_
         }
         //ItemBar갱신.
         UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListView->GetEntryWidgetFromItem(Item));
+        //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
+
         if (EntryWidget)
             EntryWidget->InitBar(Item);
     }
@@ -201,6 +207,8 @@ void UC_InvenUiWidget::testAroundItemList(UListView* list, const TArray<AC_Item*
             list->AddItem(Item);
         }
         UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListView->GetEntryWidgetFromItem(Item));
+        //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(AroundItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
+
         if (EntryWidget)
             EntryWidget->InitBar(Item);
     }

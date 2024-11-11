@@ -2,12 +2,17 @@
 
 
 #include "InvenUserInterface/C_ItemBarWidget.h"
+#include "InvenUserInterface/C_InvenUiWidget.h"
+
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetTree.h"
+#include "Blueprint/DragDropOperation.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+
 #include "Item/C_Item.h"
-#include "InvenUserInterface/C_InvenUiWidget.h"
 #include "TimerManager.h"
 
 #include "Character/Component/C_InvenSystem.h"
@@ -26,7 +31,7 @@ void UC_ItemBarWidget::NativeConstruct()
 	//ItemName = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), FName("ItemName1"));
 	//ItemStackBlock = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), FName("ItemStackBlock1"));
 	
-	SetIsFocusable(false);
+	//SetIsFocusable(false);
 	
 	if (!OwnerCharacter)
 	{
@@ -72,12 +77,7 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 		{   // 우클릭 이벤트 실행
 			CachedItem->Interaction(OwnerCharacter);
 
-			FTimerDelegate TimerDelegate;
-			FTimerHandle TimerHandle;
-			//TimerDelegate.BindUFunction(this, FName("InitInvenUIWidget"));
-			//SetVisibility(ESlateVisibility::Hidden);
 
-			//GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.1f, false);
 			InitInvenUIWidget();
 			
 			//NativeOnListItemObjectSet에서의 호출과 중복으로 일단 주석처리, 다만 이벤트시에 초기화가 필요하면 사용해야 할 수 있음.
@@ -86,6 +86,23 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 			InitBar(CachedItem);
 			//SetVisibility(ESlateVisibility::Visible);
 			
+			return FReply::Handled();
+		}
+	}
+	else if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+	{
+		if (CachedItem)
+		{
+			//드래그 이벤트 실행.
+			// 드래그를 시작하도록 설정
+			UDragDropOperation* DragOperation = NewObject<UDragDropOperation>();
+			// 드래그 대상과 관련된 데이터 설정
+			DragOperation->DefaultDragVisual = this; // 드래그 시 나타날 시각적 요소
+			DragOperation->Payload = CachedItem; // 드래그 중 전달할 데이터 (아이템)
+
+			// 드래그를 시작하고 반응함
+			UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, DragOperation->DefaultDragVisual, EKeys::LeftMouseButton);
+
 			return FReply::Handled();
 		}
 	}
@@ -118,7 +135,9 @@ void UC_ItemBarWidget::InitBar(AC_Item* item)
 	//ItemImage = Cast<UImage>(GetWidgetFromName(FName("ItemImage1")));
 	//ItemName = Cast<UTextBlock>(GetWidgetFromName(FName("ItemName1")));
 	//ItemStackBlock = Cast<UTextBlock>(GetWidgetFromName(FName("ItemStackBlock1")));
+	//SetIsFocusable(false);
 
+	//bIsFocusable
 	if (item)
 	{
 		CachedItem = item;
