@@ -9,6 +9,10 @@
 
 #include "GameFramework/SpringArmComponent.h"
 
+#include "Character/Component/C_SwimmingComponent.h"
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_SkyDiveWidget.h"
+
 #include "Utility/C_Util.h"
 
 UC_SkyDivingComponent::UC_SkyDivingComponent()
@@ -53,12 +57,20 @@ void UC_SkyDivingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	UpdateCurrentHeight();
+	UpdatePlayerSkyDiveHUD();
+
 	LerpPlayerMainCameraArmLength(DeltaTime);
 	LerpVelocityZ(DeltaTime);
 
 	HandleStateTransitionByHeight();
 
+	OwnerCharacter->GetVelocity().Size();
+
 	if (!IsValid(ParachuteSkeletalMesh) || !IsValid(ParachuteBackpackStaticMesh)) UC_Util::Print("WARNING");
+
+	//UC_Util::Print(OwnerCharacter->GetVelocity().Size() * 0.036f);
+
 	/*switch (SkyDivingState)
 	{
 	case ESkyDivingState::READY:
@@ -179,6 +191,22 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		//OwnerMovement->AirControlBoostMultiplier = 10.0f;
 		//OwnerMovement->MaxFlySpeed = 1000.f;
 		//OwnerMovement->BrakingDecelerationFlying = 2048.f;
+
+		// SkyDive Widget Jumped고도 잡아주기
+		if (OwnerPlayer)
+		{
+			UpdateCurrentHeight();
+
+			UC_SkyDiveWidget* PlayerSkyDiveWidget = OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget();
+
+			PlayerSkyDiveWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+
+			PlayerSkyDiveWidget->SetJumpedAltitude(CurrentHeight);
+
+			// TODO: 맵에 따른 parachute Limit 고도 설정(SkyDiveWidget에서 사용)
+			PlayerSkyDiveWidget->SetParachuteLimitAltitude(PARACHUTE_DEPLOY_LIMIT_HEIGHT);
+		}
+
 		return;
 	}
 	case ESkyDivingState::PARACHUTING:
@@ -193,12 +221,44 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 	}
 	case ESkyDivingState::LANDING:
 	{
+		// 낙하산 animation
+		//ParachuteSkeletalMesh->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+		ParachuteSkeletalMesh->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+
+		ParachuteSkeletalMesh->GetAnimInstance()->Montage_Play(ParachuteEjectMontage);
+
+		// 가방 숨기기
+		ParachuteBackpackStaticMesh->SetVisibility(false);
+
 		OwnerCharacter->PlayAnimMontage(LandingMontage);
 		SkyDivingState = ESkyDivingState::LANDING;
+
+		// HUD 끄기
+		if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden);
 		return;
 	}
 	default: return;
 	}
+}
+
+void UC_SkyDivingComponent::OnCharacterLandedOnWater()
+{
+	ParachuteSkeletalMesh->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	ParachuteSkeletalMesh->GetAnimInstance()->Montage_Play(ParachuteEjectMontage);
+
+	ParachuteBackpackStaticMesh->SetVisibility(false);
+
+	UCharacterMovementComponent* OwnerMovement = OwnerCharacter->GetCharacterMovement();
+	OwnerMovement->AirControl					= 0.f;
+	OwnerMovement->GravityScale					= 1.f;
+	OwnerMovement->BrakingDecelerationFalling	= 0.f;
+	OwnerMovement->Velocity.Z					= 0.f;
+
+	OwnerCharacter->SetMainState(EMainState::IDLE);
+	SkyDivingState = ESkyDivingState::LANDING;
+
+	// HUD 끄기
+	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UC_SkyDivingComponent::OnDeployParachuteMontageEnd()
@@ -219,12 +279,26 @@ void UC_SkyDivingComponent::OnLandingMontageEnd()
 	OwnerCharacter->SetMainState(EMainState::IDLE);
 }
 
+void UC_SkyDivingComponent::OnParachuteLandingMontageEnd()
+{
+	ParachuteSkeletalMesh->SetVisibility(false);
+}
+
 void UC_SkyDivingComponent::LerpPlayerMainCameraArmLength(const float& DeltaTime)
 {
 	if (!OwnerPlayer) return;
-	if (OwnerPlayer->GetMainState() != EMainState::SKYDIVING) return;
 
 	USpringArmComponent* MainCamSpringArm = OwnerPlayer->GetMainSpringArm();
+
+	if (OwnerPlayer->GetMainState() != EMainState::SKYDIVING)
+	{
+		// Landing한 이후로 TargetArmLength가 원위치 되지 않았을 때의 예외처리
+		if (FMath::Abs(MainCamSpringArm->TargetArmLength - PLAYER_ORIGIN_MAINCAM_ARMLENGTH) > 0.1f)
+			MainCamSpringArm->TargetArmLength = FMath::Lerp(MainCamSpringArm->TargetArmLength, PLAYER_ORIGIN_MAINCAM_ARMLENGTH, DeltaTime * 5.f);
+
+		return;
+	}
+
 	
 	switch (SkyDivingState)
 	{
@@ -258,5 +332,57 @@ void UC_SkyDivingComponent::LerpVelocityZ(const float& DeltaTime)
 
 void UC_SkyDivingComponent::HandleStateTransitionByHeight()
 {
+	switch (SkyDivingState)
+	{
+	case ESkyDivingState::SKYDIVING:
+	{
+		if (CurrentHeight < PARACHUTE_DEPLOY_LIMIT_HEIGHT)
+		{
+			UC_Util::Print(CurrentHeight, FColor::Red, 10.f);
+			SetSkyDivingState(ESkyDivingState::PARACHUTING);
+		}
+		return;
+	}
+	case ESkyDivingState::PARACHUTING:
+		if (!OwnerCharacter->GetCharacterMovement()->IsFalling())
+			SetSkyDivingState(ESkyDivingState::LANDING);
+		return;
+	default: return;
+	}
+}
 
+void UC_SkyDivingComponent::UpdateCurrentHeight()
+{
+	switch (SkyDivingState)
+	{
+	case ESkyDivingState::SKYDIVING: case ESkyDivingState::PARACHUTING:
+	{
+		FCollisionQueryParams CollisionParams{};
+		CollisionParams.AddIgnoredActor(OwnerCharacter);
+
+		FHitResult HitResult{};
+
+		FVector StartLocation = OwnerCharacter->GetActorLocation();
+		FVector DestLocation  = StartLocation - FVector::UnitZ() * MAX_SKYDIVE_JUMP_ALTITUDE;
+
+		bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECollisionChannel::ECC_Visibility, CollisionParams);
+		if (!HasHit) return;
+
+		// Update CurrentHeight
+		CurrentHeight = HitResult.Distance;
+	}
+	default: return;
+	}
+}
+
+void UC_SkyDivingComponent::UpdatePlayerSkyDiveHUD()
+{
+	// SkyDive HUD Widget 가져오기
+	if (!OwnerPlayer) return;
+
+	UC_SkyDiveWidget* SkyDiveWidget = OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget();
+	if (!SkyDiveWidget) return;
+
+	// Update Height
+	SkyDiveWidget->SetAltitude(CurrentHeight);
 }

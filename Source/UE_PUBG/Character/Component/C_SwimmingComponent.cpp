@@ -11,6 +11,7 @@
 #include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
+#include "Character/Component/C_SkyDivingComponent.h"
 
 #include "Utility/C_Util.h"
 
@@ -301,14 +302,22 @@ void UC_SwimmingComponent::StartSwimming()
 	// 이미 수영하는 중
 	if (SwimmingState != ESwimmingState::ON_GROUND) return;
 
+	UC_Util::Print("Start Swimming", FColor::Red, 10.f);
+
+	// SkyDiving Parachuting state 도중 물로 착지했을 때의 예외처리
+	OwnerCharacter->GetSkyDivingComponent()->OnCharacterLandedOnWater();
+
 	OwnerCharacter->GetPhysicsVolume()->bWaterVolume = true;
 	OwnerCharacter->SetCanMove(true);
 	OwnerCharacter->SetPoseState(OwnerCharacter->GetPoseState(), EPoseState::STAND);
-	OwnerCharacter->LaunchCharacter(OwnerCharacter->GetActorUpVector() * 0.0005f, false, false);
+	OwnerCharacter->GetCharacterMovement()->Velocity.Z = 0.f;
+	//OwnerCharacter->LaunchCharacter(OwnerCharacter->GetActorUpVector() * 0.0005f, false, false);
 	OwnerCharacter->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::NONE);
 
 	SwimmingState = ESwimmingState::SWIMMING_SURFACE;
+	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Swimming);
 
+	// Player의 HUD 업데이트
 	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetOxygenWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
