@@ -6,9 +6,11 @@
 #include "Animation/AnimInstance.h"
 #include "C_AnimBasicCharacter.generated.h"
 
+enum class EMainState : uint8;
 enum class EHandState : uint8;
 enum class EPoseState : uint8;
 enum class ESwimmingState : uint8;
+enum class ESkyDivingState : uint8;
 
 /**
  * 
@@ -47,6 +49,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsJumping{};
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bGunHasGrip{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float Direction{}; // Direction Angle
@@ -86,6 +90,9 @@ protected:
 	bool bCanUseAimOffset = false;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsLeftHandIKOn = false;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EMainState MainState{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EHandState HandState{};
@@ -133,4 +140,10 @@ protected:
 	// Radian Crawl Rotation Angle
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	float CrawlRotationAngle{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	ESkyDivingState SkyDivingState{};
+
 };

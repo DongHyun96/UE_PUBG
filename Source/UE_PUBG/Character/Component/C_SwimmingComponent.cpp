@@ -10,6 +10,8 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_PoseColliderHandlerComponent.h"
+#include "Character/Component/C_SkyDivingComponent.h"
 
 #include "Utility/C_Util.h"
 
@@ -74,9 +76,12 @@ void UC_SwimmingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UC_SwimmingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
 {
+	bIsHandlingPlayerMovementOnCurrentTick = true;
+	OwnerCharacter->GetPoseColliderHandlerComponent()->SetColliderBySwimmingMovingState(true);
+
 	OwnerPlayer->GetCharacterMovement()->bUseControllerDesiredRotation	= false;
 	OwnerPlayer->GetCharacterMovement()->bOrientRotationToMovement		= true;
-	OwnerPlayer->bUseControllerRotationYaw = false;
+	OwnerPlayer->bUseControllerRotationYaw								= false;
 
 	//if (OwnerPlayer->GetIsHoldDirection() || OwnerPlayer->GetIsAltPressed())
 	//	OwnerPlayer->bUseControllerRotationYaw = false;
@@ -100,6 +105,7 @@ void UC_SwimmingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
 				SwimmingState = ESwimmingState::SWIMMING_UNDER;
 		}
 
+
 		const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
 		const FVector   RightDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
 
@@ -108,6 +114,67 @@ void UC_SwimmingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
 
 		OwnerPlayer->SetNextSpeed(OwnerPlayer->GetCharacterMovement()->MaxWalkSpeed); // AnimCharacter에서 Speed Lerp할 값 setting
 	}
+}
+
+void UC_SwimmingComponent::OnSwimmingCKey()
+{
+	SwimmingState = ESwimmingState::SWIMMING_UNDER;
+
+	if (!bIsHandlingPlayerMovementOnCurrentTick)
+	{
+		OwnerPlayer->GetCharacterMovement()->bUseControllerDesiredRotation	= true;
+		OwnerPlayer->GetCharacterMovement()->bOrientRotationToMovement		= true;
+		OwnerPlayer->bUseControllerRotationYaw								= true;
+		//OwnerPlayer->GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+
+	OwnerPlayer->UpdateMaxWalkSpeed(FVector2D::Zero()); // Swimming일 때 방향은 상관 없음
+
+	if (OwnerPlayer->Controller)
+	{
+		static const float DOWNWARD_PITCH = 270.f;
+
+		FRotator Rotation	= OwnerPlayer->GetController()->GetControlRotation();
+		Rotation.Pitch		= DOWNWARD_PITCH;
+		Rotation.Roll		= 0.f;
+		
+		const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
+		OwnerPlayer->AddMovementInput(ForwardDirection, 1.f);
+		OwnerPlayer->SetNextSpeed(OwnerPlayer->GetCharacterMovement()->MaxWalkSpeed);
+	}
+}
+
+void UC_SwimmingComponent::OnSwimmingSpaceBarKey()
+{
+	static const float UPWARD_PITCH = 89.f;
+
+	if (!bIsHandlingPlayerMovementOnCurrentTick)
+	{
+		OwnerPlayer->GetCharacterMovement()->bUseControllerDesiredRotation	= true;
+		OwnerPlayer->GetCharacterMovement()->bOrientRotationToMovement		= true;
+		OwnerPlayer->bUseControllerRotationYaw								= true;
+		//OwnerPlayer->GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+
+	OwnerPlayer->UpdateMaxWalkSpeed(FVector2D::Zero()); // Swimming일 때 방향은 상관 없음
+
+	if (OwnerPlayer->Controller)
+	{
+		FRotator Rotation	= OwnerPlayer->GetController()->GetControlRotation();
+		Rotation.Pitch		= UPWARD_PITCH;
+		Rotation.Roll		= 0.f;
+		
+		const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
+		OwnerPlayer->AddMovementInput(ForwardDirection, 1.f);
+		OwnerPlayer->SetNextSpeed(OwnerPlayer->GetCharacterMovement()->MaxWalkSpeed);
+	}
+}
+
+void UC_SwimmingComponent::OnSwimmingMoveEnd()
+{
+	bIsHandlingPlayerMovementOnCurrentTick = false;
+	OwnerCharacter->GetPoseColliderHandlerComponent()->SetColliderByPoseState(EPoseState::STAND);
+	OwnerCharacter->GetPoseColliderHandlerComponent()->SetColliderBySwimmingMovingState(false);
 }
 
 void UC_SwimmingComponent::SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter)
@@ -235,14 +302,22 @@ void UC_SwimmingComponent::StartSwimming()
 	// 이미 수영하는 중
 	if (SwimmingState != ESwimmingState::ON_GROUND) return;
 
+	UC_Util::Print("Start Swimming", FColor::Red, 10.f);
+
+	// SkyDiving Parachuting state 도중 물로 착지했을 때의 예외처리
+	OwnerCharacter->GetSkyDivingComponent()->OnCharacterLandedOnWater();
+
 	OwnerCharacter->GetPhysicsVolume()->bWaterVolume = true;
 	OwnerCharacter->SetCanMove(true);
 	OwnerCharacter->SetPoseState(OwnerCharacter->GetPoseState(), EPoseState::STAND);
-	OwnerCharacter->LaunchCharacter(OwnerCharacter->GetActorUpVector() * 0.0005f, false, false);
+	OwnerCharacter->GetCharacterMovement()->Velocity.Z = 0.f;
+	//OwnerCharacter->LaunchCharacter(OwnerCharacter->GetActorUpVector() * 0.0005f, false, false);
 	OwnerCharacter->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::NONE);
 
 	SwimmingState = ESwimmingState::SWIMMING_SURFACE;
+	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Swimming);
 
+	// Player의 HUD 업데이트
 	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetOxygenWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
@@ -250,6 +325,9 @@ void UC_SwimmingComponent::StopSwimming()
 {
 	OwnerCharacter->GetPhysicsVolume()->bWaterVolume = false;
 	SwimmingState = ESwimmingState::ON_GROUND;
+
+	// PoseCollider 원형으로 다시 재배치
+	OwnerCharacter->GetPoseColliderHandlerComponent()->SetColliderBySwimmingMovingState(false);
 
 	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetOxygenWidget()->SetVisibility(ESlateVisibility::Hidden);
 }

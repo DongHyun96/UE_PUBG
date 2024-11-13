@@ -15,6 +15,7 @@ UC_InvenComponent::UC_InvenComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+
 	// ...
 }
 
@@ -23,7 +24,9 @@ UC_InvenComponent::UC_InvenComponent()
 void UC_InvenComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	PlayerController = GetWorld()->GetFirstPlayerController();
+	InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
+	InvenUI->SetOwnerCharacter(OwnerCharacter);
 	// ...
 }
 
@@ -37,17 +40,30 @@ void UC_InvenComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 }
 /// <summary>
 /// Item을 인벤에 넣을 때, 나의 최대 용량(MaxVolume)을 넘는지를 검사.
+/// 아이템의 stack에 따른 용량의 변화 작업해야함.
 /// </summary>
 /// <param name="volume"></param>
 /// <returns></returns>
 bool UC_InvenComponent::CheckVolume(AC_Item* item)
 {
-	if (MaxVolume > CurVolume + item->GetVolume())
+	//item의 용량은 ItemVolume * ItemStack 이다.
+	uint8 ItemVolume = item->GetVolume() * item->GetItemDatas().ItemStack;
+
+	if (MaxVolume > CurVolume + ItemVolume)
 	{
 		return true;
 	}
 
 	return false;
+}
+uint8 UC_InvenComponent::LoopCheckVolume(AC_Item* item)
+{
+	for (uint8 i = item->GetItemDatas().ItemStack; i > 0; i--)
+	{
+		if (MaxVolume > CurVolume + item->GetVolume() * i) 
+			return i;
+	}
+	return 0;
 }
 /// <summary>
 /// 1. Holster가 nullptr이면 maxVolume+= volume을 해준다.
@@ -174,7 +190,10 @@ void UC_InvenComponent::Interaction(AC_Item* wilditem)
 {
 	//AC_BasicCharacter* player = OwnerCharacter;
 	
+	//wilditem->Interaction(OwnerCharacter);
+
 	wilditem->Interaction(OwnerCharacter);
+
 
 	if (CheckVolume(wilditem))
 	{
@@ -272,15 +291,172 @@ bool UC_InvenComponent::AddItem(AC_Item* item)
 	{
 		CurVolume += item->GetVolume();
 
-		MyItems.Add(item);
+		//이부분도 아이템에서 처리
+		//item->SetOwnerCharacter(OwnerCharacter);
+		//item->SetActorHiddenInGame(true);
+		//item->SetActorEnableCollision(false);
+		FString AddedItemName;
+		EItemTypes type = item->GetItemDatas().ItemType;
+		switch (type)
+		{
+		case EItemTypes::NONE:
+			break;
+		case EItemTypes::HELMET:
+		case EItemTypes::ARMOR:
+		case EItemTypes::BACKPACK:
+		case EItemTypes::MAINGUN:
+		case EItemTypes::MELEEWEAPON:
+		case EItemTypes::ATTACHMENT:
+			item->PickUpItem(OwnerCharacter);
+			break;
+		case EItemTypes::THROWABLE:
+		case EItemTypes::CONSUMPTIONITEM:
+			//AddedItemName = TEXT("NONE");
+			AddedItemName = item->GetItemDatas().ItemName;
+			if (testMyItems.Contains(AddedItemName))
+			{
+				//현재 파밍하려는 아이템이 이미 인벤(MyItemList)에 존재 하는 경우.
+				// InPutStack = 현재 아이템의 스택 + 파밍한 아이템의 스택
+				uint8 InPutStack = testMyItems[AddedItemName]->GetItemDatas().ItemStack + item->GetItemDatas().ItemStack;
 
-		item->SetOwnerCharacter(OwnerCharacter);
-		item->SetActorHiddenInGame(true);
-		item->SetActorEnableCollision(false);
+				testMyItems[AddedItemName]->SetItemStack(InPutStack);
+
+				//testMyItems.Remove(AddedItemName);
+				item->SetActorHiddenInGame(true);
+				item->SetActorEnableCollision(false);
+				//가지고 있던 아이템을 업데이트 했으므로 가져오던 아이템은 삭제.
+				item->Destroy();
+			}
+			else
+			{
+				//현재 파밍하려는 아이템이 인벤(MyItemList)에 없는 아이템 인 경우.
+				item->PickUpItem(OwnerCharacter);
+				testMyItems.Add(AddedItemName, item);
+			}
+			break;
+		default:
+			//AddedItemName = TEXT("NONE");
+			break;
+		}
+		//아이템을 습득할 때 아이템의 종류에 따라 알아서 습득, 장착등이 되도록.
+
+
+		///////////////////
+
 
 		return true;
 	}
 	return false;
+}
+
+AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_EquipableItem* EquipItem)
+{
+	AC_EquipableItem* PrevSlotEquipItem = EquipmentItems[InSlot];
+
+	// 들어온 슬롯의 이전 무기가 존재할 때 이전 무기 해제
+	//if (PrevSlotEquipItem)
+	//{
+	//	// 현재 들고 있는 무기의 slot에 새로운 무기로 바꿔버리려 할 때
+	//	if (GetCurWeapon() == PrevSlotEquipItem)
+	//	{
+	//		OwnerCharacter->SetHandState(EHandState::UNARMED);
+	//		if (!Weapon) CurWeaponType = EWeaponSlot::NONE;
+	//	}
+
+	//	// 이전 무기 해제에 대한 PoseTransitionEnd 델리게이트 해제
+	//	OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(PrevSlotWeapon);
+
+	//	//C_Item의 detachment에서 처리중, 혹시몰라 남겨둠.
+	//	//PrevSlotWeapon->SetOwnerCharacter(nullptr);
+	//}
+
+	//EquipmentItems[InSlot] = EquipItem; // 새로 들어온 무기로 교체
+
+	//if (!EquipmentItems[InSlot]) return PrevSlotEquipItem; // Slot에 새로 지정한 무기가 nullptr -> early return
+
+	//EquipmentItems[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
+
+	//// Attach to Holster 하기 전에 Local transform 초기화
+	////Weapons[InSlot]->SetActorRelativeTransform(FTransform::Identity);
+	//EquipmentItems[InSlot]->SetRelativeTranformToInitial();
+	//EquipmentItems[InSlot]->AttachToHolster(OwnerCharacter->GetMesh());
+
+
+	return PrevSlotEquipItem;
+}
+
+AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
+{
+	AC_Item** FoundItem = testMyItems.Find(item->GetItemDatas().ItemName);
+	return FoundItem ? *FoundItem : nullptr;
+}
+
+void UC_InvenComponent::AddItemToMyList(AC_Item* item)
+{
+	testMyItems.Add(item->GetItemDatas().ItemName, item);
+	if (IsValid(OwnerCharacter))
+	{
+		item->SetOwnerCharacter(OwnerCharacter);
+	}
+	item->SetItemPlace(EItemPlace::INVEN);
+	item->SetActorHiddenInGame(true);
+	item->SetActorEnableCollision(false);
+}
+
+void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
+{
+	testMyItems.Remove(item->GetItemDatas().ItemName);
+	//Add와 달리 슬롯으로 가는 경우를 대비하여 OwnerCharacter의 설정을 건드리지 않았음.
+	item->SetItemPlace(EItemPlace::AROUND);
+}
+
+void UC_InvenComponent::GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values)
+{
+	Map.GenerateValueArray(Values);
+
+}
+
+void UC_InvenComponent::OpenInvenUI()
+{
+	UC_Util::Print("Down I Key");
+
+	if (InvenUI)
+	{
+		if (InvenUI->IsVisible())
+		{
+			UC_Util::Print("Hidden Inven UI");
+			InvenUI->SetVisibility(ESlateVisibility::Hidden);
+			InvenUI->RemoveFromViewport();
+			//InvenUI = nullptr;
+			PlayerController->bShowMouseCursor = false;
+		}
+		else
+		{
+			UC_Util::Print("Visible Inven UI");
+			PlayerController->bShowMouseCursor = true;
+			InvenUI->SetVisibility(ESlateVisibility::Visible);
+			InvenUI->AddToViewport();
+		}
+	}
+	else
+	{
+		UC_Util::Print("No InvenUI");
+
+	}
+
+}
+
+void UC_InvenComponent::InitInvenUI()
+{
+	if (!InvenUI) return;
+
+	InvenUI->InitListView();
+}
+
+
+void UC_InvenComponent::InitMyitems()
+{
+
 }
 
 

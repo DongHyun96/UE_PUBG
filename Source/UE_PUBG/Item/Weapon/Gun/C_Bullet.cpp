@@ -129,13 +129,13 @@ void AC_Bullet::ActivateInstance()
 	IsActive = true;
 }
 
-bool AC_Bullet::Fire(AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity)
+bool AC_Bullet::Fire(AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity, FVector InHitLocation)
 {
 	if (EnableGravity)
 		BulletProjectileMovement->ProjectileGravityScale = 1.0f;
 	else
 		BulletProjectileMovement->ProjectileGravityScale = 0;
-
+	LineTraceHitLocation = InHitLocation;
 	TestTickCount = 0;
 	TestTimeCount = 0;
 	InstanceLifeTime = 10.0f;
@@ -164,6 +164,7 @@ bool AC_Bullet::Fire(AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, 
 		//UC_Util::Print(BulletSpeedCheck, FColor::Blue);
 
 		//Bullet->BulletProjectileMovement->SetActive(true);
+		InitialVelocityNormalized = InDirection.GetSafeNormal();
 		return true;
 	}
 	else

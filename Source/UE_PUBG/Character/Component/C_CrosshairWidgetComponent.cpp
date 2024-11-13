@@ -23,6 +23,7 @@ void UC_CrosshairWidgetComponent::NativeConstruct()
 void UC_CrosshairWidgetComponent::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+	CountFullAutoFiringTime(InDeltaTime);
 	ManageAimWidgetImages();
 }
 
@@ -92,6 +93,17 @@ void UC_CrosshairWidgetComponent::SetVisibileOfCrosshairBorder(bool InIsVisible)
 		CrosshairRight->SetVisibility( ESlateVisibility::Hidden);
 	}
 
+}
+
+void UC_CrosshairWidgetComponent::CountFullAutoFiringTime(float InDeltaTime)
+{
+	if (OwnerCharacter->GetIsFiringBullet())
+	{
+		FullAutoFiringTime += InDeltaTime;
+	}
+	else
+		FullAutoFiringTime = 0;
+	FullAutoSpreadRate = FMath::Clamp(1 + FullAutoFiringTime * 5, 1, 3);
 }
 
 void UC_CrosshairWidgetComponent::SetCrosshairState(ECrosshairState InState)
@@ -190,7 +202,7 @@ void UC_CrosshairWidgetComponent::UpdateImageSize()
 	//UC_Util::Print(InitialBaseCrosshairImageSlotSize);
 	//UC_Util::Print(BaseSize);
 
-	FVector2D NewSize = FVector2D(100,100) * SizeMultiplier * BaseSize * SizeMultOnPose * SizeMultOnAiming;
+	FVector2D NewSize = FVector2D(100,100) * SizeMultiplier * BaseSize * SizeMultOnPose * SizeMultOnAiming * FullAutoSpreadRate;
 	//UC_Util::Print(NewSize, FColor::Blue);
 
 	ImageSlot->SetSize(NewSize);		

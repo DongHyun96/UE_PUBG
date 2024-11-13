@@ -17,8 +17,22 @@
 #include "Component/C_ConsumableUsageMeshComponent.h"
 #include "Component/C_PoseColliderHandlerComponent.h"
 #include "Component/C_SwimmingComponent.h"
+#include "Component/C_SkyDivingComponent.h"
+#include "Component/C_InvenSystem.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Components/Image.h"
+
+#include "Item/C_Item.h"
+#include "Item/Equipment/C_EquipableItem.h"
+#include "Item/Equipment/C_BackPack.h"
+#include "Item/Weapon/C_Weapon.h"
+#include "Item/Weapon/Gun/C_Gun.h"
+#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
+#include "Character/Component/C_AttachableItemMeshComponent.h"
 
 #include "Utility/C_Util.h"
 
@@ -35,6 +49,9 @@ AC_BasicCharacter::AC_BasicCharacter()
 	Inventory = CreateDefaultSubobject<UC_InvenComponent>("C_Inventory");
 	Inventory->SetOwnerCharacter(this);
 
+	InvenSystem = CreateDefaultSubobject<UC_InvenSystem>("C_InvenSystem");
+	InvenSystem->SetOwnerCharacter(this);
+
 	StatComponent = CreateDefaultSubobject<UC_StatComponent>("StatComponent");
 
 	ConsumableUsageMeshComponent = CreateDefaultSubobject<UC_ConsumableUsageMeshComponent>("ConsumableUsageMeshComponent");
@@ -43,8 +60,25 @@ AC_BasicCharacter::AC_BasicCharacter()
 	PoseColliderHandlerComponent = CreateDefaultSubobject<UC_PoseColliderHandlerComponent>("PoseColliderHandlerComponent");
 	PoseColliderHandlerComponent->SetOwnerCharacter(this);
 
+	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
+	DetectionSphere->InitSphereRadius(100.0f); // 탐지 반경 설정
+	DetectionSphere->SetupAttachment(RootComponent);
+
+	//DetectionSphere->SetGenerateOverlapEvents(true);
+	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &AC_BasicCharacter::OnOverlapBegin);
+	DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &AC_BasicCharacter::OnOverlapEnd);
+	//CrawlCollider->SetupAttachment(GetMesh());
+
+
 	SwimmingComponent = CreateDefaultSubobject<UC_SwimmingComponent>("SwimmingComponent");
 	SwimmingComponent->SetOwnerCharacter(this);
+
+	SkyDiveComponent = CreateDefaultSubobject<UC_SkyDivingComponent>("SkyDivingComponent");
+	SkyDiveComponent->SetOwnerCharcter(this);
+
+	AttachmentMeshComponent = CreateDefaultSubobject<UC_AttachableItemMeshComponent>("AttachmentMeshComponent");
+	AttachmentMeshComponent->SetOwnerCharacter(this);
+
 }
 
 // Called when the game starts or when spawned
@@ -52,6 +86,9 @@ void AC_BasicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// For Testing
+	//MainState = EMainState::SKYDIVING;
+	//SkyDiveComponent->SetSkyDivingState(ESkyDivingState::READY);
 
 	GetPhysicsVolume()->FluidFriction = 2.5f;
 	StatComponent->SetOwnerCharacter(this);
@@ -83,7 +120,65 @@ float AC_BasicCharacter::PlayAnimMontage(UAnimMontage* AnimMontage, float InPlay
 
 	return 0.0f;
 }
+/// <summary>
+/// 아이템이 캐릭터의 근처에 있을 때.
+/// </summary>
+/// <param name="OverlappedComp"></param>
+/// <param name="OtherActor"></param>
+/// <param name="OtherComp"></param>
+/// <param name="OtherBodyIndex"></param>
+/// <param name="bFromSweep"></param>
+/// <param name="SweepResult"></param>
+void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
 
+	FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetCurVolume());
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
+
+	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+
+
+	if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
+	{
+		UC_Util::Print("OverlappedItem");
+		//UC_Util::Print(*OverlappedItem->GetName());
+
+		//Inventory->GetNearItems().Add(OverlappedItem);
+		//Inventory->AddItemToAroundList(OverlappedItem);
+		Inventory->AddItemToNearList(OverlappedItem);
+		//Inventory->InitInvenUI();
+		if (!InvenSystem) return;
+	    InvenSystem->InitializeList();
+	}
+	else
+	{
+		UC_Util::Print("No item");
+
+		return;
+	}
+}
+
+/// <summary>
+/// 아이템이 캐릭터의 감지범위를 벗어났을 때.
+/// </summary>
+/// <param name="OverlappedComp"></param>
+/// <param name="OtherActor"></param>
+/// <param name="OtherComp"></param>
+/// <param name="OtherBodyIndex"></param>
+void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+
+	if (OverlappedItem)
+	{
+		//Inventory->GetNearItems().Remove(OverlappedItem);
+		//Inventory->RemoveItemToAroundList(OverlappedItem);
+		Inventory->RemoveItemNearList(OverlappedItem);
+		//Inventory->InitInvenUI();
+		if (!InvenSystem) return;
+		InvenSystem->InitializeList();
+	}
+}
 float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate, FName StartSectionName)
 {
 	if (!IsValid(PAnimMontage.AnimMontage)) return 0.f;
@@ -137,7 +232,6 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 	//GetCharacterMovement()->MaxWalkSpeed =	(PoseState == EPoseState::STAND)  ? 370.f :
 	//										(PoseState == EPoseState::CROUCH) ? 200.f :
 	//										(PoseState == EPoseState::CRAWL)  ? 100.f : 600.f;
-	// TODO : 도핑 했을 시, 도핑 계수 곱해주기
 	if (SwimmingComponent->IsSwimming())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
@@ -206,7 +300,7 @@ void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
 
 bool AC_BasicCharacter::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 {
-	// TODO : Enemy 캐릭터에 대한 자세 변환 적용
+	// TODO : Enemy 캐릭터에 대한 자세 변환 적용 - Player는 작성 완료 BasicCharacter 작성 필요
 
 	return false;
 }

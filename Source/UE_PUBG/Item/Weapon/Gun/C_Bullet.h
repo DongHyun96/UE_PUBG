@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class UE_PUBG_API AC_Bullet : public AC_Item
+class UE_PUBG_API AC_Bullet : public AActor
 {
 	GENERATED_BODY()
 public:
@@ -41,8 +41,11 @@ public:
 	void ActivateInstance();
 	bool GetIsActive() { return IsActive; }
 	//void SetMeshVisiblility(bool InBool) { BulletMesh->SetVisibility(InBool);}
-
-	bool Fire(class AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity = true);
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FVector InitialVelocityNormalized{};
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FVector LineTraceHitLocation{};
+	bool Fire(class AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity = true, FVector InHitLocation = FVector(0));
 
 	void SubSteppingMovementPhysics(float SebStepDeltaTime);
 
@@ -72,4 +75,9 @@ protected:
 	int InstanceNum;
 
 	float InstanceLifeTime = 0.0f;
+
+	AC_BasicCharacter* OwnerCharacter{};
+public:
+	virtual void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+
 };

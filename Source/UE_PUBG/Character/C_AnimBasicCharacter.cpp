@@ -16,6 +16,7 @@
 
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
+#include "Character/Component/C_SkyDivingComponent.h"
 
 void UC_AnimBasicCharacter::NativeBeginPlay()
 {
@@ -24,7 +25,6 @@ void UC_AnimBasicCharacter::NativeBeginPlay()
 	OwnerCharacter = Cast<AC_BasicCharacter>(TryGetPawnOwner());
 	//CSpineRotation = FRotator(0);
 	//CHeadLookAtRotation = FQuat(0);
-
 }
 
 void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
@@ -44,6 +44,8 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 
 	//FString TheFloatStr = FString::SanitizeFloat(Direction);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
+
+	MainState		  = OwnerCharacter->GetMainState();
 	HandState         = OwnerCharacter->GetHandState();
 	PoseState         = OwnerCharacter->GetPoseState();
 	bIsFalling        = OwnerCharacter->GetCharacterMovement()->IsFalling();
@@ -52,8 +54,9 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bCanCharacterMove = OwnerCharacter->GetCanMove();
 	bIsHoldDirection  = OwnerCharacter->GetIsHoldDirection();
 	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
-
+	
 	SwimmingState	  = OwnerCharacter->GetSwimmingComponent()->GetSwimmingState();
+	SkyDivingState	  = OwnerCharacter->GetSkyDivingComponent()->GetSkyDivingState();
 	//switch (SwimmingState)
 	//{
 	//case ESwimmingState::ON_GROUND:
@@ -73,24 +76,13 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	CrawlRotationAngle = OwnerCharacter->GetPoseColliderHandlerComponent()->GetCurrentCrawlSlopeAngleForRigControl();
 
 	AC_Gun* CurrentGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
-	if (IsValid(CurrentGun))
-	{
-		RifleLeftHandSocket = CurrentGun->GetLeftHandSocketTransform();
-		UAnimMontage* RifleSheathMontage = CurrentGun->GetSheathMontages()[OwnerCharacter->GetPoseState()].Montages[CurrentGun->GetCurrentWeaponState()].AnimMontage;
-		if (IsValid(RifleSheathMontage))
-		{
-			bCharacterIsSheathing = OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(RifleSheathMontage);
-		}
-		else
-			bCharacterIsSheathing = false;
-	}
-	else
-	{
-		bCharacterIsSheathing = true;
-		//UC_Util::Print("Sheating!");
-	}
+
 	ControlHeadRotation();
 	SetAimOfssetRotation();
+	if (IsValid(CurrentGun))
+	{
+		bGunHasGrip = CurrentGun->GetGunHasGrip();
+	}
 	SetAimingTurnInPlaceRotation();
 }
 
@@ -106,7 +98,7 @@ void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_Stand_To_Falling()
 void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_RunningJump_To_Falling()
 {
 	// Start Transition 시 수행할 로직 추가
-	FString TheFloatStr = "Start Transition";
+	FString TheFloatStr = "Start RunningJump To Falling Transition";
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	UE_LOG(LogTemp, Warning, TEXT("Transition Started"));
 	//Cast<AC_Player>(OwnerCharacter)->BackToMainCamera();
@@ -217,6 +209,7 @@ void UC_AnimBasicCharacter::SetAimOfssetRotation()
 	AimOffsetLerpDelayTime = 0;
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 	AC_Gun* CurGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetCurWeapon());
+
 	if (OwnerPlayer->GetIsWatchingSight() && OwnerPlayer->GetPoseState() == EPoseState::CRAWL)
 	{
 		if (CCurrentAimOffsetRotation.Pitch < 0)
@@ -321,9 +314,9 @@ void UC_AnimBasicCharacter::SetIsLeftHandIKOn()
 	//	return;
 	//}
 	bool Condition0 = bCanCharacterMove && !bIsFalling;
-	bool Condition1 = Condition0 && (HandState == EHandState::WEAPON_GUN);
+	bool Condition1 = Condition0 && (HandState == EHandState::WEAPON_GUN);	
 	bool Condition2 = !bCharacterIsSheathing && Condition1;
-	bool Condition3 = !OwnerCharacter->GetIsReloadingBullet() && Condition1;
+	bool Condition3 = !OwnerCharacter->GetIsReloadingBullet() && Condition2;
 
 	bIsLeftHandIKOn = Condition3;
 }

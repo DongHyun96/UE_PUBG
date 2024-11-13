@@ -1,0 +1,180 @@
+Date : 2024-11-07 22:20:57
+Directory : c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG
+Total : 132 files,  9851 codes, 2576 comments, 4036 blanks, all 16463 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| C++      |        131 |      9,828 |      2,559 |      4,027 |     16,414 |
+| C#       |          1 |         23 |         17 |          9 |         49 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                               | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                  |        132 |      9,851 |      2,576 |      4,036 |     16,463 |
+| . (Files)                                                                                                                          |          9 |        179 |         71 |         84 |        334 |
+| Character                                                                                                                          |         34 |      4,591 |      1,215 |      1,802 |      7,608 |
+| Character (Files)                                                                                                                  |         12 |      1,787 |        519 |        704 |      3,010 |
+| Character\Component                                                                                                                |         22 |      2,804 |        696 |      1,098 |      4,598 |
+| HUD                                                                                                                                |          8 |        405 |        156 |        213 |        774 |
+| InvenUserInterface                                                                                                                 |         14 |        576 |        122 |        242 |        940 |
+| Item                                                                                                                               |         56 |      3,563 |        902 |      1,474 |      5,939 |
+| Item (Files)                                                                                                                       |          2 |        139 |         58 |         63 |        260 |
+| Item\Attachment                                                                                                                    |          2 |         82 |          8 |         25 |        115 |
+| Item\ConsumableItem                                                                                                                |         16 |        632 |        104 |        278 |      1,014 |
+| Item\ConsumableItem (Files)                                                                                                        |          6 |        284 |         61 |        135 |        480 |
+| Item\ConsumableItem\Boosting                                                                                                       |          4 |        112 |         14 |         47 |        173 |
+| Item\ConsumableItem\Healing                                                                                                        |          6 |        236 |         29 |         96 |        361 |
+| Item\Equipment                                                                                                                     |          4 |        129 |         45 |         75 |        249 |
+| Item\Weapon                                                                                                                        |         32 |      2,581 |        687 |      1,033 |      4,301 |
+| Item\Weapon (Files)                                                                                                                |          2 |        157 |         58 |         65 |        280 |
+| Item\Weapon\Gun                                                                                                                    |          8 |        946 |        169 |        267 |      1,382 |
+| Item\Weapon\MeleeWeapon                                                                                                            |          2 |        134 |         49 |         60 |        243 |
+| Item\Weapon\ThrowingWeapon                                                                                                         |         12 |      1,033 |        329 |        496 |      1,858 |
+| Item\Weapon\WeaponStrategy                                                                                                         |          8 |        311 |         82 |        145 |        538 |
+| MagneticField                                                                                                                      |          4 |        271 |         70 |        135 |        476 |
+| Singleton                                                                                                                          |          2 |         36 |         10 |         21 |         67 |
+| Utility                                                                                                                            |          5 |        230 |         30 |         65 |        325 |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                                           | language | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\C_AnimBasicCharacter.cpp                      | C++      |        214 |         47 |         63 |        324 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\C_AnimBasicCharacter.h                        | C++      |         96 |          8 |         46 |        150 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\C_AnimPlayer.cpp                              | C++      |          1 |          1 |          4 |          6 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\C_AnimPlayer.h                                | C++      |          9 |          4 |          5 |         18 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\C_BasicCharacter.cpp                          | C++      |        215 |         50 |         67 |        332 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\C_BasicCharacter.h                            | C++      |        224 |         72 |        112 |        408 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\C_Enemy.cpp                                   | C++      |          1 |          1 |          4 |          6 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\C_Enemy.h                                     | C++      |          9 |          4 |          5 |         18 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\C_Player.cpp                                  | C++      |        762 |        221 |        245 |      1,228 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\C_Player.h                                    | C++      |        178 |        105 |        109 |        392 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\C_WorldPingActor.cpp                          | C++      |         53 |          3 |         26 |         82 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\C_WorldPingActor.h                            | C++      |         25 |          3 |         18 |         46 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_ConsumableUsageMeshComponent.cpp  | C++      |         52 |         10 |         19 |         81 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_ConsumableUsageMeshComponent.h    | C++      |         42 |         10 |         21 |         73 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_CrosshairWidgetComponent.cpp      | C++      |        184 |         11 |         32 |        227 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_CrosshairWidgetComponent.h        | C++      |         64 |          8 |         10 |         82 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_EquippedComponent.cpp             | C++      |        208 |         40 |         76 |        324 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_EquippedComponent.h               | C++      |         67 |         40 |         40 |        147 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_InputComponent.cpp                | C++      |        411 |         72 |        132 |        615 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_InputComponent.h                  | C++      |        107 |         19 |         55 |        181 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_InvenComponent.cpp                | C++      |        250 |        111 |         76 |        437 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_InvenComponent.h                  | C++      |        101 |         42 |         57 |        200 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_InvenSystem.cpp                   | C++      |         56 |         14 |         31 |        101 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_InvenSystem.h                     | C++      |         27 |          4 |         17 |         48 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_PingSystemComponent.cpp           | C++      |         48 |          3 |         23 |         74 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_PingSystemComponent.h             | C++      |         28 |         10 |         25 |         63 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_PoseColliderHandlerComponent.cpp  | C++      |        227 |         48 |         89 |        364 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_PoseColliderHandlerComponent.h    | C++      |         70 |         67 |         50 |        187 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_SkyDivingComponent.cpp            | C++      |        221 |         43 |         66 |        330 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_SkyDivingComponent.h              | C++      |        102 |         32 |         51 |        185 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_StatComponent.cpp                 | C++      |        118 |         11 |         48 |        177 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_StatComponent.h                   | C++      |        108 |         38 |         54 |        200 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_SwimmingComponent.cpp             | C++      |        241 |         39 |         86 |        366 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Character\Component\C_SwimmingComponent.h               | C++      |         72 |         24 |         40 |        136 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\HUD\C_HUDWidget.cpp                                     | C++      |          8 |          1 |          6 |         15 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\HUD\C_HUDWidget.h                                       | C++      |         60 |         34 |         37 |        131 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\HUD\C_MainMapWidget.cpp                                 | C++      |        228 |         45 |         93 |        366 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\HUD\C_MainMapWidget.h                                   | C++      |         61 |         27 |         42 |        130 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\HUD\C_MapWidget.cpp                                     | C++      |         10 |          1 |          6 |         17 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\HUD\C_MapWidget.h                                       | C++      |         25 |         40 |         17 |         82 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\HUD\C_OxygenWidget.cpp                                  | C++      |          1 |          1 |          4 |          6 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\HUD\C_OxygenWidget.h                                    | C++      |         12 |          7 |          8 |         27 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_CustomListView.cpp                 | C++      |          4 |          2 |          4 |         10 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_CustomListView.h                   | C++      |         15 |          4 |          8 |         27 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_EquipSlot.cpp                      | C++      |          1 |          1 |          4 |          6 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_EquipSlot.h                        | C++      |         15 |          4 |          5 |         24 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_InvenUiWidget.cpp                  | C++      |        113 |         29 |         55 |        197 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_InvenUiWidget.h                    | C++      |         37 |         13 |         25 |         75 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_ItemBarWidget.cpp                  | C++      |        116 |         26 |         38 |        180 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_ItemBarWidget.h                    | C++      |         41 |         12 |         22 |         75 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_MainGunWidget.cpp                  | C++      |         51 |          2 |         11 |         64 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_MainGunWidget.h                    | C++      |         33 |          6 |         16 |         55 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_MyItemListWidget.cpp               | C++      |         39 |         12 |         15 |         66 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_MyItemListWidget.h                 | C++      |         24 |          6 |         13 |         43 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_ThrowableWidget.cpp                | C++      |         53 |          1 |          8 |         62 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\InvenUserInterface\C_ThrowableWidget.h                  | C++      |         34 |          4 |         18 |         56 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Attachment\C_AttachableItem.cpp                    | C++      |         63 |          4 |         15 |         82 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Attachment\C_AttachableItem.h                      | C++      |         19 |          4 |         10 |         33 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\C_Item.cpp                                         | C++      |         31 |          8 |         18 |         57 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\C_Item.h                                           | C++      |        108 |         50 |         45 |        203 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\Boosting\C_EnergyDrink.cpp          | C++      |         37 |          1 |         14 |         52 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\Boosting\C_EnergyDrink.h            | C++      |         19 |          6 |         10 |         35 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\Boosting\C_PainKiller.cpp           | C++      |         37 |          1 |         13 |         51 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\Boosting\C_PainKiller.h             | C++      |         19 |          6 |         10 |         35 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\C_BoostItem.cpp                     | C++      |         31 |          1 |         11 |         43 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\C_BoostItem.h                       | C++      |         21 |          4 |         15 |         40 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\C_ConsumableItem.cpp                | C++      |        119 |         14 |         45 |        178 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\C_ConsumableItem.h                  | C++      |         47 |         35 |         35 |        117 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\C_HealItem.cpp                      | C++      |         42 |          2 |         13 |         57 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\C_HealItem.h                        | C++      |         24 |          5 |         16 |         45 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\Healing\C_Bandage.cpp               | C++      |         53 |          3 |         18 |         74 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\Healing\C_Bandage.h                 | C++      |         25 |          6 |         15 |         46 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\Healing\C_FirstAidKit.cpp           | C++      |         47 |          2 |         17 |         66 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\Healing\C_FirstAidKit.h             | C++      |         20 |          6 |         10 |         36 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\Healing\C_MedKit.cpp                | C++      |         64 |          6 |         22 |         92 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\ConsumableItem\Healing\C_MedKit.h                  | C++      |         27 |          6 |         14 |         47 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Equipment\C_BackPack.cpp                           | C++      |         69 |         19 |         34 |        122 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Equipment\C_BackPack.h                             | C++      |         27 |         16 |         21 |         64 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Equipment\C_EquipableItem.cpp                      | C++      |         17 |          1 |          8 |         26 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Equipment\C_EquipableItem.h                        | C++      |         16 |          9 |         12 |         37 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\C_Weapon.cpp                                | C++      |        108 |          5 |         26 |        139 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\C_Weapon.h                                  | C++      |         49 |         53 |         39 |        141 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\Gun\C_AR.cpp                                | C++      |         15 |          2 |          7 |         24 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\Gun\C_AR.h                                  | C++      |         15 |          6 |          8 |         29 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\Gun\C_Bullet.cpp                            | C++      |        171 |         32 |         60 |        263 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\Gun\C_Bullet.h                              | C++      |         54 |         11 |         19 |         84 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\Gun\C_Gun.cpp                               | C++      |        536 |         97 |        121 |        754 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\Gun\C_Gun.h                                 | C++      |        145 |         16 |         43 |        204 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\Gun\C_SR.cpp                                | C++      |          1 |          1 |          4 |          6 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\Gun\C_SR.h                                  | C++      |          9 |          4 |          5 |         18 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\MeleeWeapon\C_MeleeWeapon.cpp               | C++      |         83 |         32 |         28 |        143 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\MeleeWeapon\C_MeleeWeapon.h                 | C++      |         51 |         17 |         32 |        100 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\ThrowingWeapon\C_FlashBangExplode.cpp       | C++      |         97 |         22 |         48 |        167 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\ThrowingWeapon\C_FlashBangExplode.h         | C++      |         21 |         21 |         21 |         63 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\ThrowingWeapon\C_GrenadeExplode.cpp         | C++      |        159 |         71 |         73 |        303 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\ThrowingWeapon\C_GrenadeExplode.h           | C++      |         24 |         29 |         21 |         74 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\ThrowingWeapon\C_ScreenShotWidget.cpp       | C++      |         17 |         13 |         12 |         42 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\ThrowingWeapon\C_ScreenShotWidget.h         | C++      |         17 |          4 |         12 |         33 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\ThrowingWeapon\C_SmokeGrndExplode.cpp       | C++      |         15 |          1 |          8 |         24 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\ThrowingWeapon\C_SmokeGrndExplode.h         | C++      |         12 |          1 |          8 |         21 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\ThrowingWeapon\C_ThrowingWeapon.cpp         | C++      |        509 |        102 |        185 |        796 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\ThrowingWeapon\C_ThrowingWeapon.h           | C++      |        146 |         53 |         97 |        296 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\ThrowingWeapon\I_ExplodeStrategy.cpp        | C++      |          1 |          2 |          4 |          7 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\ThrowingWeapon\I_ExplodeStrategy.h          | C++      |         15 |         10 |          7 |         32 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\WeaponStrategy\C_GunStrategy.cpp            | C++      |        121 |         10 |         44 |        175 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\WeaponStrategy\C_GunStrategy.h              | C++      |         24 |          4 |         11 |         39 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\WeaponStrategy\C_MeleeWeaponStrategy.cpp    | C++      |         50 |          1 |         24 |         75 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\WeaponStrategy\C_MeleeWeaponStrategy.h      | C++      |         19 |          4 |         11 |         34 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\WeaponStrategy\C_ThrowingWeaponStrategy.cpp | C++      |         55 |          2 |         23 |         80 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\WeaponStrategy\C_ThrowingWeaponStrategy.h   | C++      |         19 |          5 |         11 |         35 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\WeaponStrategy\I_WeaponButtonStrategy.cpp   | C++      |          1 |          2 |          4 |          7 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Item\Weapon\WeaponStrategy\I_WeaponButtonStrategy.h     | C++      |         22 |         54 |         17 |         93 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\MagneticField\C_MagneticFieldManager.cpp                | C++      |        142 |         21 |         64 |        227 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\MagneticField\C_MagneticFieldManager.h                  | C++      |         84 |         39 |         46 |        169 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\MagneticField\C_MagneticWall.cpp                        | C++      |         26 |          6 |         13 |         45 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\MagneticField\C_MagneticWall.h                          | C++      |         19 |          4 |         12 |         35 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\MyWaterBody.cpp                                         | C++      |          1 |          1 |          4 |          6 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\MyWaterBody.h                                           | C++      |          9 |          4 |          5 |         18 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Singleton\C_GameSceneManager.cpp                        | C++      |         17 |          3 |          7 |         27 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Singleton\C_GameSceneManager.h                          | C++      |         19 |          7 |         14 |         40 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\UE_PUBG.Build.cs                                        | C#       |         23 |         17 |          9 |         49 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\UE_PUBG.cpp                                             | C++      |          3 |          1 |          3 |          7 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\UE_PUBG.h                                               | C++      |          2 |          1 |          3 |          6 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\UE_PUBGCharacter.cpp                                    | C++      |         79 |         27 |         24 |        130 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\UE_PUBGCharacter.h                                      | C++      |         39 |         13 |         22 |         74 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\UE_PUBGGameMode.cpp                                     | C++      |         12 |          6 |          6 |         24 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\UE_PUBGGameMode.h                                       | C++      |         11 |          1 |          8 |         20 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Utility\C_TimelineComponent.cpp                         | C++      |          0 |          0 |          1 |          1 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Utility\C_TimelineUtility.cpp                           | C++      |        109 |         16 |         25 |        150 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Utility\C_TimelineUtility.h                             | C++      |         59 |          9 |         20 |         88 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Utility\C_Util.cpp                                      | C++      |         43 |          1 |         12 |         56 |
+| c:\Users\wadan\Desktop\SGA\Portfolio\Unreal\Project\UE_PUBG\Source\UE_PUBG\Utility\C_Util.h                                        | C++      |         19 |          4 |          7 |         30 |
+| Total                                                                                                                              |          |      9,851 |      2,576 |      4,036 |     16,463 |
++------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

@@ -60,6 +60,7 @@
 #include "Item/ConsumableItem/Healing/C_FirstAidKit.h"
 #include "Item/Weapon/Gun/C_Bullet.h"
 #include "Singleton/C_GameSceneManager.h"
+#include "Character/Component/C_AttachableItemMeshComponent.h"
 
 AC_Player::AC_Player()
 {
@@ -71,13 +72,13 @@ AC_Player::AC_Player()
 
 	InitTurnAnimMontageMap();
 
-	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
-	DetectionSphere->InitSphereRadius(100.0f); // 탐지 반경 설정
-	DetectionSphere->SetupAttachment(RootComponent);
-
-	//DetectionSphere->SetGenerateOverlapEvents(true);
-	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &AC_Player::OnOverlapBegin);
-	DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &AC_Player::OnOverlapEnd);
+	//DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
+	//DetectionSphere->InitSphereRadius(100.0f); // 탐지 반경 설정
+	//DetectionSphere->SetupAttachment(RootComponent);
+	//
+	////DetectionSphere->SetGenerateOverlapEvents(true);
+	//DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &AC_Player::OnOverlapBegin);
+	//DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &AC_Player::OnOverlapEnd);
 	AimSpringArmTemp = CreateDefaultSubobject<USpringArmComponent>("AimSpringArm");
 	//AimSpringArmTemp->SetupAttachment(RootComponent);
 	AimSpringArmTemp->SetupAttachment(GetMesh());
@@ -201,6 +202,8 @@ void AC_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//UC_Util::Print(CurveFloatForSwitchCamera->GetFloatValue(GetWorld()->GetDeltaSeconds()));
+	//UC_Util::Print(AimCamera->IsActive());
+	//UC_Util::Print(MainCamera->IsActive());
 
 	HandleTurnInPlace();
 	HandleTurnInPlaceWhileAiming();
@@ -214,7 +217,7 @@ void AC_Player::Tick(float DeltaTime)
 
 	HandleLerpMainSpringArmToDestRelativeLocation(DeltaTime);
 	HandleStatesWhileMovingCrawl();
-
+	SetCanFireWhileCrawl();
 	//int TestCount = 0;
 
 	//for (auto& Bullet : PooledBullets)
@@ -266,6 +269,9 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 
 void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime)
 {
+	// SkyDiving & Parachuting 중에서의 Lerp Destination 적용
+
+
 	C_MainSpringArm->SetRelativeLocation
 	(
 		FMath::Lerp
@@ -285,6 +291,26 @@ void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime)
 			DeltaTime * 5.f
 		)
 	);
+}
+
+//void AC_Player::SetCanFireWhileCrawl()
+//{
+//	float ControllerPitchAngle = 360 - GetControlRotation().Pitch;
+//	if (ControllerPitchAngle >= 0 && ControllerPitchAngle <= 10 && PoseState == EPoseState::CRAWL)
+//		bCanFireBullet = false;
+//	else
+//		bCanFireBullet = true;
+//
+//	
+//}
+
+void AC_Player::SetCanFireWhileCrawl()
+{
+	float ControllerPitchAngle = 360 - GetControlRotation().Pitch;
+	if (ControllerPitchAngle >= 0 && ControllerPitchAngle <= 10 && PoseState == EPoseState::CRAWL)
+		bCanFireBullet = false;
+	else
+		bCanFireBullet = true;
 }
 
 bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
@@ -397,45 +423,45 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 /// <param name="OtherBodyIndex"></param>
 /// <param name="bFromSweep"></param>
 /// <param name="SweepResult"></param>
-void AC_Player::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-
-	FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetCurVolume());
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
-
-	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
-	
-	
-	if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
-	{
-		UC_Util::Print("OverlappedItem");
-		//UC_Util::Print(*OverlappedItem->GetName());
-	
-		Inventory->GetNearItems().Add(OverlappedItem);
-	}
-	else
-	{
-		UC_Util::Print("No item");
-
-		return;
-	}
-}
-/// <summary>
-/// 아이템이 캐릭터의 감지범위를 벗어났을 때.
-/// </summary>
-/// <param name="OverlappedComp"></param>
-/// <param name="OtherActor"></param>
-/// <param name="OtherComp"></param>
-/// <param name="OtherBodyIndex"></param>
-void AC_Player::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
-
-	if (OverlappedItem)
-	{
-		Inventory->GetNearItems().Remove(OverlappedItem);
-	}
-}
+//void AC_Player::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{
+//
+//	FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetCurVolume());
+//	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
+//
+//	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+//	
+//	
+//	if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
+//	{
+//		UC_Util::Print("OverlappedItem");
+//		//UC_Util::Print(*OverlappedItem->GetName());
+//	
+//		Inventory->GetNearItems().Add(OverlappedItem);
+//	}
+//	else
+//	{
+//		UC_Util::Print("No item");
+//
+//		return;
+//	}
+//}
+///// <summary>
+///// 아이템이 캐릭터의 감지범위를 벗어났을 때.
+///// </summary>
+///// <param name="OverlappedComp"></param>
+///// <param name="OtherActor"></param>
+///// <param name="OtherComp"></param>
+///// <param name="OtherBodyIndex"></param>
+//void AC_Player::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+//{
+//	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+//
+//	if (OverlappedItem)
+//	{
+//		Inventory->GetNearItems().Remove(OverlappedItem);
+//	}
+//}
 
 void AC_Player::SetAimPressCameraLocation()
 {
@@ -462,6 +488,8 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 {
 	// 현재 멈춰있는 상황이 아니면 처리 x
 	if (!bCanMove)								return;
+
+	//if (MainState != EMainState::IDLE)			return;
 	if (GetCharacterMovement()->IsSwimming())	return;
 	if (GetVelocity().Size() > 0.f)				return;
 	if (bIsHoldDirection)						return;
@@ -1072,13 +1100,14 @@ void AC_Player::HandleRecoilInterpolation(float Value)
 	//UC_Util::Print("Recoiling!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 	//UC_Util::Print(Value);
 	float TestFloat = CurGun->GetRecoilFactors().Y;
-	float RecoilFactor = 1;
+	SetRecoilFactorByPose();
+	float RecoilFactor = 1 * PlayerRecoilFactorByPose;
 	AddControllerPitchInput(-Value * RecoilFactor);
 }
 
 void AC_Player::OnRecoilTimelineFinished()
 {
-	
+	bIsFiringBullet = false;
 }
 
 void AC_Player::SetRecoilTimeLineComponent()
@@ -1104,8 +1133,9 @@ void AC_Player::RecoilController()
 {
 	UC_Util::Print("Start Recoil");
 	RecoilTimeline->PlayFromStart();
+	bIsFiringBullet = true;
 	//ControllerRecoilTimeline->PlayFromStart();
-	float Value = FMath::FRandRange(-1.0, 1.0);
+	float Value = FMath::FRandRange(-1.0, 1.0) * PlayerRecoilFactorByPose;
 	AddControllerYawInput(Value);
 
 
@@ -1121,6 +1151,28 @@ void AC_Player::SetRecoilTimelineValues()
 	RecoilTimeline->SetTimelinePlayRate(PlayRate);
 	//CameraTransitionTimeline->SetPlayRate(PlayRate);  // 재생 속도 설정
 	//CameraTransitionTimeline->SetLooping(false);  // 반복하지 않도록 설정
+}
+
+void AC_Player::SetRecoilFactorByPose()
+{
+	switch (PoseState)
+	{
+	case EPoseState::STAND:
+		PlayerRecoilFactorByPose = 1;
+		break;
+	case EPoseState::CROUCH:
+		PlayerRecoilFactorByPose = 0.5;
+
+		break;
+	case EPoseState::CRAWL:
+		PlayerRecoilFactorByPose = 0.3;
+
+		break;
+	case EPoseState::POSE_MAX:
+		break;
+	default:
+		break;
+	}
 }
 
 void AC_Player::SpawnConsumableItemForTesting()
@@ -1148,7 +1200,7 @@ void AC_Player::PoolingBullets()
 		Bullet->DeactivateInstance();
 		if (IsValid(Bullet))
 		{
-
+			Bullet->SetOwnerCharacter(this);
 			//UC_Util::Print("Created Bullet");
 			PooledBullets.Add(Bullet);
 		}

@@ -1,3 +1,5 @@
+
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Item/Weapon/Gun/C_Gun.h"
@@ -15,7 +17,7 @@
 #include "Components/PanelWidget.h"
 #include "Components/NamedSlotInterface.h"
 #include "Utility/C_Util.h"
-
+#include "UObject/ConstructorHelpers.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Character/C_BasicCharacter.h"
 #include "Character/Component/C_EquippedComponent.h"
@@ -33,6 +35,8 @@
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
+#include "Item/Attachment/C_AttachableItem.h"
+#include "Character/Component/C_AttachableItemMeshComponent.h"
 
 #include "Item/Weapon/Gun/C_Bullet.h"
 
@@ -44,60 +48,56 @@ AC_Gun::AC_Gun()
 	PrimaryActorTick.bCanEverTick = true;
 
 	WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
-	//AimSightSpringArm = CreateDefaultSubobject<USpringArmComponent>();
-	//Bullet = LoadObject<AC_Bullet>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet"));
 	//ItemType 설정.
+	//Magazine = LoadObject<AC_AttachableItem>(nullptr, TEXT("/Game/Project_PUBG/Common/Weapon/GunWeapon/Magazine/BPC_Magazine.BPC_Magazine"));
 
 	MyItemType = EItemTypes::MAINGUN;
+
+
+
 }
 
 void AC_Gun::BeginPlay()
 {
 	Super::BeginPlay();
+	//Add Grip for Test
+
+	SetHolsterNames();
+	AttachedParts[EPartsName::GRIP] = Cast<UStaticMeshComponent>(GetDefaultSubobjectByName("VertgripMesh"));
+	IronSightMesh = Cast<USkeletalMeshComponent>(GetDefaultSubobjectByName("IronSightMesh"));
+	//IronSightMesh->SetHiddenInGame(true);
 	SetBulletSpeed();
-	AimSightCamera = FindComponentByClass<UCameraComponent>();
-	//AimSightCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName(FName("Camera")));
-	//AimSightSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("RifleSightSpringArm"));
-	
-	AimSightSpringArm = FindComponentByClass<USpringArmComponent>(); 
+	AimSightCamera   = FindComponentByClass<UCameraComponent>();
+	AimSightSpringArm = FindComponentByClass<USpringArmComponent>();
+
 	//if(IsValid(AimSightCamera))
 	if (AimSightCamera)
 		AimSightCamera->SetActive(false);
 	//블루프린트에서 할당한 Skeletal Mesh 찾아서 변수에 저장
 	GunMesh = FindComponentByClass<USkeletalMeshComponent>();
 	GunMesh->SetupAttachment(RootComponent);
-	//SetAimSightWidget();
-	//AimSightCamera->SetupAttachment(GunMesh);
-	//CurveFloatForSwitchCameraChange = LoadObject<UCurveFloat>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/CameraMoving/CF_CameraMoving"));
-
-	//Bullet = LoadObject<AC_Bullet>(nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet"));
-
-	//UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>
 	
-		//if (!AimWidget)
-	//{
+	LoadMagazine();
 
-	//	AimWidget = LoadObject<UUserWidget>(nullptr, TEXT("/All/Game/Project_PUBG/Hyunho/TempWidget/WBP_CrossHair"));
-	//	AimWidget->AddToViewport();
-	//	AimWidget->SetVisibility(ESlateVisibility::Hidden);
-	//}
-	//if (IsValid(MyMesh))
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Skeletal Mesh: %s"), *MyMesh->GetName());
-	//	FString TheFloatStr = "Found Mesh";
-	//	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
-	//	// 추가적인 논리로 스켈레탈 메쉬를 처리합니다.
-	//}
-	//else
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Skeletal Mesh not found!"));
-	//}
-	
+	if (IsValid(Magazine))
+	{
+
+		Magazine->AttachToComponent(
+			GunMesh,
+			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+			MAGAZINE_SOCKET_NAME
+		);
+	}
 }
 
 void AC_Gun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//if (IsValid(Magazine))
+	//{
+	//	UC_Util::Print(Magazine->GetActorLocation());	
+	//}
 
 	if (!OwnerCharacter) return;
 
@@ -106,12 +106,22 @@ void AC_Gun::Tick(float DeltaTime)
 	//GunMesh->SetWorldRotation(OwnerCharacter->GetControlRotation());
 	if (IsValid(GunMesh))
 	{
-		FTransform TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
 		FVector OutLocation{};
 		FRotator OutRotation{};
+		FTransform TempVec{};
+		FRotator AdditionalRotation = FRotator(0, 0, 0); // Yaw를 45도 회전시키는 예제
+
+		if (IsValid(AttachedParts[EPartsName::GRIP]))
+			TempVec = AttachedParts[EPartsName::GRIP]->GetSocketTransform("LeftHandSocket");
+		else
+			TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
+		//TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
+
 		OwnerCharacter->GetMesh()->TransformToBoneSpace("RightHand", TempVec.GetLocation(), TempVec.GetRotation().Rotator(), OutLocation, OutRotation);
 		LeftHandSocketLocation.SetLocation(OutLocation);
 		LeftHandSocketLocation.SetRotation(OutRotation.Quaternion());
+		//LeftHandSocketLocation.ConcatenateRotation(AdditionalRotation.Quaternion());
+
 		//FTransform RootTrasnform = OwnerCharacter->GetMesh()->GetSocketTransform("SpineGunSocket");
 		//
 		//LeftHandSocketLocation = TempVec.GetRelativeTransform(RootTrasnform);
@@ -264,12 +274,10 @@ bool AC_Gun::SetAimingPress()
 
 bool AC_Gun::BackToMainCamera()
 {
-	//UC_Util::Print("Fuck333333333333333333333333");
 
 	AimSightCamera->SetActive(false);
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() != OwnerCharacter)
 	{
-		//UC_Util::Print("Fuck333333333333333333333333");
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(OwnerCharacter, 0.2);
 	}
 	OwnerCharacter->GetMesh()->UnHideBoneByName(FName("Head"));
@@ -301,7 +309,8 @@ void AC_Gun::GetPlayerIsAimDownOrNot()
 	}
 }
 
-void AC_Gun::SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter)
+
+void AC_Gun::SetOwnerCharacter(AC_BasicCharacter * InOwnerCharacter)
 {
 	Super::SetOwnerCharacter(InOwnerCharacter);
 	if (!InOwnerCharacter)
@@ -314,6 +323,72 @@ void AC_Gun::SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter)
 		return;
 	}
 	SetAimSightWidget();
+}
+
+void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
+{
+	UC_EquippedComponent* EquippedComponent = Character->GetEquippedComponent();
+	EWeaponSlot Slot = EWeaponSlot::MAIN_GUN;
+
+	switch (Slot)
+	{
+	case EWeaponSlot::NONE:
+		break;
+	case EWeaponSlot::MAIN_GUN:
+		//Main Gun Slot에 총이 없다면 실행
+		if (!EquippedComponent->GetWeapons()[EWeaponSlot::MAIN_GUN])
+		{
+			EquippedComponent->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
+			
+			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
+			SetActorHiddenInGame(true);
+			SetActorEnableCollision(false);
+
+			SetActorHiddenInGame(false);
+			SetActorEnableCollision(true);
+			return;
+		}
+		//Slot = EWeaponSlot::SUB_GUN;
+	case EWeaponSlot::SUB_GUN:
+		//Sub Gun Slot에 총이 없다면 실행
+		if (!EquippedComponent->GetWeapons()[EWeaponSlot::SUB_GUN])
+		{
+			EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+
+			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
+			SetActorHiddenInGame(true);
+			SetActorEnableCollision(false);
+
+			SetActorHiddenInGame(false);
+			SetActorEnableCollision(true);
+
+			return;
+		}
+		break;
+	case EWeaponSlot::MELEE_WEAPON:
+		break;
+	case EWeaponSlot::THROWABLE_WEAPON:
+		break;
+	default:
+		break;
+	}
+
+	//Main, Sub 모두 총이 있는 경우.
+	EHandState HandState = Character->GetHandState();
+	AC_Weapon* DropGun = nullptr;
+	if (HandState == EHandState::WEAPON_GUN)
+	{
+		EWeaponSlot curSlot = EquippedComponent->GetCurWeaponType();
+		
+		//제대로 총을 바꾸는지 확인해야함, SetSlotWeapon과 DetachmentItem의 순서를 바꿔야 할 수 도 있음.
+		DropGun = EquippedComponent->SetSlotWeapon(curSlot, this);
+		DropGun->DetachmentItem();
+	}
+	else
+	{
+		DropGun = EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+		DropGun->DetachmentItem();
+	}
 
 }
 
@@ -354,7 +429,12 @@ bool AC_Gun::GetIsPlayingMontagesOfAny()
 	UAnimMontage* DrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
 	//UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 	UAnimMontage* SheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
-	bool IsPlayingMontagesOfAny = CurAnimInstance->Montage_IsPlaying(DrawMontage) || CurAnimInstance->Montage_IsPlaying(SheathMontage);
+	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+	bool IsPlayingMontagesOfAny = 
+		CurAnimInstance->Montage_IsPlaying(DrawMontage)   || 
+		CurAnimInstance->Montage_IsPlaying(SheathMontage) ||
+		CurAnimInstance->Montage_IsPlaying(ReloadMontage);
+
 	return IsPlayingMontagesOfAny;
 }
 
@@ -378,8 +458,10 @@ void AC_Gun::ExecuteReloadMontage()
 	if (CurBulletCount == MaxBulletCount) return;
 	if (!CurPlayer->GetCanMove()) return;
 	if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return;
+	SetMagazineVisibility(false);
 	OwnerCharacter->SetIsReloadingBullet(true);
 	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
+	BackToMainCamera();	
 }
 
 
@@ -416,8 +498,9 @@ bool AC_Gun::FireBullet()
 
 	FVector FireLocation;
 	FVector FireDirection;
+	FVector HitLocation;
 	bool HasHit;
-	if (!SetBulletDirection(FireLocation, FireDirection, HasHit)) return false;
+	if (!SetBulletDirection(FireLocation, FireDirection,HitLocation, HasHit)) return false;
 	UC_Util::Print(FireLocation);
 	UC_Util::Print(FireDirection);
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
@@ -434,7 +517,11 @@ bool AC_Gun::FireBullet()
 		//UC_Util::Print("FIRE!!!!!!!");
 		CurBulletCount--;
 		OwnerPlayer->RecoilController();
-		return Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+		if (HasHit)
+			return Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity, HitLocation);
+		else
+			return Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+
 		//Bullet->Fire(this, FireLocation, FireDirection);
 		//if (BulletCount > 100)
 		//	return true;
@@ -473,7 +560,7 @@ void AC_Gun::SetBulletSpeed()
 	}
 }
 
-bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, bool& OutHasHit)
+bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVector &OutHitLocation, bool& OutHasHit)
 {
 	FHitResult HitResult;
 
@@ -528,7 +615,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, boo
 	if (OwnerCharacter->GetIsWatchingSight())
 	{
 		RandomPointOnScreen.X = (0.5 * ViewportSize.X );
-		RandomPointOnScreen.Y = (0.5 * ViewportSize.Y );
+		RandomPointOnScreen.Y = (0.4 * ViewportSize.Y );
 	}
 	else
 	{
@@ -538,7 +625,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, boo
 
 	WolrdContorller->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, WorldLocation, WorldDirection);
 
-	FVector DestLocation = WorldLocation + WorldDirection * 10000;
+	FVector DestLocation = WorldLocation + WorldDirection * 100000;
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, DestLocation, ECC_Visibility, CollisionParams);
 
 	DrawDebugSphere(GetWorld(), HitResult.Location, 1.0f, 12, FColor::Red, true);
@@ -549,10 +636,11 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, boo
 	//UC_Util::Print(FireLocation2, FColor::Blue);
 	FVector FireDirection;
 
-	if (HasHit)
+	if (HitResult.Distance <= 1000 && HitResult.Distance >0)
 	{
 		FireDirection = HitResult.Location - FireLocation;
 		FireDirection = FireDirection.GetSafeNormal();
+		
 		UC_Util::Print(HitResult.Location, FColor::Emerald);
 		UC_Util::Print(HitResult.Distance, FColor::Cyan);
 	}
@@ -582,6 +670,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, boo
 	OutLocation = FireLocation;
 	OutDirection = FireDirection;
 	OutHasHit = HasHit;
+	OutHitLocation = HitResult.Location;
 	return true;
 }
 
@@ -618,6 +707,77 @@ void AC_Gun::ShowAndHideWhileAiming()
 	}
 		//UC_Util::Print("No Hit");
 
+}
+
+void AC_Gun::LoadMagazine()
+{
+	FString ClassPath = TEXT("/Game/Project_PUBG/Common/Weapon/GunWeapon/Magazine/BPC_Magazine.BPC_Magazine_C");
+	//Magazine = LoadObject<AC_AttachableItem>(nullptr, ));
+
+	// UClass로 불러오기
+	UClass* MagazineClass = LoadObject<UClass>(nullptr, *ClassPath);
+	if (MagazineClass)
+	{
+		//	// 인스턴스 생성
+		FActorSpawnParameters Param{};
+		Param.Owner = this;
+		//ConsumableItem = GetWorld()->SpawnActor<AC_FirstAidKit>(ConsumableItemClass, Param);
+		Magazine = GetWorld()->SpawnActor<AC_AttachableItem>(MagazineClass, Param);
+	}
+	if (IsValid(Magazine))
+	{
+		// 인스턴스를 GunMesh에 Attach
+		Magazine->SetOwnerCharacter(OwnerCharacter);
+		Magazine->SetIsAttached(true);
+		UC_Util::Print("Success To Load Magazine", FColor::Blue, 10.0f);
+
+	}
+	else
+	{
+		UC_Util::Print("Failed To Load Magazine", FColor::Blue, 10.0f);
+	}
+
+//	else
+//	{
+//		UC_Util::Print("Fail To Load Magazine Class", FColor::Blue, 10.0f);
+//
+//	}
+}
+
+void AC_Gun::SetMagazineVisibility(bool InIsVisible)
+{
+	if (IsValid(Magazine))
+	{
+		Magazine->SetMeshVisibility(InIsVisible);
+		//UC_Util::Print("ASDaisujdfhaiseuehfaiesuhfaweiufh");
+	}
+}
+
+bool AC_Gun::GetGunHasGrip()
+{
+	return 	IsValid(AttachedParts[EPartsName::GRIP]);
+}
+
+void AC_Gun::SetHolsterNames()
+{
+	AttachmentPartsHolsterNames.Add(EAttachmentNames::REDDOT, FName("Red_Dot_Socket"));
+	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNames에 MAX가 있다면
+	{
+		EPartsName AttachmentName = (EPartsName)i;
+		IsPartAttached.Add(AttachmentName, false);
+		AttachedItemName.Add(AttachmentName, EAttachmentNames::MAX);
+	}
+}
+
+void AC_Gun::SetIronSightMeshHiddenInGame(bool bInIsHidden)
+{
+	if (!IsValid(IronSightMesh)) return;
+	IronSightMesh->SetHiddenInGame(bInIsHidden);
+}
+
+void AC_Gun::SetIsPartAttached(EPartsName InAttachmentName, bool bInIsAttached)
+{
+	IsPartAttached[InAttachmentName] = bInIsAttached;
 }
 
 //void AC_Gun::SpawnBulletForTest()

@@ -1,0 +1,59 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Blueprint/UserWidget.h"
+#include "C_SkyDiveWidget.generated.h"
+
+enum class ESkyDivingState : uint8;
+
+/**
+ * 
+ */
+UCLASS()
+class UE_PUBG_API UC_SkyDiveWidget : public UUserWidget
+{
+	GENERATED_BODY()
+
+public:
+	void NativeConstruct() override;
+
+protected:
+
+	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+public:
+
+	void SetJumpedAltitude(float Altitude) { JumpedAltitude = Altitude; }
+	void SetParachuteLimitAltitude(float Altitude) { ParachuteLimitAltitude = Altitude; }
+	
+	/// <summary>
+	/// Altitude Text setting & Altitude Box position setting
+	/// </summary>
+	/// <param name="Altitude"> : 고도(cm) </param>
+	void SetAltitude(const float& Altitude);
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UTextBlock* AltitudeTextBlock{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UCanvasPanel* AltitudeBoxPanel{};
+
+private:
+	// AltitudeBox 실질적인 Slot obj
+	class UCanvasPanelSlot* AltitudeBoxPanelSlot{};
+
+private: // 낙하 고도 관련 값들  
+	
+	float JumpedAltitude{}; // 최대 높이
+	float ParachuteLimitAltitude{}; // Parachute Limit Altitude
+
+private: // 낙하 높이 Box Widget 위치 관련 상수
+	
+	const FVector2D ALTITUDE_BOX_MAX_TO_PARACHUTE = { -252.f, 99.f };
+	const FVector2D ALTITUDE_BOX_PARACHUTE_TO_MIN = { 99.f, 190.f };
+	
+};

@@ -13,6 +13,15 @@
 DECLARE_MULTICAST_DELEGATE(FDele_PoseTransitionFin);
 
 UENUM(BlueprintType)
+enum class EMainState : uint8
+{
+	IDLE,
+	SKYDIVING,
+	DEAD,
+	MAX
+};
+
+UENUM(BlueprintType)
 enum class EHandState : uint8
 {
 	UNARMED,
@@ -40,7 +49,8 @@ enum class EMontagePriority : uint8
 	DRAW_SHEATH_WEAPON,		// Default Upper body
 	POSE_TRANSITION,		// Sub Full body
 	THROW_THROWABLE,		// 실질적으로 던지는 자세일 때, Default Upper body
-	PRIORITY_MAX
+	PRIORITY_MAX,
+	MAX
 };
 
 USTRUCT(BlueprintType)
@@ -116,6 +126,19 @@ private:
 	/// </summary>
 	float PlayAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None) override;
 
+protected:
+	/// <summary>
+	/// 아이템 상호작용을 위한 변수와 함수.
+	/// 구를 통해 아이템과의 충동을 감지하는 함수.
+	/// </summary>
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* DetectionSphere;
+
+	UFUNCTION()
+	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 public:
 
 	/// <summary>
@@ -144,6 +167,9 @@ protected:
 		AActor*				DamageCauser
 	) override;
 	
+
+
+
 public:
 
 	/// <summary>
@@ -154,6 +180,9 @@ public:
 
 
 public: // Getters and setters
+
+	void SetMainState(EMainState InMainState) { MainState = InMainState; }
+	EMainState GetMainState() const { return MainState; }
 
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
@@ -182,6 +211,8 @@ public:
 	bool GetCanMove() const { return bCanMove; }
 	bool GetIsAimDown() { return bIsAimDownSight; }
 	bool GetIsWatchingSight() { return bIsWatchingSight; }
+	bool GetIsFiringBullet() { return bIsFiringBullet; }
+	bool GetCanFireBullet() { return bCanFireBullet; }
 	void SetIsAimDown(bool InIsAimDownSight) { bIsAimDownSight = InIsAimDownSight; }
 	void SetIsWatchingSight(bool InIsWatchingSight) { bIsWatchingSight = InIsWatchingSight; }
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
@@ -224,6 +255,14 @@ public:
 
 	class UC_SwimmingComponent* GetSwimmingComponent() const { return SwimmingComponent; }
 
+	UFUNCTION(BlueprintGetter)
+	class UC_SkyDivingComponent* GetSkyDivingComponent() const { return SkyDiveComponent; }
+
+	UFUNCTION(BlueprintCallable)
+	class UC_InvenSystem* GetInvenSystem() { return InvenSystem; }
+
+	class UC_AttachableItemMeshComponent* GetAttachmentMeshComponent() { return AttachmentMeshComponent; };
+
 public:
 
 	/// <summary>
@@ -249,6 +288,9 @@ public:
 	bool ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState);
 
 protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	EMainState MainState{};
 
 	// Current hand state
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -297,11 +339,12 @@ protected:
 	bool bIsHoldDirection = false;
 	// Alt키 눌렸었는지 체크
 	bool bIsAltPressed = false;
-
+	bool bCanFireBullet = true;
 	bool bIsAimDownSight = false;
 	bool bIsAimingRifle = false;
 	bool bIsWatchingSight = false;
 	bool bIsReloadingBullet = false;
+	bool bIsFiringBullet = false;
 	FRotator CharacterMovingDirection;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -319,9 +362,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_StatComponent* StatComponent{};
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_InvenSystem* InvenSystem{};
+
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UC_InvenComponent* Inventory;
+	UC_InvenComponent* Inventory{};
 	
 	//UClass* InvenSystemClass;
 
@@ -355,5 +401,15 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_SwimmingComponent* SwimmingComponent{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_SkyDivingComponent* SkyDiveComponent{};
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_AttachableItemMeshComponent* AttachmentMeshComponent{};
+
 
 };

@@ -18,10 +18,13 @@
 #include "Utility/C_Util.h"
 #include "UMG.h"
 #include "Character/C_Player.h"
+#include "Character/Component/C_AttachableItemMeshComponent.h"
+
 
 
 bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	UC_Util::Print("Change Weapon Mode");
 	CurWeapon->ChangeCurShootingMode();	
@@ -30,12 +33,25 @@ bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 
 bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	//if (WeaponUser->GetIsHoldDirection()) return false;
+
+	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
+	if (CurWeapon->GetIsPartAttached(EPartsName::SCOPE))
+	{
+		WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::SCOPE, EAttachmentNames::REDDOT);
+		return true;
+	}
+	WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::SCOPE, EAttachmentNames::REDDOT);
+	//CurWeapon->ExecuteReloadMontage();
 	return false;
 }
 
 bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
 	//UC_Util::Print("Mlb Clicked");
+	if (WeaponUser->GetIsHoldDirection()) return false;
+	if (!WeaponUser->GetCanFireBullet()) return false;
+
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
 	MlbPressTimeCount = 0;
@@ -45,6 +61,9 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 
 bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	if (WeaponUser->GetIsHoldDirection()) return false;
+	if (!WeaponUser->GetCanFireBullet()) return false;
+
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
 
@@ -63,6 +82,9 @@ bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 
 bool AC_GunStrategy::UseMlb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	if (WeaponUser->GetIsHoldDirection()) return false;
+	if (!WeaponUser->GetCanFireBullet()) return false;
+
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
@@ -73,6 +95,9 @@ bool AC_GunStrategy::UseMlb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 
 bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	if (WeaponUser->GetIsHoldDirection()) return false;
+	//if (!WeaponUser->GetCanFireBullet()) return false;
+
 	MrbPressTimeCount = 0;
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
@@ -92,6 +117,9 @@ bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 
 bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	if (WeaponUser->GetIsHoldDirection()) return false;
+	//if (!WeaponUser->GetCanFireBullet()) return false;
+
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
 
@@ -114,6 +142,9 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 
 bool AC_GunStrategy::UseMrb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	if (WeaponUser->GetIsHoldDirection()) return false;
+	//if (!WeaponUser->GetCanFireBullet()) return false;
+
 	//MrbPressTimeCount = 0;
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurDrawMontage().AnimMontage)) return false;
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurSheathMontage().AnimMontage)) return false;

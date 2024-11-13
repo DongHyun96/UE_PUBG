@@ -11,6 +11,8 @@
 #include "Character/Component/C_PingSystemComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
+#include "Character/Component/C_SkyDivingComponent.h"
+#include "Character/Component/C_InvenSystem.h"
 
 #include "Components/ActorComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -67,13 +69,20 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 	if (IsValid(EnhancedInputComponent))
 	{
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &UC_InputComponent::OnJump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Ongoing, this, &UC_InputComponent::OnSwimmingJump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &UC_InputComponent::OnSwimmingJumpCrouchEnd);
 
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &UC_InputComponent::Move);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &UC_InputComponent::MoveEnd);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &UC_InputComponent::Look);
 
 		EnhancedInputComponent->BindAction(CrawlAction, ETriggerEvent::Started, this, &UC_InputComponent::Crawl);
-		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &UC_InputComponent::Crouch);
+
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started,   this, &UC_InputComponent::Crouch);
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Ongoing,   this, &UC_InputComponent::OnSwimmingCrouch);
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &UC_InputComponent::OnSwimmingJumpCrouchEnd);
+
+
 		EnhancedInputComponent->BindAction(HoldDirectionAction, ETriggerEvent::Triggered, this, &UC_InputComponent::HoldDirection);
 		EnhancedInputComponent->BindAction(HoldDirectionAction, ETriggerEvent::Completed, this, &UC_InputComponent::ReleaseDirection);
 
@@ -107,8 +116,13 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 
 		EnhancedInputComponent->BindAction(NKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnNKey);
 		EnhancedInputComponent->BindAction(MKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnMKey);
+
+		EnhancedInputComponent->BindAction(IKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnIKey);
+
+		EnhancedInputComponent->BindAction(TabKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnTabKey);	
+
 	}
-}
+}	
 
 void UC_InputComponent::Move(const FInputActionValue& Value)
 {
@@ -129,6 +143,7 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		return;
 	}
 
+
 	if (Player->GetIsHoldDirection() || Player->GetIsAltPressed() || Player->GetIsAimDown()) //GetIsAimDown() -> bIsAimDownSight
 	{
 		PlayerMovement->bUseControllerDesiredRotation	= false;
@@ -142,6 +157,12 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		PlayerMovement->bOrientRotationToMovement		= false;
 	}
 
+	if (Player->GetMainState() == EMainState::SKYDIVING)
+	{
+		Player->GetSkyDivingComponent()->HandlePlayerMovement(MovementVector);
+		return;
+	}
+
 	// Update Max walk speed
 	Player->UpdateMaxWalkSpeed(MovementVector);
 
@@ -152,24 +173,10 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
 		const FVector   RightDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
 
-		// TODO : Stand Crouch는 Character Movement 경사면 설정으로 적절히 처리가 알아서 됨
-		// Crawl 경사면 예외처리
-		/*if (Player->GetPoseState() == EPoseState::CRAWL)
-		{
-			static const float START_OFFSET_AMOUNT = 1.f;
-			FVector StartOffset = ForwardDirection * START_OFFSET_AMOUNT;
-		
-			FVector HeadStartLocation		= (Player->GetActorLocation() + ForwardDirection * 75.f) + StartOffset;
-			FVector PelvisStartLocation		= Player->GetActorLocation() + StartOffset;
-			
-			if (!Player->GetPoseColliderHandlerComponent()->CanCrawlOnSlope(HeadStartLocation, PelvisStartLocation)) return;
-		}*/
-
 		Player->AddMovementInput(ForwardDirection, MovementVector.X);
 		Player->AddMovementInput(RightDirection, MovementVector.Y);
 
 		Player->SetNextSpeed(PlayerMovement->MaxWalkSpeed); // AnimCharacter에서 Speed Lerp할 값 setting
-		//UC_Util::Print("Moving");
 	}
 }
 
@@ -178,6 +185,12 @@ void UC_InputComponent::MoveEnd(const FInputActionValue& Value)
 	Player->SetNextSpeed(0.f);
 
 	Player->SetStrafeRotationToIdleStop();
+
+	if (Player->GetSwimmingComponent()->IsSwimming())
+		Player->GetSwimmingComponent()->OnSwimmingMoveEnd();
+
+	if (Player->GetMainState() == EMainState::SKYDIVING)
+		Player->GetSkyDivingComponent()->OnSkyMoveEnd();
 }
 
 void UC_InputComponent::Look(const FInputActionValue& Value)
@@ -206,6 +219,8 @@ void UC_InputComponent::Look(const FInputActionValue& Value)
 
 void UC_InputComponent::Crouch()
 {
+	if (Player->GetSwimmingComponent()->IsSwimming()) return;
+
 	switch (Player->GetPoseState())
 	{
 	case EPoseState::STAND: // Stand to crouch (Pose transition 없이 바로 처리)
@@ -221,6 +236,12 @@ void UC_InputComponent::Crouch()
 		UC_Util::Print("From AC_Player::Crouch : UnAuthorized current pose!");
 		return;
 	}
+}
+
+void UC_InputComponent::OnSwimmingCrouch()
+{
+	if (!Player->GetSwimmingComponent()->IsSwimming()) return;
+	Player->GetSwimmingComponent()->OnSwimmingCKey();
 }
 
 void UC_InputComponent::Crawl()
@@ -267,6 +288,18 @@ void UC_InputComponent::OnJump()
 	Player->bPressedJump = true;
 	Player->SetIsJumping(true);
 	Player->JumpKeyHoldTime = 0.0f;
+}
+
+void UC_InputComponent::OnSwimmingJump()
+{
+	if (!Player->GetSwimmingComponent()->IsSwimming()) return;
+	Player->GetSwimmingComponent()->OnSwimmingSpaceBarKey();
+}
+
+void UC_InputComponent::OnSwimmingJumpCrouchEnd()
+{
+	if (!Player->GetSwimmingComponent()->IsSwimming()) return;
+	MoveEnd(0.f);
 }
 
 void UC_InputComponent::CancelTurnInPlaceMotion()
@@ -318,6 +351,7 @@ void UC_InputComponent::CancelTurnInPlaceMotion()
 void UC_InputComponent::HoldDirection()
 {
 	// 수류탄 던지는 process 중이라면 Alt키 중지
+	if (Player->GetIsFiringBullet()) return;
 
 	AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(Player->GetEquippedComponent()->GetCurWeapon());
 	if (ThrowingWeapon)
@@ -346,6 +380,8 @@ void UC_InputComponent::HoldDirection()
 
 void UC_InputComponent::ReleaseDirection()
 {
+	if (Player->GetIsFiringBullet()) return;
+
 	Player->SetIsHoldDirection(false);
 	Player->SetIsAltPressed(true);
 }
@@ -520,6 +556,15 @@ void UC_InputComponent::OnFKey()
 
 	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
 
+	// SkyDiving 관련 F키
+	if (Player->GetMainState() == EMainState::SKYDIVING)
+	{
+		if (Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
+			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING);
+		else if (Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::SKYDIVING)
+			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING);
+		return;
+	}
 
 	if (Player->GetInventory()->GetNearItems().Num() > 0)
 	{
@@ -527,7 +572,7 @@ void UC_InputComponent::OnFKey()
 		AC_Item* item = Player->GetInventory()->GetNearItems()[0];
 
 		//NearInventory.Add(Item);
-		item->Interaction(Player);
+		//item->Interaction(Player);
 		//item->SetActorHiddenInGame(true); // Hide item from the world
 		item->SetActorEnableCollision(false); // Disable collision
 		Player->GetInventory()->GetNearItems().Remove(item);
@@ -554,5 +599,16 @@ void UC_InputComponent::OnNKey()
 void UC_InputComponent::OnMKey()
 {
 	Player->GetHUDWidget()->GetMainMapWidget()->OnMKey();
+}
+
+void UC_InputComponent::OnIKey()
+{
+	//Player->GetInvenComponent()->OpenInvenUI();
+	Player->GetInvenSystem()->OpenInvenUI();
+}
+
+void UC_InputComponent::OnTabKey()
+{
+	Player->GetInvenSystem()->OpenInvenUI();
 }
 

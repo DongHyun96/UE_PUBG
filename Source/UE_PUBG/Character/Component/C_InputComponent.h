@@ -40,8 +40,13 @@ private:
 	void Look(const struct FInputActionValue& Value);
 
 	void Crouch();
+	void OnSwimmingCrouch();
+
 	void Crawl();
 	void OnJump();
+	void OnSwimmingJump();
+
+	void OnSwimmingJumpCrouchEnd();
 
 	void CancelTurnInPlaceMotion();
 	//Alt 키 누를때 이름 추천부탁
@@ -84,6 +89,9 @@ private:
 	void OnNKey();
 	void OnMKey();
 
+	void OnIKey();
+
+	void OnTabKey();
 private:
 
 	class AC_Player* Player{};
@@ -162,6 +170,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* MKeyAction{};
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* IKeyAction{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputAction* TabKeyAction{};
 private:
 	class AC_Weapon* ChangeTestWeapon{};
 };
