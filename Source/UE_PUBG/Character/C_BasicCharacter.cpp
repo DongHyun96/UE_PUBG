@@ -87,8 +87,8 @@ void AC_BasicCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// For Testing
-	MainState = EMainState::SKYDIVING;
-	SkyDiveComponent->SetSkyDivingState(ESkyDivingState::READY);
+	//MainState = EMainState::SKYDIVING;
+	//SkyDiveComponent->SetSkyDivingState(ESkyDivingState::READY);
 
 	GetPhysicsVolume()->FluidFriction = 2.5f;
 	StatComponent->SetOwnerCharacter(this);
@@ -148,7 +148,7 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 		Inventory->AddItemToNearList(OverlappedItem);
 		//Inventory->InitInvenUI();
 		if (!InvenSystem) return;
-	    //InvenSystem->InitializeList();
+	    InvenSystem->InitializeList();
 	}
 	else
 	{
@@ -176,7 +176,7 @@ void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor
 		Inventory->RemoveItemNearList(OverlappedItem);
 		//Inventory->InitInvenUI();
 		if (!InvenSystem) return;
-		//InvenSystem->InitializeList();
+		InvenSystem->InitializeList();
 	}
 }
 float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate, FName StartSectionName)
