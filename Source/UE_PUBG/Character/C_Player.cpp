@@ -60,6 +60,7 @@
 #include "Item/ConsumableItem/Healing/C_FirstAidKit.h"
 #include "Item/Weapon/Gun/C_Bullet.h"
 #include "Singleton/C_GameSceneManager.h"
+#include "Character/Component/C_AttachableItemMeshComponent.h"
 
 AC_Player::AC_Player()
 {

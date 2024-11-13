@@ -17,7 +17,25 @@ enum class EPartsName : uint8
 	MUZZLE,
 	GRIP,
 	MAGAZINE,
-	GUNSTOCK
+	GUNSTOCK,
+	MAX
+};
+
+/// <summary>
+/// Attachment 아이템 이름들
+/// </summary>
+UENUM(BlueprintType)
+enum class EAttachmentNames : uint8
+{
+	REDDOT,
+	SCOPE4,
+	SCOPE8,
+	VERTGRIP,
+	EXTENDMAG,
+	QUICKMAG,
+	COMPENSATOR,
+	SUPPRESSOR,
+	MAX
 };
 /// <summary>
 /// 현재 제대로 사용하지는 않고 있음.

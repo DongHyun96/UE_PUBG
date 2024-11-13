@@ -260,6 +260,8 @@ public:
 
 	class UC_InvenSystem* GetInvenSystem() { return InvenSystem; }
 
+	class UC_AttachableItemMeshComponent* GetAttachmentMeshComponent() { return AttachmentMeshComponent; };
+
 public:
 
 	/// <summary>
@@ -403,5 +405,10 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_SkyDivingComponent* SkyDiveComponent{};
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_AttachableItemMeshComponent* AttachmentMeshComponent{};
+
 
 };

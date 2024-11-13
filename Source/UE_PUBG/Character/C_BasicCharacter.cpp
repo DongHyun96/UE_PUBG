@@ -32,6 +32,7 @@
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
+#include "Character/Component/C_AttachableItemMeshComponent.h"
 
 #include "Utility/C_Util.h"
 
@@ -74,6 +75,10 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	SkyDiveComponent = CreateDefaultSubobject<UC_SkyDivingComponent>("SkyDivingComponent");
 	SkyDiveComponent->SetOwnerCharcter(this);
+
+	AttachmentMeshComponent = CreateDefaultSubobject<UC_AttachableItemMeshComponent>("AttachmentMeshComponent");
+	AttachmentMeshComponent->SetOwnerCharacter(this);
+
 }
 
 // Called when the game starts or when spawned

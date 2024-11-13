@@ -17,7 +17,7 @@
 #include "Components/PanelWidget.h"
 #include "Components/NamedSlotInterface.h"
 #include "Utility/C_Util.h"
-
+#include "UObject/ConstructorHelpers.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Character/C_BasicCharacter.h"
 #include "Character/Component/C_EquippedComponent.h"
@@ -36,6 +36,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 #include "Item/Attachment/C_AttachableItem.h"
+#include "Character/Component/C_AttachableItemMeshComponent.h"
 
 #include "Item/Weapon/Gun/C_Bullet.h"
 
@@ -60,7 +61,11 @@ void AC_Gun::BeginPlay()
 {
 	Super::BeginPlay();
 	//Add Grip for Test
+
+	SetHolsterNames();
 	AttachedParts[EPartsName::GRIP] = Cast<UStaticMeshComponent>(GetDefaultSubobjectByName("VertgripMesh"));
+	IronSightMesh = Cast<USkeletalMeshComponent>(GetDefaultSubobjectByName("IronSightMesh"));
+	//IronSightMesh->SetHiddenInGame(true);
 	SetBulletSpeed();
 	AimSightCamera   = FindComponentByClass<UCameraComponent>();
 	AimSightSpringArm = FindComponentByClass<USpringArmComponent>();
@@ -736,6 +741,28 @@ void AC_Gun::SetMagazineVisibility(bool InIsVisible)
 bool AC_Gun::GetGunHasGrip()
 {
 	return 	IsValid(AttachedParts[EPartsName::GRIP]);
+}
+
+void AC_Gun::SetHolsterNames()
+{
+	AttachmentPartsHolsterNames.Add(EAttachmentNames::REDDOT, FName("Red_Dot_Socket"));
+	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNames에 MAX가 있다면
+	{
+		EPartsName AttachmentName = (EPartsName)i;
+		IsPartAttached.Add(AttachmentName, false);
+		AttachedItemName.Add(AttachmentName, EAttachmentNames::MAX);
+	}
+}
+
+void AC_Gun::SetIronSightMeshHiddenInGame(bool bInIsHidden)
+{
+	if (!IsValid(IronSightMesh)) return;
+	IronSightMesh->SetHiddenInGame(bInIsHidden);
+}
+
+void AC_Gun::SetIsPartAttached(EPartsName InAttachmentName, bool bInIsAttached)
+{
+	IsPartAttached[InAttachmentName] = bInIsAttached;
 }
 
 //void AC_Gun::SpawnBulletForTest()

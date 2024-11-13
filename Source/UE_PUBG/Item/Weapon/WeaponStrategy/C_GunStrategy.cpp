@@ -18,6 +18,8 @@
 #include "Utility/C_Util.h"
 #include "UMG.h"
 #include "Character/C_Player.h"
+#include "Character/Component/C_AttachableItemMeshComponent.h"
+
 
 
 bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
@@ -31,10 +33,16 @@ bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 
 bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
-	if (WeaponUser->GetIsHoldDirection()) return false;
+	//if (WeaponUser->GetIsHoldDirection()) return false;
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	CurWeapon->ExecuteReloadMontage();
+	if (CurWeapon->GetIsPartAttached(EPartsName::SCOPE))
+	{
+		WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::SCOPE, EAttachmentNames::REDDOT);
+		return true;
+	}
+	WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::SCOPE, EAttachmentNames::REDDOT);
+	//CurWeapon->ExecuteReloadMontage();
 	return false;
 }
 

@@ -199,5 +199,32 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<EPartsName> AttachableParts{};
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<EPartsName, class UMeshComponent*> AttachedParts;
+	TMap<EPartsName, class UMeshComponent*> AttachedParts{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+
+	TMap<EAttachmentNames, FName> AttachmentPartsHolsterNames{};
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+
+	TMap<EPartsName, bool> IsPartAttached{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+
+	TMap<EPartsName, EAttachmentNames> AttachedItemName{};
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+
+	TMap<EAttachmentNames, FVector> AttachmentPartsHolsterCameraLocations{};
+public:
+	TMap<EAttachmentNames, FName> GetAttachmentPartsHolsterNames() { return AttachmentPartsHolsterNames; }
+	TMap<EAttachmentNames, FVector> GetAttachmentPartsHolsterCameraLocations() { return AttachmentPartsHolsterCameraLocations; }
+
+protected:
+	void SetHolsterNames();
+	UMeshComponent* IronSightMesh{};
+public:
+	void SetIronSightMeshHiddenInGame(bool bInIsHidden);
+	bool GetIsPartAttached(EPartsName InAttachmentName) { return IsPartAttached[InAttachmentName]; }
+	void SetIsPartAttached(EPartsName InAttachmentName, bool bInIsAttached);
+	EAttachmentNames GetAttachedItemName(EPartsName InPartName) { return AttachedItemName[InPartName]; }
+
 };
