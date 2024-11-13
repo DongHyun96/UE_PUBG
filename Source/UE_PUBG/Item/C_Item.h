@@ -60,6 +60,14 @@ enum class EItemTypes : uint8
 	CONSUMPTIONITEM
 };
 
+UENUM(BlueprintType)
+enum class EItemPlace : uint8
+{
+	NONE,
+	AROUND,
+	INVEN,
+	SLOT
+};
 
 UENUM(BlueprintType)
 enum class EItemNames : uint8
@@ -94,6 +102,9 @@ struct FItemData
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	uint8 ItemVolume = 0;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	EItemPlace ItemPlace = EItemPlace::AROUND;
 };	
 
 
@@ -185,6 +196,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool MoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToSlot, return false;);
 
+	UFUNCTION(BlueprintCallable)
+	virtual AC_Item* SpawnItem(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:SpawnItem, return nullptr;);
+
+	void SetItemPlace(EItemPlace InPlace) { ItemDatas.ItemPlace = InPlace; }
+
 public:
 	FItemData GetItemDatas() { return ItemDatas; }
 
@@ -216,5 +232,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	AC_BasicCharacter* OwnerCharacter{};
 
+	
 };
 // Fill out your copyright notice in the Description page of Project Settings.

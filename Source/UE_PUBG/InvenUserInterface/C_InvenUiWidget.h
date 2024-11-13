@@ -25,7 +25,17 @@ public:
 	/// 아이템리스트(ListView)초기화
 	/// </summary>
 	void InitListView();
-	void InitWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void InitWidget(); 
+
+	bool SetIsDragging(bool Dragging) { return bIsDragging = Dragging; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetItemListZorder(AC_BasicCharacter* Character);
+
+	UFUNCTION(BlueprintCallable)
+	void InitItemListZorder();
 protected:
 	
 	//virtual void PreConstruct(bool IsDesignTime) override;
@@ -40,7 +50,7 @@ protected:
 	void PopulateItemList(class UListView* list, const TMap<FString, class AC_Item*>& itemList);
 
 	UFUNCTION(BlueprintCallable)
-	void test(class UListView* list, const TMap<FString, AC_Item*>& itemList);
+	void testAroundItemList(class UListView* list, const TArray<AC_Item*>& AroundAtemList);
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -67,8 +77,15 @@ public:
 
 	UC_ThrowableWidget* ThrowableSlot = nullptr;
 
+	UUserWidget* Background_Around = nullptr;
+
+	UUserWidget* Background_Inventory = nullptr;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_BasicCharacter* OwnerCharacter = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsDragging = false;
+
 };

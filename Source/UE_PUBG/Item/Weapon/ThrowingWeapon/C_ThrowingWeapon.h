@@ -66,9 +66,9 @@ public:
 
 	void DropItem(AC_BasicCharacter* Character) override;
 
-	void SetItemStack(uint8 AddItemStack) override;
+	void SetItemStack(uint8 ItemStack) override;
 
-	void EquipToCharacter(AC_BasicCharacter* Character);
+	void EquipToCharacter(AC_BasicCharacter* Character);	
 
 	bool MoveToInven(AC_BasicCharacter* Character) override;
 
@@ -77,6 +77,8 @@ public:
 	bool MoveToSlot(AC_BasicCharacter* Character) override;
 
 	bool Interaction(AC_BasicCharacter* Character) override;
+
+	AC_Item* SpawnItem(AC_BasicCharacter* Character) override;
 
 public:
 

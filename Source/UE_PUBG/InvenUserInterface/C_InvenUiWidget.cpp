@@ -32,7 +32,7 @@ void UC_InvenUiWidget::NativeConstruct()
     {
         
     }
-
+    
     InitListView();
 
 
@@ -44,17 +44,22 @@ void UC_InvenUiWidget::NativeConstruct()
         MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
 
         MyItemListWidget->AddTMapItem(MyItems); // 아이템 리스트 추가
-        MyItemListWidget->AddToViewport();
+        PopulateItemList(MyItemListWidget->ItemListBar, MyItems);
+        //MyItemListWidget->AddToViewport();
     }
 
     if (AroundItemListWidget)
     {
-        TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
-        AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
+        //TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
+        //AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
+
+        TArray<AC_Item*> TestAroundItemList;
+        TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetNearItems();
         AroundItemListWidget->SetVisibility(ESlateVisibility::Visible);
 
-        AroundItemListWidget->AddTMapItem(AroundItems);
-        AroundItemListWidget->AddToViewport();
+        //AroundItemListWidget->AddTMapItem(TestAroundItemList);
+        testAroundItemList(AroundItemListWidget->ItemListBar, TestAroundItemList);
+       //AroundItemListWidget->AddToViewport();
     }
 
     // 아이템 리스트 위젯 초기화 및 데이터 추가
@@ -79,39 +84,96 @@ void UC_InvenUiWidget::NativeConstruct()
 
 void UC_InvenUiWidget::InitWidget()
 {
-    MyItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("MyItemListWidget1")));
+    if (!IsValid(MyItemListWidget))
+        //MyItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("MyItemListWidget1")));
+    
+    if (!IsValid(AroundItemListWidget))
+        //AroundItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("AroundItemListWidget1")));
 
-    AroundItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("AroundItemListWidget1")));
+    if (!IsValid(MyItemListView))
+        MyItemListView = Cast<UListView>(GetWidgetFromName(FName("MyItemList")));
 
-    MyItemListView = Cast<UListView>(GetWidgetFromName(FName("MyItemList")));
+    if (!IsValid(AroundItemListView))
+        AroundItemListView = Cast<UListView>(GetWidgetFromName(FName("AroundItemList")));
 
-    AroundItemListView = Cast<UListView>(GetWidgetFromName(FName("AroundItemList")));
+    if (!IsValid(MainGunSlot))
+        MainGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_MainGun")));
 
-    MainGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_MainGun")));
+    if (!IsValid(SubGunSlot))
+        SubGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_SubGun")));
 
-    SubGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_SubGun")));
+    if (!IsValid(MeleeSlot))
+        MeleeSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Melee")));
 
-    MeleeSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Melee")));
+    if (!IsValid(ThrowableSlot))
+        ThrowableSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Throwble")));
 
-    ThrowableSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Throwble")));
+    if (!IsValid(Background_Around))
+        Background_Around = Cast<UUserWidget>(GetWidgetFromName(FName("WB_Background_Around")));
+
+    if (!IsValid(Background_Inventory))
+        Background_Around = Cast<UUserWidget>(GetWidgetFromName(FName("WB_Background_Inventory")));
 
     SetWidgetsOwner(OwnerCharacter);
     
     MainGunSlot->SetWeaponBoxNum(1);
-    MainGunSlot->Init();
+    //MainGunSlot->Init();
     
     SubGunSlot->SetWeaponBoxNum(2);
-    SubGunSlot->Init();
+    //SubGunSlot->Init();
     
     MeleeSlot->SetWeaponBoxNum(4);
-    MeleeSlot->Init();
+    //MeleeSlot->Init();
     
     ThrowableSlot->SetWeaponBoxNum(5);
-    ThrowableSlot->Init();
+    //ThrowableSlot->Init();
 
 
 
 }
+
+void UC_InvenUiWidget::SetItemListZorder(AC_BasicCharacter* Character)
+{
+    InitWidget();
+
+    //이것 외의 방법은 미리 Z-order를 1로 올려두고 Visibility를 조정하는 방법이 있다.
+    if (Character)
+    {
+        if (!IsValid(Background_Around)) return;
+        //Background_Around   ->AddToViewport(2);
+
+        if (!IsValid(Background_Inventory)) return;
+        //Background_Inventory->AddToViewport(0);
+        Background_Around->SetVisibility(ESlateVisibility::Visible);
+        Background_Inventory->SetVisibility(ESlateVisibility::Hidden);
+       
+
+    }
+    else
+    {
+        if (!IsValid(Background_Around)) return;
+        //Background_Around   ->AddToViewport(0);
+
+        if (!IsValid(Background_Inventory)) return;
+        //Background_Inventory->AddToViewport(2);
+
+        Background_Around->SetVisibility(ESlateVisibility::Hidden);
+        Background_Inventory->SetVisibility(ESlateVisibility::Visible);
+    }
+}
+
+void UC_InvenUiWidget::InitItemListZorder()
+{
+    if (!IsValid(Background_Around)) return;
+    if (!IsValid(Background_Inventory)) return;
+
+    //Background_Around->AddToViewport(0);
+    //Background_Inventory->AddToViewport(0);
+    Background_Around->SetVisibility(ESlateVisibility::Hidden);
+    Background_Inventory->SetVisibility(ESlateVisibility::Hidden);
+}
+
+
 
 void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
 {
@@ -139,6 +201,7 @@ void UC_InvenUiWidget::InitListView()
         MyItemListView->RequestRefresh();
 
         MyItemListView->SetVisibility(ESlateVisibility::Visible);
+        
     }
 
     if (AroundItemListView)
@@ -149,9 +212,11 @@ void UC_InvenUiWidget::InitListView()
         //AroundItemListView->ClearListItems();
         TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
         AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
+        TArray<AC_Item*> TestAroundItemList;
+        TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetNearItems();
 
-        PopulateItemList(AroundItemListView, AroundItems);
-
+        //PopulateItemList(AroundItemListView, AroundItems);
+        testAroundItemList(AroundItemListView, TestAroundItemList);
         //AroundItemListView->RequestRefresh();
 
         AroundItemListView->SetVisibility(ESlateVisibility::Visible);
@@ -171,6 +236,8 @@ void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_
         }
         //ItemBar갱신.
         UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListView->GetEntryWidgetFromItem(Item));
+        //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
+
         if (EntryWidget)
             EntryWidget->InitBar(Item);
     }
@@ -178,19 +245,22 @@ void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_
     list->RequestRefresh();
 }
 
-void UC_InvenUiWidget::test(UListView* list, const TMap<FString, AC_Item*>& itemList)
+void UC_InvenUiWidget::testAroundItemList(UListView* list, const TArray<AC_Item*>& AroundItemList)
 {
-    for (const auto& ItemPair : itemList)
+    list->ClearListItems(); // 기존 아이템 삭제
+
+    for (auto& AroundItem : AroundItemList)
     {
-        AC_Item* Item = ItemPair.Value; // TMap에서 아이템 가져오기
+        AC_Item* Item = AroundItem;
         if (Item)
         {
             list->AddItem(Item);
         }
-        //ItemBar갱신.
         UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListView->GetEntryWidgetFromItem(Item));
+        //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(AroundItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
+
         if (EntryWidget)
             EntryWidget->InitBar(Item);
     }
-
 }
+

@@ -54,3 +54,13 @@ void AttachToSocket(USceneComponent* InParent)
 {
 
 }
+
+//AC_Item* SpawnItem(AC_Item* OriginalItem, const AC_BasicCharacter* Character)
+//{
+//	FActorSpawnParameters SpawnParams;
+//
+//	AC_Item* SpawnedItme = Character->GetWorld()->SpawnActor<AC_Item>(OriginalItem->GetClass(), Character->GetActorLocation(), Character->GetActorRotation(), SpawnParams);
+//
+//
+//	return nullptr;
+//}
