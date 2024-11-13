@@ -171,8 +171,6 @@ FReply UC_MainMapWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, cons
 {
 	bIsMouseDragging = false;
 
-	UC_Util::Print("Mouse Up");
-
 	return FReply::Handled();
 }
 
@@ -183,8 +181,6 @@ FReply UC_MainMapWidget::NativeOnMouseWheel(const FGeometry& InGeometry, const F
 		UC_Util::Print("From UC_MainMapWidget::NativeOnMouseWheel : MainImg nullptr");
 		return FReply::Unhandled();
 	}
-
-	UC_Util::Print("OnMouseWheel");
 
 	float ScrollDelta = InMouseEvent.GetWheelDelta();
 

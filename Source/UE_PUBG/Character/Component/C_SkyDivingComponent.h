@@ -75,6 +75,13 @@ public:
 public:
 
 	/// <summary>
+	/// Parachuting 상태일 때 물 위로 착륙했을 때 호출될 예외처리 함수
+	/// </summary>
+	void OnCharacterLandedOnWater();
+
+public:
+
+	/// <summary>
 	/// Deploy Parachute 몽타주 재생 끝날 때 AnimNotify callback 함수
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
@@ -85,6 +92,12 @@ public:
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnLandingMontageEnd();
+
+	/// <summary>
+	/// Parachute Landing End Animotify callback 함수
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void OnParachuteLandingMontageEnd();
 
 private:
 
@@ -104,7 +117,13 @@ private:
 	/// 높이에 따른 State 전환 담당 (ex -> 일정 높이 이하면 낙하산 자동으로 펼치기)
 	/// </summary>
 	void HandleStateTransitionByHeight();
+	
+	/// <summary>
+	/// 현재 높이(고도) Update
+	/// </summary>
+	void UpdateCurrentHeight();
 
+	void UpdatePlayerSkyDiveHUD();
 
 private:
 
@@ -163,10 +182,22 @@ protected: // Parachute Skeletal Mesh AnimMontages
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UAnimMontage* ParachuteDeployMontage{};
 
-	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UAnimMontage* ParachuteEjectMontage{};
 
 private:
 
-	const float PARACHUTE_DEPLOY_LIMIT_HEIGHT = 43000.f;
+	// 원작 수치
+	//const float PARACHUTE_DEPLOY_LIMIT_HEIGHT = 43000.f;
+	//const float MAX_SKYDIVE_JUMP_ALTITUDE = 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
+
+	const float PARACHUTE_DEPLOY_LIMIT_HEIGHT	= 10000.f;
+	const float MAX_SKYDIVE_JUMP_ALTITUDE		= 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
+
+private:
+	
+	// 현재 낙하 높이(고도)
+	float CurrentHeight{};
+
 
 };

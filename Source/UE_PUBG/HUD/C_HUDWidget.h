@@ -92,6 +92,7 @@ public:
 	class UBorder* GetMiniMapBorder() const { return MiniMapBorder; }
 	class UC_MainMapWidget* GetMainMapWidget() const { return MainMapWidget; }
 	class UC_OxygenWidget* GetOxygenWidget() const { return OxygenWidget; }
+	class UC_SkyDiveWidget* GetSkyDiveWidget() const { return SkyDiveWidget; }
 
 protected:
 
@@ -123,6 +124,10 @@ protected: // Oxygen Widget
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_OxygenWidget* OxygenWidget{};
 
+protected: // SkyDive Widget
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_SkyDiveWidget* SkyDiveWidget{};
 
 private:
 
