@@ -286,6 +286,26 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 
 	AC_Item* inItem = nullptr;
 
+	if (ItemDatas.ItemPlace == EItemPlace::INVEN)
+	{
+		//작업중
+		invenComp->RemoveItemToMyList(this);
+		this->SetOwnerCharacter(nullptr);
+		this->SetItemPlace(EItemPlace::AROUND);
+		UC_Util::Print("Remove Item in My Inven");
+		//SetActorHiddenInGame(false);
+		//SetActorEnableCollision(true);
+		//SpawnItem(Character);
+		return true;
+	}
+
+	if (ItemDatas.ItemPlace == EItemPlace::SLOT)
+	{
+		//추가 조정 필요함.
+		equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
+		return true;
+	}
+
 	if (!Character->GetEquippedComponent()->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON])
 	{
 		//슬롯에 투척류가 없다면 실행.

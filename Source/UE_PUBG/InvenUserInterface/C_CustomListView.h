@@ -19,11 +19,15 @@ class UE_PUBG_API UC_CustomListView : public UListView
 public:
 	UC_CustomListView(const FObjectInitializer& Initializer);
 
+	//FReply NativeOnDrop
 protected:
 
 	void Init();
 
 protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomListView")
+	TSubclassOf<UUserWidget> InEntryWidget;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class AC_BasicCharacter* OwnerCharacter;
 };

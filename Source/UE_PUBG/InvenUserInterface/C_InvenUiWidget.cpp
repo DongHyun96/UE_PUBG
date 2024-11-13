@@ -108,6 +108,12 @@ void UC_InvenUiWidget::InitWidget()
     if (!IsValid(ThrowableSlot))
         ThrowableSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Throwble")));
 
+    if (!IsValid(Background_Around))
+        Background_Around = Cast<UUserWidget>(GetWidgetFromName(FName("WB_Background_Around")));
+
+    if (!IsValid(Background_Inventory))
+        Background_Around = Cast<UUserWidget>(GetWidgetFromName(FName("WB_Background_Inventory")));
+
     SetWidgetsOwner(OwnerCharacter);
     
     MainGunSlot->SetWeaponBoxNum(1);
@@ -125,6 +131,49 @@ void UC_InvenUiWidget::InitWidget()
 
 
 }
+
+void UC_InvenUiWidget::SetItemListZorder(AC_BasicCharacter* Character)
+{
+    InitWidget();
+
+    //이것 외의 방법은 미리 Z-order를 1로 올려두고 Visibility를 조정하는 방법이 있다.
+    if (Character)
+    {
+        if (!IsValid(Background_Around)) return;
+        //Background_Around   ->AddToViewport(2);
+
+        if (!IsValid(Background_Inventory)) return;
+        //Background_Inventory->AddToViewport(0);
+        Background_Around->SetVisibility(ESlateVisibility::Visible);
+        Background_Inventory->SetVisibility(ESlateVisibility::Hidden);
+       
+
+    }
+    else
+    {
+        if (!IsValid(Background_Around)) return;
+        //Background_Around   ->AddToViewport(0);
+
+        if (!IsValid(Background_Inventory)) return;
+        //Background_Inventory->AddToViewport(2);
+
+        Background_Around->SetVisibility(ESlateVisibility::Hidden);
+        Background_Inventory->SetVisibility(ESlateVisibility::Visible);
+    }
+}
+
+void UC_InvenUiWidget::InitItemListZorder()
+{
+    if (!IsValid(Background_Around)) return;
+    if (!IsValid(Background_Inventory)) return;
+
+    //Background_Around->AddToViewport(0);
+    //Background_Inventory->AddToViewport(0);
+    Background_Around->SetVisibility(ESlateVisibility::Hidden);
+    Background_Inventory->SetVisibility(ESlateVisibility::Hidden);
+}
+
+
 
 void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
 {
@@ -152,6 +201,7 @@ void UC_InvenUiWidget::InitListView()
         MyItemListView->RequestRefresh();
 
         MyItemListView->SetVisibility(ESlateVisibility::Visible);
+        
     }
 
     if (AroundItemListView)
