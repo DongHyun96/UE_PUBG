@@ -53,6 +53,7 @@
 
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
+#include "HUD/C_SkyDiveWidget.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 
 
@@ -119,6 +120,7 @@ void AC_Player::BeginPlay()
 		StatComponent->SetOwnerHUDWidget(HUDWidget);
 		PingSystemComponent->SetOwnerPlayer(this);
 		HUDWidget->GetMainMapWidget()->SetPlayer(this);
+		HUDWidget->GetSkyDiveWidget()->SetOwnerPlayer(this);
 	}
 	CrosshairWidgetComponent->AddToViewport();
 	CrosshairWidgetComponent->SetOwnerCharacter(this);

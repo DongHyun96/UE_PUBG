@@ -69,7 +69,7 @@ void UC_SkyDivingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 	if (!IsValid(ParachuteSkeletalMesh) || !IsValid(ParachuteBackpackStaticMesh)) UC_Util::Print("WARNING");
 
-	//UC_Util::Print(OwnerCharacter->GetVelocity().Size() * 0.036f);
+	
 
 	/*switch (SkyDivingState)
 	{

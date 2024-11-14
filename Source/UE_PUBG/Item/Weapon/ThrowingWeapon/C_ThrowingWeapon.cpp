@@ -671,6 +671,12 @@ void AC_ThrowingWeapon::OnThrowThrowable()
 
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
+	//ECollisionResponse Response = Collider->GetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic);
+
+	//if (Response == ECollisionResponse::ECR_Block)
+	//	UC_Util::Print("Response Block", FColor::Red, 10.f);
+
+
 	this->SetActorLocation(ProjStartLocation);
 	
 	ProjectileMovement->Velocity = ProjLaunchVelocity;
