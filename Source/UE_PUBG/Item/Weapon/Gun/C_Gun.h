@@ -213,10 +213,10 @@ protected:
 	TMap<EPartsName, EAttachmentNames> AttachedItemName{};
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
-	TMap<EAttachmentNames, FVector> AttachmentPartsHolsterCameraLocations{};
+	TMap<EAttachmentNames, FVector4> AttachmentPartsHolsterCameraLocations{};
 public:
 	TMap<EAttachmentNames, FName> GetAttachmentPartsHolsterNames() { return AttachmentPartsHolsterNames; }
-	TMap<EAttachmentNames, FVector> GetAttachmentPartsHolsterCameraLocations() { return AttachmentPartsHolsterCameraLocations; }
+	TMap<EAttachmentNames, FVector4> GetAttachmentPartsHolsterCameraLocations() { return AttachmentPartsHolsterCameraLocations; }
 
 protected:
 	void SetHolsterNames();
@@ -226,5 +226,7 @@ public:
 	bool GetIsPartAttached(EPartsName InAttachmentName) { return IsPartAttached[InAttachmentName]; }
 	void SetIsPartAttached(EPartsName InAttachmentName, bool bInIsAttached);
 	EAttachmentNames GetAttachedItemName(EPartsName InPartName) { return AttachedItemName[InPartName]; }
+
+	void SetSightCameraSpringArmLocation(FVector4 InLocationAndArmLength);
 
 };

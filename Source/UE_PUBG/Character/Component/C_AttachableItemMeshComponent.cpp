@@ -157,10 +157,7 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 
 	UMeshComponent* AttachmentMesh = GetAttachablePartMesh(InPartsName, InAttachmentName);
 	if (!IsValid(AttachmentMesh)) return false;
-	UC_Util::Print("PressedR");
-
 	if (!IsValid(ParentGun))      return false;
-	UC_Util::Print("PressedR");
 
 	AttachmentMesh->SetHiddenInGame(false);
 	if (ParentGun->GetIsPartAttached(InPartsName))
@@ -168,6 +165,16 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 
 	ParentGun->SetIronSightMeshHiddenInGame(true);
 	ParentGun->SetIsPartAttached(InPartsName, true);
+	switch (InAttachmentName)
+	{
+	case EAttachmentNames::REDDOT:
+	case EAttachmentNames::SCOPE4:
+	case EAttachmentNames::SCOPE8:
+		ParentGun->SetSightCameraSpringArmLocation(ParentGun->GetAttachmentPartsHolsterCameraLocations()[InAttachmentName]);
+		break;
+	default:
+		break;
+	}
 	UC_Util::Print(AttachmentMesh->GetName(), FColor::Black, 100);
 	return AttachmentMesh->AttachToComponent
 	(
@@ -193,7 +200,7 @@ void UC_AttachableItemMeshComponent::DetachFromGun(USceneComponent* InParent, EP
 	if (!IsValid(AttachmentItem[0])) return;
 	if (!IsValid(AttachmentItem[1])) return;
 	ParentGun->SetIsPartAttached(InPartsName, false);
-
+	ParentGun->SetSightCameraSpringArmLocation(ParentGun->GetAttachmentPartsHolsterCameraLocations()[EAttachmentNames::MAX]);
 
 	if (AttachmentItem[0]->GetAttachParent() == InParent)
 	{

@@ -760,7 +760,15 @@ bool AC_Gun::GetGunHasGrip()
 
 void AC_Gun::SetHolsterNames()
 {
+
+
 	AttachmentPartsHolsterNames.Add(EAttachmentNames::REDDOT, FName("Red_Dot_Socket"));
+
+
+	AttachmentPartsHolsterCameraLocations.Add(EAttachmentNames::REDDOT, FVector4(7, 0, 15, 6 ));
+	AttachmentPartsHolsterCameraLocations.Add(EAttachmentNames::MAX,    FVector4(7, 0, 13, 12));
+
+
 	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNames에 MAX가 있다면
 	{
 		EPartsName AttachmentName = (EPartsName)i;
@@ -778,6 +786,16 @@ void AC_Gun::SetIronSightMeshHiddenInGame(bool bInIsHidden)
 void AC_Gun::SetIsPartAttached(EPartsName InAttachmentName, bool bInIsAttached)
 {
 	IsPartAttached[InAttachmentName] = bInIsAttached;
+}
+
+void AC_Gun::SetSightCameraSpringArmLocation(FVector4 InLocationAndArmLength)
+{
+	FVector Location{};
+	Location.X = InLocationAndArmLength.X;
+	Location.Y = InLocationAndArmLength.Y;
+	Location.Z = InLocationAndArmLength.Z;
+	AimSightSpringArm->SetRelativeLocation(Location);
+	AimSightSpringArm->TargetArmLength = InLocationAndArmLength.W;
 }
 
 //void AC_Gun::SpawnBulletForTest()
