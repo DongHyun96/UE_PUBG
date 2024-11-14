@@ -64,21 +64,29 @@ public:
 	UC_MyItemListWidget* AroundItemListWidget = nullptr; // 아이템 리스트 위젯
 
 	//ListViewWidget
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UListView* MyItemListView = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UListView* AroundItemListView = nullptr;
 
 	//EquipWidget
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_MainGunWidget* MainGunSlot = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UC_MainGunWidget* SubGunSlot = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_ThrowableWidget* MeleeSlot = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UC_ThrowableWidget* ThrowableSlot = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UUserWidget* Background_Around = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UUserWidget* Background_Inventory = nullptr;
 
 protected:

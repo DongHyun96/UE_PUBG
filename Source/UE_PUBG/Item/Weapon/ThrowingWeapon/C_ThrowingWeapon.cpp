@@ -286,6 +286,7 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 
 	AC_Item* inItem = nullptr;
 
+	///이 부분은 드래그앤드롭 기능으로 구분해주어야 함.
 	//if (ItemDatas.ItemPlace == EItemPlace::INVEN)
 	//{
 	//	//작업중
