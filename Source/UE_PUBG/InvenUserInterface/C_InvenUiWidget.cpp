@@ -119,15 +119,20 @@ void UC_InvenUiWidget::InitWidget()
 
     SetWidgetsOwner(OwnerCharacter);
     
+    if (!IsValid(MainGunSlot)) return;
+
     MainGunSlot->SetWeaponBoxNum(1);
     //MainGunSlot->Init();
-    
+
+    if (!IsValid(SubGunSlot)) return;
     SubGunSlot->SetWeaponBoxNum(2);
     //SubGunSlot->Init();
-    
+
+    if (!IsValid(MeleeSlot)) return;
     MeleeSlot->SetWeaponBoxNum(4);
     //MeleeSlot->Init();
-    
+
+    if (!IsValid(ThrowableSlot)) return;
     ThrowableSlot->SetWeaponBoxNum(5);
     //ThrowableSlot->Init();
 
@@ -192,7 +197,7 @@ void UC_InvenUiWidget::InitListView()
 
     //아이템 리스트 위젯 초기화 및 데이터 추가
     if (IsValid(MyItemListView))
-    { 
+    {
         //MyItemListView->AddToViewport();
         //MyItemListView->SetVisibility(ESlateVisibility::Hidden);
         //MyItemListView->ClearListItems();
@@ -201,11 +206,13 @@ void UC_InvenUiWidget::InitListView()
 
         PopulateItemList(MyItemListView, MyItems);
 
-        MyItemListView->RequestRefresh();
+        //MyItemListView->RequestRefresh();
 
         MyItemListView->SetVisibility(ESlateVisibility::Visible);
-        
+
     }
+    else
+        return;
 
     if (IsValid(AroundItemListView))
     {
@@ -224,6 +231,8 @@ void UC_InvenUiWidget::InitListView()
 
         AroundItemListView->SetVisibility(ESlateVisibility::Visible);
     }
+    else
+        return;
 }
 
 void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_Item*>& itemList)
@@ -231,37 +240,58 @@ void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_
     if (!IsValid(list))
     {
         UC_Util::Print("void List");
+        return;
     }
+    
     list->ClearListItems(); // 기존 아이템 삭제
     
-   for (const auto& ItemPair : itemList)
-    {
-        AC_Item* Item = ItemPair.Value; // TMap에서 아이템 가져오기
-        if (Item)
-        {
-            list->AddItem(Item);
-        }
-        //ItemBar갱신.
-        UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListView->GetEntryWidgetFromItem(Item));
-        //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
+    //if (itemList)
 
-        if (EntryWidget)
-            EntryWidget->InitBar(Item);
+    if (!(itemList.Num() > 0)) return;
+    for (const auto& ItemPair : itemList)
+    {
+         AC_Item* Item = ItemPair.Value; // TMap에서 아이템 가져오기
+         if (IsValid(Item))
+         {
+             list->AddItem(Item);
+         }
+         else
+         {
+             return;
+         }
+         //ItemBar갱신.
+         UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListView->GetEntryWidgetFromItem(Item));
+         //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
+
+         if (IsValid(EntryWidget))
+             EntryWidget->InitBar(Item);
     }
 
-    list->RequestRefresh();
+    //list->RequestRefresh();
 }
 
 void UC_InvenUiWidget::testAroundItemList(UListView* list, const TArray<AC_Item*>& AroundItemList)
 {
+    if (!IsValid(list))
+    {
+        UC_Util::Print("void List");
+        return;
+    }
+
     list->ClearListItems(); // 기존 아이템 삭제
+
+    if (!(AroundItemList.Num() > 0)) return;
 
     for (auto& AroundItem : AroundItemList)
     {
         AC_Item* Item = AroundItem;
-        if (Item)
+        if (IsValid(Item))
         {
             list->AddItem(Item);
+        }
+        else
+        {
+            return;
         }
         //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListView->GetEntryWidgetFromItem(Item));
         UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(AroundItemListView->GetEntryWidgetFromItem(Item));

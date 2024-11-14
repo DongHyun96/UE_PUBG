@@ -145,9 +145,10 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 
 		//Inventory->GetNearItems().Add(OverlappedItem);
 		//Inventory->AddItemToAroundList(OverlappedItem);
+		if (!IsValid(Inventory)) return;
 		Inventory->AddItemToNearList(OverlappedItem);
 		//Inventory->InitInvenUI();
-		if (!InvenSystem) return;
+		if (!IsValid(InvenSystem)) return;
 	    InvenSystem->InitializeList();
 	}
 	else
@@ -173,9 +174,10 @@ void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor
 	{
 		//Inventory->GetNearItems().Remove(OverlappedItem);
 		//Inventory->RemoveItemToAroundList(OverlappedItem);
+		if (!IsValid(Inventory)) return;
 		Inventory->RemoveItemNearList(OverlappedItem);
 		//Inventory->InitInvenUI();
-		if (!InvenSystem) return;
+		if (!IsValid(InvenSystem)) return;
 		InvenSystem->InitializeList();
 	}
 }

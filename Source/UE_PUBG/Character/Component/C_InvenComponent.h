@@ -189,8 +189,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EEquipSlot, AC_EquipableItem*> EquipmentItems;
 
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UC_InvenUiWidget* InvenUI;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	APlayerController* PlayerController;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
