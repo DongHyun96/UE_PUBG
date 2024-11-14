@@ -26,6 +26,7 @@ void UC_InvenUiWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
+
     //InvenCanvas = Cast<UCanvasPanel>(GetWidgetFromName(FName("InvenCanvas1")));
     
     if (InvenCanvas)
@@ -33,6 +34,8 @@ void UC_InvenUiWidget::NativeConstruct()
         
     }
     
+    InitWidget();
+
     InitListView();
 
 
@@ -84,35 +87,35 @@ void UC_InvenUiWidget::NativeConstruct()
 
 void UC_InvenUiWidget::InitWidget()
 {
-    if (!IsValid(MyItemListWidget))
-        //MyItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("MyItemListWidget1")));
-    
-    if (!IsValid(AroundItemListWidget))
-        //AroundItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("AroundItemListWidget1")));
-
-    if (!IsValid(MyItemListView))
-        MyItemListView = Cast<UListView>(GetWidgetFromName(FName("MyItemList")));
-
-    if (!IsValid(AroundItemListView))
-        AroundItemListView = Cast<UListView>(GetWidgetFromName(FName("AroundItemList")));
-
-    if (!IsValid(MainGunSlot))
-        MainGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_MainGun")));
-
-    if (!IsValid(SubGunSlot))
-        SubGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_SubGun")));
-
-    if (!IsValid(MeleeSlot))
-        MeleeSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Melee")));
-
-    if (!IsValid(ThrowableSlot))
-        ThrowableSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Throwble")));
-
-    if (!IsValid(Background_Around))
-        Background_Around = Cast<UUserWidget>(GetWidgetFromName(FName("WB_Background_Around")));
-
-    if (!IsValid(Background_Inventory))
-        Background_Around = Cast<UUserWidget>(GetWidgetFromName(FName("WB_Background_Inventory")));
+    //if (!IsValid(MyItemListWidget))
+    //    //MyItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("MyItemListWidget1")));
+    //
+    //if (!IsValid(AroundItemListWidget))
+    //    //AroundItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("AroundItemListWidget1")));
+    //
+    //if (!IsValid(MyItemListView))
+    //    MyItemListView = Cast<UListView>(GetWidgetFromName(FName("MyItemList")));
+    //
+    //if (!IsValid(AroundItemListView))
+    //    AroundItemListView = Cast<UListView>(GetWidgetFromName(FName("AroundItemList")));
+    //
+    //if (!IsValid(MainGunSlot))
+    //    MainGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_MainGun")));
+    //
+    //if (!IsValid(SubGunSlot))
+    //    SubGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_SubGun")));
+    //
+    //if (!IsValid(MeleeSlot))
+    //    MeleeSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Melee")));
+    //
+    //if (!IsValid(ThrowableSlot))
+    //    ThrowableSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Throwble")));
+    //
+    //if (!IsValid(Background_Around))
+    //    Background_Around = Cast<UUserWidget>(GetWidgetFromName(FName("WB_Background_Around")));
+    //
+    //if (!IsValid(Background_Inventory))
+    //    Background_Around = Cast<UUserWidget>(GetWidgetFromName(FName("WB_Background_Inventory")));
 
     SetWidgetsOwner(OwnerCharacter);
     
@@ -188,7 +191,7 @@ void UC_InvenUiWidget::InitListView()
     //dnseInitWidget();
 
     //아이템 리스트 위젯 초기화 및 데이터 추가
-    if (MyItemListView)
+    if (IsValid(MyItemListView))
     { 
         //MyItemListView->AddToViewport();
         //MyItemListView->SetVisibility(ESlateVisibility::Hidden);
@@ -204,7 +207,7 @@ void UC_InvenUiWidget::InitListView()
         
     }
 
-    if (AroundItemListView)
+    if (IsValid(AroundItemListView))
     {
         //AroundItemListView->SetVisibility(ESlateVisibility::Hidden);
 
@@ -225,6 +228,10 @@ void UC_InvenUiWidget::InitListView()
 
 void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_Item*>& itemList)
 {
+    if (!IsValid(list))
+    {
+        UC_Util::Print("void List");
+    }
     list->ClearListItems(); // 기존 아이템 삭제
     
    for (const auto& ItemPair : itemList)
@@ -256,8 +263,8 @@ void UC_InvenUiWidget::testAroundItemList(UListView* list, const TArray<AC_Item*
         {
             list->AddItem(Item);
         }
-        UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListView->GetEntryWidgetFromItem(Item));
-        //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(AroundItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
+        //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListView->GetEntryWidgetFromItem(Item));
+        UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(AroundItemListView->GetEntryWidgetFromItem(Item));
 
         if (EntryWidget)
             EntryWidget->InitBar(Item);
