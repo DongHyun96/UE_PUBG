@@ -231,4 +231,6 @@ public:
 	//For Test
 
 	class UChildActorComponent* ChildActorComponent;
+
+	void SetScopeCameraMode(EAttachmentNames InAttachmentName);
 };
