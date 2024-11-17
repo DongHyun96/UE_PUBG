@@ -32,24 +32,39 @@ void UC_InvenSystem::BeginPlay()
 
 void UC_InvenSystem::InitializeList()
 {
-	if (!IsValid(InvenUI)) return;
-
+	//if (!IsValid(InvenUI)) return;
+	if (!IsValid(InvenUI))
+	{
+		PlayerController = GetWorld()->GetFirstPlayerController();
+		InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
+		InvenUI->SetOwnerCharacter(OwnerCharacter);
+	}
 	InvenUI->InitListView();
 }
 
 void UC_InvenSystem::OpenInvenUI()
 {
+
 	//if (!InvenUI) return;	
-	if (!IsValid(InvenUI)) return;
+	if (!IsValid(InvenUI))
+	{
+		PlayerController = GetWorld()->GetFirstPlayerController();
+		InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
+		InvenUI->SetOwnerCharacter(OwnerCharacter);
+	}
+
+	
 
 	if (isPanelOpened)
 	{
 		//UI가 열려 있다면.
 		isPanelOpened = false;
-		InvenUI->SetVisibility(ESlateVisibility::Hidden);
-		InvenUI->RemoveFromViewport();
+		//InvenUI->SetVisibility(ESlateVisibility::Hidden);
 		//InvenUI = nullptr;
-
+		if (!IsValid(PlayerController))
+		{
+			PlayerController = GetWorld()->GetFirstPlayerController();
+		}
 		PlayerController->SetIgnoreLookInput(false);
 
 		FInputModeGameOnly InputMode;
@@ -58,18 +73,25 @@ void UC_InvenSystem::OpenInvenUI()
 
 		PlayerController->SetInputMode(FInputModeGameOnly());
 		PlayerController->bShowMouseCursor = false;
-
+		InvenUI->RemoveFromViewport();
+		//자꾸 터져서 가비지 컬랙터 대응용으로 해봄.
+		//InvenUI->RemoveFromRoot();
 
 	}
 	else
 	{
 		//UI가 닫혀 있다면.
+		//자꾸 터져서 가비지 컬렉터 대응용으로 해봄.
+		//InvenUI->AddToRoot();
 		isPanelOpened = true;
-
-		InvenUI->InitWidget(); //아래에서 중복처리 된다면 없애기.
-		InvenUI->SetVisibility(ESlateVisibility::Visible);
 		InvenUI->AddToViewport();
 
+		//InvenUI->InitWidget(); //아래에서 중복처리 된다면 없애기.
+		//InvenUI->SetVisibility(ESlateVisibility::Visible);
+		if (!IsValid(PlayerController))
+		{
+			PlayerController = GetWorld()->GetFirstPlayerController();
+		}
 		PlayerController->SetIgnoreLookInput(true);
 
 		FInputModeGameAndUI InputMode;

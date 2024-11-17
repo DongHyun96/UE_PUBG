@@ -38,8 +38,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UC_InvenUiWidget* GetInvenUI() { return InvenUI; }
 protected:
+	UPROPERTY()
 	class UC_InvenUiWidget* InvenUI;
 
+	UPROPERTY()
 	APlayerController* PlayerController;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
