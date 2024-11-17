@@ -165,6 +165,7 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 
 	ParentGun->SetIronSightMeshHiddenInGame(true);
 	ParentGun->SetIsPartAttached(InPartsName, true);
+	ParentGun->SetAttachedItemNameInPart(InPartsName, InAttachmentName);
 	switch (InAttachmentName)
 	{
 	case EAttachmentNames::REDDOT:

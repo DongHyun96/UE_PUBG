@@ -37,6 +37,7 @@
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 #include "Item/Attachment/C_AttachableItem.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
+#include "Components/ChildActorComponent.h"
 
 #include "Item/Weapon/Gun/C_Bullet.h"
 
@@ -69,7 +70,11 @@ void AC_Gun::BeginPlay()
 	SetBulletSpeed();
 	AimSightCamera   = FindComponentByClass<UCameraComponent>();
 	AimSightSpringArm = FindComponentByClass<USpringArmComponent>();
-
+	ChildActorComponent = FindComponentByClass<UChildActorComponent>();
+	if (IsValid(ChildActorComponent))
+	{
+		UC_Util::Print("Success To Load 4x Scope in C++", FColor::Green, 100);
+	}
 	//if(IsValid(AimSightCamera))
 	if (AimSightCamera)
 		AimSightCamera->SetActive(false);
@@ -624,8 +629,11 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	}
 
 	WolrdContorller->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, WorldLocation, WorldDirection);
-
+	FVector TestLocation = ChildActorComponent->GetComponentLocation();
+	FRotator TestDirection = ChildActorComponent->GetComponentRotation();
+	FVector ChildForward = TestDirection.Vector();
 	FVector DestLocation = WorldLocation + WorldDirection * 100000;
+	DestLocation = TestLocation + ChildForward * 100000;
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, DestLocation, ECC_Visibility, CollisionParams);
 
 	DrawDebugSphere(GetWorld(), HitResult.Location, 1.0f, 12, FColor::Red, true);
@@ -695,7 +703,7 @@ void AC_Gun::ShowAndHideWhileAiming()
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
 	CollisionParams.AddIgnoredComponent(GunMesh);
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
-	if (HasHit)
+	if (HasHit )
 	{
 		AimWidget->SetVisibility(ESlateVisibility::Visible);
 		//UC_Util::Print("Hit");

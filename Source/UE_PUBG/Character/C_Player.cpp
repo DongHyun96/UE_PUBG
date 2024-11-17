@@ -1138,7 +1138,7 @@ void AC_Player::RecoilController()
 	bIsFiringBullet = true;
 	//ControllerRecoilTimeline->PlayFromStart();
 	float Value = FMath::FRandRange(-1.0, 1.0) * PlayerRecoilFactorByPose;
-	AddControllerYawInput(Value);
+	AddControllerYawInput(0);
 
 
 }
