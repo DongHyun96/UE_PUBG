@@ -70,10 +70,13 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
     Weapons[InSlot]->SetItemPlace(EItemPlace::SLOT);
 
     SetMainGunOrSubGun(InSlot);
-        
+
 
     Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
 
+    //충돌체 켜주기, 1117 상연
+    //Weapons[InSlot]->SetActorHiddenInGame(false);
+    Weapons[InSlot]->SetActorEnableCollision(true);
     // Attach to Holster 하기 전에 Local transform 초기화
     //Weapons[InSlot]->SetActorRelativeTransform(FTransform::Identity);
  

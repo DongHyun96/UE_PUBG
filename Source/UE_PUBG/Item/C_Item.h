@@ -168,7 +168,7 @@ public:
 	/// Around -> MyItems로 아이템이 이동할 때, 이미 해당 아이템이 존재할때 ItemStack을 C_Item내에서 Set하는 함수.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	virtual void SetItemStack(uint8 AddStack) PURE_VIRTUAL(AC_Item:SetItemStack, );
+	virtual void SetItemStack(uint8 ItemStack) PURE_VIRTUAL(AC_Item:SetItemStack, );
 	
 	/// <summary>
 	/// 플레이어가 아이템을 버릴 때 사용되는 함수.

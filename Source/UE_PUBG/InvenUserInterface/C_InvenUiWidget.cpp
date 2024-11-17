@@ -148,25 +148,25 @@ void UC_InvenUiWidget::SetItemListZorder(AC_BasicCharacter* Character)
     if (Character)
     {
         if (!IsValid(Background_Around)) return;
-        //Background_Around   ->AddToViewport(2);
+        Background_Around   ->AddToViewport(2);
 
         if (!IsValid(Background_Inventory)) return;
-        //Background_Inventory->AddToViewport(0);
-        Background_Around->SetVisibility(ESlateVisibility::Visible);
-        Background_Inventory->SetVisibility(ESlateVisibility::Hidden);
+        Background_Inventory->AddToViewport(0);
+        //Background_Around->SetVisibility(ESlateVisibility::Visible);
+        //Background_Inventory->SetVisibility(ESlateVisibility::Hidden);
        
 
     }
     else
     {
         if (!IsValid(Background_Around)) return;
-        //Background_Around   ->AddToViewport(0);
+        Background_Around   ->AddToViewport(0);
 
         if (!IsValid(Background_Inventory)) return;
-        //Background_Inventory->AddToViewport(2);
+        Background_Inventory->AddToViewport(2);
 
-        Background_Around->SetVisibility(ESlateVisibility::Hidden);
-        Background_Inventory->SetVisibility(ESlateVisibility::Visible);
+        //Background_Around->SetVisibility(ESlateVisibility::Hidden);
+        //Background_Inventory->SetVisibility(ESlateVisibility::Visible);
     }
 }
 
@@ -175,10 +175,10 @@ void UC_InvenUiWidget::InitItemListZorder()
     if (!IsValid(Background_Around)) return;
     if (!IsValid(Background_Inventory)) return;
 
-    //Background_Around->AddToViewport(0);
-    //Background_Inventory->AddToViewport(0);
-    Background_Around->SetVisibility(ESlateVisibility::Hidden);
-    Background_Inventory->SetVisibility(ESlateVisibility::Hidden);
+    Background_Around->AddToViewport(0);
+    Background_Inventory->AddToViewport(0);
+    //Background_Around->SetVisibility(ESlateVisibility::Hidden);
+    //Background_Inventory->SetVisibility(ESlateVisibility::Hidden);
 }
 
 
@@ -222,6 +222,7 @@ void UC_InvenUiWidget::InitListView()
         //AroundItemListView->ClearListItems();
         TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
         AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
+        
         TArray<AC_Item*> TestAroundItemList;
         TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetNearItems();
 

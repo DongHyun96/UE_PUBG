@@ -145,9 +145,9 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 
 		//Inventory->GetNearItems().Add(OverlappedItem);
 		//Inventory->AddItemToAroundList(OverlappedItem);
-		if (!IsValid(Inventory)) return;
+		if (!IsValid(Inventory)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
 		Inventory->AddItemToNearList(OverlappedItem);
-		//Inventory->InitInvenUI();
+		Inventory->InitInvenUI();
 		if (!IsValid(InvenSystem)) return;
 	    InvenSystem->InitializeList();
 	}
@@ -176,7 +176,7 @@ void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor
 		//Inventory->RemoveItemToAroundList(OverlappedItem);
 		if (!IsValid(Inventory)) return;
 		Inventory->RemoveItemNearList(OverlappedItem);
-		//Inventory->InitInvenUI();
+		Inventory->InitInvenUI();
 		if (!IsValid(InvenSystem)) return;
 		InvenSystem->InitializeList();
 	}

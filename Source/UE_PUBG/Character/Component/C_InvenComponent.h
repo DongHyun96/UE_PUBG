@@ -58,6 +58,11 @@ public:
 	//uint16은 해당 매크로가 지원하지 않는다. uint8, uint32는 지원한다.
 	bool CheckVolume(class AC_Item* item);
 
+	/// <summary>
+	/// 아이템을 몇개까지 인벤에 넣을 수 있는지 loop Check
+	/// </summary>
+	/// <param name="item">인벤에 넣을 아이템</param>
+	/// <returns>넣을 수 있는 아이템의 Stack(갯수)</returns>
 	uint8 LoopCheckVolume(AC_Item* item);
 
 	//가방과 용량을 검사해서 가방 교체 및 장착.
@@ -137,6 +142,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
 
+public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	TMap<EEquipSlot, AC_EquipableItem*> GetEquipmentItems() { return EquipmentItems; }
 

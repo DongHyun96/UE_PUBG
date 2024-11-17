@@ -407,7 +407,7 @@ void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 {
 	testMyItems.Remove(item->GetItemDatas().ItemName);
 	//Add와 달리 슬롯으로 가는 경우를 대비하여 OwnerCharacter의 설정을 건드리지 않았음.
-	item->SetItemPlace(EItemPlace::AROUND);
+	//item->SetItemPlace(EItemPlace::AROUND);
 }
 
 void UC_InvenComponent::GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values)

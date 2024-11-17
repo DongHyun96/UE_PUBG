@@ -86,7 +86,7 @@ void UC_InvenSystem::OpenInvenUI()
 		isPanelOpened = true;
 		InvenUI->AddToViewport();
 
-		//InvenUI->InitWidget(); //아래에서 중복처리 된다면 없애기.
+		InvenUI->InitWidget(); //아래에서 중복처리 된다면 없애기.
 		//InvenUI->SetVisibility(ESlateVisibility::Visible);
 		if (!IsValid(PlayerController))
 		{

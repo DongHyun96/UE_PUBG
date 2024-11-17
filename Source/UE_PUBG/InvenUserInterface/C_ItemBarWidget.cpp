@@ -152,7 +152,7 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 
 	OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 	
-	OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetItemListZorder(OwnerCharacter);
+	OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetItemListZorder(CachedItem->GetOwnerCharacter());
 
 
 	UC_Util::Print("OnDragDetected!!");
@@ -173,6 +173,7 @@ FReply UC_ItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeome
 			FEventReply RePlyResult =
 				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 			UC_Util::Print("LeftMouseButton");
+			OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 
 			return RePlyResult.NativeReply;
 

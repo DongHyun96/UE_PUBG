@@ -27,8 +27,13 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(BlueprintCallable)
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
+	/// <summary>
+	/// InvenUI->Init함수 호출
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
 	void InitializeList();
 
 	UFUNCTION(BlueprintCallable)
@@ -49,6 +54,8 @@ protected:
 
 	bool isPanelOpened = false;
 
+	//여기에 UPROERTY()를 걸면 인벤이 안보임. InvenUIWidget안에서 OwnerCharacter->GetInvenComponent()->GetNearItems() -> Empty인 상태가 되어 버림.
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_BasicCharacter* OwnerCharacter = nullptr;
 		
 };
