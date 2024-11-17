@@ -112,6 +112,8 @@ void UC_CrosshairWidgetComponent::SetCrosshairState(ECrosshairState InState)
 	{
 		return;
 	}
+
+	AC_Gun* CurGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
 	RedDotImage->SetVisibility(       ESlateVisibility::Hidden);
 	BaseCrosshairImage->SetVisibility(ESlateVisibility::Hidden);
 	GrayDotImage->SetVisibility(      ESlateVisibility::Hidden);
@@ -128,7 +130,8 @@ void UC_CrosshairWidgetComponent::SetCrosshairState(ECrosshairState InState)
 		GrayDotImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		break;
 	case ECrosshairState::RIFLEAIMDOWNSIGHT:
-		RedDotImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		if(CurGun->GetAttachedItemName(EPartsName::SCOPE) == EAttachmentNames::REDDOT)
+			RedDotImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		break;
 	case ECrosshairState::RIFLECRAWLMOVING:
 		break;

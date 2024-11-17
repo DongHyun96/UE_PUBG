@@ -226,7 +226,11 @@ public:
 	bool GetIsPartAttached(EPartsName InAttachmentName) { return IsPartAttached[InAttachmentName]; }
 	void SetIsPartAttached(EPartsName InAttachmentName, bool bInIsAttached);
 	EAttachmentNames GetAttachedItemName(EPartsName InPartName) { return AttachedItemName[InPartName]; }
-
+	void  SetAttachedItemNameInPart(EPartsName InPartName, EAttachmentNames InAttachmentName) { AttachedItemName[InPartName] = InAttachmentName; }
 	void SetSightCameraSpringArmLocation(FVector4 InLocationAndArmLength);
+	//For Test
 
+	class UChildActorComponent* ChildActorComponent;
+
+	void SetScopeCameraMode(EAttachmentNames InAttachmentName);
 };

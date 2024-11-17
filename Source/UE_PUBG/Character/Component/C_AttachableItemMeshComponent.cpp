@@ -165,12 +165,14 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 
 	ParentGun->SetIronSightMeshHiddenInGame(true);
 	ParentGun->SetIsPartAttached(InPartsName, true);
+	ParentGun->SetAttachedItemNameInPart(InPartsName, InAttachmentName);
 	switch (InAttachmentName)
 	{
 	case EAttachmentNames::REDDOT:
 	case EAttachmentNames::SCOPE4:
 	case EAttachmentNames::SCOPE8:
 		ParentGun->SetSightCameraSpringArmLocation(ParentGun->GetAttachmentPartsHolsterCameraLocations()[InAttachmentName]);
+		ParentGun->SetScopeCameraMode(InAttachmentName);
 		break;
 	default:
 		break;
@@ -201,6 +203,7 @@ void UC_AttachableItemMeshComponent::DetachFromGun(USceneComponent* InParent, EP
 	if (!IsValid(AttachmentItem[1])) return;
 	ParentGun->SetIsPartAttached(InPartsName, false);
 	ParentGun->SetSightCameraSpringArmLocation(ParentGun->GetAttachmentPartsHolsterCameraLocations()[EAttachmentNames::MAX]);
+	ParentGun->SetScopeCameraMode(EAttachmentNames::MAX);
 
 	if (AttachmentItem[0]->GetAttachParent() == InParent)
 	{
