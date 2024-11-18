@@ -47,11 +47,11 @@ void UC_InvenUiWidget::NativeConstruct()
         MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
 
         MyItemListWidget->AddTMapItem(MyItems); // 아이템 리스트 추가
-        PopulateItemList(MyItemListWidget->ItemListBar, MyItems);
+        PopulateItemList(MyItemListWidget->ItemListView, MyItems);
         //MyItemListWidget->AddToViewport();
     }
 
-    if (AroundItemListWidget)
+    if (IsValid(AroundItemListWidget))
     {
         //TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
         //AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
@@ -59,9 +59,9 @@ void UC_InvenUiWidget::NativeConstruct()
         TArray<AC_Item*> TestAroundItemList;
         TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetNearItems();
         AroundItemListWidget->SetVisibility(ESlateVisibility::Visible);
-
         //AroundItemListWidget->AddTMapItem(TestAroundItemList);
-        testAroundItemList(AroundItemListWidget->ItemListBar, TestAroundItemList);
+        testAroundItemList(AroundItemListWidget->ItemListView, TestAroundItemList);
+        AroundItemListWidget->AddToViewport();
        //AroundItemListWidget->AddToViewport();
     }
 
@@ -185,10 +185,15 @@ void UC_InvenUiWidget::InitItemListZorder()
 
 void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
 {
-    MainGunSlot  ->SetOwnerCharacter(Character);
-    SubGunSlot   ->SetOwnerCharacter(Character);
-    MeleeSlot    ->SetOwnerCharacter(Character);
-    ThrowableSlot->SetOwnerCharacter(Character);
+    if (IsValid(MainGunSlot))
+        MainGunSlot  ->SetOwnerCharacter(Character);
+    if (IsValid(SubGunSlot))
+        SubGunSlot   ->SetOwnerCharacter(Character);
+    if (IsValid(MeleeSlot))
+        MeleeSlot    ->SetOwnerCharacter(Character);
+    if (IsValid(ThrowableSlot))
+        ThrowableSlot->SetOwnerCharacter(Character);
+
 }
 
 void UC_InvenUiWidget::InitListView()
@@ -196,7 +201,7 @@ void UC_InvenUiWidget::InitListView()
     //dnseInitWidget();
 
     //아이템 리스트 위젯 초기화 및 데이터 추가
-    if (IsValid(MyItemListView))
+    if (IsValid(OwnerCharacter) && IsValid(OwnerCharacter->GetInvenComponent()))
     {
         //MyItemListView->AddToViewport();
         //MyItemListView->SetVisibility(ESlateVisibility::Hidden);
@@ -204,17 +209,17 @@ void UC_InvenUiWidget::InitListView()
         TMap<FString, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
         MyItems = OwnerCharacter->GetInvenComponent()->GetTestMyItems();
 
-        PopulateItemList(MyItemListView, MyItems);
+        //PopulateItemList(MyItemListView, MyItems);
 
         //MyItemListView->RequestRefresh();
 
-        MyItemListView->SetVisibility(ESlateVisibility::Visible);
+        //MyItemListView->SetVisibility(ESlateVisibility::Visible);
 
     }
     else
         return;
 
-    if (IsValid(AroundItemListView))
+    if (IsValid(AroundItemListView) && IsValid(OwnerCharacter->GetInvenComponent()))
     {
         //AroundItemListView->SetVisibility(ESlateVisibility::Hidden);
 
@@ -227,13 +232,38 @@ void UC_InvenUiWidget::InitListView()
         TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetNearItems();
 
         //PopulateItemList(AroundItemListView, AroundItems);
-        testAroundItemList(AroundItemListView, TestAroundItemList);
+        //testAroundItemList(AroundItemListView, TestAroundItemList);
         //AroundItemListView->RequestRefresh();
 
-        AroundItemListView->SetVisibility(ESlateVisibility::Visible);
+        //AroundItemListView->SetVisibility(ESlateVisibility::Visible);
     }
     else
         return;
+
+    if (MyItemListWidget)
+    {
+        TMap<FString, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
+        MyItems = OwnerCharacter->GetInvenComponent()->GetTestMyItems();
+        MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
+
+        MyItemListWidget->AddTMapItem(MyItems); // 아이템 리스트 추가
+        PopulateItemList(MyItemListWidget->ItemListView, MyItems);
+        //MyItemListWidget->AddToViewport();
+    }
+
+    if (IsValid(AroundItemListWidget))
+    {
+        //TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
+        //AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
+
+        TArray<AC_Item*> TestAroundItemList;
+        TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetNearItems();
+        AroundItemListWidget->SetVisibility(ESlateVisibility::Visible);
+        //AroundItemListWidget->AddTMapItem(TestAroundItemList);
+        //testAroundItemList(AroundItemListWidget->ItemListView, TestAroundItemList);
+        AroundItemListWidget->InitAroundItemList(TestAroundItemList);
+        //AroundItemListWidget->AddToViewport();
+    }
 }
 
 void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_Item*>& itemList)

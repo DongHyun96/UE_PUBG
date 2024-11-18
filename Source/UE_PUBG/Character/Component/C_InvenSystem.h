@@ -39,6 +39,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OpenInvenUI();
 
+	UFUNCTION(BlueprintCallable)
+	void ShowInvenUI();
+
+	UFUNCTION(BlueprintCallable)
+	void CloseInvenUI();
+
 public:
 	UFUNCTION(BlueprintCallable)
 	UC_InvenUiWidget* GetInvenUI() { return InvenUI; }

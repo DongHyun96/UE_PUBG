@@ -24,8 +24,18 @@ void UC_InvenSystem::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerController = GetWorld()->GetFirstPlayerController();
-	InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
-	InvenUI->SetOwnerCharacter(OwnerCharacter);
+	if (!InvenUI && InvenUiClass)
+	{
+		InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
+		if (InvenUI)
+		{
+			InvenUI->SetOwnerCharacter(OwnerCharacter);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to create InvenUI widget."));
+		}
+	}
 
 	
 }
@@ -45,37 +55,38 @@ void UC_InvenSystem::InitializeList()
 void UC_InvenSystem::OpenInvenUI()
 {
 
-	//if (!InvenUI) return;	
-	if (!IsValid(InvenUI))
-	{
-		PlayerController = GetWorld()->GetFirstPlayerController();
-		InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
-		InvenUI->SetOwnerCharacter(OwnerCharacter);
-	}
+	if (!IsValid(InvenUI)) return;	
+	//if (!IsValid(InvenUI))
+	//{
+	//	PlayerController = GetWorld()->GetFirstPlayerController();
+	//	InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
+	//	InvenUI->SetOwnerCharacter(OwnerCharacter);
+	//}
 
 	
 
 	if (isPanelOpened)
 	{
 		//UI가 열려 있다면.
-		isPanelOpened = false;
-		//InvenUI->SetVisibility(ESlateVisibility::Hidden);
-		//InvenUI = nullptr;
-		if (!IsValid(PlayerController))
-		{
-			PlayerController = GetWorld()->GetFirstPlayerController();
-		}
-		PlayerController->SetIgnoreLookInput(false);
+		//isPanelOpened = false;
+		////InvenUI->SetVisibility(ESlateVisibility::Hidden);
+		////InvenUI = nullptr;
+		////if (!IsValid(PlayerController))
+		////{
+		////	PlayerController = GetWorld()->GetFirstPlayerController();
+		////}
+		//PlayerController->SetIgnoreLookInput(false);
 
-		FInputModeGameOnly InputMode;
+		//FInputModeGameOnly InputMode;
 
-		//PlayerController->SetInputMode(InputMode);
+		////PlayerController->SetInputMode(InputMode);
 
-		PlayerController->SetInputMode(FInputModeGameOnly());
-		PlayerController->bShowMouseCursor = false;
-		InvenUI->RemoveFromViewport();
-		//자꾸 터져서 가비지 컬랙터 대응용으로 해봄.
-		//InvenUI->RemoveFromRoot();
+		//PlayerController->SetInputMode(FInputModeGameOnly());
+		//PlayerController->bShowMouseCursor = false;
+		//InvenUI->RemoveFromViewport();
+		////자꾸 터져서 가비지 컬랙터 대응용으로 해봄.
+		////InvenUI->RemoveFromRoot();
+		CloseInvenUI();
 
 	}
 	else
@@ -83,32 +94,77 @@ void UC_InvenSystem::OpenInvenUI()
 		//UI가 닫혀 있다면.
 		//자꾸 터져서 가비지 컬렉터 대응용으로 해봄.
 		//InvenUI->AddToRoot();
-		isPanelOpened = true;
-		InvenUI->AddToViewport();
+		//isPanelOpened = true;
+		//InvenUI->AddToViewport();
 
-		InvenUI->InitWidget(); //아래에서 중복처리 된다면 없애기.
-		//InvenUI->SetVisibility(ESlateVisibility::Visible);
-		if (!IsValid(PlayerController))
-		{
-			PlayerController = GetWorld()->GetFirstPlayerController();
-		}
-		PlayerController->SetIgnoreLookInput(true);
+		//InvenUI->InitWidget(); //아래에서 중복처리 된다면 없애기.
+		////InvenUI->SetVisibility(ESlateVisibility::Visible);
+		////if (!IsValid(PlayerController))
+		////{
+		////	PlayerController = GetWorld()->GetFirstPlayerController();
+		////}
+		//PlayerController->SetIgnoreLookInput(true);
 
-		FInputModeGameAndUI InputMode;
-		//InputMode.SetWidgetToFocus(InvenUI->TakeWidget());
-		InputMode.SetWidgetToFocus(nullptr);
+		//FInputModeGameAndUI InputMode;
+		////InputMode.SetWidgetToFocus(InvenUI->TakeWidget());
+		//InputMode.SetWidgetToFocus(nullptr);
 
-		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-		InputMode.SetHideCursorDuringCapture(true);
+		//InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		//InputMode.SetHideCursorDuringCapture(true);
 
-		PlayerController->SetInputMode(InputMode);
-		PlayerController->bShowMouseCursor = true;
+		//PlayerController->SetInputMode(InputMode);
+		//PlayerController->bShowMouseCursor = true;
+		ShowInvenUI();
 	}
+
+	if (!IsValid(OwnerCharacter)) return;
 
 	UCharacterMovementComponent* CharacterMovement = OwnerCharacter->GetCharacterMovement();
 	if (CharacterMovement)
 		CharacterMovement->SetMovementMode(EMovementMode::MOVE_Walking);
 
+}
+
+void UC_InvenSystem::ShowInvenUI()
+{
+	isPanelOpened = true;
+	InvenUI->AddToViewport();
+
+	if (PlayerController)
+	{
+		PlayerController->SetIgnoreLookInput(true);
+
+		FInputModeGameAndUI InputMode;
+		InputMode.SetWidgetToFocus(InvenUI->TakeWidget());
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = true;
+	}
+	else
+	{
+		PlayerController = GetWorld()->GetFirstPlayerController();
+	}
+}
+
+void UC_InvenSystem::CloseInvenUI()
+{
+	isPanelOpened = false;
+
+	if (PlayerController)
+	{
+		PlayerController->SetIgnoreLookInput(false);
+
+		FInputModeGameOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->bShowMouseCursor = false;
+	}
+	else
+		PlayerController = GetWorld()->GetFirstPlayerController();
+
+	if (InvenUI)
+	{
+		InvenUI->RemoveFromViewport();
+	}
 }
 
 

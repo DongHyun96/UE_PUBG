@@ -142,6 +142,7 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 
 	DragOperation->Payload = CachedItem; // 드래그 중 전달할 데이터 (아이템)
 	DragOperation->Pivot = EDragPivot::MouseDown;
+	DragOperation->DraggedItem = CachedItem;
 
 	//오너캐릭터 체크
 	if (!OwnerCharacter)
