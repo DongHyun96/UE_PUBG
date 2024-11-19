@@ -31,7 +31,7 @@ void UC_ItemBarWidget::NativeConstruct()
 	//ItemImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), FName("ItemImage1"));
 	//ItemName = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), FName("ItemName1"));
 	//ItemStackBlock = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), FName("ItemStackBlock1"));
-	this->SetIsFocusable(true);
+	//this->SetIsFocusable(true);
 
 	//SetIsFocusable(false);
 

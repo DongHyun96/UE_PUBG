@@ -42,12 +42,12 @@ void UC_InvenUiWidget::NativeConstruct()
     // 아이템 리스트 위젯 초기화 및 데이터 추가
     if (MyItemListWidget)
     {
-        TMap<FString, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
-        MyItems = OwnerCharacter->GetInvenComponent()->GetTestMyItems();
-        MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
-
-        MyItemListWidget->AddTMapItem(MyItems); // 아이템 리스트 추가
-        PopulateItemList(MyItemListWidget->ItemListView, MyItems);
+        //TMap<FString, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
+        //MyItems = OwnerCharacter->GetInvenComponent()->GetTestMyItems();
+        //MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
+        //
+        //MyItemListWidget->AddTMapItem(MyItems); // 아이템 리스트 추가
+        //PopulateItemList(MyItemListWidget->ItemListView, MyItems);
         //MyItemListWidget->AddToViewport();
     }
 
@@ -56,13 +56,12 @@ void UC_InvenUiWidget::NativeConstruct()
         //TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
         //AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
 
-        TArray<AC_Item*> TestAroundItemList;
-        TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetNearItems();
-        AroundItemListWidget->SetVisibility(ESlateVisibility::Visible);
+        //TArray<AC_Item*> TestAroundItemList;
+        //TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetNearItems();
+        //AroundItemListWidget->SetVisibility(ESlateVisibility::Visible);
         //AroundItemListWidget->AddTMapItem(TestAroundItemList);
-        testAroundItemList(AroundItemListWidget->ItemListView, TestAroundItemList);
-        AroundItemListWidget->AddToViewport();
-       //AroundItemListWidget->AddToViewport();
+        //testAroundItemList(AroundItemListWidget->ItemListView, TestAroundItemList);
+        //AroundItemListWidget->AddToViewport();
     }
 
     // 아이템 리스트 위젯 초기화 및 데이터 추가
@@ -119,6 +118,8 @@ void UC_InvenUiWidget::InitWidget()
 
     SetWidgetsOwner(OwnerCharacter);
     
+    InitListView();
+
     if (!IsValid(MainGunSlot)) return;
 
     MainGunSlot->SetWeaponBoxNum(1);
@@ -200,46 +201,6 @@ void UC_InvenUiWidget::InitListView()
 {
     //dnseInitWidget();
 
-    //아이템 리스트 위젯 초기화 및 데이터 추가
-    if (IsValid(OwnerCharacter) && IsValid(OwnerCharacter->GetInvenComponent()))
-    {
-        //MyItemListView->AddToViewport();
-        //MyItemListView->SetVisibility(ESlateVisibility::Hidden);
-        //MyItemListView->ClearListItems();
-        TMap<FString, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
-        MyItems = OwnerCharacter->GetInvenComponent()->GetTestMyItems();
-
-        //PopulateItemList(MyItemListView, MyItems);
-
-        //MyItemListView->RequestRefresh();
-
-        //MyItemListView->SetVisibility(ESlateVisibility::Visible);
-
-    }
-    else
-        return;
-
-    if (IsValid(AroundItemListView) && IsValid(OwnerCharacter->GetInvenComponent()))
-    {
-        //AroundItemListView->SetVisibility(ESlateVisibility::Hidden);
-
-        //AroundItemListView->AddToViewport();
-        //AroundItemListView->ClearListItems();
-        TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
-        AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
-        
-        TArray<AC_Item*> TestAroundItemList;
-        TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetNearItems();
-
-        //PopulateItemList(AroundItemListView, AroundItems);
-        //testAroundItemList(AroundItemListView, TestAroundItemList);
-        //AroundItemListView->RequestRefresh();
-
-        //AroundItemListView->SetVisibility(ESlateVisibility::Visible);
-    }
-    else
-        return;
-
     if (MyItemListWidget)
     {
         TMap<FString, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
@@ -247,7 +208,7 @@ void UC_InvenUiWidget::InitListView()
         MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
 
         MyItemListWidget->AddTMapItem(MyItems); // 아이템 리스트 추가
-        PopulateItemList(MyItemListWidget->ItemListView, MyItems);
+        //PopulateItemList(MyItemListWidget->ItemListView, MyItems);
         //MyItemListWidget->AddToViewport();
     }
 
