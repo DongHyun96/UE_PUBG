@@ -27,7 +27,12 @@ private:
 
 	void HandleUpdateMainMapImage(float InDeltaTime);
 
+	/// <summary>
+	/// MainMap Transform에 따른 Map요소들 위치 Update
+	/// </summary>
 	void HandleUpdateMarkers();
+
+	void HandleUpdatePlaneRouteStartDest() override;
 
 private:
 
@@ -54,6 +59,22 @@ public:
 	/// <returns> : 제대로 Spawn 되었다면 return true </returns>
 	bool SpawnPingImage(FVector2D MousePos) override;
 
+private:
+
+	/// <summary>
+	/// 비행기 경로 그리기
+	/// </summary>
+	int32 NativePaint
+	(
+		const FPaintArgs&			Args,
+		const FGeometry&			AllottedGeometry,
+		const FSlateRect&			MyCullingRect,
+		FSlateWindowElementList&	OutDrawElements,
+		int32						LayerId,
+		const FWidgetStyle&			InWidgetStyle,
+		bool						bParentEnabled
+	) const override;
+
 protected:
 
 	bool CancelPingMarker();
@@ -61,6 +82,8 @@ protected:
 public:
 
 	void SetPlayer(class AC_Player* InPlayer) { Player = InPlayer; }
+
+	void SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest) override;
 
 private:
 
@@ -81,7 +104,7 @@ private:
 	bool HandleRMBDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 
 protected:
-	
+
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UImage* MainMapImg{};
 
@@ -126,4 +149,6 @@ private:
 private:
 
 	class AC_Player* Player{};
+
+
 };

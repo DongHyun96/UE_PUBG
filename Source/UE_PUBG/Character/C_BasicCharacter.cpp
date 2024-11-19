@@ -87,8 +87,8 @@ void AC_BasicCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// For Testing
-	//MainState = EMainState::SKYDIVING;
-	//SkyDiveComponent->SetSkyDivingState(ESkyDivingState::READY);
+	MainState = EMainState::SKYDIVING;
+	SkyDiveComponent->SetSkyDivingState(ESkyDivingState::READY);
 
 	GetPhysicsVolume()->FluidFriction = 2.5f;
 	StatComponent->SetOwnerCharacter(this);
