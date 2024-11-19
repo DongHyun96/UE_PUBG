@@ -219,6 +219,7 @@ public:
 
 	//class UC_InvenComponent* GetInvenComponent() { return BPC_InvenSystemInstance; }
 	
+	UFUNCTION(BlueprintCallable)
 	class UC_InvenComponent* GetInvenComponent() { return Inventory; }
 
 	void SetIsHoldDirection(bool InIsHoldDirection) { bIsHoldDirection = InIsHoldDirection; }
@@ -247,6 +248,7 @@ public:
 	void SetIsSprinting(bool InIsSprinting) { bIsSprinting = InIsSprinting; }
 	bool GetIsReloadingBullet() { return bIsReloadingBullet; }
 	void SetIsReloadingBullet(bool bInIsReloading) { bIsReloadingBullet = bInIsReloading; }
+	UFUNCTION(BlueprintCallable)
 	UC_InvenComponent* GetInventory() const { return Inventory; }
 
 	class UC_ConsumableUsageMeshComponent* GetConsumableUsageMeshComponent() const { return ConsumableUsageMeshComponent; }

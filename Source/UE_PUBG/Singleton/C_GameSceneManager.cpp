@@ -6,7 +6,11 @@
 #include "EngineUtils.h"
 #include "Character/C_Player.h"
 #include "MagneticField/C_MagneticFieldManager.h"
+#include "Airplane/C_AirplaneManager.h"
 #include "Utility/C_Util.h"
+
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_MainMapWidget.h"
 
 void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 {
@@ -22,5 +26,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		}
 
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;
+		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor)) AirplaneManager = AP_Manager;
 	}
+
 }

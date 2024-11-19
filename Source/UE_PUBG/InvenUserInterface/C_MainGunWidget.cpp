@@ -46,6 +46,7 @@ void UC_MainGunWidget::SetWeapon(AC_Item* item)
 
 void UC_MainGunWidget::SetWeaponBoxNum(uint8 Num)
 {
+	if (!IsValid(WeaponNum)) return;
 	WeaponNum->SetText(FText::FromString(FString::FromInt(Num)));
 
 	switch (Num)

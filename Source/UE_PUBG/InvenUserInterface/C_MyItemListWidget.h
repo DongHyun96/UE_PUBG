@@ -25,14 +25,17 @@ public:
 
     // 아이템 바 위젯을 생성하고 리스트에 추가하는 함수
     UFUNCTION(BlueprintCallable)
-    void PopulateItemList(const TMap<FString, AC_Item*>& itemList);
+    void InitAroundItemList(const TArray<AC_Item*>& AroundItemList);
+
+    UFUNCTION(BlueprintCallable)
+    void InitMyItemList(const TMap<FString, AC_Item*> MyItemlist);
 
 public:
 
     //UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    UListView* ItemListBar = nullptr;
+    UListView* ItemListView = nullptr;
 
 
 

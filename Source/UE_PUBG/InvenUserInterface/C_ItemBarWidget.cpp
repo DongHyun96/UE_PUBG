@@ -31,7 +31,7 @@ void UC_ItemBarWidget::NativeConstruct()
 	//ItemImage = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass(), FName("ItemImage1"));
 	//ItemName = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), FName("ItemName1"));
 	//ItemStackBlock = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), FName("ItemStackBlock1"));
-	this->SetIsFocusable(true);
+	//this->SetIsFocusable(true);
 
 	//SetIsFocusable(false);
 
@@ -142,6 +142,7 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 
 	DragOperation->Payload = CachedItem; // 드래그 중 전달할 데이터 (아이템)
 	DragOperation->Pivot = EDragPivot::MouseDown;
+	DragOperation->DraggedItem = CachedItem;
 
 	//오너캐릭터 체크
 	if (!OwnerCharacter)
@@ -152,7 +153,7 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 
 	OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 	
-	OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetItemListZorder(OwnerCharacter);
+	OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetItemListZorder(CachedItem->GetOwnerCharacter());
 
 
 	UC_Util::Print("OnDragDetected!!");
@@ -173,6 +174,7 @@ FReply UC_ItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeome
 			FEventReply RePlyResult =
 				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 			UC_Util::Print("LeftMouseButton");
+			OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 
 			return RePlyResult.NativeReply;
 

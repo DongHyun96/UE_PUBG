@@ -18,7 +18,6 @@ UC_CustomListView::UC_CustomListView(const FObjectInitializer& Initializer)
 	//{
 	//	UC_Util::Print("NO InEntryWidget!!");
 	//}
-
 }
 
 void UC_CustomListView::Init()

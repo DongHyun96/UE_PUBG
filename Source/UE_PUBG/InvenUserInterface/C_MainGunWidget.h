@@ -50,5 +50,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_Weapon* Weapon = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EWeaponSlot WeaponType{};
 };

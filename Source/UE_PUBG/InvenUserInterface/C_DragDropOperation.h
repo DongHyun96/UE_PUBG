@@ -18,6 +18,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UUserWidget* WidgetReference = nullptr;
 
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite)
+	UObject* DraggedItem;
 
 };

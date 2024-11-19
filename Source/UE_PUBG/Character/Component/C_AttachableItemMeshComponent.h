@@ -24,13 +24,16 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	TMap<EPartsName, TMap<EAttachmentNames, TArray<class UMeshComponent*>>> GetAttachableItemMeshs() { return AttachableItemsMesh; }
-	UMeshComponent* GetAttachablePartMesh(EPartsName InPartsName, EAttachmentNames InAttachmentName);
+	TMap<EPartsName, TMap<EAttachmentNames, TArray<class AAttachmentActor*>>> GetAttachableItemMeshs() { return AttachableItemsMesh; }
+	AAttachmentActor* GetAttachablePartMesh(EPartsName InPartsName, EAttachmentNames InAttachmentName);
+	AAttachmentActor* GetCurrentAttachment(class USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName);
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 	bool AttachToGun(class USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName);
 	void DetachFromGun(class USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName);
+
+	void UseAttachmentStrategy(USceneComponent* InParent);
 protected:
 	class AC_BasicCharacter* OwnerCharacter;
-	TMap<EPartsName, TMap<EAttachmentNames,TArray<class UMeshComponent*>>> AttachableItemsMesh;
+	TMap<EPartsName, TMap<EAttachmentNames,TArray<class AAttachmentActor*>>> AttachableItemsMesh;
 		
 };

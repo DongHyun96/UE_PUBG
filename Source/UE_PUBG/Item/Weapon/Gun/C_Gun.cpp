@@ -37,6 +37,8 @@
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 #include "Item/Attachment/C_AttachableItem.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
+#include "Components/ChildActorComponent.h"
+#include "Item/AttachmentActors/AttachmentActor.h"
 
 #include "Item/Weapon/Gun/C_Bullet.h"
 
@@ -69,7 +71,11 @@ void AC_Gun::BeginPlay()
 	SetBulletSpeed();
 	AimSightCamera   = FindComponentByClass<UCameraComponent>();
 	AimSightSpringArm = FindComponentByClass<USpringArmComponent>();
-
+	ChildActorComponent = FindComponentByClass<UChildActorComponent>();
+	if (IsValid(ChildActorComponent))
+	{
+		UC_Util::Print("Success To Load 4x Scope in C++", FColor::Green, 100);
+	}
 	//if(IsValid(AimSightCamera))
 	if (AimSightCamera)
 		AimSightCamera->SetActive(false);
@@ -88,6 +94,7 @@ void AC_Gun::BeginPlay()
 			MAGAZINE_SOCKET_NAME
 		);
 	}
+	SetSightCameraSpringArmLocation(ScopeCameraLocations[EAttachmentNames::MAX]);
 }
 
 void AC_Gun::Tick(float DeltaTime)
@@ -563,6 +570,7 @@ void AC_Gun::SetBulletSpeed()
 bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVector &OutHitLocation, bool& OutHasHit)
 {
 	FHitResult HitResult;
+	//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
 	AController* Controller = OwnerCharacter->GetController();
 	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
@@ -624,8 +632,23 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	}
 
 	WolrdContorller->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, WorldLocation, WorldDirection);
-
 	FVector DestLocation = WorldLocation + WorldDirection * 100000;
+	if (GetIsPartAttached(EPartsName::SCOPE))
+	{
+		if (
+			GetAttachedItemName(EPartsName::SCOPE) == EAttachmentNames::SCOPE4 ||
+			GetAttachedItemName(EPartsName::SCOPE) == EAttachmentNames::SCOPE8
+			)
+		{
+			FVector AttachmentLocation = AttachedItem[EPartsName::SCOPE]->GetActorLocation();
+			FRotator AttachmentRotation = AttachedItem[EPartsName::SCOPE]->GetActorRotation();
+			FVector AttachmentForward = AttachmentRotation.Vector().GetSafeNormal();
+			DestLocation = AttachmentLocation + AttachmentForward * 100000;
+		}
+	}
+
+	//FVector ChildForward = TestDirection.Vector();
+	//DestLocation = TestLocation + ChildForward * 100000;
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, DestLocation, ECC_Visibility, CollisionParams);
 
 	DrawDebugSphere(GetWorld(), HitResult.Location, 1.0f, 12, FColor::Red, true);
@@ -648,6 +671,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	{
 		FireDirection = DestLocation - FireLocation;
 		FireDirection = FireDirection.GetSafeNormal();
+		//HasHit = false;
 		//UC_Util::Print(FireDirection, FColor::Blue);
 
 	}
@@ -693,12 +717,15 @@ void AC_Gun::ShowAndHideWhileAiming()
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
+	//if (GetIsPartAttached(EPartsName::SCOPE))
+	//	CollisionParams.AddIgnoredActor(AttachedItem[EPartsName::SCOPE]);
 	CollisionParams.AddIgnoredComponent(GunMesh);
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
-	if (HasHit)
+	if (HasHit )
 	{
+		
 		AimWidget->SetVisibility(ESlateVisibility::Visible);
-		//UC_Util::Print("Hit");
+		//UC_Util::Print(HitResult.GetActor()->GetName());
 	}
 	else
 	{
@@ -760,10 +787,21 @@ bool AC_Gun::GetGunHasGrip()
 
 void AC_Gun::SetHolsterNames()
 {
+
+
 	AttachmentPartsHolsterNames.Add(EAttachmentNames::REDDOT, FName("Red_Dot_Socket"));
+	AttachmentPartsHolsterNames.Add(EAttachmentNames::SCOPE4, FName("4X_Scope_Socket"));
+
+
+	ScopeCameraLocations.Add(EAttachmentNames::REDDOT, FVector4(7.f,    0.f, 15.f, 6.f   ));
+	ScopeCameraLocations.Add(EAttachmentNames::SCOPE4, FVector4(10.89f, 0.f, 14.75f, 6.5f));
+	ScopeCameraLocations.Add(EAttachmentNames::MAX,    FVector4(7.f,    0.f, 13.f, 12.f  ));
+
+
 	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNames에 MAX가 있다면
 	{
 		EPartsName AttachmentName = (EPartsName)i;
+		AttachedItem.Add(AttachmentName, nullptr);
 		IsPartAttached.Add(AttachmentName, false);
 		AttachedItemName.Add(AttachmentName, EAttachmentNames::MAX);
 	}
@@ -778,6 +816,46 @@ void AC_Gun::SetIronSightMeshHiddenInGame(bool bInIsHidden)
 void AC_Gun::SetIsPartAttached(EPartsName InAttachmentName, bool bInIsAttached)
 {
 	IsPartAttached[InAttachmentName] = bInIsAttached;
+}
+
+void AC_Gun::SetSightCameraSpringArmLocation(FVector4 InLocationAndArmLength)
+{
+	FVector Location{};
+	Location.X = InLocationAndArmLength.X;
+	Location.Y = InLocationAndArmLength.Y;
+	Location.Z = InLocationAndArmLength.Z;
+	AimSightSpringArm->SetRelativeLocation(Location);
+	AimSightSpringArm->TargetArmLength = InLocationAndArmLength.W;
+}
+
+void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
+{
+	switch (InAttachmentName)
+	{
+	case EAttachmentNames::MAX:
+	case EAttachmentNames::REDDOT:
+		AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = 0.f;
+		AimSightCamera->PostProcessSettings.DepthOfFieldSensorWidth   = 0.f;
+		AimSightCamera->PostProcessSettings.DepthOfFieldFstop         = 0.f;
+		break;
+	case EAttachmentNames::SCOPE4:
+		AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = 6.5f;
+		AimSightCamera->PostProcessSettings.DepthOfFieldSensorWidth   = 5.0f;
+		AimSightCamera->PostProcessSettings.DepthOfFieldFstop         = 4.0f;
+		break;
+	case EAttachmentNames::SCOPE8:
+		AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = 6.5f;
+		AimSightCamera->PostProcessSettings.DepthOfFieldSensorWidth   = 5.0f;
+		AimSightCamera->PostProcessSettings.DepthOfFieldFstop         = 4.0f;
+		break;
+	default:
+		AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = 0.f;
+		AimSightCamera->PostProcessSettings.DepthOfFieldSensorWidth   = 0.f;
+		AimSightCamera->PostProcessSettings.DepthOfFieldFstop         = 0.f;
+		break;
+	}
+
+
 }
 
 //void AC_Gun::SpawnBulletForTest()

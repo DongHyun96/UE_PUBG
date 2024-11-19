@@ -34,6 +34,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 #include "Item/Attachment/C_AttachableItem.h"
+#include "Item/AttachmentActors/AttachmentActor.h"
 
 #include "Item/Weapon/Gun/C_Bullet.h"
 // Sets default values for this component's properties
@@ -53,47 +54,80 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 	Super::BeginPlay();
 	AttachableItemsMesh.Add(EPartsName::SCOPE);
 	AttachableItemsMesh[EPartsName::SCOPE].Add(EAttachmentNames::REDDOT);
+	AttachableItemsMesh[EPartsName::SCOPE].Add(EAttachmentNames::SCOPE4);
 	;
 	// ...
 	//static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/SM_T4_Sight.SM_T4_Sight"));
 	
-	TArray<UObject*> MeshAssets1;
-	EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/"), MeshAssets1, EngineUtils::ATL_Regular);
-	TArray<UObject*> MeshAssets2;
-	EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/"), MeshAssets2, EngineUtils::ATL_Regular);
+	TArray<UObject*> AttachmentBluePrintAssets1;
+	EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/AttachmentBluePrints"), AttachmentBluePrintAssets1, EngineUtils::ATL_Regular);
+	TArray<UObject*> AttachmentBluePrintAssets2;
+	EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/AttachmentBluePrints"), AttachmentBluePrintAssets2, EngineUtils::ATL_Regular);
 	//if (!MeshAssets1.IsEmpty())
 	//{
 	//	UC_Util::Print("It's not Empty", FColor::Blue, 100);
 	//}
-	for (auto& mesh : MeshAssets1)
+	for (auto& Attachment : AttachmentBluePrintAssets1)
 	{
-		if (mesh->GetName() == "A_RedDot")
+
+		UBlueprint* BlueprintAsset = Cast<UBlueprint>(Attachment);
+		if (BlueprintAsset && BlueprintAsset->GeneratedClass)
 		{
-			UStaticMesh* TempMesh = Cast<UStaticMesh>(mesh);
-			UStaticMesh* TempMeshComponent{};
-			UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this);
-			MeshComponent->RegisterComponent();
-			MeshComponent->SetStaticMesh(TempMesh);
-			AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Emplace(MeshComponent);
-			//UC_Util::Print(TempMesh, FColor::Red, 100);
+			UClass* ActorClass = BlueprintAsset->GeneratedClass;
+
+			AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
+			if (TempMesh)
+			{
+				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
+				UC_Util::Print(TempMesh, FColor::Red, 100);
+			}
 		}
+		
 	}
-	for (auto& mesh : MeshAssets2)
+		//if (mesh->GetName() == "A_RedDot")
+		//{
+		//	AAttachmentActor* TempMesh = Cast<AAttachmentActor>(mesh);
+		//	AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Emplace(TempMesh);
+		//	//AAttachmentActor* TempMeshComponent{};
+		//	//UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this);
+		//	//MeshComponent->RegisterComponent();
+		//	//MeshComponent->SetStaticMesh(TempMesh);
+		//	//UC_Util::Print(TempMesh, FColor::Red, 100);
+		//}
+
+	for (auto& Attachment : AttachmentBluePrintAssets2)
 	{
-		if (mesh->GetName() == "A_RedDot")
+
+		UBlueprint* BlueprintAsset = Cast<UBlueprint>(Attachment);
+		if (BlueprintAsset && BlueprintAsset->GeneratedClass)
 		{
-			UStaticMesh* TempMesh = Cast<UStaticMesh>(mesh);
-			UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this);
-			MeshComponent->RegisterComponent();
+			UClass* ActorClass = BlueprintAsset->GeneratedClass;
 
-			MeshComponent->SetStaticMesh(TempMesh);
-			AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Emplace(MeshComponent);
-			//UC_Util::Print(TempMesh, FColor::Red, 100);
+			AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
+			if (TempMesh)
+			{
+				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
+
+				UC_Util::Print(TempMesh, FColor::Red, 100);
+			}
 		}
-
-
+		
 	}
-	UC_Util::Print(AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Num(), FColor::Emerald, 100);
+	//for (auto& mesh : MeshAssets2)
+	//{
+	//	if (mesh->GetName() == "A_RedDot")
+	//	{
+	//		UStaticMesh* TempMesh = Cast<UStaticMesh>(mesh);
+	//		UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this);
+	//		MeshComponent->RegisterComponent();
+	//		MeshComponent->SetStaticMesh(TempMesh);
+	//		AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Emplace(MeshComponent);
+	//		//UC_Util::Print(TempMesh, FColor::Red, 100);
+	//	}
+
+
+	//}
+	UC_Util::Print(AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::SCOPE4].Num(), FColor::Emerald, 100);
 
 
 	//if (IsValid(MeshAsset.Object))
@@ -124,9 +158,9 @@ void UC_AttachableItemMeshComponent::TickComponent(float DeltaTime, ELevelTick T
 /// <param name="InPartsName">부착물의 부위</param>
 /// <param name="InAttachmentName">부착물의 이름</param>
 /// <returns></returns>
-UMeshComponent* UC_AttachableItemMeshComponent::GetAttachablePartMesh(EPartsName InPartsName, EAttachmentNames InAttachmentName)
+AAttachmentActor* UC_AttachableItemMeshComponent::GetAttachablePartMesh(EPartsName InPartsName, EAttachmentNames InAttachmentName)
 {
-	TArray<class UMeshComponent*> AttachmentItem = AttachableItemsMesh[InPartsName][InAttachmentName];
+	TArray<class AAttachmentActor*> AttachmentItem = AttachableItemsMesh[InPartsName][InAttachmentName];
 
 	if (AttachmentItem.IsEmpty())    return nullptr;
 
@@ -135,9 +169,26 @@ UMeshComponent* UC_AttachableItemMeshComponent::GetAttachablePartMesh(EPartsName
 	if (!IsValid(AttachmentItem[1])) return nullptr;
 
 
-	if (!AttachmentItem[0]->GetAttachParent())
+	if (!AttachmentItem[0]->GetAttachParentActor())
 		return AttachmentItem[0];
 	else
+		return AttachmentItem[1];
+	return nullptr;
+}
+
+AAttachmentActor* UC_AttachableItemMeshComponent::GetCurrentAttachment(USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName)
+{
+	TArray<class AAttachmentActor*> AttachmentItem = AttachableItemsMesh[InPartsName][InAttachmentName];
+	AC_Gun* ParentGun = Cast<AC_Gun>(InParent->GetOuter());
+	if (!IsValid(ParentGun))         return nullptr;
+	if (AttachmentItem.IsEmpty())    return nullptr;
+	if (!IsValid(AttachmentItem[0])) return nullptr;
+	if (!IsValid(AttachmentItem[1])) return nullptr;
+	UC_Util::Print("Detached Attachment!", FColor::Black, 20);
+
+	if (Cast<AC_Gun>(AttachmentItem[0]->GetAttachParentActor()) == ParentGun)
+		return AttachmentItem[0];
+	else if (Cast<AC_Gun>(AttachmentItem[1]->GetAttachParentActor()) == ParentGun)
 		return AttachmentItem[1];
 	return nullptr;
 }
@@ -155,26 +206,27 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 	
 	AC_Gun* ParentGun = Cast<AC_Gun>(InParent->GetOuter());
 
-	UMeshComponent* AttachmentMesh = GetAttachablePartMesh(InPartsName, InAttachmentName);
+	AAttachmentActor* AttachmentMesh = GetAttachablePartMesh(InPartsName, InAttachmentName);
 	if (!IsValid(AttachmentMesh)) return false;
-	UC_Util::Print("PressedR");
-
 	if (!IsValid(ParentGun))      return false;
-	UC_Util::Print("PressedR");
+	UC_Util::Print("Attached Attachment!", FColor::Black, 20);
 
-	AttachmentMesh->SetHiddenInGame(false);
+	AttachmentMesh->SetActorHiddenInGame(false);
 	if (ParentGun->GetIsPartAttached(InPartsName))
 		DetachFromGun(InParent, InPartsName, ParentGun->GetAttachedItemName(InPartsName));
 
 	ParentGun->SetIronSightMeshHiddenInGame(true);
 	ParentGun->SetIsPartAttached(InPartsName, true);
-	UC_Util::Print(AttachmentMesh->GetName(), FColor::Black, 100);
-	return AttachmentMesh->AttachToComponent
+	ParentGun->SetAttachedItemNameInPart(InPartsName, InAttachmentName);
+	ParentGun->SetAttachedItems(InPartsName, AttachmentMesh);
+	AttachmentMesh->AttachToComponent
 	(
 		InParent,
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		ParentGun->GetAttachmentPartsHolsterNames()[InAttachmentName]
 	);
+	UC_Util::Print(AttachmentMesh->GetName(), FColor::Black, 100);
+	return AttachmentMesh->UseStrategy();
 
 }
 /// <summary>
@@ -186,29 +238,38 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 /// <param name="InAttachmentName">부착물의 이름</param>
 void UC_AttachableItemMeshComponent::DetachFromGun(USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName)
 {
-	TArray<class UMeshComponent*> AttachmentItem = AttachableItemsMesh[InPartsName][InAttachmentName];
+	TArray<class AAttachmentActor*> AttachmentItem = AttachableItemsMesh[InPartsName][InAttachmentName];
 	AC_Gun* ParentGun = Cast<AC_Gun>(InParent->GetOuter());
 	if (!IsValid(ParentGun))         return;
 	if (AttachmentItem.IsEmpty())    return;
 	if (!IsValid(AttachmentItem[0])) return;
 	if (!IsValid(AttachmentItem[1])) return;
+	UC_Util::Print("Detached Attachment!", FColor::Black, 20);
 	ParentGun->SetIsPartAttached(InPartsName, false);
+	ParentGun->SetSightCameraSpringArmLocation(ParentGun->GetScopeCameraLocations()[EAttachmentNames::MAX]);
+	ParentGun->SetScopeCameraMode(EAttachmentNames::MAX);
+	ParentGun->SetAttachedItems(InPartsName, nullptr);
 
-
-	if (AttachmentItem[0]->GetAttachParent() == InParent)
+	if (Cast<AC_Gun>(AttachmentItem[0]->GetAttachParentActor()) == ParentGun)
 	{
-		AttachmentItem[0]->DetachFromParent();
-		AttachmentItem[0]->SetHiddenInGame(true);
+		AttachmentItem[0]->DetachRootComponentFromParent();
+		AttachmentItem[0]->SetActorHiddenInGame(true);
+		
 		ParentGun->SetIronSightMeshHiddenInGame(false);
 	}
-	else if (AttachmentItem[1]->GetAttachParent() == InParent)
+	else if (Cast<AC_Gun>(AttachmentItem[1]->GetAttachParentActor()) == ParentGun)
 	{
-		AttachmentItem[1]->DetachFromParent();
-		AttachmentItem[1]->SetHiddenInGame(true);
+		AttachmentItem[1]->DetachRootComponentFromParent();
+		AttachmentItem[1]->SetActorHiddenInGame(true);
 		ParentGun->SetIronSightMeshHiddenInGame(false);
 
 	}
 	return;
 
 }
+
+void UC_AttachableItemMeshComponent::UseAttachmentStrategy(USceneComponent* InParent)
+{
+}
+
 

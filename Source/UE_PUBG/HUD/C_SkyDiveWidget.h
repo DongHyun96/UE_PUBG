@@ -28,11 +28,24 @@ public:
 	void SetJumpedAltitude(float Altitude) { JumpedAltitude = Altitude; }
 	void SetParachuteLimitAltitude(float Altitude) { ParachuteLimitAltitude = Altitude; }
 	
+	void SetOwnerPlayer(class AC_Player* InOwnerPlayer) { OwnerPlayer = InOwnerPlayer; }
+	
 	/// <summary>
 	/// Altitude Text setting & Altitude Box position setting
 	/// </summary>
 	/// <param name="Altitude"> : 고도(cm) </param>
 	void SetAltitude(const float& Altitude);
+
+private:
+
+	/// <summary>
+	/// Speed HUD 업데이트
+	/// </summary>
+	void UpdateSpeed();
+
+private:
+
+	class AC_Player* OwnerPlayer{};
 
 protected:
 
@@ -55,5 +68,23 @@ private: // 낙하 높이 Box Widget 위치 관련 상수
 	
 	const FVector2D ALTITUDE_BOX_MAX_TO_PARACHUTE = { -252.f, 99.f };
 	const FVector2D ALTITUDE_BOX_PARACHUTE_TO_MIN = { 99.f, 190.f };
+
+protected: // Speed 관련 fields
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UMaterialInstanceDynamic* SpeedScaleBarMatInstDynamic{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UTextBlock* CurrentSpeedTextBlock{};
+
+private:
+
+	TArray<class UTextBlock*> SpeedTextBlocks{};
+	TArray<class UCanvasPanelSlot*> SpeedTextBlockSlots{};
+
+	const FVector2D SPEEDTEXTBLOCKS_Y_RANGE = FVector2D(278, -268);
+	const float SPEEDTEXT_MID_Y_POS = 5.f;
+	const float SPEEDTEXTBLOCKS_STEP = -91.f;
+	const float TEXTBLOCKSCALING_FACTOR = 1.82f;
 	
 };

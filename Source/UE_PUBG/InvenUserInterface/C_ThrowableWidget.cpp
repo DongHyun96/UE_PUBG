@@ -10,6 +10,21 @@
 #include "Utility/C_Util.h"
 
 
+void UC_ThrowableWidget::NativeConstruct()
+{
+	switch (WeaponSlotType)
+	{
+	case EWeaponSlot::MELEE_WEAPON:
+		WeaponNum->SetText(FText::FromString("4"));
+		break;
+	case EWeaponSlot::THROWABLE_WEAPON:
+		WeaponNum->SetText(FText::FromString("5"));
+		break;
+	default:
+		break;
+	}
+}
+
 FReply UC_ThrowableWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	// 우클릭인지 체크
@@ -17,9 +32,9 @@ FReply UC_ThrowableWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 	{
 		if (Weapon)
 		{   // 우클릭 이벤트 실행
-			Weapon->MoveToInven(OwnerCharacter);
+			if (Weapon->MoveToInven(OwnerCharacter))
+				Weapon = nullptr;
 			
-			Weapon = nullptr;
 
 			//SetVisibility(ESlateVisibility::Hidden);
 

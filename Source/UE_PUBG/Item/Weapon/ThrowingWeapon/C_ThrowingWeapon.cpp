@@ -23,6 +23,7 @@
 #include "Character/C_Player.h"
 
 #include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_AnimBasicCharacter.h"
 
@@ -234,37 +235,70 @@ void AC_ThrowingWeapon::EquipToCharacter(AC_BasicCharacter* Character)
 
 bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 {
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();
+	UC_InvenComponent*    invenComp = Character->GetInvenComponent();
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 
+	uint8 ItemStackCount = invenComp->LoopCheckVolume(this);
 
-	if (!Character->GetInvenComponent()->CheckVolume(this)) return false; //인벤이 충분하지 않으면 리턴
-
-	if (this->ItemDatas.ItemPlace == EItemPlace::SLOT)
-		equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
-
-	AC_Item* inItem = Character->GetInvenComponent()->FindMyItem(this);
-
-	if (IsValid(inItem))
+	if (ItemStackCount == 0)
 	{
+		UC_Util::Print("Not Enough Volume");
+		return false; //인벤에 넣을 수 있는 아이템의 갯수가 0 이면 넣을 수 없으므로 return false;
+	}
 
-		//인벤에 같은 아이템이 존재하므로 인벤의 아이템의 스택을 올리고 이동하려던 아이템은 삭제.
-		inItem->SetItemStack(this->GetItemDatas().ItemStack + inItem->GetItemDatas().ItemStack);
-		//inItem->AddItemStack();
-		SetActorHiddenInGame(true);
-		SetActorEnableCollision(false);
-		this->Destroy();
-		return true;
+	AC_Item* FoundItem = invenComp->FindMyItem(this); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;
+
+	if (ItemDatas.ItemStack == ItemStackCount)
+	{
+		//아이템 전부를 인벤에 넣을 수 있을 때.
+		if (IsValid(FoundItem))
+		{
+			//인벤에 해당 아이템이 존재 할 때.
+			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + ItemStackCount);
+
+			//TODO : destroy를 해도 잔상이 남는것을 대비해서 해놓음 만약 없이도 잔상이 안남는다면 지울 것.
+			this->SetActorEnableCollision(false);
+			this->SetActorHiddenInGame(true);
+
+			this->Destroy();
+			return true;
+		}
+		else
+		{
+			//인벤에 해당 아이템이 존재하지 않을 때.
+			invenComp->AddItemToMyList(this);
+			//인게임에서 보이는 것과 collision문제 때문에 임시로 꺼둠.
+			//this->SetActorEnableCollision(false);
+			this->SetActorHiddenInGame(true);
+			//던질 때 켜짐. 이걸로 만약 아이템의 오버랩이 안끝난다면 다른 방법 고민->ToInven에서 SetActorEnableCollision를 꺼주고 던질때 혹은 ToAround에서 켜주기.
+			Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			return true;
+		}
 	}
 	else
 	{
-		//인벤에 같은 아이템이 없다면 추가.
-		Character->GetInvenComponent()->AddItemToMyList(this);
-		SetActorHiddenInGame(true);
-		SetActorEnableCollision(false);
-		return true;
+		//아이템의 일부만 인벤에 넣을 수 있을 때.
+		if (IsValid(FoundItem))
+		{
+			     this->SetItemStack(ItemStatck - ItemStackCount);
+			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + ItemStackCount);
+			return true;
+		}
+		else
+		{
+			AC_Weapon* NewItem = Cast<AC_Weapon>(SpawnItem(Character));//아이템 복제 생성
+
+			NewItem->SetItemStack(ItemStackCount);
+			   this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
+
+			invenComp->AddItemToMyList(NewItem);
+
+			NewItem->SetActorHiddenInGame(true);
+			//collider 관련 설정 추가해야 할 수 있음.
+			//만약 추가해야 된다면 MoveToInven에서 SetActorEnableCollision을 꺼주고 던질 때 켜주는 방식으로.
+			return true;
+		}
 	}
-	//return true;
 }
 
 bool AC_ThrowingWeapon::MoveToAround(AC_BasicCharacter* Character)
@@ -274,6 +308,9 @@ bool AC_ThrowingWeapon::MoveToAround(AC_BasicCharacter* Character)
 	SetOwnerCharacter(nullptr);
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
+	Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+	ItemDatas.ItemPlace = EItemPlace::AROUND;
 	return true;
 }
 
@@ -286,321 +323,156 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 
 	AC_Item* inItem = nullptr;
 
-	//if (ItemDatas.ItemPlace == EItemPlace::INVEN)
-	//{
-	//	//작업중
-	//	invenComp->RemoveItemToMyList(this);
-	//	this->SetOwnerCharacter(nullptr);
-	//	this->SetItemPlace(EItemPlace::AROUND);
-	//	UC_Util::Print("Remove Item in My Inven");
-	//	//SetActorHiddenInGame(false);
-	//	//SetActorEnableCollision(true);
-	//	//SpawnItem(Character);
-	//	return true;
-	//}
-	//
-	//if (ItemDatas.ItemPlace == EItemPlace::SLOT)
-	//{
-	//	//추가 조정 필요함.
-	//	equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
-	//	return true;
-	//}
+	AC_Weapon* curWeapaon = equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
 
-	if (!Character->GetEquippedComponent()->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON])
+
+	if (IsValid(curWeapaon))
 	{
-		//슬롯에 투척류가 없다면 실행.
-		if (this->GetItemDatas().ItemStack == 1)
-		{
-			//슬롯에 넣으려는 투척류의 갯수가 1이면 실행.
-			UC_Util::Print("No Throwable");
-			switch (ItemDatas.ItemPlace)
-			{
-			case EItemPlace::AROUND:
+		AC_Weapon* OutToSlotWeapon = nullptr;
+		AC_Item* FoundItem = nullptr;
+		int nextVolume = invenComp->GetCurVolume() - ItemDatas.ItemVolume + curWeapaon->GetItemDatas().ItemVolume;
 
-				//나중에 꺼낼때 안보인다면 조정해줘야함.
-				SetActorHiddenInGame(true);
-				SetActorEnableCollision(false);
-				break;
-			case EItemPlace::INVEN:
+		if (nextVolume > invenComp->GetMaxVolume())
+		{
+			UC_Util::Print("Not Enough Volume");
+			return false;
+		}
+		else
+		{
+			if (ItemDatas.ItemStack == 1)
+			{
+				if (this->ItemDatas.ItemPlace == EItemPlace::INVEN)       invenComp->RemoveItemToMyList(this);//아마 InvenUI를 초기화 시켜주는 작업이 추가적으로 필요할것.
+				else if (this->ItemDatas.ItemPlace == EItemPlace::AROUND) invenComp->RemoveItemToAroundList(this);
+
+				OutToSlotWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
+			}
+			else
+			{
+				AC_Weapon* InToSlotWeapon = Cast<AC_Weapon>(SpawnItem(Character));
+				InToSlotWeapon->SetItemStack(1);
+				this->SetItemStack(ItemDatas.ItemStack - 1);
+
+				OutToSlotWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, InToSlotWeapon);
+			}
+
+			//if (OutToSlotWeapon->MoveToInven(Character)) return true;
+
+			FoundItem = invenComp->FindMyItem(OutToSlotWeapon); //인벤에 해당 아이템이 존재하는지 확인
+
+			if (IsValid(FoundItem))
+			{
+				//FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + 1);
+				FoundItem->AddItemStack();
+				//잔상이 생긴다면 추가 작업 필요.
+				OutToSlotWeapon->Destroy();
+				return true;
+			}
+			else
+			{
+				invenComp->AddItemToMyList(OutToSlotWeapon);
+				return true;
+			}
+		}
+	}
+	else
+	{
+		//슬롯에 아이템이 없다면 실행.
+		if (ItemDatas.ItemStack == 1)
+		{
+			//this의 stack이 1 이라면 실행.
+			//this를 슬롯에 장착 하고 목록에서 제거
+
+			if (ItemDatas.ItemPlace == EItemPlace::AROUND)
+			{
+				invenComp->RemoveItemNearList(this);
+				//invenComp->RemoveItemToAroundList(this);
+
+				//return true;
+			}
+			else if (ItemDatas.ItemPlace == EItemPlace::INVEN)
+			{
 				invenComp->RemoveItemToMyList(this);
-				SetActorHiddenInGame(false);
-				SetActorEnableCollision(true);
-				SetActorHiddenInGame(true);
-				SetActorEnableCollision(false);
-				break;
-			case EItemPlace::SLOT:
-				//invenComp->RemoveItemToMyList(this);
-				break;
-			default:
-				break;
+				//return true;
 			}
 			equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
-			//ItemDatas.ItemPlace = EItemPlace::SLOT;
-
-
 			return true;
 		}
 		else
 		{
-			//슬롯에 넣으려는 투척류의 갯수가 2이상이면 실행.
-			this->DeductItemStack();
+			//this의 스택이 1이 아니라면 실행
+			//this를 복제 생성해서 하나는 장착하고 나머지는 갯수를 수정
+			//AC_Weapon* NewWeapon = DuplicateObject(this, Character);
+			AC_Weapon* NewWeapon = Cast<AC_Weapon>(SpawnItem(Character));
+			NewWeapon->SetItemStack(1);
+			     this->SetItemStack(ItemDatas.ItemStack - 1);
+			
+			equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, NewWeapon); //슬롯에 장착. 아래의 NewWeapon과 다름.
 
-			//새로운 아이템을 스폰
-			FActorSpawnParameters SpawnParams;
-			//SpawnParams.Owner = Character;
-
-			AC_Weapon* SpawnItem = GetWorld()->SpawnActor<AC_Weapon>(this->GetClass(), GetActorLocation(), GetActorRotation(), SpawnParams);
-
-
-
-			if (SpawnItem)
-			{
-				SpawnItem->SetItemStack(1);  // 새 무기의 스택을 1로 설정
-				equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SpawnItem);
-				SpawnItem->SetOwnerCharacter(Character);
-				SpawnItem->SetActorHiddenInGame(true);
-				SpawnItem->SetActorEnableCollision(false);
-				uint16 stack = invenComp->LoopCheckVolume(this);
-
-				if (stack == 0) return false;
-				if (stack == this->ItemDatas.ItemStack)
-				{
-					invenComp->AddItemToMyList(this);
-
-					SetActorHiddenInGame(true);
-					SetActorEnableCollision(false);
-					return true;
-				}
-				AC_Weapon* SpawnItem2 = GetWorld()->SpawnActor<AC_Weapon>(this->GetClass(), GetActorLocation(), GetActorRotation(), SpawnParams);
-				SpawnItem2->SetItemStack(stack);
-				invenComp->AddItemToMyList(SpawnItem2);
-
-				SpawnItem2->SetActorHiddenInGame(true);
-				SpawnItem2->SetActorEnableCollision(false);
-
-				this->SetItemStack(ItemDatas.ItemStack - stack);
-
-				return true;
-
-				//invenComp->AddItemToMyList()
-				// 새로 생성된 무기를 비활성화 (필요할 경우)
-				//SpawnItem->SetActorHiddenInGame(true);
-				//SpawnItem->SetActorEnableCollision(false);
-			}
-			else
-			{
-				return false;
-			}
-
+			if (ItemDatas.ItemPlace == EItemPlace::AROUND) return this->MoveToInven(Character);//하나를 뺴서 장착시킨 아이템을 MoveToInven으로 인벤에 넣는 작업 실행.
+			else if (ItemDatas.ItemPlace == EItemPlace::INVEN) return true;
+			else return false;
+			
 		}
-
-		//return true; //투척류가 빈슬롯에 장착됬으므로 return true;
 	}
 
-	//장착된 투척류가 존재하고 있다면 실행.
-	uint8 nextVolume = 0;
-	if (OwnerCharacter == Character) //내 인벤의 아이템인지 확인
-	{
-		//내 인벤의 아이템인 경우.
-		if (equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]->GetItemDatas().ItemVolume < ItemDatas.ItemVolume) //장착하려는 아이템의 Volume이 더 클때는 무조건 가능.
-		{
-			//Volume이 충분해서 교체 가능.
-			AC_Weapon* MoveToSlotItem = nullptr;
-			AC_Weapon* MoveToInvenItem = nullptr;
-			if (this->ItemDatas.ItemStack == 1)
-			{
-				invenComp->RemoveItemToMyList(this); //클릭된 인벤의 투척류는 슬롯으로 가므로 MyList에서 제거.
-				MoveToInvenItem = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
-
-			}
-			else
-			{
-				//여러개 가지고 있는 경우 실행.
-				this->DeductItemStack();
-				MoveToSlotItem = Cast<AC_Weapon>(SpawnItem(Character));
-				MoveToSlotItem->SetItemStack(1);
-				MoveToSlotItem->SetOwnerCharacter(Character);
-				MoveToSlotItem->SetActorHiddenInGame(true);
-				MoveToSlotItem->SetActorEnableCollision(false);
-
-				MoveToInvenItem = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, MoveToSlotItem);
-
-			}
-
-
-			AC_Item* HasItem = invenComp->FindMyItem(MoveToInvenItem);
-			//인벤에 똑같은 아이템이 존재하는지 확인
-			if (HasItem)
-			{
-				//존재하면 실행해서 추가해주고 교체한 아이템을 삭제.
-				HasItem->AddItemStack();
-				MoveToInvenItem->Destroy();
-				return true;
-			}
-			else
-			{
-				//존재하지 않는다면 교체한 아이템을 그대로 추가.
-				invenComp->AddItemToMyList(MoveToInvenItem);
-				return true;
-			}
-		}
-		else //장착하려는 아이템의 volume이 더 작을 때 실행.
-		{
-			nextVolume =
-				invenComp->GetCurVolume()
-				+ equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]->GetItemDatas().ItemVolume
-				- ItemDatas.ItemVolume;
-
-			UC_Util::Print("Yes Throwable, Mine");
-
-			//교체후 인벤의 용량을 초과한다면 교체 불가능(slot에 있는 아이템이 내 인벤에 못들어오는 경우)
-			if (nextVolume > invenComp->GetMaxVolume())
-			{
-				UC_Util::Print("Full Volume");
-				return false;
-			}
-			else
-			{
-				//Volume이 충분해서 교체 가능.
-				AC_Weapon* MoveToSlotItem = nullptr;
-				AC_Weapon* MoveToInvenItem = nullptr;
-				if (this->ItemDatas.ItemStack == 1)
-				{
-					invenComp->RemoveItemToMyList(this); //클릭된 인벤의 투척류는 슬롯으로 가므로 MyList에서 제거.
-					MoveToInvenItem = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
-				}
-				else
-				{
-					//여러개 가지고 있는 경우 실행.
-					this->DeductItemStack();
-					MoveToSlotItem = Cast<AC_Weapon>(SpawnItem(Character));
-					MoveToSlotItem->SetItemStack(1);
-					MoveToSlotItem->SetOwnerCharacter(Character);
-					MoveToSlotItem->SetActorHiddenInGame(true);
-					MoveToSlotItem->SetActorEnableCollision(false);
-
-					MoveToInvenItem = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, MoveToSlotItem);
-
-				}
-
-
-				AC_Item* HasItem = invenComp->FindMyItem(MoveToInvenItem);
-				//인벤에 똑같은 아이템이 존재하는지 확인
-				if (HasItem)
-				{
-					//존재하면 실행해서 추가해주고 교체한 아이템을 삭제.
-					HasItem->AddItemStack();
-					MoveToInvenItem->Destroy();
-					return true;
-				}
-				else
-				{
-					//존재하지 않는다면 교체한 아이템을 그대로 추가.
-					invenComp->AddItemToMyList(MoveToInvenItem);
-					return true;
-				}
-			}
-		}
-		
-
-	}
-	else
-	{
-		//AC_Weapon* testItem = *equipComp->GetWeapons().Find(EWeaponSlot::THROWABLE_WEAPON);
-		//uint8 testVolume = testItem->GetItemDatas().ItemVolume;
-
-		//내 인벤의 아이템이 아니라 버려진 아이템인 경우.
-		nextVolume = invenComp->GetCurVolume()
-			+ equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]->GetItemDatas().ItemVolume;
-
-
-		UC_Util::Print("Yes Throwable, Not Mine");
-
-		//이 아이템이 인벤에 존재하는지 체크
-		inItem = invenComp->FindMyItem(this);
-
-		uint8 stack = invenComp->LoopCheckVolume(this);
-
-		if (inItem)
-		{
-			//이 아이템이 인벤에 존재하면 실행
-
-			if (stack == this->ItemDatas.ItemStack)
-			{
-				inItem->SetItemStack(inItem->GetItemDatas().ItemStack + this->ItemDatas.ItemStack);
-				
-				this->Destroy();
-				return true;
-			}
-			else if (stack == 0)
-			{
-				return false; //인벤에 공간이 없다는 뜻.
-			}
-			else 
-			{ 
-				//이 아이템의 일부만 넣을 수 있으므로 일부만 넣는다.
-				inItem->SetItemStack(inItem->GetItemDatas().ItemStack + stack);
-				this->SetItemStack(this->GetItemDatas().ItemStack - stack);
-				return true;
-			}
-		}
-		else
-		{
-			//이 아이템이 인벤에 존재하지 않으면 실행
-
-			if (stack == this->ItemDatas.ItemStack)
-			{
-				//이 아이템 모두를 인벤에 넣을 수 있으므로 넣는다.
-				invenComp->AddItemToMyList(this);
-
-				SetActorHiddenInGame(true);
-				SetActorEnableCollision(false);
-				return true;
-			}
-			else if (stack == 0)
-			{
-				return false; //인벤에 공간이 없으므로 리턴 false.
-			}
-			else
-			{
-				//이 아이템의 일부만 넣을 수 있으므로 일부만 넣는다.
-				AC_Weapon* SpawnItem2 = Cast<AC_Weapon>(this->SpawnItem(Character));
-				SpawnItem2->SetItemStack(stack);
-				
-				invenComp->AddItemToMyList(SpawnItem2);
-				
-				SpawnItem2->SetOwnerCharacter(Character);
-				SpawnItem2->SetActorHiddenInGame(true);
-				SpawnItem2->SetActorEnableCollision(false);
-				
-				this->SetItemStack(this->GetItemDatas().ItemStack - stack);
-				return true;
-			}
-		}
-		//return true;
-	}
-	return false;
+	//return false;
 }
 
 bool AC_ThrowingWeapon::Interaction(AC_BasicCharacter* Character)
 {
-	if (Character)
-	{
-		MoveToSlot(Character);
-		return true;
-	}
-	//MoveToSlot(Character);
+	//if (Character->GetInvenSystem()->GetInvenUI()->GetIsDragging())
+	//{
+	//	switch (ItemDatas.ItemPlace)
+	//	{
+	//	case EItemPlace::AROUND:
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//	
+	//	return MoveToAround(Character);
+	//}
+	AC_Weapon* curWeapaon = Character->GetEquippedComponent()->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
 
+	//if (curWeapaon)
+	//{
+	//	return MoveToInven(Character);
+	//}
+	//else
+	//{
+	//	return MoveToSlot(Character);
+	//}
+
+	switch (ItemDatas.ItemPlace)
+	{
+	case EItemPlace::AROUND:
+		if (curWeapaon) return MoveToInven(Character);
+	case EItemPlace::INVEN:
+		return MoveToSlot(Character);
+		break;
+	default:
+		break;
+	}
 	return false;
+	//if (Character)
+	//{
+	//	MoveToSlot(Character);
+	//	return true;
+	//}
+	////MoveToSlot(Character);
+
+	//return false;
 }
 
 AC_Item* AC_ThrowingWeapon::SpawnItem(AC_BasicCharacter* Character)
 {
 	FActorSpawnParameters SpawnParams;
 	//SpawnParams.Owner = Character;
-
-	AC_Weapon* SpawnItem = GetWorld()->SpawnActor<AC_Weapon>(this->GetClass(), Character->GetActorLocation(), Character->GetActorRotation(), SpawnParams);
+	//location, rotation을 this의 것을 쓰는 것도 생각, 왜냐하면 지금 이상하게 날라가는 이유가 이것일 수 도 있음. -> 섬광탄이 터지고 충돌체가 남아있음.
+	AC_Weapon* SpawnItem = GetWorld()->SpawnActor<AC_Weapon>(this->GetClass(), Character->GetActorLocation() - FVector(0,0,50), Character->GetActorRotation(), SpawnParams);
 	//SpawnItem->SetItemStack(1);
+	//SpawnItem->SetActorHiddenInGame(true);
+	SpawnItem->SetActorEnableCollision(false);//생성될 때 무조건 OverlapBegine에 반응해서 우선 꺼뒀음.
 	return SpawnItem;
 }
 
@@ -670,6 +542,12 @@ void AC_ThrowingWeapon::OnThrowThrowable()
 	//UC_Util::Print(ProjStartLocation);
 
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	//ECollisionResponse Response = Collider->GetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic);
+
+	//if (Response == ECollisionResponse::ECR_Block)
+	//	UC_Util::Print("Response Block", FColor::Red, 10.f);
+
 
 	this->SetActorLocation(ProjStartLocation);
 	

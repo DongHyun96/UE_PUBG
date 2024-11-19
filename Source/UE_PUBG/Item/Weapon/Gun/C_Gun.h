@@ -213,11 +213,14 @@ protected:
 	TMap<EPartsName, EAttachmentNames> AttachedItemName{};
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
-	TMap<EAttachmentNames, FVector> AttachmentPartsHolsterCameraLocations{};
+	TMap<EAttachmentNames, FVector4> ScopeCameraLocations{};
+
+	TMap<EPartsName, class AAttachmentActor*> AttachedItem{};
+
 public:
 	TMap<EAttachmentNames, FName> GetAttachmentPartsHolsterNames() { return AttachmentPartsHolsterNames; }
-	TMap<EAttachmentNames, FVector> GetAttachmentPartsHolsterCameraLocations() { return AttachmentPartsHolsterCameraLocations; }
-
+	TMap<EAttachmentNames, FVector4> GetScopeCameraLocations() { return ScopeCameraLocations; }
+	void SetAttachedItems(EPartsName InPartName, AAttachmentActor* InAttachedItem) { AttachedItem[InPartName] = InAttachedItem; }
 protected:
 	void SetHolsterNames();
 	UMeshComponent* IronSightMesh{};
@@ -226,5 +229,11 @@ public:
 	bool GetIsPartAttached(EPartsName InAttachmentName) { return IsPartAttached[InAttachmentName]; }
 	void SetIsPartAttached(EPartsName InAttachmentName, bool bInIsAttached);
 	EAttachmentNames GetAttachedItemName(EPartsName InPartName) { return AttachedItemName[InPartName]; }
+	void  SetAttachedItemNameInPart(EPartsName InPartName, EAttachmentNames InAttachmentName) { AttachedItemName[InPartName] = InAttachmentName; }
+	void SetSightCameraSpringArmLocation(FVector4 InLocationAndArmLength);
+	//For Test
 
+	class UChildActorComponent* ChildActorComponent;
+
+	void SetScopeCameraMode(EAttachmentNames InAttachmentName);
 };
