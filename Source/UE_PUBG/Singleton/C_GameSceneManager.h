@@ -28,12 +28,13 @@ public: // Getters and setters
 
 	class AC_Player* GetPlayer() const { return Player; }
 
-	void SetMagneticFieldManager(class AC_MagneticFieldManager* InMagneticFieldManager) { MagneticFieldManager = InMagneticFieldManager; }
 	class AC_MagneticFieldManager* GetMagneticFieldManager() const { return MagneticFieldManager; }
+	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
 
 private:
 
 	class AC_Player* Player{};
 	class AC_MagneticFieldManager* MagneticFieldManager{};
+	class AC_AirplaneManager* AirplaneManager{};
 
 };

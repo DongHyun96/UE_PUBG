@@ -14,6 +14,10 @@ class UE_PUBG_API UC_MapWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+protected:
+
+	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 public:
 	
 	/// <summary>
@@ -77,5 +81,30 @@ public:
 	/// <returns> : Spawn이 제대로 이루어졌다면 return true </returns>
 	virtual bool SpawnPingImage(FVector2D MousePos);
 
+public:
+
+	virtual void SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest);
+
+
+protected:
+
+	virtual void HandleUpdatePlaneRouteStartDest();
+
+protected: // 비행기 경로 관련
+
+	FVector2D AirplaneRouteStartPosOrigin{};
+	FVector2D AirplaneRouteDestPosOrigin{};
+
+	FVector2D AirplaneRouteStartPos{};
+	FVector2D AirplaneRouteDestPos{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UImage* AirplaneStartCircleImage{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UImage* AirplaneDestTriangleImage{};
+
+private:
+	const float BACKGROUND_SIZE = 2500.f;
 
 };

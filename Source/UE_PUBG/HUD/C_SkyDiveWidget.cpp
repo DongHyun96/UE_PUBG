@@ -20,7 +20,24 @@ void UC_SkyDiveWidget::NativeConstruct()
 
 	if (AltitudeBoxPanel) AltitudeBoxPanelSlot = Cast<UCanvasPanelSlot>(AltitudeBoxPanel->Slot);
 
-	this->Visibility = ESlateVisibility::Hidden;
+	this->SetVisibility(ESlateVisibility::Hidden);
+
+	// Init Speed Texts
+	for (int i = 0; i < 7; i++)
+	{
+		FString WidgetName    = FString::Printf(TEXT("ST%d"), i);
+		UTextBlock* TextBlock = Cast<UTextBlock>(GetWidgetFromName(*WidgetName));
+
+		if (!TextBlock)
+		{
+			UC_Util::Print("No Text Block!", FColor::Red, 10.f);
+			continue;
+		}
+
+		SpeedTextBlocks.Add(TextBlock);
+
+		SpeedTextBlockSlots.Add(Cast<UCanvasPanelSlot>(TextBlock->Slot));
+	}
 }
 
 void UC_SkyDiveWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -65,4 +82,33 @@ void UC_SkyDiveWidget::UpdateSpeed()
 
 	// SpeedText ¶ç¿ì±â
 	CurrentSpeedTextBlock->SetText(FText::FromString(FString::FromInt(KiloPerHour)));
+
+	// SpeedTextBlocks Update
+	int SpeedPadding	= KiloPerHour % 50;
+	int FirstSpeed		= KiloPerHour - 150 - SpeedPadding;
+	int MidSpeedMargin	= KiloPerHour - FirstSpeed - 150;
+	float MidMargin		= MidSpeedMargin * TEXTBLOCKSCALING_FACTOR;
+	float X				= SpeedTextBlockSlots[0]->GetPosition().X;
+	float FirstY		= SPEEDTEXTBLOCKS_Y_RANGE.X + MidMargin;
+
+	for (int i = 0; i < SpeedTextBlocks.Num(); i++)
+	{
+		// Set text content
+		int Current		= FirstSpeed + 50 * i;
+		FText Content	= FText::FromString(FString::FromInt(Current));
+		SpeedTextBlocks[i]->SetText(Content);
+
+		// Set Y Position
+		float Y = FirstY + SPEEDTEXTBLOCKS_STEP * i;
+		SpeedTextBlockSlots[i]->SetPosition(FVector2D(X, Y));
+
+		// Set Alpha
+		const FVector2D MidToEndRange	= FVector2D(0.f, 201.f);
+		float FromMidDiff				= FMath::Abs(Y - SPEEDTEXT_MID_Y_POS);
+		float Alpha						= FMath::GetMappedRangeValueClamped(MidToEndRange, FVector2D(1, 0), FromMidDiff);
+
+		FLinearColor TextBlockColor = SpeedTextBlocks[i]->ColorAndOpacity.GetSpecifiedColor();
+		TextBlockColor.A = (Current < 0 || FromMidDiff > 201.f) ? 0.f : Alpha;
+		SpeedTextBlocks[i]->SetColorAndOpacity(TextBlockColor);
+	}
 }
