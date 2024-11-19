@@ -18,6 +18,7 @@
 #include "Component/C_PoseColliderHandlerComponent.h"
 #include "Component/C_SwimmingComponent.h"
 #include "Component/C_SkyDivingComponent.h"
+#include "Component/C_InvenComponent.h"
 #include "Component/C_InvenSystem.h"
 
 #include "Components/CapsuleComponent.h"

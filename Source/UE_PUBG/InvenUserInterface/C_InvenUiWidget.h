@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-
+#include "InvenUserInterface/C_BasicUserWidget.h"
 
 #include "C_InvenUiWidget.generated.h"
 
@@ -12,12 +12,11 @@
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_InvenUiWidget : public UUserWidget
+class UE_PUBG_API UC_InvenUiWidget : public UC_BasicUserWidget
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable)
-	void SetOwnerCharacter(class AC_BasicCharacter* Character) { OwnerCharacter = Character; }
+
 
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetsOwner(AC_BasicCharacter* Character);
@@ -94,9 +93,6 @@ public:
 	UUserWidget* Background_Inventory = nullptr;
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	AC_BasicCharacter* OwnerCharacter = nullptr;
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsDragging = false;
 

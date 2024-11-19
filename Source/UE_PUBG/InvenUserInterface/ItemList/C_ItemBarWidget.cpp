@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "InvenUserInterface/C_ItemBarWidget.h"
+#include "InvenUserInterface/ItemList/C_ItemBarWidget.h"
 #include "InvenUserInterface/C_InvenUiWidget.h"
-#include "InvenUserInterface/C_DragDropOperation.h"
+#include "InvenUserInterface/ItemList/C_DragDropOperation.h"
 
 #include "Components/Image.h"
 #include "Components/TextBlock.h"

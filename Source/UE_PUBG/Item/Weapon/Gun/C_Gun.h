@@ -8,6 +8,7 @@
 #include "Containers/Map.h"
 #include "Containers/Array.h"
 #include "Templates/Tuple.h"
+#include "Character/Component/C_InvenComponent.h"
 #include "C_Gun.generated.h"
 
 UENUM(BlueprintType)

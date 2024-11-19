@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "InvenUserInterface/C_BasicUserWidget.h"
 #include "UE_PUBG/Character/C_BasicCharacter.h"
 #include "Components/TextBlock.h"
 #include "Character/Component/C_EquippedComponent.h"
@@ -18,7 +19,7 @@ class AC_Weapon;
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_MainGunWidget : public UUserWidget
+class UE_PUBG_API UC_MainGunWidget : public UC_BasicUserWidget
 {
 	GENERATED_BODY()
 public:
@@ -30,10 +31,7 @@ public:
 
 	void SetWeaponBoxNum(uint8 Num);
 
-	void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class AC_BasicCharacter* OwnerCharacter = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UImage* GunImage = nullptr;

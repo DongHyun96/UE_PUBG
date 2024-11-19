@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "InvenUserInterface/C_ThrowableWidget.h"
+#include "InvenUserInterface/EquipSlot/C_ThrowableWidget.h"
 #include "InvenUserInterface/C_InvenUiWidget.h"
 #include "Item/C_Item.h"
 #include "Item/Weapon/C_Weapon.h"

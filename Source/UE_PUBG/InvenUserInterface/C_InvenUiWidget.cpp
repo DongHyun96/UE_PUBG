@@ -2,23 +2,21 @@
 
 #include "InvenUserInterface/C_InvenUiWidget.h"
 
-#include "InvenUserInterface/C_ItemBarWidget.h"
-#include "InvenUserInterface/C_MainGunWidget.h"
-#include "InvenUserInterface/C_ThrowableWidget.h"
-#include "InvenUserInterface/C_EquipSlot.h"
+#include "InvenUserInterface/ItemList/C_ItemBarWidget.h"
+#include "InvenUserInterface/ItemList/C_MyItemListWidget.h"
+#include "InvenUserInterface/EquipSlot/C_MainGunWidget.h"
+#include "InvenUserInterface/EquipSlot/C_ThrowableWidget.h"
+#include "InvenUserInterface/EquipSlot/C_EquipSlot.h"
 
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/TextBlock.h"
 #include "Components/ListView.h"
 #include "UE_PUBG/Character/C_BasicCharacter.h"
-#include "C_MyItemListWidget.h"
 
 #include "Components/CanvasPanel.h"
 
-#include "TimerManager.h"
-
-#include "InvenUserInterface/C_ItemBarWidget.h"
+#include "Character/Component/C_InvenComponent.h"
 
 #include "Utility/C_Util.h"
 

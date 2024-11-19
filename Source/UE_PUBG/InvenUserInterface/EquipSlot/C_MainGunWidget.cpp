@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "InvenUserInterface/C_MainGunWidget.h"
+#include "InvenUserInterface/EquipSlot/C_MainGunWidget.h"
 //#include "Item/C_Item.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
