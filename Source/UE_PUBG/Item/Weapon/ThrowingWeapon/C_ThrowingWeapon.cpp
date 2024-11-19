@@ -309,6 +309,10 @@ bool AC_ThrowingWeapon::MoveToAround(AC_BasicCharacter* Character)
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	
+	//바닥 레이 캐스팅 받아와서 바닥에 아이템 생성하기.
+	//SetActorLocation(Character->GetActorLocation() - FVector(0,0,80)); 
+	//SetActorRotation(FQuat(0,0,0));
 
 	ItemDatas.ItemPlace = EItemPlace::AROUND;
 	return true;
