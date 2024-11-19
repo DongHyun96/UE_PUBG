@@ -27,6 +27,9 @@ private:
 
 	void HandleUpdateMainMapImage(float InDeltaTime);
 
+	/// <summary>
+	/// MainMap Transform에 따른 Map요소들 위치 Update
+	/// </summary>
 	void HandleUpdateMarkers();
 
 private:
@@ -37,6 +40,20 @@ private:
 	FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)	override;
 
 	FReply NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)		override;
+
+	/// <summary>
+	/// 비행기 경로 그리기
+	/// </summary>
+	int32 NativePaint
+	(
+		const FPaintArgs& Args,
+		const FGeometry& AllottedGeometry,
+		const FSlateRect& MyCullingRect,
+		FSlateWindowElementList& OutDrawElements,
+		int32						LayerId,
+		const FWidgetStyle& InWidgetStyle,
+		bool						bParentEnabled
+	) const override;
 
 public:
 
@@ -62,6 +79,8 @@ public:
 
 	void SetPlayer(class AC_Player* InPlayer) { Player = InPlayer; }
 
+	void SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest);
+
 private:
 
 	/// <summary>
@@ -81,7 +100,7 @@ private:
 	bool HandleRMBDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 
 protected:
-	
+
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UImage* MainMapImg{};
 
@@ -93,6 +112,11 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UBorder* PingMarkerBorder{};
+
+private:
+
+	class UCanvasPanel*			MapBorderPanel{};
+	TOptional<struct FGeometry>	MapBorderGeometry{};
 
 private:
 
@@ -126,4 +150,12 @@ private:
 private:
 
 	class AC_Player* Player{};
+
+private:
+
+	FVector2D AirplaneRouteStartPosOrigin{};
+	FVector2D AirplaneRouteDestPosOrigin{};
+
+	FVector2D AirplaneRouteStartPos{};
+	FVector2D AirplaneRouteDestPos{};
 };

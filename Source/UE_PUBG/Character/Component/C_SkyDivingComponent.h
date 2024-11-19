@@ -192,7 +192,9 @@ private:
 	//const float MAX_SKYDIVE_JUMP_ALTITUDE = 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
 
 	const float PARACHUTE_DEPLOY_LIMIT_HEIGHT	= 10000.f;
-	const float MAX_SKYDIVE_JUMP_ALTITUDE		= 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
+	//const float MAX_SKYDIVE_JUMP_ALTITUDE		= 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
+	const float MAX_SKYDIVE_JUMP_ALTITUDE = 1e9; // Testing 값
+
 
 private:
 	

@@ -5,11 +5,17 @@
 #include "HUD/C_HUDWidget.h"
 
 #include "Singleton/C_GameSceneManager.h"
+#include "Airplane/C_AirplaneManager.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_PingSystemComponent.h"
+#include "Character/Component/C_SkyDivingComponent.h"
+
+#include "HUD/C_SkyDiveWidget.h"
 #include "HUD/C_MapWidget.h"
+
 #include "Utility/C_Util.h"
 
+#include "Components/CanvasPanel.h"
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Kismet/GameplayStatics.h"
@@ -50,6 +56,15 @@ void UC_MainMapWidget::OnMKey()
 		//PC->SetMouseCursorWidget()
 
 		//this->SetUserFocus(PC);
+
+		// Init AirplaneRoute Start Dest pos
+		if (AirplaneRouteStartPosOrigin.X == 0.f)
+		{
+			if (AC_AirplaneManager* AirplaneManager = GAMESCENE_MANAGER->GetAirplaneManager())
+				SetAirplaneRouteStartDestPosOrigin(AirplaneManager->GetPlaneRouteStartDestPair());
+		}
+
+		Player->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
@@ -62,6 +77,11 @@ void UC_MainMapWidget::OnMKey()
 
 		PC->SetIgnoreLookInput(false);  // 마우스 이동에 의한 카메라 회전을 막음
 		//PC->SetIgnoreMoveInput(false);  // 마우스 클릭에 의한 움직임을 막음
+
+		ESkyDivingState PlayerSkyDivingState = Player->GetSkyDivingComponent()->GetSkyDivingState();
+		if (PlayerSkyDivingState == ESkyDivingState::SKYDIVING || PlayerSkyDivingState == ESkyDivingState::PARACHUTING)
+			Player->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::HitTestInvisible);
+
 	}
 
 }
@@ -72,6 +92,10 @@ void UC_MainMapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 	HandleUpdateMainMapImage(InDeltaTime);
 	HandleUpdateMarkers();
+
+	// Border 패널의 Geometry 가져오기
+	if (!MapBorderPanel) MapBorderPanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("Border")));
+	if (MapBorderPanel) MapBorderGeometry = MapBorderPanel->GetCachedGeometry();
 }
 
 void UC_MainMapWidget::HandleUpdateMainMapImage(float InDeltaTime)
@@ -130,6 +154,21 @@ void UC_MainMapWidget::HandleUpdateMarkers()
 	PingMarkerToMainMapPos += MainMapImg->GetRenderTransform().Translation;
 
 	PingMarkerBorder->SetRenderTranslation(PingMarkerToMainMapPos);
+
+	// 비행기 경로 위치 잡기
+	AirplaneRouteStartPos = AirplaneRouteStartPosOrigin * MainMapScale;
+	AirplaneRouteStartPos += MainMapImg->GetRenderTransform().Translation + MID_POINT;
+	AirplaneRouteDestPos = AirplaneRouteDestPosOrigin * MainMapScale;
+	AirplaneRouteDestPos += MainMapImg->GetRenderTransform().Translation + MID_POINT;
+
+	// 맵 밖으로 나가는 bound 처리
+	//float StartX = FMath::Clamp(AirplaneRouteStartPos.X, MID_POINT.X - CANVAS_SIZE * 0.5f, MID_POINT.X + CANVAS_SIZE * 0.5f);
+	//float StartY = FMath::Clamp(AirplaneRouteStartPos.Y, MID_POINT.Y - CANVAS_SIZE * 0.5f, MID_POINT.Y + CANVAS_SIZE * 0.5f);
+	//float DestX = FMath::Clamp(AirplaneRouteDestPos.X, MID_POINT.X - CANVAS_SIZE * 0.5f, MID_POINT.X + CANVAS_SIZE * 0.5f);
+	//float DestY = FMath::Clamp(AirplaneRouteDestPos.Y, MID_POINT.Y - CANVAS_SIZE * 0.5f, MID_POINT.Y + CANVAS_SIZE * 0.5f);
+	//AirplaneRouteStartPos.Set(StartX, StartY);
+	//AirplaneRouteDestPos.Set(DestX, DestY);
+
 }
 
 FReply UC_MainMapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -219,6 +258,64 @@ FReply UC_MainMapWidget::NativeOnMouseWheel(const FGeometry& InGeometry, const F
 	return FReply::Handled();
 }
 
+int32 UC_MainMapWidget::NativePaint
+(
+	const FPaintArgs&			Args, 
+	const FGeometry&			AllottedGeometry, 
+	const FSlateRect&			MyCullingRect, 
+	FSlateWindowElementList&	OutDrawElements, 
+	int32						LayerId, 
+	const FWidgetStyle&			InWidgetStyle, 
+	bool						bParentEnabled
+) const
+{
+	Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
+
+	// Border Canvas panel의 Geometry 기반으로 클리핑 영역 설정
+	if (MapBorderGeometry.IsSet())
+	{
+		// Border의 좌상단 위치와 크기를 이용해 정확한 클리핑 영역 계산
+		//const FVector2D BorderPosition  = MapBorderGeometry->GetAbsolutePosition();
+		//const FVector2D BorderSize		= MapBorderGeometry->GetLocalSize();
+		//const FSlateRect ClippingRect(BorderPosition.X, BorderPosition.Y, BorderPosition.X + BorderSize.X, BorderPosition.Y + BorderSize.Y);
+
+		//FSlateClippingZone ClippingZone(ClippingRect);
+		FSlateClippingZone ClippingZone(MapBorderGeometry.GetValue());
+		OutDrawElements.PushClip(ClippingZone);
+	}
+
+	// 선의 색상 및 두께 설정
+	FLinearColor LineColor = FLinearColor::Red;
+	float LineThickness = 2.0f;
+
+	// 선을 정의하는 배열 생성
+	TArray<FVector2D> LinePoints{};
+
+	// Border Canvas Panel 길이 제한 지정
+
+
+	LinePoints.Add(AirplaneRouteStartPos);
+	LinePoints.Add(AirplaneRouteDestPos);
+
+	// 선을 그리는 엘리먼트 추가
+	FSlateDrawElement::MakeLines
+	(
+		OutDrawElements,
+		LayerId,
+		AllottedGeometry.ToPaintGeometry(),
+		LinePoints,
+		ESlateDrawEffect::None,
+		LineColor,
+		true,
+		LineThickness
+	);
+
+	// 클리핑 영역 제거
+	if (MapBorderGeometry.IsSet()) OutDrawElements.PopClip();
+
+	return LayerId + 1;
+}
+
 bool UC_MainMapWidget::SpawnPingImage(FVector WorldPingLocation)
 {
 	if (!PingMarkerBorder) return false;
@@ -238,6 +335,8 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 	PingMarkerPos = MousePos - MID_POINT;
 	PingMarkerPos -= MainMapImg->GetRenderTransform().Translation;
 	PingMarkerPos /= MainMapScale;
+
+	UC_Util::Print(PingMarkerPos);
 
 	// Spawn MainMap Ping
 	PingMarkerBorder->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -293,6 +392,15 @@ bool UC_MainMapWidget::CancelPingMarker()
 	Player->GetHUDWidget()->HideCompassBarPingMarker();
 
 	return true;
+}
+
+void UC_MainMapWidget::SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest)
+{
+	AirplaneRouteStartPosOrigin = { StartDest.Key.Y,   -StartDest.Key.X };
+	AirplaneRouteDestPosOrigin  = { StartDest.Value.Y, -StartDest.Value.X };
+
+	AirplaneRouteStartPosOrigin *= (CANVAS_SIZE / WORLD_MAP_SIZE);
+	AirplaneRouteDestPosOrigin  *= (CANVAS_SIZE / WORLD_MAP_SIZE);
 }
 
 bool UC_MainMapWidget::HandleLMBDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -354,7 +462,7 @@ bool UC_MainMapWidget::HandleRMBDown(const FGeometry& InGeometry, const FPointer
 	// 새로운 핑 찍기
 	SpawnPingImage(MousePos);
 
-	UC_Util::Print(MousePos);
+	//UC_Util::Print(MousePos);
 
 	return true;
 }
