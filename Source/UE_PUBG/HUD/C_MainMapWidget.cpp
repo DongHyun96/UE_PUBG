@@ -92,10 +92,49 @@ void UC_MainMapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 	HandleUpdateMainMapImage(InDeltaTime);
 	HandleUpdateMarkers();
+}
 
-	// Border 패널의 Geometry 가져오기
-	if (!MapBorderPanel) MapBorderPanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("Border")));
-	if (MapBorderPanel) MapBorderGeometry = MapBorderPanel->GetCachedGeometry();
+int32 UC_MainMapWidget::NativePaint
+(
+	const FPaintArgs&			Args, 
+	const FGeometry&			AllottedGeometry, 
+	const FSlateRect&			MyCullingRect, 
+	FSlateWindowElementList&	OutDrawElements, 
+	int32						LayerId, 
+	const FWidgetStyle&			InWidgetStyle, 
+	bool						bParentEnabled
+) const
+{
+	Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
+
+	// 선의 색상 및 두께 설정
+	FLinearColor LineColor = FLinearColor::Red;
+	float LineThickness = 2.f;
+
+	// 선을 정의하는 배열 생성
+	TArray<FVector2D> LinePoints{};
+
+	LinePoints.Add(AirplaneRouteStartPos);
+	LinePoints.Add(AirplaneRouteDestPos);
+
+	//LinePoints.Add(FVector2D(0.f, 0.f));
+	//LinePoints.Add(FVector2D(1920.f, 1080.f));
+
+
+	// 선을 그리는 엘리먼트 추가
+	FSlateDrawElement::MakeLines
+	(
+		OutDrawElements,
+		LayerId,
+		AllottedGeometry.ToPaintGeometry(),
+		LinePoints,
+		ESlateDrawEffect::None,
+		LineColor,
+		true,
+		LineThickness
+	);
+
+	return LayerId + 1;
 }
 
 void UC_MainMapWidget::HandleUpdateMainMapImage(float InDeltaTime)
@@ -109,7 +148,7 @@ void UC_MainMapWidget::HandleUpdateMainMapImage(float InDeltaTime)
 	MainMapPos = FMath::Lerp(MainMapPos, MainMapPosLerpDest, InDeltaTime * 12.f);
 
 	// Border check
-	float PosLimit = (MainMapScale * CANVAS_SIZE - CANVAS_SIZE) * 0.5f;
+	float PosLimit = (MainMapScale * CANVAS_SIZE - CANVAS_SIZE) * 0.5f; 
 	MainMapPos.X = FMath::Clamp(MainMapPos.X, -PosLimit, PosLimit);
 	MainMapPos.Y = FMath::Clamp(MainMapPos.Y, -PosLimit, PosLimit);
 
@@ -154,21 +193,61 @@ void UC_MainMapWidget::HandleUpdateMarkers()
 	PingMarkerToMainMapPos += MainMapImg->GetRenderTransform().Translation;
 
 	PingMarkerBorder->SetRenderTranslation(PingMarkerToMainMapPos);
+}
 
+void UC_MainMapWidget::HandleUpdatePlaneRouteStartDest()
+{
 	// 비행기 경로 위치 잡기
 	AirplaneRouteStartPos = AirplaneRouteStartPosOrigin * MainMapScale;
-	AirplaneRouteStartPos += MainMapImg->GetRenderTransform().Translation + MID_POINT;
+	AirplaneRouteStartPos += MainMapImg->GetRenderTransform().Translation;
+
+	// Start Circle 이미지 위치 잡기
+	AirplaneStartCircleImage->SetRenderTranslation(AirplaneRouteStartPos);
+
+	AirplaneRouteStartPos += MID_POINT;
+
 	AirplaneRouteDestPos = AirplaneRouteDestPosOrigin * MainMapScale;
-	AirplaneRouteDestPos += MainMapImg->GetRenderTransform().Translation + MID_POINT;
+	AirplaneRouteDestPos += MainMapImg->GetRenderTransform().Translation;
 
-	// 맵 밖으로 나가는 bound 처리
-	//float StartX = FMath::Clamp(AirplaneRouteStartPos.X, MID_POINT.X - CANVAS_SIZE * 0.5f, MID_POINT.X + CANVAS_SIZE * 0.5f);
-	//float StartY = FMath::Clamp(AirplaneRouteStartPos.Y, MID_POINT.Y - CANVAS_SIZE * 0.5f, MID_POINT.Y + CANVAS_SIZE * 0.5f);
-	//float DestX = FMath::Clamp(AirplaneRouteDestPos.X, MID_POINT.X - CANVAS_SIZE * 0.5f, MID_POINT.X + CANVAS_SIZE * 0.5f);
-	//float DestY = FMath::Clamp(AirplaneRouteDestPos.Y, MID_POINT.Y - CANVAS_SIZE * 0.5f, MID_POINT.Y + CANVAS_SIZE * 0.5f);
-	//AirplaneRouteStartPos.Set(StartX, StartY);
-	//AirplaneRouteDestPos.Set(DestX, DestY);
+	AirplaneDestTriangleImage->SetRenderTranslation(AirplaneRouteDestPos);
 
+	AirplaneRouteDestPos += MID_POINT;
+
+	// Border Panel 길이 제한 (x에 대한 제한만 걸면 됨)
+
+	// 직선 a, b factor 구하기
+	float LineAFactor = (AirplaneRouteStartPos.Y - AirplaneRouteDestPos.Y) / (AirplaneRouteStartPos.X - AirplaneRouteDestPos.X);
+	float LineBFactor = AirplaneRouteStartPos.Y - LineAFactor * AirplaneRouteStartPos.X;
+
+	if (AirplaneRouteStartPos.X < MID_POINT.X - CANVAS_SIZE * 0.5f)
+	{
+		float NewX = MID_POINT.X - CANVAS_SIZE * 0.5f;
+		float NewY = LineAFactor * NewX + LineBFactor;
+
+		AirplaneRouteStartPos.Set(NewX, NewY);
+	}
+	else if (AirplaneRouteStartPos.X > MID_POINT.X + CANVAS_SIZE * 0.5f)
+	{
+		float NewX = MID_POINT.X + CANVAS_SIZE * 0.5f;
+		float NewY = LineAFactor * NewX + LineBFactor;
+
+		AirplaneRouteStartPos.Set(NewX, NewY);
+	}
+
+	if (AirplaneRouteDestPos.X < MID_POINT.X - CANVAS_SIZE * 0.5f)
+	{
+		float NewX = MID_POINT.X - CANVAS_SIZE * 0.5f;
+		float NewY = LineAFactor * NewX + LineBFactor;
+
+		AirplaneRouteDestPos.Set(NewX, NewY);
+	}
+	else if (AirplaneRouteDestPos.X > MID_POINT.X + CANVAS_SIZE * 0.5f)
+	{
+		float NewX = MID_POINT.X + CANVAS_SIZE * 0.5f;
+		float NewY = LineAFactor * NewX + LineBFactor;
+
+		AirplaneRouteDestPos.Set(NewX, NewY);
+	}
 }
 
 FReply UC_MainMapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -258,64 +337,6 @@ FReply UC_MainMapWidget::NativeOnMouseWheel(const FGeometry& InGeometry, const F
 	return FReply::Handled();
 }
 
-int32 UC_MainMapWidget::NativePaint
-(
-	const FPaintArgs&			Args, 
-	const FGeometry&			AllottedGeometry, 
-	const FSlateRect&			MyCullingRect, 
-	FSlateWindowElementList&	OutDrawElements, 
-	int32						LayerId, 
-	const FWidgetStyle&			InWidgetStyle, 
-	bool						bParentEnabled
-) const
-{
-	Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
-
-	// Border Canvas panel의 Geometry 기반으로 클리핑 영역 설정
-	if (MapBorderGeometry.IsSet())
-	{
-		// Border의 좌상단 위치와 크기를 이용해 정확한 클리핑 영역 계산
-		//const FVector2D BorderPosition  = MapBorderGeometry->GetAbsolutePosition();
-		//const FVector2D BorderSize		= MapBorderGeometry->GetLocalSize();
-		//const FSlateRect ClippingRect(BorderPosition.X, BorderPosition.Y, BorderPosition.X + BorderSize.X, BorderPosition.Y + BorderSize.Y);
-
-		//FSlateClippingZone ClippingZone(ClippingRect);
-		FSlateClippingZone ClippingZone(MapBorderGeometry.GetValue());
-		OutDrawElements.PushClip(ClippingZone);
-	}
-
-	// 선의 색상 및 두께 설정
-	FLinearColor LineColor = FLinearColor::Red;
-	float LineThickness = 2.0f;
-
-	// 선을 정의하는 배열 생성
-	TArray<FVector2D> LinePoints{};
-
-	// Border Canvas Panel 길이 제한 지정
-
-
-	LinePoints.Add(AirplaneRouteStartPos);
-	LinePoints.Add(AirplaneRouteDestPos);
-
-	// 선을 그리는 엘리먼트 추가
-	FSlateDrawElement::MakeLines
-	(
-		OutDrawElements,
-		LayerId,
-		AllottedGeometry.ToPaintGeometry(),
-		LinePoints,
-		ESlateDrawEffect::None,
-		LineColor,
-		true,
-		LineThickness
-	);
-
-	// 클리핑 영역 제거
-	if (MapBorderGeometry.IsSet()) OutDrawElements.PopClip();
-
-	return LayerId + 1;
-}
-
 bool UC_MainMapWidget::SpawnPingImage(FVector WorldPingLocation)
 {
 	if (!PingMarkerBorder) return false;
@@ -331,6 +352,9 @@ bool UC_MainMapWidget::SpawnPingImage(FVector WorldPingLocation)
 bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 {
 	if (!PingMarkerBorder) return false;
+
+	// For Testing
+	MousePos = AirplaneRouteStartPos;
 
 	PingMarkerPos = MousePos - MID_POINT;
 	PingMarkerPos -= MainMapImg->GetRenderTransform().Translation;
@@ -401,6 +425,41 @@ void UC_MainMapWidget::SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector
 
 	AirplaneRouteStartPosOrigin *= (CANVAS_SIZE / WORLD_MAP_SIZE);
 	AirplaneRouteDestPosOrigin  *= (CANVAS_SIZE / WORLD_MAP_SIZE);
+
+	// Dest triangle 회전 잡기
+	if (AirplaneRouteStartPosOrigin.X - AirplaneRouteDestPosOrigin.X == 0.f)
+	{
+		if (AirplaneRouteStartPosOrigin.Y - AirplaneRouteDestPosOrigin.Y > 0.f)
+			AirplaneDestTriangleImage->SetRenderTransformAngle(0.f);
+		else AirplaneDestTriangleImage->SetRenderTransformAngle(180.f);
+			
+		return;
+	}
+
+	if (AirplaneRouteStartPosOrigin.Y - AirplaneRouteDestPosOrigin.Y == 0.f)
+	{
+		if (AirplaneRouteStartPosOrigin.X - AirplaneRouteDestPosOrigin.X > 0.f)
+			AirplaneDestTriangleImage->SetRenderTransformAngle(90.f);
+		else
+			AirplaneDestTriangleImage->SetRenderTransformAngle(-90.f);
+
+		return;
+	}
+	
+	float DX = AirplaneRouteDestPosOrigin.X - AirplaneRouteStartPosOrigin.X;
+	float DY = AirplaneRouteDestPosOrigin.Y - AirplaneRouteStartPosOrigin.Y;
+
+	float Angle = FMath::RadiansToDegrees(FMath::Atan(DX / DY));
+	
+	// 1, 4 사분면 회전 잡기
+	//Angle += ((DX > 0.f && DY > 0.f) || (DX > 0.f && DY < 0.f)) ? 90.f : -90.f;
+
+	AirplaneDestTriangleImage->SetRenderTransformAngle(90.f - Angle);
+
+	/*
+	// 회전 잡기
+	PlayerMarkerImg->SetRenderTransformAngle(Player->GetActorRotation().Yaw);
+	*/
 }
 
 bool UC_MainMapWidget::HandleLMBDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)

@@ -33,6 +33,13 @@ private:
 	/// </summary>
 	void InitRandomStartDestPosition();
 
+	/// <summary>
+	/// Start Dest pos 초기화 시 Border가 valid한지 체크
+	/// </summary>
+	/// <param name="PositionValue"></param>
+	/// <returns></returns>
+	bool IsValueValidInBorder(float PositionValue);
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -41,6 +48,8 @@ protected:
 private:
 
 	const float PLANE_ALTITUDE = 60000.f; // 600m
+
+	const float PLANE_START_DEST_BORDER_VALUE = 40000.f;
 
 	// 비행기 경로 시작점, 끝점
 	FVector PlaneRouteStart{};

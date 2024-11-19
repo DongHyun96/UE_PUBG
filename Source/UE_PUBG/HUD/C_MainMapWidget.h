@@ -32,6 +32,8 @@ private:
 	/// </summary>
 	void HandleUpdateMarkers();
 
+	void HandleUpdatePlaneRouteStartDest() override;
+
 private:
 
 	//FEventReply OnMouseButtonDown(FGeometry MyGeometry, const FPointerEvent& MouseEvent) override;
@@ -40,20 +42,6 @@ private:
 	FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)	override;
 
 	FReply NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)		override;
-
-	/// <summary>
-	/// 비행기 경로 그리기
-	/// </summary>
-	int32 NativePaint
-	(
-		const FPaintArgs& Args,
-		const FGeometry& AllottedGeometry,
-		const FSlateRect& MyCullingRect,
-		FSlateWindowElementList& OutDrawElements,
-		int32						LayerId,
-		const FWidgetStyle& InWidgetStyle,
-		bool						bParentEnabled
-	) const override;
 
 public:
 
@@ -71,6 +59,22 @@ public:
 	/// <returns> : 제대로 Spawn 되었다면 return true </returns>
 	bool SpawnPingImage(FVector2D MousePos) override;
 
+private:
+
+	/// <summary>
+	/// 비행기 경로 그리기
+	/// </summary>
+	int32 NativePaint
+	(
+		const FPaintArgs&			Args,
+		const FGeometry&			AllottedGeometry,
+		const FSlateRect&			MyCullingRect,
+		FSlateWindowElementList&	OutDrawElements,
+		int32						LayerId,
+		const FWidgetStyle&			InWidgetStyle,
+		bool						bParentEnabled
+	) const override;
+
 protected:
 
 	bool CancelPingMarker();
@@ -79,7 +83,7 @@ public:
 
 	void SetPlayer(class AC_Player* InPlayer) { Player = InPlayer; }
 
-	void SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest);
+	void SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest) override;
 
 private:
 
@@ -115,11 +119,6 @@ protected:
 
 private:
 
-	class UCanvasPanel*			MapBorderPanel{};
-	TOptional<struct FGeometry>	MapBorderGeometry{};
-
-private:
-
 	float MainMapScaleLerpDest = 1.f;
 	FVector2D MainMapPosLerpDest{};
 
@@ -151,11 +150,5 @@ private:
 
 	class AC_Player* Player{};
 
-private:
 
-	FVector2D AirplaneRouteStartPosOrigin{};
-	FVector2D AirplaneRouteDestPosOrigin{};
-
-	FVector2D AirplaneRouteStartPos{};
-	FVector2D AirplaneRouteDestPos{};
 };
