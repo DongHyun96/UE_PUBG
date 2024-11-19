@@ -130,8 +130,11 @@ void UC_CrosshairWidgetComponent::SetCrosshairState(ECrosshairState InState)
 		GrayDotImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		break;
 	case ECrosshairState::RIFLEAIMDOWNSIGHT:
-		if(CurGun->GetAttachedItemName(EPartsName::SCOPE) == EAttachmentNames::REDDOT)
+		if (CurGun->GetAttachedItemName(EPartsName::SCOPE) == EAttachmentNames::REDDOT)
+		{
+			UC_Util::Print("RedDot!!!", FColor::Magenta, 10);
 			RedDotImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		}
 		break;
 	case ECrosshairState::RIFLECRAWLMOVING:
 		break;
