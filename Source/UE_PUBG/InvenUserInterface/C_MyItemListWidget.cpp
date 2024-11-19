@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "InvenUserInterface/ItemList/C_MyItemListWidget.h"
-#include "InvenUserInterface/ItemList/C_ItemBarWidget.h"
-#include "InvenUserInterface/C_BasicUserWidget.h"
+#include "InvenUserInterface/C_MyItemListWidget.h"
+#include "InvenUserInterface/C_ItemBarWidget.h"
 
 #include "Item/C_Item.h"
 #include "Utility/C_Util.h"

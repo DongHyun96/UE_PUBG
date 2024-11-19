@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-//#include "Component/C_InvenComponent.h"
+#include "Component/C_InvenComponent.h"
 
 #include "Component/C_StatComponent.h"
 
@@ -397,7 +397,7 @@ protected: // Consumable °ü·Ã
 
 protected: // ÃÑ¾Ë Object Pooling
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TArray<class AC_Item*> Bullets;
+	TArray<AC_Item*> Bullets;
 
 protected:
 

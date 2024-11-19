@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InvenUserInterface/C_CustomListView.h"
-#include "InvenUserInterface/ItemList/C_ItemBarWidget.h"
+#include "InvenUserInterface/C_ItemBarWidget.h"
 #include "Components/ListView.h"
 
 #include "Utility/C_Util.h"

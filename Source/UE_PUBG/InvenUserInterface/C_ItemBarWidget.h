@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "InvenUserInterface/C_BasicUserWidget.h"
 
 #include "Blueprint/IUserObjectListEntry.h"
 #include "Components/TextBlock.h"
@@ -12,13 +11,14 @@
 #include "Item/C_Item.h"
 
 #include "UE_PUBG/Character/C_BasicCharacter.h"
+
 #include "C_ItemBarWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_ItemBarWidget : public UC_BasicUserWidget, public IUserObjectListEntry
+class UE_PUBG_API UC_ItemBarWidget : public UUserWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
 public:
@@ -49,6 +49,8 @@ public:
     void InitInvenUIWidget();
     //두 기능을 합친 SetItem생각
 
+    void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+
 public:
     // UI에 바인딩할 변수 선언 (Blueprint에서 연결)
     //UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (BindWidget))
@@ -70,5 +72,7 @@ public:
     // C++에서 처리할 아이템
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
     AC_Item* CachedItem;
-
+protected:
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    class AC_BasicCharacter* OwnerCharacter;
 };

@@ -4,17 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "InvenUserInterface/C_BasicUserWidget.h"
 #include "Components/ListView.h"
 #include "UE_PUBG/Character/C_BasicCharacter.h"
-
 #include "C_MyItemListWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_MyItemListWidget : public UC_BasicUserWidget
+class UE_PUBG_API UC_MyItemListWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -38,4 +36,10 @@ public:
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     UListView* ItemListView = nullptr;
+
+
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    class AC_BasicCharacter* OwnerCharacter;
 };
