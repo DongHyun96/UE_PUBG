@@ -38,6 +38,7 @@
 #include "Item/Attachment/C_AttachableItem.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
 #include "Components/ChildActorComponent.h"
+#include "Item/AttachmentActors/AttachmentActor.h"
 
 #include "Item/Weapon/Gun/C_Bullet.h"
 
@@ -93,6 +94,7 @@ void AC_Gun::BeginPlay()
 			MAGAZINE_SOCKET_NAME
 		);
 	}
+	SetSightCameraSpringArmLocation(ScopeCameraLocations[EAttachmentNames::MAX]);
 }
 
 void AC_Gun::Tick(float DeltaTime)
@@ -568,6 +570,7 @@ void AC_Gun::SetBulletSpeed()
 bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVector &OutHitLocation, bool& OutHasHit)
 {
 	FHitResult HitResult;
+	//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
 	AController* Controller = OwnerCharacter->GetController();
 	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
@@ -629,11 +632,23 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	}
 
 	WolrdContorller->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, WorldLocation, WorldDirection);
-	FVector TestLocation = ChildActorComponent->GetComponentLocation();
-	FRotator TestDirection = ChildActorComponent->GetComponentRotation();
-	FVector ChildForward = TestDirection.Vector();
 	FVector DestLocation = WorldLocation + WorldDirection * 100000;
-	DestLocation = TestLocation + ChildForward * 100000;
+	if (GetIsPartAttached(EPartsName::SCOPE))
+	{
+		if (
+			GetAttachedItemName(EPartsName::SCOPE) == EAttachmentNames::SCOPE4 ||
+			GetAttachedItemName(EPartsName::SCOPE) == EAttachmentNames::SCOPE8
+			)
+		{
+			FVector AttachmentLocation = AttachedItem[EPartsName::SCOPE]->GetActorLocation();
+			FRotator AttachmentRotation = AttachedItem[EPartsName::SCOPE]->GetActorRotation();
+			FVector AttachmentForward = AttachmentRotation.Vector().GetSafeNormal();
+			DestLocation = AttachmentLocation + AttachmentForward * 100000;
+		}
+	}
+
+	//FVector ChildForward = TestDirection.Vector();
+	//DestLocation = TestLocation + ChildForward * 100000;
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, DestLocation, ECC_Visibility, CollisionParams);
 
 	DrawDebugSphere(GetWorld(), HitResult.Location, 1.0f, 12, FColor::Red, true);
@@ -656,6 +671,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	{
 		FireDirection = DestLocation - FireLocation;
 		FireDirection = FireDirection.GetSafeNormal();
+		//HasHit = false;
 		//UC_Util::Print(FireDirection, FColor::Blue);
 
 	}
@@ -701,12 +717,15 @@ void AC_Gun::ShowAndHideWhileAiming()
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
+	//if (GetIsPartAttached(EPartsName::SCOPE))
+	//	CollisionParams.AddIgnoredActor(AttachedItem[EPartsName::SCOPE]);
 	CollisionParams.AddIgnoredComponent(GunMesh);
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
 	if (HasHit )
 	{
+		
 		AimWidget->SetVisibility(ESlateVisibility::Visible);
-		//UC_Util::Print("Hit");
+		//UC_Util::Print(HitResult.GetActor()->GetName());
 	}
 	else
 	{
@@ -771,16 +790,18 @@ void AC_Gun::SetHolsterNames()
 
 
 	AttachmentPartsHolsterNames.Add(EAttachmentNames::REDDOT, FName("Red_Dot_Socket"));
+	AttachmentPartsHolsterNames.Add(EAttachmentNames::SCOPE4, FName("4X_Scope_Socket"));
 
 
-	AttachmentPartsHolsterCameraLocations.Add(EAttachmentNames::REDDOT, FVector4(7.f,    0.f, 15.f, 6.f   ));
-	AttachmentPartsHolsterCameraLocations.Add(EAttachmentNames::SCOPE4, FVector4(10.89f, 0.f, 15.f, 14.75f));
-	AttachmentPartsHolsterCameraLocations.Add(EAttachmentNames::MAX,    FVector4(7.f,    0.f, 13.f, 12.f  ));
+	ScopeCameraLocations.Add(EAttachmentNames::REDDOT, FVector4(7.f,    0.f, 15.f, 6.f   ));
+	ScopeCameraLocations.Add(EAttachmentNames::SCOPE4, FVector4(10.89f, 0.f, 14.75f, 6.5f));
+	ScopeCameraLocations.Add(EAttachmentNames::MAX,    FVector4(7.f,    0.f, 13.f, 12.f  ));
 
 
 	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNames에 MAX가 있다면
 	{
 		EPartsName AttachmentName = (EPartsName)i;
+		AttachedItem.Add(AttachmentName, nullptr);
 		IsPartAttached.Add(AttachmentName, false);
 		AttachedItemName.Add(AttachmentName, EAttachmentNames::MAX);
 	}

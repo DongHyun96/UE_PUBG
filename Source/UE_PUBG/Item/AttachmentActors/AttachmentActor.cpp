@@ -22,6 +22,6 @@ void AAttachmentActor::BeginPlay()
 void AAttachmentActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
