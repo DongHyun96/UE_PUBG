@@ -67,81 +67,81 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 	//{
 	//	UC_Util::Print("It's not Empty", FColor::Blue, 100);
 	//}
-	for (auto& Attachment : AttachmentBluePrintAssets1)
-	{
-
-		UBlueprint* BlueprintAsset = Cast<UBlueprint>(Attachment);
-		if (BlueprintAsset && BlueprintAsset->GeneratedClass)
-		{
-			UClass* ActorClass = BlueprintAsset->GeneratedClass;
-
-			AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
-			if (TempMesh)
-			{
-				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
-				UC_Util::Print(TempMesh, FColor::Red, 100);
-			}
-		}
-		
-	}
-		//if (mesh->GetName() == "A_RedDot")
-		//{
-		//	AAttachmentActor* TempMesh = Cast<AAttachmentActor>(mesh);
-		//	AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Emplace(TempMesh);
-		//	//AAttachmentActor* TempMeshComponent{};
-		//	//UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this);
-		//	//MeshComponent->RegisterComponent();
-		//	//MeshComponent->SetStaticMesh(TempMesh);
-		//	//UC_Util::Print(TempMesh, FColor::Red, 100);
-		//}
-
-	for (auto& Attachment : AttachmentBluePrintAssets2)
-	{
-
-		UBlueprint* BlueprintAsset = Cast<UBlueprint>(Attachment);
-		if (BlueprintAsset && BlueprintAsset->GeneratedClass)
-		{
-			UClass* ActorClass = BlueprintAsset->GeneratedClass;
-
-			AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
-			if (TempMesh)
-			{
-				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
-
-				UC_Util::Print(TempMesh, FColor::Red, 100);
-			}
-		}
-		
-	}
-	//for (auto& mesh : MeshAssets2)
+	//for (auto& Attachment : AttachmentBluePrintAssets1)
 	//{
-	//	if (mesh->GetName() == "A_RedDot")
+
+	//	UBlueprint* BlueprintAsset = Cast<UBlueprint>(Attachment);
+	//	if (BlueprintAsset && BlueprintAsset->GeneratedClass)
 	//	{
-	//		UStaticMesh* TempMesh = Cast<UStaticMesh>(mesh);
-	//		UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this);
-	//		MeshComponent->RegisterComponent();
-	//		MeshComponent->SetStaticMesh(TempMesh);
-	//		AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Emplace(MeshComponent);
-	//		//UC_Util::Print(TempMesh, FColor::Red, 100);
+	//		UClass* ActorClass = BlueprintAsset->GeneratedClass;
+
+	//		AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
+	//		if (TempMesh)
+	//		{
+	//			AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
+	//			UC_Util::Print(TempMesh, FColor::Red, 100);
+	//		}
 	//	}
-
-
+	//	
 	//}
-	UC_Util::Print(AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::SCOPE4].Num(), FColor::Emerald, 100);
+	//	//if (mesh->GetName() == "A_RedDot")
+	//	//{
+	//	//	AAttachmentActor* TempMesh = Cast<AAttachmentActor>(mesh);
+	//	//	AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Emplace(TempMesh);
+	//	//	//AAttachmentActor* TempMeshComponent{};
+	//	//	//UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this);
+	//	//	//MeshComponent->RegisterComponent();
+	//	//	//MeshComponent->SetStaticMesh(TempMesh);
+	//	//	//UC_Util::Print(TempMesh, FColor::Red, 100);
+	//	//}
 
-
-	//if (IsValid(MeshAsset.Object))
+	//for (auto& Attachment : AttachmentBluePrintAssets2)
 	//{
-	//	UStaticMeshComponent* TempMesh{};
-	//	TempMesh->SetStaticMesh(MeshAsset.Object);
-	//	AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Add(TempMesh);
+
+	//	UBlueprint* BlueprintAsset = Cast<UBlueprint>(Attachment);
+	//	if (BlueprintAsset && BlueprintAsset->GeneratedClass)
+	//	{
+	//		UClass* ActorClass = BlueprintAsset->GeneratedClass;
+
+	//		AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
+	//		if (TempMesh)
+	//		{
+	//			AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
+
+	//			UC_Util::Print(TempMesh, FColor::Red, 100);
+	//		}
+	//	}
+	//	
 	//}
-	//if (IsValid(MeshAsset.Object))
-	//{
-	//	UStaticMeshComponent* TempMesh{};
-	//	TempMesh->SetStaticMesh(MeshAsset.Object);
-	//	AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Add(TempMesh);
-	//}
+	////for (auto& mesh : MeshAssets2)
+	////{
+	////	if (mesh->GetName() == "A_RedDot")
+	////	{
+	////		UStaticMesh* TempMesh = Cast<UStaticMesh>(mesh);
+	////		UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this);
+	////		MeshComponent->RegisterComponent();
+	////		MeshComponent->SetStaticMesh(TempMesh);
+	////		AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Emplace(MeshComponent);
+	////		//UC_Util::Print(TempMesh, FColor::Red, 100);
+	////	}
+
+
+	////}
+	//UC_Util::Print(AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::SCOPE4].Num(), FColor::Emerald, 100);
+
+
+	////if (IsValid(MeshAsset.Object))
+	////{
+	////	UStaticMeshComponent* TempMesh{};
+	////	TempMesh->SetStaticMesh(MeshAsset.Object);
+	////	AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Add(TempMesh);
+	////}
+	////if (IsValid(MeshAsset.Object))
+	////{
+	////	UStaticMeshComponent* TempMesh{};
+	////	TempMesh->SetStaticMesh(MeshAsset.Object);
+	////	AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Add(TempMesh);
+	////}
 }
 
 

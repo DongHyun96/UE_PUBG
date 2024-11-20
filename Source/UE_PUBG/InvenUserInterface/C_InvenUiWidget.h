@@ -32,11 +32,6 @@ public:
 
 	bool SetIsDragging(bool Dragging) { return bIsDragging = Dragging; }
 
-	UFUNCTION(BlueprintCallable)
-	void SetItemListZorder(AC_BasicCharacter* Character);
-
-	UFUNCTION(BlueprintCallable)
-	void InitItemListZorder();
 
 public:
 	bool GetIsDragging() { return bIsDragging; }
@@ -55,6 +50,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void testAroundItemList(class UListView* list, const TArray<AC_Item*>& AroundAtemList);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateVolumeBar();
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -88,10 +86,7 @@ public:
 	UC_ThrowableWidget* ThrowableSlot = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UUserWidget* Background_Around = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UUserWidget* Background_Inventory = nullptr;
+	class UProgressBar* VolumeBar = nullptr;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

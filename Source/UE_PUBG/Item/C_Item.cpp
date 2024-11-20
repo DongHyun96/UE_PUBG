@@ -5,6 +5,8 @@
 #include "Utility/C_Util.h"
 #include "Character/C_BasicCharacter.h"
 
+#include "Engine/World.h"
+
 #include "Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
 #include "Weapon/WeaponStrategy/C_GunStrategy.h"
 
@@ -28,7 +30,6 @@ void AC_Item::BeginPlay()
 void AC_Item::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AC_Item::DetachmentItem()
@@ -64,3 +65,39 @@ void AttachToSocket(USceneComponent* InParent)
 //
 //	return nullptr;
 //}
+
+FVector AC_Item::GetGroundLocation(AC_BasicCharacter* Character)
+{
+	// 캐릭터의 위치
+	FVector CharacterLocation = Character->GetActorLocation();
+
+	// 라인 트레이스 시작 및 끝 위치 설정
+	FVector TraceStart = CharacterLocation;
+	FVector TraceEnd = TraceStart - FVector(0.0f, 0.0f, 10000.0f); // 아래 방향으로 10,000 유닛
+
+	// 라인 트레이스 설정
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(Character); // 캐릭터는 무시
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		TraceStart,
+		TraceEnd,
+		ECC_Visibility, // 충돌 채널
+		Params
+	);
+
+	if (bHit)
+	{
+		UC_Util::Print("Hit Ground");
+		UC_Util::Print(HitResult.GetActor()->GetName());
+
+	}
+	else
+	{
+		UC_Util::Print("Not Hit Ground");
+	}
+
+	return HitResult.Location;
+}
