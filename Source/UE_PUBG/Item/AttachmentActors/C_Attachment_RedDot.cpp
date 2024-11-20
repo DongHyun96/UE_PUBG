@@ -23,7 +23,7 @@ void AC_Attachment_RedDot::Tick(float DeltaTime)
 
 }
 
-bool AC_Attachment_RedDot::UseStrategy()
+bool AC_Attachment_RedDot::UseAttachStrategy()
 {
 	if (!GetAttachParentActor())
 		return false;
@@ -32,5 +32,24 @@ bool AC_Attachment_RedDot::UseStrategy()
 		return false;
 	CurrentGun->SetSightCameraSpringArmLocation(CurrentGun->GetScopeCameraLocations()[AttachmentName]);
 	CurrentGun->SetScopeCameraMode(AttachmentName);
+	CurrentGun->SetIronSightMeshHiddenInGame(true);
+
 	return true;
 }
+
+bool AC_Attachment_RedDot::UseDetachStrategy()
+{
+	if (!GetAttachParentActor())
+		return false;
+	AC_Gun* CurrentGun = Cast<AC_Gun>(GetAttachParentActor());
+	if (!IsValid(CurrentGun))
+		return false;
+	CurrentGun->SetSightCameraSpringArmLocation(CurrentGun->GetScopeCameraLocations()[EAttachmentNames::MAX]);
+	CurrentGun->SetScopeCameraMode(EAttachmentNames::MAX);
+	CurrentGun->SetIronSightMeshHiddenInGame(false);
+	DetachRootComponentFromParent();
+	SetActorHiddenInGame(true);
+
+	return true;
+}
+

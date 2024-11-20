@@ -71,12 +71,6 @@ void AC_Gun::BeginPlay()
 	SetBulletSpeed();
 	AimSightCamera   = FindComponentByClass<UCameraComponent>();
 	AimSightSpringArm = FindComponentByClass<USpringArmComponent>();
-	ChildActorComponent = FindComponentByClass<UChildActorComponent>();
-	if (IsValid(ChildActorComponent))
-	{
-		UC_Util::Print("Success To Load 4x Scope in C++", FColor::Green, 100);
-	}
-	//if(IsValid(AimSightCamera))
 	if (AimSightCamera)
 		AimSightCamera->SetActive(false);
 	//블루프린트에서 할당한 Skeletal Mesh 찾아서 변수에 저장
@@ -246,9 +240,10 @@ bool AC_Gun::SetAimingDown()
 {
 
 	//스프린트 중이라면 Return
-	if (OwnerCharacter->GetNextSpeed() > 600)
-		return false;
-	Cast<AC_Player>(OwnerCharacter)->SetToAimDownSight();
+	if (OwnerCharacter->GetNextSpeed() > 600) return false;
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	if (!IsValid(OwnerPlayer))	              return false;
+	OwnerPlayer->SetToAimDownSight();
 	//CharacterMesh->HideBoneByName(FName("HeadBoneName"), EPhysBodyOp::PBO_None);
 
 	//OwnerCharacter->bUseControllerRotationYaw = true;
@@ -259,18 +254,18 @@ bool AC_Gun::SetAimingDown()
 	AimSightCamera->SetActive(true);
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(this, 0.2);
 	bIsAimDown = true;
-
+	if (IsValid(AttachedItem[EPartsName::SCOPE]))
+		AttachedItem[EPartsName::SCOPE]->UseMrbStrategy();
 	return true;
 }
 //견착 조준만할 때 Player AimKePress함수로 메인카메라에서 에임 카메라로 바꿔주기
 bool AC_Gun::SetAimingPress()
 {
 	//스프린트 중이라면 Return
-	if (OwnerCharacter->GetNextSpeed() > 600)
-		return false;
+	if (OwnerCharacter->GetNextSpeed() > 600) return false;
 
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-	if (!IsValid(OwnerPlayer)) return false;
+	if (!IsValid(OwnerPlayer))       return false;
 	if (OwnerPlayer->GetIsAimDown()) return false;
 	OwnerPlayer->SetToAimKeyPress();
 	//bIsAimDown = true;
@@ -291,6 +286,8 @@ bool AC_Gun::BackToMainCamera()
 	OwnerCharacter->bUseControllerRotationYaw = false;
 	bIsAimDown = false;
 	Cast<AC_Player>(OwnerCharacter)->BackToMainCamera();
+	if (IsValid(AttachedItem[EPartsName::SCOPE]))
+		AttachedItem[EPartsName::SCOPE]->UseMrbStrategy();
 	return true;
 	
 	//FString TheFloatStr = FString::SanitizeFloat(MrbPressTimeCount);
@@ -410,11 +407,7 @@ void AC_Gun::CheckPlayerIsRunning()
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
 	if (NextSpeed > 600 && OwnerPlayer->GetIsAimDown())
-	{
 		BackToMainCamera();
-		UC_Util::Print("Fuck");
-
-	}
 
 
 }
@@ -756,7 +749,7 @@ void AC_Gun::LoadMagazine()
 		// 인스턴스를 GunMesh에 Attach
 		Magazine->SetOwnerCharacter(OwnerCharacter);
 		Magazine->SetIsAttached(true);
-		UC_Util::Print("Success To Load Magazine", FColor::Blue, 10.0f);
+		//UC_Util::Print("Success To Load Magazine", FColor::Blue, 10.0f);
 
 	}
 	else

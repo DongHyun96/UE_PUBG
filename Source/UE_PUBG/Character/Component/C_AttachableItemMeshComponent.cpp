@@ -79,7 +79,7 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 			if (TempMesh)
 			{
 				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
-				UC_Util::Print(TempMesh, FColor::Red, 100);
+				//UC_Util::Print(TempMesh, FColor::Red, 100);
 			}
 		}
 		
@@ -108,7 +108,7 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 			{
 				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
 
-				UC_Util::Print(TempMesh, FColor::Red, 100);
+				//UC_Util::Print(TempMesh, FColor::Red, 100);
 			}
 		}
 		
@@ -215,7 +215,6 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 	if (ParentGun->GetIsPartAttached(InPartsName))
 		DetachFromGun(InParent, InPartsName, ParentGun->GetAttachedItemName(InPartsName));
 
-	ParentGun->SetIronSightMeshHiddenInGame(true);
 	ParentGun->SetIsPartAttached(InPartsName, true);
 	ParentGun->SetAttachedItemNameInPart(InPartsName, InAttachmentName);
 	ParentGun->SetAttachedItems(InPartsName, AttachmentMesh);
@@ -226,7 +225,7 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 		ParentGun->GetAttachmentPartsHolsterNames()[InAttachmentName]
 	);
 	UC_Util::Print(AttachmentMesh->GetName(), FColor::Black, 100);
-	return AttachmentMesh->UseStrategy();
+	return AttachmentMesh->UseAttachStrategy();
 
 }
 /// <summary>
@@ -246,24 +245,13 @@ void UC_AttachableItemMeshComponent::DetachFromGun(USceneComponent* InParent, EP
 	if (!IsValid(AttachmentItem[1])) return;
 	UC_Util::Print("Detached Attachment!", FColor::Black, 20);
 	ParentGun->SetIsPartAttached(InPartsName, false);
-	ParentGun->SetSightCameraSpringArmLocation(ParentGun->GetScopeCameraLocations()[EAttachmentNames::MAX]);
-	ParentGun->SetScopeCameraMode(EAttachmentNames::MAX);
+
 	ParentGun->SetAttachedItems(InPartsName, nullptr);
 
 	if (Cast<AC_Gun>(AttachmentItem[0]->GetAttachParentActor()) == ParentGun)
-	{
-		AttachmentItem[0]->DetachRootComponentFromParent();
-		AttachmentItem[0]->SetActorHiddenInGame(true);
-		
-		ParentGun->SetIronSightMeshHiddenInGame(false);
-	}
+		AttachmentItem[0]->UseDetachStrategy();
 	else if (Cast<AC_Gun>(AttachmentItem[1]->GetAttachParentActor()) == ParentGun)
-	{
-		AttachmentItem[1]->DetachRootComponentFromParent();
-		AttachmentItem[1]->SetActorHiddenInGame(true);
-		ParentGun->SetIronSightMeshHiddenInGame(false);
-
-	}
+		AttachmentItem[1]->UseDetachStrategy();
 	return;
 
 }

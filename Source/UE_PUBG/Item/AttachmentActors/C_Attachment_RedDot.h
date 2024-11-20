@@ -24,5 +24,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual bool UseStrategy() override;
+	virtual bool UseAttachStrategy() override;
+	virtual bool UseDetachStrategy() override;
 };
