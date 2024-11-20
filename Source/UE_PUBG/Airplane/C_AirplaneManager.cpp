@@ -5,6 +5,11 @@
 #include "Airplane/C_Airplane.h"
 #include "Utility/C_Util.h"
 
+#include "Singleton/C_GameSceneManager.h"
+
+#include "Character/C_BasicCharacter.h"
+#include "Character/Component/C_SkyDivingComponent.h"
+
 // Sets default values
 AC_AirplaneManager::AC_AirplaneManager()
 {
@@ -19,9 +24,10 @@ void AC_AirplaneManager::BeginPlay()
 	Super::BeginPlay();
 
 	InitRandomStartDestPosition();
-	if (Airplane)
-		Airplane->SetActorLocation(PlaneRouteDest);
+	if (Airplane) InitAirplaneStartPosAndFlightDirection();
 
+	// Airplane TakeOff Timer Setting
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
 }
 
 // Called every frame
@@ -29,6 +35,45 @@ void AC_AirplaneManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UpdateTakeOffTimer(DeltaTime);
+
+	CheckAirplaneArrivedToRouteDestLimit();
+}
+
+void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
+{
+	if (!TakeOffTimerStarted) return;
+	if (HasAirplaneTakeOff) return;
+
+	TakeOffTimer -= DeltaTime;
+
+	if (TakeOffTimer <= 0.f) // 이륙 시작
+	{
+		InitAirplaneStartPosAndFlightDirection();
+		Airplane->StartFlight();
+		HasAirplaneTakeOff = true;
+
+		GAMESCENE_MANAGER->GetAllCharacters();
+		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
+		{
+			Character->SetMainState(EMainState::SKYDIVING);
+			Character->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::READY);
+		}
+	}
+}
+
+bool AC_AirplaneManager::CanDiveOnCurrentAirplanePosition()
+{
+	if (!HasAirplaneTakeOff || !Airplane->GetIsFlying()) return false;
+
+	FVector FlightDirection = PlaneRouteDest - PlaneRouteStart;
+	FlightDirection.Normalize();
+
+	FVector AirplaneLocation = Airplane->GetActorLocation();
+	FVector StartToAirplaneDirection = AirplaneLocation - PlaneRouteStart;
+	StartToAirplaneDirection.Normalize();
+
+	return FlightDirection.Equals(StartToAirplaneDirection, KINDA_SMALL_NUMBER);
 }
 
 void AC_AirplaneManager::InitRandomStartDestPosition()
@@ -56,7 +101,7 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 	{
 		StartX			= (FMath::RandRange(0, 1) == 0) ? PLANE_START_DEST_BORDER_VALUE : -PLANE_START_DEST_BORDER_VALUE;
 		StartY			= FMath::FRandRange(-PLANE_START_DEST_BORDER_VALUE, PLANE_START_DEST_BORDER_VALUE);
-		PlaneRouteStart = FVector(StartX, StartY, 0.f);
+		PlaneRouteStart = FVector(StartX, StartY, PLANE_ALTITUDE);
 
 		// Y = Slope * X + YInterceptValue
 		Slope = (RandomPos.Y - StartY) / (RandomPos.X - StartX);
@@ -64,7 +109,7 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 
 		if (Slope == 0.f)
 		{
-			PlaneRouteDest = FVector(-StartX, StartY, 0.f);
+			PlaneRouteDest = FVector(-StartX, StartY, PLANE_ALTITUDE);
 			return;
 		}
 
@@ -77,7 +122,7 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 
 		if (IsValueValidInBorder(DY))
 		{
-			PlaneRouteDest = FVector(DX, DY, 0.f);
+			PlaneRouteDest = FVector(DX, DY, PLANE_ALTITUDE);
 			return;
 		}
 
@@ -89,7 +134,7 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 
 			if (IsValueValidInBorder(DX))
 			{
-				PlaneRouteDest = FVector(DX, DY, 0.f);
+				PlaneRouteDest = FVector(DX, DY, PLANE_ALTITUDE);
 				return;
 			}
 		}
@@ -98,11 +143,11 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 	{
 		StartY			= (FMath::RandRange(0, 1) == 0) ? PLANE_START_DEST_BORDER_VALUE : -PLANE_START_DEST_BORDER_VALUE;
 		StartX			= FMath::FRandRange(-PLANE_START_DEST_BORDER_VALUE, PLANE_START_DEST_BORDER_VALUE);
-		PlaneRouteStart = FVector(StartX, StartY, 0.f);
+		PlaneRouteStart = FVector(StartX, StartY, PLANE_ALTITUDE);
 
 		if (RandomPos.X - StartX == 0.f) // 기울기가 무한일 때
 		{
-			PlaneRouteDest = FVector(StartX, -StartY, 0.f);
+			PlaneRouteDest = FVector(StartX, -StartY, PLANE_ALTITUDE);
 			return;
 		}
 
@@ -119,7 +164,7 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 
 		if (IsValueValidInBorder(DX))
 		{
-			PlaneRouteDest = FVector(DX, DY, 0.f);
+			PlaneRouteDest = FVector(DX, DY, PLANE_ALTITUDE);
 			return;
 		}
 
@@ -131,7 +176,7 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 
 			if (IsValueValidInBorder(DY))
 			{
-				PlaneRouteDest = FVector(DX, DY, 0.f);
+				PlaneRouteDest = FVector(DX, DY, PLANE_ALTITUDE);
 				return;
 			}
 		}
@@ -141,5 +186,93 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 bool AC_AirplaneManager::IsValueValidInBorder(float PositionValue)
 {
 	return FMath::Abs(PositionValue) <= PLANE_START_DEST_BORDER_VALUE;
+}
+
+void AC_AirplaneManager::CheckAirplaneArrivedToRouteDestLimit()
+{
+	// 낙하지점 Limit을 넘어갔다면 아직 내리지 않은 캐릭터들 내리게 처리
+	if (!Airplane->GetIsFlying()) return;
+
+	//if (!HasAirplaneTakeOff || !Airplane->GetIsFlying()) return false;
+	//
+	//FVector FlightDirection = PlaneRouteDest - PlaneRouteStart;
+	//FlightDirection.Normalize();
+	//
+	//FVector StartToAirplaneDirection = AirplaneLocation - PlaneRouteStart;
+	//StartToAirplaneDirection.Normalize();
+	//
+	//return FlightDirection.Equals(StartToAirplaneDirection, KINDA_SMALL_NUMBER);
+
+	FVector FlightDirection = PlaneRouteDest - PlaneRouteStart;
+	FlightDirection.Normalize();
+
+	FVector AirplaneLocation = Airplane->GetActorLocation();
+	FVector DestToAirplaneDirection = AirplaneLocation - PlaneRouteDest;
+	DestToAirplaneDirection.Normalize();
+
+	// 낙하 지점 Limit을 넘어간 시점
+	if (FlightDirection.Equals(DestToAirplaneDirection, KINDA_SMALL_NUMBER))
+	{
+		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
+		{
+			if (Character->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
+				Character->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING);
+		}
+	}
+}
+
+void AC_AirplaneManager::InitAirplaneStartPosAndFlightDirection()
+{
+	// TODO : Init Airplane actual StartPosition and FlightDirection
+	// L(t) = (x0 + t dx, y0 + t dy)
+
+	FVector FlightDirection = PlaneRouteDest - PlaneRouteStart;
+	FlightDirection.Normalize();
+	Airplane->SetFlightDirection(FlightDirection);
+
+	FVector ToStartDirection = -FlightDirection;
+
+	const float ACTUAL_START_DEST_BORDER_VALUE = 50000.f;
+	// x = +-START_DEST_BORDER_VALUE | y = +-START_DEST_BORDER_VALUE 교차점 찾아서 Valid한 교차지점 찾기
+
+	// x = +-START_DEST_BORDER_VALUE 교차점 찾기
+	if (!FMath::IsNearlyZero(ToStartDirection.X)) // 세로선과 평행이지 않을 때
+	{
+		for (int i = -1; i <= 1; i += 2)
+		{
+			float X = ACTUAL_START_DEST_BORDER_VALUE * i;
+			float T = (X - PlaneRouteStart.X) / ToStartDirection.X;
+			float Y = PlaneRouteStart.Y + T * ToStartDirection.Y;
+
+			if (T < 0.f) continue;
+
+			// Check Border validation
+			if (FMath::Abs(Y) <= ACTUAL_START_DEST_BORDER_VALUE)
+			{
+				Airplane->SetStartPosition(FVector(X, Y, PLANE_ALTITUDE));
+				return;
+			}
+		}
+	}
+
+	if (!FMath::IsNearlyZero(ToStartDirection.Y)) // 가로선과 평행이지 않을 때
+	{
+		for (int i = -1; i <= 1; i += 2)
+		{
+			float Y = ACTUAL_START_DEST_BORDER_VALUE * i;
+			float T = (Y - PlaneRouteStart.Y) / ToStartDirection.Y;
+			float X = PlaneRouteStart.X + T * ToStartDirection.X;
+
+			if (T < 0.f) continue;
+
+			// Check Border validation
+			if (FMath::Abs(Y) <= ACTUAL_START_DEST_BORDER_VALUE)
+			{
+				Airplane->SetStartPosition(FVector(X, Y, PLANE_ALTITUDE));
+				return;
+			}
+		}
+	}
+
 }
 

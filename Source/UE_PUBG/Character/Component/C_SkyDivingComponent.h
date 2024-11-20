@@ -165,6 +165,7 @@ protected:
 
 private: // Player Main camera spring arm 거리 조절 관련
 
+	const float PLAYER_READY_MAINCAM_ARMLENGTH = 3000.f; // 비행기 안에 탑승했을 때의 ArmLength
 	const float PLAYER_PARACHUTE_MAINCAM_ARMLENGTH = 600.f;
 	const float PLAYER_SKYDIVE_MAINCAM_ARMLENGTH = 400.f;
 	const float PLAYER_ORIGIN_MAINCAM_ARMLENGTH  = 220.f;

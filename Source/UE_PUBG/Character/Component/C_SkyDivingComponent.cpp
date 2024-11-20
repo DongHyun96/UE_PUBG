@@ -12,8 +12,13 @@
 #include "Character/Component/C_SwimmingComponent.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_SkyDiveWidget.h"
+#include "HUD/C_MainMapWidget.h"
 
 #include "Utility/C_Util.h"
+
+#include "Singleton/C_GameSceneManager.h"
+#include "Airplane/C_AirplaneManager.h"
+#include "Airplane/C_Airplane.h"
 
 UC_SkyDivingComponent::UC_SkyDivingComponent()
 {
@@ -167,13 +172,19 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 	switch (InSkyDivingState)
 	{
 	case ESkyDivingState::READY:
-		// TODO : Player일 경우 비행기 위치로 카메라 잡기
 		OwnerCharacter->SetActorHiddenInGame(true);
 		OwnerCharacter->GetCharacterMovement()->GravityScale = 0.f;
 		SkyDivingState = InSkyDivingState;
 		return;
 	case ESkyDivingState::SKYDIVING:
 	{
+		// SkyDiving 가능한지 체크
+		if (!GAMESCENE_MANAGER->GetAirplaneManager()->CanDiveOnCurrentAirplanePosition())
+		{
+			UC_Util::Print("Cannot SkyDive at the current pos");
+			return;
+		}
+
 		SkyDivingState = InSkyDivingState;
 
 		// TODO : 비행기 위치에 Character spawn(Visibility on) & Player일 경우 MainCamera Player로 다시 잡아주기
@@ -205,6 +216,10 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 
 			// TODO: 맵에 따른 parachute Limit 고도 설정(SkyDiveWidget에서 사용)
 			PlayerSkyDiveWidget->SetParachuteLimitAltitude(PARACHUTE_DEPLOY_LIMIT_HEIGHT);
+
+			// Player 마커 MainMap에 다시 표시하기
+			UC_MainMapWidget* PlayerMainMapWidget = OwnerPlayer->GetHUDWidget()->GetMainMapWidget();
+			PlayerMainMapWidget->TogglePlayerMarkerImageVisibility(true);
 		}
 
 		return;
@@ -312,6 +327,8 @@ void UC_SkyDivingComponent::LerpPlayerMainCameraArmLength(const float& DeltaTime
 		MainCamSpringArm->TargetArmLength = FMath::Lerp(MainCamSpringArm->TargetArmLength, PLAYER_ORIGIN_MAINCAM_ARMLENGTH, DeltaTime * 5.f);
 		return;
 	case ESkyDivingState::READY:
+		MainCamSpringArm->TargetArmLength = FMath::Lerp(MainCamSpringArm->TargetArmLength, PLAYER_READY_MAINCAM_ARMLENGTH, DeltaTime * 5.f);
+		return;
 	case ESkyDivingState::MAX:
 	default:
 		return;
@@ -359,6 +376,8 @@ void UC_SkyDivingComponent::UpdateCurrentHeight()
 	{
 		FCollisionQueryParams CollisionParams{};
 		CollisionParams.AddIgnoredActor(OwnerCharacter);
+
+		CollisionParams.AddIgnoredActor(GAMESCENE_MANAGER->GetAirplaneManager()->GetAirplane());
 
 		FHitResult HitResult{};
 

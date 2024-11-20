@@ -23,15 +23,34 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
+
+	/// <summary>
+	/// 비행기 비행 시작 시간 재기
+	/// </summary>
+	/// <param name="DeltaTime"></param>
+	void UpdateTakeOffTimer(const float& DeltaTime);
+
 public:
 
 	TPair<FVector, FVector> GetPlaneRouteStartDestPair() const { return { PlaneRouteStart, PlaneRouteDest }; }
+	class AC_Airplane* GetAirplane() const { return Airplane; }
 
-private:
+public:
+
+	/// <summary>
+	/// 현재 비행기 위치에서 낙하할 수 있는지 체크
+	/// </summary>
+	/// <returns></returns>
+	bool CanDiveOnCurrentAirplanePosition();
+
+public:
 	/// <summary>
 	/// Random Start, Dest position 지정하기
 	/// </summary>
 	void InitRandomStartDestPosition();
+
+private:
 
 	/// <summary>
 	/// Start Dest pos 초기화 시 Border가 valid한지 체크
@@ -39,6 +58,20 @@ private:
 	/// <param name="PositionValue"></param>
 	/// <returns></returns>
 	bool IsValueValidInBorder(float PositionValue);
+
+	/// <summary>
+	/// 낙하해야 하는 Limit 거리까지 도달했는지 체크해서 도달했다면, 남아있는 캐릭터들 모두 SkyDiving 시키기
+	/// </summary>
+	void CheckAirplaneArrivedToRouteDestLimit();
+
+	/// <summary>
+	/// Airplane의 StartPos와 FlightDirection Init
+	/// </summary>
+	void InitAirplaneStartPosAndFlightDirection();
+
+private:
+
+	void StartTakeOffTimer() { TakeOffTimerStarted = true; }
 
 protected:
 
@@ -51,9 +84,22 @@ private:
 
 	const float PLANE_START_DEST_BORDER_VALUE = 40000.f;
 
-	// 비행기 경로 시작점, 끝점
+	// 비행기 경로 시작점, 끝점 (맵에 표시된 경로의 시작점, 끝점)
 	FVector PlaneRouteStart{};
 	FVector PlaneRouteDest{};
 
+private:
+
+	struct FTimerHandle TimerHandle{};
+
+	// 비행기 출발 시작 전까지의 Timer 시작했는지
+	bool TakeOffTimerStarted{};
+
+	// 비행기 출발 시작했는지
+	bool HasAirplaneTakeOff{};
+
+	//const float TAKEOFF_TIME_TOTAL = 30.f;
+	const float TAKEOFF_TIME_TOTAL = 1.f;
+	float		TakeOffTimer = TAKEOFF_TIME_TOTAL;
 
 };
