@@ -36,5 +36,7 @@ public:
 	EAttachmentNames GetAttachmentName() { return AttachmentName; }
 
 
-	virtual bool UseStrategy() PURE_VIRTUAL(AAttachmentActor::UseStrategy, return false;);
+	virtual bool UseAttachStrategy() PURE_VIRTUAL(AAttachmentActor::UseAttachStrategy, return false;);
+	virtual bool UseDetachStrategy() PURE_VIRTUAL(AAttachmentActor::UseDetachStrategy, return false;);
+	virtual bool UseMrbStrategy() { return false; };
 };
