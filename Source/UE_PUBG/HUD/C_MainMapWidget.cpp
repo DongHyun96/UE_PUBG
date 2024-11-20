@@ -108,8 +108,8 @@ int32 UC_MainMapWidget::NativePaint
 	Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
 
 	// 선의 색상 및 두께 설정
-	FLinearColor LineColor = FLinearColor::Red;
-	float LineThickness = 2.f;
+	FLinearColor LineColor = FLinearColor(1.f, 0.27f, 0.27f, 0.7f);
+	float LineThickness = 5.f;
 
 	// 선을 정의하는 배열 생성
 	TArray<FVector2D> LinePoints{};
@@ -209,6 +209,7 @@ void UC_MainMapWidget::HandleUpdatePlaneRouteStartDest()
 	AirplaneRouteDestPos = AirplaneRouteDestPosOrigin * MainMapScale;
 	AirplaneRouteDestPos += MainMapImg->GetRenderTransform().Translation;
 
+	// Dest Triangle 이미지 위치 잡기
 	AirplaneDestTriangleImage->SetRenderTranslation(AirplaneRouteDestPos);
 
 	AirplaneRouteDestPos += MID_POINT;
@@ -447,19 +448,39 @@ void UC_MainMapWidget::SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector
 	}
 	
 	float DX = AirplaneRouteDestPosOrigin.X - AirplaneRouteStartPosOrigin.X;
-	float DY = AirplaneRouteDestPosOrigin.Y - AirplaneRouteStartPosOrigin.Y;
+	float DY = AirplaneRouteStartPosOrigin.Y - AirplaneRouteDestPosOrigin.Y;
 
-	float Angle = FMath::RadiansToDegrees(FMath::Atan(DX / DY));
-	
-	// 1, 4 사분면 회전 잡기
-	//Angle += ((DX > 0.f && DY > 0.f) || (DX > 0.f && DY < 0.f)) ? 90.f : -90.f;
+	float Angle = FMath::RadiansToDegrees(FMath::Atan(DY / DX));
+	Angle	    = (DX < 0.f) ? 270.f - Angle : 90.f - Angle;
 
-	AirplaneDestTriangleImage->SetRenderTransformAngle(90.f - Angle);
+	AirplaneDestTriangleImage->SetRenderTransformAngle(Angle);
 
-	/*
-	// 회전 잡기
-	PlayerMarkerImg->SetRenderTransformAngle(Player->GetActorRotation().Yaw);
-	*/
+	// Airplane 이미지 회전 잡기
+	AirplaneImg->SetRenderTransformAngle(Angle - 90.f);
+}
+
+void UC_MainMapWidget::UpdateAirplaneImagePosition(const FVector& AirplaneLocation)
+{
+	FVector2D Position = { AirplaneLocation.Y, -AirplaneLocation.X };
+	Position *= (CANVAS_SIZE / WORLD_MAP_SIZE) * MainMapScale;
+	Position += MainMapImg->GetRenderTransform().Translation;
+
+	AirplaneImg->SetRenderTranslation(Position);
+
+	FVector2D AirplaneImgScale = FVector2D(1.f, 1.f) * MainMapScale;
+	AirplaneImg->SetRenderScale(AirplaneImgScale);
+}
+
+void UC_MainMapWidget::ToggleAirplaneImageVisibility(bool Visible)
+{
+	ESlateVisibility ImageVisibility = Visible ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden;
+	AirplaneImg->SetVisibility(ImageVisibility);
+}
+
+void UC_MainMapWidget::TogglePlayerMarkerImageVisibility(bool Visible)
+{
+	ESlateVisibility ImageVisibility = Visible ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden;
+	PlayerMarkerImg->SetVisibility(ImageVisibility);
 }
 
 bool UC_MainMapWidget::HandleLMBDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)

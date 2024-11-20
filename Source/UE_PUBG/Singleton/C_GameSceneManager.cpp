@@ -23,6 +23,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		{
 			Player = P;
 			//UC_Util::Print(Player, FColor::Red, 10.f);
+			AllCharacters.Add(Player);
 		}
 
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;

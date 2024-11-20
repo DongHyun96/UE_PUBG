@@ -85,6 +85,17 @@ public:
 
 	void SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest) override;
 
+
+	/// <summary>
+	/// AirplaneLocation에 따른 AirplaneImagePosition 잡기
+	/// </summary>
+	/// <param name="AirplaneLocation"> : 비행기 현재 위치 </param>
+	void UpdateAirplaneImagePosition(const FVector& AirplaneLocation);
+
+	void ToggleAirplaneImageVisibility(bool Visible);
+
+	void TogglePlayerMarkerImageVisibility(bool Visible);
+
 private:
 
 	/// <summary>
