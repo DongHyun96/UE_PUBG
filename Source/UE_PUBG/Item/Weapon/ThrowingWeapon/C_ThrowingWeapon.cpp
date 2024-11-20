@@ -303,14 +303,21 @@ bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 
 bool AC_ThrowingWeapon::MoveToAround(AC_BasicCharacter* Character)
 {
+	if (!Character) return false;
+
 	Character->GetInvenComponent()->RemoveItemToMyList(this);
 	//TODO: 분할해서 버리는 경우 새로 스폰해주어야함.
+	ItemDatas.ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
-	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	//바닥 레이 캐스팅 받아와서 바닥에 아이템 생성하기.
+	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
+
+	//SetActorRotation(FQuat(0,0,0));
+
 	return true;
 }
 

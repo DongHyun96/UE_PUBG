@@ -56,17 +56,12 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 	AttachableItemsMesh[EPartsName::SCOPE].Add(EAttachmentNames::REDDOT);
 	AttachableItemsMesh[EPartsName::SCOPE].Add(EAttachmentNames::SCOPE4);
 	;
-	// ...
-	//static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/SM_T4_Sight.SM_T4_Sight"));
-	
+
 	TArray<UObject*> AttachmentBluePrintAssets1;
 	EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/AttachmentBluePrints"), AttachmentBluePrintAssets1, EngineUtils::ATL_Regular);
 	TArray<UObject*> AttachmentBluePrintAssets2;
 	EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/AttachmentBluePrints"), AttachmentBluePrintAssets2, EngineUtils::ATL_Regular);
-	//if (!MeshAssets1.IsEmpty())
-	//{
-	//	UC_Util::Print("It's not Empty", FColor::Blue, 100);
-	//}
+
 	for (auto& Attachment : AttachmentBluePrintAssets1)
 	{
 
@@ -79,21 +74,12 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 			if (TempMesh)
 			{
 				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
-				UC_Util::Print(TempMesh, FColor::Red, 100);
+				//UC_Util::Print(TempMesh, FColor::Red, 100);
 			}
 		}
 		
 	}
-		//if (mesh->GetName() == "A_RedDot")
-		//{
-		//	AAttachmentActor* TempMesh = Cast<AAttachmentActor>(mesh);
-		//	AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Emplace(TempMesh);
-		//	//AAttachmentActor* TempMeshComponent{};
-		//	//UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this);
-		//	//MeshComponent->RegisterComponent();
-		//	//MeshComponent->SetStaticMesh(TempMesh);
-		//	//UC_Util::Print(TempMesh, FColor::Red, 100);
-		//}
+
 
 	for (auto& Attachment : AttachmentBluePrintAssets2)
 	{
@@ -108,40 +94,12 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 			{
 				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
 
-				UC_Util::Print(TempMesh, FColor::Red, 100);
+				//UC_Util::Print(TempMesh, FColor::Red, 100);
 			}
 		}
 		
 	}
-	//for (auto& mesh : MeshAssets2)
-	//{
-	//	if (mesh->GetName() == "A_RedDot")
-	//	{
-	//		UStaticMesh* TempMesh = Cast<UStaticMesh>(mesh);
-	//		UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this);
-	//		MeshComponent->RegisterComponent();
-	//		MeshComponent->SetStaticMesh(TempMesh);
-	//		AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Emplace(MeshComponent);
-	//		//UC_Util::Print(TempMesh, FColor::Red, 100);
-	//	}
-
-
-	//}
-	UC_Util::Print(AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::SCOPE4].Num(), FColor::Emerald, 100);
-
-
-	//if (IsValid(MeshAsset.Object))
-	//{
-	//	UStaticMeshComponent* TempMesh{};
-	//	TempMesh->SetStaticMesh(MeshAsset.Object);
-	//	AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Add(TempMesh);
-	//}
-	//if (IsValid(MeshAsset.Object))
-	//{
-	//	UStaticMeshComponent* TempMesh{};
-	//	TempMesh->SetStaticMesh(MeshAsset.Object);
-	//	AttachableItemsMesh[EPartsName::SCOPE][EAttachmentNames::REDDOT].Add(TempMesh);
-	//}
+	
 }
 
 
@@ -215,7 +173,6 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 	if (ParentGun->GetIsPartAttached(InPartsName))
 		DetachFromGun(InParent, InPartsName, ParentGun->GetAttachedItemName(InPartsName));
 
-	ParentGun->SetIronSightMeshHiddenInGame(true);
 	ParentGun->SetIsPartAttached(InPartsName, true);
 	ParentGun->SetAttachedItemNameInPart(InPartsName, InAttachmentName);
 	ParentGun->SetAttachedItems(InPartsName, AttachmentMesh);
@@ -226,7 +183,7 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 		ParentGun->GetAttachmentPartsHolsterNames()[InAttachmentName]
 	);
 	UC_Util::Print(AttachmentMesh->GetName(), FColor::Black, 100);
-	return AttachmentMesh->UseStrategy();
+	return AttachmentMesh->UseAttachStrategy();
 
 }
 /// <summary>
@@ -246,24 +203,13 @@ void UC_AttachableItemMeshComponent::DetachFromGun(USceneComponent* InParent, EP
 	if (!IsValid(AttachmentItem[1])) return;
 	UC_Util::Print("Detached Attachment!", FColor::Black, 20);
 	ParentGun->SetIsPartAttached(InPartsName, false);
-	ParentGun->SetSightCameraSpringArmLocation(ParentGun->GetScopeCameraLocations()[EAttachmentNames::MAX]);
-	ParentGun->SetScopeCameraMode(EAttachmentNames::MAX);
+
 	ParentGun->SetAttachedItems(InPartsName, nullptr);
 
 	if (Cast<AC_Gun>(AttachmentItem[0]->GetAttachParentActor()) == ParentGun)
-	{
-		AttachmentItem[0]->DetachRootComponentFromParent();
-		AttachmentItem[0]->SetActorHiddenInGame(true);
-		
-		ParentGun->SetIronSightMeshHiddenInGame(false);
-	}
+		AttachmentItem[0]->UseDetachStrategy();
 	else if (Cast<AC_Gun>(AttachmentItem[1]->GetAttachParentActor()) == ParentGun)
-	{
-		AttachmentItem[1]->DetachRootComponentFromParent();
-		AttachmentItem[1]->SetActorHiddenInGame(true);
-		ParentGun->SetIronSightMeshHiddenInGame(false);
-
-	}
+		AttachmentItem[1]->UseDetachStrategy();
 	return;
 
 }

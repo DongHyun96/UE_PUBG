@@ -104,6 +104,9 @@ protected: // 비행기 경로 관련
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UImage* AirplaneDestTriangleImage{};
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UImage* AirplaneImg{};
+
 private:
 	const float BACKGROUND_SIZE = 2500.f;
 

@@ -233,7 +233,7 @@ public:
 	void SetSightCameraSpringArmLocation(FVector4 InLocationAndArmLength);
 	//For Test
 
-	class UChildActorComponent* ChildActorComponent;
+	
 
 	void SetScopeCameraMode(EAttachmentNames InAttachmentName);
 };

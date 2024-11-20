@@ -201,6 +201,8 @@ public:
 
 	void SetItemPlace(EItemPlace InPlace) { ItemDatas.ItemPlace = InPlace; }
 
+	FVector GetGroundLocation(AC_BasicCharacter* Character);
+
 public:
 	FItemData GetItemDatas() { return ItemDatas; }
 

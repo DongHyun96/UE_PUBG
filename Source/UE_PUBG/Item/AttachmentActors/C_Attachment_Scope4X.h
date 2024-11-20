@@ -24,5 +24,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual bool UseStrategy() override;
+	virtual bool UseAttachStrategy() override;
+	virtual bool UseDetachStrategy() override;
+	virtual bool UseMrbStrategy()    override;
+
+	class USceneCaptureComponent2D* SceneCaptureComponent;
 };

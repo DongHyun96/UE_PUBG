@@ -153,7 +153,7 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 
 	OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 	
-	OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetItemListZorder(CachedItem->GetOwnerCharacter());
+	//OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetItemListZorder(CachedItem->GetOwnerCharacter());
 
 
 	UC_Util::Print("OnDragDetected!!");

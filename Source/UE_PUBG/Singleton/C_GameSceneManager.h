@@ -31,10 +31,17 @@ public: // Getters and setters
 	class AC_MagneticFieldManager* GetMagneticFieldManager() const { return MagneticFieldManager; }
 	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
 
+	TArray<class AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
+
 private:
 
-	class AC_Player* Player{};
-	class AC_MagneticFieldManager* MagneticFieldManager{};
-	class AC_AirplaneManager* AirplaneManager{};
+	class AC_Player*				Player{};
+	class AC_MagneticFieldManager*	MagneticFieldManager{};
+	class AC_AirplaneManager*		AirplaneManager{};
+
+private:
+
+	// 인게임 모든 캐릭터들(Player + Enemies)
+	TArray<class AC_BasicCharacter*> AllCharacters{};
 
 };

@@ -38,10 +38,10 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	if (CurWeapon->GetIsPartAttached(EPartsName::SCOPE))
 	{
-		WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::SCOPE, EAttachmentNames::REDDOT);
+		WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::SCOPE, EAttachmentNames::SCOPE4);
 		return true;
 	}
-	WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::SCOPE, EAttachmentNames::REDDOT);
+	WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::SCOPE, EAttachmentNames::SCOPE4);
 	//CurWeapon->ExecuteReloadMontage();
 	return false;
 }
