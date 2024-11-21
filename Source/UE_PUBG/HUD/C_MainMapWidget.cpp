@@ -354,9 +354,6 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 {
 	if (!PingMarkerBorder) return false;
 
-	// For Testing
-	MousePos = AirplaneRouteStartPos;
-
 	PingMarkerPos = MousePos - MID_POINT;
 	PingMarkerPos -= MainMapImg->GetRenderTransform().Translation;
 	PingMarkerPos /= MainMapScale;

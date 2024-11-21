@@ -93,6 +93,7 @@ public:
 	class UC_MainMapWidget* GetMainMapWidget() const { return MainMapWidget; }
 	class UC_OxygenWidget* GetOxygenWidget() const { return OxygenWidget; }
 	class UC_SkyDiveWidget* GetSkyDiveWidget() const { return SkyDiveWidget; }
+	class UC_InstructionWidget* GetInstructionWidget() const { return InstructionWidget; }
 
 protected:
 
@@ -128,6 +129,12 @@ protected: // SkyDive Widget
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_SkyDiveWidget* SkyDiveWidget{};
+
+protected: // Key Instruction Widget
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class  UC_InstructionWidget* InstructionWidget{};
+
 
 private:
 
