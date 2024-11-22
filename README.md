@@ -14,7 +14,7 @@ Developed with Unreal Engine 5
 
 ## # 전상연
 
-### 구조설계
+### 구조 설계
 * 아이템 구조 설계
 * 캐릭터 Inventory 구조 설계
 
@@ -45,9 +45,32 @@ Developed with Unreal Engine 5
 * ThrowableWeaponSlot Widget 구현(이미지만)
 * SlotWidget들의 경우 블프의 내용을 C++로 이전하면서 이미지만 띄우고 있음
 * 블프에서는 우클릭까지 가능 했었음
-<br/><br/><br/>
+<br/><br/><br/><br/>
 
 ## # 김동현
+### 구조 설계
+* Character basic FSM 구조 설계
+    * Character MainState / HandState / PoseState
+* Weapon 기본 구조 및 Weapon Button strategy pattern 구조 설계
 
+### Character Implementation
+* Character HandState WEAPON_MELEE / WEAPON_THROWABLE BlendSpaces 구현
+    * WEAPON_MELEE - Stand BS
+    * WEAPON_MELEE - Crouch BS
+    * WEAPON_MELEE - Crawl BS
+    * WEAPON_THROWABLE - Stand BS
+    * WEAPON_THROWABLE - Crouch BS 
+    * WEAPON_THROABLE - Stand BS
+<br/>
+* AnimMontage Priority에 따른 PlayAnimMontage 방식 수정
+    * PriorityAnimMontage 구조 설계 및 구현
+    * AnimMontage끼리의 우선순위에 따른 재생 구현
+ 
+<br/> 
+* PoseState별 Collider 처리 및 지형지물에 따른 자세전환 제한 구현
+* 자세 및 Boost 량에 따른 속도 조절
+* Swimming State 구현
+* SkyDiving State 구현
 
+<br/><br/><br/><br/>
 ## # 박현호
