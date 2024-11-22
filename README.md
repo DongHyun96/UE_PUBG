@@ -17,3 +17,6 @@ Developed with Unreal Engine 5
 ### 구조설계
 * 아이템 구조 설계
 * 캐릭터 Inventory 구조 설계
+
+### Character Implementation
+* 
