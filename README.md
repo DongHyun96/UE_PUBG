@@ -45,7 +45,7 @@ Developed with Unreal Engine 5
 * ThrowableWeaponSlot Widget 구현(이미지만)
 * SlotWidget들의 경우 블프의 내용을 C++로 이전하면서 이미지만 띄우고 있음
 * 블프에서는 우클릭까지 가능 했었음
-        
+
 
 ## # 김동현
 ### 구조 설계
@@ -71,5 +71,33 @@ Developed with Unreal Engine 5
 * Swimming State 구현
 * SkyDiving State 구현
 
+### 투척류 Implementation
+* Grenade
+* SmokeGrenade
+* FlashBang
+* 투척 예상 경로 그리기 구현
+* 투척류 폭발 Strategy에 따라 폭발 처리 구조 Strategy pattern 구현
+* 투척류 현 State에 따른 캐릭터 모션처리
+
+### Melee Weapon Implementation
+* 근접 무기 프라이팬 구현
+
+### EquippedComponent Implementation
+* 캐릭터에 장착된 총기1, 2 / 투척류 / 근접무기 Slot 관리 구현
+    * 캐릭터 HandState 전환( ex) 총기1 상태에서 투척류 전환 or 무기 집어넣기/꺼내기)에 따른 무기 전환 처리 구현
+
+### StatComponent Implementation
+* 캐릭터 HP / Boosting Amount / Oxygen Amount(수영 시 산소량)에 따른 캐릭터 상태 처리
+* 부위별 피격 Damage에 따른 Damage량 조절
+
+### Consumable Item Usage Implementation
+* Template method pattern 구조를 통한 Consumable Item 사용 기능 구현
+* Heal Item Usage
+    * MedKit Usage(의료용 키트)
+    * FirstAidKit Usage(구급 상자)
+    * Bandage Usage(붕대)
+* Boost Item Usage
+    * PainKiller Usage(진통제)
+    * EnergyDrink Usage(에너지드링크)
         
 ## # 박현호
