@@ -20,4 +20,4 @@ Developed with Unreal Engine 5
 
 ### Character Implementation
 * Character basic input mapping
- * Character Movement input mapping
+    * Character Movement input mapping
