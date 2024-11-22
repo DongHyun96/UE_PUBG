@@ -114,6 +114,16 @@ Developed with Unreal Engine 5
 * SkyDiving State 시 현재 고도 및 속력 측정계 구현
 * 상단 Compass Bar 구현
 
+### Airplane Manager Implementation
+* 게임 첫 시작 비행 관리 구현
+* Random한 비행 동선 및 비행기 객체 관리 구현
+* Character들 SkyDive State 전환 관리 구현
+
+### 자기장 System Implementation
+* Random Next Circle 기능 구현
+* Current Circle -> Next Circle 줄어드는 알고리즘 구현
+* 자기장 페이즈 조절 구현
+
 <br/><br/><br/><br/><br/>
 
 ## # 박현호
