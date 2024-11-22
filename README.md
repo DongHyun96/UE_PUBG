@@ -19,4 +19,5 @@ Developed with Unreal Engine 5
 * 캐릭터 Inventory 구조 설계
 
 ### Character Implementation
-* 
+* Character basic input mapping
+ * Character Movement input mapping
