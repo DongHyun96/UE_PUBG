@@ -43,9 +43,10 @@ Developed with Unreal Engine 5
 * Volume System 구현
 * MainGunSlot, SubGunSlot Widget 구현(이미지만)
 * ThrowableWeaponSlot Widget 구현(이미지만)
-* SlotWidget들의 경우 블프의 내용을 C++로 이전하면서 이미지만 띄우고 있음
-* 블프에서는 우클릭까지 가능 했었음
+* SlotWidget들의 경우 블루프린트의 내용을 C++로 이전하면서 이미지만 띄우고 있음
+* 블루프린트에서는 우클릭까지 가능 했었음
 
+<br/><br/><br/><br/><br/>
 
 ## # 김동현
 ### 구조 설계
@@ -99,5 +100,19 @@ Developed with Unreal Engine 5
 * Boost Item Usage
     * PainKiller Usage(진통제)
     * EnergyDrink Usage(에너지드링크)
+
+### Ping System Implementation
+* Ping marker 표시 기능 구현
+    * InGame Level에서 Player가 바라보는 지점 Ping 찍기 기능 구현
+    * Map에서 Ping 찍기 기능 구현
+
+### Player HUD Implementation
+* 플레이어 Stat에 따른 Stat 표기
+    * Player HP / Boosting Amount / Oxygen Amount
+* MiniMap 기능 구현
+* MainMap 기능 구현
+* SkyDiving State 시 현재 고도 및 속력 측정계 구현
+* 상단 Compass Bar 구현
+
         
 ## # 박현호
