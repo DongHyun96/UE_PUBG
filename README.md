@@ -114,5 +114,68 @@ Developed with Unreal Engine 5
 * SkyDiving State 시 현재 고도 및 속력 측정계 구현
 * 상단 Compass Bar 구현
 
-        
+<br/><br/><br/><br/><br/>
+
 ## # 박현호
+
+### Animation System
+* AnimBasicCharacter
+* Player의 Animation과 Function 전반을 관리하는 핵심 클래스.
+* Aim Offset 및 Lerp를 활용하여 자연스러운 시선 이동 구현:
+    * 시선 이동: 머리와 시선이 먼저 움직이고 이후 몸체가 따라오는 방식으로 애니메이션 처리.
+* C++에서 필요한 수치와 Boolean 값을 처리하여 Blueprint에 전달.
+* 애니메이션은 ABP_Player에서 집중적으로 처리.
+* **Player의 상태(State)**에 따라 애니메이션을 동적으로 전환.
+
+### Weapon System
+* Gun
+    * Item Class를 상속받아 제작된 Weapon Class.
+    * 무기 관련 모든 상호작용과 기능을 이 클래스에서 처리.
+ 
+### Bullet Firing System
+* Firing Logic
+    * Player의 상태에 따라 총알 발사 로직이 상이.
+        * 조준(Aim) 모드 및 일반 모드:
+            * Crosshair 내부에서 Ray Trace를 수행하여 충돌 위치를 결정.
+            * 총구에서 충돌 위치까지 총알을 발사.
+            * 100m 이내 충돌:
+                * 중력을 적용하지 않고 탄을 직선으로 발사.
+            * 100m 초과 충돌:
+                * 중력을 적용하여 탄도가 자연스럽게 낙차를 보이도록 설정.
+        * Aim Down Sight (ADS) 모드:
+            * Zeroing(영점) 거리: 100m.
+            * 화면 중심에서 Ray Trace를 수행하여 100m 지점에 닿도록 발사 각도 조정.
+            * 항상 중력 적용하여 사실적인 탄도를 구현.
+
+### Timeline Component
+* CurveFloat 데이터를 기반으로 Tick 독립적으로 작동.
+* 총기 발사 반동, Aim 시 카메라 이동, Controller 진동 등의 처리를 담당.
+* CurveFloat 값 조정으로 세부적인 진동 및 이동 효과 설정 가능.
+* 결과적으로 부드럽고 세밀한 카메라 이동 및 진동 효과를 구현.
+  
+### Attachment System
+* Attachment Component
+    * Attachment 아이템들을 관리하는 핵심 클래스.
+    * Player는 하나의 Attachment Component를 소유.
+    * 2개의 총기를 사용할 수 있으므로 각 총기에 대한 Attachment Array를 관리.
+* Attachment Actor
+    * 추상 클래스로 설계:
+        * 자식 클래스들이 특정 총기와의 상호작용을 독립적으로 구현 가능.
+* Attachment 종류
+    * Red Dot Sight:
+        * 기본적으로 총기에 장착.
+        * Ray Trace를 통해 화면 중심에서 Hit Event 발생 시 붉은 점 표시.
+        * Red Dot이 범위를 벗어나면 붉은 점을 비활성화.
+    * 4x Scope:
+        * Render Target 및 Scene Capture 2D를 활용하여 Scope의 유리에 확대 이미지를 렌더링.
+        * Bump Mapping을 적용하여 2D 이미지를 통해 깊이감을 부여.
+
+### Crosshair Widget Component
+* 캐릭터 상태에 따라 Crosshair의 크기, 가시성 등을 조정.
+* 다양한 게임 상황(조준, 반동, 이동 등)에 따른 동적 처리를 지원.
+
+###추가 고려 사항
+* 이벤트 중심 설계를 통해 성능 최적화:
+    * 발사 로직 및 Crosshair 업데이트는 필요 시점에만 수행.
+* 모듈화된 구조:
+    * 각 기능은 독립적으로 설계되어 유지보수와 확장이 용이.
