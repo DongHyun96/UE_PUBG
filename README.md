@@ -61,11 +61,11 @@ Developed with Unreal Engine 5
     * WEAPON_THROWABLE - Stand BS
     * WEAPON_THROWABLE - Crouch BS 
     * WEAPON_THROABLE - Stand BS
-  
+
 * AnimMontage Priority에 따른 PlayAnimMontage 방식 수정
     * PriorityAnimMontage 구조 설계 및 구현
     * AnimMontage끼리의 우선순위에 따른 재생 구현
-  
+
 * PoseState별 Collider 처리 및 지형지물에 따른 자세전환 제한 구현
 * 자세 및 Boost 량에 따른 속도 조절
 * Swimming State 구현
