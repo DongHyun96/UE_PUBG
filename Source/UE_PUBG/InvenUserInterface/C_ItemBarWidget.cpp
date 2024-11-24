@@ -73,22 +73,6 @@ void UC_ItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	// 우클릭인지 체크
-	InMouseEvent.GetEffectingButton();
-	
-	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-	{
-		if (CachedItem)
-		{
-			//드래그 이벤트 실행.
-	
-			// 드래그를 시작하고 반응함
-			FEventReply RePlyResult = 
-				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-			UC_Util::Print("LEftMouseButton");
-			return RePlyResult.NativeReply;
-			//return FReply::Handled();
-		}
-	}
 
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
@@ -103,6 +87,8 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 			//if (!CachedItem) return;
 			
 			InitBar(CachedItem);
+
+			//if (CachedItem->)
 			//SetVisibility(ESlateVisibility::Visible);
 			
 			return FReply::Handled();
@@ -206,7 +192,11 @@ void UC_ItemBarWidget::InitBar(AC_Item* item)
 
 		ItemName1->SetText(FText::FromString(item->GetItemDatas().ItemName));
 
-		ItemStackBlock1->SetText(FText::AsNumber(item->GetItemDatas().ItemStack));
+
+		if (item->GetItemDatas().ItemStack == 0)
+			ItemStackBlock1->SetVisibility(ESlateVisibility::Hidden);
+		else
+			ItemStackBlock1->SetText(FText::AsNumber(item->GetItemDatas().ItemStack));
 		//AddToViewport();
 		SetVisibility(ESlateVisibility::Visible);
 

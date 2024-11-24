@@ -52,7 +52,7 @@ protected:
 	void testAroundItemList(class UListView* list, const TArray<AC_Item*>& AroundAtemList);
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateVolumeBar();
+	void UpdateVolumeBar(AC_BasicCharacter* Character);
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -86,7 +86,13 @@ public:
 	UC_ThrowableWidget* ThrowableSlot = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UProgressBar* VolumeBar = nullptr;
+	class UC_EquipSlot* BackPackSlot = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UProgressBar* curVolumeBar = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UProgressBar* maxVolumeBar = nullptr;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

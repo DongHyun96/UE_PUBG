@@ -25,11 +25,12 @@ enum class EEquipSlot : uint8
 };
 
 /// <summary>
+/// 기본 MaxVolume은 70
 /// C_InvenComponent는 0~3레벨까지 존재하며 이는 가방의 레벨에 따라서 변화한다.
 ///가방은 자동장착되며 레벨을 올리는데는 제한이 없지만
 ///다운그레이드의 경우 다운되는 레벨의 무게를 초과하는 인벤상태라면
-///불가능하다.
-/// EquipmentSystem을 Blueprint에서 만들어서 거기서 InvenComponent와 EquippedComponent를 사용해서 인벤시스템와 UI를 제작.
+///불가능하다.에서 만들어서 거기서 InvenC
+/// EquipmentSystem을 Blueprintomponent와 EquippedComponent를 사용해서 인벤시스템와 UI를 제작.
 /// </summary>
 //UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 
@@ -63,7 +64,7 @@ public:
 	/// </summary>
 	/// <param name="item">인벤에 넣을 아이템</param>
 	/// <returns>넣을 수 있는 아이템의 Stack(갯수)</returns>
-	uint8 LoopCheckVolume(AC_Item* item);
+	float LoopCheckVolume(AC_Item* item);
 
 	//가방과 용량을 검사해서 가방 교체 및 장착.
 	UFUNCTION(BlueprintCallable)
@@ -73,8 +74,8 @@ public:
 	void Interaction(AC_Item* wilditem);
 
 	//가방의 용량을 반환
-	uint16 CheckBackPackVolume(uint32 backpacklevel);
-	uint16 CheckBackPackVolume(EBackPackLevel backpacklevel);
+	float CheckBackPackVolume(uint32 backpacklevel);
+	float CheckBackPackVolume(EBackPackLevel backpacklevel);
 
 	UFUNCTION(BlueprintCallable)
 	void DroppingItem(AC_Item* myitem);
@@ -128,16 +129,17 @@ public:
 
 	void InitInvenUI();
 
+	void SetMyBackPack(AC_BackPack* inBackPack) { MyBackPack = inBackPack; }
 	//Getter and Seter
 public:
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; } 
 	//EBackPackLevel SetCurBackPackLevel(uint8 level) { CurBackPackLevel = (EBackPackLevel)level; }
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	int32 GetMaxVolume() { return MaxVolume; }
+	float GetMaxVolume() { return MaxVolume; }
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	int32 GetCurVolume() { return CurVolume; }
+	float GetCurVolume() { return CurVolume; }
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
@@ -160,10 +162,10 @@ protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int32 MaxVolume = 70;
+	float MaxVolume = 70.f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int32 CurVolume =  0;
+	float CurVolume =  0.f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EBackPackLevel CurBackPackLevel = EBackPackLevel::LV0;

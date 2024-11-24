@@ -18,6 +18,8 @@ public:
 	// Sets default values for this actor's properties
 	AC_EquipableItem();
 
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,6 +32,7 @@ public:
 
 	virtual bool Interaction(AC_BasicCharacter* Character) override;
 
+	//bool MoveToAround(AC_BasicCharacter* Character) override;
 
 	//void SetRelativeTranformToInitial() { SetActorRelativeTransform(InitialRelativeTransform); }
 
