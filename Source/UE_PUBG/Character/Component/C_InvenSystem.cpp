@@ -30,6 +30,7 @@ void UC_InvenSystem::BeginPlay()
 		if (InvenUI)
 		{
 			InvenUI->SetOwnerCharacter(OwnerCharacter);
+			//InvenUI->SetWidgetsOwner(OwnerCharacter);
 		}
 		else
 		{

@@ -2,6 +2,9 @@
 
 #include "InvenUserInterface/C_ThrowableWidget.h"
 #include "InvenUserInterface/C_InvenUiWidget.h"
+
+#include "Character/Component/C_EquippedComponent.h"
+
 #include "Item/C_Item.h"
 #include "Item/Weapon/C_Weapon.h"
 
@@ -33,13 +36,18 @@ FReply UC_ThrowableWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 		if (Weapon)
 		{   // 우클릭 이벤트 실행
 			if (Weapon->MoveToInven(OwnerCharacter))
+			{
+				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
 				Weapon = nullptr;
+			}
+			
 			
 
 			//SetVisibility(ESlateVisibility::Hidden);
 
 			if (UC_InvenUiWidget* InvenUiWidget = GetTypedOuter<UC_InvenUiWidget>())
 				InvenUiWidget->InitListView();
+			Init();
 			return FReply::Handled();
 		}
 	}

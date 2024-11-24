@@ -13,6 +13,7 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_SkyDiveWidget.h"
 #include "HUD/C_MainMapWidget.h"
+#include "HUD/C_InstructionWidget.h"
 
 #include "Utility/C_Util.h"
 
@@ -179,11 +180,13 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 	case ESkyDivingState::SKYDIVING:
 	{
 		// SkyDiving 가능한지 체크
-		if (!GAMESCENE_MANAGER->GetAirplaneManager()->CanDiveOnCurrentAirplanePosition())
+		if (!GAMESCENE_MANAGER->GetAirplaneManager()->GetCanDive())
 		{
 			UC_Util::Print("Cannot SkyDive at the current pos");
 			return;
 		}
+		
+		OwnerCharacter->SetCanMove(true);
 
 		SkyDivingState = InSkyDivingState;
 
@@ -218,8 +221,13 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 			PlayerSkyDiveWidget->SetParachuteLimitAltitude(PARACHUTE_DEPLOY_LIMIT_HEIGHT);
 
 			// Player 마커 MainMap에 다시 표시하기
-			UC_MainMapWidget* PlayerMainMapWidget = OwnerPlayer->GetHUDWidget()->GetMainMapWidget();
-			PlayerMainMapWidget->TogglePlayerMarkerImageVisibility(true);
+			//UC_MainMapWidget* PlayerMainMapWidget = OwnerPlayer->GetHUDWidget()->GetMainMapWidget();
+			//PlayerMainMapWidget->TogglePlayerMarkerImageVisibility(true);
+
+			// Instruction Key HUD 업데이트
+			UC_InstructionWidget* InstructionWidget = OwnerPlayer->GetHUDWidget()->GetInstructionWidget();
+			InstructionWidget->ToggleDeployParachuteInstructionVisibility(true);
+			InstructionWidget->ToggleEjectInstructionVisibility(false);
 		}
 
 		return;
@@ -232,6 +240,10 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		OwnerCharacter->PlayAnimMontage(DeployParachuteMontage);
 		ParachuteSkeletalMesh->GetAnimInstance()->Montage_Play(ParachuteDeployMontage);
 		//ParachuteSkeletalMesh->PlayAnimation()
+
+		// Instruction Key HUD 업데이트
+		if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->ToggleDeployParachuteInstructionVisibility(false);
+
 		return;
 	}
 	case ESkyDivingState::LANDING:

@@ -52,9 +52,16 @@ UC_AttachableItemMeshComponent::UC_AttachableItemMeshComponent()
 void UC_AttachableItemMeshComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	AttachableItemsMesh.Add(EPartsName::SCOPE);
+	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNames에 MAX가 있다면
+	{
+		EPartsName AttachmentName = (EPartsName)i;
+		AttachableItemsMesh.Add(AttachmentName);
+	}
+	//AttachableItemsMesh.Add(EPartsName::SCOPE);
 	AttachableItemsMesh[EPartsName::SCOPE].Add(EAttachmentNames::REDDOT);
 	AttachableItemsMesh[EPartsName::SCOPE].Add(EAttachmentNames::SCOPE4);
+	AttachableItemsMesh[EPartsName::GRIP].Add(EAttachmentNames::VERTGRIP);
+	//AttachableItemsMesh[EPartsName::SCOPE].Add(EAttachmentNames::SCOPE4);
 	;
 
 	TArray<UObject*> AttachmentBluePrintAssets1;
@@ -74,6 +81,7 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 			if (TempMesh)
 			{
 				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
+				
 				//UC_Util::Print(TempMesh, FColor::Red, 100);
 			}
 		}
@@ -92,6 +100,8 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 			AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
 			if (TempMesh)
 			{
+				//AttachableItemsMesh[TempMesh->GetPartName()].Add(TempMesh->GetAttachmentName()).Emplace(TempMesh);
+
 				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
 
 				//UC_Util::Print(TempMesh, FColor::Red, 100);

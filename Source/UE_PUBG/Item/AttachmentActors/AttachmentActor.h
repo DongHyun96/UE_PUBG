@@ -34,7 +34,7 @@ public:
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 	EPartsName GetPartName() { return PartName; }
 	EAttachmentNames GetAttachmentName() { return AttachmentName; }
-
+	UMeshComponent* GetAttachmentMesh() { return AttachmentMesh; }
 
 	virtual bool UseAttachStrategy() PURE_VIRTUAL(AAttachmentActor::UseAttachStrategy, return false;);
 	virtual bool UseDetachStrategy() PURE_VIRTUAL(AAttachmentActor::UseDetachStrategy, return false;);

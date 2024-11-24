@@ -52,8 +52,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* BackpackMesh;
 
+	bool Interaction(AC_BasicCharacter* Character) override;
 	
 	void PickUpItem(AC_BasicCharacter* Character) override;
+
+	bool MoveToAround(AC_BasicCharacter* Character) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

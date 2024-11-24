@@ -36,13 +36,8 @@ public:
 	TPair<FVector, FVector> GetPlaneRouteStartDestPair() const { return { PlaneRouteStart, PlaneRouteDest }; }
 	class AC_Airplane* GetAirplane() const { return Airplane; }
 
-public:
+	bool GetCanDive() const { return CanDive; }
 
-	/// <summary>
-	/// 현재 비행기 위치에서 낙하할 수 있는지 체크
-	/// </summary>
-	/// <returns></returns>
-	bool CanDiveOnCurrentAirplanePosition();
 
 public:
 	/// <summary>
@@ -51,6 +46,11 @@ public:
 	void InitRandomStartDestPosition();
 
 private:
+
+	/// <summary>
+	/// 비행기 현재 위치에서 Dive할 수 있는지 CanDive 업데이트
+	/// </summary>
+	void UpdateCanDive();
 
 	/// <summary>
 	/// Start Dest pos 초기화 시 Border가 valid한지 체크
@@ -63,6 +63,11 @@ private:
 	/// 낙하해야 하는 Limit 거리까지 도달했는지 체크해서 도달했다면, 남아있는 캐릭터들 모두 SkyDiving 시키기
 	/// </summary>
 	void CheckAirplaneArrivedToRouteDestLimit();
+
+	/// <summary>
+	/// 비행기 도착 지점( Dest를 지나 맵 조금 밖)에 도착했는지 조사
+	/// </summary>
+	void CheckFlightFinished();
 
 	/// <summary>
 	/// Airplane의 StartPos와 FlightDirection Init
@@ -101,5 +106,13 @@ private:
 	//const float TAKEOFF_TIME_TOTAL = 30.f;
 	const float TAKEOFF_TIME_TOTAL = 1.f;
 	float		TakeOffTimer = TAKEOFF_TIME_TOTAL;
+
+private:
+
+	// 현재 비행기 위치에서 SkyDiving 할 수 있는지
+	bool CanDive{};
+
+	// 낙하 가능 지점 Limit에 끝까지 도달했는지
+	bool RouteDestLimitReached{};
 
 };

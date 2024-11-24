@@ -31,17 +31,26 @@ public:
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 	/// <summary>
-	/// InvenUI->Init함수 호출
+	/// InvenUI->Init함수 호출, InvenUI를 초기화
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void InitializeList();
 
+	/// <summary>
+	/// InvenUI를 켜주고 꺼주는 함수.
+	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OpenInvenUI();
 
+	/// <summary>
+	/// InvenUI를 켜주는 함수.
+	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void ShowInvenUI();
 
+	/// <summary>
+	/// InvenUi를 꺼주는 함수.
+	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void CloseInvenUI();
 
@@ -50,10 +59,10 @@ public:
 	UC_InvenUiWidget* GetInvenUI() { return InvenUI; }
 protected:
 	UPROPERTY()
-	class UC_InvenUiWidget* InvenUI;
+	class UC_InvenUiWidget* InvenUI = nullptr;
 
 	UPROPERTY()
-	APlayerController* PlayerController;
+	APlayerController* PlayerController = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> InvenUiClass;

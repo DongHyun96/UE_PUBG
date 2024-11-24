@@ -3,6 +3,7 @@
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/C_BasicCharacter.h"
 #include "Item/C_Item.h"
+#include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Character/Component/C_EquippedComponent.h"
 
@@ -47,7 +48,7 @@ void UC_InvenComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 bool UC_InvenComponent::CheckVolume(AC_Item* item)
 {
 	//item의 용량은 ItemVolume * ItemStack 이다.
-	uint8 ItemVolume = item->GetVolume() * item->GetItemDatas().ItemStack;
+	float ItemVolume = item->GetOnceVolume() * item->GetItemDatas().ItemStack;
 
 	if (MaxVolume > CurVolume + ItemVolume)
 	{
@@ -56,11 +57,11 @@ bool UC_InvenComponent::CheckVolume(AC_Item* item)
 
 	return false;
 }
-uint8 UC_InvenComponent::LoopCheckVolume(AC_Item* item)
+float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 {
-	for (uint8 i = item->GetItemDatas().ItemStack; i > 0; i--)
+	for (float i = item->GetItemDatas().ItemStack; i > 0; i--)
 	{
-		if (MaxVolume > CurVolume + item->GetVolume() * i) 
+		if (MaxVolume > CurVolume + item->GetOnceVolume() * i) 
 			return i;
 	}
 	return 0;
@@ -123,7 +124,7 @@ bool UC_InvenComponent::CheckMyBackPack(AC_BackPack* backpack)
 	else if (CurBackPackLevel > PreBackPackLevel)
 	{
 		//다음 용량 = 현재가방상태의 최대 용량 - (현재 가방의 용량 - 다음 가방의 용량)
-		uint16 NextVolume = MaxVolume - (CheckBackPackVolume(CurBackPackLevel) - CheckBackPackVolume(backpack->GetLevel()));
+		float NextVolume = MaxVolume - (CheckBackPackVolume(CurBackPackLevel) - CheckBackPackVolume(backpack->GetLevel()));
 		
 		//
 		if (CurVolume < NextVolume)
@@ -198,7 +199,7 @@ void UC_InvenComponent::Interaction(AC_Item* wilditem)
 	if (CheckVolume(wilditem))
 	{
 		//상호작용된 아이템의 무게를 더해도 무게한도를 넘지 않는 경우.
-		CurVolume += wilditem->GetVolume();
+		CurVolume += wilditem->GetOnceVolume();
 		//서버와 동기화하는데 주로 사용한다고함. 서버와 클라이언트간에 컴포넌트 상태를 동기화하고, 소유한다.
 		wilditem->AddActorComponentReplicatedSubObject(this, wilditem);
 	}
@@ -215,7 +216,7 @@ void UC_InvenComponent::Interaction(AC_Item* wilditem)
 /// </summary>
 /// <param name="backpacklevel"></param>
 /// <returns></returns>
-uint16 UC_InvenComponent::CheckBackPackVolume(uint32 backpacklevel)
+float UC_InvenComponent::CheckBackPackVolume(uint32 backpacklevel)
 {
 	switch (backpacklevel)
 	{
@@ -237,7 +238,7 @@ uint16 UC_InvenComponent::CheckBackPackVolume(uint32 backpacklevel)
 	}
 }
 
-uint16 UC_InvenComponent::CheckBackPackVolume(EBackPackLevel backpacklevel)
+float UC_InvenComponent::CheckBackPackVolume(EBackPackLevel backpacklevel)
 {
 	switch (backpacklevel)
 	{
@@ -277,10 +278,31 @@ void UC_InvenComponent::RemoveBackPack()
 
 void UC_InvenComponent::EquippedBackPack(AC_BackPack* backpack)
 {
+	if (MyBackPack) RemoveBackPack();
+
 	backpack->AttachToSocket(OwnerCharacter);
 	MyBackPack = backpack;
+
+	MaxVolume += CheckBackPackVolume(MyBackPack->GetLevel());
+
+	CurBackPackLevel = PreBackPackLevel;
+
 	//원래 장착하면 OverlapEnd로 인해 자동으로 없어져야 한다고 생각하는데 안사라져서 강제로 지웠음.
 	NearItems.Remove(backpack);
+
+	UC_EquippedComponent* equipComp = OwnerCharacter->GetEquippedComponent();
+	AC_Gun* MainGunSlot = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]);
+	AC_Gun* SubGunSlot = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]);
+
+	//equipComp->GetWeapons().Find(EWeaponSlot::MAIN_GUN)
+
+	if (MainGunSlot)
+		MainGunSlot->CheckBackPackLevelChange();
+
+	if (SubGunSlot)
+		SubGunSlot->CheckBackPackLevelChange();
+
+		
 }
 
 bool UC_InvenComponent::AddItem(AC_Item* item)
@@ -289,7 +311,7 @@ bool UC_InvenComponent::AddItem(AC_Item* item)
 
 	if (CheckVolume(item))
 	{
-		CurVolume += item->GetVolume();
+		CurVolume += item->GetOnceVolume();
 
 		//이부분도 아이템에서 처리
 		//item->SetOwnerCharacter(OwnerCharacter);
@@ -393,7 +415,10 @@ AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 
 void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 {
+	//AC_Item* FoundItem = FindMyItem(item); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;
+
 	testMyItems.Add(item->GetItemDatas().ItemName, item);
+
 	if (IsValid(OwnerCharacter))
 	{
 		item->SetOwnerCharacter(OwnerCharacter);
@@ -401,6 +426,8 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 	item->SetItemPlace(EItemPlace::INVEN);
 	item->SetActorHiddenInGame(true);
 	item->SetActorEnableCollision(false);
+
+	CurVolume += item->GetAllVolume();
 }
 
 void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
@@ -408,6 +435,7 @@ void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 	testMyItems.Remove(item->GetItemDatas().ItemName);
 	//Add와 달리 슬롯으로 가는 경우를 대비하여 OwnerCharacter의 설정을 건드리지 않았음.
 	//item->SetItemPlace(EItemPlace::AROUND);
+	CurVolume -= item->GetAllVolume();
 }
 
 void UC_InvenComponent::GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values)
@@ -441,7 +469,6 @@ void UC_InvenComponent::OpenInvenUI()
 	else
 	{
 		UC_Util::Print("No InvenUI");
-
 	}
 
 }

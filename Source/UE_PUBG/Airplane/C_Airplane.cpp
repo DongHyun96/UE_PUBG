@@ -50,7 +50,6 @@ void AC_Airplane::Tick(float DeltaTime)
 
 	if (!IsFlying) return;
 
-	CheckFlightFinished();
 	Move(DeltaTime);
 	UpdatePassengersPosition();
 	UpdateProps(DeltaTime);
@@ -62,6 +61,12 @@ void AC_Airplane::SetFlightDirection(FVector InDirection)
 {
 	InDirection.Normalize();
 	FlightDirection = InDirection;
+}
+
+void AC_Airplane::SetIsFlying(bool InIsFlying)
+{
+	IsFlying = InIsFlying;
+	this->SetActorHiddenInGame(!InIsFlying);
 }
 
 void AC_Airplane::StartFlight()
@@ -77,9 +82,10 @@ void AC_Airplane::StartFlight()
 	// MainMap UI에 비행기 이미지 Visibility 토글
 	if (!PlayerHUDWidget) PlayerHUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget();
 	PlayerHUDWidget->GetMainMapWidget()->ToggleAirplaneImageVisibility(true);
+	PlayerHUDWidget->GetMiniMapWidget()->ToggleAirplaneImageVisibility(true);
 
 	// MainMap UI에 PlayerMarker 이미지 Visibility 토글
-	PlayerHUDWidget->GetMainMapWidget()->TogglePlayerMarkerImageVisibility(false);
+	//PlayerHUDWidget->GetMainMapWidget()->TogglePlayerMarkerImageVisibility(false);
 }
 
 void AC_Airplane::Move(const float& DeltaTime)
@@ -90,14 +96,8 @@ void AC_Airplane::Move(const float& DeltaTime)
 
 void AC_Airplane::UpdatePlayerMapHUD()
 {
-	// TODO : UI 업데이트 시키기
 	PlayerHUDWidget->GetMainMapWidget()->UpdateAirplaneImagePosition(this->GetActorLocation());
-}
-
-void AC_Airplane::CheckFlightFinished()
-{
-	// TODO : 비행 끝났는지 체크 (맵 반경에 아예 나갔는지 체크)
-	// 끝났다면 -> IsFlying false | MainMap UI Toggle airplane visibility
+	PlayerHUDWidget->GetMiniMapWidget()->UpdateAirplaneImagePosition(this->GetActorLocation());
 }
 
 void AC_Airplane::UpdatePassengersPosition()

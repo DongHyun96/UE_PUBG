@@ -8,7 +8,12 @@
 #include "Singleton/C_GameSceneManager.h"
 
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 #include "Character/Component/C_SkyDivingComponent.h"
+
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_MainMapWidget.h"
+#include "HUD/C_InstructionWidget.h"
 
 // Sets default values
 AC_AirplaneManager::AC_AirplaneManager()
@@ -27,7 +32,9 @@ void AC_AirplaneManager::BeginPlay()
 	if (Airplane) InitAirplaneStartPosAndFlightDirection();
 
 	// Airplane TakeOff Timer Setting
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
+	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
+	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 0.5f, false);
+
 }
 
 // Called every frame
@@ -37,7 +44,9 @@ void AC_AirplaneManager::Tick(float DeltaTime)
 
 	UpdateTakeOffTimer(DeltaTime);
 
+	UpdateCanDive();
 	CheckAirplaneArrivedToRouteDestLimit();
+	CheckFlightFinished();
 }
 
 void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
@@ -60,20 +69,6 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 			Character->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::READY);
 		}
 	}
-}
-
-bool AC_AirplaneManager::CanDiveOnCurrentAirplanePosition()
-{
-	if (!HasAirplaneTakeOff || !Airplane->GetIsFlying()) return false;
-
-	FVector FlightDirection = PlaneRouteDest - PlaneRouteStart;
-	FlightDirection.Normalize();
-
-	FVector AirplaneLocation = Airplane->GetActorLocation();
-	FVector StartToAirplaneDirection = AirplaneLocation - PlaneRouteStart;
-	StartToAirplaneDirection.Normalize();
-
-	return FlightDirection.Equals(StartToAirplaneDirection, KINDA_SMALL_NUMBER);
 }
 
 void AC_AirplaneManager::InitRandomStartDestPosition()
@@ -183,6 +178,24 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 	}
 }
 
+void AC_AirplaneManager::UpdateCanDive()
+{
+	// CanDive는 한 번만 넘었을 때 true로 체크하면 됨
+	if (!HasAirplaneTakeOff || !Airplane->GetIsFlying() || CanDive) return;
+	
+	FVector FlightDirection = PlaneRouteDest - PlaneRouteStart;
+	FlightDirection.Normalize();
+
+	FVector AirplaneLocation = Airplane->GetActorLocation();
+	FVector StartToAirplaneDirection = AirplaneLocation - PlaneRouteStart;
+	StartToAirplaneDirection.Normalize();
+
+	CanDive = FlightDirection.Equals(StartToAirplaneDirection, KINDA_SMALL_NUMBER);
+
+	// Player HUD 업데이트
+	if (CanDive) GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->ToggleEjectInstructionVisibility(true);
+}
+
 bool AC_AirplaneManager::IsValueValidInBorder(float PositionValue)
 {
 	return FMath::Abs(PositionValue) <= PLANE_START_DEST_BORDER_VALUE;
@@ -192,16 +205,6 @@ void AC_AirplaneManager::CheckAirplaneArrivedToRouteDestLimit()
 {
 	// 낙하지점 Limit을 넘어갔다면 아직 내리지 않은 캐릭터들 내리게 처리
 	if (!Airplane->GetIsFlying()) return;
-
-	//if (!HasAirplaneTakeOff || !Airplane->GetIsFlying()) return false;
-	//
-	//FVector FlightDirection = PlaneRouteDest - PlaneRouteStart;
-	//FlightDirection.Normalize();
-	//
-	//FVector StartToAirplaneDirection = AirplaneLocation - PlaneRouteStart;
-	//StartToAirplaneDirection.Normalize();
-	//
-	//return FlightDirection.Equals(StartToAirplaneDirection, KINDA_SMALL_NUMBER);
 
 	FVector FlightDirection = PlaneRouteDest - PlaneRouteStart;
 	FlightDirection.Normalize();
@@ -213,11 +216,34 @@ void AC_AirplaneManager::CheckAirplaneArrivedToRouteDestLimit()
 	// 낙하 지점 Limit을 넘어간 시점
 	if (FlightDirection.Equals(DestToAirplaneDirection, KINDA_SMALL_NUMBER))
 	{
+		RouteDestLimitReached = true;
+
 		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
 		{
 			if (Character->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
 				Character->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING);
 		}
+	}
+}
+
+void AC_AirplaneManager::CheckFlightFinished()
+{
+	if (!HasAirplaneTakeOff || !Airplane->GetIsFlying()) return;
+	if (!RouteDestLimitReached) return;
+
+	// 비행 끝났는지 체크 (맵 반경에 아예 나갔는지 체크)
+	// 끝났다면 -> 비행기 IsFlying false | MainMap UI Toggle airplane visibility
+	FVector AirplaneLocation = Airplane->GetActorLocation();
+
+	const float ACTUAL_START_DEST_BORDER_VALUE = 50000.f;
+
+	if (FMath::Abs(AirplaneLocation.X) > ACTUAL_START_DEST_BORDER_VALUE ||
+		FMath::Abs(AirplaneLocation.Y) > ACTUAL_START_DEST_BORDER_VALUE)
+	{
+		Airplane->SetIsFlying(false);
+		UC_HUDWidget* HUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget();
+		HUDWidget->GetMainMapWidget()->ToggleAirplaneImageVisibility(false);
+		HUDWidget->GetMiniMapWidget()->ToggleAirplaneImageVisibility(false);
 	}
 }
 

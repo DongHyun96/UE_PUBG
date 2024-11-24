@@ -55,7 +55,7 @@ AC_Gun::AC_Gun()
 
 	MyItemType = EItemTypes::MAINGUN;
 
-
+	SetHolsterNames();
 
 }
 
@@ -64,7 +64,7 @@ void AC_Gun::BeginPlay()
 	Super::BeginPlay();
 	//Add Grip for Test
 
-	SetHolsterNames();
+	//SetHolsterNames();
 	AttachedParts[EPartsName::GRIP] = Cast<UStaticMeshComponent>(GetDefaultSubobjectByName("VertgripMesh"));
 	IronSightMesh = Cast<USkeletalMeshComponent>(GetDefaultSubobjectByName("IronSightMesh"));
 	//IronSightMesh->SetHiddenInGame(true);
@@ -112,8 +112,8 @@ void AC_Gun::Tick(float DeltaTime)
 		FTransform TempVec{};
 		FRotator AdditionalRotation = FRotator(0, 0, 0); // Yaw를 45도 회전시키는 예제
 
-		if (IsValid(AttachedParts[EPartsName::GRIP]))
-			TempVec = AttachedParts[EPartsName::GRIP]->GetSocketTransform("LeftHandSocket");
+		if (IsValid(AttachedItem[EPartsName::GRIP]))
+			TempVec = AttachedItem[EPartsName::GRIP]->GetAttachmentMesh()->GetSocketTransform("LeftHandSocket");
 		else
 			TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
 		//TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
@@ -132,7 +132,7 @@ void AC_Gun::Tick(float DeltaTime)
 	HandleSpringArmRotation();
 	GetPlayerIsAimDownOrNot();
 	CheckPlayerIsRunning();
-	CheckBackPackLevelChange();
+	//CheckBackPackLevelChange();
 	ShowAndHideWhileAiming();
 }
 
@@ -329,9 +329,27 @@ void AC_Gun::SetOwnerCharacter(AC_BasicCharacter * InOwnerCharacter)
 	SetAimSightWidget();
 }
 
+bool AC_Gun::MoveToAround(AC_BasicCharacter* Character)
+{
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
+
+	equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
+
+	//SpawnItem(Character);
+
+	this->SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
+
+	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	DetachmentItem();
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
+
+	return true;
+}
+
 void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* EquippedComponent = Character->GetEquippedComponent();
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 	EWeaponSlot Slot = EWeaponSlot::MAIN_GUN;
 
 	switch (Slot)
@@ -340,9 +358,9 @@ void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
 		break;
 	case EWeaponSlot::MAIN_GUN:
 		//Main Gun Slot에 총이 없다면 실행
-		if (!EquippedComponent->GetWeapons()[EWeaponSlot::MAIN_GUN])
+		if (!equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN])
 		{
-			EquippedComponent->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
+			equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
 			
 			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
 			SetActorHiddenInGame(true);
@@ -355,9 +373,9 @@ void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
 		//Slot = EWeaponSlot::SUB_GUN;
 	case EWeaponSlot::SUB_GUN:
 		//Sub Gun Slot에 총이 없다면 실행
-		if (!EquippedComponent->GetWeapons()[EWeaponSlot::SUB_GUN])
+		if (!equipComp->GetWeapons()[EWeaponSlot::SUB_GUN])
 		{
-			EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+			equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
 
 			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
 			SetActorHiddenInGame(true);
@@ -382,15 +400,15 @@ void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
 	AC_Weapon* DropGun = nullptr;
 	if (HandState == EHandState::WEAPON_GUN)
 	{
-		EWeaponSlot curSlot = EquippedComponent->GetCurWeaponType();
+		EWeaponSlot curSlot = equipComp->GetCurWeaponType();
 		
 		//제대로 총을 바꾸는지 확인해야함, SetSlotWeapon과 DetachmentItem의 순서를 바꿔야 할 수 도 있음.
-		DropGun = EquippedComponent->SetSlotWeapon(curSlot, this);
+		DropGun = equipComp->SetSlotWeapon(curSlot, this);
 		DropGun->DetachmentItem();
 	}
 	else
 	{
-		DropGun = EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+		DropGun = equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
 		DropGun->DetachmentItem();
 	}
 
@@ -775,20 +793,26 @@ void AC_Gun::SetMagazineVisibility(bool InIsVisible)
 
 bool AC_Gun::GetGunHasGrip()
 {
-	return 	IsValid(AttachedParts[EPartsName::GRIP]);
+	return 	IsValid(AttachedItem[EPartsName::GRIP]);
 }
 
 void AC_Gun::SetHolsterNames()
 {
+	for (int32 i = 0; i < (int32)EAttachmentNames::MAX; ++i) // EAttachmentNames에 MAX가 있다면
+	{
+		EAttachmentNames AttachmentName = (EAttachmentNames)i;
+		AttachmentPartsHolsterNames.Add(AttachmentName);
+		ScopeCameraLocations.Add(AttachmentName);
+	}
 
 
-	AttachmentPartsHolsterNames.Add(EAttachmentNames::REDDOT, FName("Red_Dot_Socket"));
-	AttachmentPartsHolsterNames.Add(EAttachmentNames::SCOPE4, FName("4X_Scope_Socket"));
+	//AttachmentPartsHolsterNames.Add(EAttachmentNames::REDDOT, FName("Red_Dot_Socket"));
+	//AttachmentPartsHolsterNames.Add(EAttachmentNames::SCOPE4, FName("4X_Scope_Socket"));
+	//
 
-
-	ScopeCameraLocations.Add(EAttachmentNames::REDDOT, FVector4(7.f,    0.f, 15.f, 6.f   ));
-	ScopeCameraLocations.Add(EAttachmentNames::SCOPE4, FVector4(10.89f, 0.f, 14.75f, 6.5f));
-	ScopeCameraLocations.Add(EAttachmentNames::MAX,    FVector4(7.f,    0.f, 13.f, 12.f  ));
+	//ScopeCameraLocations.Add(EAttachmentNames::REDDOT, FVector4(7.f,    0.f, 15.f, 6.f   ));
+	//ScopeCameraLocations.Add(EAttachmentNames::SCOPE4, FVector4(10.89f, 0.f, 14.75f, 6.5f));
+	ScopeCameraLocations.Add(EAttachmentNames::MAX);
 
 
 	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNames에 MAX가 있다면

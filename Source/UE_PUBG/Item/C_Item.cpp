@@ -39,12 +39,12 @@ void AC_Item::DetachmentItem()
 	
 	DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 
+	//후에 라인 트레이스를 사용해서 바꿔주기.
 	SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
 	SetActorRotation(FRotator(0.f, 0.f, -90.f));
-
 	SetOwnerCharacter(nullptr);
 
-	//한번 껏다 꺼줘야 OverlapBegin이 작동
+	//한번 껏다 꺼줘야 OverlapBegin이 작동 -> 장착할때 꺼주고 버릴 때 켜주면 될듯?
 	SetActorEnableCollision(false);
 	SetActorEnableCollision(true);
 
@@ -100,4 +100,16 @@ FVector AC_Item::GetGroundLocation(AC_BasicCharacter* Character)
 	}
 
 	return HitResult.Location;
+}
+
+AC_Item* AC_Item::SpawnItem(AC_BasicCharacter* Character)
+{
+	FActorSpawnParameters SpawnParams;
+	//SpawnParams.Owner = Character;
+	//location, rotation을 this의 것을 쓰는 것도 생각, 왜냐하면 지금 이상하게 날라가는 이유가 이것일 수 도 있음. -> 섬광탄이 터지고 충돌체가 남아있음.
+	AC_Item* SpawnItem = GetWorld()->SpawnActor<AC_Item>(this->GetClass(), GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z, Character->GetActorRotation(), SpawnParams);
+	//SpawnItem->SetItemStack(1);
+	//SpawnItem->SetActorHiddenInGame(true);
+	SpawnItem->SetActorEnableCollision(false);//생성될 때 무조건 OverlapBegine에 반응해서 우선 꺼뒀음.
+	return SpawnItem;
 }

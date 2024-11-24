@@ -24,6 +24,8 @@ class UE_PUBG_API UC_MainGunWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 	void Init();
 
 	void SetWeapon(AC_Item* item);

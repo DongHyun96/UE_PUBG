@@ -95,16 +95,19 @@ struct FItemData
 	FString ItemName;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	UTexture2D* ItemIcon;
+	UTexture2D* ItemIcon = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	uint8 ItemStack = 0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	uint8 ItemVolume = 0;
+	float ItemVolume = 0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	EItemPlace ItemPlace = EItemPlace::AROUND;
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	//float Volume;
 };	
 
 
@@ -146,8 +149,7 @@ public:
 	/// <summary>
 	/// ItemBar에서 우클릭으로 사용하는 기본 상호작용.
 	/// 자식단계에서 오버라이드해서 사용.
-	/// 아이템의 OwnerCharacter가 있는지 없는지를 기본으로 판단하고 경우에 따라 다른 기능을 실행할 예정.
-	/// 이름을 상호작용(Interaction으로 바꿀까도 고민중)
+	/// 아이템의 OwnerCharacter가 있는지 없는지를 기본으로 판단하고 경우에 따라 다른 기능을 실행할 예정.)
 	/// 상호작용으로 바꾼다면. OwnerCharcter의 여부에 따라, 아이템에 따라 UseItem의 이름을 다른 범용적인 함수에 사용가능.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
@@ -197,22 +199,30 @@ public:
 	virtual bool MoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToSlot, return false;);
 
 	UFUNCTION(BlueprintCallable)
-	virtual AC_Item* SpawnItem(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:SpawnItem, return nullptr;);
+	virtual AC_Item* SpawnItem(AC_BasicCharacter* Character);
 
 	void SetItemPlace(EItemPlace InPlace) { ItemDatas.ItemPlace = InPlace; }
 
+	//캐릭터의 밑바닥을 라인 트레이스로 location을 반환해줌.
 	FVector GetGroundLocation(AC_BasicCharacter* Character);
 
 public:
 	FItemData GetItemDatas() { return ItemDatas; }
 
+	/// <summary>
+	/// 아이템 하나의 Volume
+	/// </summary>
+	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
-	uint8 GetVolume() { return Volume; }
+	float GetOnceVolume() { return ItemDatas.ItemVolume; }
+
+	UFUNCTION(BlueprintCallable)
+	float GetAllVolume() { return ItemDatas.ItemVolume * ItemDatas.ItemStack; }
 
 	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 
 private:
-	uint8 Volume;
+	
 	
 
 protected:
@@ -233,7 +243,5 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	AC_BasicCharacter* OwnerCharacter{};
-
-	
 };
 // Fill out your copyright notice in the Description page of Project Settings.

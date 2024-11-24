@@ -10,11 +10,44 @@
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 
+#include "Utility/C_Util.h"
+
 #include "Item/Weapon/C_Weapon.h"
 
 void UC_MainGunWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+}
+
+FReply UC_MainGunWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	// 우클릭인지 체크
+	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
+	{
+		if (Weapon)
+		{   // 우클릭 이벤트 실행
+			if (Weapon->MoveToAround(OwnerCharacter))
+			{
+				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
+				Weapon = nullptr;
+			}
+
+
+
+			//SetVisibility(ESlateVisibility::Hidden);
+
+			if (UC_InvenUiWidget* InvenUiWidget = GetTypedOuter<UC_InvenUiWidget>())
+				InvenUiWidget->InitListView();
+			Init();
+			return FReply::Handled();
+		}
+	}
+	else
+	{
+		UC_Util::Print("No cached item to interact with!", FColor::Red, 5.0f);
+	}
+	// 다른 버튼 클릭 처리
+	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
 void UC_MainGunWidget::Init()

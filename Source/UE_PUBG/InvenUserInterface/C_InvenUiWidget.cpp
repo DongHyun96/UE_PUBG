@@ -15,6 +15,7 @@
 #include "C_MyItemListWidget.h"
 
 #include "Components/CanvasPanel.h"
+#include "Components/ProgressBar.h"
 
 #include "TimerManager.h"
 
@@ -116,6 +117,8 @@ void UC_InvenUiWidget::InitWidget()
     
     InitListView();
 
+    UpdateVolumeBar(OwnerCharacter);
+
     if (!IsValid(MainGunSlot)) return;
 
     MainGunSlot->SetWeaponBoxNum(1);
@@ -133,6 +136,9 @@ void UC_InvenUiWidget::InitWidget()
     ThrowableSlot->SetWeaponBoxNum(5);
     //ThrowableSlot->Init();
 
+    if (!IsValid(BackPackSlot)) return;
+    BackPackSlot->Init();
+
 
 
 }
@@ -147,7 +153,8 @@ void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
         MeleeSlot    ->SetOwnerCharacter(Character);
     if (IsValid(ThrowableSlot))
         ThrowableSlot->SetOwnerCharacter(Character);
-
+    if (IsValid(BackPackSlot))
+        BackPackSlot->SetOwnerCharacter(Character);
 }
 
 void UC_InvenUiWidget::InitListView()
@@ -246,7 +253,16 @@ void UC_InvenUiWidget::testAroundItemList(UListView* list, const TArray<AC_Item*
     }
 }
 
-void UC_InvenUiWidget::UpdateVolumeBar()
+void UC_InvenUiWidget::UpdateVolumeBar(AC_BasicCharacter* Character)
 {
+    float curVolume = Character->GetInvenComponent()->GetCurVolume();
+    float maxVolume = Character->GetInvenComponent()->GetMaxVolume();
+
+    float MaxVolumePercent = maxVolume / 370.f; //370 = 70(±âº») + 250(3LVBackPack) + 50(°©ºü)
+    float curVolumePercent = curVolume / 370.f;
+
+    curVolumeBar->SetPercent(curVolumePercent);
+    maxVolumeBar->SetPercent(MaxVolumePercent);
 }
+
 
