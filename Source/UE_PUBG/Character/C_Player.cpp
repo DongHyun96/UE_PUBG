@@ -119,8 +119,10 @@ void AC_Player::BeginPlay()
 		HUDWidget->AddToViewport();
 		StatComponent->SetOwnerHUDWidget(HUDWidget);
 		PingSystemComponent->SetOwnerPlayer(this);
-		HUDWidget->GetMainMapWidget()->SetPlayer(this);
 		HUDWidget->GetSkyDiveWidget()->SetOwnerPlayer(this);
+
+		HUDWidget->GetMainMapWidget()->SetOwnerPlayer(this);
+		HUDWidget->GetMiniMapWidget()->SetOwnerPlayer(this);
 	}
 	CrosshairWidgetComponent->AddToViewport();
 	CrosshairWidgetComponent->SetOwnerCharacter(this);

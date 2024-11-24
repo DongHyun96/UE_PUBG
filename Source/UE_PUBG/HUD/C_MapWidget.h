@@ -19,6 +19,10 @@ protected:
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 public:
+
+	void SetOwnerPlayer(class AC_Player* InOwnerPlayer) { OwnerPlayer = InOwnerPlayer; }
+
+public:
 	
 	/// <summary>
 	/// 블루프린트 쪽에서 구현한 Event Function (Map 이미지의 MainCircle Material 관련 information 조정)
@@ -81,22 +85,67 @@ public:
 	/// <returns> : Spawn이 제대로 이루어졌다면 return true </returns>
 	virtual bool SpawnPingImage(FVector2D MousePos);
 
-public:
+public: // Airplane 관련
 
-	virtual void SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest);
+	//virtual void SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest);
 
+	/// <summary>
+	/// Start, Dest에 따른 비행기 경로 이미지 관련 위치 및 회전 잡기
+	/// </summary>
+	/// <param name="StartDest"> : 비행기 시작(낙하 가능 시작위치), 끝(낙하 가능 끝 위치) 위치</param>
+	void SetAirplaneRoute(TPair<FVector, FVector> StartDest);
+
+	void ToggleAirplaneImageVisibility(bool Visible);
+
+	/// <summary>
+	/// AirplaneLocation에 따른 AirplaneImagePosition 잡기
+	/// </summary>
+	/// <param name="AirplaneLocation"> : 비행기 현재 위치 </param>
+	virtual void UpdateAirplaneImagePosition(const FVector& AirplaneLocation);
 
 protected:
 
-	virtual void HandleUpdatePlaneRouteStartDest();
+	/// <summary>
+	/// 맵의 Transform 또는 Player의 위치에 따른 PlaneRoute 관련 Image Transform 조정
+	/// </summary>
+	virtual void HandleUpdatePlaneRouteTransform();
+
+protected:
+
+	/// <summary>
+	/// World 대비 Map size 척도로 적용된 위치 찾기
+	/// </summary>
+	/// <param name="GameWorldLocation"> : World Location </param>
+	/// <returns> : 적용된 위치 FVector2D </returns>
+	virtual FVector2D GetWorldToMapSizePos(FVector GameWorldLocation);
+
+private:
+
+	/// <summary>
+	/// Player위치 OwnerPlayer World 위치에 따라 Update 시키기
+	/// </summary>
+	void UpdatePlayerTranslationOnMap();
+
+	void UpdatePlayerMarkerRotation();
+
+protected:
+
+	class AC_Player* OwnerPlayer{};
+	
+	FVector2D PlayerTranslationOnMap{};
 
 protected: // 비행기 경로 관련
 
-	FVector2D AirplaneRouteStartPosOrigin{};
-	FVector2D AirplaneRouteDestPosOrigin{};
+	//FVector2D AirplaneRouteStartPosOrigin{};
+	//FVector2D AirplaneRouteDestPosOrigin{};
 
 	FVector2D AirplaneRouteStartPos{};
 	FVector2D AirplaneRouteDestPos{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UImage* PlayerMarkerImg{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UImage* AirplaneStartCircleImage{};
@@ -107,7 +156,17 @@ protected: // 비행기 경로 관련
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UImage* AirplaneImg{};
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UImage* AirplaneRouteImage{};
+
+
+protected:
+
+	// AirplaneRouteImage의 size X를 조정하기 위함
+	class UCanvasPanelSlot* AirplaneRouteImageCanvasSlot{};
+
 private:
 	const float BACKGROUND_SIZE = 2500.f;
+	const float WORLD_TO_BG_SIZE_FACTOR = 0.025f;
 
 };

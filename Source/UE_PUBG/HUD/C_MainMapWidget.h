@@ -32,7 +32,10 @@ private:
 	/// </summary>
 	void HandleUpdateMarkers();
 
-	void HandleUpdatePlaneRouteStartDest() override;
+	/// <summary>
+	/// 맵의 Transform 또는 Player의 위치에 따른 PlaneRoute 관련 Image Transform 조정
+	/// </summary>
+	void HandleUpdatePlaneRouteTransform() override;
 
 private:
 
@@ -59,32 +62,12 @@ public:
 	/// <returns> : 제대로 Spawn 되었다면 return true </returns>
 	bool SpawnPingImage(FVector2D MousePos) override;
 
-private:
-
-	/// <summary>
-	/// 비행기 경로 그리기
-	/// </summary>
-	int32 NativePaint
-	(
-		const FPaintArgs&			Args,
-		const FGeometry&			AllottedGeometry,
-		const FSlateRect&			MyCullingRect,
-		FSlateWindowElementList&	OutDrawElements,
-		int32						LayerId,
-		const FWidgetStyle&			InWidgetStyle,
-		bool						bParentEnabled
-	) const override;
-
 protected:
 
 	bool CancelPingMarker();
 
+
 public:
-
-	void SetPlayer(class AC_Player* InPlayer) { Player = InPlayer; }
-
-	void SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest) override;
-
 
 	/// <summary>
 	/// AirplaneLocation에 따른 AirplaneImagePosition 잡기
@@ -92,9 +75,7 @@ public:
 	/// <param name="AirplaneLocation"> : 비행기 현재 위치 </param>
 	void UpdateAirplaneImagePosition(const FVector& AirplaneLocation);
 
-	void ToggleAirplaneImageVisibility(bool Visible);
-
-	void TogglePlayerMarkerImageVisibility(bool Visible);
+	//void TogglePlayerMarkerImageVisibility(bool Visible);
 
 private:
 
@@ -115,12 +96,17 @@ private:
 	bool HandleRMBDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 
 protected:
+	/// <summary>
+	/// World 대비 Map size 척도로 적용된 위치 찾기
+	/// </summary>
+	/// <param name="GameWorldLocation"> : World Location </param>
+	/// <returns> : 적용된 위치 FVector2D </returns>
+	FVector2D GetWorldToMapSizePos(FVector GameWorldLocation) override;
+
+protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UImage* MainMapImg{};
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UImage* PlayerMarkerImg{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UImage* GridImg{};
@@ -156,10 +142,6 @@ private:
 	bool bIsMouseDragging{};
 	FVector2D PrevDragMousePos{};
 	const float DRAG_SPEED = 5.f;
-
-private:
-
-	class AC_Player* Player{};
 
 
 };
