@@ -36,12 +36,12 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	//if (WeaponUser->GetIsHoldDirection()) return false;
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	if (CurWeapon->GetIsPartAttached(EPartsName::SCOPE))
+	if (CurWeapon->GetIsPartAttached(EPartsName::GRIP))
 	{
-		WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::SCOPE, EAttachmentNames::SCOPE4);
+		WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);
 		return true;
 	}
-	WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::SCOPE, EAttachmentNames::SCOPE4);
+	WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);
 	//CurWeapon->ExecuteReloadMontage();
 	return false;
 }

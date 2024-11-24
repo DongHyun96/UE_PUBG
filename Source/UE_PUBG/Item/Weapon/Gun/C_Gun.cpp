@@ -55,7 +55,7 @@ AC_Gun::AC_Gun()
 
 	MyItemType = EItemTypes::MAINGUN;
 
-
+	SetHolsterNames();
 
 }
 
@@ -64,7 +64,7 @@ void AC_Gun::BeginPlay()
 	Super::BeginPlay();
 	//Add Grip for Test
 
-	SetHolsterNames();
+	//SetHolsterNames();
 	AttachedParts[EPartsName::GRIP] = Cast<UStaticMeshComponent>(GetDefaultSubobjectByName("VertgripMesh"));
 	IronSightMesh = Cast<USkeletalMeshComponent>(GetDefaultSubobjectByName("IronSightMesh"));
 	//IronSightMesh->SetHiddenInGame(true);
@@ -112,8 +112,8 @@ void AC_Gun::Tick(float DeltaTime)
 		FTransform TempVec{};
 		FRotator AdditionalRotation = FRotator(0, 0, 0); // Yaw를 45도 회전시키는 예제
 
-		if (IsValid(AttachedParts[EPartsName::GRIP]))
-			TempVec = AttachedParts[EPartsName::GRIP]->GetSocketTransform("LeftHandSocket");
+		if (IsValid(AttachedItem[EPartsName::GRIP]))
+			TempVec = AttachedItem[EPartsName::GRIP]->GetAttachmentMesh()->GetSocketTransform("LeftHandSocket");
 		else
 			TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
 		//TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
@@ -775,20 +775,26 @@ void AC_Gun::SetMagazineVisibility(bool InIsVisible)
 
 bool AC_Gun::GetGunHasGrip()
 {
-	return 	IsValid(AttachedParts[EPartsName::GRIP]);
+	return 	IsValid(AttachedItem[EPartsName::GRIP]);
 }
 
 void AC_Gun::SetHolsterNames()
 {
+	for (int32 i = 0; i < (int32)EAttachmentNames::MAX; ++i) // EAttachmentNames에 MAX가 있다면
+	{
+		EAttachmentNames AttachmentName = (EAttachmentNames)i;
+		AttachmentPartsHolsterNames.Add(AttachmentName);
+		ScopeCameraLocations.Add(AttachmentName);
+	}
 
 
-	AttachmentPartsHolsterNames.Add(EAttachmentNames::REDDOT, FName("Red_Dot_Socket"));
-	AttachmentPartsHolsterNames.Add(EAttachmentNames::SCOPE4, FName("4X_Scope_Socket"));
+	//AttachmentPartsHolsterNames.Add(EAttachmentNames::REDDOT, FName("Red_Dot_Socket"));
+	//AttachmentPartsHolsterNames.Add(EAttachmentNames::SCOPE4, FName("4X_Scope_Socket"));
+	//
 
-
-	ScopeCameraLocations.Add(EAttachmentNames::REDDOT, FVector4(7.f,    0.f, 15.f, 6.f   ));
-	ScopeCameraLocations.Add(EAttachmentNames::SCOPE4, FVector4(10.89f, 0.f, 14.75f, 6.5f));
-	ScopeCameraLocations.Add(EAttachmentNames::MAX,    FVector4(7.f,    0.f, 13.f, 12.f  ));
+	//ScopeCameraLocations.Add(EAttachmentNames::REDDOT, FVector4(7.f,    0.f, 15.f, 6.f   ));
+	//ScopeCameraLocations.Add(EAttachmentNames::SCOPE4, FVector4(10.89f, 0.f, 14.75f, 6.5f));
+	ScopeCameraLocations.Add(EAttachmentNames::MAX);
 
 
 	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNames에 MAX가 있다면
