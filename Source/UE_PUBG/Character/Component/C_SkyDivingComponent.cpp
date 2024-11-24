@@ -221,8 +221,8 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 			PlayerSkyDiveWidget->SetParachuteLimitAltitude(PARACHUTE_DEPLOY_LIMIT_HEIGHT);
 
 			// Player 마커 MainMap에 다시 표시하기
-			UC_MainMapWidget* PlayerMainMapWidget = OwnerPlayer->GetHUDWidget()->GetMainMapWidget();
-			PlayerMainMapWidget->TogglePlayerMarkerImageVisibility(true);
+			//UC_MainMapWidget* PlayerMainMapWidget = OwnerPlayer->GetHUDWidget()->GetMainMapWidget();
+			//PlayerMainMapWidget->TogglePlayerMarkerImageVisibility(true);
 
 			// Instruction Key HUD 업데이트
 			UC_InstructionWidget* InstructionWidget = OwnerPlayer->GetHUDWidget()->GetInstructionWidget();

@@ -15,7 +15,8 @@
 
 #include "Utility/C_Util.h"
 
-#include "Components/CanvasPanel.h"
+//#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Kismet/GameplayStatics.h"
@@ -58,13 +59,17 @@ void UC_MainMapWidget::OnMKey()
 		//this->SetUserFocus(PC);
 
 		// Init AirplaneRoute Start Dest pos
-		if (AirplaneRouteStartPosOrigin.X == 0.f)
+		if (AirplaneRouteStartPos.X == 0.f)
 		{
 			if (AC_AirplaneManager* AirplaneManager = GAMESCENE_MANAGER->GetAirplaneManager())
-				SetAirplaneRouteStartDestPosOrigin(AirplaneManager->GetPlaneRouteStartDestPair());
+			{
+				TPair<FVector, FVector> StartDestPair = AirplaneManager->GetPlaneRouteStartDestPair();
+				SetAirplaneRoute(StartDestPair);
+				GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget()->SetAirplaneRoute(StartDestPair);
+			}
 		}
 
-		Player->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden);
+		OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
@@ -78,9 +83,9 @@ void UC_MainMapWidget::OnMKey()
 		PC->SetIgnoreLookInput(false);  // 마우스 이동에 의한 카메라 회전을 막음
 		//PC->SetIgnoreMoveInput(false);  // 마우스 클릭에 의한 움직임을 막음
 
-		ESkyDivingState PlayerSkyDivingState = Player->GetSkyDivingComponent()->GetSkyDivingState();
+		ESkyDivingState PlayerSkyDivingState = OwnerPlayer->GetSkyDivingComponent()->GetSkyDivingState();
 		if (PlayerSkyDivingState == ESkyDivingState::SKYDIVING || PlayerSkyDivingState == ESkyDivingState::PARACHUTING)
-			Player->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::HitTestInvisible);
+			OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::HitTestInvisible);
 
 	}
 
@@ -92,49 +97,6 @@ void UC_MainMapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 	HandleUpdateMainMapImage(InDeltaTime);
 	HandleUpdateMarkers();
-}
-
-int32 UC_MainMapWidget::NativePaint
-(
-	const FPaintArgs&			Args, 
-	const FGeometry&			AllottedGeometry, 
-	const FSlateRect&			MyCullingRect, 
-	FSlateWindowElementList&	OutDrawElements, 
-	int32						LayerId, 
-	const FWidgetStyle&			InWidgetStyle, 
-	bool						bParentEnabled
-) const
-{
-	Super::NativePaint(Args, AllottedGeometry, MyCullingRect, OutDrawElements, LayerId, InWidgetStyle, bParentEnabled);
-
-	// 선의 색상 및 두께 설정
-	FLinearColor LineColor = FLinearColor(1.f, 0.27f, 0.27f, 0.7f);
-	float LineThickness = 5.f;
-
-	// 선을 정의하는 배열 생성
-	TArray<FVector2D> LinePoints{};
-
-	LinePoints.Add(AirplaneRouteStartPos);
-	LinePoints.Add(AirplaneRouteDestPos);
-
-	//LinePoints.Add(FVector2D(0.f, 0.f));
-	//LinePoints.Add(FVector2D(1920.f, 1080.f));
-
-
-	// 선을 그리는 엘리먼트 추가
-	FSlateDrawElement::MakeLines
-	(
-		OutDrawElements,
-		LayerId,
-		AllottedGeometry.ToPaintGeometry(),
-		LinePoints,
-		ESlateDrawEffect::None,
-		LineColor,
-		true,
-		LineThickness
-	);
-
-	return LayerId + 1;
 }
 
 void UC_MainMapWidget::HandleUpdateMainMapImage(float InDeltaTime)
@@ -164,14 +126,14 @@ void UC_MainMapWidget::HandleUpdateMarkers()
 		return;
 	}
 
-	if (!Player)
+	if (!OwnerPlayer)
 	{
 		UC_Util::Print("From UC_MainMapWidget::HandleUpdateMarkers : Player member var nullptr.");
 		return;
 	}
 
 	// 위치 잡기
-	FVector2D PlayerPos			 = { Player->GetActorLocation().Y, -Player->GetActorLocation().X };
+	FVector2D PlayerPos			 = { OwnerPlayer->GetActorLocation().Y, -OwnerPlayer->GetActorLocation().X };
 	FVector2D PlayerMarkerPos	 = PlayerPos * (CANVAS_SIZE / WORLD_MAP_SIZE) * MainMapScale;
 
 	//PlayerMarkerPos += MainMapImg->GetRenderTransform().Translation * (1 / MainMapScale);
@@ -179,9 +141,6 @@ void UC_MainMapWidget::HandleUpdateMarkers()
 
 
 	PlayerMarkerImg->SetRenderTranslation(PlayerMarkerPos);
-
-	// 회전 잡기
-	PlayerMarkerImg->SetRenderTransformAngle(Player->GetActorRotation().Yaw);
 
 	if (!PingMarkerBorder)
 	{
@@ -195,60 +154,33 @@ void UC_MainMapWidget::HandleUpdateMarkers()
 	PingMarkerBorder->SetRenderTranslation(PingMarkerToMainMapPos);
 }
 
-void UC_MainMapWidget::HandleUpdatePlaneRouteStartDest()
+void UC_MainMapWidget::HandleUpdatePlaneRouteTransform()
 {
-	// 비행기 경로 위치 잡기
-	AirplaneRouteStartPos = AirplaneRouteStartPosOrigin * MainMapScale;
-	AirplaneRouteStartPos += MainMapImg->GetRenderTransform().Translation;
+	FVector2D ImgScale = FVector2D(1.f, 1.f) * MainMapScale;
 
-	// Start Circle 이미지 위치 잡기
-	AirplaneStartCircleImage->SetRenderTranslation(AirplaneRouteStartPos);
+	// Start Circle 이미지 위치 및 크기 잡기
+	FVector2D StartPos = AirplaneRouteStartPos * MainMapScale;
+	StartPos += MainMapImg->GetRenderTransform().Translation;
+	AirplaneStartCircleImage->SetRenderTranslation(StartPos);
+	AirplaneStartCircleImage->SetRenderScale(ImgScale);
 
-	AirplaneRouteStartPos += MID_POINT;
+	// Dest Triangle 이미지 위치 크기 잡기
+	FVector2D DestPos = AirplaneRouteDestPos * MainMapScale;
+	DestPos += MainMapImg->GetRenderTransform().Translation;
+	AirplaneDestTriangleImage->SetRenderTranslation(DestPos);
+	AirplaneDestTriangleImage->SetRenderScale(ImgScale);
 
-	AirplaneRouteDestPos = AirplaneRouteDestPosOrigin * MainMapScale;
-	AirplaneRouteDestPos += MainMapImg->GetRenderTransform().Translation;
+	// PlaneRoute 이미지 위치 크기 잡기
+	FVector2D PlaneRoutePos = (StartPos + DestPos) * 0.5f;
+	AirplaneRouteImage->SetRenderTranslation(PlaneRoutePos);
+	AirplaneRouteImage->SetRenderScale(FVector2D(1.f, MainMapScale));
 
-	// Dest Triangle 이미지 위치 잡기
-	AirplaneDestTriangleImage->SetRenderTranslation(AirplaneRouteDestPos);
-
-	AirplaneRouteDestPos += MID_POINT;
-
-	// Border Panel 길이 제한 (x에 대한 제한만 걸면 됨)
-
-	// 직선 a, b factor 구하기
-	float LineAFactor = (AirplaneRouteStartPos.Y - AirplaneRouteDestPos.Y) / (AirplaneRouteStartPos.X - AirplaneRouteDestPos.X);
-	float LineBFactor = AirplaneRouteStartPos.Y - LineAFactor * AirplaneRouteStartPos.X;
-
-	if (AirplaneRouteStartPos.X < MID_POINT.X - CANVAS_SIZE * 0.5f)
-	{
-		float NewX = MID_POINT.X - CANVAS_SIZE * 0.5f;
-		float NewY = LineAFactor * NewX + LineBFactor;
-
-		AirplaneRouteStartPos.Set(NewX, NewY);
-	}
-	else if (AirplaneRouteStartPos.X > MID_POINT.X + CANVAS_SIZE * 0.5f)
-	{
-		float NewX = MID_POINT.X + CANVAS_SIZE * 0.5f;
-		float NewY = LineAFactor * NewX + LineBFactor;
-
-		AirplaneRouteStartPos.Set(NewX, NewY);
-	}
-
-	if (AirplaneRouteDestPos.X < MID_POINT.X - CANVAS_SIZE * 0.5f)
-	{
-		float NewX = MID_POINT.X - CANVAS_SIZE * 0.5f;
-		float NewY = LineAFactor * NewX + LineBFactor;
-
-		AirplaneRouteDestPos.Set(NewX, NewY);
-	}
-	else if (AirplaneRouteDestPos.X > MID_POINT.X + CANVAS_SIZE * 0.5f)
-	{
-		float NewX = MID_POINT.X + CANVAS_SIZE * 0.5f;
-		float NewY = LineAFactor * NewX + LineBFactor;
-
-		AirplaneRouteDestPos.Set(NewX, NewY);
-	}
+	// PlaneRoute 이미지 크기 조정
+	if (!AirplaneRouteImageCanvasSlot) AirplaneRouteImageCanvasSlot = Cast<UCanvasPanelSlot>(AirplaneRouteImage->Slot);
+	FVector2D NewSize	= AirplaneRouteImageCanvasSlot->GetSize();
+	NewSize.X			= FVector2D::Distance(StartPos, DestPos);
+	AirplaneRouteImageCanvasSlot->SetSize(NewSize);
+	
 }
 
 FReply UC_MainMapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -342,9 +274,7 @@ bool UC_MainMapWidget::SpawnPingImage(FVector WorldPingLocation)
 {
 	if (!PingMarkerBorder) return false;
 
-	PingMarkerPos  = { WorldPingLocation.Y, -WorldPingLocation.X };
-	PingMarkerPos *= (CANVAS_SIZE / WORLD_MAP_SIZE);
-
+	PingMarkerPos = GetWorldToMapSizePos(WorldPingLocation);
 	PingMarkerBorder->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 	return true;
@@ -357,8 +287,6 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 	PingMarkerPos = MousePos - MID_POINT;
 	PingMarkerPos -= MainMapImg->GetRenderTransform().Translation;
 	PingMarkerPos /= MainMapScale;
-
-	UC_Util::Print(PingMarkerPos);
 
 	// Spawn MainMap Ping
 	PingMarkerBorder->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -387,13 +315,13 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 										FVector( -WorldPingPos2D.Y, WorldPingPos2D.X, FIXED_LANDSCAPE_HEIGHT);
 
 	// Spawn World ping
-	Player->GetPingSystemComponent()->SpawnWorldPingActor(WorldPingPos);
+	OwnerPlayer->GetPingSystemComponent()->SpawnWorldPingActor(WorldPingPos);
 
 	// Spawn MiniMap ping
-	Player->GetHUDWidget()->GetMiniMapWidget()->SpawnPingImage(WorldPingPos);
+	OwnerPlayer->GetHUDWidget()->GetMiniMapWidget()->SpawnPingImage(WorldPingPos);
 
 	// Spawn Compass bar ping
-	Player->GetHUDWidget()->SpawnCompassBarPingMarker(WorldPingPos);
+	OwnerPlayer->GetHUDWidget()->SpawnCompassBarPingMarker(WorldPingPos);
 
 	return true;
 }
@@ -403,63 +331,23 @@ bool UC_MainMapWidget::CancelPingMarker()
 	// World ping, MiniMap Ping 모두 Hidden 처리하기
 	PingMarkerBorder->SetVisibility(ESlateVisibility::Hidden);
 
-	if (!Player)
+	if (!OwnerPlayer)
 	{
 		UC_Util::Print("From UC_MainMapWidget::CancelPingMarker : Player nullptr");
 		return false;
 	}
 
-	Player->GetHUDWidget()->GetMiniMapWidget()->OnCancelPingMarker();
-	Player->GetPingSystemComponent()->OnCancelWorldPing();
-	Player->GetHUDWidget()->HideCompassBarPingMarker();
+	OwnerPlayer->GetHUDWidget()->GetMiniMapWidget()->OnCancelPingMarker();
+	OwnerPlayer->GetPingSystemComponent()->OnCancelWorldPing();
+	OwnerPlayer->GetHUDWidget()->HideCompassBarPingMarker();
 
 	return true;
 }
 
-void UC_MainMapWidget::SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest)
-{
-	AirplaneRouteStartPosOrigin = { StartDest.Key.Y,   -StartDest.Key.X };
-	AirplaneRouteDestPosOrigin  = { StartDest.Value.Y, -StartDest.Value.X };
-
-	AirplaneRouteStartPosOrigin *= (CANVAS_SIZE / WORLD_MAP_SIZE);
-	AirplaneRouteDestPosOrigin  *= (CANVAS_SIZE / WORLD_MAP_SIZE);
-
-	// Dest triangle 회전 잡기
-	if (AirplaneRouteStartPosOrigin.X - AirplaneRouteDestPosOrigin.X == 0.f)
-	{
-		if (AirplaneRouteStartPosOrigin.Y - AirplaneRouteDestPosOrigin.Y > 0.f)
-			AirplaneDestTriangleImage->SetRenderTransformAngle(0.f);
-		else AirplaneDestTriangleImage->SetRenderTransformAngle(180.f);
-			
-		return;
-	}
-
-	if (AirplaneRouteStartPosOrigin.Y - AirplaneRouteDestPosOrigin.Y == 0.f)
-	{
-		if (AirplaneRouteStartPosOrigin.X - AirplaneRouteDestPosOrigin.X > 0.f)
-			AirplaneDestTriangleImage->SetRenderTransformAngle(90.f);
-		else
-			AirplaneDestTriangleImage->SetRenderTransformAngle(-90.f);
-
-		return;
-	}
-	
-	float DX = AirplaneRouteDestPosOrigin.X - AirplaneRouteStartPosOrigin.X;
-	float DY = AirplaneRouteStartPosOrigin.Y - AirplaneRouteDestPosOrigin.Y;
-
-	float Angle = FMath::RadiansToDegrees(FMath::Atan(DY / DX));
-	Angle	    = (DX < 0.f) ? 270.f - Angle : 90.f - Angle;
-
-	AirplaneDestTriangleImage->SetRenderTransformAngle(Angle);
-
-	// Airplane 이미지 회전 잡기
-	AirplaneImg->SetRenderTransformAngle(Angle - 90.f);
-}
-
 void UC_MainMapWidget::UpdateAirplaneImagePosition(const FVector& AirplaneLocation)
 {
-	FVector2D Position = { AirplaneLocation.Y, -AirplaneLocation.X };
-	Position *= (CANVAS_SIZE / WORLD_MAP_SIZE) * MainMapScale;
+	FVector2D Position = GetWorldToMapSizePos(AirplaneLocation);
+	Position *= MainMapScale;
 	Position += MainMapImg->GetRenderTransform().Translation;
 
 	AirplaneImg->SetRenderTranslation(Position);
@@ -468,17 +356,11 @@ void UC_MainMapWidget::UpdateAirplaneImagePosition(const FVector& AirplaneLocati
 	AirplaneImg->SetRenderScale(AirplaneImgScale);
 }
 
-void UC_MainMapWidget::ToggleAirplaneImageVisibility(bool Visible)
-{
-	ESlateVisibility ImageVisibility = Visible ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden;
-	AirplaneImg->SetVisibility(ImageVisibility);
-}
-
-void UC_MainMapWidget::TogglePlayerMarkerImageVisibility(bool Visible)
-{
-	ESlateVisibility ImageVisibility = Visible ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden;
-	PlayerMarkerImg->SetVisibility(ImageVisibility);
-}
+//void UC_MainMapWidget::TogglePlayerMarkerImageVisibility(bool Visible)
+//{
+//	ESlateVisibility ImageVisibility = Visible ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden;
+//	PlayerMarkerImg->SetVisibility(ImageVisibility);
+//}
 
 bool UC_MainMapWidget::HandleLMBDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
@@ -542,5 +424,11 @@ bool UC_MainMapWidget::HandleRMBDown(const FGeometry& InGeometry, const FPointer
 	//UC_Util::Print(MousePos);
 
 	return true;
+}
+
+FVector2D UC_MainMapWidget::GetWorldToMapSizePos(FVector GameWorldLocation)
+{
+	FVector2D Pos = { GameWorldLocation.Y, -GameWorldLocation.X };
+	return Pos * (CANVAS_SIZE / WORLD_MAP_SIZE);
 }
 

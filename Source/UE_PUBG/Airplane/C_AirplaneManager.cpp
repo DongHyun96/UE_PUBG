@@ -241,7 +241,9 @@ void AC_AirplaneManager::CheckFlightFinished()
 		FMath::Abs(AirplaneLocation.Y) > ACTUAL_START_DEST_BORDER_VALUE)
 	{
 		Airplane->SetIsFlying(false);
-		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMainMapWidget()->ToggleAirplaneImageVisibility(false);
+		UC_HUDWidget* HUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget();
+		HUDWidget->GetMainMapWidget()->ToggleAirplaneImageVisibility(false);
+		HUDWidget->GetMiniMapWidget()->ToggleAirplaneImageVisibility(false);
 	}
 }
 

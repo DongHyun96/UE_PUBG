@@ -82,9 +82,10 @@ void AC_Airplane::StartFlight()
 	// MainMap UI에 비행기 이미지 Visibility 토글
 	if (!PlayerHUDWidget) PlayerHUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget();
 	PlayerHUDWidget->GetMainMapWidget()->ToggleAirplaneImageVisibility(true);
+	PlayerHUDWidget->GetMiniMapWidget()->ToggleAirplaneImageVisibility(true);
 
 	// MainMap UI에 PlayerMarker 이미지 Visibility 토글
-	PlayerHUDWidget->GetMainMapWidget()->TogglePlayerMarkerImageVisibility(false);
+	//PlayerHUDWidget->GetMainMapWidget()->TogglePlayerMarkerImageVisibility(false);
 }
 
 void AC_Airplane::Move(const float& DeltaTime)
@@ -95,8 +96,8 @@ void AC_Airplane::Move(const float& DeltaTime)
 
 void AC_Airplane::UpdatePlayerMapHUD()
 {
-	// TODO : UI 업데이트 시키기
 	PlayerHUDWidget->GetMainMapWidget()->UpdateAirplaneImagePosition(this->GetActorLocation());
+	PlayerHUDWidget->GetMiniMapWidget()->UpdateAirplaneImagePosition(this->GetActorLocation());
 }
 
 void AC_Airplane::UpdatePassengersPosition()
