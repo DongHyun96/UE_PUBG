@@ -256,6 +256,7 @@ bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 			//인벤에 해당 아이템이 존재 할 때.
 			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + ItemStackCount);
 
+			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
 			//TODO : destroy를 해도 잔상이 남는것을 대비해서 해놓음 만약 없이도 잔상이 안남는다면 지울 것.
 			this->SetActorEnableCollision(false);
 			this->SetActorHiddenInGame(true);
@@ -287,7 +288,6 @@ bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 		else
 		{
 			AC_Weapon* NewItem = Cast<AC_Weapon>(SpawnItem(Character));//아이템 복제 생성
-
 			NewItem->SetItemStack(ItemStackCount);
 			   this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
 

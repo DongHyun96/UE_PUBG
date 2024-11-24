@@ -20,10 +20,17 @@ protected:
     void NativeConstruct() override;
 
 public:
+    /// <summary>
+    /// MyItemListWidget(UI에 보이는 Inventory의 itemlist)를 초기화 하는 함수.
+    /// </summary>
+    /// <param name="itemlist"></param>
     UFUNCTION(BlueprintCallable)
     void AddTMapItem(TMap<FString, AC_Item*> itemlist);
 
-    // 아이템 바 위젯을 생성하고 리스트에 추가하는 함수
+    /// <summary>
+    /// AroundItemListWidget를 초기화 하는 함수.
+    /// </summary>
+    /// <param name="AroundItemList"></param>
     UFUNCTION(BlueprintCallable)
     void InitAroundItemList(const TArray<AC_Item*>& AroundItemList);
 
