@@ -53,7 +53,7 @@ AC_Gun::AC_Gun()
 	//ItemType ¼³Á¤.
 	//Magazine = LoadObject<AC_AttachableItem>(nullptr, TEXT("/Game/Project_PUBG/Common/Weapon/GunWeapon/Magazine/BPC_Magazine.BPC_Magazine"));
 
-	MyItemType = EItemTypes::MAINGUN;
+	ItemDatas.ItemType = EItemTypes::MAINGUN;
 
 	SetHolsterNames();
 

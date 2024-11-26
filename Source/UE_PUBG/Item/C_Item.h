@@ -51,7 +51,7 @@ enum class EItemTypes : uint8
 {
 	NONE,
 	HELMET,
-	ARMOR,
+	VEST,
 	BACKPACK,
 	MAINGUN,
 	MELEEWEAPON,
@@ -84,18 +84,21 @@ enum class EItemNames : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FItemData
+struct FItemData : public FTableRowBase
 {
 	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	FString ItemName{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	EItemTypes ItemType{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	FString ItemName;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	UTexture2D* ItemIcon = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Mesh")
+	FSoftObjectPath ItemMeshPath{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	uint8 ItemStack = 0;
@@ -226,17 +229,17 @@ private:
 	
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	EItemTypes MyItemType;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	FString ItemName;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	UTexture2D* ItemIcon;		
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	uint8 ItemStatck;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	//EItemTypes MyItemType;
+	//
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	//FString ItemName;
+	//
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	//UTexture2D* ItemIcon;		
+	//
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	//uint8 ItemStatck;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	FItemData ItemDatas;

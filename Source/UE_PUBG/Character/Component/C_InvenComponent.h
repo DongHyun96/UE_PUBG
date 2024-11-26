@@ -130,6 +130,10 @@ public:
 	void InitInvenUI();
 
 	void SetMyBackPack(AC_BackPack* inBackPack) { MyBackPack = inBackPack; }
+
+	void CheckBackPackOnCharacter();
+
+	void AddInvenCurVolume(float ItemVolume);
 	//Getter and Seter
 public:
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; } 
