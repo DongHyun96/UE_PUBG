@@ -101,11 +101,11 @@ public:
 	bool GetIsPlayingMontagesOfAny();
 	bool GetCanGunAction();
 	void ChangeCurShootingMode();
-	void ExecuteReloadMontage();
+	virtual void ExecuteReloadMontage();
 	class UCanvasPanelSlot* AimImage;
 	float MilitaryOperationArea;
 	FVector2D PanelSize;
-private:
+protected:
 	const FName SUB_HOLSTER_SOCKET_NAME = "SubGunSocket_NoBag"; // 무기집 socket 이름
 	const FName MAIN_HOLSTER_SOCKET_NAME = "MainGunSocket_NoBag"; // 무기집 socket 이름
 
@@ -119,7 +119,7 @@ private:
 	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // 무기가 손에 부착될 socket 이름
 	EGunState CurState = EGunState::MAIN_GUN;
 	bool bIsAimDown = false;
-private:
+protected:
 	//블루프린트에서 할당한 스켈레탈 메쉬를 저장하는 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* GunMesh;
@@ -161,8 +161,17 @@ protected:
 	float RecoilFactorHorizontal;
 
 	EShootingMode CurrentShootingMode = EShootingMode::FULL_AUTO;
+
+	float RecoilMultiplierByGripVert = 1;
+	float RecoilMultiplierByGripHorizon = 1;
+	float RecoilMultiplierMuzzleVert = 1;
+	float RecoilMultiplierMuzzleHorizon = 1;
 public:
-	FVector2D GetRecoilFactors() { return FVector2D(RecoilFactorHorizontal, RecoilFactorVertical); }
+	void SetRecoilMultiplierGripVert(float InValue)      { RecoilMultiplierByGripVert    = InValue; }
+	void SetRecoilMultiplierGripHorizon(float InValue)   { RecoilMultiplierByGripHorizon = InValue; }
+	void SetRecoilMultiplierMuzzleVert(float InValue)    { RecoilMultiplierMuzzleVert    = InValue; }
+	void SetRecoilMultiplierMuzzleHorizon(float InValue) { RecoilMultiplierMuzzleHorizon = InValue; }
+	FVector2D GetRecoilFactors();
 	float GetBulletRPM() { return BulletRPM; }
 	virtual bool FireBullet();
 

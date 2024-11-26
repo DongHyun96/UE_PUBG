@@ -403,6 +403,7 @@ void UC_InputComponent::SetToNonAimCamera()
 void UC_InputComponent::OnNum1()
 {
 	Player->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::MAIN_GUN);
+	Player->SetRecoilTimelineValues();
 }
 
 void UC_InputComponent::OnNum2()
@@ -411,6 +412,8 @@ void UC_InputComponent::OnNum2()
 	Player->GetStatComponent()->AddBoost(40.f);
 
 	Player->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::SUB_GUN);
+	Player->SetRecoilTimelineValues();
+
 }
 
 void UC_InputComponent::OnNum4()

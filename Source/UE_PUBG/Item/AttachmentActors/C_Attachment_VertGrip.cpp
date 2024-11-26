@@ -5,12 +5,16 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Utility/C_Util.h"
 #include "Item/Weapon/Gun/C_Gun.h"
+#include "Components/StaticMeshComponent.h"
+
 
 AC_Attachment_VertGrip::AC_Attachment_VertGrip()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PartName       = EPartsName::GRIP;
 	AttachmentName = EAttachmentNames::VERTGRIP;
+	AttachmentMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+
 }
 
 void AC_Attachment_VertGrip::BeginPlay()
@@ -30,6 +34,8 @@ bool AC_Attachment_VertGrip::UseAttachStrategy()
 	AC_Gun* CurrentGun = Cast<AC_Gun>(GetAttachParentActor());
 	if (!IsValid(CurrentGun))
 		return false;
+
+	CurrentGun->SetRecoilMultiplierGripVert(0.7f);
 	return true;
 }
 
@@ -40,6 +46,8 @@ bool AC_Attachment_VertGrip::UseDetachStrategy()
 	AC_Gun* CurrentGun = Cast<AC_Gun>(GetAttachParentActor());
 	if (!IsValid(CurrentGun))
 		return false;
+	CurrentGun->SetRecoilMultiplierGripVert(1.0f);
+
 	DetachRootComponentFromParent();
 	SetActorHiddenInGame(true);
 	return true;

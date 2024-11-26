@@ -1103,9 +1103,9 @@ void AC_Player::HandleRecoilInterpolation(float Value)
 	if (!IsValid(CurGun)) return;
 	//UC_Util::Print("Recoiling!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 	//UC_Util::Print(Value);
-	float TestFloat = CurGun->GetRecoilFactors().Y;
+	float GunRecoilFactor = CurGun->GetRecoilFactors().Y;
 	SetRecoilFactorByPose();
-	float RecoilFactor = 1 * PlayerRecoilFactorByPose;
+	float RecoilFactor = GunRecoilFactor * PlayerRecoilFactorByPose;
 	AddControllerPitchInput(-Value * RecoilFactor);
 }
 
@@ -1136,11 +1136,15 @@ void AC_Player::SetRecoilTimeLineComponent()
 void AC_Player::RecoilController()
 {
 	UC_Util::Print("Start Recoil");
+	AC_Gun* CurGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
+	if (!IsValid(CurGun)) return;
 	RecoilTimeline->PlayFromStart();
 	bIsFiringBullet = true;
+	float GunRecoilFactor = CurGun->GetRecoilFactors().X;
+
 	//ControllerRecoilTimeline->PlayFromStart();
-	float Value = FMath::FRandRange(-1.0, 1.0) * PlayerRecoilFactorByPose;
-	AddControllerYawInput(0);
+	float Value = FMath::FRandRange(-1.0, 1.0) * PlayerRecoilFactorByPose * GunRecoilFactor;
+	AddControllerYawInput(Value);
 
 
 }
