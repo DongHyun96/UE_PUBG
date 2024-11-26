@@ -8,7 +8,7 @@ AC_AR::AC_AR()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	//ItemType ¼³Á¤.
-	MyItemType = EItemTypes::MAINGUN;
+	ItemDatas.ItemType = EItemTypes::MAINGUN;
 }
 
 void AC_AR::BeginPlay()

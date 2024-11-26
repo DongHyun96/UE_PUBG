@@ -274,6 +274,9 @@ void UC_InvenComponent::RemoveBackPack()
 	MyBackPack = nullptr;
 
 	CurBackPackLevel = EBackPackLevel::LV0;
+
+	CheckBackPackOnCharacter();
+
 }
 
 void UC_InvenComponent::EquippedBackPack(AC_BackPack* backpack)
@@ -290,19 +293,7 @@ void UC_InvenComponent::EquippedBackPack(AC_BackPack* backpack)
 	//원래 장착하면 OverlapEnd로 인해 자동으로 없어져야 한다고 생각하는데 안사라져서 강제로 지웠음.
 	NearItems.Remove(backpack);
 
-	UC_EquippedComponent* equipComp = OwnerCharacter->GetEquippedComponent();
-	AC_Gun* MainGunSlot = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]);
-	AC_Gun* SubGunSlot = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]);
-
-	//equipComp->GetWeapons().Find(EWeaponSlot::MAIN_GUN)
-
-	if (MainGunSlot)
-		MainGunSlot->CheckBackPackLevelChange();
-
-	if (SubGunSlot)
-		SubGunSlot->CheckBackPackLevelChange();
-
-		
+	CheckBackPackOnCharacter();
 }
 
 bool UC_InvenComponent::AddItem(AC_Item* item)
@@ -324,7 +315,7 @@ bool UC_InvenComponent::AddItem(AC_Item* item)
 		case EItemTypes::NONE:
 			break;
 		case EItemTypes::HELMET:
-		case EItemTypes::ARMOR:
+		case EItemTypes::VEST:
 		case EItemTypes::BACKPACK:
 		case EItemTypes::MAINGUN:
 		case EItemTypes::MELEEWEAPON:
@@ -479,6 +470,29 @@ void UC_InvenComponent::InitInvenUI()
 
 	InvenUI->InitListView();
 }
+
+void UC_InvenComponent::CheckBackPackOnCharacter()
+{
+	if (!OwnerCharacter) return;
+
+	UC_EquippedComponent* equipComp = OwnerCharacter->GetEquippedComponent();
+	AC_Gun* MainGunSlot = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]);
+	AC_Gun* SubGunSlot = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]);
+
+	//equipComp->GetWeapons().Find(EWeaponSlot::MAIN_GUN)
+
+	if (MainGunSlot)
+		MainGunSlot->CheckBackPackLevelChange();
+
+	if (SubGunSlot)
+		SubGunSlot->CheckBackPackLevelChange();
+}
+
+void UC_InvenComponent::AddInvenCurVolume(float ItemVolume)
+{
+	CurVolume += ItemVolume;
+}
+
 
 
 void UC_InvenComponent::InitMyitems()
