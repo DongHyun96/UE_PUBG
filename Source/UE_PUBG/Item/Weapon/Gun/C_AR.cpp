@@ -11,6 +11,8 @@ AC_AR::AC_AR()
 	PrimaryActorTick.bCanEverTick = true;
 	//ItemType 설정.
 	ItemDatas.ItemType = EItemTypes::MAINGUN;
+	CurGunType = EGunType::AR;
+	EQUIPPED_SOCKET_NAME = FName("Rifle_Equip"); // 무기가 손에 부착될 socket 이름
 }
 
 void AC_AR::BeginPlay()

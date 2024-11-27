@@ -17,6 +17,13 @@ enum class EGunState : uint8
 	SUB_GUN
 };
 
+UENUM(BlueprintType)
+enum class EGunType : uint8
+{
+	AR,
+	SR,
+	MAX
+};
 
 UENUM(BlueprintType)
 enum class EShootingMode : uint8
@@ -114,7 +121,7 @@ protected:
 	const FName MAGAZINE_SOCKET_NAME = "Magazine_Socket";
 
 
-	const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
+	FName EQUIPPED_SOCKET_NAME; 
 	//const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
 	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // 무기가 손에 부착될 socket 이름
 	EGunState CurState = EGunState::MAIN_GUN;
@@ -249,4 +256,8 @@ public:
 	
 
 	void SetScopeCameraMode(EAttachmentNames InAttachmentName);
+protected:
+	EGunType CurGunType = EGunType::MAX;
+public:
+	EGunType GetGunType() { return CurGunType; }
 };

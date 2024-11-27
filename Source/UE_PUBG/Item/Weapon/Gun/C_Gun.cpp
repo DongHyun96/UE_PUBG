@@ -65,7 +65,7 @@ void AC_Gun::BeginPlay()
 	//Add Grip for Test
 
 	//SetHolsterNames();
-	AttachedParts[EPartsName::GRIP] = Cast<UStaticMeshComponent>(GetDefaultSubobjectByName("VertgripMesh"));
+	//AttachedParts[EPartsName::GRIP] = Cast<UStaticMeshComponent>(GetDefaultSubobjectByName("VertgripMesh"));
 	IronSightMesh = Cast<USkeletalMeshComponent>(GetDefaultSubobjectByName("IronSightMesh"));
 	//IronSightMesh->SetHiddenInGame(true);
 	SetBulletSpeed();
