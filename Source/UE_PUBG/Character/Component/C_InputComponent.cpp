@@ -451,6 +451,12 @@ void UC_InputComponent::OnXKey()
 	//}
 	//
 	//SwimFlag = !SwimFlag;
+
+	// For testing
+	if (Player->GetMainState() == EMainState::IDLE)
+		Player->SetMainState(EMainState::DEAD);
+	else
+		Player->SetMainState(EMainState::IDLE);
 	
 	Player->GetStatComponent()->TakeDamage(10.f, EDamagingPartType::HEAD, Player);
 	Player->GetEquippedComponent()->ToggleArmed();
