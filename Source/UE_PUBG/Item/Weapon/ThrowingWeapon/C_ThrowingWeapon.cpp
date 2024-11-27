@@ -666,8 +666,6 @@ bool AC_ThrowingWeapon::ReleaseOnGround()
 	if (!bIsCooked) return false;						// Cooking이 안되었다면 (안전손잡이가 날아가지 않았다면)
 	if (ProjectileMovement->IsActive()) return false;	// 이미 던졌었다면
 
-	UC_Util::Print("ReleaseOnGround", FColor::Red, 10.f);
-
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
