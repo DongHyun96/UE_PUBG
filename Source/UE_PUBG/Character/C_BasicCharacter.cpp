@@ -19,6 +19,7 @@
 #include "Component/C_SwimmingComponent.h"
 #include "Component/C_SkyDivingComponent.h"
 #include "Component/C_InvenSystem.h"
+#include "Component/C_ParkourComponent.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -79,6 +80,8 @@ AC_BasicCharacter::AC_BasicCharacter()
 	AttachmentMeshComponent = CreateDefaultSubobject<UC_AttachableItemMeshComponent>("AttachmentMeshComponent");
 	AttachmentMeshComponent->SetOwnerCharacter(this);
 
+	ParkourComponent = CreateDefaultSubobject<UC_ParkourComponent>("ParkourComponent");
+	ParkourComponent->SetOwnerCharacter(this);
 }
 
 // Called when the game starts or when spawned

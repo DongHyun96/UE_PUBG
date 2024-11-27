@@ -413,5 +413,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_AttachableItemMeshComponent* AttachmentMeshComponent{};
 
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_ParkourComponent* ParkourComponent{};
 
 };
