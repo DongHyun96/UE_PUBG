@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Character/C_BasicCharacter.h"
+
 #include "C_ParkourComponent.generated.h"
 
 
@@ -23,6 +25,21 @@ public:
 
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
+	/// <summary>
+	/// For Testing
+	/// </summary>
+	void SwapMesh(bool ToRootedMesh);
+
+	void Vault();
+
+
+	UFUNCTION()
+	void OnParkourAnimMontageEnd(UAnimMontage* Montage, bool bInterrupted);
+
+private:
+
+	void VaultMotionWarp();
+
 private:
 
 	class AC_BasicCharacter* OwnerCharacter{};
@@ -36,4 +53,25 @@ protected:
 	// Root Bone 처리된 Skeletal Mesh의 Anim class
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TSubclassOf<class UAnimInstance> RootedAnimInstance{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FPriorityAnimMontage VaultingMontage{};
+
+private:
+
+	class USkeletalMesh* MainSkeletalMesh{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TSubclassOf<class UAnimInstance> MainAnimInstance{};
+
+private:
+
+	FVector VaultStartPos{};
+	FVector VaultMiddlePos{};
+	FVector VaultLandPos{};
+	bool CanWarp{};
 };

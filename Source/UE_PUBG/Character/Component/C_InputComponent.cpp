@@ -13,6 +13,7 @@
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_SkyDivingComponent.h"
 #include "Character/Component/C_InvenSystem.h"
+#include "Character/Component/C_ParkourComponent.h"
 
 #include "Components/ActorComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -453,10 +454,18 @@ void UC_InputComponent::OnXKey()
 	//SwimFlag = !SwimFlag;
 
 	// For testing
+	Player->GetParkourComponent()->Vault();
+
 	if (Player->GetMainState() == EMainState::IDLE)
-		Player->SetMainState(EMainState::DEAD);
+	{
+		//Player->GetParkourComponent()->SwapMesh(true);
+		//Player->SetMainState(EMainState::DEAD);
+	}
 	else
-		Player->SetMainState(EMainState::IDLE);
+	{
+		//Player->GetParkourComponent()->SwapMesh(false);
+		//Player->SetMainState(EMainState::IDLE);
+	}
 	
 	Player->GetStatComponent()->TakeDamage(10.f, EDamagingPartType::HEAD, Player);
 	Player->GetEquippedComponent()->ToggleArmed();

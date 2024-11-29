@@ -265,6 +265,10 @@ public:
 
 	class UC_AttachableItemMeshComponent* GetAttachmentMeshComponent() { return AttachmentMeshComponent; };
 
+	class UC_ParkourComponent* GetParkourComponent() const { return ParkourComponent; }
+
+	class UMotionWarpingComponent* GetMotionWarpingComponent() const { return MotionWarpingComponent; }
+
 public:
 
 	/// <summary>
@@ -413,9 +417,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_AttachableItemMeshComponent* AttachmentMeshComponent{};
 
-protected:
+protected: // ÆÄÄí¸£ °ü·Ã Components
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_ParkourComponent* ParkourComponent{};
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UMotionWarpingComponent* MotionWarpingComponent{};
 };

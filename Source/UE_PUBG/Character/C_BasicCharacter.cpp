@@ -35,6 +35,8 @@
 #include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
 
+#include "MotionWarpingComponent.h"
+
 #include "Utility/C_Util.h"
 
 
@@ -82,6 +84,8 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	ParkourComponent = CreateDefaultSubobject<UC_ParkourComponent>("ParkourComponent");
 	ParkourComponent->SetOwnerCharacter(this);
+
+	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>("MotionWarping");
 }
 
 // Called when the game starts or when spawned
