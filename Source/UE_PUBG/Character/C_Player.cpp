@@ -469,7 +469,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 void AC_Player::SetAimPressCameraLocation()
 {
-
+	
 
 	FVector HeadLocation = GetMesh()->GetBoneLocation("Head" ,EBoneSpaces::ComponentSpace);
 	FVector NewLocation = FVector(0, 0, 0);

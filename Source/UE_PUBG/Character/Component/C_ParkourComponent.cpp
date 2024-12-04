@@ -12,6 +12,8 @@
 UC_ParkourComponent::UC_ParkourComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	//OwnerCharacter->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &UC_ParkourComponent::OnParkourAnimMontageEnd);
 }
 
 
@@ -21,45 +23,62 @@ void UC_ParkourComponent::BeginPlay()
 
 	//OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_SetEndDelegate(
 	//	FOnMontageEnded::CreateUObject(this, &UC_ParkourComponent::OnParkourAnimMontageEnd), VaultingMontage.AnimMontage);
+
 }
 
 
 void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	//if (OwnerCharacter->GetMesh()->GetSkeletalMeshAsset() == MainSkeletalMesh)
+	//	UC_Util::Print("MainSkeletal");
+	//
+	//if (OwnerCharacter->GetMesh()->GetAnimClass() == MainAnimInstance)
+	//	UC_Util::Print("MainAnimClass");
+
+	//UC_Util::Print(OwnerCharacter->GetCharacterMovement()->GetMovementName());
+
+	if (bPendingMeshUpdateToMainMesh)
+	{
+		bPendingMeshUpdateToMainMesh = false;
+		SwapMesh(false);
+	}
 }
 
 void UC_ParkourComponent::SwapMesh(bool ToRootedMesh)
 {
-	if (!RootedSkeletalMesh || !RootedAnimInstance)
+	if (!RootedSkeletalMesh || !RootedAnimInstanceClass)
 	{
 		UC_Util::Print("From UC_ParkourComponent : Var not inited!", FColor::Red, 10.f);
 		return;
 	}
 
-	static FTransform MainRelativeTransform{};
+	UC_Util::Print("Swapping Mesh", FColor::Red, 3.f);
 
-	// Mesh Swap 전 재생 중인 Animation이 있다면 Animation 바로 Stop 시키기
-	OwnerCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0);
-	OwnerCharacter->GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
-	OwnerCharacter->GetMesh()->SetAnimation(nullptr);
-	OwnerCharacter->GetMesh()->SetAnimInstanceClass(nullptr);
+	static FTransform MainRelativeTransform{};
 
 	if (ToRootedMesh)
 	{
+		// 이미 해당 mesh일 때
+		if (OwnerCharacter->GetMesh()->GetSkeletalMeshAsset() == RootedSkeletalMesh) return;
+
 		MainSkeletalMesh = OwnerCharacter->GetMesh()->GetSkeletalMeshAsset();
 		//MainAnimInstance = OwnerCharacter->GetMesh()->GetAnimClass();
 
 		MainRelativeTransform = OwnerCharacter->GetMesh()->GetRelativeTransform();
 
 		OwnerCharacter->GetMesh()->SetSkeletalMesh(RootedSkeletalMesh);
-		OwnerCharacter->GetMesh()->SetAnimInstanceClass(RootedAnimInstance);
+		OwnerCharacter->GetMesh()->SetAnimInstanceClass(RootedAnimInstanceClass);
 		OwnerCharacter->GetMesh()->SetRelativeTransform(MainRelativeTransform);
 	}
 	else
 	{
+		// 이미 해당 mesh일 때
+		if (OwnerCharacter->GetMesh()->GetSkeletalMeshAsset() == MainSkeletalMesh) return;
+
 		OwnerCharacter->GetMesh()->SetSkeletalMesh(MainSkeletalMesh);
-		OwnerCharacter->GetMesh()->SetAnimInstanceClass(MainAnimInstance);
+		OwnerCharacter->GetMesh()->SetAnimInstanceClass(MainAnimInstanceClass);
 		OwnerCharacter->GetMesh()->SetRelativeTransform(MainRelativeTransform);
 	}
 }
@@ -93,8 +112,8 @@ void UC_ParkourComponent::Vault()
 			CollisionParams
 		);
 
-		DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, 5.f, 4, FColor::Red, true);
-		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 5.f, 4, FColor::Yellow, true);
+		//DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, 5.f, 4, FColor::Red, true);
+		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 5.f, 4, FColor::Yellow, true);
 
 		if (HasHit) break;
 	}
@@ -119,7 +138,7 @@ void UC_ParkourComponent::Vault()
 			CollisionParams
 		);
 
-		DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, 10.f, 4, FColor::Red, true);
+		//DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, 10.f, 4, FColor::Red, true);
 		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 4, FColor::Yellow, true);
 
 		if (HasHit)
@@ -127,12 +146,12 @@ void UC_ParkourComponent::Vault()
 			if (i == 0) // Start Position
 			{
 				VaultStartPos = HitResult.Location;
-				DrawDebugSphere(GetWorld(), VaultStartPos, 10.f, 12, FColor::Cyan, false, 10.f);
+				//DrawDebugSphere(GetWorld(), VaultStartPos, 10.f, 12, FColor::Cyan, false, 10.f);
 			}
 
 			// Mid Position
 			VaultMiddlePos = HitResult.Location;
-			DrawDebugSphere(GetWorld(), VaultMiddlePos, 10.f, 12, FColor::Yellow, false, 10.f);
+			//DrawDebugSphere(GetWorld(), VaultMiddlePos, 10.f, 12, FColor::Yellow, false, 10.f);
 			CanWarp = true;
 
 		}
@@ -145,8 +164,9 @@ void UC_ParkourComponent::Vault()
 			bool Hitted = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
 			if (Hitted)
 			{
-				DrawDebugLine(GetWorld(), Start, HitResult.Location, FColor::Blue, true);
+				//DrawDebugLine(GetWorld(), Start, HitResult.Location, FColor::Blue, true);
 				VaultLandPos = HitResult.Location;
+				//DrawDebugSphere(GetWorld(), VaultLandPos, 10.f, 12, FColor::Yellow, true);
 				break;
 			}
 		}
@@ -163,6 +183,11 @@ void UC_ParkourComponent::VaultMotionWarp()
 
 	UC_Util::Print("MotionWarping");
 
+	DrawDebugSphere(GetWorld(), VaultStartPos, 10.f, 12, FColor::Yellow, true);
+	DrawDebugSphere(GetWorld(), VaultMiddlePos, 10.f, 12, FColor::Yellow, true);
+	DrawDebugSphere(GetWorld(), VaultLandPos, 10.f, 12, FColor::Yellow, true);
+
+
 	SwapMesh(true);
 
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
@@ -177,11 +202,13 @@ void UC_ParkourComponent::VaultMotionWarp()
 
 	MotionWarping->AddOrUpdateWarpTarget(Target);
 
+	Target = {};
 	Target.Name		= FName(TEXT("VaultMiddle"));
 	Target.Location = VaultMiddlePos;
 
 	MotionWarping->AddOrUpdateWarpTarget(Target);
 
+	Target = {};
 	Target.Name		= FName(TEXT("VaultLand"));
 	Target.Location = VaultLandPos;
 
@@ -190,10 +217,10 @@ void UC_ParkourComponent::VaultMotionWarp()
 	OwnerCharacter->PlayAnimMontage(VaultingMontage);
 
 	// AddDynamic 내부적으로 중복 Binding 방지
-	OwnerCharacter->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &UC_ParkourComponent::OnParkourAnimMontageEnd);
+	//OwnerCharacter->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &UC_ParkourComponent::OnParkourAnimMontageEnd);
 }
 
-void UC_ParkourComponent::OnParkourAnimMontageEnd(UAnimMontage* Montage, bool bInterrupted)
+void UC_ParkourComponent::OnParkourAnimMontageEnd()
 {
 	UC_Util::Print("OnParkourEnd", FColor::Cyan, 10.f);
 
@@ -201,8 +228,10 @@ void UC_ParkourComponent::OnParkourAnimMontageEnd(UAnimMontage* Montage, bool bI
 	OwnerCharacter->SetActorEnableCollision(true);
 	CanWarp = false;
 
-	SwapMesh(false);
+	OwnerCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0);
 
 	VaultLandPos.Z = 20000.f;
+
+	bPendingMeshUpdateToMainMesh = true; // 다음 Update Tick에서 Main skeletal mesh로 돌아감
 }
 

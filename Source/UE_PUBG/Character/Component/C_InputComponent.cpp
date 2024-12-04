@@ -310,10 +310,12 @@ void UC_InputComponent::CancelTurnInPlaceMotion()
 	UAnimMontage* RightMontage = Player->GetPoseTurnAnimMontage(Player->GetHandState()).RightMontages[Player->GetPoseState()].AnimMontage;
 	UAnimInstance* AnimInstance = Player->GetMesh()->GetAnimInstance();
 
+	if (!AnimInstance) return;
+
 	if (!IsValid(RightMontage)) return;
 
 	if (AnimInstance->Montage_IsPlaying(RightMontage))
-	{
+	{ 
 		Player->SetStrafeRotationToIdleStop();
 		AnimInstance->Montage_Stop(0.2f, RightMontage);
 	}

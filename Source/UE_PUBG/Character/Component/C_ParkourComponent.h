@@ -32,9 +32,8 @@ public:
 
 	void Vault();
 
-
-	UFUNCTION()
-	void OnParkourAnimMontageEnd(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION(BlueprintCallable)
+	void OnParkourAnimMontageEnd();
 
 private:
 
@@ -52,7 +51,7 @@ protected:
 
 	// Root Bone 처리된 Skeletal Mesh의 Anim class
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSubclassOf<class UAnimInstance> RootedAnimInstance{};
+	TSubclassOf<class UAnimInstance> RootedAnimInstanceClass{};
 
 protected:
 
@@ -66,7 +65,7 @@ private:
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSubclassOf<class UAnimInstance> MainAnimInstance{};
+	TSubclassOf<class UAnimInstance> MainAnimInstanceClass{};
 
 private:
 
@@ -74,4 +73,10 @@ private:
 	FVector VaultMiddlePos{};
 	FVector VaultLandPos{};
 	bool CanWarp{};
+
+private:
+
+	// Tick 함수에서 SkeletalMesh와 AnimInstanceClass를 바꾸는지 -> Deferred Update를 사용할 예정
+	bool bPendingMeshUpdateToMainMesh{};
+
 };
