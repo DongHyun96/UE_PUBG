@@ -138,6 +138,8 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
+	Player->GetParkourComponent()->SetHasTryVaulting(MovementVector);
+
 	if (Player->GetSwimmingComponent()->IsSwimming())
 	{
 		Player->GetSwimmingComponent()->HandlePlayerMovement(MovementVector);
@@ -192,6 +194,8 @@ void UC_InputComponent::MoveEnd(const FInputActionValue& Value)
 
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 		Player->GetSkyDivingComponent()->OnSkyMoveEnd();
+
+	Player->GetParkourComponent()->SetHasTryVaulting(false);
 }
 
 void UC_InputComponent::Look(const FInputActionValue& Value)
@@ -271,6 +275,9 @@ void UC_InputComponent::OnJump()
 	if (Player->GetSwimmingComponent()->IsSwimming())			return;
 
 	CancelTurnInPlaceMotion();
+
+	// 파쿠르 Action에 성공했다면 return
+	if (Player->GetParkourComponent()->TryExecuteParkourAction()) return;
 
 	if (Player->GetPoseState() == EPoseState::CRAWL) // Crawl to crouch
 	{
@@ -457,17 +464,6 @@ void UC_InputComponent::OnXKey()
 
 	// For testing
 	Player->GetParkourComponent()->Vault();
-
-	if (Player->GetMainState() == EMainState::IDLE)
-	{
-		//Player->GetParkourComponent()->SwapMesh(true);
-		//Player->SetMainState(EMainState::DEAD);
-	}
-	else
-	{
-		//Player->GetParkourComponent()->SwapMesh(false);
-		//Player->SetMainState(EMainState::IDLE);
-	}
 	
 	Player->GetStatComponent()->TakeDamage(10.f, EDamagingPartType::HEAD, Player);
 	Player->GetEquippedComponent()->ToggleArmed();

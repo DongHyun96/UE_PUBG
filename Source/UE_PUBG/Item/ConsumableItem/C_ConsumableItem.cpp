@@ -88,10 +88,20 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 	{
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser)) Player->GetHUDWidget()->OnConsumableUsed();
 
-		// TODO : 아이템 삭제 (몇 초 뒤에 삭제처리해야함) -> 붕대의 UsageMesh 없애는 시간까지는 기다려야 함
-		// TODO : Inventory UI에서 지우기
-		// TODO : 이 라인 지우기
-		ConsumableItemState = EConsumableItemState::IDLE;
+		// TODO : 남은 아이템 개수(자기자신) 업데이트 (하나 빼기)
+		// 만약 아이템 수가 0보다 크다면 ConsumableItemState Idle로 다시 사용할 수 있게끔 전환 & Inven UI 업데이트
+		// 남아있는 아이템이 없다면 아이템 삭제 (몇 초 뒤에 삭제처리해야함) -> 붕대의 UsageMesh 없애는 시간까지는 기다려야 함
+
+		ItemDatas.ItemStack--;
+
+		//if (ItemDatas.ItemStack <= 0)
+		//{
+		//	// TODO : Set Timer로 Destroy Actor (붕대의 UsageMesh 없애는 시간까지는 기다려야 함)
+		//
+		//	return;
+		//}
+
+		ConsumableItemState = EConsumableItemState::IDLE; // 다시 재사용 가능하게끔 처리
 	}
 		return;
 	default:
