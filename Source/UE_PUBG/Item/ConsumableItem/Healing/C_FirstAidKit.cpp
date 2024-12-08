@@ -39,6 +39,8 @@ void AC_FirstAidKit::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+
+
 void AC_FirstAidKit::HandleActivatingState()
 {
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser)) 
