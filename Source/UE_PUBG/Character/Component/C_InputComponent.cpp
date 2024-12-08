@@ -465,7 +465,7 @@ void UC_InputComponent::OnXKey()
 	//SwimFlag = !SwimFlag;
 
 	// For testing
-	Player->GetParkourComponent()->Vault();
+	//Player->GetParkourComponent()->Vault();
 	
 	Player->GetStatComponent()->TakeDamage(10.f, EDamagingPartType::HEAD, Player);
 	Player->GetEquippedComponent()->ToggleArmed();
