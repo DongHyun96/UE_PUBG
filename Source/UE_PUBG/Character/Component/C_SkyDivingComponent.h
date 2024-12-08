@@ -21,11 +21,11 @@ enum class ESkyDivingState : uint8
 /// <summary>
 /// 자세 speed 관련 struct
 /// </summary>
-struct DivingSpeeds
+struct FDivingSpeeds
 {
-	DivingSpeeds() {}
+	FDivingSpeeds() {}
 
-	DivingSpeeds(float MinWalk, float MaxWalk, float BackKeyZSpeed, float ZSpeedMin, float ZSpeedMax) :
+	FDivingSpeeds(float MinWalk, float MaxWalk, float BackKeyZSpeed, float ZSpeedMin, float ZSpeedMax) :
 		MaxWalkSpeed_Min(MinWalk),
 		MaxWalkSpeed_Max(MaxWalk),
 		BackKeyZSpeed(BackKeyZSpeed),
@@ -139,16 +139,16 @@ private: // 중력가속 사용 x -> 직접 Velocity.Z를 조절
 
 private: // SkyDiving & Parachuting 자세 speed 관련
 
-	const TMap<ESkyDivingState, DivingSpeeds> State_DivingSpeeds =
+	const TMap<ESkyDivingState, FDivingSpeeds> State_DivingSpeeds =
 	{
 		{
 			ESkyDivingState::SKYDIVING, 
-			DivingSpeeds(0.f, 3000.f, -2500.f, -3000.f, -6000.f) 
+			FDivingSpeeds(0.f, 3000.f, -2500.f, -3000.f, -6000.f) 
 		},
 
 		{
 			ESkyDivingState::PARACHUTING,
-			DivingSpeeds(400.f, 1000.f, -300.f, -500.f, -2000.f)
+			FDivingSpeeds(400.f, 1000.f, -300.f, -500.f, -2000.f)
 		}
 	};
 

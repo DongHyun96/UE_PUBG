@@ -23,7 +23,8 @@ public class UE_PUBG : ModuleRules
             "GameplayCameras",
             "Niagara",
             "Slate",
-            "SlateCore"
+            "SlateCore",
+            "MotionWarping"
         });
 
         /*

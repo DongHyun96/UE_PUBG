@@ -13,6 +13,7 @@
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_SkyDivingComponent.h"
 #include "Character/Component/C_InvenSystem.h"
+#include "Character/Component/C_ParkourComponent.h"
 
 #include "Components/ActorComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -137,6 +138,8 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
+	Player->GetParkourComponent()->SetHasTryVaulting(MovementVector);
+
 	if (Player->GetSwimmingComponent()->IsSwimming())
 	{
 		Player->GetSwimmingComponent()->HandlePlayerMovement(MovementVector);
@@ -191,6 +194,8 @@ void UC_InputComponent::MoveEnd(const FInputActionValue& Value)
 
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 		Player->GetSkyDivingComponent()->OnSkyMoveEnd();
+
+	Player->GetParkourComponent()->SetHasTryVaulting(false);
 }
 
 void UC_InputComponent::Look(const FInputActionValue& Value)
@@ -220,6 +225,7 @@ void UC_InputComponent::Look(const FInputActionValue& Value)
 void UC_InputComponent::Crouch()
 {
 	if (Player->GetSwimmingComponent()->IsSwimming()) return;
+	//if (Player->GetParkourComponent()->GetIsCurrentlyWarping()) return;
 
 	switch (Player->GetPoseState())
 	{
@@ -246,6 +252,8 @@ void UC_InputComponent::OnSwimmingCrouch()
 
 void UC_InputComponent::Crawl()
 {
+	//if (Player->GetParkourComponent()->GetIsCurrentlyWarping()) return;
+
 	switch (Player->GetPoseState())
 	{
 	case EPoseState::STAND: // Stand to Crawl
@@ -268,8 +276,12 @@ void UC_InputComponent::OnJump()
 	if (!Player->GetCanMove())									return;
 	if (Player->GetIsJumping() || PlayerMovement->IsFalling())	return;
 	if (Player->GetSwimmingComponent()->IsSwimming())			return;
+	//if (Player->GetParkourComponent()->GetIsCurrentlyWarping()) return;
 
 	CancelTurnInPlaceMotion();
+
+	// 파쿠르 Action에 성공했다면 return
+	if (Player->GetParkourComponent()->TryExecuteParkourAction()) return;
 
 	if (Player->GetPoseState() == EPoseState::CRAWL) // Crawl to crouch
 	{
@@ -309,10 +321,12 @@ void UC_InputComponent::CancelTurnInPlaceMotion()
 	UAnimMontage* RightMontage = Player->GetPoseTurnAnimMontage(Player->GetHandState()).RightMontages[Player->GetPoseState()].AnimMontage;
 	UAnimInstance* AnimInstance = Player->GetMesh()->GetAnimInstance();
 
+	if (!AnimInstance) return;
+
 	if (!IsValid(RightMontage)) return;
 
 	if (AnimInstance->Montage_IsPlaying(RightMontage))
-	{
+	{ 
 		Player->SetStrafeRotationToIdleStop();
 		AnimInstance->Montage_Stop(0.2f, RightMontage);
 	}
@@ -451,10 +465,7 @@ void UC_InputComponent::OnXKey()
 	//SwimFlag = !SwimFlag;
 
 	// For testing
-	//if (Player->GetMainState() == EMainState::IDLE)
-	//	Player->SetMainState(EMainState::DEAD);
-	//else
-	//	Player->SetMainState(EMainState::IDLE);
+	Player->GetParkourComponent()->Vault();
 	
 	Player->GetStatComponent()->TakeDamage(10.f, EDamagingPartType::HEAD, Player);
 	Player->GetEquippedComponent()->ToggleArmed();

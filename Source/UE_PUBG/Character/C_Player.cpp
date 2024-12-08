@@ -21,6 +21,7 @@
 #include "Character/Component/C_PingSystemComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
+#include "Character/Component/C_ParkourComponent.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -469,7 +470,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 void AC_Player::SetAimPressCameraLocation()
 {
-
+	
 
 	FVector HeadLocation = GetMesh()->GetBoneLocation("Head" ,EBoneSpaces::ComponentSpace);
 	FVector NewLocation = FVector(0, 0, 0);
@@ -497,6 +498,7 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 	if (GetCharacterMovement()->IsSwimming())	return;
 	if (GetVelocity().Size() > 0.f)				return;
 	if (bIsHoldDirection)						return;
+	//if (ParkourComponent->GetIsCurrentlyWarping()) return;
 
 	// 0 360
 	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;

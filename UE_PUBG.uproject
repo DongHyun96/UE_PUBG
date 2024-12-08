@@ -13,7 +13,8 @@
 				"CoreUObject",
 				"UMGEditor",
 				"UMG",
-				"Water"
+				"Water",
+				"MotionWarping"
 			]
 		}
 	],
