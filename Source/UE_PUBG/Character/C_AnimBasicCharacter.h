@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Item/Weapon/Gun/C_Gun.h"
+
 #include "C_AnimBasicCharacter.generated.h"
 
 enum class EMainState : uint8;
@@ -98,7 +100,8 @@ protected:
 	EHandState HandState{};
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPoseState PoseState{};
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EGunType CurGunType{};
 
 	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
 	void AnimNotify_OnStartTransition_Stand_To_Falling();

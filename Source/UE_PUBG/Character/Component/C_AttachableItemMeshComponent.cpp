@@ -61,8 +61,9 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 	AttachableItemsMesh[EPartsName::SCOPE].Add(EAttachmentNames::REDDOT);
 	AttachableItemsMesh[EPartsName::SCOPE].Add(EAttachmentNames::SCOPE4);
 	AttachableItemsMesh[EPartsName::GRIP].Add(EAttachmentNames::VERTGRIP);
+	AttachableItemsMesh[EPartsName::MUZZLE].Add(EAttachmentNames::COMPENSATOR);
 	//AttachableItemsMesh[EPartsName::SCOPE].Add(EAttachmentNames::SCOPE4);
-	;
+	
 
 	TArray<UObject*> AttachmentBluePrintAssets1;
 	EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/AttachmentBluePrints"), AttachmentBluePrintAssets1, EngineUtils::ATL_Regular);
@@ -80,6 +81,10 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 			AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
 			if (TempMesh)
 			{
+				if (AttachableItemsMesh[TempMesh->GetPartName()].IsEmpty())
+				{
+					AttachableItemsMesh[TempMesh->GetPartName()].Add(TempMesh->GetAttachmentName());
+				}
 				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
 				
 				//UC_Util::Print(TempMesh, FColor::Red, 100);

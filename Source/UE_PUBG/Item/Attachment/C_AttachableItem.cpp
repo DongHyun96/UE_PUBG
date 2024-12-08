@@ -47,7 +47,7 @@ AC_AttachableItem::AC_AttachableItem()
 void AC_AttachableItem::BeginPlay()
 {
 	Super::BeginPlay();
-	ItemName = "Test Item Name";
+	ItemDatas.ItemName = "Test Item Name";
 	AttachableItemMesh = FindComponentByClass<USkeletalMeshComponent>();
 	CapsuleCollider = FindComponentByClass<UCapsuleComponent>();
 	if (IsValid(AttachableItemMesh))

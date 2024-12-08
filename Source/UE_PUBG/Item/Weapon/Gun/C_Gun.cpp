@@ -53,7 +53,7 @@ AC_Gun::AC_Gun()
 	//ItemType 설정.
 	//Magazine = LoadObject<AC_AttachableItem>(nullptr, TEXT("/Game/Project_PUBG/Common/Weapon/GunWeapon/Magazine/BPC_Magazine.BPC_Magazine"));
 
-	MyItemType = EItemTypes::MAINGUN;
+	ItemDatas.ItemType = EItemTypes::MAINGUN;
 
 	SetHolsterNames();
 
@@ -65,7 +65,7 @@ void AC_Gun::BeginPlay()
 	//Add Grip for Test
 
 	//SetHolsterNames();
-	AttachedParts[EPartsName::GRIP] = Cast<UStaticMeshComponent>(GetDefaultSubobjectByName("VertgripMesh"));
+	//AttachedParts[EPartsName::GRIP] = Cast<UStaticMeshComponent>(GetDefaultSubobjectByName("VertgripMesh"));
 	IronSightMesh = Cast<USkeletalMeshComponent>(GetDefaultSubobjectByName("IronSightMesh"));
 	//IronSightMesh->SetHiddenInGame(true);
 	SetBulletSpeed();
@@ -227,12 +227,14 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 	OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
 	
+	OwnerPlayer->SetRecoilTimelineValues(BulletRPM);
 	return AttachToComponent
 	(
 		InParent,
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		EQUIPPED_SOCKET_NAME
 	);
+
 	
 }
 
@@ -472,47 +474,31 @@ void AC_Gun::ChangeCurShootingMode()
 
 void AC_Gun::ExecuteReloadMontage()
 {
-	AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
-	if (CurBulletCount == MaxBulletCount) return;
-	if (!CurPlayer->GetCanMove()) return;
-	if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return;
-	SetMagazineVisibility(false);
-	OwnerCharacter->SetIsReloadingBullet(true);
-	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
-	BackToMainCamera();	
+	//AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
+	//if (CurBulletCount == MaxBulletCount) return;
+	//if (!CurPlayer->GetCanMove()) return;
+	//if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return;
+	//SetMagazineVisibility(false);
+	//OwnerCharacter->SetIsReloadingBullet(true);
+	//OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
+	//BackToMainCamera();	
 }
 
+
+FVector2D AC_Gun::GetRecoilFactors()
+{
+	float VerticalFactor   = RecoilFactorVertical * RecoilMultiplierByGripVert * RecoilMultiplierMuzzleVert;
+	float HorizontalFactor = RecoilFactorHorizontal * RecoilMultiplierByGripHorizon * RecoilMultiplierMuzzleHorizon;
+
+	return FVector2D(HorizontalFactor, VerticalFactor);
+}
 
 bool AC_Gun::FireBullet()
 {
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
 	if (!OnScreen) return false;
+	ExecuteReloadMontage();
 
-	if (CurBulletCount <= 0)
-	{
-		//TODO: 재장전 모션 실행 (총알이 Inven에 없으면 아무것도 못함)
-		ExecuteReloadMontage();
-		UC_Util::Print("Can't Fire");
-
-		return false;
-	}
-
-	//CollisionParams.AddIgnoredActor(Bullet);
-
-
-	//if (FoundWidgets.Num() > 0)
-	//{
-	//	MyWidget = FoundWidgets[0];  // 첫 번째 위젯 가져오기
-	//	//UC_Util::Print("FoundWidget");
-
-	//}
-	//else 
-	//	return false;
-
-	//TODO 캐릭터 상태, 상황에 따라 다른 위젯이미지 불러오기
-
-	//UC_Util::Print(float(HitResult.Location.Y));
-	//Controller->ActorLineTraceSingle(nullptr, ),)
 
 	FVector FireLocation;
 	FVector FireDirection;
@@ -633,8 +619,8 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	//TODO: 캐릭터 상태에 따라 탄퍼짐 or 직선
 	if (OwnerCharacter->GetIsWatchingSight())
 	{
-		RandomPointOnScreen.X = (0.5 * ViewportSize.X );
-		RandomPointOnScreen.Y = (0.4 * ViewportSize.Y );
+		RandomPointOnScreen.X = (IronSightWindowLocation.X * ViewportSize.X );
+		RandomPointOnScreen.Y = (IronSightWindowLocation.Y * ViewportSize.Y );
 	}
 	else
 	{

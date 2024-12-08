@@ -57,7 +57,7 @@ AC_ThrowingWeapon::AC_ThrowingWeapon()
 	PredictedEndPoint->SetVisibility(false);
 
 	//ItemType 설정.
-	MyItemType = EItemTypes::THROWABLE;
+	ItemDatas.ItemType = EItemTypes::THROWABLE;
 
 	ExplosionSphere = CreateDefaultSubobject<USphereComponent>("ExplosionSphere");
 }
@@ -255,9 +255,10 @@ bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 		{
 			//인벤에 해당 아이템이 존재 할 때.
 			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + ItemStackCount);
-
 			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
 			//TODO : destroy를 해도 잔상이 남는것을 대비해서 해놓음 만약 없이도 잔상이 안남는다면 지울 것.
+			invenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
+
 			this->SetActorEnableCollision(false);
 			this->SetActorHiddenInGame(true);
 
@@ -281,8 +282,11 @@ bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 		//아이템의 일부만 인벤에 넣을 수 있을 때.
 		if (IsValid(FoundItem))
 		{
-			     this->SetItemStack(ItemStatck - ItemStackCount);
+			     this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
 			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + ItemStackCount);
+
+			invenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
+
 			return true;
 		}
 		else

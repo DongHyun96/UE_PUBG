@@ -13,7 +13,8 @@
 				"CoreUObject",
 				"UMGEditor",
 				"UMG",
-				"Water"
+				"Water",
+				"MotionWarping"
 			]
 		}
 	],
@@ -31,6 +32,10 @@
 		},
 		{
 			"Name": "MotionWarping",
+			"Enabled": true
+		},
+		{
+			"Name": "SkeletalMeshModelingTools",
 			"Enabled": true
 		}
 	]

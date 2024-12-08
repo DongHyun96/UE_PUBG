@@ -82,7 +82,10 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	if (IsValid(CurrentGun))
 	{
 		bGunHasGrip = CurrentGun->GetGunHasGrip();
+		CurGunType = CurrentGun->GetGunType();
 	}
+	else
+		CurGunType = EGunType::MAX;
 	SetAimingTurnInPlaceRotation();
 }
 

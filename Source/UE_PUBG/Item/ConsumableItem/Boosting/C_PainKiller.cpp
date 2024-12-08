@@ -30,6 +30,7 @@ void AC_PainKiller::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+
 void AC_PainKiller::OnStartUsing()
 {
 	UsingTimer = 0.f;

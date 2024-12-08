@@ -13,7 +13,7 @@ AC_BackPack::AC_BackPack()
 	PrimaryActorTick.bCanEverTick = true;
 
 	//ItemType 설정.
-	MyItemType = EItemTypes::BACKPACK;
+	ItemDatas.ItemType = EItemTypes::BACKPACK;
 
 	Level = 3;
 
@@ -21,9 +21,9 @@ AC_BackPack::AC_BackPack()
 	RootComponent = BackpackMesh;
 
 	static ConstructorHelpers::FObjectFinder<UTexture2D> ImageTexture(TEXT("/Game/Project_PUBG/Common/InventoryUI/Icons/Item/Equipment/Backpack/Item_Back_BlueBlocker.Item_Back_BlueBlocker"));
-	ItemIcon = ImageTexture.Object;
+	ItemDatas.ItemIcon = ImageTexture.Object;
 
-	ItemName = TEXT("BackPack");
+	ItemDatas.ItemName = TEXT("BackPack");
 
 }
 
@@ -44,8 +44,22 @@ void AC_BackPack::Tick(float DeltaTime)
 
 void AC_BackPack::AttachToSocket(AC_BasicCharacter* character)
 {
-	FName SocketName = "BackPackSocket";
-
+	FName SocketName{};
+	switch (Level)
+	{
+	case 1:
+		SocketName = "BackPack_Lv1";
+		break;
+	case 2:
+		SocketName = "BackPack_Lv2";
+		break;
+	case 3:
+		SocketName = "BackPack_Lv3";
+		break;
+	default:
+		break;
+	}
+	
 	//mobility가 Moveable이여야 장착 가능. 지금은 에디터 내에서 설정해 놓았음.
 	//BackpackMesh->SetMobility(EComponentMobility::Movable);
 

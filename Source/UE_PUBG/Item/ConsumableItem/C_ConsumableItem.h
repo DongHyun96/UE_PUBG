@@ -52,6 +52,15 @@ public:
 	/// <returns> : 정상적으로 취소되었다면 return true </returns>
 	bool CancelActivating();
 
+	bool Interaction(AC_BasicCharacter* Character) override;
+
+	bool MoveToInven(AC_BasicCharacter* Character) override;
+
+	bool MoveToSlot(AC_BasicCharacter* Character) override;
+
+	bool MoveToAround(AC_BasicCharacter* Character) override;
+
+
 protected:
 
 	/// <summary>

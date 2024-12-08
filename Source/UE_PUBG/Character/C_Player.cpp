@@ -21,6 +21,7 @@
 #include "Character/Component/C_PingSystemComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
+#include "Character/Component/C_ParkourComponent.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -469,7 +470,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 void AC_Player::SetAimPressCameraLocation()
 {
-
+	
 
 	FVector HeadLocation = GetMesh()->GetBoneLocation("Head" ,EBoneSpaces::ComponentSpace);
 	FVector NewLocation = FVector(0, 0, 0);
@@ -497,6 +498,7 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 	if (GetCharacterMovement()->IsSwimming())	return;
 	if (GetVelocity().Size() > 0.f)				return;
 	if (bIsHoldDirection)						return;
+	//if (ParkourComponent->GetIsCurrentlyWarping()) return;
 
 	// 0 360
 	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;
@@ -1103,9 +1105,9 @@ void AC_Player::HandleRecoilInterpolation(float Value)
 	if (!IsValid(CurGun)) return;
 	//UC_Util::Print("Recoiling!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 	//UC_Util::Print(Value);
-	float TestFloat = CurGun->GetRecoilFactors().Y;
+	float GunRecoilFactor = CurGun->GetRecoilFactors().Y;
 	SetRecoilFactorByPose();
-	float RecoilFactor = 1 * PlayerRecoilFactorByPose;
+	float RecoilFactor = GunRecoilFactor * PlayerRecoilFactorByPose;
 	AddControllerPitchInput(-Value * RecoilFactor);
 }
 
@@ -1136,22 +1138,29 @@ void AC_Player::SetRecoilTimeLineComponent()
 void AC_Player::RecoilController()
 {
 	UC_Util::Print("Start Recoil");
+	AC_Gun* CurGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
+	if (!IsValid(CurGun)) return;
 	RecoilTimeline->PlayFromStart();
 	bIsFiringBullet = true;
+	float GunRecoilFactor = CurGun->GetRecoilFactors().X;
+
 	//ControllerRecoilTimeline->PlayFromStart();
-	float Value = FMath::FRandRange(-1.0, 1.0) * PlayerRecoilFactorByPose;
-	AddControllerYawInput(0);
+	float Value = FMath::FRandRange(-1.0, 1.0) * PlayerRecoilFactorByPose * GunRecoilFactor;
+	AddControllerYawInput(Value);
 
 
 }
 
-void AC_Player::SetRecoilTimelineValues()
+void AC_Player::SetRecoilTimelineValues(float InGunRPM)
 {
-	AC_Gun* CurGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
-	if (!IsValid(CurGun)) return;
+	//AC_Gun* CurGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
+	//UC_Util::Print("SetRecoilTimelineValues", FColor::Red, 10);
+
+	//if (!IsValid(CurGun)) return;
 	float PlayRate = 1.0f;
-	if (CurGun->GetBulletRPM() != 0)
-		PlayRate /= CurGun->GetBulletRPM();
+	if (InGunRPM != 0)
+		PlayRate /= InGunRPM;
+	UC_Util::Print(PlayRate, FColor::Red, 10);
 	RecoilTimeline->SetTimelinePlayRate(PlayRate);
 	//CameraTransitionTimeline->SetPlayRate(PlayRate);  // 재생 속도 설정
 	//CameraTransitionTimeline->SetLooping(false);  // 반복하지 않도록 설정
