@@ -5,6 +5,8 @@
 #include "GameFramework/Actor.h"
 #include "C_Item.generated.h"
 
+
+
 /// <summary>
 /// AttachableItem PartsName Enum class
 /// C_Gun에서 부착 가능 부위
@@ -84,6 +86,22 @@ enum class EItemNames : uint8
 };
 
 USTRUCT(BlueprintType)
+struct FSpawnItemData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpawnItemData")
+	FSoftObjectPath itemMesh{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpawnItemData")
+	FSoftObjectPath  SpawnedItemData{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpawnItemData")
+	TSubclassOf<AC_Item> ItemClass{};
+
+};
+
+USTRUCT(BlueprintType)
 struct FItemData : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -97,8 +115,8 @@ struct FItemData : public FTableRowBase
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	UTexture2D* ItemIcon = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Mesh")
-	FSoftObjectPath ItemMeshPath{};
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Mesh")
+	//FSoftObjectPath ItemMeshPath{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	uint8 ItemStack = 0;
@@ -108,6 +126,9 @@ struct FItemData : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	EItemPlace ItemPlace = EItemPlace::AROUND;
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	//TSubclassOf<AC_Item> ItemClass;
 
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	//float Volume;
@@ -121,7 +142,7 @@ struct FItemData : public FTableRowBase
 /// 예)탄, 진통제, 구상, 수류탄등.
 /// 가방에 들어가는 소지품 목록 작성해야함.
 /// </summary>
-UCLASS(abstract)
+UCLASS(abstract, BlueprintType)
 class UE_PUBG_API AC_Item : public AActor
 {
 	GENERATED_BODY()

@@ -25,6 +25,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	//bool Interaction(AC_BasicCharacter* Character) override;
+
 private:
 
 	void OnStartUsing()		  override;
