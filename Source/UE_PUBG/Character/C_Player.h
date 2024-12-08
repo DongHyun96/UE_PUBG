@@ -264,7 +264,7 @@ public:
 
 	void SetRecoilTimeLineComponent();
 
-	void SetRecoilTimelineValues();
+	void SetRecoilTimelineValues(float InGunRPM);
 	void SetRecoilFactorByPose();
 	float PlayerRecoilFactorByPose = 1.0f;
 private:

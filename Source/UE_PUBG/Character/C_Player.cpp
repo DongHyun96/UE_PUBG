@@ -1149,13 +1149,16 @@ void AC_Player::RecoilController()
 
 }
 
-void AC_Player::SetRecoilTimelineValues()
+void AC_Player::SetRecoilTimelineValues(float InGunRPM)
 {
-	AC_Gun* CurGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
-	if (!IsValid(CurGun)) return;
+	//AC_Gun* CurGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
+	//UC_Util::Print("SetRecoilTimelineValues", FColor::Red, 10);
+
+	//if (!IsValid(CurGun)) return;
 	float PlayRate = 1.0f;
-	if (CurGun->GetBulletRPM() != 0)
-		PlayRate /= CurGun->GetBulletRPM();
+	if (InGunRPM != 0)
+		PlayRate /= InGunRPM;
+	UC_Util::Print(PlayRate, FColor::Red, 10);
 	RecoilTimeline->SetTimelinePlayRate(PlayRate);
 	//CameraTransitionTimeline->SetPlayRate(PlayRate);  // 재생 속도 설정
 	//CameraTransitionTimeline->SetLooping(false);  // 반복하지 않도록 설정

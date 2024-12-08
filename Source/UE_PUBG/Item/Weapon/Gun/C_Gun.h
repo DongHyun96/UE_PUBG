@@ -260,4 +260,6 @@ protected:
 	EGunType CurGunType = EGunType::MAX;
 public:
 	EGunType GetGunType() { return CurGunType; }
+protected:
+	FVector2D IronSightWindowLocation{};
 };

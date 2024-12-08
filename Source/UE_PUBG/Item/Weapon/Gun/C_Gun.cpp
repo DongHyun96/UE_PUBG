@@ -227,12 +227,14 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 	OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
 	
+	OwnerPlayer->SetRecoilTimelineValues(BulletRPM);
 	return AttachToComponent
 	(
 		InParent,
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		EQUIPPED_SOCKET_NAME
 	);
+
 	
 }
 
@@ -617,8 +619,8 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	//TODO: 캐릭터 상태에 따라 탄퍼짐 or 직선
 	if (OwnerCharacter->GetIsWatchingSight())
 	{
-		RandomPointOnScreen.X = (0.5 * ViewportSize.X );
-		RandomPointOnScreen.Y = (0.4 * ViewportSize.Y );
+		RandomPointOnScreen.X = (IronSightWindowLocation.X * ViewportSize.X );
+		RandomPointOnScreen.Y = (IronSightWindowLocation.Y * ViewportSize.Y );
 	}
 	else
 	{
