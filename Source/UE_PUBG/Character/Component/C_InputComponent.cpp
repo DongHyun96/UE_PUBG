@@ -225,6 +225,7 @@ void UC_InputComponent::Look(const FInputActionValue& Value)
 void UC_InputComponent::Crouch()
 {
 	if (Player->GetSwimmingComponent()->IsSwimming()) return;
+	//if (Player->GetParkourComponent()->GetIsCurrentlyWarping()) return;
 
 	switch (Player->GetPoseState())
 	{
@@ -251,6 +252,8 @@ void UC_InputComponent::OnSwimmingCrouch()
 
 void UC_InputComponent::Crawl()
 {
+	//if (Player->GetParkourComponent()->GetIsCurrentlyWarping()) return;
+
 	switch (Player->GetPoseState())
 	{
 	case EPoseState::STAND: // Stand to Crawl
@@ -273,6 +276,7 @@ void UC_InputComponent::OnJump()
 	if (!Player->GetCanMove())									return;
 	if (Player->GetIsJumping() || PlayerMovement->IsFalling())	return;
 	if (Player->GetSwimmingComponent()->IsSwimming())			return;
+	//if (Player->GetParkourComponent()->GetIsCurrentlyWarping()) return;
 
 	CancelTurnInPlaceMotion();
 

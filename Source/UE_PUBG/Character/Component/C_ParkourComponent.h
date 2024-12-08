@@ -32,7 +32,7 @@ struct FParkourDescriptor
 
 	// Vault일 경우		- MiddlePos와 LandPos 모두 잘 잡혔을 때 CanWarp 가능
 	// Mantling일 경우	- MiddlePos까지 잘 잡혔을 때 CanWarp 가능
-	bool CanWarp{};
+	//bool CanWarp{};
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -64,6 +64,8 @@ public:
 	void SetHasTryVaulting(const FVector2D& MovementVector) { bHasTryVaulting = MovementVector.X == 1; }
 	void SetHasTryVaulting(bool HasTryVaulting) { bHasTryVaulting = HasTryVaulting; }
 
+	//bool GetIsCurrentlyWarping() const { return bIsCurrentlyWarping; }
+
 	UFUNCTION(BlueprintCallable)
 	void OnParkourAnimMontageEnd();
 
@@ -75,8 +77,21 @@ private:
 	/// <param name="ToRootedMesh"> : If false, Swap back to Main Skeletal Mesh </param>
 	void SwapMesh(bool ToRootedMesh);
 
+private:
+
 	void VaultMotionWarp();
 
+	/// <summary>
+	/// Vault motion warping 처리
+	/// </summary>
+	/// <param name="CurParkourDesc"> : 현 Parkour Desc </param>
+	void VaultMotionWarp(const FParkourDescriptor& CurParkourDesc);
+
+	/// <summary>
+	/// Mantle motion warping 처리
+	/// </summary>
+	/// <param name="CurParkourDesc"> : 현 Parkour Desc </param>
+	void MantleMotionWarp(const FParkourDescriptor& CurParkourDesc);
 
 
 private:
@@ -158,4 +173,5 @@ private:
 	// Input forward와 파쿠르를 동시에 했을 시 true
 	bool bHasTryVaulting{};
 
+	//bool bIsCurrentlyWarping{};
 };
