@@ -37,6 +37,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void SetLinkedItemBarWidget(class UC_ItemBarWidget* InItemBarWidget) { LinkedItemBarWidget = InItemBarWidget; }
+
 public:
 
 	/// <summary>
@@ -95,6 +97,10 @@ protected:
 	/// </summary>
 	virtual void OnCancelActivating() PURE_VIRTUAL(AC_ConsumableItem::OnCancelActivating, );
 
+protected:
+
+	virtual void HandleDestroy() PURE_VIRTUAL(AC_ConsumableItem::HandleDestroy, );
+
 public: // getters and setters
 
 	EConsumableItemState GetConsumableItemState() const { return ConsumableItemState; }
@@ -120,6 +126,11 @@ protected:
 	// 자세별 아이템 사용 동작
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> UsingMontageMap{};
+
+protected:
+
+	// 이 Consumable Item과 연결된 ItemBarWidget 객체
+	class UC_ItemBarWidget* LinkedItemBarWidget{};
 
 
 };

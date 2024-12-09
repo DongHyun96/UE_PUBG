@@ -67,7 +67,17 @@ void AC_Bandage::OnCancelActivating()
 	// 아무 action도 안취해도 됨
 }
 
+void AC_Bandage::HandleDestroy()
+{
+	bDestroyFlag = true;
+}
+
 void AC_Bandage::HideUsageMesh()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::BANDAGE, false);
+	if (bDestroyFlag)
+	{
+		UC_Util::Print("Destroying Bandage", FColor::Red, 5.f);
+		this->Destroy();
+	}
 }
