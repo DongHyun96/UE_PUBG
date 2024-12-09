@@ -80,7 +80,6 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 		{   // 우클릭 이벤트 실행
 			CachedItem->Interaction(OwnerCharacter);
 	
-	
 			InitInvenUIWidget();
 			
 			//NativeOnListItemObjectSet에서의 호출과 중복으로 일단 주석처리, 다만 이벤트시에 초기화가 필요하면 사용해야 할 수 있음.
@@ -226,6 +225,11 @@ AC_Item* UC_ItemBarWidget::GetItem(AC_Item* nearItem)
 AC_Item* UC_ItemBarWidget::DropItem(AC_Item* myItem)
 {
 	return nullptr;
+}
+
+void UC_ItemBarWidget::SetPercent(float curTime, float endTime)
+{
+	ItemUsingTimer->SetPercent(curTime / endTime);
 }
 
 void UC_ItemBarWidget::InitInvenUIWidget()

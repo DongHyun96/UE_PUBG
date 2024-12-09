@@ -528,6 +528,7 @@ void AC_ThrowingWeapon::OnThrowThrowable()
 {
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
+	//OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
 	// Direction 구하는 방법 1
 	/*FVector ActorForward = FRotationMatrix(OwnerCharacter->GetActorRotation()).GetUnitAxis(EAxis::X);
 

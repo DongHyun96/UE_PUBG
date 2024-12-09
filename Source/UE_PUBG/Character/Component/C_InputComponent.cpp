@@ -494,12 +494,14 @@ void UC_InputComponent::OnRKey()
 void UC_InputComponent::OnMLBStarted()
 {
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
+	if (Player->GetInvenSystem()->GetIsPanelOpend()) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMlb_Started();
 }
 
 void UC_InputComponent::OnMLBOnGoing()
 {
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
+	//if (Player->GetInvenSystem()->GetIsPanelOpend()) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMlb_OnGoing();
 }
 
@@ -512,7 +514,7 @@ void UC_InputComponent::OnMLBCompleted()
 void UC_InputComponent::OnMRBStarted()
 {
 	UC_Util::Print("Switching Consumable");
-
+	if (Player->GetInvenSystem()->GetIsPanelOpend()) return;
 	// Test¿ë Consumable switching
 	if (Player->ConsumableIterator >= Player->ConsumableItems.Num() - 1) Player->ConsumableIterator = 0;
 	else Player->ConsumableIterator++;

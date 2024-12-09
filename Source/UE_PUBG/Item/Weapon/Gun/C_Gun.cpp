@@ -13,6 +13,7 @@
 #include "Components/Image.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_InvenSystem.h"
 
 #include "Components/PanelWidget.h"
 #include "Components/NamedSlotInterface.h"
@@ -240,7 +241,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 
 bool AC_Gun::SetAimingDown()
 {
-
+	if (OwnerCharacter->GetInvenSystem()->GetIsPanelOpend()) return false; //UI가 열려 있을때 작동 금지.
 	//스프린트 중이라면 Return
 	if (OwnerCharacter->GetNextSpeed() > 600) return false;
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
@@ -263,6 +264,7 @@ bool AC_Gun::SetAimingDown()
 //견착 조준만할 때 Player AimKePress함수로 메인카메라에서 에임 카메라로 바꿔주기
 bool AC_Gun::SetAimingPress()
 {
+	//if (OwnerCharacter->GetInvenSystem()->GetIsPanelOpend()) return false;
 	//스프린트 중이라면 Return
 	if (OwnerCharacter->GetNextSpeed() > 600) return false;
 

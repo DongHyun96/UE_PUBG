@@ -2,7 +2,11 @@
 
 
 #include "Character/Component/C_InvenSystem.h"
+#include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_BasicCharacter.h"
+
+#include "Item/Weapon/Gun/C_Gun.h"
+
 #include "GameFramework/PlayerController.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -115,6 +119,10 @@ void UC_InvenSystem::OpenInvenUI()
 
 		//PlayerController->SetInputMode(InputMode);
 		//PlayerController->bShowMouseCursor = true;
+
+		//if (OwnerCharacter->GetEquippedComponent()->GetCurWeapon())
+		//	Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon())->SetIsAimPress(false);
+
 		ShowInvenUI();
 	}
 

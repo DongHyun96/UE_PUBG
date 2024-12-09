@@ -121,5 +121,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> UsingMontageMap{};
 
-
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_ItemBarWidget* MyItemBar{};
 };

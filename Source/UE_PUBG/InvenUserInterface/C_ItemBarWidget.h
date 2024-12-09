@@ -7,6 +7,7 @@
 
 #include "Blueprint/IUserObjectListEntry.h"
 #include "Components/TextBlock.h"
+#include "Components/Progressbar.h"
 
 #include "Item/C_Item.h"
 
@@ -45,6 +46,14 @@ public:
     UFUNCTION(BlueprintCallable)
     AC_Item* DropItem(AC_Item* myItem);
 
+    /// <summary>
+    /// 아이템 사용시 눈으로 알려주는 progressbar타이머.
+    /// </summary>
+    /// <param name="curTime"></param>
+    /// <param name="endTime"></param>
+    UFUNCTION(BlueprintCallable)
+    void SetPercent(float curTime, float endTime);
+
     UFUNCTION(BlueprintCallable)
     void InitInvenUIWidget();
     //두 기능을 합친 SetItem생각
@@ -64,6 +73,9 @@ public:
     //현재 UI에서 바인딩하지 않음.
     UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
     class UTextBlock* ItemStackBlock1;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+    class UProgressBar* ItemUsingTimer{};
 
     //uint8 ItemStack;
     UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))

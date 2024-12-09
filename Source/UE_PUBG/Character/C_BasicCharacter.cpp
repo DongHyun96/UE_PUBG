@@ -140,18 +140,24 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 
 	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
 
+	//if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
 
-	if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
+	if (IsValid(OverlappedItem))
 	{
 		UC_Util::Print("OverlappedItem");
 		//UC_Util::Print(*OverlappedItem->GetName());
 
 		//Inventory->GetNearItems().Add(OverlappedItem);
 		//Inventory->AddItemToAroundList(OverlappedItem);
-		if (!IsValid(Inventory)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
-		Inventory->AddItemToNearList(OverlappedItem);
-		Inventory->InitInvenUI();
-		if (!IsValid(InvenSystem)) return;
+
+		if (OverlappedItem->GetOwnerCharacter() == nullptr)
+
+		{
+			if (!IsValid(Inventory)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
+			Inventory->AddItemToNearList(OverlappedItem);
+			Inventory->InitInvenUI();
+			if (!IsValid(InvenSystem)) return;
+		}
 	    InvenSystem->InitializeList();
 	}
 	else
