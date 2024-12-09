@@ -5,6 +5,8 @@
 #include "InvenUserInterface/C_ItemBarWidget.h"
 
 #include "Item/C_Item.h"
+#include "Item/ConsumableItem/C_ConsumableItem.h"
+
 #include "Utility/C_Util.h"
 //#include "Kismet/KismetRenderingLibrary.h" // For widget creation
 
@@ -46,7 +48,12 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, AC_Item*> MyItemlist)
         //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
 
         if (IsValid(EntryWidget))
+        {
+            if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
+                ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
+
             EntryWidget->InitBar(Item);
+        }
     }
 }
 

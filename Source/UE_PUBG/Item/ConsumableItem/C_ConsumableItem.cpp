@@ -12,6 +12,9 @@
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
+
+#include "InvenUserInterface/C_ItemBarWidget.h"
+
 #include "Utility/C_Util.h"
 
 AC_ConsumableItem::AC_ConsumableItem()
@@ -51,7 +54,14 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 			UAnimInstance* UserAnimInstance = ItemUser->GetMesh()->GetAnimInstance();
 
-			for (auto& Pair : UsingMontageMap) if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) return;
+			for (auto& Pair : UsingMontageMap)
+			{
+				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) // 방해 받지 않았을 때
+				{
+					LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
+					return;
+				}
+			}
 
 			// 방해를 받음
 			CancelActivating();
@@ -194,6 +204,7 @@ bool AC_ConsumableItem::CancelActivating()
 	OnCancelActivating();
 
 	ConsumableItemState = EConsumableItemState::IDLE;
+	LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 	UsingTimer			= 0.f;
 	//ItemUser			= nullptr;
 
