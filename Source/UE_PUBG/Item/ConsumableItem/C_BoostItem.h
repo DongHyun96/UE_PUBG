@@ -32,6 +32,8 @@ private:
 
 	void HandleActivateCompletedState() override;
 
+	void HandleDestroy() override;
+
 protected:
 
 	float BoostAmount{};

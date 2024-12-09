@@ -65,3 +65,9 @@ void AC_FirstAidKit::OnCancelActivating()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, false);
 }
+
+void AC_FirstAidKit::HandleDestroy()
+{
+	UC_Util::Print("Destroying FirstAidKit", FColor::Red, 5.f);
+	this->Destroy();
+}

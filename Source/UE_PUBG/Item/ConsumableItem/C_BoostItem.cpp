@@ -7,6 +7,8 @@
 #include "Character/C_Player.h"
 #include "HUD/C_HUDWidget.h"
 
+#include "Utility/C_Util.h"
+
 
 AC_BoostItem::AC_BoostItem()
 {
@@ -40,4 +42,10 @@ void AC_BoostItem::HandleActivateCompletedState()
 	if (ItemDatas.ItemStack > 1)
 		UsingTimer = 0.f;
 	ConsumableItemState = EConsumableItemState::USED;
+}
+
+void AC_BoostItem::HandleDestroy()
+{
+	UC_Util::Print("Destroying Boost Item", FColor::Red, 5.f);
+	this->Destroy();
 }

@@ -198,6 +198,8 @@ void AC_Player::BeginPlay()
 	//	}
 	//}
 
+	ParkourComponent->SetOwnerPlayer(this);
+
 	SpawnConsumableItemForTesting();
 	PoolingBullets();
 
@@ -1196,7 +1198,11 @@ void AC_Player::SpawnConsumableItemForTesting()
 	//ConsumableItem = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClass, Param);
 
 	for (auto& ItemClass : ConsumableItemClasses)
-		ConsumableItems.Add(GetWorld()->SpawnActor<AC_ConsumableItem>(ItemClass, Param));
+	{
+		AC_ConsumableItem* cItem = GetWorld()->SpawnActor<AC_ConsumableItem>(ItemClass, Param);
+		cItem->SetOwnerCharacter(this);
+		ConsumableItems.Add(cItem);
+	}
 
 }
 

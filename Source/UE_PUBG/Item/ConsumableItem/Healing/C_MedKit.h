@@ -35,6 +35,8 @@ private:
 	void OnActivatingFinish()		override;
 	void OnCancelActivating()		override;
 
+	void HandleDestroy()			override;
+
 private:
 
 	void SwitchingBandageToSyringe();

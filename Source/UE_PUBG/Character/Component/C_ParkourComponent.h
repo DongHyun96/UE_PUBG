@@ -50,6 +50,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+	void SetOwnerPlayer(class AC_Player* InOwnerPlayer) { OwnerPlayer = InOwnerPlayer; }
+
 
 public:
 
@@ -113,7 +115,8 @@ private:
 
 private:
 
-	class AC_BasicCharacter* OwnerCharacter{};
+	class AC_BasicCharacter*	OwnerCharacter{};
+	class AC_Player*			OwnerPlayer{};
 
 protected:
 
