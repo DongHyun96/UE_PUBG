@@ -16,8 +16,6 @@ UC_InvenComponent::UC_InvenComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-
 	// ...
 }
 
@@ -371,8 +369,10 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 	{
 		PrevSlotEquipItem->DetachmentItem();
 	}
-	EquipmentItems[InSlot] = EquipItem;
+	EquipmentItems[InSlot] = Cast<AC_EquipableItem>(EquipItem);
 	
+	if (EquipmentItems[InSlot] == nullptr)	return PrevSlotEquipItem;
+
 	EquipmentItems[InSlot]->AttachToSocket(OwnerCharacter);
 
 	// 들어온 슬롯의 이전 무기가 존재할 때 이전 무기 해제
@@ -501,17 +501,6 @@ void UC_InvenComponent::AddInvenCurVolume(float ItemVolume)
 {
 	CurVolume += ItemVolume;
 }
-
-void UC_InvenComponent::SetEquipmentItem(EEquipSlot inSlot, AC_EquipableItem EquipableItem)
-{
-	AC_EquipableItem* PrevSlotItem = EquipmentItems[inSlot];
-
-	if (PrevSlotItem)
-	{
-
-	}
-}
-
 
 
 void UC_InvenComponent::InitMyitems()

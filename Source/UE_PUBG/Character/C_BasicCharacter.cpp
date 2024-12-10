@@ -86,6 +86,7 @@ AC_BasicCharacter::AC_BasicCharacter()
 	ParkourComponent->SetOwnerCharacter(this);
 
 	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>("MotionWarping");
+
 }
 
 // Called when the game starts or when spawned
@@ -95,6 +96,11 @@ void AC_BasicCharacter::BeginPlay()
 
 	GetPhysicsVolume()->FluidFriction = 2.5f;
 	StatComponent->SetOwnerCharacter(this);
+
+	InvenSystem->GetInvenUI()->AddToViewport();
+	InvenSystem->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
+
+
 }
 
 // Called every frame

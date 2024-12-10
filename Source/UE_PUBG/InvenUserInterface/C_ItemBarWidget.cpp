@@ -208,13 +208,13 @@ void UC_ItemBarWidget::InitBar(AC_Item* item)
 		UC_Util::Print("Visibility::Hidden");
 	}
 
-	FInputModeGameAndUI InputMode;
-	InputMode.SetWidgetToFocus(nullptr);
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	InputMode.SetHideCursorDuringCapture(true);
-
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->SetInputMode(InputMode);
+	//FInputModeGameAndUI InputMode;
+	//InputMode.SetWidgetToFocus(nullptr);
+	//InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	//InputMode.SetHideCursorDuringCapture(true);
+	//
+	//APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	//PlayerController->SetInputMode(InputMode);
 }
 
 AC_Item* UC_ItemBarWidget::GetItem(AC_Item* nearItem)

@@ -135,7 +135,7 @@ public:
 
 	void AddInvenCurVolume(float ItemVolume);
 
-	void SetEquipmentItem(EEquipSlot inSlot, AC_EquipableItem EquipableItem);
+	//void SetEquipmentItem(EEquipSlot inSlot, AC_EquipableItem EquipableItem);
 	//Getter and Seter
 public:
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; } 
@@ -201,7 +201,12 @@ protected:
 	TMap<FString, AC_Item*> testAroundItems;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<EEquipSlot, AC_EquipableItem*> EquipmentItems;
+	TMap<EEquipSlot, AC_EquipableItem*> EquipmentItems = 
+	{
+	{EEquipSlot::HELMET, nullptr},
+	{EEquipSlot::BACKPACK, nullptr},
+	{EEquipSlot::VEST, nullptr}
+	};
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

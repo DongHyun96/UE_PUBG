@@ -28,7 +28,7 @@ bool AC_EquipableItem::Interaction(AC_BasicCharacter* Character)
 
 void AC_EquipableItem::AttachToSocket(AC_BasicCharacter* InParent)
 {
-	FName SocketName{};
+	//FName SocketName{};
 	switch (Level)
 	{
 	case 1:
