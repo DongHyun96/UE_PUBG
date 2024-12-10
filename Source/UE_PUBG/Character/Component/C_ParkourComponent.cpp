@@ -470,7 +470,9 @@ bool UC_ParkourComponent::CheckParkourActionAndDistance(FParkourDescriptor& CurP
 			}
 
 			if (DistanceLevel == 0) CurParkourDesc.WarpStartPos = HitResult.Location; // Init Start Location
+			//if (DistanceLevel == 1) MantlingMiddlePos = HitResult.Location + OwnerCharacter->GetActorForwardVector() * 50.f;
 			if (DistanceLevel == 1) MantlingMiddlePos = HitResult.Location;
+
 
 			// (Init PossibleToVault) 50cm 이상으로 높이가 높아지는 Obstacle의 경우 Vault 불가 판정
 			PossibleToVault = (HitResult.Location.Z - CurParkourDesc.WarpStartPos.Z < 50.f);
