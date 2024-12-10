@@ -36,7 +36,7 @@ public:
 	//virtual bool Interaction() override;
 
 
-	void AttachToSocket(class AC_BasicCharacter* InParent);
+	void AttachToSocket(class AC_BasicCharacter* InParent) override;
 
 	/// <summary>
 	/// 장착중인 가방을 내려놓음.
@@ -59,8 +59,8 @@ public:
 	bool MoveToAround(AC_BasicCharacter* Character) override;
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	uint8 Level;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//uint8 Level;
 
 private:
 };

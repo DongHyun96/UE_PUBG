@@ -5,6 +5,7 @@
 #include "Item/C_Item.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Equipment/C_BackPack.h"
+#include "Item/Equipment/C_EquipableItem.h"
 #include "Character/Component/C_EquippedComponent.h"
 
 #include "Utility/C_Util.h"
@@ -366,6 +367,14 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 {
 	AC_EquipableItem* PrevSlotEquipItem = EquipmentItems[InSlot];
 
+	if (PrevSlotEquipItem)
+	{
+		PrevSlotEquipItem->DetachmentItem();
+	}
+	EquipmentItems[InSlot] = EquipItem;
+	
+	EquipmentItems[InSlot]->AttachToSocket(OwnerCharacter);
+
 	// 들어온 슬롯의 이전 무기가 존재할 때 이전 무기 해제
 	//if (PrevSlotEquipItem)
 	//{
@@ -491,6 +500,16 @@ void UC_InvenComponent::CheckBackPackOnCharacter()
 void UC_InvenComponent::AddInvenCurVolume(float ItemVolume)
 {
 	CurVolume += ItemVolume;
+}
+
+void UC_InvenComponent::SetEquipmentItem(EEquipSlot inSlot, AC_EquipableItem EquipableItem)
+{
+	AC_EquipableItem* PrevSlotItem = EquipmentItems[inSlot];
+
+	if (PrevSlotItem)
+	{
+
+	}
 }
 
 

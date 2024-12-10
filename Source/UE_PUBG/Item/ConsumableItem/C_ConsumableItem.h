@@ -107,6 +107,8 @@ public: // getters and setters
 
 	float GetUsingTimer() const { return UsingTimer; }
 
+	class UC_ItemBarWidget* GetLinkedItemBarWidget() { return LinkedItemBarWidget; }
+
 protected:
 	
 	EConsumableItemState ConsumableItemState{};
@@ -131,6 +133,6 @@ protected:
 protected:
 
 	// 이 Consumable Item과 연결된 ItemBarWidget 객체
-	class UC_ItemBarWidget* LinkedItemBarWidget{};
+	UC_ItemBarWidget* LinkedItemBarWidget{};
 
 };

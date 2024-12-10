@@ -14,4 +14,7 @@ class UE_PUBG_API AC_Helmet : public AC_EquipableItem
 {
 	GENERATED_BODY()
 	
+
+protected:
+	float Durability = 0;
 };
