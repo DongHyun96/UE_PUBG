@@ -456,7 +456,7 @@ bool AC_Gun::GetIsPlayingMontagesOfAny()
 		CurAnimInstance->Montage_IsPlaying(DrawMontage)   || 
 		CurAnimInstance->Montage_IsPlaying(SheathMontage) ||
 		CurAnimInstance->Montage_IsPlaying(ReloadMontage);
-
+	UC_Util::Print(IsPlayingMontagesOfAny, FColor::Magenta, 10);
 	return IsPlayingMontagesOfAny;
 }
 
@@ -474,7 +474,7 @@ void AC_Gun::ChangeCurShootingMode()
 	UC_Util::Print(CurMode);
 }
 
-void AC_Gun::ExecuteReloadMontage()
+bool AC_Gun::ExecuteReloadMontage()
 {
 	//AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
 	//if (CurBulletCount == MaxBulletCount) return;
@@ -484,6 +484,7 @@ void AC_Gun::ExecuteReloadMontage()
 	//OwnerCharacter->SetIsReloadingBullet(true);
 	//OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
 	//BackToMainCamera();	
+	return true;
 }
 
 
