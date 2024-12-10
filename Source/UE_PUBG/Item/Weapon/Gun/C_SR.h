@@ -21,7 +21,11 @@ protected:
 
 public:
 	// Called every frame
+
 	virtual void Tick(float DeltaTime) override;
-	virtual void ExecuteReloadMontage() override;
-	FName SR_RELOAD_LEFT_HAND_SOCKET_NAME ="";
+	virtual bool ExecuteReloadMontage() override;
+	FName SR_RELOAD_LEFT_HAND_SOCKET_NAME ="Kar98ReloadSocket";
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EPoseState, FPriorityAnimMontage> SniperReloadMontages{};
+	virtual bool GetIsPlayingMontagesOfAny();
 };

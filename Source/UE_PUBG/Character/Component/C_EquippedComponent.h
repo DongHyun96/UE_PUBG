@@ -101,7 +101,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnReloadEnd();
-
+	UFUNCTION(BlueprintCallable)
+	void OnSniperReloadEnd();
 private:
 
 	/// <summary>

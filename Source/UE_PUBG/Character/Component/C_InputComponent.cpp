@@ -623,10 +623,20 @@ void UC_InputComponent::OnIKey()
 {
 	//Player->GetInvenComponent()->OpenInvenUI();
 	Player->GetInvenSystem()->OpenInvenUI();
+	AC_Gun* CurGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
+	if (IsValid(CurGun))
+	{
+		CurGun->BackToMainCamera();
+	}
 }
 
 void UC_InputComponent::OnTabKey()
 {
 	Player->GetInvenSystem()->OpenInvenUI();
+	AC_Gun* CurGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
+	if (IsValid(CurGun))
+	{
+		CurGun->BackToMainCamera();
+	}
 }
 
