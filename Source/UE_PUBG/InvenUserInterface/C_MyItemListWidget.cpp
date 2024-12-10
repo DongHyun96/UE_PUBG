@@ -27,7 +27,7 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, AC_Item*> MyItemlist)
         return;
     }
 
-    ItemListView->ClearListItems(); // 기존 아이템 삭제
+    //ItemListView->ClearListItems(); // 기존 아이템 삭제
 
     //if (itemList)
 
@@ -35,6 +35,10 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, AC_Item*> MyItemlist)
     for (const auto& ItemPair : MyItemlist)
     {
         AC_Item* Item = ItemPair.Value; // TMap에서 아이템 가져오기
+
+        if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
+            if (ConsumableItem->GetLinkedItemBarWidget()) continue;
+
         if (IsValid(Item))
         {
             ItemListView->AddItem(Item);
@@ -43,6 +47,9 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, AC_Item*> MyItemlist)
         {
             return;
         }
+
+
+
         //ItemBar갱신.
         UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(ItemListView->GetEntryWidgetFromItem(Item));
         //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
@@ -50,7 +57,18 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, AC_Item*> MyItemlist)
         if (IsValid(EntryWidget))
         {
             if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
-                ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
+            {
+                if (ConsumableItem->GetLinkedItemBarWidget())
+                {
+                    EntryWidget = ConsumableItem->GetLinkedItemBarWidget();
+                }
+                else
+                {
+                    ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
+                }
+                
+            }
+            
 
             EntryWidget->InitBar(Item);
         }

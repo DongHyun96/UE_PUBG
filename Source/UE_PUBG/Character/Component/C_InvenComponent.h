@@ -134,6 +134,8 @@ public:
 	void CheckBackPackOnCharacter();
 
 	void AddInvenCurVolume(float ItemVolume);
+
+	void SetEquipmentItem(EEquipSlot inSlot, AC_EquipableItem EquipableItem);
 	//Getter and Seter
 public:
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; } 

@@ -14,4 +14,13 @@ class UE_PUBG_API AC_Vest : public AC_EquipableItem
 {
 	GENERATED_BODY()
 	
+public:
+	AC_Vest();
+
+	bool Interaction(AC_BasicCharacter* Character) override;
+
+	void AttachToSocket(class AC_BasicCharacter* InParent) override;
+protected:
+	float Durability = 0;
+
 };
