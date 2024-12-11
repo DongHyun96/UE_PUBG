@@ -58,7 +58,7 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, AC_Item*> MyItemlist)
         {
             if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
             {
-                if (ConsumableItem->GetLinkedItemBarWidget())
+                if (IsValid(ConsumableItem->GetLinkedItemBarWidget()))
                 {
                     EntryWidget = ConsumableItem->GetLinkedItemBarWidget();
                 }

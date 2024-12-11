@@ -71,6 +71,10 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 		// Activating end
 
+		ItemDatas.ItemStack--;
+		FString Left = "Item Used: ItemStack -> " + FString::FromInt(ItemDatas.ItemStack);
+		UC_Util::Print(Left, FColor::Red, 5.f);
+
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 			Player->GetHUDWidget()->OnConsumableItemActivatingEnd();
 
@@ -112,9 +116,6 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 	case EConsumableItemState::USED:
 	{
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser)) Player->GetHUDWidget()->OnConsumableUsed();
-
-
-		ItemDatas.ItemStack--;
 
 		if (ItemDatas.ItemStack == 0)
 		{
@@ -273,7 +274,8 @@ bool AC_ConsumableItem::MoveToInven(AC_BasicCharacter* Character)
 	else
 	{
 		//아이템의 일부만 인벤에 넣을 수 있을 때.
-		if (IsValid(FoundItem))
+
+		if (IsValid(FoundItem)) // 인벤에 아이템이 이미 있을 때
 		{
 			this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
 			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + ItemStackCount);
@@ -282,9 +284,12 @@ bool AC_ConsumableItem::MoveToInven(AC_BasicCharacter* Character)
 
 			return true;
 		}
-		else
+		else // 인벤에 아이템이 없을 때
 		{
+
 			AC_Weapon* NewItem = Cast<AC_Weapon>(SpawnItem(Character));//아이템 복제 생성
+			//AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//아이템 복제 생성
+
 			NewItem->SetItemStack(ItemStackCount);
 			this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
 
