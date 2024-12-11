@@ -52,8 +52,8 @@ AC_BasicCharacter::AC_BasicCharacter()
 	Inventory = CreateDefaultSubobject<UC_InvenComponent>("C_Inventory");
 	Inventory->SetOwnerCharacter(this);
 
-	InvenSystem = CreateDefaultSubobject<UC_InvenSystem>("C_InvenSystem");
-	InvenSystem->SetOwnerCharacter(this);
+	//InvenSystem = CreateDefaultSubobject<UC_InvenSystem>("C_InvenSystem");
+	//InvenSystem->SetOwnerCharacter(this);
 
 	StatComponent = CreateDefaultSubobject<UC_StatComponent>("StatComponent");
 
@@ -97,8 +97,8 @@ void AC_BasicCharacter::BeginPlay()
 	GetPhysicsVolume()->FluidFriction = 2.5f;
 	StatComponent->SetOwnerCharacter(this);
 
-	InvenSystem->GetInvenUI()->AddToViewport();
-	InvenSystem->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
+	//InvenSystem->GetInvenUI()->AddToViewport();
+	//InvenSystem->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
 
 
 }
@@ -141,37 +141,39 @@ float AC_BasicCharacter::PlayAnimMontage(UAnimMontage* AnimMontage, float InPlay
 void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
+
 	FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetCurVolume());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
 
-	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+	HandleOverlapBegin(OtherActor);
+	//AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
 
-	//if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
+	////if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
 
-	if (IsValid(OverlappedItem))
-	{
-		UC_Util::Print("OverlappedItem");
-		//UC_Util::Print(*OverlappedItem->GetName());
+	//if (IsValid(OverlappedItem))
+	//{
+	//	UC_Util::Print("OverlappedItem");
+	//	//UC_Util::Print(*OverlappedItem->GetName());
 
-		//Inventory->GetNearItems().Add(OverlappedItem);
-		//Inventory->AddItemToAroundList(OverlappedItem);
+	//	//Inventory->GetNearItems().Add(OverlappedItem);
+	//	//Inventory->AddItemToAroundList(OverlappedItem);
 
-		if (OverlappedItem->GetOwnerCharacter() == nullptr)
+	//	if (OverlappedItem->GetOwnerCharacter() == nullptr)
 
-		{
-			if (!IsValid(Inventory)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
-			Inventory->AddItemToNearList(OverlappedItem);
-			Inventory->InitInvenUI();
-			if (!IsValid(InvenSystem)) return;
-		}
-	    InvenSystem->InitializeList();
-	}
-	else
-	{
-		UC_Util::Print("No item");
+	//	{
+	//		if (!IsValid(Inventory)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
+	//		Inventory->AddItemToNearList(OverlappedItem);
+	//		Inventory->InitInvenUI();
+	//		//if (!IsValid(InvenSystem)) return;
+	//	}
+	//    //InvenSystem->InitializeList();
+	//}
+	//else
+	//{
+	//	UC_Util::Print("No item");
 
-		return;
-	}
+	//	return;
+	//}
 }
 
 /// <summary>
@@ -183,18 +185,19 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 /// <param name="OtherBodyIndex"></param>
 void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+	HandleOverlapEnd(OtherActor);
+	//AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
 
-	if (OverlappedItem)
-	{
-		//Inventory->GetNearItems().Remove(OverlappedItem);
-		//Inventory->RemoveItemToAroundList(OverlappedItem);
-		if (!IsValid(Inventory)) return;
-		Inventory->RemoveItemNearList(OverlappedItem);
-		Inventory->InitInvenUI();
-		if (!IsValid(InvenSystem)) return;
-		InvenSystem->InitializeList();
-	}
+	//if (OverlappedItem)
+	//{
+	//	//Inventory->GetNearItems().Remove(OverlappedItem);
+	//	//Inventory->RemoveItemToAroundList(OverlappedItem);
+	//	if (!IsValid(Inventory)) return;
+	//	Inventory->RemoveItemNearList(OverlappedItem);
+	//	Inventory->InitInvenUI();
+	//	//if (!IsValid(InvenSystem)) return;
+	//	//InvenSystem->InitializeList();
+	//}
 }
 float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate, FName StartSectionName)
 {
@@ -242,6 +245,15 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	StatComponent->TakeDamage(DamageAmount);
 
 	return DamageAmount;
+}
+
+void AC_BasicCharacter::HandleOverlapBegin(AActor* OtherActor)
+{
+
+}
+
+void AC_BasicCharacter::HandleOverlapEnd(AActor* OtherActor)
+{
 }
 
 void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)

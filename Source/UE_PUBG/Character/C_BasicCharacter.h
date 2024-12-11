@@ -167,8 +167,11 @@ protected:
 		AActor*				DamageCauser
 	) override;
 	
+	//자식 단계에서 OverlapBegin에서 사용할 함수 Template method
+	virtual void HandleOverlapBegin(AActor* OtherActor);
 
-
+	//자식 단계에서 OverlapBegin에서 사용할 함수 Template method
+	virtual void HandleOverlapEnd(AActor* OtherActor);
 
 public:
 
@@ -205,7 +208,7 @@ public:
 	bool GetIsJumping() const { return bIsJumping; }
 	UFUNCTION(BlueprintCallable)
 	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
-	//class UC_InvenComponent* GetInvenComponent() const { return BPC_InvenSystemInstance; }
+
 	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
 
 	bool GetCanMove() const { return bCanMove; }
@@ -217,7 +220,6 @@ public:
 	void SetIsWatchingSight(bool InIsWatchingSight) { bIsWatchingSight = InIsWatchingSight; }
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
 
-	//class UC_InvenComponent* GetInvenComponent() { return BPC_InvenSystemInstance; }
 	
 	UFUNCTION(BlueprintCallable)
 	class UC_InvenComponent* GetInvenComponent() { return Inventory; }
@@ -260,8 +262,8 @@ public:
 	UFUNCTION(BlueprintGetter)
 	class UC_SkyDivingComponent* GetSkyDivingComponent() const { return SkyDiveComponent; }
 
-	UFUNCTION(BlueprintCallable)
-	class UC_InvenSystem* GetInvenSystem() { return InvenSystem; }
+	//UFUNCTION(BlueprintCallable)
+	//class UC_InvenSystem* GetInvenSystem() { return InvenSystem; }
 
 	class UC_AttachableItemMeshComponent* GetAttachmentMeshComponent() { return AttachmentMeshComponent; };
 
@@ -368,17 +370,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_StatComponent* StatComponent{};
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_InvenSystem* InvenSystem{};
+	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	//class UC_InvenSystem* InvenSystem{};
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UC_InvenComponent* Inventory{};
-	
-	//UClass* InvenSystemClass;
-
-	//UC_InvenComponent* Inventory;
-
 
 protected: // PriorityAnimMontage 관련
 

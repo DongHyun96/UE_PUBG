@@ -127,7 +127,7 @@ void UC_InvenSystem::OpenInvenUI()
 
 		//if (OwnerCharacter->GetEquippedComponent()->GetCurWeapon())
 		//	Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon())->SetIsAimPress(false);
-
+		InitializeList();
 		ShowInvenUI();
 	}
 

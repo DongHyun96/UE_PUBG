@@ -58,6 +58,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			{
 				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) // 방해 받지 않았을 때
 				{
+					
 					LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
 					return;
 				}

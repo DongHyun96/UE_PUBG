@@ -241,7 +241,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 
 bool AC_Gun::SetAimingDown()
 {
-	if (OwnerCharacter->GetInvenSystem()->GetIsPanelOpend()) return false; //UI가 열려 있을때 작동 금지.
+	//if (OwnerCharacter->GetInvenSystem()->GetIsPanelOpend()) return false; //UI가 열려 있을때 작동 금지.
 	//스프린트 중이라면 Return
 	if (OwnerCharacter->GetNextSpeed() > 600) return false;
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);

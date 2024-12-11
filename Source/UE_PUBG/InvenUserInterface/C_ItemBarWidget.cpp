@@ -37,7 +37,7 @@ void UC_ItemBarWidget::NativeConstruct()
 
 	if (!OwnerCharacter)
 	{
-		OwnerCharacter = Cast<AC_BasicCharacter>(GetOwningPlayerPawn());
+		OwnerCharacter = Cast<AC_Player>(GetOwningPlayerPawn());
 	}
 
 	if (!CachedItem) return;
