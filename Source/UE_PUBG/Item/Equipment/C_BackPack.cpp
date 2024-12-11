@@ -44,7 +44,7 @@ void AC_BackPack::Tick(float DeltaTime)
 
 void AC_BackPack::AttachToSocket(AC_BasicCharacter* InParent)
 {
-	FName SocketName{};
+	//FName SocketName{};
 	switch (Level)
 	{
 	case 1:

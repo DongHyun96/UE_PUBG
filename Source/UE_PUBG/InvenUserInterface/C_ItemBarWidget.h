@@ -12,6 +12,7 @@
 #include "Item/C_Item.h"
 
 #include "UE_PUBG/Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 
 #include "C_ItemBarWidget.generated.h"
 
@@ -58,7 +59,7 @@ public:
     void InitInvenUIWidget();
     //두 기능을 합친 SetItem생각
 
-    void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+    void SetOwnerCharacter(AC_Player* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 public:
     // UI에 바인딩할 변수 선언 (Blueprint에서 연결)
@@ -86,5 +87,5 @@ public:
     AC_Item* CachedItem;
 protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    class AC_BasicCharacter* OwnerCharacter;
+    class AC_Player* OwnerCharacter;
 };

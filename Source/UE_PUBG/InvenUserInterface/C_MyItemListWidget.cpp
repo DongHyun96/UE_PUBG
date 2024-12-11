@@ -36,8 +36,8 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, AC_Item*> MyItemlist)
     {
         AC_Item* Item = ItemPair.Value; // TMap에서 아이템 가져오기
 
-        if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
-            if (ConsumableItem->GetLinkedItemBarWidget()) continue;
+        //if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
+        //    if (ConsumableItem->GetLinkedItemBarWidget()) continue;
 
         if (IsValid(Item))
         {
@@ -45,7 +45,7 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, AC_Item*> MyItemlist)
         }
         else
         {
-            return;
+            continue;
         }
 
 
@@ -67,6 +67,7 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, AC_Item*> MyItemlist)
                     ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
                 }
                 
+
             }
             
 

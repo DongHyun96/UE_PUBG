@@ -58,6 +58,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			{
 				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) // 방해 받지 않았을 때
 				{
+					
 					LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
 					return;
 				}
@@ -77,20 +78,6 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 			Player->GetHUDWidget()->OnConsumableItemActivatingEnd();
-
-		//if (ItemDatas.ItemStack == 1)
-		//{
-		//	if (UsingTimer >= UsageTime)
-		//	{
-		//		this->GetOwnerCharacter()->GetInvenComponent()->RemoveItemToMyList(this);
-		//		//ConsumableItemState = EConsumableItemState::IDLE;
-		//		ItemDatas.ItemStack--;
-		//
-		//		Destroy();
-		//		//return;    //문제시 삭제.
-		//	}
-		//	//return; // 사용중이라면 USED 상태를 유지.
-		//}
 
 		ConsumableItemState = EConsumableItemState::ACTIVATE_COMPLETED;
 		
@@ -130,6 +117,16 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 	default:
 		return;
 	}
+}
+
+void AC_ConsumableItem::SetLinkedItemBarWidget(UC_ItemBarWidget* InItemBarWidget)
+{
+	LinkedItemBarWidget = InItemBarWidget;
+	//if (LinkedItemBarWidget)
+	//{
+	//	// 현재 진행 상태 동기화
+	//	LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
+	//}
 }
 
 bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
@@ -286,9 +283,7 @@ bool AC_ConsumableItem::MoveToInven(AC_BasicCharacter* Character)
 		}
 		else // 인벤에 아이템이 없을 때
 		{
-
-			AC_Weapon* NewItem = Cast<AC_Weapon>(SpawnItem(Character));//아이템 복제 생성
-			//AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//아이템 복제 생성
+			AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//아이템 복제 생성
 
 			NewItem->SetItemStack(ItemStackCount);
 			this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
