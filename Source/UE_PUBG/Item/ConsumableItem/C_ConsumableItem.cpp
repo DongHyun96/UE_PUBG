@@ -280,7 +280,7 @@ bool AC_ConsumableItem::MoveToInven(AC_BasicCharacter* Character)
 		}
 		else
 		{
-			AC_Weapon* NewItem = Cast<AC_Weapon>(SpawnItem(Character));//아이템 복제 생성
+			AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//아이템 복제 생성
 			NewItem->SetItemStack(ItemStackCount);
 			this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
 

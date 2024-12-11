@@ -477,7 +477,8 @@ void UC_InvenComponent::InitInvenUI()
 {
 	if (!InvenUI) return;
 
-	InvenUI->InitListView();
+	//InvenUI->InitListView();
+	//InvenUI->initial
 }
 
 void UC_InvenComponent::CheckBackPackOnCharacter()
