@@ -17,7 +17,7 @@ class UE_PUBG_API UC_MainMapWidget : public UC_MapWidget
 public:
 	void NativeConstruct() override;
 
-	void OnMKey();
+	void SetVisibility(ESlateVisibility InVisibility) override;
 
 protected:
 

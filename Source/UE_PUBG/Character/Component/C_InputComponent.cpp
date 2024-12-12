@@ -119,7 +119,6 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 		EnhancedInputComponent->BindAction(MKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnMKey);
 
 		EnhancedInputComponent->BindAction(IKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnIKey);
-
 		EnhancedInputComponent->BindAction(TabKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnTabKey);	
 
 	}
@@ -618,70 +617,50 @@ void UC_InputComponent::OnNKey()
 
 void UC_InputComponent::OnMKey()
 {
-	Player->GetHUDWidget()->GetMainMapWidget()->OnMKey();
-
-	if (Player->GetInvenSystem()->GetIsPanelOpend())
+	if (Player->GetHUDWidget()->GetMainMapWidget()->GetVisibility() != ESlateVisibility::Visible)
 	{
-		//Player->GetInvenSystem()->OpenInvenUI();
-		if (Player->GetInvenSystem()->GetInvenUI()->GetVisibility() == ESlateVisibility::Visible)
-			Player->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
-		else
-			Player->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
+		// MainMap 열기
+		Player->GetInvenSystem()->CloseInvenUI();
+		Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		Player->GetHUDWidget()->GetMainMapWidget()->SetVisibility(ESlateVisibility::Visible);
+		Player->GetHUDWidget()->GetMiniMapWidget()->SetVisibility(ESlateVisibility::Hidden);
+		return;
 	}
-	Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
+	// MainMap 닫기 Idle 상태로 돌아가기
+	Player->GetInvenSystem()->CloseInvenUI();
+	Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	Player->GetHUDWidget()->GetMainMapWidget()->SetVisibility(ESlateVisibility::Hidden);
+	Player->GetHUDWidget()->GetMiniMapWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UC_InputComponent::OnIKey()
 {
-	//Player->GetInvenComponent()->OpenInvenUI();
-	if (Player->GetInvenSystem()->GetIsPanelOpend())
-	{
-		if (Player->GetHUDWidget()->GetVisibility() == ESlateVisibility::Hidden)
-			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		else
-			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Hidden);
-	}
-	else
-	{
-		if (Player->GetHUDWidget()->GetVisibility() == ESlateVisibility::Hidden)
-			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		else
-			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Hidden);
-	}
-
-	Player->GetInvenSystem()->OpenInvenUI();
-
-	AC_Gun* CurGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
-	if (IsValid(CurGun))
-	{
-		CurGun->BackToMainCamera();
-	}
+	OnTabKey(); // Inventory 토글 기능 똑같음
 }
 
 void UC_InputComponent::OnTabKey()
 {
-	if (Player->GetInvenSystem()->GetIsPanelOpend())
-	{
-		if (Player->GetHUDWidget()->GetVisibility() == ESlateVisibility::Hidden)
-			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		else
-			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Hidden);
-	}
-	else
-	{
-		if (Player->GetHUDWidget()->GetVisibility() == ESlateVisibility::Hidden)
-			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		else
-			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Hidden);
-	}
-	
-	Player->GetInvenSystem()->OpenInvenUI();
+	// Inven 켜기 / 끄기 기능
 
-	AC_Gun* CurGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
-	if (IsValid(CurGun))
+	if (!Player->GetInvenSystem()->GetIsPanelOpend())
 	{
-		CurGun->BackToMainCamera();
+		Player->GetInvenSystem()->ShowInvenUI();
+		Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Hidden);
+
+		AC_Gun* CurGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
+		if (IsValid(CurGun))
+		{
+			CurGun->BackToMainCamera();
+		}
+	}
+	else 
+	{
+		// Idle 기본 상황
+		Player->GetInvenSystem()->CloseInvenUI();
+		Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		Player->GetHUDWidget()->GetMainMapWidget()->SetVisibility(ESlateVisibility::Hidden);
+		Player->GetHUDWidget()->GetMiniMapWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 }
 
