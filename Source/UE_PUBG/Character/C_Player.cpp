@@ -18,6 +18,7 @@
 #include "Character/Component/C_InputComponent.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_PingSystemComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
@@ -105,6 +106,9 @@ AC_Player::AC_Player()
 	SetTimeLineComponentForMovingCamera();
 	SetRecoilTimeLineComponent();
 
+	InvenSystem = CreateDefaultSubobject<UC_InvenSystem>("C_InvenSystem");
+	InvenSystem->SetOwnerCharacter(this);
+
 }
 
 void AC_Player::BeginPlay()
@@ -125,6 +129,13 @@ void AC_Player::BeginPlay()
 		HUDWidget->GetMainMapWidget()->SetOwnerPlayer(this);
 		HUDWidget->GetMiniMapWidget()->SetOwnerPlayer(this);
 	}
+
+	if (InvenSystem)
+	{
+		InvenSystem->GetInvenUI()->AddToViewport();
+		InvenSystem->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
+	}
+
 	CrosshairWidgetComponent->AddToViewport();
 	CrosshairWidgetComponent->SetOwnerCharacter(this);
 	AimCamera->SetActive(false);
@@ -197,6 +208,8 @@ void AC_Player::BeginPlay()
 	//		// 예: PrimitiveComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 	//	}
 	//}
+
+	ParkourComponent->SetOwnerPlayer(this);
 
 	SpawnConsumableItemForTesting();
 	PoolingBullets();
@@ -416,6 +429,54 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		case EPoseState::POSE_MAX: default: return false;
 		}
 	case EPoseState::POSE_MAX: default: return false;
+	}
+}
+
+void AC_Player::HandleOverlapBegin(AActor* OtherActor)
+{
+	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+
+	//if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
+
+	if (IsValid(OverlappedItem))
+	{
+		UC_Util::Print("OverlappedItem");
+		//UC_Util::Print(*OverlappedItem->GetName());
+
+		//Inventory->GetNearItems().Add(OverlappedItem);
+		//Inventory->AddItemToAroundList(OverlappedItem);
+
+		if (OverlappedItem->GetOwnerCharacter() == nullptr)
+
+		{
+			if (!IsValid(Inventory)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
+			Inventory->AddItemToNearList(OverlappedItem);
+			Inventory->InitInvenUI();
+			//if (!IsValid(InvenSystem)) return;
+		}
+		InvenSystem->InitializeList();
+	}
+	else
+	{
+		UC_Util::Print("No item");
+
+		return;
+	}
+}
+
+void AC_Player::HandleOverlapEnd(AActor* OtherActor)
+{
+	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
+
+	if (OverlappedItem)
+	{
+		//Inventory->GetNearItems().Remove(OverlappedItem);
+		//Inventory->RemoveItemToAroundList(OverlappedItem);
+		if (!IsValid(Inventory)) return;
+		Inventory->RemoveItemNearList(OverlappedItem);
+		Inventory->InitInvenUI();
+		//if (!IsValid(InvenSystem)) return;
+		//InvenSystem->InitializeList();
 	}
 }
 
@@ -1196,7 +1257,11 @@ void AC_Player::SpawnConsumableItemForTesting()
 	//ConsumableItem = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClass, Param);
 
 	for (auto& ItemClass : ConsumableItemClasses)
-		ConsumableItems.Add(GetWorld()->SpawnActor<AC_ConsumableItem>(ItemClass, Param));
+	{
+		AC_ConsumableItem* cItem = GetWorld()->SpawnActor<AC_ConsumableItem>(ItemClass, Param);
+		cItem->SetOwnerCharacter(this);
+		ConsumableItems.Add(cItem);
+	}
 
 }
 

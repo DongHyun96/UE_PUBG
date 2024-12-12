@@ -71,6 +71,11 @@ void AC_MedKit::OnCancelActivating()
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, false);
 }
 
+void AC_MedKit::HandleDestroy()
+{
+	this->Destroy();
+}
+
 void AC_MedKit::SwitchingBandageToSyringe()
 {
 	if (ConsumableItemState != EConsumableItemState::ACTIVATING)

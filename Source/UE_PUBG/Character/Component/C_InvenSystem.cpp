@@ -2,7 +2,11 @@
 
 
 #include "Character/Component/C_InvenSystem.h"
+#include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_BasicCharacter.h"
+
+#include "Item/Weapon/Gun/C_Gun.h"
+
 #include "GameFramework/PlayerController.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -14,6 +18,8 @@ UC_InvenSystem::UC_InvenSystem()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	//InvenUI->AddToViewport();
+	//InvenUI->SetVisibility(ESlateVisibility::Hidden);
 	// ...
 }
 
@@ -31,6 +37,8 @@ void UC_InvenSystem::BeginPlay()
 		{
 			InvenUI->SetOwnerCharacter(OwnerCharacter);
 			//InvenUI->SetWidgetsOwner(OwnerCharacter);
+			//InvenUI->AddToViewport();
+			//InvenUI->SetVisibility(ESlateVisibility::Hidden);
 		}
 		else
 		{
@@ -63,6 +71,7 @@ void UC_InvenSystem::OpenInvenUI()
 	//	InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
 	//	InvenUI->SetOwnerCharacter(OwnerCharacter);
 	//}
+
 
 	
 
@@ -115,6 +124,10 @@ void UC_InvenSystem::OpenInvenUI()
 
 		//PlayerController->SetInputMode(InputMode);
 		//PlayerController->bShowMouseCursor = true;
+
+		//if (OwnerCharacter->GetEquippedComponent()->GetCurWeapon())
+		//	Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon())->SetIsAimPress(false);
+		InitializeList();
 		ShowInvenUI();
 	}
 
@@ -129,42 +142,47 @@ void UC_InvenSystem::OpenInvenUI()
 void UC_InvenSystem::ShowInvenUI()
 {
 	isPanelOpened = true;
-	InvenUI->AddToViewport();
+	//InvenUI->AddToViewport();
 
-	if (PlayerController)
+	if (!InvenUI->IsInViewport())
 	{
-		PlayerController->SetIgnoreLookInput(true);
-
-		FInputModeGameAndUI InputMode;
-		InputMode.SetWidgetToFocus(InvenUI->TakeWidget());
-		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-		PlayerController->SetInputMode(InputMode);
-		PlayerController->bShowMouseCursor = true;
+		InvenUI->AddToViewport();
 	}
-	else
-	{
+
+	if (!PlayerController)
 		PlayerController = GetWorld()->GetFirstPlayerController();
-	}
+	
+	PlayerController->SetIgnoreLookInput(true);
+
+	FInputModeGameAndUI InputMode;
+	InputMode.SetWidgetToFocus(InvenUI->TakeWidget());
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	PlayerController->SetInputMode(InputMode);
+	PlayerController->bShowMouseCursor = true;
+
+	InvenUI->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UC_InvenSystem::CloseInvenUI()
 {
 	isPanelOpened = false;
 
-	if (PlayerController)
-	{
-		PlayerController->SetIgnoreLookInput(false);
-
-		FInputModeGameOnly InputMode;
-		PlayerController->SetInputMode(InputMode);
-		PlayerController->bShowMouseCursor = false;
-	}
-	else
+	if (!PlayerController) 
 		PlayerController = GetWorld()->GetFirstPlayerController();
+
+
+	PlayerController->SetIgnoreLookInput(false);
+
+	FInputModeGameOnly InputMode;
+	PlayerController->SetInputMode(InputMode);
+
+	PlayerController->bShowMouseCursor = false;
+
 
 	if (InvenUI)
 	{
-		InvenUI->RemoveFromViewport();
+		//InvenUI->RemoveFromViewport();
+		InvenUI->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 

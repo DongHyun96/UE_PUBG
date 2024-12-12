@@ -12,6 +12,9 @@
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
+
+#include "InvenUserInterface/C_ItemBarWidget.h"
+
 #include "Utility/C_Util.h"
 
 AC_ConsumableItem::AC_ConsumableItem()
@@ -51,7 +54,15 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 			UAnimInstance* UserAnimInstance = ItemUser->GetMesh()->GetAnimInstance();
 
-			for (auto& Pair : UsingMontageMap) if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) return;
+			for (auto& Pair : UsingMontageMap)
+			{
+				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) // 방해 받지 않았을 때
+				{
+					
+					LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
+					return;
+				}
+			}
 
 			// 방해를 받음
 			CancelActivating();
@@ -61,10 +72,15 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 		// Activating end
 
+		ItemDatas.ItemStack--;
+		FString Left = "Item Used: ItemStack -> " + FString::FromInt(ItemDatas.ItemStack);
+		UC_Util::Print(Left, FColor::Red, 5.f);
+
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 			Player->GetHUDWidget()->OnConsumableItemActivatingEnd();
 
 		ConsumableItemState = EConsumableItemState::ACTIVATE_COMPLETED;
+		
 		UsingTimer = 0.f;
 
 		if (ItemUser->GetEquippedComponent()->GetCurWeapon()) // 착용 중인 무기가 있었을 때
@@ -88,35 +104,29 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 	{
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser)) Player->GetHUDWidget()->OnConsumableUsed();
 
-		// TODO : 남은 아이템 개수(자기자신) 업데이트 (하나 빼기)
-		// 만약 아이템 수가 0보다 크다면 ConsumableItemState Idle로 다시 사용할 수 있게끔 전환 & Inven UI 업데이트
-		// 남아있는 아이템이 없다면 아이템 삭제 (몇 초 뒤에 삭제처리해야함) -> 붕대의 UsageMesh 없애는 시간까지는 기다려야 함
-
-		//if (ItemDatas.ItemStack <= 0)
-		//{
-		//	// TODO : Set Timer로 Destroy Actor (붕대의 UsageMesh 없애는 시간까지는 기다려야 함)
-		//
-		//	return;
-		//}
-
-		ConsumableItemState = EConsumableItemState::IDLE; // 다시 재사용 가능하게끔 처리
-
-		// TODO : 아이템 삭제 (몇 초 뒤에 삭제처리해야함) -> 붕대의 UsageMesh 없애는 시간까지는 기다려야 함
-		// TODO : Inventory UI에서 지우기
-		// TODO : 이 라인 지우기
-		ConsumableItemState = EConsumableItemState::IDLE;
-		ItemDatas.ItemStack--;
 		if (ItemDatas.ItemStack == 0)
 		{
-			this->GetOwnerCharacter()->GetInvenComponent()->RemoveItemToMyList(this);
-			Destroy();
+			ItemUser->GetInvenComponent()->RemoveItemToMyList(this);
+			HandleDestroy(); // 각 아이템 별 Destroy 하는 시점이 다름
+			return;
 		}
 
+		ConsumableItemState = EConsumableItemState::IDLE;
 	}
 		return;
 	default:
 		return;
 	}
+}
+
+void AC_ConsumableItem::SetLinkedItemBarWidget(UC_ItemBarWidget* InItemBarWidget)
+{
+	LinkedItemBarWidget = InItemBarWidget;
+	//if (LinkedItemBarWidget)
+	//{
+	//	// 현재 진행 상태 동기화
+	//	LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
+	//}
 }
 
 bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
@@ -192,6 +202,7 @@ bool AC_ConsumableItem::CancelActivating()
 	OnCancelActivating();
 
 	ConsumableItemState = EConsumableItemState::IDLE;
+	LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 	UsingTimer			= 0.f;
 	//ItemUser			= nullptr;
 
@@ -260,7 +271,8 @@ bool AC_ConsumableItem::MoveToInven(AC_BasicCharacter* Character)
 	else
 	{
 		//아이템의 일부만 인벤에 넣을 수 있을 때.
-		if (IsValid(FoundItem))
+
+		if (IsValid(FoundItem)) // 인벤에 아이템이 이미 있을 때
 		{
 			this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
 			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + ItemStackCount);
@@ -269,9 +281,10 @@ bool AC_ConsumableItem::MoveToInven(AC_BasicCharacter* Character)
 
 			return true;
 		}
-		else
+		else // 인벤에 아이템이 없을 때
 		{
-			AC_Weapon* NewItem = Cast<AC_Weapon>(SpawnItem(Character));//아이템 복제 생성
+			AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//아이템 복제 생성
+
 			NewItem->SetItemStack(ItemStackCount);
 			this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
 

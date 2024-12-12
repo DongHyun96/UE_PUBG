@@ -7,10 +7,12 @@
 
 #include "Blueprint/IUserObjectListEntry.h"
 #include "Components/TextBlock.h"
+#include "Components/Progressbar.h"
 
 #include "Item/C_Item.h"
 
 #include "UE_PUBG/Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 
 #include "C_ItemBarWidget.generated.h"
 
@@ -45,11 +47,19 @@ public:
     UFUNCTION(BlueprintCallable)
     AC_Item* DropItem(AC_Item* myItem);
 
+    /// <summary>
+    /// 아이템 사용시 눈으로 알려주는 progressbar타이머.
+    /// </summary>
+    /// <param name="curTime"></param>
+    /// <param name="endTime"></param>
+    UFUNCTION(BlueprintCallable)
+    void SetPercent(float curTime, float endTime);
+
     UFUNCTION(BlueprintCallable)
     void InitInvenUIWidget();
     //두 기능을 합친 SetItem생각
 
-    void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+    void SetOwnerCharacter(AC_Player* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 public:
     // UI에 바인딩할 변수 선언 (Blueprint에서 연결)
@@ -65,6 +75,9 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
     class UTextBlock* ItemStackBlock1;
 
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+    class UProgressBar* ItemUsingTimer{};
+
     //uint8 ItemStack;
     UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
     EItemTypes ItemType{};
@@ -74,5 +87,5 @@ public:
     AC_Item* CachedItem;
 protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    class AC_BasicCharacter* OwnerCharacter;
+    class AC_Player* OwnerCharacter;
 };

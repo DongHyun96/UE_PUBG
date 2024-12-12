@@ -37,7 +37,7 @@ void UC_ItemBarWidget::NativeConstruct()
 
 	if (!OwnerCharacter)
 	{
-		OwnerCharacter = Cast<AC_BasicCharacter>(GetOwningPlayerPawn());
+		OwnerCharacter = Cast<AC_Player>(GetOwningPlayerPawn());
 	}
 
 	if (!CachedItem) return;
@@ -79,7 +79,6 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 		if (CachedItem)
 		{   // 우클릭 이벤트 실행
 			CachedItem->Interaction(OwnerCharacter);
-	
 	
 			InitInvenUIWidget();
 			
@@ -209,13 +208,13 @@ void UC_ItemBarWidget::InitBar(AC_Item* item)
 		UC_Util::Print("Visibility::Hidden");
 	}
 
-	FInputModeGameAndUI InputMode;
-	InputMode.SetWidgetToFocus(nullptr);
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	InputMode.SetHideCursorDuringCapture(true);
-
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->SetInputMode(InputMode);
+	//FInputModeGameAndUI InputMode;
+	//InputMode.SetWidgetToFocus(nullptr);
+	//InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	//InputMode.SetHideCursorDuringCapture(true);
+	//
+	//APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	//PlayerController->SetInputMode(InputMode);
 }
 
 AC_Item* UC_ItemBarWidget::GetItem(AC_Item* nearItem)
@@ -226,6 +225,11 @@ AC_Item* UC_ItemBarWidget::GetItem(AC_Item* nearItem)
 AC_Item* UC_ItemBarWidget::DropItem(AC_Item* myItem)
 {
 	return nullptr;
+}
+
+void UC_ItemBarWidget::SetPercent(float curTime, float endTime)
+{
+	ItemUsingTimer->SetPercent(curTime / endTime);
 }
 
 void UC_ItemBarWidget::InitInvenUIWidget()

@@ -3,6 +3,7 @@
 
 #include "Character/Component/C_ParkourComponent.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MotionWarpingComponent.h"
@@ -223,6 +224,8 @@ void UC_ParkourComponent::VaultMotionWarp()
 
 	//bIsCurrentlyWarping = true;
 	OwnerCharacter->SetCanMove(false);
+	OwnerCharacter->SetNextSpeed(0.f);
+	if (OwnerPlayer) OwnerPlayer->SetStrafeRotationToIdleStop();
 
 	DrawDebugSphere(GetWorld(), VaultStartPos, 10.f, 12, FColor::Yellow, true);
 	//DrawDebugSphere(GetWorld(), VaultMiddlePos, 10.f, 12, FColor::Yellow, true);
@@ -275,6 +278,8 @@ void UC_ParkourComponent::VaultMotionWarp(const FParkourDescriptor& CurParkourDe
 
 	//bIsCurrentlyWarping = true;
 	OwnerCharacter->SetCanMove(false);
+	OwnerCharacter->SetNextSpeed(0.f);
+	if (OwnerPlayer) OwnerPlayer->SetStrafeRotationToIdleStop();
 
 	SwapMesh(true);
 
@@ -323,6 +328,8 @@ void UC_ParkourComponent::MantleMotionWarp(const FParkourDescriptor& CurParkourD
 	//DrawDebugSphere(GetWorld(), VaultLandPos, 10.f, 12, FColor::Yellow, true);
 
 	OwnerCharacter->SetCanMove(false);
+	OwnerCharacter->SetNextSpeed(0.f);
+	if (OwnerPlayer) OwnerPlayer->SetStrafeRotationToIdleStop();
 	//bIsCurrentlyWarping = true;
 
 	SwapMesh(true);
@@ -463,7 +470,9 @@ bool UC_ParkourComponent::CheckParkourActionAndDistance(FParkourDescriptor& CurP
 			}
 
 			if (DistanceLevel == 0) CurParkourDesc.WarpStartPos = HitResult.Location; // Init Start Location
+			//if (DistanceLevel == 1) MantlingMiddlePos = HitResult.Location + OwnerCharacter->GetActorForwardVector() * 50.f;
 			if (DistanceLevel == 1) MantlingMiddlePos = HitResult.Location;
+
 
 			// (Init PossibleToVault) 50cm 이상으로 높이가 높아지는 Obstacle의 경우 Vault 불가 판정
 			PossibleToVault = (HitResult.Location.Z - CurParkourDesc.WarpStartPos.Z < 50.f);

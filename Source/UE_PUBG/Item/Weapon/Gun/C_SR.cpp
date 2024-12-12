@@ -2,7 +2,8 @@
 
 
 #include "Item/Weapon/Gun/C_SR.h"
-
+#include "Character/C_Player.h"
+#include "Utility/C_Util.h"
 AC_SR::AC_SR()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -23,6 +24,57 @@ void AC_SR::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AC_SR::ExecuteReloadMontage()
+bool AC_SR::ExecuteReloadMontage()
 {
+	if (!IsValid(OwnerCharacter)) return false;
+	if (SniperReloadMontages.IsEmpty()) return false;
+	AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
+
+	if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
+
+	if (CurBulletCount > 0)
+	{
+		UAnimMontage* DrawMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
+		OwnerCharacter->PlayAnimMontage(SniperReloadMontages[OwnerCharacter->GetPoseState()]);
+		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+		OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
+		AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+		//OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
+		bIsSniperReload = true;
+		OwnerCharacter->SetIsReloadingBullet(true);
+		BackToMainCamera();
+
+		//OwnerPlayer->SetRecoilTimelineValues(BulletRPM);
+		return 	AttachToComponent
+		(
+			OwnerCharacter->GetMesh(),
+			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+			SR_RELOAD_LEFT_HAND_SOCKET_NAME
+		);
+	}
+	else
+	{
+		OwnerCharacter->SetIsReloadingBullet(true);
+		OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
+		BackToMainCamera();
+	}
+	return true;
+}
+
+bool AC_SR::GetIsPlayingMontagesOfAny()
+{
+	UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+	UAnimMontage* DrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+	//UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+	UAnimMontage* SheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+	UAnimMontage* SniperReloadMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
+
+	bool IsPlayingMontagesOfAny =
+		CurAnimInstance->Montage_IsPlaying(DrawMontage) ||
+		CurAnimInstance->Montage_IsPlaying(SheathMontage) ||
+		CurAnimInstance->Montage_IsPlaying(ReloadMontage) ||
+		CurAnimInstance->Montage_IsPlaying(SniperReloadMontage);
+	//UC_Util::Print(IsPlayingMontagesOfAny, FColor::Magenta, 10);
+	return IsPlayingMontagesOfAny;
 }

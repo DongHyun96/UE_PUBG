@@ -34,6 +34,8 @@ private:
 	void OnActivatingFinish()		override;
 	void OnCancelActivating()		override;
 
+	void HandleDestroy()			override;
+
 private:
 
 	void HideUsageMesh();
@@ -43,5 +45,9 @@ private:
 	struct FTimerHandle TimerHandle{};
 	const float USAGE_MESH_SHOWN_TIME = 10.f;
 
+private:
+
+	// 붕대 나머지 한개 까지 모두 소모했을 때 Destroy 하는 Flag, True면 Destroy
+	bool bDestroyFlag{};
 
 };

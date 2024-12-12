@@ -57,6 +57,8 @@ public:
 public:
 	UFUNCTION(BlueprintCallable)
 	UC_InvenUiWidget* GetInvenUI() { return InvenUI; }
+
+	bool GetIsPanelOpend() { return isPanelOpened; }
 protected:
 	UPROPERTY()
 	class UC_InvenUiWidget* InvenUI = nullptr;

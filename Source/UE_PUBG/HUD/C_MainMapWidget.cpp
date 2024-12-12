@@ -26,7 +26,7 @@ void UC_MainMapWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	//SetVisibility(ESlateVisibility::Visible);
-	bIsFocusable = true;
+	//bIsFocusable = true;
 	bIsEnabled = true;
 }
 

@@ -13,6 +13,7 @@
 #include "Components/Image.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_InvenSystem.h"
 
 #include "Components/PanelWidget.h"
 #include "Components/NamedSlotInterface.h"
@@ -240,7 +241,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 
 bool AC_Gun::SetAimingDown()
 {
-
+	//if (OwnerCharacter->GetInvenSystem()->GetIsPanelOpend()) return false; //UI가 열려 있을때 작동 금지.
 	//스프린트 중이라면 Return
 	if (OwnerCharacter->GetNextSpeed() > 600) return false;
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
@@ -263,6 +264,7 @@ bool AC_Gun::SetAimingDown()
 //견착 조준만할 때 Player AimKePress함수로 메인카메라에서 에임 카메라로 바꿔주기
 bool AC_Gun::SetAimingPress()
 {
+	//if (OwnerCharacter->GetInvenSystem()->GetIsPanelOpend()) return false;
 	//스프린트 중이라면 Return
 	if (OwnerCharacter->GetNextSpeed() > 600) return false;
 
@@ -454,7 +456,7 @@ bool AC_Gun::GetIsPlayingMontagesOfAny()
 		CurAnimInstance->Montage_IsPlaying(DrawMontage)   || 
 		CurAnimInstance->Montage_IsPlaying(SheathMontage) ||
 		CurAnimInstance->Montage_IsPlaying(ReloadMontage);
-
+	UC_Util::Print(IsPlayingMontagesOfAny, FColor::Magenta, 10);
 	return IsPlayingMontagesOfAny;
 }
 
@@ -472,7 +474,7 @@ void AC_Gun::ChangeCurShootingMode()
 	UC_Util::Print(CurMode);
 }
 
-void AC_Gun::ExecuteReloadMontage()
+bool AC_Gun::ExecuteReloadMontage()
 {
 	//AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
 	//if (CurBulletCount == MaxBulletCount) return;
@@ -482,6 +484,7 @@ void AC_Gun::ExecuteReloadMontage()
 	//OwnerCharacter->SetIsReloadingBullet(true);
 	//OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
 	//BackToMainCamera();	
+	return true;
 }
 
 

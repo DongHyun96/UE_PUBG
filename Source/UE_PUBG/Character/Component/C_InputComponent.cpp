@@ -494,12 +494,14 @@ void UC_InputComponent::OnRKey()
 void UC_InputComponent::OnMLBStarted()
 {
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
+	if (Player->GetInvenSystem()->GetIsPanelOpend()) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMlb_Started();
 }
 
 void UC_InputComponent::OnMLBOnGoing()
 {
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
+	//if (Player->GetInvenSystem()->GetIsPanelOpend()) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMlb_OnGoing();
 }
 
@@ -512,7 +514,7 @@ void UC_InputComponent::OnMLBCompleted()
 void UC_InputComponent::OnMRBStarted()
 {
 	UC_Util::Print("Switching Consumable");
-
+	if (Player->GetInvenSystem()->GetIsPanelOpend()) return;
 	// Test¿ë Consumable switching
 	if (Player->ConsumableIterator >= Player->ConsumableItems.Num() - 1) Player->ConsumableIterator = 0;
 	else Player->ConsumableIterator++;
@@ -617,16 +619,69 @@ void UC_InputComponent::OnNKey()
 void UC_InputComponent::OnMKey()
 {
 	Player->GetHUDWidget()->GetMainMapWidget()->OnMKey();
+
+	if (Player->GetInvenSystem()->GetIsPanelOpend())
+	{
+		//Player->GetInvenSystem()->OpenInvenUI();
+		if (Player->GetInvenSystem()->GetInvenUI()->GetVisibility() == ESlateVisibility::Visible)
+			Player->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
+		else
+			Player->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
+	}
+	Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
 }
 
 void UC_InputComponent::OnIKey()
 {
 	//Player->GetInvenComponent()->OpenInvenUI();
+	if (Player->GetInvenSystem()->GetIsPanelOpend())
+	{
+		if (Player->GetHUDWidget()->GetVisibility() == ESlateVisibility::Hidden)
+			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		else
+			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		if (Player->GetHUDWidget()->GetVisibility() == ESlateVisibility::Hidden)
+			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		else
+			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Hidden);
+	}
+
 	Player->GetInvenSystem()->OpenInvenUI();
+
+	AC_Gun* CurGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
+	if (IsValid(CurGun))
+	{
+		CurGun->BackToMainCamera();
+	}
 }
 
 void UC_InputComponent::OnTabKey()
 {
+	if (Player->GetInvenSystem()->GetIsPanelOpend())
+	{
+		if (Player->GetHUDWidget()->GetVisibility() == ESlateVisibility::Hidden)
+			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		else
+			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		if (Player->GetHUDWidget()->GetVisibility() == ESlateVisibility::Hidden)
+			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		else
+			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Hidden);
+	}
+	
 	Player->GetInvenSystem()->OpenInvenUI();
+
+	AC_Gun* CurGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
+	if (IsValid(CurGun))
+	{
+		CurGun->BackToMainCamera();
+	}
 }
 

@@ -42,9 +42,9 @@ void AC_BackPack::Tick(float DeltaTime)
 //	character->GetInvenComponent()->CheckMyBackPack(this);	
 //}
 
-void AC_BackPack::AttachToSocket(AC_BasicCharacter* character)
+void AC_BackPack::AttachToSocket(AC_BasicCharacter* InParent)
 {
-	FName SocketName{};
+	//FName SocketName{};
 	switch (Level)
 	{
 	case 1:
@@ -65,7 +65,7 @@ void AC_BackPack::AttachToSocket(AC_BasicCharacter* character)
 
 	bool Attached = AttachToComponent
 	(
-		character->GetMesh(),
+		InParent->GetMesh(),
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		SocketName
 	);
@@ -73,7 +73,7 @@ void AC_BackPack::AttachToSocket(AC_BasicCharacter* character)
 
 	//DrawDebugSphere(GetWorld(), InParent->GetSocketLocation(SocketName), 10.f, 12, FColor::Red, false, 10.f);
 
-	SetOwnerCharacter(character);
+	SetOwnerCharacter(InParent);
 
 	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);
 }

@@ -24,5 +24,5 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	virtual void ExecuteReloadMontage() override;
+	virtual bool ExecuteReloadMontage() override;
 };

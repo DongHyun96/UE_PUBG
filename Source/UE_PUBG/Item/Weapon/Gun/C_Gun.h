@@ -105,10 +105,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages> ReloadMontages{};
 
-	bool GetIsPlayingMontagesOfAny();
+	virtual bool GetIsPlayingMontagesOfAny();
 	bool GetCanGunAction();
 	void ChangeCurShootingMode();
-	virtual void ExecuteReloadMontage();
+	virtual bool ExecuteReloadMontage();
+	bool bIsSniperReload = false;
+	void SetIsSniperReload(bool InIsSniperReload) { bIsSniperReload = InIsSniperReload; }
 	class UCanvasPanelSlot* AimImage;
 	float MilitaryOperationArea;
 	FVector2D PanelSize;
@@ -256,6 +258,7 @@ public:
 	
 
 	void SetScopeCameraMode(EAttachmentNames InAttachmentName);
+	void BackTo_RightHand();
 protected:
 	EGunType CurGunType = EGunType::MAX;
 public:

@@ -341,7 +341,13 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 	{
 		AC_Weapon* OutToSlotWeapon = nullptr;
 		AC_Item* FoundItem = nullptr;
-		int nextVolume = invenComp->GetCurVolume() - ItemDatas.ItemVolume + curWeapaon->GetItemDatas().ItemVolume;
+		//int nextVolume = invenComp->GetCurVolume() - ItemDatas.ItemVolume + curWeapaon->GetItemDatas().ItemVolume; //이건 인벤에 존재하는 아이템을 옮길때만 유효 한거 같은데?
+		int nextVolume = 0;
+
+		if (this->ItemDatas.ItemPlace == EItemPlace::INVEN)
+			nextVolume = invenComp->GetCurVolume() - ItemDatas.ItemVolume + curWeapaon->GetItemDatas().ItemVolume;
+		else
+			nextVolume = invenComp->GetCurVolume() + curWeapaon->GetItemDatas().ItemVolume;
 
 		if (nextVolume > invenComp->GetMaxVolume())
 		{
@@ -528,6 +534,7 @@ void AC_ThrowingWeapon::OnThrowThrowable()
 {
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
+	//OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
 	// Direction 구하는 방법 1
 	/*FVector ActorForward = FRotationMatrix(OwnerCharacter->GetActorRotation()).GetUnitAxis(EAxis::X);
 

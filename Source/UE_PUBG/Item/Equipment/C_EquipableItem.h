@@ -6,6 +6,14 @@
 #include "Item/C_Item.h"
 #include "C_EquipableItem.generated.h"
 
+UENUM(BlueprintType)
+enum class EEquipableItemLevel : uint8
+{
+	LV1,
+	LV2,
+	LV3
+};
+
 /**
  * 
  */
@@ -30,10 +38,23 @@ public:
 	
 	//virtual void Interaction(class AC_BasicCharacter* character) override;
 
-	virtual bool Interaction(AC_BasicCharacter* Character) override;
+	virtual bool Interaction(AC_BasicCharacter* Character);
 
 	//bool MoveToAround(AC_BasicCharacter* Character) override;
 
 	//void SetRelativeTranformToInitial() { SetActorRelativeTransform(InitialRelativeTransform); }
 
+	virtual void AttachToSocket(class AC_BasicCharacter* InParent);
+
+	void SetItemLevel(EEquipableItemLevel inItemLevel) { ItemLevel = inItemLevel; }
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	uint8 Level = 0;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EEquipableItemLevel ItemLevel = EEquipableItemLevel::LV1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FName SocketName{};
 };
