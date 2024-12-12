@@ -30,17 +30,25 @@ void UC_MainMapWidget::NativeConstruct()
 	bIsEnabled = true;
 }
 
-void UC_MainMapWidget::OnMKey()
+void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
 {
+	if (InVisibility == ESlateVisibility::HitTestInvisible || InVisibility == ESlateVisibility::SelfHitTestInvisible)
+	{
+		UC_Util::Print
+		(
+			"From UC_MainMapWidget::SetVisibility : HitTestInvisible param in -> Reset it into ESlateVisible::Visible",
+			FColor::Red,
+			10.f
+		);
+
+		InVisibility = ESlateVisibility::Visible;
+	}
+
 	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
-	// Toggle Visibility of MainMap and MiniMap
-	if (this->Visibility == ESlateVisibility::Hidden)
+	if (InVisibility == ESlateVisibility::Visible)
 	{
-		SetVisibility(ESlateVisibility::Visible);
-		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget()->SetVisibility(ESlateVisibility::Hidden);
-		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapBorder()->SetVisibility(ESlateVisibility::Hidden);
-
+		UUserWidget::SetVisibility(ESlateVisibility::Visible);
 
 		// 마우스 입력은 UI로, 다른 입력은 게임에서 처리
 		PC->SetInputMode
@@ -69,13 +77,12 @@ void UC_MainMapWidget::OnMKey()
 			}
 		}
 
+		// TODO : 이 부분 외부로 옮기기
 		OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
-		SetVisibility(ESlateVisibility::Hidden);
-		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapBorder()->SetVisibility(ESlateVisibility::Visible);
+		UUserWidget::SetVisibility(ESlateVisibility::Hidden);
 
 		PC->bShowMouseCursor = false;
 		PC->SetInputMode(FInputModeGameOnly());
@@ -83,12 +90,11 @@ void UC_MainMapWidget::OnMKey()
 		PC->SetIgnoreLookInput(false);  // 마우스 이동에 의한 카메라 회전을 막음
 		//PC->SetIgnoreMoveInput(false);  // 마우스 클릭에 의한 움직임을 막음
 
+		// TODO : 이 부분 외부로 옮기기
 		ESkyDivingState PlayerSkyDivingState = OwnerPlayer->GetSkyDivingComponent()->GetSkyDivingState();
 		if (PlayerSkyDivingState == ESkyDivingState::SKYDIVING || PlayerSkyDivingState == ESkyDivingState::PARACHUTING)
 			OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::HitTestInvisible);
-
 	}
-
 }
 
 void UC_MainMapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

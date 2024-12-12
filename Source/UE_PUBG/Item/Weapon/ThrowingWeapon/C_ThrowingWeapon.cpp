@@ -25,7 +25,11 @@
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenSystem.h"	
 #include "Character/C_AnimBasicCharacter.h"
+
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_MainMapWidget.h"
 
 #include "I_ExplodeStrategy.h"
 #include "C_GrenadeExplode.h"
@@ -103,8 +107,8 @@ void AC_ThrowingWeapon::Tick(float DeltaTime)
 
 bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
 {
-	// TODO : 투척류를 핀까지만 뽑았고 쿠킹을 안했을 시 다시 집어넣음
-	// TODO : 투척류를 안전손잡이까지 뽑았다면 현재 위치에 현재 투척류 그냥 바닥에 떨굼
+	// 투척류를 핀까지만 뽑았고 쿠킹을 안했을 시 다시 집어넣음
+	// 투척류를 안전손잡이까지 뽑았다면 현재 위치에 현재 투척류 그냥 바닥에 떨굼
 
 	SetActorHiddenInGame(true);
 
@@ -521,13 +525,39 @@ void AC_ThrowingWeapon::OnRemovePinFin()
 
 void AC_ThrowingWeapon::OnThrowReadyLoop()
 {
-	if (bIsCharging) HandlePredictedPath();
-	else
+	// Player HUD Opened 관련 예외처리
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 	{
-		// 다음 던지기 동작 실행
-		OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowMontage);
-		ClearSpline();
+		// UI 창이 켜졌을 때
+		if (OwnerPlayer->GetInvenSystem()->GetIsPanelOpend() ||
+			OwnerPlayer->GetHUDWidget()->GetMainMapWidget()->GetIsPanelOpened())
+		{
+			ClearSpline();
+
+			if (bIsCooked) // cooking 되었다면 던져버림
+			{
+				OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowMontage);
+				return;
+			}
+
+			// Cooking 되어있지 않다면 다시 Idle 자세로 돌아옴
+			OwnerPlayer->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, CurThrowProcessMontages.ThrowReadyMontage.AnimMontage);
+			bIsOnThrowProcess	= false;
+			bIsCharging			= false;
+			return;
+		}
 	}
+
+	if (bIsCharging)
+	{
+		// Charging 중 처리
+		HandlePredictedPath();
+		return;
+	}
+
+	// Charging이 풀렸을 때 다음 던지기 동작 실행
+	ClearSpline();
+	OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowMontage);
 }
 
 void AC_ThrowingWeapon::OnThrowThrowable()
@@ -591,14 +621,21 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 
 	UAnimInstance* OwnerAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 
+	//OwnerAnimInstance->StopAllMontages(0.2f);
+
+	// 중간에 자세를 바꿀 수 있기 때문에 모든 자세별 AnimMontage playing 체크
 	for (uint8 p = 0; p < static_cast<uint8>(EPoseState::POSE_MAX); p++)
 	{
 		EPoseState	  PoseState	   = static_cast<EPoseState>(p);
 		UAnimMontage* ThrowMontage = ThrowProcessMontages[PoseState].ThrowMontage.AnimMontage;
+		UAnimMontage* ReadyMontage = ThrowProcessMontages[PoseState].ThrowReadyMontage.AnimMontage;
 
-		if (OwnerAnimInstance->Montage_IsPlaying(ThrowMontage))
+		UAnimMontage* TargetMontage = OwnerAnimInstance->Montage_IsPlaying(ThrowMontage) ? ThrowMontage :
+									  OwnerAnimInstance->Montage_IsPlaying(ReadyMontage) ? ReadyMontage : nullptr;
+
+		if (TargetMontage)
 		{
-			OwnerAnimInstance->Montage_Stop(0.2f, ThrowMontage);
+			OwnerAnimInstance->Montage_Stop(0.2f, TargetMontage);
 			break;
 		}
 	}
@@ -611,23 +648,23 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	OwnerEquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
 
 	// TODO : 가방에 투척류 있는지 확인해서 바로 다음 무기 장착하기 (우선순위 - 같은 종류의 투척류)
-	if (!ThrowablePool.IsEmpty())
-	{
-		AC_ThrowingWeapon* ThrowWeapon = ThrowablePool[0];
+	//if (!ThrowablePool.IsEmpty())
+	//{
+	//	AC_ThrowingWeapon* ThrowWeapon = ThrowablePool[0];
 
-		// 새로 slot에 장착하면서 새로운 투척류 함수에 Delegate 등록 이루어짐
-		OwnerEquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, ThrowWeapon);
+	//	// 새로 slot에 장착하면서 새로운 투척류 함수에 Delegate 등록 이루어짐
+	//	OwnerEquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, ThrowWeapon);
 
-		// 가방에 있는 투척류 하나 지우기
-		// TODO : 실질적으로 가방에서 지우기
-		ThrowablePool.RemoveAt(0);
+	//	// 가방에 있는 투척류 하나 지우기
+	//	// TODO : 실질적으로 가방에서 지우기
+	//	ThrowablePool.RemoveAt(0);
 
-		// 바로 다음 투척류 꺼내기
-		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
-		PrevOwnerCharacter->PlayAnimMontage(ThrowWeapon->GetCurDrawMontage());
+	//	// 바로 다음 투척류 꺼내기
+	//	OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
+	//	PrevOwnerCharacter->PlayAnimMontage(ThrowWeapon->GetCurDrawMontage());
 
-		return;
-	}
+	//	return;
+	//}
 
 	//남아 있는 투척류가 없다면 주무기1, 주무기2 순으로 장착 시도, 없다면 UnArmed인 상태로 돌아가기
 	// TODO : MeleeWeapon 줄 지우기

@@ -47,7 +47,7 @@ void AC_Item::DetachmentItem()
 	//한번 껏다 꺼줘야 OverlapBegin이 작동 -> 장착할때 꺼주고 버릴 때 켜주면 될듯?
 	SetActorEnableCollision(false);
 	SetActorEnableCollision(true);
-
+	
 	UC_Util::Print("Check");
 }
 

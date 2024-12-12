@@ -141,7 +141,8 @@ public:
 
 	UCameraComponent* AimSightCamera;
 	class USpringArmComponent* AimSightSpringArm{};
-
+	int GetCurBulletCount() { return CurBulletCount; }
+	int GetMaxBulletCount() { return MaxBulletCount; }
 protected:
 	/// <summary>
 	/// 총알 발사 관련 변수들

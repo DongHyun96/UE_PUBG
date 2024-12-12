@@ -5,6 +5,8 @@
 
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 
+#include "Utility/C_Util.h"
+
 bool AC_ThrowingWeaponStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
 	return false;

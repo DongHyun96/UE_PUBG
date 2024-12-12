@@ -77,57 +77,11 @@ void UC_InvenSystem::OpenInvenUI()
 
 	if (isPanelOpened)
 	{
-		//UI가 열려 있다면.
-		//isPanelOpened = false;
-		////InvenUI->SetVisibility(ESlateVisibility::Hidden);
-		////InvenUI = nullptr;
-		////if (!IsValid(PlayerController))
-		////{
-		////	PlayerController = GetWorld()->GetFirstPlayerController();
-		////}
-		//PlayerController->SetIgnoreLookInput(false);
-
-		//FInputModeGameOnly InputMode;
-
-		////PlayerController->SetInputMode(InputMode);
-
-		//PlayerController->SetInputMode(FInputModeGameOnly());
-		//PlayerController->bShowMouseCursor = false;
-		//InvenUI->RemoveFromViewport();
-		////자꾸 터져서 가비지 컬랙터 대응용으로 해봄.
-		////InvenUI->RemoveFromRoot();
 		CloseInvenUI();
-
 	}
 	else
 	{
-		//UI가 닫혀 있다면.
-		//자꾸 터져서 가비지 컬렉터 대응용으로 해봄.
-		//InvenUI->AddToRoot();
-		//isPanelOpened = true;
-		//InvenUI->AddToViewport();
-
-		//InvenUI->InitWidget(); //아래에서 중복처리 된다면 없애기.
-		////InvenUI->SetVisibility(ESlateVisibility::Visible);
-		////if (!IsValid(PlayerController))
-		////{
-		////	PlayerController = GetWorld()->GetFirstPlayerController();
-		////}
-		//PlayerController->SetIgnoreLookInput(true);
-
-		//FInputModeGameAndUI InputMode;
-		////InputMode.SetWidgetToFocus(InvenUI->TakeWidget());
-		//InputMode.SetWidgetToFocus(nullptr);
-
-		//InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-		//InputMode.SetHideCursorDuringCapture(true);
-
-		//PlayerController->SetInputMode(InputMode);
-		//PlayerController->bShowMouseCursor = true;
-
-		//if (OwnerCharacter->GetEquippedComponent()->GetCurWeapon())
-		//	Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon())->SetIsAimPress(false);
-		InitializeList();
+		//InitializeList();
 		ShowInvenUI();
 	}
 
