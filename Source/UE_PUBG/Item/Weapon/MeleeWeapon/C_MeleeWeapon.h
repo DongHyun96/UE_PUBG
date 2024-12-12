@@ -60,7 +60,6 @@ public:
 	/// <returns>true면 이동 성공, false면 실패</returns>
 	bool MoveToSlot(AC_BasicCharacter* Character) override;
 
-
 public:
 
 	struct FPriorityAnimMontage GetAttackMontage() const { return AttackMontage; }

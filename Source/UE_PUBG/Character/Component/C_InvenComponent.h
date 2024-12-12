@@ -194,7 +194,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<FString, AC_Item*> testMyItems;
 
-	//TMap<FString, AC_Item*> testMyItems;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<FString, TArray<AC_Item*>> NewMyItems;
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -204,7 +205,7 @@ protected:
 	TMap<EEquipSlot, AC_EquipableItem*> EquipmentItems = 
 	{
 	{EEquipSlot::HELMET, nullptr},
-	{EEquipSlot::BACKPACK, nullptr},
+	{EEquipSlot::BACKPACK, nullptr},//이건 현재 안쓰고 있음.
 	{EEquipSlot::VEST, nullptr}
 	};
 
