@@ -12,6 +12,7 @@ AC_SR::AC_SR()
 	CurGunType = EGunType::SR;
 	EQUIPPED_SOCKET_NAME = FName("Sniper_Equip"); // 무기가 손에 부착될 socket 이름
 	IronSightWindowLocation = FVector2D(0.5f, 0.5f);
+	CurrentShootingMode = EShootingMode::SEMI_AUTO;
 }
 
 void AC_SR::BeginPlay()
