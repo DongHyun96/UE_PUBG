@@ -294,7 +294,7 @@ void UC_EquippedComponent::OnSniperReloadEnd()
 void UC_EquippedComponent::SpawnWeaponsForTesting()
 {
     // Test¿ë weapon spawnµé
-    FActorSpawnParameters Param{};
+    /*FActorSpawnParameters Param{};
     Param.Owner = OwnerCharacter;
     AC_MeleeWeapon* MeleeTemp = GetWorld()->SpawnActor<AC_MeleeWeapon>(WeaponClasses[EWeaponSlot::MELEE_WEAPON], Param);
     MeleeTemp->SetOwnerCharacter(OwnerCharacter);
@@ -308,7 +308,7 @@ void UC_EquippedComponent::SpawnWeaponsForTesting()
     ARTemp->SetOwnerCharacter(OwnerCharacter);
     ARTemp->AttachToHolster(OwnerCharacter->GetMesh());
 
-    SetSlotWeapon(EWeaponSlot::MAIN_GUN, ARTemp);
+    SetSlotWeapon(EWeaponSlot::MAIN_GUN, ARTemp);*/
 
     FActorSpawnParameters Param3{};
     Param3.Owner = OwnerCharacter;

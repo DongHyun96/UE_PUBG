@@ -22,6 +22,10 @@ public:
 
 	void SetOwnerPlayer(class AC_Player* InOwnerPlayer) { OwnerPlayer = InOwnerPlayer; }
 
+	bool GetIsPanelOpened() const { return this->GetVisibility() == ESlateVisibility::Visible || this->GetVisibility() == ESlateVisibility::SelfHitTestInvisible; }
+
+	virtual void SetVisibility(ESlateVisibility InVisibility) override;
+
 public:
 	
 	/// <summary>

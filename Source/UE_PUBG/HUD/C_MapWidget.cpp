@@ -11,6 +11,10 @@
 
 #include "Character/Component/C_SkyDivingComponent.h"
 
+#include "HUD/C_HUDWidget.h"
+
+#include "Components/Border.h"
+
 void UC_MapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
@@ -20,6 +24,12 @@ void UC_MapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 	//HandleUpdatePlaneRouteStartDest();
 	HandleUpdatePlaneRouteTransform();
+}
+
+void UC_MapWidget::SetVisibility(ESlateVisibility InVisibility)
+{
+	Super::SetVisibility(InVisibility);
+	OwnerPlayer->GetHUDWidget()->GetMiniMapBorder()->SetVisibility(InVisibility);
 }
 
 bool UC_MapWidget::SpawnPingImage(FVector WorldPingLocation)
