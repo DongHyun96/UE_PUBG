@@ -204,7 +204,7 @@ protected:
 	TMap<EEquipSlot, AC_EquipableItem*> EquipmentItems = 
 	{
 	{EEquipSlot::HELMET, nullptr},
-	{EEquipSlot::BACKPACK, nullptr},
+	{EEquipSlot::BACKPACK, nullptr},//이건 현재 안쓰고 있음.
 	{EEquipSlot::VEST, nullptr}
 	};
 
