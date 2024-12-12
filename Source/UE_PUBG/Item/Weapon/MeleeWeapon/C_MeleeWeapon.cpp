@@ -88,6 +88,62 @@ void AC_MeleeWeapon::PickUpItem(AC_BasicCharacter* Character)
 	SetActorEnableCollision(false);
 }
 
+bool AC_MeleeWeapon::Interaction(AC_BasicCharacter* Character)
+{
+
+	return false;
+}
+
+bool AC_MeleeWeapon::MoveToInven(AC_BasicCharacter* Character)
+{
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();
+
+	if (invenComp->GetMaxVolume() < invenComp->GetCurVolume() + this->ItemDatas.ItemVolume) return false;
+
+	invenComp->AddItemToMyList(this);
+
+	return false;
+}
+
+bool AC_MeleeWeapon::MoveToAround(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_MeleeWeapon::MoveToSlot(AC_BasicCharacter* Character)
+{
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();
+
+	AC_Item* unEquipItem = nullptr;
+
+	AC_Item* inItem = nullptr;
+
+	AC_Weapon* curWeapaon = equipComp->GetWeapons()[EWeaponSlot::MELEE_WEAPON];
+
+	if (IsValid(curWeapaon))
+	{
+		AC_Weapon* OutToSlotWeapon = nullptr;
+		AC_Item* FoundItem = nullptr;
+
+		int nextVolume = 0;
+
+		if (this->ItemDatas.ItemPlace == EItemPlace::INVEN) 
+			nextVolume = invenComp->GetCurVolume() - ItemDatas.ItemVolume + curWeapaon->GetItemDatas().ItemVolume;
+		else
+			nextVolume = invenComp->GetCurVolume() + curWeapaon->GetItemDatas().ItemVolume;
+
+		if (nextVolume > invenComp->GetMaxVolume()) return false;
+		else
+		{
+
+		}
+
+	}
+		
+	return false;
+}
+
 void AC_MeleeWeapon::SetAttackColliderEnabled(const bool& Enabled)
 {
 	if (Enabled) AttackCollider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);

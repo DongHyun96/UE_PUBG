@@ -74,6 +74,9 @@ public: // Getters and setters
 
 	class USpringArmComponent* GetMainSpringArm() const { return C_MainSpringArm; }
 
+	UFUNCTION(BlueprintCallable)
+	class UC_InvenSystem* GetInvenSystem() { return InvenSystem; }
+
 private:
 	void SetPoseState(EPoseState InPoseState) { Super::SetPoseState(InPoseState); }
 
@@ -102,7 +105,12 @@ protected:
 	//
 	//UFUNCTION()
 	//void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	// 
+	//자식 단계에서 OverlapBegin에서 사용할 함수 Template method
+	virtual void HandleOverlapBegin(AActor* OtherActor) override;
 
+	//자식 단계에서 OverlapBegin에서 사용할 함수 Template method
+	virtual void HandleOverlapEnd(AActor* OtherActor) override;
 protected:
 	//Aim Press Camera
 	UPROPERTY(EditDefaultsOnly)
@@ -334,6 +342,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_HUDWidget* HUDWidget{};
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_InvenSystem* InvenSystem{};
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)

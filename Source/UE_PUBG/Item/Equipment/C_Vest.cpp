@@ -13,25 +13,24 @@ AC_Vest::AC_Vest()
 
 bool AC_Vest::Interaction(AC_BasicCharacter* Character)
 {
-	
+	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, this);
 
-
-	return false;
+	return true;
 }
 
 void AC_Vest::AttachToSocket(AC_BasicCharacter* InParent)
 {
-	FName SocketName{};
-	switch (Level)
+	//FName SocketName{};
+	switch (ItemLevel)
 	{
-	case 1:
-		SocketName = "Vest_Lv1";
+	case EEquipableItemLevel::LV1:
+		SocketName = "Vest_1";
 		break;
-	case 2:
-		SocketName = "Vest_Lv2";
+	case EEquipableItemLevel::LV2:
+		SocketName = "Vest_2";
 		break;
-	case 3:
-		SocketName = "Vest_Lv3";
+	case EEquipableItemLevel::LV3:
+		SocketName = "Vest_3";
 		break;
 	default:
 		break;

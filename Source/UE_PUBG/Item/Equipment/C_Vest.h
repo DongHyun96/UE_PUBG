@@ -19,7 +19,7 @@ public:
 
 	bool Interaction(AC_BasicCharacter* Character) override;
 
-	void AttachToSocket(class AC_BasicCharacter* InParent) override;
+	void AttachToSocket(class AC_BasicCharacter* InParent);
 protected:
 	float Durability = 0;
 

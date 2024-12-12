@@ -38,7 +38,7 @@ public:
 	
 	//virtual void Interaction(class AC_BasicCharacter* character) override;
 
-	virtual bool Interaction(AC_BasicCharacter* Character) override;
+	virtual bool Interaction(AC_BasicCharacter* Character);
 
 	//bool MoveToAround(AC_BasicCharacter* Character) override;
 
@@ -54,4 +54,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EEquipableItemLevel ItemLevel = EEquipableItemLevel::LV1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FName SocketName{};
 };

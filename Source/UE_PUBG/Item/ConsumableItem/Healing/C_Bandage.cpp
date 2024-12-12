@@ -9,6 +9,7 @@
 
 #include "Character/Component/C_StatComponent.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_ConsumableUsageMeshComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 
@@ -57,7 +58,7 @@ void AC_Bandage::OnStartUsing()
 void AC_Bandage::OnActivatingFinish()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::BANDAGE, true);
-
+	
 	// 10초 뒤 팔에 감은 붕대 감추기
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_Bandage::HideUsageMesh, USAGE_MESH_SHOWN_TIME, false);
 }

@@ -16,8 +16,6 @@ UC_InvenComponent::UC_InvenComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-
 	// ...
 }
 
@@ -367,42 +365,21 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 {
 	AC_EquipableItem* PrevSlotEquipItem = EquipmentItems[InSlot];
 
+	//기존의 장비가 있다면.
 	if (PrevSlotEquipItem)
 	{
-		PrevSlotEquipItem->DetachmentItem();
+		PrevSlotEquipItem->DetachmentItem(); //장착 해제.
+		//AddItemToAroundList(PrevSlotEquipItem);// TODO : Collision을 키고 끄는 방식으로 할 지 아니면 강제로 넣고 빼줄지 생각
+
 	}
-	EquipmentItems[InSlot] = EquipItem;
+	EquipmentItems[InSlot] = Cast<AC_EquipableItem>(EquipItem);
 	
+	if (EquipmentItems[InSlot] == nullptr)	return PrevSlotEquipItem; //nullptr이면 종료.
+
 	EquipmentItems[InSlot]->AttachToSocket(OwnerCharacter);
 
-	// 들어온 슬롯의 이전 무기가 존재할 때 이전 무기 해제
-	//if (PrevSlotEquipItem)
-	//{
-	//	// 현재 들고 있는 무기의 slot에 새로운 무기로 바꿔버리려 할 때
-	//	if (GetCurWeapon() == PrevSlotEquipItem)
-	//	{
-	//		OwnerCharacter->SetHandState(EHandState::UNARMED);
-	//		if (!Weapon) CurWeaponType = EWeaponSlot::NONE;
-	//	}
-
-	//	// 이전 무기 해제에 대한 PoseTransitionEnd 델리게이트 해제
-	//	OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(PrevSlotWeapon);
-
-	//	//C_Item의 detachment에서 처리중, 혹시몰라 남겨둠.
-	//	//PrevSlotWeapon->SetOwnerCharacter(nullptr);
-	//}
-
-	//EquipmentItems[InSlot] = EquipItem; // 새로 들어온 무기로 교체
-
-	//if (!EquipmentItems[InSlot]) return PrevSlotEquipItem; // Slot에 새로 지정한 무기가 nullptr -> early return
-
-	//EquipmentItems[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
-
-	//// Attach to Holster 하기 전에 Local transform 초기화
-	////Weapons[InSlot]->SetActorRelativeTransform(FTransform::Identity);
-	//EquipmentItems[InSlot]->SetRelativeTranformToInitial();
-	//EquipmentItems[InSlot]->AttachToHolster(OwnerCharacter->GetMesh());
-
+	EquipmentItems[InSlot]->SetActorEnableCollision(false);
+	//RemoveItemToAroundList(EquipItem); // TODO : Collision을 키고 끄는 방식으로 할 지 아니면 강제로 넣고 빼줄지 생각
 
 	return PrevSlotEquipItem;
 }
@@ -477,7 +454,8 @@ void UC_InvenComponent::InitInvenUI()
 {
 	if (!InvenUI) return;
 
-	InvenUI->InitListView();
+	//InvenUI->InitListView();
+	//InvenUI->initial
 }
 
 void UC_InvenComponent::CheckBackPackOnCharacter()
@@ -501,17 +479,6 @@ void UC_InvenComponent::AddInvenCurVolume(float ItemVolume)
 {
 	CurVolume += ItemVolume;
 }
-
-void UC_InvenComponent::SetEquipmentItem(EEquipSlot inSlot, AC_EquipableItem EquipableItem)
-{
-	AC_EquipableItem* PrevSlotItem = EquipmentItems[inSlot];
-
-	if (PrevSlotItem)
-	{
-
-	}
-}
-
 
 
 void UC_InvenComponent::InitMyitems()
