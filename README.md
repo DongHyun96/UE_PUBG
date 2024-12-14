@@ -124,7 +124,7 @@ Developed with Unreal Engine 5
 * Current Circle -> Next Circle 줄어드는 알고리즘 구현
 * 자기장 페이즈 조절 구현
 
-### Parkour system Implementation
+### Parkour System Implementation
 * Vaulting Low / High
 * Mantling Low / High
 
