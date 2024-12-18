@@ -642,6 +642,7 @@ void UC_InputComponent::OnIKey()
 void UC_InputComponent::OnTabKey()
 {
 	// Inven 켜기 / 끄기 기능
+	UC_Util::Print("OnTabKey", FColor::Red, 2.f);
 
 	if (!Player->GetInvenSystem()->GetIsPanelOpend())
 	{

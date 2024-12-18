@@ -53,6 +53,18 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		OwnerCharacter->SetCanMove(true);
 		//bIsCurrentlyWarping = false;
 	}
+
+	// Testing
+	//OwnerCharacter->GetMesh()->GetBoneTransform()
+	// LeftHandMiddle2
+	// RightToeBase
+	/*const FName LeftHandName = "LeftHandMiddle2";
+	const FName RightToeName = "RightToeBase";
+	static float _Max{};
+	FVector HandLocation = OwnerCharacter->GetMesh()->GetBoneTransform(LeftHandName).GetTranslation();
+	FVector FootLocation = OwnerCharacter->GetMesh()->GetBoneTransform(RightToeName).GetTranslation();
+	_Max = FMath::Max(_Max, HandLocation.Z - FootLocation.Z);
+	UC_Util::Print(_Max);*/
 }
 
 bool UC_ParkourComponent::TryExecuteParkourAction()
@@ -69,6 +81,10 @@ bool UC_ParkourComponent::TryExecuteParkourAction()
 	// Check Vaulting or Mantling -> Vault Start Pos / Middle pos / Land pos check
 	// CurParkourActionType Á¤ÇÏ±â
 	if (!CheckParkourActionAndDistance(CurParkourDesc)) return false;
+
+	DrawDebugSphere(GetWorld(), CurParkourDesc.WarpStartPos, 5.f, 4, FColor::Cyan,	true);
+	DrawDebugSphere(GetWorld(), CurParkourDesc.WarpMiddlePos, 5.f, 4, FColor::Cyan, true);
+	DrawDebugSphere(GetWorld(), CurParkourDesc.WarpLandPos, 5.f, 4, FColor::Cyan,	true);
 
 	// Handle Motion warping
 	switch (CurParkourDesc.CurParkourActionType)

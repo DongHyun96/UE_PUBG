@@ -11,6 +11,8 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Utility/C_Util.h"
+
 // Sets default values for this component's properties
 UC_InvenSystem::UC_InvenSystem()
 {
@@ -119,6 +121,8 @@ void UC_InvenSystem::ShowInvenUI()
 
 void UC_InvenSystem::CloseInvenUI()
 {
+	UC_Util::Print("CloseInvenUI");
+
 	isPanelOpened = false;
 
 	if (!PlayerController) 
