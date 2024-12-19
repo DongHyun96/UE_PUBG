@@ -19,7 +19,7 @@ void UC_MyItemListWidget::NativeConstruct()
     }
 }
 
-void UC_MyItemListWidget::AddTMapItem(TMap<FString, AC_Item*> MyItemlist)
+void UC_MyItemListWidget::AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItemlist)
 {
     if (!IsValid(ItemListView))
     {
@@ -27,51 +27,45 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, AC_Item*> MyItemlist)
         return;
     }
 
-    //ItemListView->ClearListItems(); // 기존 아이템 삭제
+    ItemListView->ClearListItems(); // 기존 아이템 삭제
 
     //if (itemList)
 
     if (!(MyItemlist.Num() > 0)) return;
-    for (const auto& ItemPair : MyItemlist)
+    for (const auto& ItemPairTArray : MyItemlist)
     {
-        AC_Item* Item = ItemPair.Value; // TMap에서 아이템 가져오기
+        TArray<AC_Item*> ItemTArray = ItemPairTArray.Value; // TMap에서 아이템 가져오기
 
-        //if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
-        //    if (ConsumableItem->GetLinkedItemBarWidget()) continue;
-
-        if (IsValid(Item))
+        for (const auto& Item : ItemTArray)
         {
-            ItemListView->AddItem(Item);
-        }
-        else
-        {
-            continue;
-        }
-
-
-
-        //ItemBar갱신.
-        UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(ItemListView->GetEntryWidgetFromItem(Item));
-        //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
-
-        if (IsValid(EntryWidget))
-        {
-            if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
+            if (IsValid(Item))
             {
-                if (IsValid(ConsumableItem->GetLinkedItemBarWidget()))
-                {
-                    EntryWidget = ConsumableItem->GetLinkedItemBarWidget();
-                }
-                else
-                {
-                    ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
-                }
-                
-
+                ItemListView->AddItem(Item);
             }
-            
+            else
+            {
+                continue;
+            }
 
-            EntryWidget->InitBar(Item);
+            //ItemBar갱신.
+            UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(ItemListView->GetEntryWidgetFromItem(Item));
+            //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
+
+            if (IsValid(EntryWidget))
+            {
+                if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
+                {
+                    if (IsValid(ConsumableItem->GetLinkedItemBarWidget()))
+                    {
+                        EntryWidget = ConsumableItem->GetLinkedItemBarWidget();
+                    }
+                    else
+                    {
+                        ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
+                    }
+                }
+                EntryWidget->InitBar(Item);
+            }
         }
     }
 }

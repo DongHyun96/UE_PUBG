@@ -72,8 +72,8 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 		// Activating end
 
-		ItemDatas.ItemStack--;
-		FString Left = "Item Used: ItemStack -> " + FString::FromInt(ItemDatas.ItemStack);
+		ItemDatas.ItemCurStack--;
+		FString Left = "Item Used: ItemStack -> " + FString::FromInt(ItemDatas.ItemCurStack);
 		UC_Util::Print(Left, FColor::Red, 5.f);
 
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser))
@@ -104,7 +104,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 	{
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser)) Player->GetHUDWidget()->OnConsumableUsed();
 
-		if (ItemDatas.ItemStack == 0)
+		if (ItemDatas.ItemCurStack == 0)
 		{
 			ItemUser->GetInvenComponent()->RemoveItemToMyList(this);
 			HandleDestroy(); // 각 아이템 별 Destroy 하는 시점이 다름
@@ -236,16 +236,18 @@ bool AC_ConsumableItem::MoveToInven(AC_BasicCharacter* Character)
 		UC_Util::Print("Not Enough Volume");
 		return false; //인벤에 넣을 수 있는 아이템의 갯수가 0 이면 넣을 수 없으므로 return false;
 	}
-
+	
 	AC_Item* FoundItem = invenComp->FindMyItem(this); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;
 
-	if (ItemDatas.ItemStack == ItemStackCount)
+	
+
+	if (ItemDatas.ItemCurStack == ItemStackCount)
 	{
 		//아이템 전부를 인벤에 넣을 수 있을 때.
 		if (IsValid(FoundItem))
 		{
 			//인벤에 해당 아이템이 존재 할 때.
-			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + ItemStackCount);
+			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
 			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
 			//TODO : destroy를 해도 잔상이 남는것을 대비해서 해놓음 만약 없이도 잔상이 안남는다면 지울 것.
 			invenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
@@ -263,6 +265,7 @@ bool AC_ConsumableItem::MoveToInven(AC_BasicCharacter* Character)
 			//인게임에서 보이는 것과 collision문제 때문에 임시로 꺼둠.
 			//this->SetActorEnableCollision(false);
 			this->SetActorHiddenInGame(true);
+			this->SetActorEnableCollision(false);
 			//던질 때 켜짐. 이걸로 만약 아이템의 오버랩이 안끝난다면 다른 방법 고민->ToInven에서 SetActorEnableCollision를 꺼주고 던질때 혹은 ToAround에서 켜주기.
 			//Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			return true;
@@ -274,8 +277,8 @@ bool AC_ConsumableItem::MoveToInven(AC_BasicCharacter* Character)
 
 		if (IsValid(FoundItem)) // 인벤에 아이템이 이미 있을 때
 		{
-			this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
-			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + ItemStackCount);
+			this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
+			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
 
 			invenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
 
@@ -286,7 +289,7 @@ bool AC_ConsumableItem::MoveToInven(AC_BasicCharacter* Character)
 			AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//아이템 복제 생성
 
 			NewItem->SetItemStack(ItemStackCount);
-			this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
+			this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
 
 			invenComp->AddItemToMyList(NewItem);
 

@@ -154,8 +154,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	TMap<EEquipSlot, AC_EquipableItem*> GetEquipmentItems() { return EquipmentItems; }
 
+	const TMap<FString, TArray<class AC_Item*>>& GetTestMyItems() { return testMyItems; }
 
-	const TMap<FString, class AC_Item*>& GetTestMyItems() { return testMyItems; }
+	//const TMap<FString, class AC_Item*>& GetTestMyItems() { return testMyItems; }
 
 	TMap<FString, class AC_Item*>& GetTestAroundItems() { return testAroundItems; }
 
@@ -191,11 +192,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<AC_Item*> NearItems;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<FString, AC_Item*> testMyItems;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//TMap<FString, AC_Item*> testMyItems;
 
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<FString, TArray<AC_Item*>> NewMyItems;
+	TMap<FString, TArray<AC_Item*>> testMyItems;
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

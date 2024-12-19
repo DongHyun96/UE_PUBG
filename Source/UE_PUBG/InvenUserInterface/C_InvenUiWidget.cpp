@@ -27,7 +27,10 @@ void UC_InvenUiWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
+    //FSlateApplication::Get().SetNavigationConfig(MakeShared<FNavigationConfig>());
 
+
+    SetIsFocusable(false);
     //InvenCanvas = Cast<UCanvasPanel>(GetWidgetFromName(FName("InvenCanvas1")));
     
     if (InvenCanvas)
@@ -143,6 +146,7 @@ void UC_InvenUiWidget::InitWidget()
 
 }
 
+
 void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
 {
     if (IsValid(MainGunSlot))
@@ -163,7 +167,7 @@ void UC_InvenUiWidget::InitListView()
 
     if (MyItemListWidget)
     {
-        TMap<FString, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
+        TMap<FString, TArray<AC_Item*>> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
         MyItems = OwnerCharacter->GetInvenComponent()->GetTestMyItems();
         MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
 

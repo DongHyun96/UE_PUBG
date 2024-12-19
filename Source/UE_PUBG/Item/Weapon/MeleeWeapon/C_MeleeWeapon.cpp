@@ -90,7 +90,17 @@ void AC_MeleeWeapon::PickUpItem(AC_BasicCharacter* Character)
 
 bool AC_MeleeWeapon::Interaction(AC_BasicCharacter* Character)
 {
+	AC_Weapon* curWeapaon = Character->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MELEE_WEAPON];
 
+	switch (ItemDatas.ItemPlace)
+	{
+	case EItemPlace::AROUND:
+		if (curWeapaon) return MoveToInven(Character);
+	case EItemPlace::INVEN:
+		return MoveToSlot(Character);
+	default:
+		break;
+	}
 	return false;
 }
 
@@ -101,13 +111,31 @@ bool AC_MeleeWeapon::MoveToInven(AC_BasicCharacter* Character)
 	if (invenComp->GetMaxVolume() < invenComp->GetCurVolume() + this->ItemDatas.ItemVolume) return false;
 
 	invenComp->AddItemToMyList(this);
+	//AttachToHolster(Character->GetMesh());
+	//인벤에서 장착을 하면 이상한 위치에 있던 문제를 이걸로 우선 해결.
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
-	return false;
+	return true; 
 }
 
 bool AC_MeleeWeapon::MoveToAround(AC_BasicCharacter* Character)
 {
-	return false;
+	if (!Character) return false;
+
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();
+	//if (ItemDatas.ItemPlace == EItemPlace::SLOT)
+	//TODO:여기 말고 다른 함수에서 때어 줘야 할 거 같음.
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	SetOwnerCharacter(nullptr);
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
+	//if (ItemDatas.ItemPlace == EItemPlace::INVEN)
+	invenComp->RemoveItemToMyList(this); //여기서 임시로 뺴주고 있는데 별로 안좋아 보임.
+		//invenComp->AddItemToAroundList(this);
+	//바닥 레이 캐스팅 받아와서 바닥에 아이템 생성하기.
+	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
+	return true;
 }
 
 bool AC_MeleeWeapon::MoveToSlot(AC_BasicCharacter* Character)
@@ -115,9 +143,9 @@ bool AC_MeleeWeapon::MoveToSlot(AC_BasicCharacter* Character)
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 
-	AC_Item* unEquipItem = nullptr;
+	AC_Item* unEquipItem = nullptr; //해제할 아이템
 
-	AC_Item* inItem = nullptr;
+	AC_Item* inItem = nullptr; //장착할 아이템
 
 	AC_Weapon* curWeapaon = equipComp->GetWeapons()[EWeaponSlot::MELEE_WEAPON];
 
@@ -136,12 +164,21 @@ bool AC_MeleeWeapon::MoveToSlot(AC_BasicCharacter* Character)
 		if (nextVolume > invenComp->GetMaxVolume()) return false;
 		else
 		{
-
+			unEquipItem = equipComp->SetSlotWeapon(EWeaponSlot::MELEE_WEAPON, this);
+			invenComp->AddItemToMyList(unEquipItem);
+			return true;
 		}
 
 	}
+	else
+	{
+		equipComp->SetSlotWeapon(EWeaponSlot::MELEE_WEAPON, this);
+		invenComp->RemoveItemToMyList(this);
+		return true;
+		//if (this->ItemDatas.ItemPlace == EItemPlace::INVEN)
+	}
 		
-	return false;
+	//return false;
 }
 
 void AC_MeleeWeapon::SetAttackColliderEnabled(const bool& Enabled)

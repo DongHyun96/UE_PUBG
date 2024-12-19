@@ -161,7 +161,7 @@ void AC_ThrowingWeapon::DropItem(AC_BasicCharacter* Character)
 
 void AC_ThrowingWeapon::SetItemStack(uint8 ItemStack)
 {
-	ItemDatas.ItemStack = ItemStack;
+	ItemDatas.ItemCurStack = ItemStack;
 }
 
 void AC_ThrowingWeapon::EquipToCharacter(AC_BasicCharacter* Character)
@@ -252,13 +252,13 @@ bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 
 	AC_Item* FoundItem = invenComp->FindMyItem(this); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;
 
-	if (ItemDatas.ItemStack == ItemStackCount)
+	if (ItemDatas.ItemCurStack == ItemStackCount)
 	{
 		//아이템 전부를 인벤에 넣을 수 있을 때.
 		if (IsValid(FoundItem))
 		{
 			//인벤에 해당 아이템이 존재 할 때.
-			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + ItemStackCount);
+			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
 			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
 			//TODO : destroy를 해도 잔상이 남는것을 대비해서 해놓음 만약 없이도 잔상이 안남는다면 지울 것.
 			invenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
@@ -286,8 +286,8 @@ bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 		//아이템의 일부만 인벤에 넣을 수 있을 때.
 		if (IsValid(FoundItem))
 		{
-			     this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
-			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + ItemStackCount);
+			     this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
+			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
 
 			invenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
 
@@ -297,7 +297,7 @@ bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 		{
 			AC_Weapon* NewItem = Cast<AC_Weapon>(SpawnItem(Character));//아이템 복제 생성
 			NewItem->SetItemStack(ItemStackCount);
-			   this->SetItemStack(ItemDatas.ItemStack - ItemStackCount);
+			   this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
 
 			invenComp->AddItemToMyList(NewItem);
 
@@ -360,7 +360,8 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 		}
 		else
 		{
-			if (ItemDatas.ItemStack == 1)
+			//SetActorEnableCollision(false);
+			if (ItemDatas.ItemCurStack == 1)
 			{
 				if (this->ItemDatas.ItemPlace == EItemPlace::INVEN)       invenComp->RemoveItemToMyList(this);//아마 InvenUI를 초기화 시켜주는 작업이 추가적으로 필요할것.
 				else if (this->ItemDatas.ItemPlace == EItemPlace::AROUND) invenComp->RemoveItemToAroundList(this);
@@ -371,7 +372,7 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 			{
 				AC_Weapon* InToSlotWeapon = Cast<AC_Weapon>(SpawnItem(Character));
 				InToSlotWeapon->SetItemStack(1);
-				this->SetItemStack(ItemDatas.ItemStack - 1);
+				this->SetItemStack(ItemDatas.ItemCurStack - 1);
 
 				OutToSlotWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, InToSlotWeapon);
 			}
@@ -398,7 +399,7 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 	else
 	{
 		//슬롯에 아이템이 없다면 실행.
-		if (ItemDatas.ItemStack == 1)
+		if (ItemDatas.ItemCurStack == 1)
 		{
 			//this의 stack이 1 이라면 실행.
 			//this를 슬롯에 장착 하고 목록에서 제거
@@ -425,7 +426,7 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 			//AC_Weapon* NewWeapon = DuplicateObject(this, Character);
 			AC_Weapon* NewWeapon = Cast<AC_Weapon>(SpawnItem(Character));
 			NewWeapon->SetItemStack(1);
-			     this->SetItemStack(ItemDatas.ItemStack - 1);
+			     this->SetItemStack(ItemDatas.ItemCurStack - 1);
 			
 			equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, NewWeapon); //슬롯에 장착. 아래의 NewWeapon과 다름.
 
@@ -612,6 +613,8 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	bIsOnThrowProcess = false;
 
 	bIsCharging = false;
+
+	SetActorEnableCollision(true);//장착 할 때 껏던 충돌 켜주기.
 
 	// Ready 도중 ProcessEnd가 될 수 있기 때문에 Predicted Path spline 모두 지워주기
 	ClearSpline();

@@ -74,9 +74,12 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
     Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
 
-    //충돌체 켜주기, 1117 상연
-    //Weapons[InSlot]->SetActorHiddenInGame(false);
-    Weapons[InSlot]->SetActorEnableCollision(true);
+    //충돌체 켜주기, 1117 상연, 근접무기는 장착만 해도 보이는 상태.
+    if (InSlot == EWeaponSlot::MELEE_WEAPON)
+        Weapons[InSlot]->SetActorHiddenInGame(false);
+
+    //꺼주면 제자리 파쿠르 방지.
+    Weapons[InSlot]->SetActorEnableCollision(false); 
     // Attach to Holster 하기 전에 Local transform 초기화
     //Weapons[InSlot]->SetActorRelativeTransform(FTransform::Identity);
  
@@ -142,6 +145,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
         // 다음 무기가 있을 때
         OwnerCharacter->PlayAnimMontage(Weapons[NextWeaponType]->GetCurDrawMontage());
+        
         return true;
     }
 

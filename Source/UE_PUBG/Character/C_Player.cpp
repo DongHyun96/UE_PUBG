@@ -58,7 +58,7 @@
 #include "HUD/C_SkyDiveWidget.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 
-
+//#include "SlateNavigationConfig.h"
 
 #include "Item/ConsumableItem/Healing/C_FirstAidKit.h"
 #include "Item/Weapon/Gun/C_Bullet.h"
@@ -151,6 +151,7 @@ void AC_Player::BeginPlay()
 		{
 			SubSystem->AddMappingContext(MyInputComponent->MappingContext, 0);
 		}
+		//FSlateApplication::Get().SetNavigationConfig(MakeShared<FNavigationConfig>());
 	}
 
 	// AimPunching 돌아올 때 쓰일 Local 좌표들
@@ -476,7 +477,7 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 		Inventory->RemoveItemNearList(OverlappedItem);
 		Inventory->InitInvenUI();
 		//if (!IsValid(InvenSystem)) return;
-		//InvenSystem->InitializeList();
+		InvenSystem->InitializeList();
 	}
 }
 

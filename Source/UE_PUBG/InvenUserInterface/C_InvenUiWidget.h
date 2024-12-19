@@ -16,6 +16,7 @@ class UE_PUBG_API UC_InvenUiWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+
 	UFUNCTION(BlueprintCallable)
 	void SetOwnerCharacter(class AC_BasicCharacter* Character) { OwnerCharacter = Character; }
 

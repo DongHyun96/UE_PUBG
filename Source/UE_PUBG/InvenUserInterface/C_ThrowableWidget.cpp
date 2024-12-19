@@ -37,12 +37,15 @@ FReply UC_ThrowableWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 		{   // 우클릭 이벤트 실행
 			if (Weapon->MoveToInven(OwnerCharacter))
 			{
-				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
+				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(WeaponSlotType, nullptr);
 				Weapon = nullptr;
 			}
-			
-			
-
+			else
+			{
+				Weapon->MoveToAround(OwnerCharacter);
+				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(WeaponSlotType, nullptr);
+				Weapon = nullptr;
+			}
 			//SetVisibility(ESlateVisibility::Hidden);
 
 			if (UC_InvenUiWidget* InvenUiWidget = GetTypedOuter<UC_InvenUiWidget>())
