@@ -110,6 +110,7 @@ FReply UC_ItemBarWidget::NativeOnKeyDown(const FGeometry& MyGeometry, const FKey
 		// Tab 키 입력을 처리하고 더 이상 전파되지 않도록 함
 		//OwnerCharacter->GetInvenSystem()->OpenInvenUI();
 		return FReply::Unhandled();
+
 	}
 
 	// 다른 키 입력은 기본 처리로 넘어감

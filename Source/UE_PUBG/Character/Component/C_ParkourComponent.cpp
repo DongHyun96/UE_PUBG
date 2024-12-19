@@ -8,7 +8,15 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MotionWarpingComponent.h"
 
+#include "Character/Component/ParkourActionStrategy/I_ParkourActionStrategy.h"
+#include "Character/Component/ParkourActionStrategy/C_VaultLowActionStrategy.h"
+#include "Character/Component/ParkourActionStrategy/C_VaultHighActionStrategy.h"
+#include "Character/Component/ParkourActionStrategy/C_MantleLowActionStrategy.h"
+#include "Character/Component/ParkourActionStrategy/C_MantleHighActionStrategy.h"
+
 #include "Utility/C_Util.h"
+
+TMap<EParkourActionType, class II_ParkourActionStrategy*> UC_ParkourComponent::ParkourActionStrategies{};
 
 UC_ParkourComponent::UC_ParkourComponent()
 {
@@ -22,17 +30,60 @@ void UC_ParkourComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_SetEndDelegate(
-	//	FOnMontageEnded::CreateUObject(this, &UC_ParkourComponent::OnParkourAnimMontageEnd), VaultingMontage.AnimMontage);
-
 	// Init ParkourMontageMap
-
 	ParkourMontageMap.Add(EParkourActionType::VAULTING_LOW,  LowVaultingMontages);
 	ParkourMontageMap.Add(EParkourActionType::VAULTING_HIGH, HighVaultingMontages);
 	ParkourMontageMap.Add(EParkourActionType::MANTLING_LOW,  LowMantlingMontages);
 	ParkourMontageMap.Add(EParkourActionType::MANTLING_HIGH, HighMantlingMontages);
+
+	/*
+	UAction* action{ NewObject<UAction>(GetTransientPackage(), 
+                                    UAction::StaticClass()),
+			            
+	*/
+
+	// Init ParkourAction Strategies
+	if (ParkourActionStrategies.IsEmpty())
+	{
+		//TStrongObjectPtr<UC_VaultLowActionStrategy> VaultLowActionStrategy =
+		//	TStrongObjectPtr<UC_VaultLowActionStrategy>(NewObject<UC_VaultLowActionStrategy>(GetTransientPackage()));
+
+		II_ParkourActionStrategy* VaultingLowStrategy = NewObject<UC_VaultLowActionStrategy>();
+		VaultingLowStrategy->_getUObject()->AddToRoot(); // GC 방지 -> 주의 : 반드시 RemoveFromRoot 호출할 것
+
+		II_ParkourActionStrategy* VaultingHighStrategy = NewObject<UC_VaultHighActionStrategy>();
+		VaultingHighStrategy->_getUObject()->AddToRoot();
+
+		II_ParkourActionStrategy* MantleLowStrategy = NewObject<UC_MantleLowActionStrategy>();
+		MantleLowStrategy->_getUObject()->AddToRoot();
+
+		II_ParkourActionStrategy* MantleHighStrategy = NewObject<UC_MantleHighActionStrategy>();
+		MantleHighStrategy->_getUObject()->AddToRoot();
+
+		ParkourActionStrategies.Add(EParkourActionType::VAULTING_LOW,  VaultingLowStrategy);
+		ParkourActionStrategies.Add(EParkourActionType::VAULTING_HIGH, VaultingHighStrategy);
+		ParkourActionStrategies.Add(EParkourActionType::MANTLING_LOW,  MantleLowStrategy);
+		ParkourActionStrategies.Add(EParkourActionType::MANTLING_HIGH, MantleHighStrategy);
+	}
 }
 
+
+void UC_ParkourComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	// 아직 Game이 진행중이고 남아있는 캐릭터들은 전략들을 아직 필요로 함
+	if (EndPlayReason == EEndPlayReason::Type::Destroyed) return;
+
+	// static 멤버변수 메모리 해제
+	if (!ParkourActionStrategies.IsEmpty())
+	{
+		for (TPair<EParkourActionType, II_ParkourActionStrategy*>& pair : ParkourActionStrategies)
+			pair.Value->_getUObject()->RemoveFromRoot();
+
+		ParkourActionStrategies.Empty();
+	}
+}
 
 void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -53,6 +104,18 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		OwnerCharacter->SetCanMove(true);
 		//bIsCurrentlyWarping = false;
 	}
+
+	// Testing
+	//OwnerCharacter->GetMesh()->GetBoneTransform()
+	// LeftHandMiddle2
+	// RightToeBase
+	/*const FName LeftHandName = "LeftHandMiddle2";
+	const FName RightToeName = "RightToeBase";
+	static float _Max{};
+	FVector HandLocation = OwnerCharacter->GetMesh()->GetBoneTransform(LeftHandName).GetTranslation();
+	FVector FootLocation = OwnerCharacter->GetMesh()->GetBoneTransform(RightToeName).GetTranslation();
+	_Max = FMath::Max(_Max, HandLocation.Z - FootLocation.Z);
+	UC_Util::Print(_Max);*/
 }
 
 bool UC_ParkourComponent::TryExecuteParkourAction()
@@ -66,19 +129,22 @@ bool UC_ParkourComponent::TryExecuteParkourAction()
 	if (!CheckParkourTarget(CurParkourDesc)) return false;
 
 	// 어느 거리까지 장애물이 전방으로 뻗어있는지 조사
-	// Check Vaulting or Mantling -> Vault Start Pos / Middle pos / Land pos check
-	// CurParkourActionType 정하기
-	if (!CheckParkourActionAndDistance(CurParkourDesc)) return false;
+	if (!InitVerticleHitPositionsAndLandPos(CurParkourDesc)) return false;
 
-	// Handle Motion warping
-	switch (CurParkourDesc.CurParkourActionType)
-	{
-	case EParkourActionType::MANTLING_LOW: case EParkourActionType::MANTLING_HIGH: MantleMotionWarp(CurParkourDesc);
-		return true;
-	case EParkourActionType::VAULTING_LOW: case EParkourActionType::VAULTING_HIGH: VaultMotionWarp(CurParkourDesc);
-		return true;
-	default: return false;
-	}
+	if (!InitCurParkourActionStrategy(CurParkourDesc)) return false;
+
+	OwnerCharacter->SetCanMove(false);
+	OwnerCharacter->SetNextSpeed(0.f);
+	if (OwnerPlayer) OwnerPlayer->SetStrafeRotationToIdleStop();
+
+	SwapMesh(true);
+
+	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+	OwnerCharacter->SetActorEnableCollision(false);
+
+	// ParkourActionStrategy 실행
+	CurParkourActionStrategy->UseMotionWarpActionStrategy(OwnerCharacter, CurParkourDesc);
+	return true;
 }
 
 void UC_ParkourComponent::SwapMesh(bool ToRootedMesh)
@@ -118,247 +184,6 @@ void UC_ParkourComponent::SwapMesh(bool ToRootedMesh)
 	}
 }
 
-void UC_ParkourComponent::Vault()
-{
-	FHitResult HitResult{};
-	FCollisionQueryParams CollisionParams{};
-	CollisionParams.AddIgnoredActor(OwnerCharacter);
-	//TArray<AActor*> AttachedActors{};
-	//OwnerCharacter->GetAttachedActors(AttachedActors);
-	//CollisionParams.AddIgnoredActors(AttachedActors);
-
-	for (int i = 0; i < 4; i++)
-	{
-		//GetWorld()->SphereTraceByChannel
-		//SphereTraceByChanne
-
-		FVector StartLocation = OwnerCharacter->GetActorLocation();
-		//StartLocation.Z += i * 30; 
-		StartLocation.Z = StartLocation.Z + 90.f - i * 30; // 위에서 아래로 검사 진행
-		FVector DestLocation = StartLocation + OwnerCharacter->GetActorForwardVector() * 80.f;
-
-		bool HasHit = GetWorld()->SweepSingleByChannel
-		(
-			HitResult,
-			StartLocation,
-			DestLocation,
-			FQuat::Identity,
-			ECC_Visibility,
-			FCollisionShape::MakeSphere(5.f),
-			CollisionParams
-		);
-
-		DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, 5.f, 4, FColor::Red, true);
-		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 5.f, 4, FColor::Yellow, true);
-
-		if (HasHit) break;
-	}
-	if (!HitResult.bBlockingHit) return;
-
-	FVector FirstHitResult = HitResult.Location;
-
-	for (int i = 0; i < 6; i++)
-	{
-		FVector StartLocation = FirstHitResult + FVector::UnitZ() * 100.f + OwnerCharacter->GetActorForwardVector() * (50.f * i);
-		FVector DestLocation = StartLocation  - FVector::UnitZ() * 100.f;
-
-		HitResult = {};
-
-		bool HasHit = GetWorld()->SweepSingleByChannel
-		(
-			HitResult,
-			StartLocation,
-			DestLocation,
-			FQuat::Identity,
-			ECC_Visibility,
-			FCollisionShape::MakeSphere(10.f),
-			CollisionParams
-		);
-
-		DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, 10.f, 4, FColor::Red, true);
-		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 4, FColor::Yellow, true);
-
-		if (HasHit)
-		{
-			if (i == 0) // Start Position
-			{
-				VaultStartPos = HitResult.Location;
-				//DrawDebugSphere(GetWorld(), VaultStartPos, 10.f, 12, FColor::Cyan, false, 10.f);
-			}
-
-			// Mid Position
-			VaultMiddlePos = HitResult.Location;
-			DrawDebugSphere(GetWorld(), VaultMiddlePos, 10.f, 12, FColor::Yellow, true);
-			CanWarp = true;
-
-		}
-		else // Landing position
-		{
-			FVector Start = HitResult.TraceStart + OwnerCharacter->GetActorForwardVector() * 80.f;
-			FVector End   = Start - FVector::UnitZ() * 1000.f;
-			HitResult = {};
-
-			bool Hitted = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
-			if (Hitted)
-			{
-				//DrawDebugLine(GetWorld(), Start, HitResult.Location, FColor::Blue, true);
-				VaultLandPos = HitResult.Location;
-				//DrawDebugSphere(GetWorld(), VaultLandPos, 10.f, 12, FColor::Yellow, true);
-				break;
-			}
-		}
-	}
-
-	UC_Util::Print(FVector::Distance(VaultStartPos, VaultMiddlePos), FColor::Red, 5.f);
-
-	VaultMotionWarp();
-}
-
-void UC_ParkourComponent::VaultMotionWarp()
-{
-	float LocationZ = OwnerCharacter->GetMesh()->GetComponentLocation().Z;
-	if (VaultLandPos.Z < LocationZ - 50.f || VaultLandPos.Z > LocationZ + 50.f) return;
-	if (!CanWarp) return;
-
-	UC_Util::Print("MotionWarping");
-
-	//bIsCurrentlyWarping = true;
-	OwnerCharacter->SetCanMove(false);
-	OwnerCharacter->SetNextSpeed(0.f);
-	if (OwnerPlayer) OwnerPlayer->SetStrafeRotationToIdleStop();
-
-	DrawDebugSphere(GetWorld(), VaultStartPos, 10.f, 12, FColor::Yellow, true);
-	//DrawDebugSphere(GetWorld(), VaultMiddlePos, 10.f, 12, FColor::Yellow, true);
-	DrawDebugSphere(GetWorld(), VaultLandPos, 10.f, 12, FColor::Yellow, true);
-
-	SwapMesh(true);
-
-	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-
-	OwnerCharacter->SetActorEnableCollision(false);
-	UMotionWarpingComponent* MotionWarping = OwnerCharacter->GetMotionWarpingComponent();
-
-	FMotionWarpingTarget Target{};
-	Target.Name		= FName(TEXT("VaultStart"));
-	Target.Location = VaultStartPos;
-	Target.Rotation = OwnerCharacter->GetActorRotation();
-
-	MotionWarping->AddOrUpdateWarpTarget(Target);
-
-	Target = {};
-	Target.Name		= FName(TEXT("VaultMiddle"));
-	Target.Location = VaultMiddlePos;
-
-	MotionWarping->AddOrUpdateWarpTarget(Target);
-
-	Target = {};
-	Target.Name		= FName(TEXT("VaultLand"));
-	Target.Location = VaultLandPos;
-
-	MotionWarping->AddOrUpdateWarpTarget(Target);
-
-	OwnerCharacter->PlayAnimMontage(VaultingMontage);
-	//OwnerCharacter->PlayAnimMontage(LowMantleMontage);
-
-
-	// AddDynamic 내부적으로 중복 Binding 방지
-	//OwnerCharacter->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &UC_ParkourComponent::OnParkourAnimMontageEnd);
-}
-
-void UC_ParkourComponent::VaultMotionWarp(const FParkourDescriptor& CurParkourDesc)
-{
-	// 기존의 제약 처리
-	//float LocationZ = OwnerCharacter->GetMesh()->GetComponentLocation().Z;
-	//if (VaultLandPos.Z < LocationZ - 50.f || VaultLandPos.Z > LocationZ + 50.f) return;
-	//if (!CanWarp) return;
-	
-	//DrawDebugSphere(GetWorld(), VaultStartPos, 10.f, 12, FColor::Yellow, true);
-	//DrawDebugSphere(GetWorld(), VaultMiddlePos, 10.f, 12, FColor::Yellow, true);
-	//DrawDebugSphere(GetWorld(), VaultLandPos, 10.f, 12, FColor::Yellow, true);
-
-	//bIsCurrentlyWarping = true;
-	OwnerCharacter->SetCanMove(false);
-	OwnerCharacter->SetNextSpeed(0.f);
-	if (OwnerPlayer) OwnerPlayer->SetStrafeRotationToIdleStop();
-
-	SwapMesh(true);
-
-	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-
-	OwnerCharacter->SetActorEnableCollision(false);
-	UMotionWarpingComponent* MotionWarping = OwnerCharacter->GetMotionWarpingComponent();
-
-	FMotionWarpingTarget Target{};
-	Target.Name		= FName(TEXT("VaultStart"));
-	Target.Location = CurParkourDesc.WarpStartPos;
-	Target.Rotation = OwnerCharacter->GetActorRotation();
-
-	MotionWarping->AddOrUpdateWarpTarget(Target);
-
-	Target = {};
-	Target.Name		= FName(TEXT("VaultMiddle"));
-	Target.Location = CurParkourDesc.WarpMiddlePos;
-
-	MotionWarping->AddOrUpdateWarpTarget(Target);
-
-	Target = {};
-	Target.Name		= FName(TEXT("VaultLand"));
-	Target.Location = CurParkourDesc.WarpLandPos;
-
-	MotionWarping->AddOrUpdateWarpTarget(Target);
-
-	// TODO : ParkourMontageMap 초기화
-
-	// 현재 Parkour Action에 해당하는 Random한 parkourAction 재생
-	int RandIdx = FMath::RandRange(0, ParkourMontageMap[CurParkourDesc.CurParkourActionType].Num() - 1);
-	OwnerCharacter->PlayAnimMontage(ParkourMontageMap[CurParkourDesc.CurParkourActionType][RandIdx]);
-}
-
-void UC_ParkourComponent::MantleMotionWarp(const FParkourDescriptor& CurParkourDesc)
-{
-	// TODO : Motion Warp -> Root 기준이라 manual하게 Z위치 맞춰줘야 함 (아닐지도?)
-
-	// 기존의 제약 처리
-	//float LocationZ = OwnerCharacter->GetMesh()->GetComponentLocation().Z;
-	//if (VaultLandPos.Z < LocationZ - 50.f || VaultLandPos.Z > LocationZ + 50.f) return;
-	//if (!CanWarp) return;
-	
-	//DrawDebugSphere(GetWorld(), VaultStartPos, 10.f, 12, FColor::Yellow, true);
-	//DrawDebugSphere(GetWorld(), VaultMiddlePos, 10.f, 12, FColor::Yellow, true);
-	//DrawDebugSphere(GetWorld(), VaultLandPos, 10.f, 12, FColor::Yellow, true);
-
-	OwnerCharacter->SetCanMove(false);
-	OwnerCharacter->SetNextSpeed(0.f);
-	if (OwnerPlayer) OwnerPlayer->SetStrafeRotationToIdleStop();
-	//bIsCurrentlyWarping = true;
-
-	SwapMesh(true);
-
-	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-
-	OwnerCharacter->SetActorEnableCollision(false);
-	UMotionWarpingComponent* MotionWarping = OwnerCharacter->GetMotionWarpingComponent();
-
-	FMotionWarpingTarget Target{};
-	Target.Name		= FName(TEXT("MantleStart"));
-	Target.Location = CurParkourDesc.WarpStartPos;
-	Target.Rotation = OwnerCharacter->GetActorRotation();
-
-	MotionWarping->AddOrUpdateWarpTarget(Target);
-
-	Target = {};
-	Target.Name		= FName(TEXT("MantleEnd"));
-	Target.Location = CurParkourDesc.WarpMiddlePos;
-
-	MotionWarping->AddOrUpdateWarpTarget(Target);
-
-	// TODO : ParkourMontageMap 초기화
-
-	// 현재 Parkour Action에 해당하는 Random한 parkourAction 재생
-	int RandIdx = FMath::RandRange(0, ParkourMontageMap[CurParkourDesc.CurParkourActionType].Num() - 1);
-	OwnerCharacter->PlayAnimMontage(ParkourMontageMap[CurParkourDesc.CurParkourActionType][RandIdx]);
-}
-
 bool UC_ParkourComponent::CheckParkourTarget(FParkourDescriptor& CurParkourDesc)
 {
 	static const float FORWARD_CHECK_LENGTH = 80.f;
@@ -367,9 +192,9 @@ bool UC_ParkourComponent::CheckParkourTarget(FParkourDescriptor& CurParkourDesc)
 	FCollisionQueryParams	CollisionParams{};
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
 
-	//TArray<AActor*> AttachedActors{};
-	//OwnerCharacter->GetAttachedActors(AttachedActors);
-	//CollisionParams.AddIgnoredActors(AttachedActors);
+	TArray<AActor*> AttachedActors{};
+	OwnerCharacter->GetAttachedActors(AttachedActors);
+	CollisionParams.AddIgnoredActors(AttachedActors);
 
 	// 파쿠르할 수 있는 높이인지 체크
 	FVector Start	= OwnerCharacter->GetActorLocation() + FVector::UnitZ() * 175.f;
@@ -419,30 +244,26 @@ bool UC_ParkourComponent::CheckParkourTarget(FParkourDescriptor& CurParkourDesc)
 	return false;
 }
 
-bool UC_ParkourComponent::CheckParkourActionAndDistance(FParkourDescriptor& CurParkourDesc)
+bool UC_ParkourComponent::InitVerticleHitPositionsAndLandPos(FParkourDescriptor& CurParkourDesc)
 {
 	// Check Distance
 
 	FCollisionQueryParams CollisionParams{};
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
 
-	//TArray<AActor*> AttachedActors{};
-	//OwnerCharacter->GetAttachedActors(AttachedActors);
-	//CollisionParams.AddIgnoredActors(AttachedActors);
+	TArray<AActor*> AttachedActors{};
+	OwnerCharacter->GetAttachedActors(AttachedActors);
+	CollisionParams.AddIgnoredActors(AttachedActors);
 	
 	bool HasHit{};
-	int  DistanceLevel{};
-	bool PossibleToVault{};
-
-	bool LandInited{};
 
 	FVector MantlingMiddlePos{};
 
-	for (int i = 0; i < 4; i++)
+	for (int distanceLevel = 0; distanceLevel < 4; distanceLevel++)
 	{
-		FVector StartLocation = CurParkourDesc.FirstObstacleHitLocation + 
+		FVector StartLocation = CurParkourDesc.FirstObstacleHitLocation +
 								FVector::UnitZ() * 200.f +
-								OwnerCharacter->GetActorForwardVector() * (50.f * i);
+								OwnerCharacter->GetActorForwardVector() * (50.f * distanceLevel);
 		FVector DestLocation = StartLocation - FVector::UnitZ() * 200.f;
 
 		FHitResult HitResult{};
@@ -460,95 +281,100 @@ bool UC_ParkourComponent::CheckParkourActionAndDistance(FParkourDescriptor& CurP
 
 		if (HasHit)
 		{
-			DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, 10.f, 4, FColor::Red, true);
-
-			DistanceLevel = i;
-			if (DistanceLevel == 3)
-			{
-				PossibleToVault = false;
-				break;
-			}
-
-			if (DistanceLevel == 0) CurParkourDesc.WarpStartPos = HitResult.Location; // Init Start Location
-			//if (DistanceLevel == 1) MantlingMiddlePos = HitResult.Location + OwnerCharacter->GetActorForwardVector() * 50.f;
-			if (DistanceLevel == 1) MantlingMiddlePos = HitResult.Location;
-
-
-			// (Init PossibleToVault) 50cm 이상으로 높이가 높아지는 Obstacle의 경우 Vault 불가 판정
-			PossibleToVault = (HitResult.Location.Z - CurParkourDesc.WarpStartPos.Z < 50.f);
-
-			// Init Middle position
-			CurParkourDesc.WarpMiddlePos = HitResult.Location;
-			DrawDebugSphere(GetWorld(), CurParkourDesc.WarpMiddlePos, 10.f, 12, FColor::Yellow, true);
-
+			CurParkourDesc.VerticleHitPositions.Add(HitResult.Location);
 			continue;
 		}
 
 		// 첫 Start pos가 제대로 안잡혔을 때
-		if (i == 0)
-		{
-			UC_Util::Print("Start pos not inited");
-			return false;
-		}
+		if (distanceLevel == 0) return false;
 
 		// Set Landing Position
-		FVector Start	= HitResult.TraceStart + OwnerCharacter->GetActorForwardVector() * 80.f;
-		FVector End		= Start - FVector::UnitZ() * 1000.f;
-		HitResult		= {};
+		FVector Start = HitResult.TraceStart + OwnerCharacter->GetActorForwardVector() * 80.f;
+		FVector End   = Start - FVector::UnitZ() * 1000.f; // TODO - 너무 낮은 높이로 LandPos 잡힐수도 있음 -> Test / 이럴 때에는 Vaulting에서 잘 처리
+		HitResult = {};
 
 		HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
 
 		if (HasHit)
 		{
-			CurParkourDesc.WarpLandPos = HitResult.Location;
-			LandInited = true;
-			break;
+			CurParkourDesc.LandPos = HitResult.Location;
+			CurParkourDesc.bLandPosInited = true;
+			return true;
 		}
 	}
 
-	// Init ParkourActionType
+	return false;
+}
 
-	// 무조건 Mantling으로 처리해야할 때
-	if (!PossibleToVault)
+bool UC_ParkourComponent::InitCurParkourActionStrategy(const FParkourDescriptor& CurParkourDesc)
+{
+	UC_Util::Print("InitCurParkourActionStrategy", FColor::Red, 10.f);
+
+	CurParkourActionStrategy = nullptr;
+
+	const int DIST_LEVEL = CurParkourDesc.VerticleHitPositions.Num();
+
+	if (DIST_LEVEL <= 0)
 	{
-		CurParkourDesc.CurParkourActionType = (CurParkourDesc.bIsLowAction) ?
-											   EParkourActionType::MANTLING_LOW : EParkourActionType::MANTLING_HIGH;
-		CurParkourDesc.WarpMiddlePos = MantlingMiddlePos;
-		return true;
+		UC_Util::Print("From InitCurParkourActionStrategy : DIST_LEVEL <= 0", FColor::Red, 10.f);
+		return false;
 	}
 
 	// 무조건 Vaulting 처리 해야할 때 - Mantling할 공간이 충분하지 않을 때
-	if (DistanceLevel == 0)
+	if (DIST_LEVEL == 1)
 	{
-		if (!LandInited) return false;
+		if (!CurParkourDesc.bLandPosInited) 
+		{
+			UC_Util::Print("From InitCurParkourActionStrategy : Vault but Land Pos not inited", FColor::Red, 10.f);
+			return false;
+		}
 
-		CurParkourDesc.CurParkourActionType = (CurParkourDesc.bIsLowAction) ?
-											   EParkourActionType::VAULTING_LOW : EParkourActionType::VAULTING_HIGH;
+		CurParkourActionStrategy = ParkourActionStrategies[CurParkourDesc.bIsLowAction ?
+			EParkourActionType::VAULTING_LOW : EParkourActionType::VAULTING_HIGH];
 		return true;
 	}
 
-	// 높이가 높을 때에 DistanceLevel 0 초과이면 무조건 Mantling
-	if (!CurParkourDesc.bIsLowAction && DistanceLevel > 0)
+	bool ObstaclePossibleToVault{};	// Vault 가능한 지형지물인지 체크
+	bool DistancePossibleToVault = DIST_LEVEL <= 3; // Vault할 수 있는 거리인지
+	
+	float FirstPosZ = CurParkourDesc.VerticleHitPositions[0].Z;
+	for (int distLevel = 1; distLevel < DIST_LEVEL; distLevel++)
+		ObstaclePossibleToVault = CurParkourDesc.VerticleHitPositions[distLevel].Z - FirstPosZ < 50.f;
+
+	// 무조건 Mantling으로 처리해야 할 때
+	if (!DistancePossibleToVault || !ObstaclePossibleToVault)
 	{
-		CurParkourDesc.CurParkourActionType = EParkourActionType::MANTLING_HIGH;
-		CurParkourDesc.WarpMiddlePos = MantlingMiddlePos;
+		CurParkourActionStrategy = ParkourActionStrategies[CurParkourDesc.bIsLowAction ?
+			EParkourActionType::MANTLING_LOW : EParkourActionType::MANTLING_HIGH];
+		return true;
+	}
+
+	// 높이가 높을 때에 DistanceLevel 1 초과이면 무조건 Mantling
+	if (!CurParkourDesc.bIsLowAction && DIST_LEVEL > 1)
+	{
+		CurParkourActionStrategy = ParkourActionStrategies[CurParkourDesc.bIsLowAction ?
+			EParkourActionType::MANTLING_LOW : EParkourActionType::MANTLING_HIGH];
 		return true;
 	}
 
 	if (bHasTryVaulting)
 	{
-		if (!LandInited) return false;
-		CurParkourDesc.CurParkourActionType = (CurParkourDesc.bIsLowAction) ?
-											   EParkourActionType::VAULTING_LOW : EParkourActionType::VAULTING_HIGH;
+		if (!CurParkourDesc.bLandPosInited)
+		{
+			UC_Util::Print("From InitCurParkourActionStrategy : Vault but Land Pos not inited", FColor::Red, 10.f);
+			return false;
+		}
+
+		CurParkourActionStrategy = ParkourActionStrategies[CurParkourDesc.bIsLowAction ?
+			EParkourActionType::VAULTING_LOW : EParkourActionType::VAULTING_HIGH];
+		return true;
 	}
 	else
 	{
-		CurParkourDesc.CurParkourActionType = (CurParkourDesc.bIsLowAction) ?
-											   EParkourActionType::MANTLING_LOW : EParkourActionType::MANTLING_HIGH;
-		CurParkourDesc.WarpMiddlePos = MantlingMiddlePos;
+		CurParkourActionStrategy = ParkourActionStrategies[CurParkourDesc.bIsLowAction ?
+			EParkourActionType::MANTLING_LOW : EParkourActionType::MANTLING_HIGH];
+		return true;
 	}
-
-	return true;
 }
 
 void UC_ParkourComponent::OnParkourAnimMontageEnd()
@@ -557,11 +383,8 @@ void UC_ParkourComponent::OnParkourAnimMontageEnd()
 
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	OwnerCharacter->SetActorEnableCollision(true);
-	CanWarp = false;
 
 	OwnerCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0);
-
-	VaultLandPos.Z = 20000.f;
 
 	bPendingMeshUpdateToMainMesh = true; // 다음 Update Tick에서 Main skeletal mesh로 돌아감
 }
