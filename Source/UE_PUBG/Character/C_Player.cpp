@@ -62,6 +62,7 @@
 
 #include "Item/ConsumableItem/Healing/C_FirstAidKit.h"
 #include "Item/Weapon/Gun/C_Bullet.h"
+#include "Item/Weapon/Gun/C_SR.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
 
@@ -237,6 +238,8 @@ void AC_Player::Tick(float DeltaTime)
 	HandleLerpMainSpringArmToDestRelativeLocation(DeltaTime);
 	HandleStatesWhileMovingCrawl();
 	SetCanFireWhileCrawl();
+	//DistanceToGround = GetCharacterMovement()->CurrentFloor.FloorDist;
+	
 	//int TestCount = 0;
 
 	//for (auto& Bullet : PooledBullets)
@@ -332,6 +335,23 @@ void AC_Player::SetCanFireWhileCrawl()
 		bCanFireBullet = true;
 }
 
+bool AC_Player::GetIsHighEnoughToFall()
+{
+	FCollisionQueryParams CollisionParams{};
+	CollisionParams.AddIgnoredActor(this);
+
+	//CollisionParams.AddIgnoredActor(GAMESCENE_MANAGER->GetAirplaneManager()->GetAirplane());
+
+	FHitResult HitResult{};
+
+	FVector StartLocation = GetActorLocation();
+	FVector DestLocation = StartLocation - FVector::UnitZ() * (90.f+250.f);
+
+	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECollisionChannel::ECC_Visibility, CollisionParams);
+	//UC_Util::Print(HitResult.Distance);	
+	return !HasHit;
+}
+
 bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 {
 	if (!bCanMove)											return false;
@@ -360,6 +380,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
 			ClampControllerRotationPitchWhileCrawl(PoseState);
 			SetSpringArmRelativeLocationDest(EPoseState::STAND);
+
 			if (SwimmingComponent->GetSwimmingState() != ESwimmingState::ON_GROUND)
 			{
 				SetPoseState(EPoseState::STAND);
@@ -391,7 +412,6 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (bIsActivatingConsumableItem) return false; // TODO : 일어설 수 없습니다 UI 띄우기
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
-
 			ClampControllerRotationPitchWhileCrawl(PoseState);
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToCrouch, EPoseState::CROUCH);
 			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
@@ -402,7 +422,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		case EPoseState::POSE_MAX: default: return false;
 		}
 	case EPoseState::CRAWL:
-		switch (InChangeFrom)
+		switch (InChangeFrom)	
 		{
 		case EPoseState::STAND: // Stand to Crawl
 

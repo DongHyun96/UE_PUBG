@@ -216,6 +216,7 @@ public:
 	bool GetIsWatchingSight() { return bIsWatchingSight; }
 	bool GetIsFiringBullet() { return bIsFiringBullet; }
 	bool GetCanFireBullet() { return bCanFireBullet; }
+	virtual bool GetIsHighEnoughToFall();
 	void SetIsAimDown(bool InIsAimDownSight) { bIsAimDownSight = InIsAimDownSight; }
 	void SetIsWatchingSight(bool InIsWatchingSight) { bIsWatchingSight = InIsWatchingSight; }
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
@@ -337,7 +338,7 @@ public:
 	FDele_PoseTransitionFin Delegate_OnPoseTransitionFin;
 
 
-
+	float GetDistanceToGround() { return DistanceToGround; }
 
 protected:
 
@@ -354,7 +355,7 @@ protected:
 	bool bIsReloadingBullet = false;
 	bool bIsFiringBullet = false;
 	FRotator CharacterMovingDirection;
-
+	float DistanceToGround{};
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanMove = true;
 
