@@ -5,18 +5,18 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "I_ParkourActionStrategy.h"
-#include "C_VaultLowActionStrategy.generated.h"
+#include "C_MantleHighActionStrategy.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_VaultLowActionStrategy : public UObject, public II_ParkourActionStrategy
+class UE_PUBG_API UC_MantleHighActionStrategy : public UObject, public II_ParkourActionStrategy
 {
 	GENERATED_BODY()
-
-private:
 	
+private:
+
 	void UseMotionWarpActionStrategy(AC_BasicCharacter* TargetCharacter, const FParkourDescriptor& CurParkourDesc) override;
 
 };

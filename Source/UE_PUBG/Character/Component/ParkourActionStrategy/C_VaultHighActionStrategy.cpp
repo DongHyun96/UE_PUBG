@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Character/Component/ParkourActionStrategy/C_VaultLowActionStrategy.h"
+#include "Character/Component/ParkourActionStrategy/C_VaultHighActionStrategy.h"
 
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
@@ -11,7 +11,7 @@
 
 #include "MotionWarpingComponent.h"
 
-void UC_VaultLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* TargetCharacter, const FParkourDescriptor& CurParkourDesc)
+void UC_VaultHighActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* TargetCharacter, const FParkourDescriptor& CurParkourDesc)
 {
 	// TODO : Vault 시 LandPos 허공인지 체크해서 다르게 처리해주어야 함
 
@@ -22,6 +22,7 @@ void UC_VaultLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* T
 
 	UMotionWarpingComponent* MotionWarping = TargetCharacter->GetMotionWarpingComponent();
 
+	// TODO : WarpStartPos Middle LandPos 여기서 지정해서 해주기
 	FMotionWarpingTarget Target{};
 	Target.Name = FName(TEXT("VaultStart"));
 	Target.Location = WarpStartPos;
@@ -46,8 +47,9 @@ void UC_VaultLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* T
 	UC_ParkourComponent* TargetParkourComponent = TargetCharacter->GetParkourComponent();
 
 	// 현재 Parkour Action에 해당하는 Random한 parkourAction 재생
-	TArray<FPriorityAnimMontage> LowVaultMontageActions = TargetParkourComponent->GetParkourMontages(EParkourActionType::VAULTING_LOW);
-	int RandIdx = FMath::RandRange(0, LowVaultMontageActions.Num() - 1);
+	// TODO : Vaulting High로 수정할 것
+	TArray<FPriorityAnimMontage> HighVaultMontageActions = TargetParkourComponent->GetParkourMontages(EParkourActionType::VAULTING_LOW);
+	int RandIdx = FMath::RandRange(0, HighVaultMontageActions.Num() - 1);
 
-	TargetCharacter->PlayAnimMontage(LowVaultMontageActions[RandIdx]);
+	TargetCharacter->PlayAnimMontage(HighVaultMontageActions[RandIdx]);
 }

@@ -21,18 +21,13 @@ enum class EParkourActionType : uint8
 // 현 Parkour 관련 필요한 정보 struct
 struct FParkourDescriptor
 {
-	EParkourActionType CurParkourActionType{};
+	bool			bIsLowAction{};				// 첫 Obstacle 검사 시 넘을 장애물의 높이 계산
+	FVector			FirstObstacleHitLocation{};
 
-	bool	bIsLowAction{}; // 첫 Obstacle 검사 시 넘을 장애물의 높이 계산
-	FVector FirstObstacleHitLocation{};
+	TArray<FVector> VerticleHitPositions{};		// Obstacle위의 거리 재기
+	FVector			LandPos{};					// Obstacle을 지나 내려가는 위치 (Vaulting Low)
+	bool			bLandPosInited{};
 
-	FVector WarpStartPos{};
-	FVector WarpMiddlePos{};
-	FVector WarpLandPos{};
-
-	// Vault일 경우		- MiddlePos와 LandPos 모두 잘 잡혔을 때 CanWarp 가능
-	// Mantling일 경우	- MiddlePos까지 잘 잡혔을 때 CanWarp 가능
-	//bool CanWarp{};
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -74,28 +69,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnParkourAnimMontageEnd();
 
-public:
+private:
 
 	/// <summary>
 	/// OwnerCharacter Skeletal Mesh Sawp
 	/// </summary>
 	/// <param name="ToRootedMesh"> : If false, Swap back to Main Skeletal Mesh </param>
 	void SwapMesh(bool ToRootedMesh);
-
-private:
-
-	/// <summary>
-	/// Vault motion warping 처리
-	/// </summary>
-	/// <param name="CurParkourDesc"> : 현 Parkour Desc </param>
-	void VaultMotionWarp(const FParkourDescriptor& CurParkourDesc);
-
-	/// <summary>
-	/// Mantle motion warping 처리
-	/// </summary>
-	/// <param name="CurParkourDesc"> : 현 Parkour Desc </param>
-	void MantleMotionWarp(const FParkourDescriptor& CurParkourDesc);
-
 
 private:
 
@@ -111,22 +91,15 @@ private:
 	/// <para> VerticleHitPoints, LandPos, bPossibleToVault init 시키기 </para>
 	/// </summary>
 	/// <param name="CurParkourDesc"> : 현 parkour Desc </param>
-	/// <returns> : 파쿠르 할 수 없는 환경이면 return false </returns>
-	bool CheckVerticleHitPoints(FParkourDescriptor& CurParkourDesc);
-
-	// TODO : 이 함수 CheckVerticleHitPoints & InitCurParkourActionStrategy로 대체할 것
-	/// <summary>
-	/// CurParkourActionType 및 ParkourStart ~ ParkourLandPos, CanWarp 조사
-	/// </summary>
-	/// <param name="CurParkourDesc"> : 현 Parkour Desc </param>
 	/// <returns> : Warp를 실행할 없는 조건일 때 return false </returns>
-	bool CheckParkourActionAndDistance(FParkourDescriptor& CurParkourDesc);
+	bool InitVerticleHitPositionsAndLandPos(FParkourDescriptor& CurParkourDesc);
 
 	/// <summary>
 	/// CurParkourAction Type 지정 및 ActionStrategy 지정
 	/// </summary>
 	/// <param name="CurParkourDesc"> : 현 Parkour Desc </param>
-	void InitCurParkourActionStrategy(const FParkourDescriptor& CurParkourDesc);
+	/// <returns> : Warp를 실행할 없는 조건일 때 return false </returns>
+	bool InitCurParkourActionStrategy(const FParkourDescriptor& CurParkourDesc);
 
 private:
 
