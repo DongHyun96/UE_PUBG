@@ -128,10 +128,14 @@ bool UC_ParkourComponent::TryExecuteParkourAction()
 	// Check front obstacle and obstacle's hit location
 	if (!CheckParkourTarget(CurParkourDesc)) return false;
 
+	UC_Util::Print("1", FColor::MakeRandomColor(), 10.f);
+
 	// 어느 거리까지 장애물이 전방으로 뻗어있는지 조사
 	if (!InitVerticleHitPositionsAndLandPos(CurParkourDesc)) return false;
+	UC_Util::Print("2", FColor::MakeRandomColor(), 10.f);
 
 	if (!InitCurParkourActionStrategy(CurParkourDesc)) return false;
+	UC_Util::Print("3", FColor::MakeRandomColor(), 10.f);
 
 	OwnerCharacter->SetCanMove(false);
 	OwnerCharacter->SetNextSpeed(0.f);
