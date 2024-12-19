@@ -54,7 +54,12 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bCanCharacterMove = OwnerCharacter->GetCanMove();
 	bIsHoldDirection  = OwnerCharacter->GetIsHoldDirection();
 	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
-	
+	if (OwnerCharacter->GetMovementComponent()->IsFalling())
+		bIsHighEnoughToFall = OwnerCharacter->GetIsHighEnoughToFall();
+	else
+		bIsHighEnoughToFall = false;
+	//UC_Util::Print(OwnerCharacter->GetDistanceToGround());
+
 	SwimmingState	  = OwnerCharacter->GetSwimmingComponent()->GetSwimmingState();
 	SkyDivingState	  = OwnerCharacter->GetSkyDivingComponent()->GetSkyDivingState();
 	//switch (SwimmingState)

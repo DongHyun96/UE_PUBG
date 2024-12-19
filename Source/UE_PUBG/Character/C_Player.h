@@ -81,7 +81,8 @@ private:
 	void SetPoseState(EPoseState InPoseState) { Super::SetPoseState(InPoseState); }
 
 	void SetCanFireWhileCrawl();
-
+public:
+	bool GetIsHighEnoughToFall() override;
 public:
 	/// <summary>
 	/// 자세 바꾸기 통합 처리

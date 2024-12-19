@@ -85,6 +85,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsAimingRifle = false;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsHighEnoughToFall = false;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ESwimmingState SwimmingState{};
