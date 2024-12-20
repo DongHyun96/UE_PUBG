@@ -16,11 +16,13 @@ void UC_VaultLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* T
 	// TODO : Vault 시 LandPos 허공인지 체크해서 다르게 처리해주어야 함
 
 	// WarpStartPos, WarpMiddlePos, WarpLandPos 잡아주기
-	FVector WarpStartPos	= CurParkourDesc.VerticleHitPositions[0];
-	FVector WarpMiddlePos	= CurParkourDesc.VerticleHitPositions.Last();
+	FVector WarpStartPos	= CurParkourDesc.VerticalHitPositions[0];
+	FVector WarpMiddlePos	= CurParkourDesc.VerticalHitPositions.Last();
 	FVector WarpLandPos		= CurParkourDesc.LandPos;
 
 	UMotionWarpingComponent* MotionWarping = TargetCharacter->GetMotionWarpingComponent();
+
+	MotionWarping->RemoveAllWarpTargets();
 
 	FMotionWarpingTarget Target{};
 	Target.Name = FName(TEXT("VaultStart"));

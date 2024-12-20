@@ -101,7 +101,19 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	{
 		bPendingMeshUpdateToMainMesh = false;
 		SwapMesh(false);
-		OwnerCharacter->SetCanMove(true);
+
+		if (CanMoveTimerAfterWarpActionFin <= 0.f) 
+			OwnerCharacter->SetCanMove(true);
+		else
+			GetWorld()->GetTimerManager().SetTimer
+			(
+				TimerHandle,
+				this, 
+				&UC_ParkourComponent::SetOwnerCharacterCanMoveToTrue, 
+				CanMoveTimerAfterWarpActionFin, 
+				false
+			);
+
 		//bIsCurrentlyWarping = false;
 	}
 
@@ -125,17 +137,16 @@ bool UC_ParkourComponent::TryExecuteParkourAction()
 	// Init CurParkourDesc
 	FParkourDescriptor CurParkourDesc{};
 
+	// Init CanMoveTimer
+	CanMoveTimerAfterWarpActionFin = 0.f;
+
 	// Check front obstacle and obstacle's hit location
 	if (!CheckParkourTarget(CurParkourDesc)) return false;
 
-	UC_Util::Print("1", FColor::MakeRandomColor(), 10.f);
-
 	// 어느 거리까지 장애물이 전방으로 뻗어있는지 조사
-	if (!InitVerticleHitPositionsAndLandPos(CurParkourDesc)) return false;
-	UC_Util::Print("2", FColor::MakeRandomColor(), 10.f);
+	if (!InitVerticalHitPositionsAndLandPos(CurParkourDesc)) return false;
 
 	if (!InitCurParkourActionStrategy(CurParkourDesc)) return false;
-	UC_Util::Print("3", FColor::MakeRandomColor(), 10.f);
 
 	OwnerCharacter->SetCanMove(false);
 	OwnerCharacter->SetNextSpeed(0.f);
@@ -190,7 +201,7 @@ void UC_ParkourComponent::SwapMesh(bool ToRootedMesh)
 
 bool UC_ParkourComponent::CheckParkourTarget(FParkourDescriptor& CurParkourDesc)
 {
-	static const float FORWARD_CHECK_LENGTH = 80.f;
+	static const float FORWARD_CHECK_LENGTH = 100.f;
 
 	FHitResult				HitResult{};
 	FCollisionQueryParams	CollisionParams{};
@@ -201,7 +212,7 @@ bool UC_ParkourComponent::CheckParkourTarget(FParkourDescriptor& CurParkourDesc)
 	CollisionParams.AddIgnoredActors(AttachedActors);
 
 	// 파쿠르할 수 있는 높이인지 체크
-	FVector Start	= OwnerCharacter->GetActorLocation() + FVector::UnitZ() * 175.f;
+	FVector Start	= OwnerCharacter->GetActorLocation() + FVector::UnitZ() * 205.f;
 	FVector Dest	= Start + OwnerCharacter->GetActorForwardVector() * FORWARD_CHECK_LENGTH;
 
 	bool NotPossibleHeight = GetWorld()->SweepSingleByChannel
@@ -218,9 +229,9 @@ bool UC_ParkourComponent::CheckParkourTarget(FParkourDescriptor& CurParkourDesc)
 	// 파쿠르 할 수 있는 높이가 아님
 	if (NotPossibleHeight) return false;
 
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 7; i++)
 	{
-		FVector StartLocation	= OwnerCharacter->GetActorLocation() + FVector::UnitZ() * (150.f - i * 30.f); // 위에서 아래로 검사 진행
+		FVector StartLocation	= OwnerCharacter->GetActorLocation() + FVector::UnitZ() * (180.f - i * 30.f); // 위에서 아래로 검사 진행
 		FVector DestLocation	= StartLocation + OwnerCharacter->GetActorForwardVector() * FORWARD_CHECK_LENGTH;
 
 		bool HasHit = GetWorld()->SweepSingleByChannel
@@ -248,7 +259,7 @@ bool UC_ParkourComponent::CheckParkourTarget(FParkourDescriptor& CurParkourDesc)
 	return false;
 }
 
-bool UC_ParkourComponent::InitVerticleHitPositionsAndLandPos(FParkourDescriptor& CurParkourDesc)
+bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor& CurParkourDesc)
 {
 	// Check Distance
 
@@ -285,7 +296,7 @@ bool UC_ParkourComponent::InitVerticleHitPositionsAndLandPos(FParkourDescriptor&
 
 		if (HasHit)
 		{
-			CurParkourDesc.VerticleHitPositions.Add(HitResult.Location);
+			CurParkourDesc.VerticalHitPositions.Add(HitResult.Location);
 			continue;
 		}
 
@@ -307,31 +318,21 @@ bool UC_ParkourComponent::InitVerticleHitPositionsAndLandPos(FParkourDescriptor&
 		}
 	}
 
-	return false;
+	return true;
 }
 
 bool UC_ParkourComponent::InitCurParkourActionStrategy(const FParkourDescriptor& CurParkourDesc)
 {
-	UC_Util::Print("InitCurParkourActionStrategy", FColor::Red, 10.f);
-
 	CurParkourActionStrategy = nullptr;
 
-	const int DIST_LEVEL = CurParkourDesc.VerticleHitPositions.Num();
+	const int DIST_LEVEL = CurParkourDesc.VerticalHitPositions.Num();
 
-	if (DIST_LEVEL <= 0)
-	{
-		UC_Util::Print("From InitCurParkourActionStrategy : DIST_LEVEL <= 0", FColor::Red, 10.f);
-		return false;
-	}
+	if (DIST_LEVEL <= 0) return false;
 
 	// 무조건 Vaulting 처리 해야할 때 - Mantling할 공간이 충분하지 않을 때
 	if (DIST_LEVEL == 1)
 	{
-		if (!CurParkourDesc.bLandPosInited) 
-		{
-			UC_Util::Print("From InitCurParkourActionStrategy : Vault but Land Pos not inited", FColor::Red, 10.f);
-			return false;
-		}
+		if (!CurParkourDesc.bLandPosInited) return false;
 
 		CurParkourActionStrategy = ParkourActionStrategies[CurParkourDesc.bIsLowAction ?
 			EParkourActionType::VAULTING_LOW : EParkourActionType::VAULTING_HIGH];
@@ -341,9 +342,9 @@ bool UC_ParkourComponent::InitCurParkourActionStrategy(const FParkourDescriptor&
 	bool ObstaclePossibleToVault{};	// Vault 가능한 지형지물인지 체크
 	bool DistancePossibleToVault = DIST_LEVEL <= 3; // Vault할 수 있는 거리인지
 	
-	float FirstPosZ = CurParkourDesc.VerticleHitPositions[0].Z;
+	float FirstPosZ = CurParkourDesc.VerticalHitPositions[0].Z;
 	for (int distLevel = 1; distLevel < DIST_LEVEL; distLevel++)
-		ObstaclePossibleToVault = CurParkourDesc.VerticleHitPositions[distLevel].Z - FirstPosZ < 50.f;
+		ObstaclePossibleToVault = CurParkourDesc.VerticalHitPositions[distLevel].Z - FirstPosZ < 50.f;
 
 	// 무조건 Mantling으로 처리해야 할 때
 	if (!DistancePossibleToVault || !ObstaclePossibleToVault)
@@ -363,11 +364,7 @@ bool UC_ParkourComponent::InitCurParkourActionStrategy(const FParkourDescriptor&
 
 	if (bHasTryVaulting)
 	{
-		if (!CurParkourDesc.bLandPosInited)
-		{
-			UC_Util::Print("From InitCurParkourActionStrategy : Vault but Land Pos not inited", FColor::Red, 10.f);
-			return false;
-		}
+		if (!CurParkourDesc.bLandPosInited) return false;
 
 		CurParkourActionStrategy = ParkourActionStrategies[CurParkourDesc.bIsLowAction ?
 			EParkourActionType::VAULTING_LOW : EParkourActionType::VAULTING_HIGH];
