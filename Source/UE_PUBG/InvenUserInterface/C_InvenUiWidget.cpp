@@ -152,9 +152,9 @@ void UC_InvenUiWidget::InitWidget()
 void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
 {
     if (IsValid(MainGunSlot))
-        MainGunSlot  ->SetOwnerCharacter(Character);
+        MainGunSlot  ->SetOwnerCharacter(Cast<AC_Player>(Character));
     if (IsValid(SubGunSlot))
-        SubGunSlot   ->SetOwnerCharacter(Character);
+        SubGunSlot   ->SetOwnerCharacter(Cast<AC_Player>(Character));
     if (IsValid(MeleeSlot))
         MeleeSlot    ->SetOwnerCharacter(Character);
     if (IsValid(ThrowableSlot))

@@ -2,6 +2,7 @@
 
 
 #include "InvenUserInterface/C_EquipmentPanel.h"
+#include "Character/C_Player.h"
 
 void UC_EquipmentPanel::NativeConstruct()
 {
@@ -37,12 +38,13 @@ void UC_EquipmentPanel::InitializeWidget()
 
 void UC_EquipmentPanel::SetWidgetOwnerCharacter(AC_BasicCharacter* inOwnerCharacter)
 {
-	MainGunWidget  ->SetOwnerCharacter(inOwnerCharacter);
-	SubGunWidget   ->SetOwnerCharacter(inOwnerCharacter);
-	MeleeWidget    ->SetOwnerCharacter(inOwnerCharacter);
-	ThrowableWidget->SetOwnerCharacter(inOwnerCharacter);
-	HelmetWidget   ->SetOwnerCharacter(inOwnerCharacter);
-	BackPackWidget ->SetOwnerCharacter(inOwnerCharacter);
-	ArmorWidget    ->SetOwnerCharacter(inOwnerCharacter);
-	UnKnownSlot    ->SetOwnerCharacter(inOwnerCharacter);
+	AC_Player* OwnerPlayer = Cast<AC_Player>(inOwnerCharacter);
+	MainGunWidget  ->SetOwnerCharacter(OwnerPlayer);
+	SubGunWidget   ->SetOwnerCharacter(OwnerPlayer);
+	MeleeWidget    ->SetOwnerCharacter(OwnerPlayer);
+	ThrowableWidget->SetOwnerCharacter(OwnerPlayer);
+	HelmetWidget   ->SetOwnerCharacter(OwnerPlayer);
+	BackPackWidget ->SetOwnerCharacter(OwnerPlayer);
+	ArmorWidget    ->SetOwnerCharacter(OwnerPlayer);
+	UnKnownSlot    ->SetOwnerCharacter(OwnerPlayer);
 }

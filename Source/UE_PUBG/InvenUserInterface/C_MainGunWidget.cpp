@@ -10,6 +10,8 @@
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 
+#include "Character/C_Player.h"
+
 #include "Utility/C_Util.h"
 
 #include "Item/Weapon/C_Weapon.h"
@@ -24,12 +26,12 @@ FReply UC_MainGunWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 	// 우클릭인지 체크
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		if (Weapon)
+		if (CachedItem)
 		{   // 우클릭 이벤트 실행
-			if (Weapon->MoveToAround(OwnerCharacter))
+			if (CachedItem->MoveToAround(OwnerCharacter))
 			{
 				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
-				Weapon = nullptr;
+				CachedItem = nullptr;
 			}
 
 
@@ -54,13 +56,15 @@ void UC_MainGunWidget::Init()
 {
 	if (IsValid(OwnerCharacter))
 	{
-		Weapon = OwnerCharacter->GetEquippedComponent()->GetWeapons()[WeaponType];
+		//Weapon = OwnerCharacter->GetEquippedComponent()->GetWeapons()[WeaponType];
+		CachedItem = Cast<AC_Weapon>(OwnerCharacter->GetEquippedComponent()->GetWeapons()[WeaponType]);
+
 	}
 
-	if (IsValid(Weapon))
+	if (IsValid(CachedItem))
 	{
-		GunImage->SetBrushFromTexture(Weapon->GetItemDatas().ItemIcon);
-		GunName->SetText(FText::FromString(Weapon->GetItemDatas().ItemName));
+		GunImage->SetBrushFromTexture(CachedItem->GetItemDatas().ItemIcon);
+		GunName->SetText(FText::FromString(CachedItem->GetItemDatas().ItemName));
 		SetVisibility(ESlateVisibility::Visible);
 		FSlateBrush Brush = GunImage->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // 완전 불투명
@@ -74,7 +78,7 @@ void UC_MainGunWidget::Init()
 
 void UC_MainGunWidget::SetWeapon(AC_Item* item)
 {
-	Weapon = Cast<AC_Weapon>(item);
+	CachedItem = Cast<AC_Weapon>(item);
 }
 
 void UC_MainGunWidget::SetWeaponBoxNum(uint8 Num)
