@@ -6,7 +6,7 @@
 #include "InvenUserInterface/C_MainGunWidget.h"
 #include "InvenUserInterface/C_ThrowableWidget.h"
 #include "InvenUserInterface/C_EquipSlot.h"
-
+#include "InvenUserInterface/C_EquipmentPanel.h"
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/TextBlock.h"
@@ -122,6 +122,8 @@ void UC_InvenUiWidget::InitWidget()
 
     UpdateVolumeBar(OwnerCharacter);
 
+    EquipmentPanel->InitializeWidget();
+
     if (!IsValid(MainGunSlot)) return;
 
     MainGunSlot->SetWeaponBoxNum(1);
@@ -159,6 +161,10 @@ void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
         ThrowableSlot->SetOwnerCharacter(Character);
     if (IsValid(BackPackSlot))
         BackPackSlot->SetOwnerCharacter(Character);
+
+    EquipmentPanel->SetOwnerChracter(Character);
+
+    EquipmentPanel->SetWidgetOwnerCharacter(Character);
 }
 
 void UC_InvenUiWidget::InitListView()

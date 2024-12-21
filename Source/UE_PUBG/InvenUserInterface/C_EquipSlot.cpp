@@ -8,7 +8,7 @@
 #include "Item/Equipment/C_BackPack.h"
 
 #include "Character/Component/C_InvenComponent.h"
-
+#include "Utility/C_Util.h"
 #include "Components/Image.h"
 
 void UC_EquipSlot::NativeConstruct()
@@ -52,7 +52,7 @@ void UC_EquipSlot::Init()
 	if (IsValid(OwnerCharacter))
 		EquippedItem = Cast<AC_EquipableItem>(OwnerCharacter->GetInvenComponent()->GetMyBackPack());
 
-
+	 
 	if (!IsValid(EquippedItem))
 	{
 		ItemImage1->SetBrushFromTexture(nullptr);
@@ -63,10 +63,23 @@ void UC_EquipSlot::Init()
 	}
 	else
 	{
+		if (EquippedItem->GetItemDatas().ItemType != SlotItemType) return;
+
 		ItemImage1->SetBrushFromTexture(EquippedItem->GetItemDatas().ItemIcon);
 		FSlateBrush Brush = ItemImage1->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // 완전 불투명
 		ItemImage1->SetBrush(Brush);
 		SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void UC_EquipSlot::DivisionInit()
+{
+	switch (EquippedItem->GetItemDatas().ItemType)
+	{
+	case EItemTypes::HELMET:
+
+	default:
+		break;
 	}
 }

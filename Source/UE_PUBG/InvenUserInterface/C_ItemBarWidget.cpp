@@ -123,7 +123,15 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	//dragdrop class를 새로 만들어 사용해야 할 수 있음.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 	
-	DragOperation->DefaultDragVisual = ItemImage1; // 드래그 시 아이템의 미리보기 이미지
+	UObject* ResourceObject = ItemImage1->Brush.GetResourceObject();
+	UTexture2D* Texture = Cast<UTexture2D>(ResourceObject);
+
+	UImage* DragVisual = NewObject<UImage>(Texture);
+	DragVisual->SetBrushFromTexture(Texture);
+
+	DragOperation->DefaultDragVisual = DragVisual;
+
+	//DragOperation->DefaultDragVisual = ItemImage1; // 드래그 시 아이템의 미리보기 이미지
 	//DragOperation->DefaultDragVisual = this; // 드래그 시 아이템의 미리보기 이미지
 
 	DragOperation->Payload = CachedItem; // 드래그 중 전달할 데이터 (아이템)
@@ -132,13 +140,14 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 
 	DragOperation->DraggedItem = CachedItem;
 
+
 	//오너캐릭터 체크
 	if (!OwnerCharacter)
 	{
 		UC_Util::Print("ItemBarWidget have not OwnerCharacter!!");
 		return;
 	}
-
+	this->Visibility = ESlateVisibility::SelfHitTestInvisible;
 	OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 	
 	//OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetItemListZorder(CachedItem->GetOwnerCharacter());

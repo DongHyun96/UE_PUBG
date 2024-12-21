@@ -28,7 +28,11 @@ public:
 
 	void Init();
 
+	void DivisionInit();
+
 	void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+
+	void SetSlotItemType(EItemTypes ItemType) { SlotItemType = ItemType; }
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class AC_BasicCharacter* OwnerCharacter = nullptr;
@@ -38,4 +42,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UImage* ItemImage1;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	EItemTypes SlotItemType{};
 };

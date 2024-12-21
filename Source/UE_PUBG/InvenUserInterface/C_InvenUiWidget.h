@@ -95,6 +95,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UProgressBar* maxVolumeBar = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UC_EquipmentPanel* EquipmentPanel = nullptr;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_BasicCharacter* OwnerCharacter = nullptr;

@@ -146,8 +146,10 @@ bool UC_ParkourComponent::TryExecuteParkourAction()
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 	OwnerCharacter->SetActorEnableCollision(false);
 
+
 	// ParkourActionStrategy ½ÇÇà
 	CurParkourActionStrategy->UseMotionWarpActionStrategy(OwnerCharacter, CurParkourDesc);
+
 	return true;
 }
 
