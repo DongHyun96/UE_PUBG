@@ -264,10 +264,14 @@ protected:
 	EGunType CurGunType = EGunType::MAX;
 public:
 	EGunType GetGunType() { return CurGunType; }
+	UTexture2D* GetDragIcon() { return DragIcon; }
 protected:
 	FVector2D IronSightWindowLocation{};
 	
 protected:
+	/// <summary>
+	/// MainGun은 Slot에 장착되는 Icon과 Drag 혹은 바닥에 놓여있을 때의 Icon이 다름.
+	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "DragIcon")
 	UTexture2D* DragIcon = nullptr; 
 

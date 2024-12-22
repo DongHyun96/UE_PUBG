@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+//#include "Blueprint/UserWidget.h"
 #include "C_BasicSlotWidget.h"
 
 #include "UE_PUBG/Character/C_BasicCharacter.h"

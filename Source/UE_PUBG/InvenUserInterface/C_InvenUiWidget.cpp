@@ -156,11 +156,11 @@ void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
     if (IsValid(SubGunSlot))
         SubGunSlot   ->SetOwnerCharacter(Cast<AC_Player>(Character));
     if (IsValid(MeleeSlot))
-        MeleeSlot    ->SetOwnerCharacter(Character);
+        MeleeSlot    ->SetOwnerCharacter(Cast<AC_Player>(Character));
     if (IsValid(ThrowableSlot))
-        ThrowableSlot->SetOwnerCharacter(Character);
+        ThrowableSlot->SetOwnerCharacter(Cast<AC_Player>(Character));
     if (IsValid(BackPackSlot))
-        BackPackSlot->SetOwnerCharacter(Character);
+        BackPackSlot->SetOwnerCharacter(Cast<AC_Player>(Character));
 
     EquipmentPanel->SetOwnerChracter(Character);
 

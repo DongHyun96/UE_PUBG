@@ -402,6 +402,8 @@ AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 	if (testMyItems.Find(item->GetItemDatas().ItemName))
 		FoundItem = testMyItems.Find(item->GetItemDatas().ItemName)->Last();
 
+	//CheckPoint, 
+
 	return FoundItem;
 }
 
