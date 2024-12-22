@@ -2,6 +2,7 @@
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
@@ -10,6 +11,7 @@
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 
 #include "Character/Component/C_SwimmingComponent.h"
+#include "Character/Component/C_InvenSystem.h"
 
 #include "Utility/C_Util.h"
 
@@ -63,6 +65,12 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
     }
     
     Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
+
+
+    if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+    {
+        Player->GetInvenSystem()->InitializeList();
+    }
 
     if (!Weapons[InSlot]) return PrevSlotWeapon; // Slot에 새로 지정한 무기가 nullptr -> early return
     

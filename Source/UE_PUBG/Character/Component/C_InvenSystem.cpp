@@ -60,7 +60,8 @@ void UC_InvenSystem::InitializeList()
 		InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
 		InvenUI->SetOwnerCharacter(OwnerCharacter);
 	}
-	InvenUI->InitListView();
+	//InvenUI->InitListView();
+	InvenUI->InitWidget();
 }
 
 void UC_InvenSystem::OpenInvenUI()

@@ -433,7 +433,6 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 			if (ItemDatas.ItemPlace == EItemPlace::AROUND) return this->MoveToInven(Character);//하나를 뺴서 장착시킨 아이템을 MoveToInven으로 인벤에 넣는 작업 실행.
 			else if (ItemDatas.ItemPlace == EItemPlace::INVEN) return true;
 			else return false;
-			
 		}
 	}
 
@@ -467,6 +466,8 @@ bool AC_ThrowingWeapon::Interaction(AC_BasicCharacter* Character)
 
 	switch (ItemDatas.ItemPlace)
 	{
+	case EItemPlace::SLOT:
+
 	case EItemPlace::AROUND:
 		if (curWeapaon) return MoveToInven(Character);
 	case EItemPlace::INVEN:

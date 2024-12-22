@@ -13,6 +13,8 @@
 #include "Components/Image.h"
 #include "Components/Border.h"
 
+#include "Item/Weapon/Gun/C_Gun.h"
+
 #include "Utility/C_Util.h"
 
 
@@ -22,7 +24,12 @@ void UC_BasicSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 	//if (!CachedItem) return;
 	//UObject* ResourceObject = Cast<UImage>(CachedItem->GetItemDatas().ItemIcon)->Brush.GetResourceObject();//UTexture2D인데 아랫줄에서 바로 사용 가능할 것 같은데?
-	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemIcon);//크기및 형태 조절하기.
+	UTexture2D* Texture = nullptr;
+
+	if (CachedItem->GetItemDatas().ItemType == EItemTypes::MAINGUN)
+		Texture = Cast<UTexture2D>(Cast<AC_Gun>(CachedItem)->GetDragIcon());
+	else
+		Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemIcon);//크기및 형태 조절하기.
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
