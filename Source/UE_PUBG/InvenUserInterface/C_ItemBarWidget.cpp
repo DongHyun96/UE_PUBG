@@ -7,6 +7,7 @@
 
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Components/Border.h"
 
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetTree.h"
@@ -123,13 +124,30 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	//dragdrop class를 새로 만들어 사용해야 할 수 있음.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 	
-	UObject* ResourceObject = ItemImage1->Brush.GetResourceObject();
-	UTexture2D* Texture = Cast<UTexture2D>(ResourceObject);
+	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemIcon);//크기및 형태 조절하기.
+
+	UBorder* Border = NewObject<UBorder>();
+	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
+	Border->SetBrushColor(BorderColor);
+
+	//Border->SetPadding(FMargin(2.0f)); 패딩이 필요하면 사용하기.
 
 	UImage* DragVisual = NewObject<UImage>(Texture);
-	DragVisual->SetBrushFromTexture(Texture);
 
-	DragOperation->DefaultDragVisual = DragVisual;
+	DragVisual->SetBrushFromTexture(Texture);
+	//DragVisual->SetBrushFromTexture(Texture);
+	DragVisual->Brush.ImageSize = FVector2D(64.f, 64.f);
+	Border->SetContent(DragVisual);
+
+	DragOperation->DefaultDragVisual = Border;
+
+	//UObject* ResourceObject = ItemImage1->Brush.GetResourceObject();
+	//UTexture2D* Texture = Cast<UTexture2D>(ResourceObject);
+	//
+	//UImage* DragVisual = NewObject<UImage>(Texture);
+	//DragVisual->SetBrushFromTexture(Texture);
+	//
+	//DragOperation->DefaultDragVisual = DragVisual;
 
 	//DragOperation->DefaultDragVisual = ItemImage1; // 드래그 시 아이템의 미리보기 이미지
 	//DragOperation->DefaultDragVisual = this; // 드래그 시 아이템의 미리보기 이미지

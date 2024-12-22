@@ -266,4 +266,9 @@ public:
 	EGunType GetGunType() { return CurGunType; }
 protected:
 	FVector2D IronSightWindowLocation{};
+	
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "DragIcon")
+	UTexture2D* DragIcon = nullptr; 
+
 };
