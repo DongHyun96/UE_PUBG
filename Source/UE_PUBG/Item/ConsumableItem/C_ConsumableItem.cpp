@@ -83,14 +83,8 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		
 		UsingTimer = 0.f;
 
-		if (ItemUser->GetEquippedComponent()->GetCurWeapon()) // 착용 중인 무기가 있었을 때 해당 무기 다시 장착
-		{
-			UC_EquippedComponent* UserEquippedComponent = ItemUser->GetEquippedComponent();
-
-			ItemUser->GetEquippedComponent()->SetNextWeaponType(UserEquippedComponent->GetCurWeaponType());
-			FPriorityAnimMontage DrawMontage = UserEquippedComponent->GetCurWeapon()->GetCurDrawMontage();
-			ItemUser->PlayAnimMontage(DrawMontage);
-		}
+		// 착용 중인 무기가 있었을 때 해당 무기 다시 장착 시도 (없다면 그냥 넘어가는 처리로 됨)
+		ItemUser->GetEquippedComponent()->TryReAttachCurWeaponToHand();
 
 		OnActivatingFinish(); // Template method
 
@@ -150,16 +144,8 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 	ConsumableItemState = EConsumableItemState::ACTIVATING;
 	OnStartUsing(); // Template method
 
-
-	// 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기
-	if (AC_Weapon* UserWeapon = ItemUser->GetEquippedComponent()->GetCurWeapon())
-	{
-		UserWeapon->AttachToHolster(ItemUser->GetMesh());
-		ItemUser->SetHandState(EHandState::UNARMED);
-
-		// 총기류 예외처리
-		if (AC_Gun* Gun = Cast<AC_Gun>(UserWeapon)) Gun->BackToMainCamera();
-	}
+	// 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기 시도
+	ItemUser->GetEquippedComponent()->TryAttachCurWeaponToHolsterWithoutSheathMotion();
 
 	// 사용자의 bIsActivatingConsumableItem 세팅
 	ItemUser->SetIsActivatingConsumableItem(true);
@@ -189,14 +175,8 @@ bool AC_ConsumableItem::CancelActivating()
 		}
 	}
 
-	if (ItemUser->GetEquippedComponent()->GetCurWeapon()) // 착용 중인 무기가 있었을 때
-	{
-		UC_EquippedComponent* UserEquippedComponent = ItemUser->GetEquippedComponent();
-		
-		ItemUser->GetEquippedComponent()->SetNextWeaponType(UserEquippedComponent->GetCurWeaponType());
-		FPriorityAnimMontage DrawMontage = UserEquippedComponent->GetCurWeapon()->GetCurDrawMontage();
-		ItemUser->PlayAnimMontage(DrawMontage);
-	}
+	// 착용 중인 무기가 있었을 때 재착용 시도
+	ItemUser->GetEquippedComponent()->TryReAttachCurWeaponToHand();
 
 	ItemUser->SetIsActivatingConsumableItem(false);
 	OnCancelActivating();

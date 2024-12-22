@@ -129,6 +129,7 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 	SetActorHiddenInGame(false);
 
 	ProjectileMovement->Deactivate();
+	ClearSpline();
 
 	OwnerCharacter->SetHandState(EHandState::WEAPON_THROWABLE);
 	
@@ -650,28 +651,50 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 
 	OwnerEquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
 
-	// TODO : 가방에 투척류 있는지 확인해서 바로 다음 무기 장착하기 (우선순위 - 같은 종류의 투척류)
-	//if (!ThrowablePool.IsEmpty())
-	//{
-	//	AC_ThrowingWeapon* ThrowWeapon = ThrowablePool[0];
+	// 동일한 종류의 투척류 있는지 조사
+	AC_Item* ThrowWeapon = OwnerCharacter->GetInvenComponent()->FindMyItem(this);
+	if (ThrowWeapon)
+	{
+		AC_ThrowingWeapon* TargetThrowWeapon = Cast<AC_ThrowingWeapon>(ThrowWeapon);
 
-	//	// 새로 slot에 장착하면서 새로운 투척류 함수에 Delegate 등록 이루어짐
-	//	OwnerEquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, ThrowWeapon);
+		if (!TargetThrowWeapon)
+		{
+			UC_Util::Print("OnProcessEnd Change to Last New Throwing Weapon casting failed!", FColor::Red, 10.f);
+			return;
+		}
+		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter);
 
-	//	// 가방에 있는 투척류 하나 지우기
-	//	// TODO : 실질적으로 가방에서 지우기
-	//	ThrowablePool.RemoveAt(0);
+		// 바로 다음 투척류 꺼내기
+		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
+		PrevOwnerCharacter->PlayAnimMontage(TargetThrowWeapon->GetCurDrawMontage());
+		return;
+	}
 
-	//	// 바로 다음 투척류 꺼내기
-	//	OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
-	//	PrevOwnerCharacter->PlayAnimMontage(ThrowWeapon->GetCurDrawMontage());
+	// 다른 투척류 조사
+	for (auto& Pair : THROWABLETYPE_ITEMNAME_MAP)
+	{
+		if (Pair.Key == this->ThrowableType) continue;
 
-	//	return;
-	//}
+		ThrowWeapon = OwnerCharacter->GetInvenComponent()->FindMyItem(Pair.Value);
+		if (!ThrowWeapon) continue;
+
+		AC_ThrowingWeapon* TargetThrowWeapon = Cast<AC_ThrowingWeapon>(ThrowWeapon);
+
+		if (!TargetThrowWeapon)
+		{
+			UC_Util::Print("OnProcessEnd Change to Last New Throwing Weapon casting failed!", FColor::Red, 10.f);
+			return;
+		}
+
+		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter);
+
+		// 바로 다음 투척류 꺼내기
+		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
+		PrevOwnerCharacter->PlayAnimMontage(TargetThrowWeapon->GetCurDrawMontage());
+		return;
+	}
 
 	//남아 있는 투척류가 없다면 주무기1, 주무기2 순으로 장착 시도, 없다면 UnArmed인 상태로 돌아가기
-	// TODO : MeleeWeapon 줄 지우기
-	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::MELEE_WEAPON)) return;
 	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::MAIN_GUN))		return;
 	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::SUB_GUN))		return;
 
@@ -679,8 +702,10 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 
 }
 
-void AC_ThrowingWeapon::InitExplodeStrategy(EThrowableType ThrowableType)
+void AC_ThrowingWeapon::InitExplodeStrategy(EThrowableType InThrowableType)
 {
+	this->ThrowableType = InThrowableType;
+
 	switch (ThrowableType)
 	{
 	case EThrowableType::GRENADE:

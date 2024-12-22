@@ -195,6 +195,43 @@ bool UC_EquippedComponent::ToggleArmed()
     return ChangeCurWeapon(PrevWeaponType);
 }
 
+bool UC_EquippedComponent::TryAttachCurWeaponToHolsterWithoutSheathMotion()
+{
+    if (!GetCurWeapon()) return false;
+
+    // 투척류 예외처리
+    if (CurWeaponType == EWeaponSlot::THROWABLE_WEAPON)
+    {
+        AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(GetCurWeapon());
+        if (IsValid(ThrowingWeapon))
+        {
+            // 이미 쿠킹이 시작되었고, 아직 손에서 떠나지 않은 투척류라면 땅에 떨굼
+            if (ThrowingWeapon->GetIsCooked() && ThrowingWeapon->GetAttachParentActor())
+                return ThrowingWeapon->ReleaseOnGround();
+        }
+    }
+
+    // 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기
+    GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
+    OwnerCharacter->SetHandState(EHandState::UNARMED);
+
+    // 총기류 예외처리
+    if (AC_Gun* Gun = Cast<AC_Gun>(GetCurWeapon())) Gun->BackToMainCamera();
+
+    return true;
+}
+
+bool UC_EquippedComponent::TryReAttachCurWeaponToHand()
+{
+    if (!GetCurWeapon()) return false;
+
+    SetNextWeaponType(CurWeaponType);
+    FPriorityAnimMontage DrawMontage = GetCurWeapon()->GetCurDrawMontage();
+    OwnerCharacter->PlayAnimMontage(DrawMontage);
+
+    return true;
+}
+
 void UC_EquippedComponent::OnSheathEnd()
 {
     // 무기를 바꾸는 도중에 SlotWeapon 장착 해제 예외 처리

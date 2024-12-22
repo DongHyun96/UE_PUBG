@@ -78,6 +78,21 @@ public:
 	/// <returns></returns>
 	bool ToggleArmed();
 
+public: // 특정 동작 처리에서의 들고 있는 무기 임시 처리 관련 ( ex -> 무기 들고 있는 중 파쿠르, 무기 들고 있는 중 ConsumableItem 사용)
+
+	/// <summary>
+	/// 현재 들고 있는 무기가 있다면 Sheath motion 없이 임시로 바로 Holster에 붙이기 (주의 : return true일 경우, 
+	/// </summary>
+	/// <returns> : 현재 들고 있는 무기(CurWeapon)가 없다면 return false</returns>
+	bool TryAttachCurWeaponToHolsterWithoutSheathMotion();
+
+	/// <summary>
+	/// <para> AttachCurWeaponToHolsterWithoutSheathMotion 이후 CurWeapon 손에 다시 부착 </para>
+	/// <para> 주의 : AttachCurWeaponToHolsterWithoutSheathMotion과 쌍으로 사용할 것 </para>
+	/// </summary>
+	/// <returns> : 현재 들고 있는 무기(CurWeapon)가 없다면 return false</returns>
+	bool TryReAttachCurWeaponToHand();
+
 public:
 
 	/// <summary>

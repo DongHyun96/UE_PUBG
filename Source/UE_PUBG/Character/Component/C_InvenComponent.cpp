@@ -405,6 +405,15 @@ AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 	return FoundItem;
 }
 
+AC_Item* UC_InvenComponent::FindMyItem(FString itemName)
+{
+	AC_Item* FoundItem = nullptr;
+	if (testMyItems.Find(itemName))
+		FoundItem = testMyItems.Find(itemName)->Last();
+
+	return FoundItem;
+}
+
 void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 {
 	//AC_Item* FoundItem = FindMyItem(item); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;

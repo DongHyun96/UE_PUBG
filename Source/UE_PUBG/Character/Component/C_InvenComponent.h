@@ -109,6 +109,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	AC_Item* FindMyItem(AC_Item* item);
 
+	AC_Item* FindMyItem(FString itemName);
+
 	void AddItemToMyList(AC_Item* item); //{ testMyItems.Add(item->GetItemDatas().ItemName, item); }
 
 	void RemoveItemToMyList(AC_Item* item);// { testMyItems.Remove(item->GetItemDatas().ItemName); }

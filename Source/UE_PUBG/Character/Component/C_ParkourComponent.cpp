@@ -76,7 +76,7 @@ void UC_ParkourComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	// 아직 Game이 진행중이고 남아있는 캐릭터들은 전략들을 아직 필요로 함
+	// 아직 Game이 진행중이고 남아있는 캐릭터들은 Parkour Action 전략들을 아직 필요로 함
 	if (EndPlayReason == EEndPlayReason::Type::Destroyed) return;
 
 	// static 멤버변수 메모리 해제
@@ -124,14 +124,8 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 				false
 			);
 
-		if (OwnerCharacter->GetEquippedComponent()->GetCurWeapon()) // 착용 중인 무기가 있었을 때 해당 무기 다시 장착
-		{
-			UC_EquippedComponent* OwnerEquippedComponent = OwnerCharacter->GetEquippedComponent();
-
-			OwnerCharacter->GetEquippedComponent()->SetNextWeaponType(OwnerEquippedComponent->GetCurWeaponType());
-			FPriorityAnimMontage DrawMontage = OwnerEquippedComponent->GetCurWeapon()->GetCurDrawMontage();
-			OwnerCharacter->PlayAnimMontage(DrawMontage);
-		}
+		// 착용 중인 무기가 있었을 때 해당 무기 다시 장착 시도
+		OwnerCharacter->GetEquippedComponent()->TryReAttachCurWeaponToHand();
 
 		//bIsCurrentlyWarping = false;
 	}
@@ -171,15 +165,8 @@ bool UC_ParkourComponent::TryExecuteParkourAction()
 	OwnerCharacter->SetNextSpeed(0.f);
 	if (OwnerPlayer) OwnerPlayer->SetStrafeRotationToIdleStop();
 
-	// 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기
-	if (AC_Weapon* OwnerWeapon = OwnerCharacter->GetEquippedComponent()->GetCurWeapon())
-	{
-		OwnerWeapon->AttachToHolster(OwnerCharacter->GetMesh());
-		OwnerCharacter->SetHandState(EHandState::UNARMED);
-
-		// 총기류 예외처리
-		if (AC_Gun* Gun = Cast<AC_Gun>(OwnerWeapon)) Gun->BackToMainCamera();
-	}
+	// 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기 시도
+	OwnerCharacter->GetEquippedComponent()->TryAttachCurWeaponToHolsterWithoutSheathMotion();
 
 	SwapMesh(true);
 

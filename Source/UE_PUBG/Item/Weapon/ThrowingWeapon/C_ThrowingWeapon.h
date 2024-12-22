@@ -26,7 +26,8 @@ enum class EThrowableType : uint8
 {
 	GRENADE,
 	FLASH_BANG,
-	SMOKE
+	SMOKE,
+	MAX
 };
 
 /**
@@ -154,7 +155,7 @@ public: // Getters & Setters
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void InitExplodeStrategy(EThrowableType ThrowableType);
+	void InitExplodeStrategy(EThrowableType InThrowableType);
 
 	/// <summary>
 	/// 안전손잡이까지 날리기
@@ -206,6 +207,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ClearSpline();
+
+private:
+
+	EThrowableType ThrowableType{};
 
 protected:
 
@@ -311,4 +316,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UShapeComponent* ExplosionSphere{};
 
+private:
+
+	const TMap<EThrowableType, FString> THROWABLETYPE_ITEMNAME_MAP =
+	{
+		{EThrowableType::GRENADE,		"Grenade"},
+		{EThrowableType::FLASH_BANG,	"FlashBang"},
+		{EThrowableType::SMOKE,			"Smoke Grenade"},
+	};
 };
