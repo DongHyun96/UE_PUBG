@@ -677,7 +677,12 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 		if (Pair.Key == this->ThrowableType) continue;
 
 		ThrowWeapon = OwnerCharacter->GetInvenComponent()->FindMyItem(Pair.Value);
+
+		UC_Util::Print("1");
+
 		if (!ThrowWeapon) continue;
+
+		UC_Util::Print("2");
 
 		AC_ThrowingWeapon* TargetThrowWeapon = Cast<AC_ThrowingWeapon>(ThrowWeapon);
 
