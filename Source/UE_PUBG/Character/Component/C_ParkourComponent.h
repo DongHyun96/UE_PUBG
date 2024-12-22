@@ -79,6 +79,20 @@ private:
 	/// <param name="ToRootedMesh"> : If false, Swap back to Main Skeletal Mesh </param>
 	void SwapMesh(bool ToRootedMesh);
 
+	// TODO : 무기를 들고 있었다면 holster에 붙인 뒤, parkour가 끝나면 다시 무기를 드는 동작으로 가져가야 함
+
+	/// <summary>
+	/// 현 skeletalMesh에 부착된 Actor 조사하기
+	/// </summary>
+	/// <param name="AttachedActors"> : Init 시킬 AttachedActors </param>
+	void GetSocketAttachedActors(TMap<FName, AActor*>& AttachedActors);
+
+	/// <summary>
+	/// 전 SkeletalMesh에 부착된 Actor 다시 부착하기
+	/// </summary>
+	/// <param name="PrevAttachedActors"> : 전에 부착되었었던 Actor들 </param>
+	void ReAttachActorsToSocket(const TMap<FName, AActor*>& PrevAttachedActors);
+
 	/// <summary>
 	/// SwapMesh -> MainMesh로 돌아왔을 때 호출
 	/// </summary>

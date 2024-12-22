@@ -15,8 +15,6 @@
 
 void UC_VaultHighActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* TargetCharacter, const FParkourDescriptor& CurParkourDesc)
 {
-	// TODO : Vault 시 LandPos 허공인지 체크해서 다르게 처리해주어야 함
-
 	UC_Util::Print("VaultHigh Strategy", FColor::Red, 10.f);
 
 	static const float CHARACTER_CLIMB_ACTION_HEIGHT = 200.f; // 캐릭터가 팔 뻗어서 오르려 할 때의 총장 길이

@@ -83,7 +83,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		
 		UsingTimer = 0.f;
 
-		if (ItemUser->GetEquippedComponent()->GetCurWeapon()) // 착용 중인 무기가 있었을 때
+		if (ItemUser->GetEquippedComponent()->GetCurWeapon()) // 착용 중인 무기가 있었을 때 해당 무기 다시 장착
 		{
 			UC_EquippedComponent* UserEquippedComponent = ItemUser->GetEquippedComponent();
 
