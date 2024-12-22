@@ -103,7 +103,7 @@ FVector AC_Item::GetGroundLocation(AC_BasicCharacter* Character)
 }
 
 AC_Item* AC_Item::SpawnItem(AC_BasicCharacter* Character)
-{
+	{
 	FActorSpawnParameters SpawnParams;
 	//SpawnParams.Owner = Character;
 	//location, rotation을 this의 것을 쓰는 것도 생각, 왜냐하면 지금 이상하게 날라가는 이유가 이것일 수 도 있음. -> 섬광탄이 터지고 충돌체가 남아있음.

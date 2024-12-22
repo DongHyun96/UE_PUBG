@@ -141,7 +141,7 @@ bool AC_Bullet::Fire(AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, 
 	InstanceLifeTime = 10.0f;
 	if (!RootComponent)
 	{
-		UC_Util::Print("No Root!");
+		//UC_Util::Print("No Root!");
 		return false;
 	}
 	//SetActorHiddenInGame(false);
@@ -169,7 +169,7 @@ bool AC_Bullet::Fire(AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, 
 	}
 	else
 	{
-		UC_Util::Print("No BulletProjectileMovement");
+		//UC_Util::Print("No BulletProjectileMovement");
 	}
 	
 	return false;
