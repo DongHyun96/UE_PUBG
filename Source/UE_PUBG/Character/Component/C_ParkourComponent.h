@@ -24,7 +24,7 @@ struct FParkourDescriptor
 	bool			bIsLowAction{};				// 첫 Obstacle 검사 시 넘을 장애물의 높이 계산
 	FVector			FirstObstacleHitLocation{};
 
-	TArray<FVector> VerticleHitPositions{};		// Obstacle위의 거리 재기
+	TArray<FVector> VerticalHitPositions{};		// Obstacle위의 거리 재기
 	FVector			LandPos{};					// Obstacle을 지나 내려가는 위치 (Vaulting Low)
 	bool			bLandPosInited{};
 
@@ -53,6 +53,8 @@ public:
 
 	TArray<FPriorityAnimMontage>& GetParkourMontages(EParkourActionType ParkourActionType) { return ParkourMontageMap[ParkourActionType]; }
 
+	void SetCanMoveTimerAfterWarpActionFin(float Time) { CanMoveTimerAfterWarpActionFin = Time; }
+
 public:
 
 	/// <summary>
@@ -77,6 +79,25 @@ private:
 	/// <param name="ToRootedMesh"> : If false, Swap back to Main Skeletal Mesh </param>
 	void SwapMesh(bool ToRootedMesh);
 
+	// TODO : 무기를 들고 있었다면 holster에 붙인 뒤, parkour가 끝나면 다시 무기를 드는 동작으로 가져가야 함
+
+	/// <summary>
+	/// 현 skeletalMesh에 부착된 Actor 조사하기
+	/// </summary>
+	/// <param name="AttachedActors"> : Init 시킬 AttachedActors </param>
+	void GetSocketAttachedActors(TMap<FName, AActor*>& AttachedActors);
+
+	/// <summary>
+	/// 전 SkeletalMesh에 부착된 Actor 다시 부착하기
+	/// </summary>
+	/// <param name="PrevAttachedActors"> : 전에 부착되었었던 Actor들 </param>
+	void ReAttachActorsToSocket(const TMap<FName, AActor*>& PrevAttachedActors);
+
+	/// <summary>
+	/// SwapMesh -> MainMesh로 돌아왔을 때 호출
+	/// </summary>
+	void SetOwnerCharacterCanMoveToTrue() { OwnerCharacter->SetCanMove(true); }
+
 private:
 
 	/// <summary>
@@ -92,7 +113,7 @@ private:
 	/// </summary>
 	/// <param name="CurParkourDesc"> : 현 parkour Desc </param>
 	/// <returns> : Warp를 실행할 없는 조건일 때 return false </returns>
-	bool InitVerticleHitPositionsAndLandPos(FParkourDescriptor& CurParkourDesc);
+	bool InitVerticalHitPositionsAndLandPos(FParkourDescriptor& CurParkourDesc);
 
 	/// <summary>
 	/// CurParkourAction Type 지정 및 ActionStrategy 지정
@@ -151,6 +172,12 @@ private:
 
 	// Tick 함수에서 SkeletalMesh와 AnimInstanceClass를 바꾸는지 -> Deferred Update를 사용할 예정
 	bool bPendingMeshUpdateToMainMesh{};
+
+private:
+
+	// Warp Action이 끝나고 MainSkeletalMesh로 돌아온 이 후, CanMove를 true로 주기까지의 Timer 시간
+	float CanMoveTimerAfterWarpActionFin{};
+	struct FTimerHandle TimerHandle{};
 
 private:
 

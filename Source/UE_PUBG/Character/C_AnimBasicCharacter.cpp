@@ -118,7 +118,7 @@ void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_RunningJump_To_Falling(
 			CurGun->BackToMainCamera();
 		}
 	}
-	OwnerCharacter->SetCanMove(false);
+	//OwnerCharacter->SetCanMove(false);
 
 }
 
@@ -128,7 +128,7 @@ void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_HardLand_To_Stand()
 	FString TheFloatStr = "End Transition";
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	UE_LOG(LogTemp, Warning, TEXT("Transition Ended"));
-	OwnerCharacter->SetCanMove(true);
+	//OwnerCharacter->SetCanMove(true);
 	AnimNotify_OnEndTransition_Falling_To_Standing();
 
 

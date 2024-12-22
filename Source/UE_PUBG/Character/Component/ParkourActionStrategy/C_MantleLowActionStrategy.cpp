@@ -13,10 +13,12 @@
 
 void UC_MantleLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* TargetCharacter, const FParkourDescriptor& CurParkourDesc)
 {
-	FVector WarpStartPos = CurParkourDesc.VerticleHitPositions[0];
-	FVector WarpLandPos = CurParkourDesc.VerticleHitPositions[1];
+	FVector WarpStartPos = CurParkourDesc.VerticalHitPositions[0];
+	FVector WarpLandPos = CurParkourDesc.VerticalHitPositions[1];
 	
 	UMotionWarpingComponent* MotionWarping = TargetCharacter->GetMotionWarpingComponent();
+
+	MotionWarping->RemoveAllWarpTargets();
 
 	FMotionWarpingTarget Target{};
 	Target.Name		= FName(TEXT("MantleStart"));
