@@ -402,7 +402,7 @@ AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 	if (testMyItems.Find(item->GetItemDatas().ItemName))
 		FoundItem = testMyItems.Find(item->GetItemDatas().ItemName)->Last();
 
-	//CheckPoint, 
+	//TODO : CheckPoint - 장착, 사용 아이템의 위치가 어디에 있는지 확인할 것.
 
 	return FoundItem;
 }
