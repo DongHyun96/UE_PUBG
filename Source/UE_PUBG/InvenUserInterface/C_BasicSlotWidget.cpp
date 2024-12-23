@@ -55,7 +55,6 @@ void UC_BasicSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const
 
 	DragOperation->DraggedItem = CachedItem;
 
-
 	//오너캐릭터 체크
 	if (!OwnerCharacter)
 	{

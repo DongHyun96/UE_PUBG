@@ -20,11 +20,11 @@ FReply UC_EquipSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const 
 {
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		if (EquippedItem)
+		if (CachedItem)
 		{   // 우클릭 이벤트 실행
 			//EquippedItem->Interaction(OwnerCharacter);
-			EquippedItem->MoveToAround(OwnerCharacter);
-			EquippedItem = nullptr;
+			CachedItem->MoveToAround(OwnerCharacter);
+			CachedItem = nullptr;
 			//InitInvenUIWidget();
 		
 			//NativeOnListItemObjectSet에서의 호출과 중복으로 일단 주석처리, 다만 이벤트시에 초기화가 필요하면 사용해야 할 수 있음.
@@ -50,10 +50,10 @@ FReply UC_EquipSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const 
 void UC_EquipSlot::Init()
 {
 	if (IsValid(OwnerCharacter))
-		EquippedItem = Cast<AC_EquipableItem>(OwnerCharacter->GetInvenComponent()->GetMyBackPack());
-
+		DivisionInit();
+	//	CachedItem = Cast<AC_EquipableItem>(OwnerCharacter->GetInvenComponent()->GetMyBackPack());
 	 
-	if (!IsValid(EquippedItem))
+	if (!IsValid(CachedItem))
 	{
 		ItemImage1->SetBrushFromTexture(nullptr);
 		FSlateBrush Brush = ItemImage1->GetBrush();
@@ -63,9 +63,9 @@ void UC_EquipSlot::Init()
 	}
 	else
 	{
-		if (EquippedItem->GetItemDatas().ItemType != SlotItemType) return;
+		if (CachedItem->GetItemDatas().ItemType != SlotItemType) return;
 
-		ItemImage1->SetBrushFromTexture(EquippedItem->GetItemDatas().ItemIcon);
+		ItemImage1->SetBrushFromTexture(CachedItem->GetItemDatas().ItemIcon);
 		FSlateBrush Brush = ItemImage1->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // 완전 불투명
 		ItemImage1->SetBrush(Brush);
@@ -75,10 +75,17 @@ void UC_EquipSlot::Init()
 
 void UC_EquipSlot::DivisionInit()
 {
-	switch (EquippedItem->GetItemDatas().ItemType)
+	switch (SlotItemType)
 	{
 	case EItemTypes::HELMET:
-
+		CachedItem = Cast<AC_EquipableItem>(OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::HELMET]);
+		break;
+	case EItemTypes::VEST:
+		CachedItem = Cast<AC_EquipableItem>(OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::VEST]);
+		break;
+	case EItemTypes::BACKPACK:
+		CachedItem = Cast<AC_EquipableItem>(OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK]);
+		break;
 	default:
 		break;
 	}

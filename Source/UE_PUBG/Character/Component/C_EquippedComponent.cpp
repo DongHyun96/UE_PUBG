@@ -56,6 +56,8 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
             OwnerCharacter->SetHandState(EHandState::UNARMED);
             if (!Weapon) CurWeaponType = EWeaponSlot::NONE;
         }
+        //PrevSlotWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+        Weapons[InSlot]->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 
         // 이전 무기 해제에 대한 PoseTransitionEnd 델리게이트 해제
         OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(PrevSlotWeapon);
@@ -63,13 +65,13 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
         //C_Item의 detachment에서 처리중, 혹시몰라 남겨둠.
         //PrevSlotWeapon->SetOwnerCharacter(nullptr);
     }
-    
+
     Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
 
 
     if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
     {
-        Player->GetInvenSystem()->InitializeList();
+        Player->GetInvenSystem()->InitializeList(); 
     }
 
     if (!Weapons[InSlot]) return PrevSlotWeapon; // Slot에 새로 지정한 무기가 nullptr -> early return

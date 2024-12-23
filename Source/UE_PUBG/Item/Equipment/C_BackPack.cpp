@@ -138,6 +138,8 @@ void AC_BackPack::PickUpItem(AC_BasicCharacter* Character)
 	
 	InvenComp->EquippedBackPack(this);
 
+	this->SetItemPlace(EItemPlace::SLOT);
+
 }
 
 bool AC_BackPack::MoveToAround(AC_BasicCharacter* Character)
@@ -147,7 +149,7 @@ bool AC_BackPack::MoveToAround(AC_BasicCharacter* Character)
 	curBackPack = InvenComp->GetMyBackPack();
 
 	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//갑빠가 더해주는 Volume 추가해야함.
+	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//TODO : 갑빠가 더해주는 Volume 추가해야함.
 
 	if (curVolume > preMaxVolume) return false;
 
@@ -159,7 +161,34 @@ bool AC_BackPack::MoveToAround(AC_BasicCharacter* Character)
 		curBackPack->DetachmentItem();
 	}
 
+	this->SetItemPlace(EItemPlace::AROUND);
 
 
+
+	return true;
+}
+
+bool AC_BackPack::MoveToSlot(AC_BasicCharacter* Character)
+{
+	//TODO : PickUpItem 내용으로 우선 구현한 것. 다시 구현하기.
+	//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
+	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
+	AC_BackPack* curBackPack = nullptr;
+	curBackPack = InvenComp->GetMyBackPack();
+
+	float curVolume = InvenComp->GetCurVolume();
+	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//갑빠가 더해주는 Volume 추가해야함.
+
+	if (curVolume > preMaxVolume) return false;
+
+	if (curBackPack)
+		curBackPack->DetachmentItem();
+
+	//InvenComp->EquippedBackPack(this);
+
+	InvenComp->SetSlotEquipment(EEquipSlot::BACKPACK, this);
+
+	this->SetItemPlace(EItemPlace::SLOT);
+	
 	return true;
 }

@@ -313,18 +313,25 @@ bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 bool AC_ThrowingWeapon::MoveToAround(AC_BasicCharacter* Character)
 {
 	if (!Character) return false;
-
-	Character->GetInvenComponent()->RemoveItemToMyList(this);
+	if (this->GetItemDatas().ItemPlace == EItemPlace::INVEN)
+		Character->GetInvenComponent()->RemoveItemToMyList(this);
+	else if (this->GetItemDatas().ItemPlace == EItemPlace::SLOT)
+	{
+		Character->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
+		//this->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+	}
+	
+	//DetachmentItem();
 	//TODO: 분할해서 버리는 경우 새로 스폰해주어야함.
 	ItemDatas.ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-
+	
 	//바닥 레이 캐스팅 받아와서 바닥에 아이템 생성하기.
 	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
-
+	
 	//SetActorRotation(FQuat(0,0,0));
 
 	return true;
@@ -386,7 +393,7 @@ bool AC_ThrowingWeapon::MoveToSlot(AC_BasicCharacter* Character)
 			{
 				//FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + 1);
 				FoundItem->AddItemStack();
-				//잔상이 생긴다면 추가 작업 필요.
+				//TODO:잔상이 생긴다면 추가 작업 필요.
 				OutToSlotWeapon->Destroy();
 				return true;
 			}

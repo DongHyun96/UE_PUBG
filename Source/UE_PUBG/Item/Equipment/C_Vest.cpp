@@ -18,6 +18,21 @@ bool AC_Vest::Interaction(AC_BasicCharacter* Character)
 	return true;
 }
 
+bool AC_Vest::MoveToAround(AC_BasicCharacter* Character)
+{
+	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, nullptr);
+	OwnerCharacter = nullptr;
+
+	return false;
+}
+
+bool AC_Vest::MoveToSlot(AC_BasicCharacter* Character)
+{
+	//TODO : 장착되어 있던 Vest 처리해주기 및 제대로 구현하기, SetSlotEquipment함수 참고하기.
+	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, this);
+	return true;
+}
+
 void AC_Vest::AttachToSocket(AC_BasicCharacter* InParent)
 {
 	//FName SocketName{};

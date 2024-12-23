@@ -26,6 +26,8 @@ class UE_PUBG_API UC_MainGunWidget : public UC_BasicSlotWidget
 public:
 	virtual void NativeConstruct() override;
 
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	void Init();

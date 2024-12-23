@@ -18,6 +18,10 @@ public:
 	AC_Vest();
 
 	bool Interaction(AC_BasicCharacter* Character) override;
+	
+	bool MoveToAround(AC_BasicCharacter* Character) override;
+
+	bool MoveToSlot(AC_BasicCharacter* Character) override;
 
 	void AttachToSocket(class AC_BasicCharacter* InParent);
 protected:

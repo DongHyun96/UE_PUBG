@@ -80,6 +80,8 @@ public:
 
 	bool MoveToAround(AC_BasicCharacter* Character) override;
 
+	bool MoveToSlot(AC_BasicCharacter* Character) override;
+
 	//AC_Item* SpawnItem(AC_BasicCharacter* Character) override;
 
 	void PickUpItem(AC_BasicCharacter* Character) override;

@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Item/C_Item.h"
 #include "Character/C_Player.h"
+#include "Character/Component/C_EquippedComponent.h"
 
 #include "C_BasicSlotWidget.generated.h"
 
@@ -33,4 +34,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_Player* OwnerCharacter = nullptr;
+
+
 };
