@@ -240,6 +240,8 @@ void AC_ThrowingWeapon::EquipToCharacter(AC_BasicCharacter* Character)
 
 bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 {
+	UC_Util::Print("Try MoveToInven", FColor::Red, 10.f);
+
 	UC_InvenComponent*    invenComp = Character->GetInvenComponent();
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 
@@ -252,6 +254,11 @@ bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 	}
 
 	AC_Item* FoundItem = invenComp->FindMyItem(this); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;
+
+	/* 이 밑으로 모두 MoveToInven 가능한 상황 */
+
+	// 현재 손에 들고있는 투척류가 this라면 HandState NONE으로 전환
+	if (equipComp->GetCurWeapon() == this) equipComp->ChangeCurWeapon(EWeaponSlot::NONE);
 
 	if (ItemDatas.ItemCurStack == ItemStackCount)
 	{
@@ -313,6 +320,18 @@ bool AC_ThrowingWeapon::MoveToInven(AC_BasicCharacter* Character)
 bool AC_ThrowingWeapon::MoveToAround(AC_BasicCharacter* Character)
 {
 	if (!Character) return false;
+
+	UC_EquippedComponent* EquippedComponent = Character->GetEquippedComponent();
+
+	// Slot에 장착된 무기를 MoveToAround처리하는 상황
+	if (EquippedComponent->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON] == this)
+	{
+		// 만약 현재 손에 들고 있던 무기를 MoveToAround처리 했을 때
+		if (EquippedComponent->GetCurWeapon() == this)
+			EquippedComponent->ChangeCurWeapon(EWeaponSlot::NONE);
+		
+		EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
+	}
 
 	Character->GetInvenComponent()->RemoveItemToMyList(this);
 	//TODO: 분할해서 버리는 경우 새로 스폰해주어야함.
