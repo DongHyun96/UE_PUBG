@@ -371,6 +371,7 @@ bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor&
 		if (HasHit)
 		{
 			CurParkourDesc.VerticalHitPositions.Add(HitResult.Location);
+			DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, 5.f, 4, FColor::Red, true);
 			continue;
 		}
 

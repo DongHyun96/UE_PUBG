@@ -61,6 +61,7 @@ public:
 
 	bool AttachToHand(class USceneComponent* InParent) override;
 
+private:
 
 	//UFUNCTION(BlueprintCallable)
 	void PickUpItem(AC_BasicCharacter* Character) override;
