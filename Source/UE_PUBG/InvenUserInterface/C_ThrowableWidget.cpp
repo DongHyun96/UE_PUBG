@@ -33,16 +33,19 @@ FReply UC_ThrowableWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 	// 우클릭인지 체크
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		if (Weapon)
+		if (CachedItem)
 		{   // 우클릭 이벤트 실행
-			if (Weapon->MoveToInven(OwnerCharacter))
+			if (CachedItem->MoveToInven(OwnerCharacter))
 			{
-				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
-				Weapon = nullptr;
+				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(WeaponSlotType, nullptr);
+				CachedItem = nullptr;
 			}
-			
-			
-
+			else
+			{
+				CachedItem->MoveToAround(OwnerCharacter);
+				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(WeaponSlotType, nullptr);
+				CachedItem = nullptr;
+			}
 			//SetVisibility(ESlateVisibility::Hidden);
 
 			if (UC_InvenUiWidget* InvenUiWidget = GetTypedOuter<UC_InvenUiWidget>())
@@ -63,13 +66,13 @@ void UC_ThrowableWidget::Init()
 {
 	if (IsValid(OwnerCharacter))
 	{
-		Weapon = OwnerCharacter->GetEquippedComponent()->GetWeapons()[WeaponSlotType];
+		CachedItem = OwnerCharacter->GetEquippedComponent()->GetWeapons()[WeaponSlotType];
 	}
 
-	if (IsValid(Weapon))
+	if (IsValid(CachedItem))
 	{
-		ItemIcon->SetBrushFromTexture(Weapon->GetItemDatas().ItemIcon);
-		ItemName->SetText(FText::FromString(Weapon->GetItemDatas().ItemName));
+		ItemIcon->SetBrushFromTexture(CachedItem->GetItemDatas().ItemIcon);
+		ItemName->SetText(FText::FromString(CachedItem->GetItemDatas().ItemName));
 		SetVisibility(ESlateVisibility::Visible);
 		FSlateBrush Brush = ItemIcon->GetBrush();
 
@@ -88,11 +91,11 @@ void UC_ThrowableWidget::SetWeapon(AC_Item* item)
 	{
 	case EItemTypes::MELEEWEAPON:
 		if (WeaponSlotType == EWeaponSlot::MELEE_WEAPON)
-			Weapon = Cast<AC_Weapon>(item);
+			CachedItem = Cast<AC_Weapon>(item);
 		break;
 	case EItemTypes::THROWABLE:
 		if (WeaponSlotType == EWeaponSlot::THROWABLE_WEAPON)
-			Weapon = Cast<AC_Weapon>(item);
+			CachedItem = Cast<AC_Weapon>(item);
 	default:
 		break;
 	}

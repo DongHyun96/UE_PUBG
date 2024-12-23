@@ -334,6 +334,11 @@ bool AC_BasicCharacter::SetPoseState(EPoseState InChangeFrom, EPoseState InChang
 	return false;
 }
 
+bool AC_BasicCharacter::GetIsHighEnoughToFall()
+{
+	return false;
+}
+
 void AC_BasicCharacter::OnPoseTransitionGoing()
 {
 	PoseState = NextPoseState;

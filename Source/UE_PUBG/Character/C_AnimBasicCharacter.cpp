@@ -54,7 +54,12 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	bCanCharacterMove = OwnerCharacter->GetCanMove();
 	bIsHoldDirection  = OwnerCharacter->GetIsHoldDirection();
 	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
-	
+	if (OwnerCharacter->GetMovementComponent()->IsFalling())
+		bIsHighEnoughToFall = OwnerCharacter->GetIsHighEnoughToFall();
+	else
+		bIsHighEnoughToFall = false;
+	//UC_Util::Print(OwnerCharacter->GetDistanceToGround());
+
 	SwimmingState	  = OwnerCharacter->GetSwimmingComponent()->GetSwimmingState();
 	SkyDivingState	  = OwnerCharacter->GetSkyDivingComponent()->GetSkyDivingState();
 	//switch (SwimmingState)
@@ -113,7 +118,7 @@ void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_RunningJump_To_Falling(
 			CurGun->BackToMainCamera();
 		}
 	}
-	OwnerCharacter->SetCanMove(false);
+	//OwnerCharacter->SetCanMove(false);
 
 }
 
@@ -123,7 +128,7 @@ void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_HardLand_To_Stand()
 	FString TheFloatStr = "End Transition";
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	UE_LOG(LogTemp, Warning, TEXT("Transition Ended"));
-	OwnerCharacter->SetCanMove(true);
+	//OwnerCharacter->SetCanMove(true);
 	AnimNotify_OnEndTransition_Falling_To_Standing();
 
 

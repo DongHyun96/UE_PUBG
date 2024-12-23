@@ -47,7 +47,7 @@ void UC_InvenComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 bool UC_InvenComponent::CheckVolume(AC_Item* item)
 {
 	//item의 용량은 ItemVolume * ItemStack 이다.
-	float ItemVolume = item->GetOnceVolume() * item->GetItemDatas().ItemStack;
+	float ItemVolume = item->GetOnceVolume() * item->GetItemDatas().ItemCurStack;
 
 	if (MaxVolume > CurVolume + ItemVolume)
 	{
@@ -58,7 +58,7 @@ bool UC_InvenComponent::CheckVolume(AC_Item* item)
 }
 float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 {
-	for (float i = item->GetItemDatas().ItemStack; i > 0; i--)
+	for (float i = item->GetItemDatas().ItemCurStack; i > 0; i--)
 	{
 		if (MaxVolume > CurVolume + item->GetOnceVolume() * i) 
 			return i;
@@ -329,9 +329,10 @@ bool UC_InvenComponent::AddItem(AC_Item* item)
 			{
 				//현재 파밍하려는 아이템이 이미 인벤(MyItemList)에 존재 하는 경우.
 				// InPutStack = 현재 아이템의 스택 + 파밍한 아이템의 스택
-				uint8 InPutStack = testMyItems[AddedItemName]->GetItemDatas().ItemStack + item->GetItemDatas().ItemStack;
+				//uint8 InPutStack = testMyItems[AddedItemName]->GetItemDatas().ItemStack + item->GetItemDatas().ItemStack;
+				uint8 InPutStack = testMyItems[AddedItemName].Last()->GetItemDatas().ItemCurStack + item->GetItemDatas().ItemCurStack;
 
-				testMyItems[AddedItemName]->SetItemStack(InPutStack);
+				testMyItems[AddedItemName].Last()->SetItemStack(InPutStack);
 
 				//testMyItems.Remove(AddedItemName);
 				item->SetActorHiddenInGame(true);
@@ -343,7 +344,18 @@ bool UC_InvenComponent::AddItem(AC_Item* item)
 			{
 				//현재 파밍하려는 아이템이 인벤(MyItemList)에 없는 아이템 인 경우.
 				item->PickUpItem(OwnerCharacter);
-				testMyItems.Add(AddedItemName, item);
+				if (TArray<AC_Item*>* FoundArray = testMyItems.Find(AddedItemName)) 
+				{
+					FoundArray->Add(item);
+				}
+				else 
+				{
+					// 키가 없으면 새로운 배열을 생성하고 추가
+					TArray<AC_Item*> NewArray;
+					NewArray.Add(item);
+					testMyItems.Add(AddedItemName, NewArray);
+				}
+				//testMyItems.Add(AddedItemName, item);
 			}
 			break;
 		default:
@@ -386,15 +398,40 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 
 AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 {
-	AC_Item** FoundItem = testMyItems.Find(item->GetItemDatas().ItemName);
-	return FoundItem ? *FoundItem : nullptr;
+	AC_Item* FoundItem = nullptr;
+	if (testMyItems.Find(item->GetItemDatas().ItemName))
+		FoundItem = testMyItems.Find(item->GetItemDatas().ItemName)->Last();
+
+	//TODO : CheckPoint - 장착, 사용 아이템의 위치가 어디에 있는지 확인할 것.
+
+	return FoundItem;
+}
+
+AC_Item* UC_InvenComponent::FindMyItem(FString itemName)
+{
+	AC_Item* FoundItem = nullptr;
+	if (testMyItems.Find(itemName))
+		FoundItem = testMyItems.Find(itemName)->Last();
+
+	return FoundItem;
 }
 
 void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 {
 	//AC_Item* FoundItem = FindMyItem(item); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;
-
-	testMyItems.Add(item->GetItemDatas().ItemName, item);
+	if (TArray<AC_Item*>* FoundArray = testMyItems.Find(item->GetItemDatas().ItemName))
+	{
+		//if (item->GetItemDatas().ItemCurStack < item->GetItemDatas().ItemMaxStack)
+		FoundArray->Emplace(item);
+	}
+	else 
+	{
+		// 키가 없으면 새로운 배열을 생성하고 추가
+		TArray<AC_Item*> NewArray;
+		NewArray.Add(item);
+		testMyItems.Add(item->GetItemDatas().ItemName, NewArray);
+	}
+	//testMyItems.Add(item->GetItemDatas().ItemName, item);
 
 	if (IsValid(OwnerCharacter))
 	{

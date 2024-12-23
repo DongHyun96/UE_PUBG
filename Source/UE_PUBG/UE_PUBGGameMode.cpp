@@ -3,6 +3,7 @@
 #include "UE_PUBGGameMode.h"
 #include "UE_PUBGCharacter.h"
 #include "Utility/C_Util.h"
+#include "Character/Component/C_PlayerController.h"
 #include "UObject/ConstructorHelpers.h"
 
 AUE_PUBGGameMode::AUE_PUBGGameMode()
@@ -18,6 +19,7 @@ AUE_PUBGGameMode::AUE_PUBGGameMode()
 	if (PlayerPawnBPClass.Class != NULL)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
+		PlayerControllerClass = AC_PlayerController::StaticClass();
 	}
 
 }

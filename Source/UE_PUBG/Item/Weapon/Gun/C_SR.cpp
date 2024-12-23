@@ -23,6 +23,7 @@ void AC_SR::BeginPlay()
 void AC_SR::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	SetRelativeRotationOnCrawl();
 }
 
 bool AC_SR::ExecuteReloadMontage()
@@ -60,7 +61,7 @@ bool AC_SR::ExecuteReloadMontage()
 		BackToMainCamera();
 	}
 	return true;
-}
+}	
 
 bool AC_SR::GetIsPlayingMontagesOfAny()
 {
@@ -78,4 +79,24 @@ bool AC_SR::GetIsPlayingMontagesOfAny()
 		CurAnimInstance->Montage_IsPlaying(SniperReloadMontage);
 	//UC_Util::Print(IsPlayingMontagesOfAny, FColor::Magenta, 10);
 	return IsPlayingMontagesOfAny;
+}
+
+void AC_SR::SetRelativeRotationOnCrawl()
+{
+	if (!IsValid(OwnerCharacter)) return;
+	EPoseState OwnerCurPoseState = OwnerCharacter->GetPoseState();
+	switch (OwnerCurPoseState)
+	{
+	case EPoseState::STAND:
+	case EPoseState::POSE_MAX:
+	case EPoseState::CROUCH:
+		SetActorRelativeRotation(FRotator(0));
+		break;
+	case EPoseState::CRAWL:
+		SetActorRelativeRotation(RelativeRotationOnCrawl);
+
+		break;
+	default:
+		break;
+	}
 }

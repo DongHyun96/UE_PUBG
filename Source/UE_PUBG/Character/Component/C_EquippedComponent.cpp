@@ -2,6 +2,7 @@
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
@@ -10,6 +11,7 @@
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 
 #include "Character/Component/C_SwimmingComponent.h"
+#include "Character/Component/C_InvenSystem.h"
 
 #include "Utility/C_Util.h"
 
@@ -54,6 +56,8 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
             OwnerCharacter->SetHandState(EHandState::UNARMED);
             if (!Weapon) CurWeaponType = EWeaponSlot::NONE;
         }
+        //PrevSlotWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+        Weapons[InSlot]->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 
         // 이전 무기 해제에 대한 PoseTransitionEnd 델리게이트 해제
         OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(PrevSlotWeapon);
@@ -61,8 +65,14 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
         //C_Item의 detachment에서 처리중, 혹시몰라 남겨둠.
         //PrevSlotWeapon->SetOwnerCharacter(nullptr);
     }
-    
+
     Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
+    
+
+    if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+    {
+        Player->GetInvenSystem()->InitializeList(); 
+    }
 
     if (!Weapons[InSlot]) return PrevSlotWeapon; // Slot에 새로 지정한 무기가 nullptr -> early return
     
@@ -74,9 +84,12 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
     Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
 
-    //충돌체 켜주기, 1117 상연
-    //Weapons[InSlot]->SetActorHiddenInGame(false);
-    Weapons[InSlot]->SetActorEnableCollision(true);
+    //충돌체 켜주기, 1117 상연, 근접무기는 장착만 해도 보이는 상태.
+    if (InSlot == EWeaponSlot::MELEE_WEAPON)
+        Weapons[InSlot]->SetActorHiddenInGame(false);
+
+    //꺼주면 제자리 파쿠르 방지.
+    Weapons[InSlot]->SetActorEnableCollision(false); 
     // Attach to Holster 하기 전에 Local transform 초기화
     //Weapons[InSlot]->SetActorRelativeTransform(FTransform::Identity);
  
@@ -142,6 +155,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
         // 다음 무기가 있을 때
         OwnerCharacter->PlayAnimMontage(Weapons[NextWeaponType]->GetCurDrawMontage());
+        
         return true;
     }
 
@@ -189,6 +203,43 @@ bool UC_EquippedComponent::ToggleArmed()
 
     // 현재 들고 있는 무기가 없을 때
     return ChangeCurWeapon(PrevWeaponType);
+}
+
+bool UC_EquippedComponent::TryAttachCurWeaponToHolsterWithoutSheathMotion()
+{
+    if (!GetCurWeapon()) return false;
+
+    // 투척류 예외처리
+    if (CurWeaponType == EWeaponSlot::THROWABLE_WEAPON)
+    {
+        AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(GetCurWeapon());
+        if (IsValid(ThrowingWeapon))
+        {
+            // 이미 쿠킹이 시작되었고, 아직 손에서 떠나지 않은 투척류라면 땅에 떨굼
+            if (ThrowingWeapon->GetIsCooked() && ThrowingWeapon->GetAttachParentActor())
+                return ThrowingWeapon->ReleaseOnGround();
+        }
+    }
+
+    // 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기
+    GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
+    OwnerCharacter->SetHandState(EHandState::UNARMED);
+
+    // 총기류 예외처리
+    if (AC_Gun* Gun = Cast<AC_Gun>(GetCurWeapon())) Gun->BackToMainCamera();
+
+    return true;
+}
+
+bool UC_EquippedComponent::TryReAttachCurWeaponToHand()
+{
+    if (!GetCurWeapon()) return false;
+
+    SetNextWeaponType(CurWeaponType);
+    FPriorityAnimMontage DrawMontage = GetCurWeapon()->GetCurDrawMontage();
+    OwnerCharacter->PlayAnimMontage(DrawMontage);
+
+    return true;
 }
 
 void UC_EquippedComponent::OnSheathEnd()

@@ -24,8 +24,8 @@ public:
     /// MyItemListWidget(UI에 보이는 Inventory의 itemlist)를 초기화 하는 함수.
     /// </summary>
     /// <param name="itemlist"></param>
-    UFUNCTION(BlueprintCallable)
-    void AddTMapItem(TMap<FString, AC_Item*> itemlist);
+    //UFUNCTION(BlueprintCallable)
+    void AddTMapItem(TMap<FString, TArray<AC_Item*>> itemlist);
 
     /// <summary>
     /// AroundItemListWidget를 초기화 하는 함수.

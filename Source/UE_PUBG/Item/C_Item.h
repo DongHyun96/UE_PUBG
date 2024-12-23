@@ -119,7 +119,10 @@ struct FItemData : public FTableRowBase
 	//FSoftObjectPath ItemMeshPath{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	uint8 ItemStack = 0;
+	uint8 ItemCurStack = 0;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	uint8 ItemMaxStack = 0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	float ItemVolume = 0;
@@ -207,11 +210,11 @@ public:
 
 	//아이템의 스택을 1 올려줌.
 	UFUNCTION(BlueprintCallable)
-	void AddItemStack() { ItemDatas.ItemStack += 1; }
+	void AddItemStack() { ItemDatas.ItemCurStack += 1; }
 	
 	//아이템의 스택을 1 내려줌.
 	UFUNCTION(BlueprintCallable)
-	void DeductItemStack() { ItemDatas.ItemStack -= 1; }
+	void DeductItemStack() { ItemDatas.ItemCurStack -= 1; }
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool MoveToInven(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToInven, return false;);
@@ -241,7 +244,7 @@ public:
 	float GetOnceVolume() { return ItemDatas.ItemVolume; }
 
 	UFUNCTION(BlueprintCallable)
-	float GetAllVolume() { return ItemDatas.ItemVolume * ItemDatas.ItemStack; }
+	float GetAllVolume() { return ItemDatas.ItemVolume * ItemDatas.ItemCurStack; }
 
 	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 

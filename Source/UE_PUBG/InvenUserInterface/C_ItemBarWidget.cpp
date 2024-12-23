@@ -7,6 +7,7 @@
 
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Components/Border.h"
 
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetTree.h"
@@ -17,7 +18,7 @@
 #include "TimerManager.h"
 
 #include "Character/Component/C_InvenSystem.h"
-
+//#include "NavigationSystem.h"
 #include "Utility/C_Util.h"
 
 void UC_ItemBarWidget::NativeConstruct()
@@ -33,7 +34,7 @@ void UC_ItemBarWidget::NativeConstruct()
 	//ItemStackBlock = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), FName("ItemStackBlock1"));
 	//this->SetIsFocusable(true);
 
-	//SetIsFocusable(false);
+	SetIsFocusable(false);
 
 	if (!OwnerCharacter)
 	{
@@ -108,8 +109,9 @@ FReply UC_ItemBarWidget::NativeOnKeyDown(const FGeometry& MyGeometry, const FKey
 	if (InKeyEvent.GetKey() == EKeys::Tab)
 	{
 		// Tab 키 입력을 처리하고 더 이상 전파되지 않도록 함
-		OwnerCharacter->GetInvenSystem()->OpenInvenUI();
-		return FReply::Handled();
+		//OwnerCharacter->GetInvenSystem()->OpenInvenUI();
+		return FReply::Unhandled();
+
 	}
 
 	// 다른 키 입력은 기본 처리로 넘어감
@@ -122,12 +124,40 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	//dragdrop class를 새로 만들어 사용해야 할 수 있음.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 	
+	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemIcon);//크기및 형태 조절하기.
+
+	UBorder* Border = NewObject<UBorder>();
+	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
+	Border->SetBrushColor(BorderColor);
+
+	//Border->SetPadding(FMargin(2.0f)); 패딩이 필요하면 사용하기.
+
+	UImage* DragVisual = NewObject<UImage>(Texture);
+
+	DragVisual->SetBrushFromTexture(Texture);
+	//DragVisual->SetBrushFromTexture(Texture);
+	DragVisual->Brush.ImageSize = FVector2D(64.f, 64.f);
+	Border->SetContent(DragVisual);
+
+	DragOperation->DefaultDragVisual = Border;
+
+	//UObject* ResourceObject = ItemImage1->Brush.GetResourceObject();
+	//UTexture2D* Texture = Cast<UTexture2D>(ResourceObject);
+	//
+	//UImage* DragVisual = NewObject<UImage>(Texture);
+	//DragVisual->SetBrushFromTexture(Texture);
+	//
+	//DragOperation->DefaultDragVisual = DragVisual;
+
 	//DragOperation->DefaultDragVisual = ItemImage1; // 드래그 시 아이템의 미리보기 이미지
-	DragOperation->DefaultDragVisual = this; // 드래그 시 아이템의 미리보기 이미지
+	//DragOperation->DefaultDragVisual = this; // 드래그 시 아이템의 미리보기 이미지
 
 	DragOperation->Payload = CachedItem; // 드래그 중 전달할 데이터 (아이템)
-	DragOperation->Pivot = EDragPivot::MouseDown;
+	//DragOperation->Pivot = EDragPivot::MouseDown;
+	DragOperation->Pivot = EDragPivot::CenterCenter;
+
 	DragOperation->DraggedItem = CachedItem;
+
 
 	//오너캐릭터 체크
 	if (!OwnerCharacter)
@@ -135,7 +165,7 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 		UC_Util::Print("ItemBarWidget have not OwnerCharacter!!");
 		return;
 	}
-
+	this->Visibility = ESlateVisibility::SelfHitTestInvisible;
 	OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 	
 	//OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetItemListZorder(CachedItem->GetOwnerCharacter());
@@ -192,18 +222,18 @@ void UC_ItemBarWidget::InitBar(AC_Item* item)
 		ItemName1->SetText(FText::FromString(item->GetItemDatas().ItemName));
 
 
-		if (item->GetItemDatas().ItemStack == 0)
+		if (item->GetItemDatas().ItemCurStack == 0)
 			ItemStackBlock1->SetVisibility(ESlateVisibility::Hidden);
 		else
-			ItemStackBlock1->SetText(FText::AsNumber(item->GetItemDatas().ItemStack));
+			ItemStackBlock1->SetText(FText::AsNumber(item->GetItemDatas().ItemCurStack));
 		//AddToViewport();
-		SetVisibility(ESlateVisibility::Visible);
+		//SetVisibility(ESlateVisibility::Visible);
 
 	}
 	else
 	{
 		UC_Util::Print("NO CachedItem!!", FColor::Red, 5.0f);
-		SetVisibility(ESlateVisibility::Hidden);
+		//SetVisibility(ESlateVisibility::Hidden);
 		//RemoveFromViewport();
 		UC_Util::Print("Visibility::Hidden");
 	}

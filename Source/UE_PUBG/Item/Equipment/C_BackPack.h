@@ -58,6 +58,8 @@ public:
 
 	bool MoveToAround(AC_BasicCharacter* Character) override;
 
+	bool MoveToSlot(AC_BasicCharacter* Character) override;
+
 protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//uint8 Level;

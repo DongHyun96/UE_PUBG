@@ -28,4 +28,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> SniperReloadMontages{};
 	virtual bool GetIsPlayingMontagesOfAny();
+protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FRotator RelativeRotationOnCrawl = FRotator(0.0f, 0.0f, 0.0f); // Pitch, Yaw, Roll
+	void SetRelativeRotationOnCrawl();
+public:
+	FRotator GetNewRelativeRotationOnCrawl() { return RelativeRotationOnCrawl; }
 };

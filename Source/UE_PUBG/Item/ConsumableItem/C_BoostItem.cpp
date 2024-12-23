@@ -39,7 +39,7 @@ void AC_BoostItem::HandleActivatingState()
 void AC_BoostItem::HandleActivateCompletedState()
 {
 	ItemUser->GetStatComponent()->AddBoost(BoostAmount);
-	if (ItemDatas.ItemStack > 1)
+	if (ItemDatas.ItemCurStack > 1)
 		UsingTimer = 0.f;
 	ConsumableItemState = EConsumableItemState::USED;
 }

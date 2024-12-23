@@ -11,6 +11,8 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Utility/C_Util.h"
+
 // Sets default values for this component's properties
 UC_InvenSystem::UC_InvenSystem()
 {
@@ -58,7 +60,8 @@ void UC_InvenSystem::InitializeList()
 		InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
 		InvenUI->SetOwnerCharacter(OwnerCharacter);
 	}
-	InvenUI->InitListView();
+	//InvenUI->InitListView();
+	InvenUI->InitWidget();
 }
 
 void UC_InvenSystem::OpenInvenUI()
@@ -119,6 +122,8 @@ void UC_InvenSystem::ShowInvenUI()
 
 void UC_InvenSystem::CloseInvenUI()
 {
+	UC_Util::Print("CloseInvenUI");
+
 	isPanelOpened = false;
 
 	if (!PlayerController) 

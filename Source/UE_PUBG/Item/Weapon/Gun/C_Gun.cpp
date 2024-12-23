@@ -336,7 +336,7 @@ bool AC_Gun::MoveToAround(AC_BasicCharacter* Character)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 
-	equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
+	//equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
 
 	//SpawnItem(Character);
 
@@ -348,6 +348,75 @@ bool AC_Gun::MoveToAround(AC_BasicCharacter* Character)
 	SetActorEnableCollision(true);
 
 	return true;
+}
+
+bool AC_Gun::MoveToSlot(AC_BasicCharacter* Character)
+{
+	//TODO : PickUpItem 내용으로 우선 만든거라 다시 만들어야함. 그리고 MainGun과 SubGun slot의 이동을 고민해야 함.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
+	EWeaponSlot Slot = EWeaponSlot::MAIN_GUN;
+
+	switch (Slot)
+	{
+	case EWeaponSlot::NONE:
+		break;
+	case EWeaponSlot::MAIN_GUN:
+		//Main Gun Slot에 총이 없다면 실행
+		if (!equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN])
+		{
+			equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
+
+			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
+			SetActorHiddenInGame(true);
+			SetActorEnableCollision(false);
+
+			SetActorHiddenInGame(false);
+			SetActorEnableCollision(true);
+			return true;
+		}
+		//Slot = EWeaponSlot::SUB_GUN;
+	case EWeaponSlot::SUB_GUN:
+		//Sub Gun Slot에 총이 없다면 실행
+		if (!equipComp->GetWeapons()[EWeaponSlot::SUB_GUN])
+		{
+			equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+
+			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
+			SetActorHiddenInGame(true);
+			SetActorEnableCollision(false);
+
+			SetActorHiddenInGame(false);
+			SetActorEnableCollision(true);
+
+			return true;
+		}
+		break;
+	case EWeaponSlot::MELEE_WEAPON:
+		break;
+	case EWeaponSlot::THROWABLE_WEAPON:
+		break;
+	default:
+		break;
+	}
+
+	//Main, Sub 모두 총이 있는 경우.
+	EHandState HandState = Character->GetHandState();
+	AC_Weapon* DropGun = nullptr;
+	if (HandState == EHandState::WEAPON_GUN)
+	{
+		EWeaponSlot curSlot = equipComp->GetCurWeaponType();
+
+		//제대로 총을 바꾸는지 확인해야함, SetSlotWeapon과 DetachmentItem의 순서를 바꿔야 할 수 도 있음.
+		DropGun = equipComp->SetSlotWeapon(curSlot, this);
+		DropGun->DetachmentItem();
+		return true;
+	}
+	else
+	{
+		DropGun = equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+		DropGun->DetachmentItem();
+		return true;
+	}
 }
 
 void AC_Gun::PickUpItem(AC_BasicCharacter* Character)

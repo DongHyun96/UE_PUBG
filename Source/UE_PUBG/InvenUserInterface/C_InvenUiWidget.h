@@ -16,6 +16,7 @@ class UE_PUBG_API UC_InvenUiWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+
 	UFUNCTION(BlueprintCallable)
 	void SetOwnerCharacter(class AC_BasicCharacter* Character) { OwnerCharacter = Character; }
 
@@ -93,6 +94,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UProgressBar* maxVolumeBar = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UC_EquipmentPanel* EquipmentPanel = nullptr;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

@@ -6,7 +6,7 @@
 #include "InvenUserInterface/C_MainGunWidget.h"
 #include "InvenUserInterface/C_ThrowableWidget.h"
 #include "InvenUserInterface/C_EquipSlot.h"
-
+#include "InvenUserInterface/C_EquipmentPanel.h"
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/TextBlock.h"
@@ -27,7 +27,10 @@ void UC_InvenUiWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
+    //FSlateApplication::Get().SetNavigationConfig(MakeShared<FNavigationConfig>());
 
+
+    SetIsFocusable(false);
     //InvenCanvas = Cast<UCanvasPanel>(GetWidgetFromName(FName("InvenCanvas1")));
     
     if (InvenCanvas)
@@ -119,6 +122,8 @@ void UC_InvenUiWidget::InitWidget()
 
     UpdateVolumeBar(OwnerCharacter);
 
+    EquipmentPanel->InitializeWidget();
+
     if (!IsValid(MainGunSlot)) return;
 
     MainGunSlot->SetWeaponBoxNum(1);
@@ -143,18 +148,23 @@ void UC_InvenUiWidget::InitWidget()
 
 }
 
+
 void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
 {
     if (IsValid(MainGunSlot))
-        MainGunSlot  ->SetOwnerCharacter(Character);
+        MainGunSlot  ->SetOwnerCharacter(Cast<AC_Player>(Character));
     if (IsValid(SubGunSlot))
-        SubGunSlot   ->SetOwnerCharacter(Character);
+        SubGunSlot   ->SetOwnerCharacter(Cast<AC_Player>(Character));
     if (IsValid(MeleeSlot))
-        MeleeSlot    ->SetOwnerCharacter(Character);
+        MeleeSlot    ->SetOwnerCharacter(Cast<AC_Player>(Character));
     if (IsValid(ThrowableSlot))
-        ThrowableSlot->SetOwnerCharacter(Character);
+        ThrowableSlot->SetOwnerCharacter(Cast<AC_Player>(Character));
     if (IsValid(BackPackSlot))
-        BackPackSlot->SetOwnerCharacter(Character);
+        BackPackSlot->SetOwnerCharacter(Cast<AC_Player>(Character));
+
+    EquipmentPanel->SetOwnerChracter(Character);
+
+    EquipmentPanel->SetWidgetOwnerCharacter(Character);
 }
 
 void UC_InvenUiWidget::InitListView()
@@ -163,7 +173,7 @@ void UC_InvenUiWidget::InitListView()
 
     if (MyItemListWidget)
     {
-        TMap<FString, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
+        TMap<FString, TArray<AC_Item*>> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
         MyItems = OwnerCharacter->GetInvenComponent()->GetTestMyItems();
         MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
 

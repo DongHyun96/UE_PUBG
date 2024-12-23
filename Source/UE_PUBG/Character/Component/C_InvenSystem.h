@@ -45,13 +45,13 @@ public:
 	/// <summary>
 	/// InvenUI를 켜주는 함수.
 	/// </summary>
-	UFUNCTION(BlueprintCallable)
+	//UFUNCTION(BlueprintCallable)
 	void ShowInvenUI();
 
 	/// <summary>
 	/// InvenUi를 꺼주는 함수.
 	/// </summary>
-	UFUNCTION(BlueprintCallable)
+	//UFUNCTION(BlueprintCallable)
 	void CloseInvenUI();
 
 public:
