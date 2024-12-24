@@ -35,14 +35,14 @@ FReply UC_ThrowableWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 	{
 		if (CachedItem)
 		{   // 우클릭 이벤트 실행
-			if (CachedItem->MoveToInven(OwnerCharacter))
+			if (CachedItem->LegacyMoveToInven(OwnerCharacter))
 			{
 				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(WeaponSlotType, nullptr);
 				CachedItem = nullptr;
 			}
 			else
 			{
-				CachedItem->MoveToAround(OwnerCharacter);
+				CachedItem->LegacyMoveToAround(OwnerCharacter);
 				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(WeaponSlotType, nullptr);
 				CachedItem = nullptr;
 			}

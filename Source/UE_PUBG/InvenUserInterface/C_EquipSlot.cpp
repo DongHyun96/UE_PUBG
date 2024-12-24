@@ -23,7 +23,7 @@ FReply UC_EquipSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const 
 		if (CachedItem)
 		{   // 우클릭 이벤트 실행
 			//EquippedItem->Interaction(OwnerCharacter);
-			CachedItem->MoveToAround(OwnerCharacter);
+			CachedItem->LegacyMoveToAround(OwnerCharacter);
 			CachedItem = nullptr;
 			//InitInvenUIWidget();
 		

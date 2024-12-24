@@ -113,3 +113,114 @@ AC_Item* AC_Item::SpawnItem(AC_BasicCharacter* Character)
 	SpawnItem->SetActorEnableCollision(false);//생성될 때 무조건 OverlapBegine에 반응해서 우선 꺼뒀음.
 	return SpawnItem;
 }
+
+bool AC_Item::MoveToInven(AC_BasicCharacter* Character)
+{
+	
+	switch (GetItemDatas().ItemPlace)
+	{
+	case EItemPlace::AROUND:
+		MoveAroundToInven(Character);
+		break;
+	case EItemPlace::INVEN:
+		MoveInvenToInven(Character);
+		break;
+	case EItemPlace::SLOT:
+		MoveSlotToInven(Character);
+		break;
+	default:
+		break;
+	}
+	return false;
+}
+
+bool AC_Item::MoveToAround(AC_BasicCharacter* Character)
+{
+	switch (GetItemDatas().ItemPlace)
+	{
+	case EItemPlace::AROUND:
+		MoveAroundToAround(Character);
+		break;
+	case EItemPlace::INVEN:
+		MoveInvenToAround(Character);
+		break;
+	case EItemPlace::SLOT:
+		MoveSlotToAround(Character);
+		break;
+	default:
+		break;
+	}
+	return false;
+}
+
+bool AC_Item::MoveToSlot(AC_BasicCharacter* Character)
+{
+	switch (GetItemDatas().ItemPlace)
+	{
+	case EItemPlace::AROUND:
+		MoveAroundToSlot(Character);
+		break;
+	case EItemPlace::INVEN:
+		MoveInvenToSlot(Character);
+		break;
+	case EItemPlace::SLOT:
+		MoveSlotToSlot(Character);
+		break;
+	default:
+		break;
+	}
+	return false;
+}
+
+bool AC_Item::MoveSlotToInven(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_Item::MoveSlotToSlot(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_Item::MoveInvenToAround(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_Item::MoveInvenToInven(AC_BasicCharacter* Character)
+{
+	return false;
+}			  
+bool AC_Item::MoveInvenToSlot(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_Item::MoveAroundToAround(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_Item::MoveAroundToInven(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_Item::MoveAroundToSlot(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+void AC_Item::DropItem(AC_BasicCharacter* Character)
+{
+	//TODO : 아이템이 장착(Attach)되었던 상태를 해제하는 작업에 관한 처리 생각
+	//TODO : 분할해서 버리는 경우 새로 스폰해주어야함.
+	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	SetOwnerCharacter(nullptr);               //OwnerCharacter 해제
+	SetActorHiddenInGame(false);			  //모습이 보이도록 Hidden 해제.
+	SetActorEnableCollision(true);			  //Overlap가능 하도록 Collision On
+	//Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);//이건 투척류만 사용하는 기능.
+
+	//바닥 레이 캐스팅 받아와서 바닥에 아이템 생성하기.
+	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
+}

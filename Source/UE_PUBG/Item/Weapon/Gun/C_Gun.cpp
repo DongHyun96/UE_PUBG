@@ -332,7 +332,7 @@ void AC_Gun::SetOwnerCharacter(AC_BasicCharacter * InOwnerCharacter)
 	SetAimSightWidget();
 }
 
-bool AC_Gun::MoveToAround(AC_BasicCharacter* Character)
+bool AC_Gun::LegacyMoveToAround(AC_BasicCharacter* Character)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 
@@ -350,7 +350,7 @@ bool AC_Gun::MoveToAround(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_Gun::MoveToSlot(AC_BasicCharacter* Character)
+bool AC_Gun::LegacyMoveToSlot(AC_BasicCharacter* Character)
 {
 	//TODO : PickUpItem 내용으로 우선 만든거라 다시 만들어야함. 그리고 MainGun과 SubGun slot의 이동을 고민해야 함.
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();

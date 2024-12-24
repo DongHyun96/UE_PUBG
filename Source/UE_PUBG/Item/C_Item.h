@@ -206,7 +206,7 @@ public:
 	/// RemoveItemFromInventory
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	virtual void DropItem(AC_BasicCharacter* Character )PURE_VIRTUAL(AC_Item:DropItem, );
+	virtual void DropItem(AC_BasicCharacter* Character); //PURE_VIRTUAL(AC_Item:DropItem, );
 
 	//아이템의 스택을 1 올려줌.
 	UFUNCTION(BlueprintCallable)
@@ -217,13 +217,22 @@ public:
 	void DeductItemStack() { ItemDatas.ItemCurStack -= 1; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool MoveToInven(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToInven, return false;);
+	virtual bool LegacyMoveToInven(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToInven, return false;);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual bool LegacyMoveToAround(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToAround, return false;);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual bool LegacyMoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToSlot, return false;);
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool MoveToAround(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToAround, return false;);
-
+	virtual bool MoveToInven(AC_BasicCharacter* Character);
+	
 	UFUNCTION(BlueprintCallable)
-	virtual bool MoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToSlot, return false;);
+	virtual bool MoveToAround(AC_BasicCharacter* Character);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual bool MoveToSlot(AC_BasicCharacter* Character);
 
 	UFUNCTION(BlueprintCallable)
 	virtual AC_Item* SpawnItem(AC_BasicCharacter* Character);
@@ -232,6 +241,19 @@ public:
 
 	//캐릭터의 밑바닥을 라인 트레이스로 location을 반환해줌.
 	FVector GetGroundLocation(AC_BasicCharacter* Character);
+
+private:
+	virtual bool MoveSlotToAround(AC_BasicCharacter* Character);
+	virtual bool MoveSlotToInven(AC_BasicCharacter* Character);
+	virtual bool MoveSlotToSlot(AC_BasicCharacter* Character);
+
+	virtual bool MoveInvenToAround(AC_BasicCharacter* Character);
+	virtual bool MoveInvenToInven(AC_BasicCharacter* Character);
+	virtual bool MoveInvenToSlot(AC_BasicCharacter* Character);
+
+	virtual bool MoveAroundToAround(AC_BasicCharacter* Character);
+	virtual bool MoveAroundToInven(AC_BasicCharacter* Character);
+	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character);
 
 public:
 	FItemData GetItemDatas() { return ItemDatas; }
@@ -248,9 +270,6 @@ public:
 
 	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 
-private:
-	
-	
 
 protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")

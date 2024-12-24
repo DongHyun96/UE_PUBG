@@ -51,14 +51,14 @@ public:
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns></returns>
-	bool MoveToAround(AC_BasicCharacter* Character) override;
+	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
 	/// <summary>
 	/// 아이템을 슬롯으로 이동.
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns>true면 이동 성공, false면 실패</returns>
-	bool MoveToSlot(AC_BasicCharacter* Character) override;
+	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 
 public:
 

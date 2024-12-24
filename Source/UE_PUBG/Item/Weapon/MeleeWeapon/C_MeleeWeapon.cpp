@@ -95,16 +95,16 @@ bool AC_MeleeWeapon::Interaction(AC_BasicCharacter* Character)
 	switch (ItemDatas.ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		if (curWeapaon) return MoveToInven(Character);
+		if (curWeapaon) return LegacyMoveToInven(Character);
 	case EItemPlace::INVEN:
-		return MoveToSlot(Character);
+		return LegacyMoveToSlot(Character);
 	default:
 		break;
 	}
 	return false;
 }
 
-bool AC_MeleeWeapon::MoveToInven(AC_BasicCharacter* Character)
+bool AC_MeleeWeapon::LegacyMoveToInven(AC_BasicCharacter* Character)
 {
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 
@@ -118,7 +118,7 @@ bool AC_MeleeWeapon::MoveToInven(AC_BasicCharacter* Character)
 	return true; 
 }
 
-bool AC_MeleeWeapon::MoveToAround(AC_BasicCharacter* Character)
+bool AC_MeleeWeapon::LegacyMoveToAround(AC_BasicCharacter* Character)
 {
 	if (!Character) return false;
 
@@ -138,7 +138,7 @@ bool AC_MeleeWeapon::MoveToAround(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_MeleeWeapon::MoveToSlot(AC_BasicCharacter* Character)
+bool AC_MeleeWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();

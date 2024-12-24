@@ -78,7 +78,7 @@ public:
 	EShootingMode GetCurrentShootingMode() { return CurrentShootingMode; }
 	class UCameraComponent* GetGunCamera() { return AimSightCamera; }
 
-	bool MoveToAround(AC_BasicCharacter* Character) override;
+	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
 	bool MoveToSlot(AC_BasicCharacter* Character) override;
 

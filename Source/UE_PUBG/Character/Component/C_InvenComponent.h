@@ -7,6 +7,9 @@
 #include "Item/C_Item.h"
 #include "InvenUserInterface/C_InvenUiWidget.h"
 #include "C_InvenComponent.generated.h"
+
+#define MAX_STACK 120
+
 UENUM(BlueprintType)
 enum class EBackPackLevel : uint8
 {

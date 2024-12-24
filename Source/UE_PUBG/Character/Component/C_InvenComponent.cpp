@@ -419,10 +419,23 @@ AC_Item* UC_InvenComponent::FindMyItem(FString itemName)
 void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 {
 	//AC_Item* FoundItem = FindMyItem(item); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;
+	if (!IsValid(item)) return; //nullptr가 들어 오면 return.
 	if (TArray<AC_Item*>* FoundArray = testMyItems.Find(item->GetItemDatas().ItemName))
 	{
+		//item과 같은 이름의 아이템이 있다면 TArray에 추가?
 		//if (item->GetItemDatas().ItemCurStack < item->GetItemDatas().ItemMaxStack)
-		FoundArray->Emplace(item);
+		int sum = FoundArray->Last()->GetItemDatas().ItemCurStack + item->GetItemDatas().ItemCurStack;
+		if (sum <= MAX_STACK)
+		{
+			FoundArray->Last()->SetItemStack(sum);
+			item->Destroy();//가지고 있던 아이템에 새로 넣는 아이템을 다 넣었으므로 삭제.
+		}
+		else
+		{
+			FoundArray->Last()->SetItemStack(MAX_STACK);
+			item->SetItemStack(MAX_STACK - FoundArray->Last()->GetItemDatas().ItemCurStack);
+			FoundArray->Emplace(item);
+		}
 	}
 	else 
 	{

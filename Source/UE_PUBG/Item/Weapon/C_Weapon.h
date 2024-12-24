@@ -117,6 +117,18 @@ public:
 public:
 
 	void SetRelativeTranformToInitial() { SetActorRelativeTransform(InitialRelativeTransform); }
+private:
+	virtual bool MoveSlotToAround(AC_BasicCharacter* Character) override;
+	virtual bool MoveSlotToInven(AC_BasicCharacter* Character) override;
+	virtual bool MoveSlotToSlot(AC_BasicCharacter* Character) override;
+
+	virtual bool MoveInvenToAround(AC_BasicCharacter* Character) override;
+	virtual bool MoveInvenToInven(AC_BasicCharacter* Character) override;
+	virtual bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
+
+	virtual bool MoveAroundToAround(AC_BasicCharacter* Character) override;
+	virtual bool MoveAroundToInven(AC_BasicCharacter* Character) override;
+	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 
 protected:
 

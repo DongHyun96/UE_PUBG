@@ -142,7 +142,7 @@ void AC_BackPack::PickUpItem(AC_BasicCharacter* Character)
 
 }
 
-bool AC_BackPack::MoveToAround(AC_BasicCharacter* Character)
+bool AC_BackPack::LegacyMoveToAround(AC_BasicCharacter* Character)
 {
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	AC_BackPack* curBackPack = nullptr;
@@ -168,7 +168,7 @@ bool AC_BackPack::MoveToAround(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_BackPack::MoveToSlot(AC_BasicCharacter* Character)
+bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
 {
 	//TODO : PickUpItem 내용으로 우선 구현한 것. 다시 구현하기.
 	//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
