@@ -80,7 +80,7 @@ public:
 
 	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
-	bool MoveToSlot(AC_BasicCharacter* Character) override;
+	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 
 	//AC_Item* SpawnItem(AC_BasicCharacter* Character) override;
 

@@ -117,6 +117,7 @@ public:
 public:
 
 	void SetRelativeTranformToInitial() { SetActorRelativeTransform(InitialRelativeTransform); }
+
 private:
 	virtual bool MoveSlotToAround(AC_BasicCharacter* Character) override;
 	virtual bool MoveSlotToInven(AC_BasicCharacter* Character) override;

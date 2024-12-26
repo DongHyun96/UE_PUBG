@@ -137,42 +137,47 @@ bool AC_Weapon::Interaction(AC_BasicCharacter* Character)
 	return false;
 }
 
-bool MoveSlotToInven(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveSlotToAround(AC_BasicCharacter* Character)
 {
 	return false;
 }
 
-bool MoveSlotToSlot(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveSlotToInven(AC_BasicCharacter* Character)
 {
 	return false;
 }
 
-bool MoveInvenToAround(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveSlotToSlot(AC_BasicCharacter* Character)
 {
 	return false;
 }
 
-bool MoveInvenToInven(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveInvenToAround(AC_BasicCharacter* Character)
 {
 	return false;
 }
 
-bool MoveInvenToSlot(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveInvenToInven(AC_BasicCharacter* Character)
 {
 	return false;
 }
 
-bool MoveAroundToAround(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 {
 	return false;
 }
 
-bool MoveAroundToInven(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveAroundToAround(AC_BasicCharacter* Character)
 {
 	return false;
 }
 
-bool MoveAroundToSlot(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveAroundToInven(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_Weapon::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
 	return false;
 }

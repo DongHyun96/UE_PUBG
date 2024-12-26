@@ -629,10 +629,9 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 		AC_ThrowingWeapon* SwapItem = Cast<AC_ThrowingWeapon>(SpawnItem(Character));
 		SwapItem->SetItemStack(1);
 		equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
-
+	}
 	invenComp->AddItemToMyList(curWeapon);//내부에서 매개변수 nullptr가 들어오면 return시켜버림. TODO : curWeapon을 정의한 뒤에 equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]의 값이 바뀌었으므로 역참조를 하면 문제가 생김.
 	//if (curWeapon) //TODO : InvenComp->AddItemToMyList(nullptr)이 문제 생기면 활성화 
-	}
 	//Lagacy code
 	//if (curWeapon)
 	//{
@@ -741,6 +740,7 @@ bool AC_ThrowingWeapon::MoveAroundToSlot(AC_BasicCharacter* Character)
 		SwapItem->SetItemStack(1);
 		equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
 	}
+	return true;
 }
 
 void AC_ThrowingWeapon::InitTestPool(AC_BasicCharacter* InOwnerCharacter, UClass* Class, UC_EquippedComponent* EquippedComponent)

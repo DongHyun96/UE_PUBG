@@ -43,7 +43,7 @@ public:
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns></returns>
-	bool MoveToInven(AC_BasicCharacter* Character) override;
+	bool LegacyMoveToInven(AC_BasicCharacter* Character) override;
 
 	/// <summary>
 	/// 해당 아이템(객체)를 얼마나 버릴 것인지 계산해서 버린다.(이것은 후에 나눠버리기 기능을 위해 uint8정도를 받아 사용하면 좋을듯.)

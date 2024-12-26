@@ -172,6 +172,10 @@ bool AC_Item::MoveToSlot(AC_BasicCharacter* Character)
 	return false;
 }
 
+bool AC_Item::MoveSlotToAround(AC_BasicCharacter* Character)
+{
+	return false;
+}
 bool AC_Item::MoveSlotToInven(AC_BasicCharacter* Character)
 {
 	return false;
