@@ -107,6 +107,22 @@ void AC_BasicCharacter::BeginPlay()
 void AC_BasicCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	/*switch (HandState)
+	{
+	case EHandState::UNARMED: UC_Util::Print("UnArmed");
+		break;
+	case EHandState::WEAPON_GUN: UC_Util::Print("Gun");
+		break;
+	case EHandState::WEAPON_MELEE: UC_Util::Print("Melee");
+		break;
+	case EHandState::WEAPON_THROWABLE: UC_Util::Print("Throwable");
+		break;
+	case EHandState::HANDSTATE_MAX:
+		break;
+	default:
+		break;
+	}*/
 }
 
 // Called to bind functionality to input

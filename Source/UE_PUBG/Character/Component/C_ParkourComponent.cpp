@@ -296,12 +296,15 @@ bool UC_ParkourComponent::CheckParkourTarget(FParkourDescriptor& CurParkourDesc)
 		Dest,
 		FQuat::Identity,
 		ECC_Visibility,
-		FCollisionShape::MakeSphere(5.f),
+		FCollisionShape::MakeSphere(15.f),
 		CollisionParams
 	);
 
 	// 파쿠르 할 수 있는 높이가 아님
 	if (NotPossibleHeight) return false;
+
+	// <HeightLevel, HitLocation> pair
+	TArray<TPair<UINT, FVector>> HitLocations{};
 
 	for (int i = 0; i < 7; i++)
 	{
@@ -315,22 +318,35 @@ bool UC_ParkourComponent::CheckParkourTarget(FParkourDescriptor& CurParkourDesc)
 			DestLocation,
 			FQuat::Identity,
 			ECC_Visibility,
-			FCollisionShape::MakeSphere(5.f),
+			FCollisionShape::MakeSphere(15.f),
 			CollisionParams
 		);
 
 		DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, 5.f, 4, FColor::Red, true);
-		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 5.f, 4, FColor::Yellow, true);
 
-		if (HasHit)
-		{
-			//if (i < 4) // High Parkour else Low Parkour
-			CurParkourDesc.bIsLowAction				= (i < 4) ? false : true;
-			CurParkourDesc.FirstObstacleHitLocation = HitResult.Location;
-			return true;
-		}
+		if (HasHit) HitLocations.Add({ i, HitResult.Location });
 	}
-	return false;
+
+	if (HitLocations.IsEmpty()) return false;
+
+	// HitLocations 중 캐릭터 높이와 가장 가까운 지점을 FirstObstacleHitLocation 지점으로 사용할 예정
+	// -> 캐릭터와 가장 가까운 높이 지점의 물체에 대해 파쿠르를 우선적으로 진행
+	TPair<UINT, FVector> Picked{};
+	float CharacterZ	= OwnerCharacter->GetActorLocation().Z;
+	Picked.Value.Z		= CharacterZ + 1000.f;
+	for (auto& HeightLv_HitLocationPair : HitLocations)
+	{
+		UINT HeightLevel	= HeightLv_HitLocationPair.Key;
+		FVector HitLocation = HeightLv_HitLocationPair.Value;
+
+		if (FMath::Abs(HitLocation.Z - CharacterZ) < FMath::Abs(Picked.Value.Z - CharacterZ))
+			Picked = HeightLv_HitLocationPair;
+
+	}
+
+	CurParkourDesc.bIsLowAction = (Picked.Key >= 4);
+	CurParkourDesc.FirstObstacleHitLocation = Picked.Value;
+	return true;
 }
 
 bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor& CurParkourDesc)
@@ -346,50 +362,101 @@ bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor&
 	
 	bool HasHit{};
 
-	FVector MantlingMiddlePos{};
+	// VerticalHitPositions First start 조사
+	FVector StartLocation	= CurParkourDesc.FirstObstacleHitLocation + FVector::UnitZ() * 150.f;
+	FVector DestLocation	= StartLocation - FVector::UnitZ() * 250.f;
+	TArray<FHitResult> HitResults{};
 
-	for (int distanceLevel = 0; distanceLevel < 4; distanceLevel++)
+	HasHit = GetWorld()->SweepMultiByChannel
+	(
+		HitResults,
+		StartLocation,
+		DestLocation,
+		FQuat::Identity,
+		ECC_Visibility,
+		FCollisionShape::MakeSphere(15.f),
+		CollisionParams
+	);
+
+	DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, 15.f, 4, FColor::Red, true);
+
+	if (!HasHit) return false; // 초기 VerticalHitPositions 제대로 충돌하지 않았다면 return false
+
+	float ZDiff = 1e9;
+	FVector FirstVerticalHitPosition{};
+	for (auto& HitResult : HitResults)
 	{
-		FVector StartLocation = CurParkourDesc.FirstObstacleHitLocation +
-								FVector::UnitZ() * 200.f +
+		// HitResult Z 중 Character Z와 가장 가까운 값을 사용 ->
+		// Character와 가장 가까운 높이의 물체에 파쿠르 시도를 우선적으로 한다고 간주
+		float CurZDiff = FMath::Abs(HitResult.Location.Z - OwnerCharacter->GetActorLocation().Z);
+		if (CurZDiff < ZDiff)
+		{
+			ZDiff = CurZDiff;
+			FirstVerticalHitPosition = HitResult.Location;
+		}
+	}
+
+	CurParkourDesc.VerticalHitPositions.Add(FirstVerticalHitPosition);
+
+	for (int distanceLevel = 1; distanceLevel < 4; distanceLevel++)
+	{
+		StartLocation = CurParkourDesc.FirstObstacleHitLocation +
+								FVector::UnitZ() * 150.f +
 								OwnerCharacter->GetActorForwardVector() * (50.f * distanceLevel);
-		FVector DestLocation = StartLocation - FVector::UnitZ() * 200.f;
+		DestLocation = StartLocation - FVector::UnitZ() * 250.f;
+		HitResults.Empty();
 
-		FHitResult HitResult{};
+		//GetWorld()->SweepMultiByChannel()
 
-		HasHit = GetWorld()->SweepSingleByChannel
+		HasHit = GetWorld()->SweepMultiByChannel
 		(
-			HitResult,
+			HitResults,
 			StartLocation,
 			DestLocation,
 			FQuat::Identity,
 			ECC_Visibility,
-			FCollisionShape::MakeSphere(10.f),
+			FCollisionShape::MakeSphere(15.f),
 			CollisionParams
 		);
 
+		bool CurDistanceLevelInited{};
+
 		if (HasHit)
 		{
-			CurParkourDesc.VerticalHitPositions.Add(HitResult.Location);
-			DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, 5.f, 4, FColor::Red, true);
-			continue;
+			for (auto& HitResult : HitResults)
+			{
+				// 첫 VerticalHitPosition과 +- 30cm 높이 차가 나는 지점 저장
+				if (FMath::Abs(HitResult.Location.Z - FirstVerticalHitPosition.Z) < 30.f)
+				{
+					CurDistanceLevelInited = true;
+					CurParkourDesc.VerticalHitPositions.Add(HitResult.Location);
+					DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, 5.f, 4, FColor::Red, true);
+					break;
+				}
+			}
 		}
 
-		// 첫 Start pos가 제대로 안잡혔을 때
-		if (distanceLevel == 0) return false;
+		// 다음 DistanceLevel 조사
+		if (CurDistanceLevelInited) continue;
 
 		// Set Landing Position
-		FVector Start = HitResult.TraceStart + OwnerCharacter->GetActorForwardVector() * 80.f;
-		FVector End   = Start - FVector::UnitZ() * 1000.f; // TODO - 너무 낮은 높이로 LandPos 잡힐수도 있음 -> Test / 이럴 때에는 Vaulting에서 잘 처리
-		HitResult = {};
+		FVector Start = StartLocation + OwnerCharacter->GetActorForwardVector() * 80.f;
+		FVector End   = Start - FVector::UnitZ() * 1000.f; // 너무 낮은 높이로 LandPos 잡힐수도 있음 -> Test / 이럴 때에는 Vaulting에서 처리
+		HitResults.Empty();
 
-		HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
+		HasHit = GetWorld()->LineTraceMultiByChannel(HitResults, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
 
-		if (HasHit)
+		if (!HasHit) return true;
+
+		for (auto& HitResult : HitResults)
 		{
-			CurParkourDesc.LandPos = HitResult.Location;
-			CurParkourDesc.bLandPosInited = true;
-			return true;
+			// FirstVerticalHitPositionZ보다는 낮고 그 중, 제일 높은 지점을 VaultingLandPos로 사용할 예정
+			if (HitResult.Location.Z < FirstVerticalHitPosition.Z)
+			{
+				CurParkourDesc.LandPos = HitResult.Location;
+				CurParkourDesc.bLandPosInited = true;
+				return true;
+			}
 		}
 	}
 
