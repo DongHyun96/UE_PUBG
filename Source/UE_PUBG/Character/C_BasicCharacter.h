@@ -119,8 +119,6 @@ public:
 
 private:
 
-	// TODO : 얘를 Deprecated 시킬지, 아니면 Priority를 사용 안하고 무조건적으로 재생시키는 AnimMontage도 존재하게끔 놔두는게 좋을지
-	// 후자의 경우 그냥 해당 오버라이딩 함수는 지워버리면 됨
 	/// <summary>
 	/// Deprecated in current UE_PUBG Project : Priority를 적용한 AC_PriorityAnimMontage로 AnimMontage 재생해야 함
 	/// </summary>

@@ -157,8 +157,6 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 
 bool AC_ConsumableItem::CancelActivating()
 {
-	// TODO : 한 캐릭터 안에서 통용된 CancelActivating으로 수정해야 함
-
 	if (ConsumableItemState != EConsumableItemState::ACTIVATING) return false;
 
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
