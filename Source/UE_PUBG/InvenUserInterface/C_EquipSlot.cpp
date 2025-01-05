@@ -23,7 +23,7 @@ FReply UC_EquipSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const 
 		if (CachedItem)
 		{   // 우클릭 이벤트 실행
 			//EquippedItem->Interaction(OwnerCharacter);
-			CachedItem->MoveToAround(OwnerCharacter);
+			CachedItem->LegacyMoveToAround(OwnerCharacter);
 			CachedItem = nullptr;
 			//InitInvenUIWidget();
 		
@@ -65,7 +65,7 @@ void UC_EquipSlot::Init()
 	{
 		if (CachedItem->GetItemDatas().ItemType != SlotItemType) return;
 
-		ItemImage1->SetBrushFromTexture(CachedItem->GetItemDatas().ItemIcon);
+		ItemImage1->SetBrushFromTexture(CachedItem->GetItemDatas().ItemSlotImage);
 		FSlateBrush Brush = ItemImage1->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // 완전 불투명
 		ItemImage1->SetBrush(Brush);

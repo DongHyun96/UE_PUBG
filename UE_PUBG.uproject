@@ -14,7 +14,8 @@
 				"UMGEditor",
 				"UMG",
 				"Water",
-				"MotionWarping"
+				"MotionWarping",
+				"AIModule"
 			]
 		}
 	],

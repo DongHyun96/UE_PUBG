@@ -35,6 +35,7 @@
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 
 #include "GameFramework/SpringArmComponent.h"
+#include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 #include "Item/Attachment/C_AttachableItem.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
@@ -145,7 +146,10 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 	OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::NORIFLE);
 
 	EBackPackLevel BackPackLevel = OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel();
-	if (BackPackLevel == EBackPackLevel::LV0)
+
+	AC_EquipableItem* curBackPack = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK];
+
+	if (!curBackPack)
 	{
 		switch (CurState)
 		{
@@ -332,7 +336,7 @@ void AC_Gun::SetOwnerCharacter(AC_BasicCharacter * InOwnerCharacter)
 	SetAimSightWidget();
 }
 
-bool AC_Gun::MoveToAround(AC_BasicCharacter* Character)
+bool AC_Gun::LegacyMoveToAround(AC_BasicCharacter* Character)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 
@@ -343,14 +347,14 @@ bool AC_Gun::MoveToAround(AC_BasicCharacter* Character)
 	this->SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
 
 	ItemDatas.ItemPlace = EItemPlace::AROUND;
-	DetachmentItem();
+	DetachItem();
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 
 	return true;
 }
 
-bool AC_Gun::MoveToSlot(AC_BasicCharacter* Character)
+bool AC_Gun::LegacyMoveToSlot(AC_BasicCharacter* Character)
 {
 	//TODO : PickUpItem 내용으로 우선 만든거라 다시 만들어야함. 그리고 MainGun과 SubGun slot의 이동을 고민해야 함.
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
@@ -408,13 +412,13 @@ bool AC_Gun::MoveToSlot(AC_BasicCharacter* Character)
 
 		//제대로 총을 바꾸는지 확인해야함, SetSlotWeapon과 DetachmentItem의 순서를 바꿔야 할 수 도 있음.
 		DropGun = equipComp->SetSlotWeapon(curSlot, this);
-		DropGun->DetachmentItem();
+		DropGun->DetachItem();
 		return true;
 	}
 	else
 	{
 		DropGun = equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
-		DropGun->DetachmentItem();
+		DropGun->DetachItem();
 		return true;
 	}
 }
@@ -476,12 +480,12 @@ void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
 		
 		//제대로 총을 바꾸는지 확인해야함, SetSlotWeapon과 DetachmentItem의 순서를 바꿔야 할 수 도 있음.
 		DropGun = equipComp->SetSlotWeapon(curSlot, this);
-		DropGun->DetachmentItem();
+		DropGun->DetachItem();
 	}
 	else
 	{
 		DropGun = equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
-		DropGun->DetachmentItem();
+		DropGun->DetachItem();
 	}
 
 }
@@ -504,13 +508,21 @@ void AC_Gun::CheckPlayerIsRunning()
 
 void AC_Gun::CheckBackPackLevelChange()
 {
-	if (PrevBackPackLevel != OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel())
+	AC_EquipableItem* curBackPack = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK];
+
+	if (curBackPack)
 	{
 		if(OwnerCharacter->GetEquippedComponent()->GetCurWeapon() != this)
 			AttachToHolster(OwnerCharacter->GetMesh());
 	}
 	PrevBackPackLevel = OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel();
 
+}
+
+void AC_Gun::DropItem(AC_BasicCharacter* Character)
+{
+	DetachItem();
+	ItemDatas.ItemPlace = EItemPlace::AROUND;
 }
 
 bool AC_Gun::GetIsPlayingMontagesOfAny()
@@ -555,6 +567,40 @@ bool AC_Gun::ExecuteReloadMontage()
 	return true;
 }
 
+bool AC_Gun::MoveAroundToInven(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character)
+{
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+
+	AC_Gun* currentMainGun = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]);
+	AC_Gun* currentSubGun  = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]);
+
+	if (!currentMainGun)
+	{
+		equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
+		invenComp->RemoveItemToAroundList(this);
+		return true;
+	}
+
+	if (!currentSubGun)
+	{
+		equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+		invenComp->RemoveItemToAroundList(this);
+		return true;
+	}
+	else
+	{
+		AC_Weapon* DroppedGun = equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+		invenComp->RemoveItemToAroundList(this);
+		DroppedGun->DropItem(Character);
+		return true;
+	}
+}
 
 FVector2D AC_Gun::GetRecoilFactors()
 {

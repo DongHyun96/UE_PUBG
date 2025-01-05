@@ -70,8 +70,6 @@ AC_BasicCharacter::AC_BasicCharacter()
 	//DetectionSphere->SetGenerateOverlapEvents(true);
 	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &AC_BasicCharacter::OnOverlapBegin);
 	DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &AC_BasicCharacter::OnOverlapEnd);
-	//CrawlCollider->SetupAttachment(GetMesh());
-
 
 	SwimmingComponent = CreateDefaultSubobject<UC_SwimmingComponent>("SwimmingComponent");
 	SwimmingComponent->SetOwnerCharacter(this);
@@ -99,8 +97,6 @@ void AC_BasicCharacter::BeginPlay()
 
 	//InvenSystem->GetInvenUI()->AddToViewport();
 	//InvenSystem->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
-
-
 }
 
 // Called every frame

@@ -157,8 +157,6 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 
 bool AC_ConsumableItem::CancelActivating()
 {
-	// TODO : 한 캐릭터 안에서 통용된 CancelActivating으로 수정해야 함
-
 	if (ConsumableItemState != EConsumableItemState::ACTIVATING) return false;
 
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
@@ -195,7 +193,7 @@ bool AC_ConsumableItem::Interaction(AC_BasicCharacter* Character)
 	switch (ItemDatas.ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		if (!OwnerCharacter) return MoveToInven(Character);
+		if (!OwnerCharacter) return LegacyMoveToInven(Character);
 	case EItemPlace::INVEN:
 		return StartUsingConsumableItem(Character);
 		//break;
@@ -204,7 +202,7 @@ bool AC_ConsumableItem::Interaction(AC_BasicCharacter* Character)
 	}
 }
 
-bool AC_ConsumableItem::MoveToInven(AC_BasicCharacter* Character)
+bool AC_ConsumableItem::LegacyMoveToInven(AC_BasicCharacter* Character)
 {
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
@@ -281,12 +279,12 @@ bool AC_ConsumableItem::MoveToInven(AC_BasicCharacter* Character)
 	}
 }
 
-bool AC_ConsumableItem::MoveToSlot(AC_BasicCharacter* Character)
+bool AC_ConsumableItem::LegacyMoveToSlot(AC_BasicCharacter* Character)
 {
 	return false;
 }
 
-bool AC_ConsumableItem::MoveToAround(AC_BasicCharacter* Character)
+bool AC_ConsumableItem::LegacyMoveToAround(AC_BasicCharacter* Character)
 {
 	if (!Character) return false;
 

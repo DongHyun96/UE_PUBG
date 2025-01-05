@@ -56,11 +56,11 @@ public:
 
 	bool Interaction(AC_BasicCharacter* Character) override;
 
-	bool MoveToInven(AC_BasicCharacter* Character) override;
+	bool LegacyMoveToInven(AC_BasicCharacter* Character) override;
 
-	bool MoveToSlot(AC_BasicCharacter* Character) override;
+	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 
-	bool MoveToAround(AC_BasicCharacter* Character) override;
+	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
 
 protected:

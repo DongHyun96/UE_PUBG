@@ -38,7 +38,7 @@ void UC_MainGunWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	if (CachedItem->GetItemDatas().ItemType == EItemTypes::MAINGUN)
 		Texture = Cast<UTexture2D>(Cast<AC_Gun>(CachedItem)->GetDragIcon());
 	else
-		Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemIcon);//크기및 형태 조절하기.
+		Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemSlotImage);//크기및 형태 조절하기.
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
@@ -91,7 +91,7 @@ FReply UC_MainGunWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 	{
 		if (CachedItem)
 		{   // 우클릭 이벤트 실행
-			if (CachedItem->MoveToAround(OwnerCharacter))
+			if (CachedItem->LegacyMoveToAround(OwnerCharacter))
 			{
 				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
 				CachedItem = nullptr;
@@ -126,7 +126,7 @@ void UC_MainGunWidget::Init()
 
 	if (IsValid(CachedItem))
 	{
-		GunImage->SetBrushFromTexture(CachedItem->GetItemDatas().ItemIcon);
+		GunImage->SetBrushFromTexture(CachedItem->GetItemDatas().ItemSlotImage);
 		GunName->SetText(FText::FromString(CachedItem->GetItemDatas().ItemName));
 		SetVisibility(ESlateVisibility::Visible);
 		FSlateBrush Brush = GunImage->GetBrush();

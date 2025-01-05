@@ -244,17 +244,23 @@ public:
 
 	void BackToMainCamera();
 	void HandleStatesWhileMovingCrawl();
+
+private:
+
 	class UC_TimelineUtility* CameraTransitionTimelineComponent;
 	float PrevMoveSpeed = 0;
+
+public:
 	UFUNCTION(CallInEditor)
 	void HandleCameraTransitionInterpolation(float Value);
 
 	UFUNCTION()
 	void OnCameraTransitionTimelineFinished();
 
+private:
 	FVector InitialCameraLocation;
 	FRotator InitialCameraRotation;
-
+public:
 	void SetTimeLineComponentForMovingCamera();
 
 public:
@@ -263,7 +269,9 @@ public:
 	/// </summary>
 
 	void RecoilController();
+private:
 	class UC_TimelineUtility* RecoilTimeline;
+public:
 
 	UFUNCTION(CallInEditor)
 	void HandleRecoilInterpolation(float Value);
@@ -275,8 +283,10 @@ public:
 
 	void SetRecoilTimelineValues(float InGunRPM);
 	void SetRecoilFactorByPose();
-	float PlayerRecoilFactorByPose = 1.0f;
+
 private:
+	float PlayerRecoilFactorByPose = 1.0f;
+
 	void SpawnConsumableItemForTesting();
 
 protected:

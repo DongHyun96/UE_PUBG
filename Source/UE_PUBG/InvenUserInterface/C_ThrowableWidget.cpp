@@ -35,14 +35,14 @@ FReply UC_ThrowableWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 	{
 		if (CachedItem)
 		{   // 우클릭 이벤트 실행
-			if (CachedItem->MoveToInven(OwnerCharacter))
+			if (CachedItem->LegacyMoveToInven(OwnerCharacter))
 			{
 				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(WeaponSlotType, nullptr);
 				CachedItem = nullptr;
 			}
 			else
 			{
-				CachedItem->MoveToAround(OwnerCharacter);
+				CachedItem->LegacyMoveToAround(OwnerCharacter);
 				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(WeaponSlotType, nullptr);
 				CachedItem = nullptr;
 			}
@@ -71,7 +71,7 @@ void UC_ThrowableWidget::Init()
 
 	if (IsValid(CachedItem))
 	{
-		ItemIcon->SetBrushFromTexture(CachedItem->GetItemDatas().ItemIcon);
+		ItemIcon->SetBrushFromTexture(CachedItem->GetItemDatas().ItemBarIcon);
 		ItemName->SetText(FText::FromString(CachedItem->GetItemDatas().ItemName));
 		SetVisibility(ESlateVisibility::Visible);
 		FSlateBrush Brush = ItemIcon->GetBrush();
@@ -96,6 +96,7 @@ void UC_ThrowableWidget::SetWeapon(AC_Item* item)
 	case EItemTypes::THROWABLE:
 		if (WeaponSlotType == EWeaponSlot::THROWABLE_WEAPON)
 			CachedItem = Cast<AC_Weapon>(item);
+		break;
 	default:
 		break;
 	}

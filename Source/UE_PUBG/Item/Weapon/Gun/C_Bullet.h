@@ -79,5 +79,8 @@ protected:
 	AC_BasicCharacter* OwnerCharacter{};
 public:
 	virtual void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+	UFUNCTION(BlueprintCallable)
+
+	AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 
 };

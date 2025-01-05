@@ -78,15 +78,17 @@ public:
 	EShootingMode GetCurrentShootingMode() { return CurrentShootingMode; }
 	class UCameraComponent* GetGunCamera() { return AimSightCamera; }
 
-	bool MoveToAround(AC_BasicCharacter* Character) override;
+	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
-	bool MoveToSlot(AC_BasicCharacter* Character) override;
+	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 
 	//AC_Item* SpawnItem(AC_BasicCharacter* Character) override;
 
 	void PickUpItem(AC_BasicCharacter* Character) override;
 
 	void CheckBackPackLevelChange();
+
+	void DropItem(AC_BasicCharacter* Character) override;
 protected:
 	/// <summary>
 	/// OwnerCharacter의 Pose Transition 모션이 끝났을 때 Delegate를 통해 call back을 받는 함수 (현재 캐릭터의 slot에 장착된 무기만 call back 될 예정) 
@@ -178,6 +180,11 @@ protected:
 	float RecoilMultiplierByGripHorizon = 1;
 	float RecoilMultiplierMuzzleVert = 1;
 	float RecoilMultiplierMuzzleHorizon = 1;
+private:
+	//bool MoveSlotToAround(AC_BasicCharacter* Character) override;
+	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
+	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
+
 public:
 	void SetRecoilMultiplierGripVert(float InValue)      { RecoilMultiplierByGripVert    = InValue; }
 	void SetRecoilMultiplierGripHorizon(float InValue)   { RecoilMultiplierByGripHorizon = InValue; }

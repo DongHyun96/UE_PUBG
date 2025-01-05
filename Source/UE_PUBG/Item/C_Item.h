@@ -113,8 +113,10 @@ struct FItemData : public FTableRowBase
 	EItemTypes ItemType{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	UTexture2D* ItemIcon = nullptr;
+	UTexture2D* ItemBarIcon = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	UTexture2D* ItemSlotImage = nullptr;
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Mesh")
 	//FSoftObjectPath ItemMeshPath{};
 
@@ -129,12 +131,6 @@ struct FItemData : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	EItemPlace ItemPlace = EItemPlace::AROUND;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	//TSubclassOf<AC_Item> ItemClass;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	//float Volume;
 };	
 
 
@@ -169,7 +165,7 @@ public:
 
 	//아이템의 장착을 해제하고 땅에 떨구게 해줌.
 	UFUNCTION(BlueprintCallable)
-	virtual void DetachmentItem();
+	virtual void DetachItem();
 
 	virtual void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
@@ -197,7 +193,7 @@ public:
 	/// Around -> MyItems로 아이템이 이동할 때, 이미 해당 아이템이 존재할때 ItemStack을 C_Item내에서 Set하는 함수.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	virtual void SetItemStack(uint8 ItemStack) PURE_VIRTUAL(AC_Item:SetItemStack, );
+	void SetItemStack(uint8 inItemStack) { ItemDatas.ItemCurStack = inItemStack; }
 	
 	/// <summary>
 	/// 플레이어가 아이템을 버릴 때 사용되는 함수.
@@ -206,7 +202,7 @@ public:
 	/// RemoveItemFromInventory
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	virtual void DropItem(AC_BasicCharacter* Character )PURE_VIRTUAL(AC_Item:DropItem, );
+	virtual void DropItem(AC_BasicCharacter* Character); //PURE_VIRTUAL(AC_Item:DropItem, );
 
 	//아이템의 스택을 1 올려줌.
 	UFUNCTION(BlueprintCallable)
@@ -217,13 +213,22 @@ public:
 	void DeductItemStack() { ItemDatas.ItemCurStack -= 1; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool MoveToInven(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToInven, return false;);
+	virtual bool LegacyMoveToInven(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToInven, return false;);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual bool LegacyMoveToAround(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToAround, return false;);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual bool LegacyMoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToSlot, return false;);
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool MoveToAround(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToAround, return false;);
-
+	virtual bool MoveToInven(AC_BasicCharacter* Character);
+	
 	UFUNCTION(BlueprintCallable)
-	virtual bool MoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToSlot, return false;);
+	virtual bool MoveToAround(AC_BasicCharacter* Character);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual bool MoveToSlot(AC_BasicCharacter* Character);
 
 	UFUNCTION(BlueprintCallable)
 	virtual AC_Item* SpawnItem(AC_BasicCharacter* Character);
@@ -232,6 +237,19 @@ public:
 
 	//캐릭터의 밑바닥을 라인 트레이스로 location을 반환해줌.
 	FVector GetGroundLocation(AC_BasicCharacter* Character);
+
+private:
+	virtual bool MoveSlotToAround(AC_BasicCharacter* Character);
+	virtual bool MoveSlotToInven(AC_BasicCharacter* Character);
+	virtual bool MoveSlotToSlot(AC_BasicCharacter* Character);
+
+	virtual bool MoveInvenToAround(AC_BasicCharacter* Character);
+	virtual bool MoveInvenToInven(AC_BasicCharacter* Character);
+	virtual bool MoveInvenToSlot(AC_BasicCharacter* Character);
+
+	virtual bool MoveAroundToAround(AC_BasicCharacter* Character);
+	virtual bool MoveAroundToInven(AC_BasicCharacter* Character);
+	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character);
 
 public:
 	FItemData GetItemDatas() { return ItemDatas; }
@@ -248,9 +266,6 @@ public:
 
 	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 
-private:
-	
-	
 
 protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
