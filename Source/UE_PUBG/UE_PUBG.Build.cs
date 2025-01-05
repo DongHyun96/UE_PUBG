@@ -24,7 +24,8 @@ public class UE_PUBG : ModuleRules
             "Niagara",
             "Slate",
             "SlateCore",
-            "MotionWarping"
+            "MotionWarping",
+            "AIModule"
         });
 
         /*

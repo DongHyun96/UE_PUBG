@@ -99,7 +99,7 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
     // 새로 장착된 무기에 대한 PoseTransitionEnd 델리게이트 callback 걸기
     OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(Weapons[InSlot], &AC_Weapon::OnOwnerCharacterPoseTransitionFin);
-
+    
     return PrevSlotWeapon;
 }
 

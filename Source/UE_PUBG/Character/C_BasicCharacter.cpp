@@ -70,8 +70,6 @@ AC_BasicCharacter::AC_BasicCharacter()
 	//DetectionSphere->SetGenerateOverlapEvents(true);
 	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &AC_BasicCharacter::OnOverlapBegin);
 	DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &AC_BasicCharacter::OnOverlapEnd);
-	//CrawlCollider->SetupAttachment(GetMesh());
-
 
 	SwimmingComponent = CreateDefaultSubobject<UC_SwimmingComponent>("SwimmingComponent");
 	SwimmingComponent->SetOwnerCharacter(this);
@@ -99,30 +97,12 @@ void AC_BasicCharacter::BeginPlay()
 
 	//InvenSystem->GetInvenUI()->AddToViewport();
 	//InvenSystem->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
-
-
 }
 
 // Called every frame
 void AC_BasicCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	/*switch (HandState)
-	{
-	case EHandState::UNARMED: UC_Util::Print("UnArmed");
-		break;
-	case EHandState::WEAPON_GUN: UC_Util::Print("Gun");
-		break;
-	case EHandState::WEAPON_MELEE: UC_Util::Print("Melee");
-		break;
-	case EHandState::WEAPON_THROWABLE: UC_Util::Print("Throwable");
-		break;
-	case EHandState::HANDSTATE_MAX:
-		break;
-	default:
-		break;
-	}*/
 }
 
 // Called to bind functionality to input
