@@ -6,6 +6,7 @@
 #include "UE_PUBG/Item/C_Item.h"
 #include "GameFramework/Actor.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/Component/C_EquippedComponent.h"
 
 #include "C_Weapon.generated.h"
 
@@ -131,6 +132,11 @@ private:
 	virtual bool MoveAroundToInven(AC_BasicCharacter* Character) override;
 	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 
+	/// <summary>
+	/// 아이템의 type에 따라 알맞는 WeaponSlot을 반환
+	/// </summary>
+	/// <returns>WeaponSlot을 반환</returns>
+	EWeaponSlot GetWeaponSlot();
 protected:
 
 	// 무기에 따른 각 버튼에 대한 strategy 알고리즘 객체

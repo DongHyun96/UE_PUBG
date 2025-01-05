@@ -380,13 +380,17 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 	//기존의 장비가 있다면.
 	if (PrevSlotEquipItem)
 	{
-		PrevSlotEquipItem->DetachmentItem(); //장착 해제.
+		PrevSlotEquipItem->DetachItem(); //장착 해제.
+		MaxVolume -= CheckBackPackVolume(MyBackPack->GetLevel()); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기.
 		//AddItemToAroundList(PrevSlotEquipItem);// TODO : Collision을 키고 끄는 방식으로 할 지 아니면 강제로 넣고 빼줄지 생각
-
 	}
 	EquipmentItems[InSlot] = Cast<AC_EquipableItem>(EquipItem);
 	
 	if (EquipmentItems[InSlot] == nullptr)	return PrevSlotEquipItem; //nullptr이면 종료.
+
+	MyBackPack = Cast<AC_BackPack>(GetEquipmentItems()[EEquipSlot::BACKPACK]); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기. 및 BackPack의 쓸데없이 Level이 2개임 하나로 통일하기.
+
+	MaxVolume += CheckBackPackVolume(MyBackPack->GetLevel());
 
 	EquipmentItems[InSlot]->AttachToSocket(OwnerCharacter);
 
@@ -424,6 +428,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 	{
 		//item과 같은 이름의 아이템이 있다면 TArray에 추가?
 		//if (item->GetItemDatas().ItemCurStack < item->GetItemDatas().ItemMaxStack)
+		//TODO : 부착물과 meleeweapon에 대한 처리.
 		int sum = FoundArray->Last()->GetItemDatas().ItemCurStack + item->GetItemDatas().ItemCurStack;
 		if (sum <= MAX_STACK)
 		{
@@ -439,7 +444,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 	}
 	else 
 	{
-		// 키가 없으면 새로운 배열을 생성하고 추가
+		// 해당키의 값이 없으면 새로운 배열을 생성하고 추가
 		TArray<AC_Item*> NewArray;
 		NewArray.Add(item);
 		testMyItems.Add(item->GetItemDatas().ItemName, NewArray);
@@ -517,6 +522,7 @@ void UC_InvenComponent::CheckBackPackOnCharacter()
 	AC_Gun* SubGunSlot = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]);
 
 	//equipComp->GetWeapons().Find(EWeaponSlot::MAIN_GUN)
+
 
 	if (MainGunSlot)
 		MainGunSlot->CheckBackPackLevelChange();

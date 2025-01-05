@@ -29,7 +29,7 @@ void UC_BasicSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const
 	if (CachedItem->GetItemDatas().ItemType == EItemTypes::MAINGUN)
 		Texture = Cast<UTexture2D>(Cast<AC_Gun>(CachedItem)->GetDragIcon());
 	else
-		Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemIcon);//크기및 형태 조절하기.
+		Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemBarIcon);//크기및 형태 조절하기.
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)

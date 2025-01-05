@@ -70,7 +70,7 @@ private:
 
 	void DropItem(AC_BasicCharacter* Character) override;
 
-	void SetItemStack(uint8 ItemStack) override;
+	//void SetItemStack(uint8 ItemStack) override;
 
 	void EquipToCharacter(AC_BasicCharacter* Character);	
 //protected:

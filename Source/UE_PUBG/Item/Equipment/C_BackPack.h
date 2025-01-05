@@ -49,9 +49,10 @@ public:
 	uint8 GetLevel() { return Level; }
 
 	// Skeletal mesh for the backpack
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USkeletalMeshComponent* BackpackMesh;
-
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Components")
+	//UStaticMeshComponent* BackpackMesh;
+	//USkeletalMeshComponent* BackpackMesh;
 	bool Interaction(AC_BasicCharacter* Character) override;
 	
 	void PickUpItem(AC_BasicCharacter* Character) override;

@@ -71,7 +71,7 @@ void UC_ThrowableWidget::Init()
 
 	if (IsValid(CachedItem))
 	{
-		ItemIcon->SetBrushFromTexture(CachedItem->GetItemDatas().ItemIcon);
+		ItemIcon->SetBrushFromTexture(CachedItem->GetItemDatas().ItemBarIcon);
 		ItemName->SetText(FText::FromString(CachedItem->GetItemDatas().ItemName));
 		SetVisibility(ESlateVisibility::Visible);
 		FSlateBrush Brush = ItemIcon->GetBrush();
@@ -96,6 +96,7 @@ void UC_ThrowableWidget::SetWeapon(AC_Item* item)
 	case EItemTypes::THROWABLE:
 		if (WeaponSlotType == EWeaponSlot::THROWABLE_WEAPON)
 			CachedItem = Cast<AC_Weapon>(item);
+		break;
 	default:
 		break;
 	}

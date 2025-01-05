@@ -113,8 +113,10 @@ struct FItemData : public FTableRowBase
 	EItemTypes ItemType{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	UTexture2D* ItemIcon = nullptr;
+	UTexture2D* ItemBarIcon = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	UTexture2D* ItemSlotImage = nullptr;
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Mesh")
 	//FSoftObjectPath ItemMeshPath{};
 
@@ -129,12 +131,6 @@ struct FItemData : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	EItemPlace ItemPlace = EItemPlace::AROUND;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	//TSubclassOf<AC_Item> ItemClass;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	//float Volume;
 };	
 
 
@@ -169,7 +165,7 @@ public:
 
 	//아이템의 장착을 해제하고 땅에 떨구게 해줌.
 	UFUNCTION(BlueprintCallable)
-	virtual void DetachmentItem();
+	virtual void DetachItem();
 
 	virtual void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
@@ -197,7 +193,7 @@ public:
 	/// Around -> MyItems로 아이템이 이동할 때, 이미 해당 아이템이 존재할때 ItemStack을 C_Item내에서 Set하는 함수.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	virtual void SetItemStack(uint8 ItemStack) PURE_VIRTUAL(AC_Item:SetItemStack, );
+	void SetItemStack(uint8 inItemStack) { ItemDatas.ItemCurStack = inItemStack; }
 	
 	/// <summary>
 	/// 플레이어가 아이템을 버릴 때 사용되는 함수.

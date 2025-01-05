@@ -32,7 +32,7 @@ void AC_Item::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AC_Item::DetachmentItem()
+void AC_Item::DetachItem()
 {
 	
 	if (!OwnerCharacter) return;
@@ -48,6 +48,8 @@ void AC_Item::DetachmentItem()
 	SetActorEnableCollision(false);
 	SetActorEnableCollision(true);
 	
+	
+
 	UC_Util::Print("Check");
 }
 
@@ -226,5 +228,5 @@ void AC_Item::DropItem(AC_BasicCharacter* Character)
 	//Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);//이건 투척류만 사용하는 기능.
 
 	//바닥 레이 캐스팅 받아와서 바닥에 아이템 생성하기.
-	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
+	this->SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
 }

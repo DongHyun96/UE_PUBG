@@ -124,7 +124,7 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	//dragdrop class를 새로 만들어 사용해야 할 수 있음.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 	
-	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemIcon);//크기및 형태 조절하기.
+	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemBarIcon);//크기및 형태 조절하기.
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
@@ -215,7 +215,7 @@ void UC_ItemBarWidget::InitBar(AC_Item* item)
 	{
 		CachedItem = item;
 
-		ItemImage1->SetBrushFromTexture(item->GetItemDatas().ItemIcon);
+		ItemImage1->SetBrushFromTexture(item->GetItemDatas().ItemBarIcon);
 
 		ItemType = item->GetItemDatas().ItemType;
 
