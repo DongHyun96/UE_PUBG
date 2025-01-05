@@ -24,9 +24,6 @@ UC_InvenComponent::UC_InvenComponent()
 void UC_InvenComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayerController = GetWorld()->GetFirstPlayerController();
-	InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
-	InvenUI->SetOwnerCharacter(OwnerCharacter);
 	// ...
 }
 

@@ -7,7 +7,7 @@
 #include "Component/C_InvenComponent.h"
 
 #include "Component/C_StatComponent.h"
-
+#include "GenericTeamAgentInterface.h"
 #include "C_BasicCharacter.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FDele_PoseTransitionFin);
@@ -98,7 +98,7 @@ public:
 
 
 UCLASS()
-class UE_PUBG_API AC_BasicCharacter : public ACharacter
+class UE_PUBG_API AC_BasicCharacter : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -119,8 +119,6 @@ public:
 
 private:
 
-	// TODO : 얘를 Deprecated 시킬지, 아니면 Priority를 사용 안하고 무조건적으로 재생시키는 AnimMontage도 존재하게끔 놔두는게 좋을지
-	// 후자의 경우 그냥 해당 오버라이딩 함수는 지워버리면 됨
 	/// <summary>
 	/// Deprecated in current UE_PUBG Project : Priority를 적용한 AC_PriorityAnimMontage로 AnimMontage 재생해야 함
 	/// </summary>
@@ -159,7 +157,7 @@ protected:
 	/// <param name="EventInstigator"></param>
 	/// <param name="DamageCauser"></param>
 	/// <returns> : The amount of damage actually applied. </returns>
-	virtual float TakeDamage
+	float TakeDamage
 	(
 		float				DamageAmount,
 		FDamageEvent const& DamageEvent,
@@ -296,6 +294,10 @@ public:
 	/// <returns> Pose transition motion이 제대로 실행되었다면 return true </returns>
 	bool ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState);
 
+public:
+
+	FGenericTeamId GetGenericTeamId() const override { return FGenericTeamId(TeamID); }
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -422,4 +424,9 @@ protected: // 파쿠르 관련 Components
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UMotionWarpingComponent* MotionWarpingComponent{};
+
+protected: // AI 피아 식별 관련
+	
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TEnumAsByte<ETeamAttitude::Type> TeamID = ETeamAttitude::Neutral;
 };

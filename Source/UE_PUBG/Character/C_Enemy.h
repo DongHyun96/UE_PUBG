@@ -13,5 +13,17 @@ UCLASS()
 class UE_PUBG_API AC_Enemy : public AC_BasicCharacter
 {
 	GENERATED_BODY()
-	
+
+public:
+	AC_Enemy();
+
+	void BeginPlay() override;
+
+	class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	class UBehaviorTree* BehaviorTree{};
+
 };

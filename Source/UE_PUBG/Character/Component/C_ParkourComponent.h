@@ -21,12 +21,17 @@ enum class EParkourActionType : uint8
 // 현 Parkour 관련 필요한 정보 struct
 struct FParkourDescriptor
 {
+	FCollisionQueryParams CollisionParams{};
+
 	bool			bIsLowAction{};				// 첫 Obstacle 검사 시 넘을 장애물의 높이 계산
 	FVector			FirstObstacleHitLocation{};
 
 	TArray<FVector> VerticalHitPositions{};		// Obstacle위의 거리 재기
 	FVector			LandPos{};					// Obstacle을 지나 내려가는 위치 (Vaulting Low)
 	bool			bLandPosInited{};
+
+	bool bMustVault{}; // 무조건 Vaulting으로 처리를 해야하는지
+	bool bMustMantle{}; // 무조건 Mantling으로 처리를 해야하는지
 
 };
 
@@ -74,6 +79,13 @@ public:
 private:
 
 	/// <summary>
+	/// 파쿠르 검사 프레임워크 통과 후 Motion warping을 실행하는 단계
+	/// </summary>
+	void ExecuteMotionWarpingAction(const FParkourDescriptor& CurParkourDesc);
+
+private:
+
+	/// <summary>
 	/// OwnerCharacter Skeletal Mesh Sawp
 	/// </summary>
 	/// <param name="ToRootedMesh"> : If false, Swap back to Main Skeletal Mesh </param>
@@ -101,14 +113,6 @@ private:
 private:
 
 	/// <summary>
-	/// <para> 캐릭터 전방에 파쿠르할 장애물이 있는지 검사 </para>
-	/// <para> 동시에 파쿠르 할 수 있는 높이 및 bIsLowAction 체크 </para>
-	/// </summary>
-	/// <param name="CurParkourDesc"> : 현 Parkour Desc </param>
-	/// <returns> : 전방 Obstacle target이 valid하지 않다면 return false </returns>
-	bool CheckParkourTarget(FParkourDescriptor& CurParkourDesc);
-
-	/// <summary>
 	/// <para> VerticleHitPoints, LandPos, bPossibleToVault init 시키기 </para>
 	/// </summary>
 	/// <param name="CurParkourDesc"> : 현 parkour Desc </param>
@@ -119,8 +123,66 @@ private:
 	/// CurParkourAction Type 지정 및 ActionStrategy 지정
 	/// </summary>
 	/// <param name="CurParkourDesc"> : 현 Parkour Desc </param>
-	/// <returns> : Warp를 실행할 없는 조건일 때 return false </returns>
-	bool InitCurParkourActionStrategy(const FParkourDescriptor& CurParkourDesc);
+	void InitCurParkourActionStrategy(const FParkourDescriptor& CurParkourDesc);
+
+private:
+
+	/// <summary>
+	/// CheckFirstHitLocation -> InitVerticalHitPositionsAndLandPos -> CheckSpaceForParkourAction 일련의 과정
+	/// </summary>
+	/// <param name="CurParkourDesc"> : 현 ParkourDesc </param>
+	/// <param name="bCheckLowAction"> : true이면 LowAction에 대한 Parkour 프레임워크 조사 </param>
+	/// <returns></returns>
+	bool CheckParkourFramework(FParkourDescriptor& CurParkourDesc, bool bCheckLowAction);
+
+private:
+
+	/// <summary>
+	/// 캐릭터 전방에 LowAction처리할 장애물이 있는지 검사
+	/// </summary>
+	/// <param name="CurParkourDesc"> : 현 Parkour Desc </param>
+	/// <returns> : 전방 Obstacle target이 valid하지 않다면 return false </returns>
+	bool CheckLowParkourTarget(FParkourDescriptor& CurParkourDesc);
+
+	/// <summary>
+	/// 캐릭터 전방에 HighAction처리할 장애물이 있는지 검사
+	/// </summary>
+	/// <param name="CurParkourDesc"> : 현 Parkour Desc </param>
+	/// <returns> : 전방 Obstacle target이 valid하지 않다면 return false </returns>
+	bool CheckHighParkourTarget(FParkourDescriptor& CurParkourDesc);
+
+private: // Check Parkour space 관련
+
+	/// <summary>
+	/// VerticalHitPosition 방면 파쿠르 가능한 공간이 충분히 있는지 조사 | bMustMantle, bMustVault 조정
+	/// </summary>
+	/// <param name="CurParkourDesc"> : 현 Parkour Desc </param>
+	/// <returns> : 파쿠르를 하기에 충분한 공간이 있으면 return true </returns>
+	bool CheckSpaceForParkourAction(FParkourDescriptor& CurParkourDesc);
+
+	/// <summary>
+	/// Vaulting 가능한 Space가 니오는지 검사
+	/// </summary>
+	/// <param name="CurParkourDesc"></param>
+	/// <returns></returns>
+	bool CheckSpaceForVaulting(const FParkourDescriptor& CurParkourDesc);
+
+	/// <summary>
+	/// Mantling 가능한 Space가 나오는지 검사
+	/// </summary>
+	/// <param name="CurParkourDesc"></param>
+	/// <returns></returns>
+	bool CheckSpaceForMantling(const FParkourDescriptor& CurParkourDesc);
+
+private:
+
+	/// <summary>
+	/// bMustVault, bMustMantle 초기화
+	/// </summary>
+	/// <param name="CurParkourDesc"> 현 Parkour Desc </param>
+	/// <returns> : 초기화 불가능 (파쿠르 자체를 할 수 없는) 상황이면 return false </returns>
+	bool InitMustVaultOrMustMantle(FParkourDescriptor& CurParkourDesc);
+
 
 private:
 
@@ -183,4 +245,8 @@ private:
 
 	// Input forward와 파쿠르를 동시에 했을 시 true
 	bool bHasTryVaulting{};
+
+private:
+
+	FColor DebugMsgColor{};
 };

@@ -127,9 +127,7 @@ private:
 protected:
 
 	class AC_BasicCharacter*	OwnerCharacter{};
-	class AC_Player*			OwnerPlayer{};
 	class UC_HUDWidget*			OwnerHUDWidget{};
-
 private:
 
 	const float MAX_HP			= 100.f;

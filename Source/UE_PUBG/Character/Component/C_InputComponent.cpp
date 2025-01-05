@@ -473,8 +473,8 @@ void UC_InputComponent::OnXKey()
 void UC_InputComponent::OnBKey()
 {
 	// Testing 용 Heal 주기 TODO : 이 라인 지우기
-	if (IsValid(Player->ConsumableItems[Player->ConsumableIterator])) 
-		Player->ConsumableItems[Player->ConsumableIterator]->StartUsingConsumableItem(Player);
+	//if (IsValid(Player->ConsumableItems[Player->ConsumableIterator])) 
+	//	Player->ConsumableItems[Player->ConsumableIterator]->StartUsingConsumableItem(Player);
 
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteBKey();
