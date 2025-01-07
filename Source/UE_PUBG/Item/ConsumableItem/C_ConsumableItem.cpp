@@ -110,6 +110,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
 			if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened())
 				OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
+			//OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
 		}
 		
 		if (ItemDatas.ItemCurStack == 0)
