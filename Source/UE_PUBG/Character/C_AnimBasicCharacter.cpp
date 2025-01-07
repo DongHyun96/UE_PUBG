@@ -21,7 +21,6 @@
 void UC_AnimBasicCharacter::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
-
 	OwnerCharacter = Cast<AC_BasicCharacter>(TryGetPawnOwner());
 	//CSpineRotation = FRotator(0);
 	//CHeadLookAtRotation = FQuat(0);
@@ -83,7 +82,7 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	AC_Gun* CurrentGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
 
 	ControlHeadRotation();
-	SetAimOfssetRotation();
+	SetAimOffsetRotation();
 	if (IsValid(CurrentGun))
 	{
 		bGunHasGrip = CurrentGun->GetGunHasGrip();
@@ -183,7 +182,7 @@ void UC_AnimBasicCharacter::RilfeLeftHandIK()
 {
 }
 
-void UC_AnimBasicCharacter::SetAimOfssetRotation()
+void UC_AnimBasicCharacter::SetAimOffsetRotation()
 {
 	float DeltaTime = OwnerCharacter->GetWorld()->GetDeltaSeconds();
 	//AimOffsetLerpDelayTime += DeltaTime;
@@ -215,39 +214,7 @@ void UC_AnimBasicCharacter::SetAimOfssetRotation()
 
 	}
 	AimOffsetLerpDelayTime = 0;
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-	AC_Gun* CurGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetCurWeapon());
-
-	if (OwnerPlayer->GetIsWatchingSight() && OwnerPlayer->GetPoseState() == EPoseState::CRAWL)
-	{
-		if (CCurrentAimOffsetRotation.Pitch < 0)
-		{
-
-			OwnerCharacter->GetMesh()->HideBoneByName(FName("LeftArm"), EPhysBodyOp::PBO_None);
-			OwnerCharacter->GetMesh()->HideBoneByName(FName("RightArm"), EPhysBodyOp::PBO_None);
-			CurGun->GetGunMesh()->SetVisibility(false,true);
-		}
-		else
-		{
-
-			OwnerCharacter->GetMesh()->UnHideBoneByName(FName("LeftArm"));
-			OwnerCharacter->GetMesh()->UnHideBoneByName(FName("RightArm"));
-			CurGun->GetGunMesh()->SetVisibility(true,true);
-
-		}
-
-
-	}
-	else
-	{
-		OwnerCharacter->GetMesh()->UnHideBoneByName(FName("LeftArm"));
-		OwnerCharacter->GetMesh()->UnHideBoneByName(FName("RightArm"));
-		if(IsValid(CurGun))
-			CurGun->GetGunMesh()->SetVisibility(true,true);
-
-
-
-	}
+	
 	//UC_Util::Print(float(CCurrentAimOffsetRotation.Yaw),FColor::Blue);
 
 	//UC_Util::Print(float(CCurrentAimOffsetRotation.Yaw));

@@ -13,5 +13,15 @@ UCLASS()
 class UE_PUBG_API UC_AnimPlayer : public UC_AnimBasicCharacter
 {
 	GENERATED_BODY()
+
+	virtual void NativeBeginPlay() override;
+
+private:
+
+	void SetAimOffsetRotation() override;
+
+private:
+
+	class AC_Player* OwnerPlayer{};
 	
 };
