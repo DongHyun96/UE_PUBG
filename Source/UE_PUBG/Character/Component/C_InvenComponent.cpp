@@ -378,17 +378,20 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 	if (PrevSlotEquipItem)
 	{
 		PrevSlotEquipItem->DetachItem(); //장착 해제.
-		MaxVolume -= CheckBackPackVolume(MyBackPack->GetLevel()); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기.
+
+		if (PrevSlotEquipItem->GetItemDatas().ItemType == EItemTypes::BACKPACK)
+			MaxVolume -= CheckBackPackVolume(Cast<AC_BackPack>(PrevSlotEquipItem)->GetLevel()); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기.
 		//AddItemToAroundList(PrevSlotEquipItem);// TODO : Collision을 키고 끄는 방식으로 할 지 아니면 강제로 넣고 빼줄지 생각
 	}
 	EquipmentItems[InSlot] = Cast<AC_EquipableItem>(EquipItem);
 	
 	if (EquipmentItems[InSlot] == nullptr)	return PrevSlotEquipItem; //nullptr이면 종료.
 
-	MyBackPack = Cast<AC_BackPack>(GetEquipmentItems()[EEquipSlot::BACKPACK]); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기. 및 BackPack의 쓸데없이 Level이 2개임 하나로 통일하기.
-
-	MaxVolume += CheckBackPackVolume(MyBackPack->GetLevel());
-
+	if (EquipmentItems[InSlot]->GetItemDatas().ItemType == EItemTypes::BACKPACK)
+	{
+		MyBackPack = Cast<AC_BackPack>(GetEquipmentItems()[EEquipSlot::BACKPACK]); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기. 및 BackPack의 쓸데없이 Level이 2개임 하나로 통일하기.
+		MaxVolume += CheckBackPackVolume(MyBackPack->GetLevel());
+	}
 	EquipmentItems[InSlot]->AttachToSocket(OwnerCharacter);
 
 	EquipmentItems[InSlot]->SetActorEnableCollision(false);

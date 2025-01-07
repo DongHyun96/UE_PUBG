@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
 #include "Item/C_Item.h"
+
 #include "Character/C_BasicCharacter.h"
 #include "C_ConsumableItem.generated.h"
 
@@ -20,6 +20,8 @@ enum class EConsumableItemState : uint8
 	USED
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConsumableItemStateChanged, EConsumableItemState, NewState);
+//DECLARE_DYNAMIC_DELEGATE_OneParam(FonConsumableItemStateChanged, EConsumableItemState, NewState)
 UCLASS(Abstract)
 class UE_PUBG_API AC_ConsumableItem : public AC_Item
 {
@@ -28,6 +30,7 @@ class UE_PUBG_API AC_ConsumableItem : public AC_Item
 public:
 
 	AC_ConsumableItem();
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -38,6 +41,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetLinkedItemBarWidget(class UC_ItemBarWidget* InItemBarWidget); //{ LinkedItemBarWidget = InItemBarWidget; }
+
+	UPROPERTY(BlueprintAssignable) // 블루프린트에서도 사용 가능
+	FOnConsumableItemStateChanged OnConsumableItemStateChanged;
+
+	void SetConsumableItemState(EConsumableItemState NewState);
 
 public:
 
@@ -100,6 +108,15 @@ protected:
 protected:
 
 	virtual void HandleDestroy() PURE_VIRTUAL(AC_ConsumableItem::HandleDestroy, );
+
+private:
+	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
+	bool MoveInvenToInven(AC_BasicCharacter* Character) override;
+	bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
+
+	bool MoveAroundToAround(AC_BasicCharacter* Character) override;
+	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
+	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 
 public: // getters and setters
 

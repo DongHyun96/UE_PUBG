@@ -8,10 +8,14 @@
 #include "Character/C_Player.h"
 #include "HUD/C_HUDWidget.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_ConsumableUsageMeshComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
+#include "Character/Component/C_InvenSystem.h"
+
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
+//#include "Item/ConsumableItem/C_ConsumableItem.h"
 
 #include "InvenUserInterface/C_ItemBarWidget.h"
 
@@ -79,8 +83,10 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 			Player->GetHUDWidget()->OnConsumableItemActivatingEnd();
 
-		ConsumableItemState = EConsumableItemState::ACTIVATE_COMPLETED;
-		
+		//ConsumableItemState = EConsumableItemState::ACTIVATE_COMPLETED;
+
+		SetConsumableItemState(EConsumableItemState::ACTIVATE_COMPLETED);
+
 		UsingTimer = 0.f;
 
 		// 착용 중인 무기가 있었을 때 해당 무기 다시 장착 시도 (없다면 그냥 넘어가는 처리로 됨)
@@ -98,14 +104,21 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 	{
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser)) Player->GetHUDWidget()->OnConsumableUsed();
 
+		LinkedItemBarWidget->SetPercent(0.f, UsageTime);
+		SetConsumableItemState(EConsumableItemState::IDLE);
+
 		if (ItemDatas.ItemCurStack == 0)
 		{
+
 			ItemUser->GetInvenComponent()->RemoveItemToMyList(this);
 			HandleDestroy(); // 각 아이템 별 Destroy 하는 시점이 다름
 			return;
 		}
 
-		ConsumableItemState = EConsumableItemState::IDLE;
+		//ConsumableItemState = EConsumableItemState::IDLE;
+
+		//OwnerCharacter->GetInvenComponent()->GetInvenUI()->SetUsingItem(nullptr);
+
 	}
 		return;
 	default:
@@ -121,6 +134,21 @@ void AC_ConsumableItem::SetLinkedItemBarWidget(UC_ItemBarWidget* InItemBarWidget
 	//	// 현재 진행 상태 동기화
 	//	LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
 	//}
+}
+
+void AC_ConsumableItem::SetConsumableItemState(EConsumableItemState NewState)
+{
+	if (ConsumableItemState != NewState)
+	{
+		ConsumableItemState = NewState;
+
+		// 상태 변경 브로드캐스트
+		Cast<AC_Player>(OwnerCharacter)->GetInvenSystem()->GetInvenUI()->BindToItemState(this);
+		OnConsumableItemStateChanged.Broadcast(NewState);
+		//Cast<AC_Player>(OwnerCharacter)->GetInvenSystem()->GetInvenUI()->SetUsingItem(this);
+
+		//OwnerCharacter->GetInvenComponent()->GetInvenUI()->BindToItemState(this);
+	}
 }
 
 bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
@@ -141,7 +169,9 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 	if (PlayTime == 0.f) return false;
 
 	// 사용 시작하기
-	ConsumableItemState = EConsumableItemState::ACTIVATING;
+	//ConsumableItemState = EConsumableItemState::ACTIVATING;
+	//OwnerCharacter->GetInvenComponent()->GetInvenUI()->BindToItemState(this);
+	SetConsumableItemState(EConsumableItemState::ACTIVATING);
 	OnStartUsing(); // Template method
 
 	// 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기 시도
@@ -179,7 +209,8 @@ bool AC_ConsumableItem::CancelActivating()
 	ItemUser->SetIsActivatingConsumableItem(false);
 	OnCancelActivating();
 
-	ConsumableItemState = EConsumableItemState::IDLE;
+	//ConsumableItemState = EConsumableItemState::IDLE;
+	SetConsumableItemState(EConsumableItemState::IDLE);
 	LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 	UsingTimer			= 0.f;
 	//ItemUser			= nullptr;
@@ -302,4 +333,122 @@ bool AC_ConsumableItem::LegacyMoveToAround(AC_BasicCharacter* Character)
 	//SetActorRotation(FQuat(0,0,0));
 
 	return true;
+}
+
+bool AC_ConsumableItem::MoveInvenToAround(AC_BasicCharacter* Character)
+{
+	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
+
+	if (!Character) return false;
+
+	Character->GetInvenComponent()->RemoveItemToMyList(this);
+	//TODO: 분할해서 버리는 경우 새로 스폰해주어야함.
+	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	SetOwnerCharacter(nullptr);
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
+	//Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+	//바닥 레이 캐스팅 받아와서 바닥에 아이템 생성하기.
+	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
+
+	//SetActorRotation(FQuat(0,0,0));
+
+	return true;
+}
+
+bool AC_ConsumableItem::MoveInvenToInven(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_ConsumableItem::MoveInvenToSlot(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_ConsumableItem::MoveAroundToAround(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character)
+{
+	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
+
+	uint8 ItemStackCount = InvenComp->LoopCheckVolume(this);
+
+	if (ItemStackCount == 0)
+	{
+		UC_Util::Print("Not Enough Volume");
+		return false; //인벤에 넣을 수 있는 아이템의 갯수가 0 이면 넣을 수 없으므로 return false;
+	}
+
+	AC_Item* FoundItem = InvenComp->FindMyItem(this); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;
+
+
+
+	if (ItemDatas.ItemCurStack == ItemStackCount)
+	{
+		//아이템 전부를 인벤에 넣을 수 있을 때.
+		if (IsValid(FoundItem))
+		{
+			//인벤에 해당 아이템이 존재 할 때.
+			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
+			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
+			//TODO : destroy를 해도 잔상이 남는것을 대비해서 해놓음 만약 없이도 잔상이 안남는다면 지울 것.
+			InvenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
+
+			this->SetActorEnableCollision(false);
+			this->SetActorHiddenInGame(true);
+
+			this->Destroy();
+			return true;
+		}
+		else
+		{
+			//인벤에 해당 아이템이 존재하지 않을 때.
+			InvenComp->AddItemToMyList(this);
+			//인게임에서 보이는 것과 collision문제 때문에 임시로 꺼둠.
+			//this->SetActorEnableCollision(false);
+			this->SetActorHiddenInGame(true);
+			this->SetActorEnableCollision(false);
+			//던질 때 켜짐. 이걸로 만약 아이템의 오버랩이 안끝난다면 다른 방법 고민->ToInven에서 SetActorEnableCollision를 꺼주고 던질때 혹은 ToAround에서 켜주기.
+			//Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			return true;
+		}
+	}
+	else
+	{
+		//아이템의 일부만 인벤에 넣을 수 있을 때.
+
+		if (IsValid(FoundItem)) // 인벤에 아이템이 이미 있을 때
+		{
+			this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
+			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
+
+			InvenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
+
+			return true;
+		}
+		else // 인벤에 아이템이 없을 때
+		{
+			AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//아이템 복제 생성
+
+			NewItem->SetItemStack(ItemStackCount);
+			this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
+
+			InvenComp->AddItemToMyList(NewItem);
+
+			NewItem->SetActorHiddenInGame(true);
+			//collider 관련 설정 추가해야 할 수 있음.
+			//만약 추가해야 된다면 MoveToInven에서 SetActorEnableCollision을 꺼주고 던질 때 켜주는 방식으로.
+			return true;
+		}
+	}
+}
+
+bool AC_ConsumableItem::MoveAroundToSlot(AC_BasicCharacter* Character)
+{
+	return false;
 }

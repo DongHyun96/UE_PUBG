@@ -6,7 +6,9 @@
 #include "InvenUserInterface/C_MainGunWidget.h"
 #include "InvenUserInterface/C_ThrowableWidget.h"
 #include "InvenUserInterface/C_EquipSlot.h"
-#include "InvenUserInterface/C_EquipmentPanel.h"
+#include "InvenUserInterface/C_EquipmentPanel.h"\
+
+#include "Character/Component/C_InvenComponent.h"
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/TextBlock.h"
@@ -27,11 +29,7 @@ void UC_InvenUiWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    //FSlateApplication::Get().SetNavigationConfig(MakeShared<FNavigationConfig>());
-
-
     SetIsFocusable(false);
-    //InvenCanvas = Cast<UCanvasPanel>(GetWidgetFromName(FName("InvenCanvas1")));
     
     if (InvenCanvas)
     {
@@ -42,79 +40,10 @@ void UC_InvenUiWidget::NativeConstruct()
 
     InitListView();
 
-
-    // 아이템 리스트 위젯 초기화 및 데이터 추가
-    if (MyItemListWidget)
-    {
-        //TMap<FString, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
-        //MyItems = OwnerCharacter->GetInvenComponent()->GetTestMyItems();
-        //MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
-        //
-        //MyItemListWidget->AddTMapItem(MyItems); // 아이템 리스트 추가
-        //PopulateItemList(MyItemListWidget->ItemListView, MyItems);
-        //MyItemListWidget->AddToViewport();
-    }
-
-    if (IsValid(AroundItemListWidget))
-    {
-        //TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
-        //AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
-
-        //TArray<AC_Item*> TestAroundItemList;
-        //TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetNearItems();
-        //AroundItemListWidget->SetVisibility(ESlateVisibility::Visible);
-        //AroundItemListWidget->AddTMapItem(TestAroundItemList);
-        //testAroundItemList(AroundItemListWidget->ItemListView, TestAroundItemList);
-        //AroundItemListWidget->AddToViewport();
-    }
-
-    // 아이템 리스트 위젯 초기화 및 데이터 추가
-    //if (MyItemListView)
-    //{
-    //    //MyItemListView->AddToViewport();
-    //    TMap<FString, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
-    //    MyItems = OwnerCharacter->GetInvenComponent()->GetTestMyItems();
-
-    //    MyItemListView->AddItem(MyItems);
-    //}
-
-    //if (AroundItemListWidget)
-    //{
-    //    AroundItemListWidget->AddToViewport();
-    //    TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
-    //    AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
-
-    //    AroundItemListWidget->AddTMapItem(AroundItems);
-    //}
 }
 
 void UC_InvenUiWidget::InitWidget()
 {
-    //if (!IsValid(MyItemListWidget))
-    //    //MyItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("MyItemListWidget1")));
-    //
-    //if (!IsValid(AroundItemListWidget))
-    //    //AroundItemListWidget = Cast<UC_MyItemListWidget>(GetWidgetFromName(FName("AroundItemListWidget1")));
-    //
-    //if (!IsValid(MyItemListView))
-    //    MyItemListView = Cast<UListView>(GetWidgetFromName(FName("MyItemList")));
-    //
-    //if (!IsValid(AroundItemListView))
-    //    AroundItemListView = Cast<UListView>(GetWidgetFromName(FName("AroundItemList")));
-    //
-    //if (!IsValid(MainGunSlot))
-    //    MainGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_MainGun")));
-    //
-    //if (!IsValid(SubGunSlot))
-    //    SubGunSlot = Cast<UC_MainGunWidget>(GetWidgetFromName(FName("WB_SubGun")));
-    //
-    //if (!IsValid(MeleeSlot))
-    //    MeleeSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Melee")));
-    //
-    //if (!IsValid(ThrowableSlot))
-    //    ThrowableSlot = Cast<UC_ThrowableWidget>(GetWidgetFromName(FName("WB_Throwble")));
-    //
-
 
     SetWidgetsOwner(OwnerCharacter);
     
@@ -143,11 +72,41 @@ void UC_InvenUiWidget::InitWidget()
 
     if (!IsValid(BackPackSlot)) return;
     BackPackSlot->Init();
-
-
-
 }
 
+void UC_InvenUiWidget::BindToItemState(AC_Item* Item)
+{
+    AC_ConsumableItem* UsingConsumableItem = Cast<AC_ConsumableItem>(Item);
+
+    if (UsingConsumableItem)
+    {
+        UsingConsumableItem->OnConsumableItemStateChanged.AddDynamic(this, &UC_InvenUiWidget::HandleItemStateChanged);
+    }
+}
+
+void UC_InvenUiWidget::HandleItemStateChanged(EConsumableItemState NewState)
+{
+    if (NewState != EConsumableItemState::IDLE)
+    {
+        // 드래그 제한 처리
+        UE_LOG(LogTemp, Warning, TEXT("Drag Disabled: Item State is not IDLE"));
+        this->SetVisibility(ESlateVisibility::HitTestInvisible);
+    }
+    else
+    {
+        // 드래그 허용 처리
+        this->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+        UE_LOG(LogTemp, Warning, TEXT("Drag Enabled: Item State is IDLE"));
+    }
+}
+
+void UC_InvenUiWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+    Super::NativeTick(MyGeometry, InDeltaTime);
+    //BindToItemState(UsingItem);
+
+}
 
 void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
 {

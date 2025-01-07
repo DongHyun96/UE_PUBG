@@ -155,6 +155,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
 
+	UC_InvenUiWidget* GetInvenUI() { return InvenUI; }
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	TMap<EEquipSlot, AC_EquipableItem*> GetEquipmentItems() { return EquipmentItems; }
@@ -217,7 +219,7 @@ protected:
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UC_InvenUiWidget* InvenUI;
+	class UC_InvenUiWidget* InvenUI;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	APlayerController* PlayerController;

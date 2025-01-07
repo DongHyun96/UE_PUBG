@@ -157,7 +157,7 @@ bool AC_BackPack::LegacyMoveToAround(AC_BasicCharacter* Character)
 {
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	AC_BackPack* curBackPack = nullptr;
-	curBackPack = InvenComp->GetMyBackPack();
+	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
 
 	float curVolume = InvenComp->GetCurVolume();
 	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//TODO : 갑빠가 더해주는 Volume 추가해야함.
@@ -167,8 +167,9 @@ bool AC_BackPack::LegacyMoveToAround(AC_BasicCharacter* Character)
 	if (curBackPack)
 	{
 		//curBackPack->SetOwnerCharacter(nullptr);
-		InvenComp->RemoveBackPack();
-		curBackPack->DetachItem();
+		InvenComp->SetSlotEquipment(EEquipSlot::BACKPACK, curBackPack);
+		//InvenComp->RemoveBackPack();
+		//curBackPack->DetachItem();
 	}
 
 	InvenComp->CheckBackPackOnCharacter();
@@ -185,8 +186,8 @@ bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	UC_EquippedComponent* EquipComp = Character->GetEquippedComponent();
 
-	AC_EquipableItem* curBackPack = nullptr;
-	curBackPack = InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK];
+	AC_BackPack* curBackPack = nullptr;
+	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
 
 	float curVolume = InvenComp->GetCurVolume();
 	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//갑빠가 더해주는 Volume 추가해야함.
@@ -194,7 +195,7 @@ bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
 	if (curVolume > preMaxVolume) return false;
 
 	if (curBackPack)
-		curBackPack->DetachItem();
+		curBackPack->LegacyMoveToAround(Character);
 
 	//InvenComp->EquippedBackPack(this);
 
