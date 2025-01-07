@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
 #include "Item/C_Item.h"
+
 #include "Character/C_BasicCharacter.h"
 #include "C_ConsumableItem.generated.h"
 
@@ -29,6 +29,7 @@ public:
 
 	AC_ConsumableItem();
 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -38,6 +39,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetLinkedItemBarWidget(class UC_ItemBarWidget* InItemBarWidget); //{ LinkedItemBarWidget = InItemBarWidget; }
+
+	//void SetConsumableItemState(EConsumableItemState NewState);
 
 public:
 
@@ -100,6 +103,15 @@ protected:
 protected:
 
 	virtual void HandleDestroy() PURE_VIRTUAL(AC_ConsumableItem::HandleDestroy, );
+
+private:
+	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
+	bool MoveInvenToInven(AC_BasicCharacter* Character) override;
+	bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
+
+	bool MoveAroundToAround(AC_BasicCharacter* Character) override;
+	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
+	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 
 public: // getters and setters
 

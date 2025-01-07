@@ -4,8 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-
-
+#include "Item/ConsumableItem/C_ConsumableItem.h"
 #include "C_InvenUiWidget.generated.h"
 
 /**
@@ -16,6 +15,8 @@ class UE_PUBG_API UC_InvenUiWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	// Called every frame
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
 	void SetOwnerCharacter(class AC_BasicCharacter* Character) { OwnerCharacter = Character; }
@@ -33,9 +34,15 @@ public:
 
 	bool SetIsDragging(bool Dragging) { return bIsDragging = Dragging; }
 
+	void SetUsingItem(AC_Item* inItem) { UsingItem = inItem; }
 
+	void SetIsPanelOpened(bool bisPanelOpened) { isPanelOpened = bisPanelOpened; }
 public:
 	bool GetIsDragging() { return bIsDragging; }
+
+	bool GetIsPanelOpened() { return isPanelOpened; }
+
+	AC_Item* GetUsingItem() { return UsingItem; }
 protected:
 	
 	//virtual void PreConstruct(bool IsDesignTime) override;
@@ -105,4 +112,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsDragging = false;
 
+	AC_Item* UsingItem = nullptr;
+
+	bool isPanelOpened = false;
 };

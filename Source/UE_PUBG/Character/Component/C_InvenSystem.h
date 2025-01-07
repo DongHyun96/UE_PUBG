@@ -58,7 +58,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UC_InvenUiWidget* GetInvenUI() { return InvenUI; }
 
-	bool GetIsPanelOpend() { return isPanelOpened; }
+	//AC_Item* GetUsingItem() { return UsingItem; }
+	//bool GetIsPanelOpend() { return isPanelOpened; }
 protected:
 	UPROPERTY()
 	class UC_InvenUiWidget* InvenUI = nullptr;
@@ -69,7 +70,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> InvenUiClass;
 
-	bool isPanelOpened = false;
+	//bool isPanelOpened = false;
 
 	//여기에 UPROERTY()를 걸면 인벤이 안보임. InvenUIWidget안에서 OwnerCharacter->GetInvenComponent()->GetNearItems() -> Empty인 상태가 되어 버림.
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)

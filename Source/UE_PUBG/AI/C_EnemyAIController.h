@@ -38,7 +38,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	float BehaviorRange = 150.f;
 
-
-	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	//class UC_BehaviorComponent* BehaviorComponent{};
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	class UC_BehaviorComponent* BehaviorComponent{};
 };

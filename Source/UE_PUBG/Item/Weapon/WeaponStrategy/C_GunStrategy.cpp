@@ -29,7 +29,7 @@ bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 {
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetIsPanelOpend()) return false; //UI가 열려 있을때 작동 금지.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	UC_Util::Print("Change Weapon Mode");
@@ -42,7 +42,7 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	//if (WeaponUser->GetIsHoldDirection()) return false;
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetIsPanelOpend()) return false; //UI가 열려 있을때 작동 금지.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	if (CurWeapon->GetIsPartAttached(EPartsName::GRIP))
@@ -62,7 +62,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	//UC_Util::Print("Mlb Clicked");
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetIsPanelOpend()) return false; //UI가 열려 있을때 작동 금지.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	if (!WeaponUser->GetCanFireBullet()) return false;
@@ -87,7 +87,7 @@ bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	if (!WeaponUser->GetCanFireBullet()) return false;
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
-	if (CurPlayer->GetInvenSystem()->GetIsPanelOpend()) return false; //UI가 열려 있을때 작동 금지.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
@@ -111,7 +111,7 @@ bool AC_GunStrategy::UseMlb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 {
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetIsPanelOpend()) return false; //UI가 열려 있을때 작동 금지.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	if (!WeaponUser->GetCanFireBullet()) return false;
 
@@ -128,7 +128,7 @@ bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 {
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetIsPanelOpend()) return false; //UI가 열려 있을때 작동 금지.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 
@@ -153,7 +153,7 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 {
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetIsPanelOpend()) return false; //UI가 열려 있을때 작동 금지.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 
@@ -181,7 +181,7 @@ bool AC_GunStrategy::UseMrb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 {
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetIsPanelOpend()) return false; //UI가 열려 있을때 작동 금지.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 

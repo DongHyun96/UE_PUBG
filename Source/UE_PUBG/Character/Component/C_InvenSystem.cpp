@@ -78,7 +78,7 @@ void UC_InvenSystem::OpenInvenUI()
 
 	
 
-	if (isPanelOpened)
+	if (InvenUI->GetIsPanelOpened())
 	{
 		CloseInvenUI();
 	}
@@ -98,7 +98,8 @@ void UC_InvenSystem::OpenInvenUI()
 
 void UC_InvenSystem::ShowInvenUI()
 {
-	isPanelOpened = true;
+	//isPanelOpened = true;
+	InvenUI->SetIsPanelOpened(true);
 	//InvenUI->AddToViewport();
 
 	if (!InvenUI->IsInViewport())
@@ -124,8 +125,8 @@ void UC_InvenSystem::CloseInvenUI()
 {
 	UC_Util::Print("CloseInvenUI");
 
-	isPanelOpened = false;
-
+	//isPanelOpened = false;
+	InvenUI->SetIsPanelOpened(false);
 	if (!PlayerController) 
 		PlayerController = GetWorld()->GetFirstPlayerController();
 
