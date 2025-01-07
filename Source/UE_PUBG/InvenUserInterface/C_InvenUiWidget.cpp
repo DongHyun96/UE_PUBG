@@ -74,37 +74,11 @@ void UC_InvenUiWidget::InitWidget()
     BackPackSlot->Init();
 }
 
-void UC_InvenUiWidget::BindToItemState(AC_Item* Item)
-{
-    AC_ConsumableItem* UsingConsumableItem = Cast<AC_ConsumableItem>(Item);
-
-    if (UsingConsumableItem)
-    {
-        UsingConsumableItem->OnConsumableItemStateChanged.AddDynamic(this, &UC_InvenUiWidget::HandleItemStateChanged);
-    }
-}
-
-void UC_InvenUiWidget::HandleItemStateChanged(EConsumableItemState NewState)
-{
-    if (NewState != EConsumableItemState::IDLE)
-    {
-        // 드래그 제한 처리
-        UE_LOG(LogTemp, Warning, TEXT("Drag Disabled: Item State is not IDLE"));
-        this->SetVisibility(ESlateVisibility::HitTestInvisible);
-    }
-    else
-    {
-        // 드래그 허용 처리
-        this->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-
-        UE_LOG(LogTemp, Warning, TEXT("Drag Enabled: Item State is IDLE"));
-    }
-}
-
 void UC_InvenUiWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
-    //BindToItemState(UsingItem);
+    if (UsingItem)
+        this->SetVisibility(ESlateVisibility::HitTestInvisible);
 
 }
 

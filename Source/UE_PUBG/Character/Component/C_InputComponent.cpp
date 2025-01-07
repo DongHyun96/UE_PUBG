@@ -493,7 +493,7 @@ void UC_InputComponent::OnRKey()
 void UC_InputComponent::OnMLBStarted()
 {
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
-	if (Player->GetInvenSystem()->GetIsPanelOpend()) return;
+	if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMlb_Started();
 }
 
@@ -513,7 +513,7 @@ void UC_InputComponent::OnMLBCompleted()
 void UC_InputComponent::OnMRBStarted()
 {
 	UC_Util::Print("Switching Consumable");
-	if (Player->GetInvenSystem()->GetIsPanelOpend()) return;
+	if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return;
 	// Test용 Consumable switching
 	if (Player->ConsumableIterator >= Player->ConsumableItems.Num() - 1) Player->ConsumableIterator = 0;
 	else Player->ConsumableIterator++;
@@ -644,7 +644,7 @@ void UC_InputComponent::OnTabKey()
 	// Inven 켜기 / 끄기 기능
 	UC_Util::Print("OnTabKey", FColor::Red, 2.f);
 
-	if (!Player->GetInvenSystem()->GetIsPanelOpend())
+	if (!Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened())
 	{
 		Player->GetInvenSystem()->ShowInvenUI();
 		Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Hidden);

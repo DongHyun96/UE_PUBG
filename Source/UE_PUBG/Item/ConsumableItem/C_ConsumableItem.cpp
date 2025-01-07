@@ -83,9 +83,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 			Player->GetHUDWidget()->OnConsumableItemActivatingEnd();
 
-		//ConsumableItemState = EConsumableItemState::ACTIVATE_COMPLETED;
-
-		SetConsumableItemState(EConsumableItemState::ACTIVATE_COMPLETED);
+		ConsumableItemState = EConsumableItemState::ACTIVATE_COMPLETED;
 
 		UsingTimer = 0.f;
 
@@ -105,8 +103,15 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser)) Player->GetHUDWidget()->OnConsumableUsed();
 
 		LinkedItemBarWidget->SetPercent(0.f, UsageTime);
-		SetConsumableItemState(EConsumableItemState::IDLE);
-
+		ConsumableItemState = EConsumableItemState::IDLE;
+		
+		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+		{
+			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
+			if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened())
+				OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
+		}
+		
 		if (ItemDatas.ItemCurStack == 0)
 		{
 
@@ -115,9 +120,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			return;
 		}
 
-		//ConsumableItemState = EConsumableItemState::IDLE;
 
-		//OwnerCharacter->GetInvenComponent()->GetInvenUI()->SetUsingItem(nullptr);
 
 	}
 		return;
@@ -136,20 +139,7 @@ void AC_ConsumableItem::SetLinkedItemBarWidget(UC_ItemBarWidget* InItemBarWidget
 	//}
 }
 
-void AC_ConsumableItem::SetConsumableItemState(EConsumableItemState NewState)
-{
-	if (ConsumableItemState != NewState)
-	{
-		ConsumableItemState = NewState;
 
-		// 상태 변경 브로드캐스트
-		Cast<AC_Player>(OwnerCharacter)->GetInvenSystem()->GetInvenUI()->BindToItemState(this);
-		OnConsumableItemStateChanged.Broadcast(NewState);
-		//Cast<AC_Player>(OwnerCharacter)->GetInvenSystem()->GetInvenUI()->SetUsingItem(this);
-
-		//OwnerCharacter->GetInvenComponent()->GetInvenUI()->BindToItemState(this);
-	}
-}
 
 bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 {
@@ -169,9 +159,8 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 	if (PlayTime == 0.f) return false;
 
 	// 사용 시작하기
-	//ConsumableItemState = EConsumableItemState::ACTIVATING;
-	//OwnerCharacter->GetInvenComponent()->GetInvenUI()->BindToItemState(this);
-	SetConsumableItemState(EConsumableItemState::ACTIVATING);
+	ConsumableItemState = EConsumableItemState::ACTIVATING;
+	Cast<AC_Player>(OwnerCharacter)->GetInvenSystem()->GetInvenUI()->SetUsingItem(this); //InvenUI에 현재 사용중인 아이템 설정.
 	OnStartUsing(); // Template method
 
 	// 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기 시도
@@ -209,8 +198,7 @@ bool AC_ConsumableItem::CancelActivating()
 	ItemUser->SetIsActivatingConsumableItem(false);
 	OnCancelActivating();
 
-	//ConsumableItemState = EConsumableItemState::IDLE;
-	SetConsumableItemState(EConsumableItemState::IDLE);
+	ConsumableItemState = EConsumableItemState::IDLE;
 	LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 	UsingTimer			= 0.f;
 	//ItemUser			= nullptr;

@@ -45,8 +45,7 @@ void AC_HealItem::HandleActivateCompletedState()
 	if (BlockUsed >= TotalUsingBlockCnt ||
 		ItemUser->GetStatComponent()->GetCurHP() >= HealUpLimit) // End of HandleActivateCompletedState
 	{
-		//ConsumableItemState = EConsumableItemState::USED;
-		SetConsumableItemState(EConsumableItemState::USED);
+		ConsumableItemState = EConsumableItemState::USED;
 		return;
 	}
 }

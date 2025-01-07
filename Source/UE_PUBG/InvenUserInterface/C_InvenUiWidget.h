@@ -34,15 +34,15 @@ public:
 
 	bool SetIsDragging(bool Dragging) { return bIsDragging = Dragging; }
 
-	void BindToItemState(class AC_Item* Item);
-
 	void SetUsingItem(AC_Item* inItem) { UsingItem = inItem; }
 
-private:
-	UFUNCTION()
-	void HandleItemStateChanged(EConsumableItemState NewState);
+	void SetIsPanelOpened(bool bisPanelOpened) { isPanelOpened = bisPanelOpened; }
 public:
 	bool GetIsDragging() { return bIsDragging; }
+
+	bool GetIsPanelOpened() { return isPanelOpened; }
+
+	AC_Item* GetUsingItem() { return UsingItem; }
 protected:
 	
 	//virtual void PreConstruct(bool IsDesignTime) override;
@@ -113,4 +113,6 @@ protected:
 	bool bIsDragging = false;
 
 	AC_Item* UsingItem = nullptr;
+
+	bool isPanelOpened = false;
 };

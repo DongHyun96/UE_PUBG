@@ -20,8 +20,6 @@ enum class EConsumableItemState : uint8
 	USED
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConsumableItemStateChanged, EConsumableItemState, NewState);
-//DECLARE_DYNAMIC_DELEGATE_OneParam(FonConsumableItemStateChanged, EConsumableItemState, NewState)
 UCLASS(Abstract)
 class UE_PUBG_API AC_ConsumableItem : public AC_Item
 {
@@ -42,10 +40,7 @@ public:
 
 	void SetLinkedItemBarWidget(class UC_ItemBarWidget* InItemBarWidget); //{ LinkedItemBarWidget = InItemBarWidget; }
 
-	UPROPERTY(BlueprintAssignable) // 블루프린트에서도 사용 가능
-	FOnConsumableItemStateChanged OnConsumableItemStateChanged;
-
-	void SetConsumableItemState(EConsumableItemState NewState);
+	//void SetConsumableItemState(EConsumableItemState NewState);
 
 public:
 
