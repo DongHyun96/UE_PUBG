@@ -44,6 +44,7 @@ void UC_ConsumableUsageMeshComponent::BeginPlay()
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 			SocketNames[Pair.Key]
 		);
+		Pair.Value->SetVisibility(false);
 	}
 }
 

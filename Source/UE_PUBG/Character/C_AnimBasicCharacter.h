@@ -23,7 +23,11 @@ class UE_PUBG_API UC_AnimBasicCharacter : public UAnimInstance
 {
 	GENERATED_BODY()
 
+public:
+
 	virtual void NativeBeginPlay() override;
+
+private:
 
 	/// <summary>
 	/// AnimGraph에서의 transition용 data들 업데이트
@@ -122,7 +126,7 @@ protected:
 
 	void RilfeLeftHandIK();
 
-	void SetAimOfssetRotation();
+	virtual void SetAimOffsetRotation();
 
 	void SetAimingTurnInPlaceRotation();
 

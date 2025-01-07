@@ -108,7 +108,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 		{
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
-			if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened())
+			if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
 				OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
 			//OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
 		}
