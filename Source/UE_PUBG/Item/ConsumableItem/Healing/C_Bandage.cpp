@@ -15,6 +15,8 @@
 
 #include "HUD/C_HUDWidget.h"
 
+const float AC_Bandage::USAGE_MESH_SHOWN_TIME = 10.f;
+
 AC_Bandage::AC_Bandage()
 {
 	PrimaryActorTick.bCanEverTick = true;

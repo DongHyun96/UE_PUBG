@@ -7,6 +7,15 @@
 
 #include "Utility/C_Util.h"
 
+const TMap<EConsumableUsageMeshType, FName> UC_ConsumableUsageMeshComponent::SocketNames =
+{
+	{EConsumableUsageMeshType::BANDAGE,		"Bandage_ArmSocket"},
+	{EConsumableUsageMeshType::SYRINGE,		"SyringeSocket"},
+	{EConsumableUsageMeshType::DRINK,		"DrinkUsageSocket"},
+	{EConsumableUsageMeshType::PAIN_KILLER, "PainKillerUsageSocket"},
+};
+
+
 UC_ConsumableUsageMeshComponent::UC_ConsumableUsageMeshComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;

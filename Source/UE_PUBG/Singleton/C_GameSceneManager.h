@@ -23,6 +23,17 @@ class UE_PUBG_API UC_GameSceneManager : public UWorldSubsystem
 public:
 
 	void OnWorldBeginPlay(UWorld& InWorld) override;
+
+	//void Deinitialize() override;
+
+private:
+
+	void Initialize(FSubsystemCollectionBase& Collection) override;
+	void Deinitialize() override;
+
+private:
+
+	//void OnWorldEndPlay(UWorld* InWorld);
 	
 public: // Getters and setters
 
@@ -32,6 +43,11 @@ public: // Getters and setters
 	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
 
 	TArray<class AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
+
+	/// <summary>
+	/// GameScene에서 GC로부터 보호된 Object들 추가 -> GameScene 끝날 때 일괄 삭제처리 예정
+	/// </summary>
+	void AddNonGCObject(UObject* Object) { NonGCObjects.Add(Object); }
 
 private:
 
@@ -43,5 +59,10 @@ private:
 
 	// 인게임 모든 캐릭터들(Player + Enemies)
 	TArray<class AC_BasicCharacter*> AllCharacters{};
+
+private:
+
+	// InGameScene내에서 Unreal GC로부터 보호된 객체들 -> GameScene이 끝날 때 해제할 예정
+	TSet<UObject*> NonGCObjects{};
 
 };

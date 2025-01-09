@@ -118,13 +118,6 @@ private:
 public:
 
 	/// <summary>
-	/// TODO : 이 함수 지우기
-	/// </summary>
-	static void InitTestPool(class AC_BasicCharacter* InOwnerCharacter, UClass* Class, class UC_EquippedComponent* EquippedComponent);
-
-public:
-
-	/// <summary>
 	/// On Remove Pin Anim Montage end call back
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
@@ -170,9 +163,6 @@ public: // Getters & Setters
 	class UNiagaraSystem* GetNiagaraExplodeEffect() const { return NiagaraExplodeEffect; }
 
 public:
-
-	UFUNCTION(BlueprintCallable)
-	void InitExplodeStrategy(EThrowableType InThrowableType);
 
 	/// <summary>
 	/// 안전손잡이까지 날리기
@@ -225,8 +215,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ClearSpline();
 
-private:
+protected:
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	EThrowableType ThrowableType{};
 
 protected:
@@ -279,7 +270,7 @@ private:
 	FVector ProjLaunchVelocity{};
 
 	float Speed = 1500.f;
-	const float UP_DIR_BOOST_OFFSET  = 500.f;
+	static const float UP_DIR_BOOST_OFFSET;
 
 protected: // Predicted Path 관련
 
@@ -293,17 +284,13 @@ protected: // Predicted Path 관련
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UStaticMesh* SplineMesh{};
 
-protected:
-
-	// Testing 용, 배낭에 들어있는 것처럼 쓸 것임 / TODO : 이 멤버변수 지우기
-	static TArray<AC_ThrowingWeapon*> ThrowablePool;
-	
-	static const UINT TESTPOOLCNT = 2;
-
 private:
 
 	// Predicted Path를 그릴 때, 던지기 자세에서의 socket위치를 파악하기 위함, 플레이어만 사용
 	static class USkeletalMeshComponent* OwnerMeshTemp;
+
+	//  GameScene에 배치된 총 ThrowingWeapon 개수 -> OwnerMeshTemp Destroy 처리 시 사용 예정
+	static int ThrowingWeaponCount;
 
 private:
 	
@@ -316,8 +303,17 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	float CookingTime = 5.f;
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TScriptInterface<class II_ExplodeStrategy> ExplodeStrategy{};
+//protected:
+//
+//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+//	TScriptInterface<class II_ExplodeStrategy> ExplodeStrategy{};
+
+private:
+
+	static TMap<EThrowableType, class II_ExplodeStrategy*> ExplodeStrategies;
+	class II_ExplodeStrategy* ExplodeStrategy{};
+
+protected:
 
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
@@ -335,10 +331,5 @@ protected:
 
 private:
 
-	const TMap<EThrowableType, FString> THROWABLETYPE_ITEMNAME_MAP =
-	{
-		{EThrowableType::GRENADE,		"Grenade"},
-		{EThrowableType::FLASH_BANG,	"FlashBang"},
-		{EThrowableType::SMOKE,			"Smoke Grenade"},
-	};
+	static const TMap<EThrowableType, FString> THROWABLETYPE_ITEMNAME_MAP;
 };

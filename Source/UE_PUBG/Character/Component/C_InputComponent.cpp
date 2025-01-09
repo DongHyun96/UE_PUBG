@@ -482,10 +482,6 @@ void UC_InputComponent::OnBKey()
 
 void UC_InputComponent::OnRKey()
 {
-	// Testing용 ConsumableItem 작동 취소 TODO : 이 라인 지우기
-	if (IsValid(Player->ConsumableItems[Player->ConsumableIterator]))
-		Player->ConsumableItems[Player->ConsumableIterator]->CancelActivating();
-
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteRKey();
 }
@@ -512,15 +508,10 @@ void UC_InputComponent::OnMLBCompleted()
 
 void UC_InputComponent::OnMRBStarted()
 {
-	UC_Util::Print("Switching Consumable");
 	if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return;
-	// Test용 Consumable switching
-	if (Player->ConsumableIterator >= Player->ConsumableItems.Num() - 1) Player->ConsumableIterator = 0;
-	else Player->ConsumableIterator++;
-		
-	
-	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
-	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMrb_Started();
+
+	if (IsValid(Player->GetEquippedComponent()->GetCurWeapon()))  
+		Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMrb_Started();
 }
 
 void UC_InputComponent::OnMRBOnGoing()
@@ -584,6 +575,11 @@ void UC_InputComponent::OnFKey()
 			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING);
 		return;
 	}
+
+	// TODO : Consumable Item 사용 중이라면 취소 시키기
+	// Testing용 ConsumableItem 작동 취소 TODO : 이 라인 지우기
+	//if (IsValid(Player->ConsumableItems[Player->ConsumableIterator]))
+	//	Player->ConsumableItems[Player->ConsumableIterator]->CancelActivating();
 
 	if (Player->GetInventory()->GetNearItems().Num() > 0)
 	{

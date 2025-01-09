@@ -9,6 +9,8 @@
 
 #include "Utility/C_Util.h"
 
+const float AC_WorldPingActor::WORLD_PING_DISTANCE_LIMIT = 50000.f;
+
 AC_WorldPingActor::AC_WorldPingActor()
 {
 	PrimaryActorTick.bCanEverTick = true;

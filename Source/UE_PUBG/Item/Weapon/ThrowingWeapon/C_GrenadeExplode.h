@@ -63,11 +63,11 @@ private:
 private:
 
 	// 각 피격 부위별 Damage rate
-	TMap<FName, float> BodyPartsDamageRate{};
+	static const TMap<FName, float> BodyPartsDamageRate;
 
 	// Ray를 쏠 Destination bone names
-	TArray<FName> LineTraceDestBoneNames{};
+	static const TArray<FName> LineTraceDestBoneNames;
 
-	const float DAMAGE_BASE = 50.f;
+	static const float DAMAGE_BASE;
 
 };

@@ -18,9 +18,12 @@
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 
+#include "Singleton/C_GameSceneManager.h"
+
 #include "Utility/C_Util.h"
 
 TMap<EParkourActionType, class II_ParkourActionStrategy*> UC_ParkourComponent::ParkourActionStrategies{};
+int UC_ParkourComponent::ParkourComponentCount{};
 
 UC_ParkourComponent::UC_ParkourComponent()
 {
@@ -34,24 +37,17 @@ void UC_ParkourComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	++ParkourComponentCount;
+
 	// Init ParkourMontageMap
 	ParkourMontageMap.Add(EParkourActionType::VAULTING_LOW,  LowVaultingMontages);
 	ParkourMontageMap.Add(EParkourActionType::VAULTING_HIGH, HighVaultingMontages);
 	ParkourMontageMap.Add(EParkourActionType::MANTLING_LOW,  LowMantlingMontages);
 	ParkourMontageMap.Add(EParkourActionType::MANTLING_HIGH, HighMantlingMontages);
 
-	/*
-	UAction* action{ NewObject<UAction>(GetTransientPackage(), 
-                                    UAction::StaticClass()),
-			            
-	*/
-
 	// Init ParkourAction Strategies
 	if (ParkourActionStrategies.IsEmpty())
 	{
-		//TStrongObjectPtr<UC_VaultLowActionStrategy> VaultLowActionStrategy =
-		//	TStrongObjectPtr<UC_VaultLowActionStrategy>(NewObject<UC_VaultLowActionStrategy>(GetTransientPackage()));
-
 		II_ParkourActionStrategy* VaultingLowStrategy = NewObject<UC_VaultLowActionStrategy>();
 		VaultingLowStrategy->_getUObject()->AddToRoot(); // GC 방지 -> 주의 : 반드시 RemoveFromRoot 호출할 것
 
@@ -63,6 +59,11 @@ void UC_ParkourComponent::BeginPlay()
 
 		II_ParkourActionStrategy* MantleHighStrategy = NewObject<UC_MantleHighActionStrategy>();
 		MantleHighStrategy->_getUObject()->AddToRoot();
+
+		GAMESCENE_MANAGER->AddNonGCObject(VaultingLowStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddNonGCObject(VaultingHighStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddNonGCObject(MantleLowStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddNonGCObject(MantleHighStrategy->_getUObject());
 
 		ParkourActionStrategies.Add(EParkourActionType::VAULTING_LOW,  VaultingLowStrategy);
 		ParkourActionStrategies.Add(EParkourActionType::VAULTING_HIGH, VaultingHighStrategy);
@@ -76,17 +77,15 @@ void UC_ParkourComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	// 아직 Game이 진행중이고 남아있는 캐릭터들은 Parkour Action 전략들을 아직 필요로 함
-	if (EndPlayReason == EEndPlayReason::Type::Destroyed) return;
-
-	// static 멤버변수 메모리 해제
-	if (!ParkourActionStrategies.IsEmpty())
+	if (EndPlayReason == EEndPlayReason::Type::Destroyed)
 	{
-		for (TPair<EParkourActionType, II_ParkourActionStrategy*>& pair : ParkourActionStrategies)
-			pair.Value->_getUObject()->RemoveFromRoot();
-
-		ParkourActionStrategies.Empty();
+		if (--ParkourComponentCount <= 0)
+		{
+			if (!ParkourActionStrategies.IsEmpty()) ParkourActionStrategies.Empty(); // GC는 GameSceneManager에서 처리 예정
+		}
+		return;
 	}
+	if (!ParkourActionStrategies.IsEmpty()) ParkourActionStrategies.Empty(); // GC는 GameSceneManager에서 처리 예정
 }
 
 void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

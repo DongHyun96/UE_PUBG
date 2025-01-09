@@ -23,10 +23,11 @@
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_ParkourComponent.h"
+#include "Character/Component/C_CameraEffectComponent.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
-#include "Components/SceneCaptureComponent2D.h"
+//#include "Components/SceneCaptureComponent2D.h"
 #include "Components/Image.h"
 
 #include "Item/C_Item.h"
@@ -43,7 +44,7 @@
 #include "Curves/CurveFloat.h"
 
 #include "Engine/PostProcessVolume.h"
-#include "Engine/TextureRenderTarget2D.h"
+//#include "Engine/TextureRenderTarget2D.h"
 
 #include "Blueprint/UserWidget.h"
 
@@ -99,8 +100,6 @@ AC_Player::AC_Player()
 	//MainCamera = Cast<UCameraComponent>(GetDefaultSubobjectByName("Camera"));
 	//InitialMainCameraRelativeRotation = MainCamera->GetRelativeRotation().Quaternion();
 	//C_MainSpringArm = Cast<USpringArmComponent>(GetDefaultSubobjectByName("MainSpringArm"));
-	SceneCaptureComponent = CreateDefaultSubobject<USceneCaptureComponent2D>("SceneCaptureComponent");
-	//SceneCaptureComponent->bCaptureEveryFrame = false;
 
 	PingSystemComponent = CreateDefaultSubobject<UC_PingSystemComponent>("PingSystemComponent");
 
@@ -110,6 +109,8 @@ AC_Player::AC_Player()
 	InvenSystem = CreateDefaultSubobject<UC_InvenSystem>("C_InvenSystem");
 	InvenSystem->SetOwnerCharacter(this);
 
+	CameraEffectComponent = CreateDefaultSubobject<UC_CameraEffectComponent>("CameraEffectComponent");
+	CameraEffectComponent->SetOwnerPlayer(this);
 }
 
 void AC_Player::BeginPlay()
@@ -155,16 +156,7 @@ void AC_Player::BeginPlay()
 		//FSlateApplication::Get().SetNavigationConfig(MakeShared<FNavigationConfig>());
 	}
 
-	// AimPunching 돌아올 때 쓰일 Local 좌표들
-	MainCamOriginLocalLocation	= MainCamera->GetRelativeLocation();
-	MainCamOriginLocalRotation	= MainCamera->GetRelativeRotation();
-	MainCamPunchingDestLocation = MainCamOriginLocalLocation;
-	MainCamPunchingDestRotation = MainCamOriginLocalRotation;
-
-	AimCamOriginLocalLocation	= AimCamera->GetRelativeLocation();
-	AimCamOriginLocalRotation	= AimCamera->GetRelativeRotation();
-	AimCamPunchingDestLocation	= AimCamOriginLocalLocation;
-	AimCamPunchingDestRotation	= AimCamOriginLocalRotation;
+	
 
 	// 자세별 MainSpringArm 위치 초기화
 	MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::STAND, C_MainSpringArm->GetRelativeLocation());
@@ -174,15 +166,6 @@ void AC_Player::BeginPlay()
 
 	MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[EPoseState::STAND];
 	SetAimPressCameraLocation();
-
-	// PostProcessVolume 초기화
-	TArray<AActor*> PPVolumes{};
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APostProcessVolume::StaticClass(), PPVolumes);
-
-	if (!PPVolumes.IsEmpty()) PostProcessVolume = Cast<APostProcessVolume>(PPVolumes[0]);
-	PostProcessInitialIntensity = PostProcessVolume->Settings.BloomIntensity;
-
-	//ScreenShotWidget->AddToViewport();
 
 	//if (IsValid(C_MainSpringArm))
 	//{
@@ -213,7 +196,6 @@ void AC_Player::BeginPlay()
 
 	ParkourComponent->SetOwnerPlayer(this);
 
-	SpawnConsumableItemForTesting();
 	PoolingBullets();
 
 }
@@ -229,9 +211,6 @@ void AC_Player::Tick(float DeltaTime)
 	HandleTurnInPlaceWhileAiming();
 	HandlePlayerRotationWhileAiming();
 	HandleControllerRotation(DeltaTime);
-
-	HandleCameraAimPunching(DeltaTime);
-	HandleFlashBangEffect(DeltaTime);
 
 	//ClampControllerRotationPitchWhileAimDownSight();
 
@@ -880,176 +859,6 @@ void AC_Player::InitTurnAnimMontageMap()
 
 }
 
-
-void AC_Player::HandleCameraAimPunching(float DeltaTime)
-{
-	if (!IsValid(MainCamera) || !IsValid(AimCamera)) return;
-
-	FVector		MainCamPos = MainCamera->GetRelativeLocation();
-	FVector		AimCamPos  = AimCamera->GetRelativeLocation();
-	FRotator	MainCamRot = MainCamera->GetRelativeRotation();
-	FRotator	AimCamRot  = AimCamera->GetRelativeRotation();
-
-	if (FVector::Dist(MainCamPos, MainCamPunchingDestLocation) < 0.1f) // Destination으로 도달했다고 판단
-	{
-		// 다시금 원위치로 조정
-		MainCamPunchingDestLocation = MainCamOriginLocalLocation;
-		MainCamPunchingDestRotation.Roll = MainCamOriginLocalRotation.Roll;
-	}
-
-	if (FVector::Dist(AimCamPos, AimCamPunchingDestLocation) < 0.1f)
-	{
-		AimCamPunchingDestLocation = AimCamOriginLocalLocation;
-		AimCamPunchingDestRotation.Roll = AimCamOriginLocalRotation.Roll;
-	}
-
-	//if (FMath::Abs(MainCamRot.Roll - MainCamPunchingDestRotation.Roll) < 0.1f)
-	//if (FMath::Abs(AimCamRot.Roll - AimCamPunchingDestRotation.Roll) < 0.1f)
-
-	MainCamPos = FMath::Lerp(MainCamPos, MainCamPunchingDestLocation, PunchingLerpFactor * DeltaTime);
-	AimCamPos = FMath::Lerp(AimCamPos, AimCamPunchingDestLocation, PunchingLerpFactor * DeltaTime);
-
-	MainCamRot.Roll = FMath::Lerp(MainCamRot.Roll, MainCamPunchingDestRotation.Roll, PunchingLerpFactor * DeltaTime);
-	AimCamRot.Roll = FMath::Lerp(AimCamRot.Roll, AimCamPunchingDestRotation.Roll, PunchingLerpFactor * DeltaTime);
-
-	MainCamera->SetRelativeLocation(MainCamPos);
-	AimCamera->SetRelativeLocation(AimCamPos);
-	MainCamera->SetRelativeRotation(MainCamRot);
-	AimCamera->SetRelativeRotation(AimCamRot);
-
-	//UC_Util::Print(float(AimCamera->GetRelativeRotation().Roll));
-	//UC_Util::Print(float(MainCamera->GetRelativeRotation().Roll));
-
-}
-
-void AC_Player::ExecuteCameraAimPunching
-(
-	FVector CamPunchingDirection,
-	float CamPunchIntensity,
-	float CamRotationPunchingXDelta,
-	float InPunchingLerpFactor
-)
-{
-	// TODO : 현재 AimDownSight이면 다르게 처리 (Character Animation으로 처리해야 할 듯)
-	// TODO : Aim Down일 때와 Main Camera는 동일하게 모두 일괄 처리 (자세 바뀔 때도 다음 카메라 또한 에임 펀칭이 일어나는 중으로 해줘야 함)
-
-	CamPunchingDirection.Normalize();
-
-	MainCamPunchingDestLocation			= MainCamOriginLocalLocation + CamPunchingDirection * CamPunchIntensity;
-	AimCamPunchingDestLocation			= AimCamOriginLocalLocation + CamPunchingDirection * CamPunchIntensity;
-
-	MainCamPunchingDestRotation.Roll	= MainCamOriginLocalRotation.Roll + CamRotationPunchingXDelta;
-	AimCamPunchingDestRotation.Roll		= AimCamOriginLocalRotation.Roll + CamRotationPunchingXDelta;
-
-	PunchingLerpFactor = InPunchingLerpFactor;
-}
-
-void AC_Player::ExecuteCameraShake(float ShakeScale)
-{
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-
-	if (PlayerController && PlayerController->PlayerCameraManager && CameraShakeClass)
-		PlayerController->PlayerCameraManager->StartCameraShake(CameraShakeClass, ShakeScale);
-}
-
-void AC_Player::HandleFlashBangEffect(float DeltaTime)
-{
-	FlashBangEffectDuration -= DeltaTime;
-
-	// End of Effect
-	if (FlashBangEffectDuration <= 0.f)
-	{
-		FlashBangEffectDuration = 0.f;
-
-		PostProcessVolume->Settings.BloomIntensity = FMath::Lerp(PostProcessVolume->Settings.BloomIntensity, PostProcessInitialIntensity, DeltaTime * 10.f);
-
-		// TODO : Capture된 잔상 남기기
-
-		return;
-	}
-
-	PostProcessVolume->Settings.BloomIntensity = 1000.f;
-	//PostProcessVolume->Settings.BloomIntensity = 500.f;
-}
-
-void AC_Player::CaptureScene()
-{
-	if (!SceneCaptureComponent)
-	{
-		UC_Util::Print("From AC_Player::CaptureScene : SceneCaptureComponent not initialized!", FColor::Red, 5.f);
-		return;
-	}
-	if (!RenderTarget)
-	{
-		UC_Util::Print("From AC_Player::CaptureScene : RenderTarget not initialized!", FColor::Red, 5.f);
-		return;
-	}
-
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-
-	if (!IsValid(PlayerController))
-	{
-		UC_Util::Print("From AC_Player::CaptureScene : PlayerController Invalid!", FColor::Red, 5.f);
-		return;
-	}
-
-	AActor* ViewTarget = PlayerController->PlayerCameraManager->GetViewTarget();
-	if (!IsValid(ViewTarget))
-	{
-		UC_Util::Print("From AC_Player::CaptureScene : ViewTarget Invalid!", FColor::Red, 5.f);
-		return;
-	}
-
-	UCameraComponent* CameraComponent = ViewTarget->FindComponentByClass<UCameraComponent>();
-
-	if (!CameraComponent)
-	{
-		UC_Util::Print("From AC_Player::CaptrueScene : Camera Component not found!", FColor::Red, 5.f);
-		return;
-	}
-
-	SceneCaptureComponent->SetWorldTransform(CameraComponent->GetComponentTransform());
-	SceneCaptureComponent->FOVAngle = CameraComponent->FieldOfView;
-	
-	SceneCaptureComponent->TextureTarget = RenderTarget;
-	SceneCaptureComponent->CaptureScene();
-
-	UTexture2D* NewTexture = RenderTarget->ConstructTexture2D(SceneCaptureComponent, TEXT("CapturedImage"), EObjectFlags::RF_NoFlags, CTF_DeferCompression);
-
-	if (!NewTexture)
-	{
-		UC_Util::Print("Texture not created!", FColor::Red, 5.f);
-		return;
-	}
-
-	// 필요에 따라 텍스쳐를 더 수정할 수 있음 (무슨 소린지 잘 모르겠음)
-	NewTexture->UpdateResource();
-
-	//FSlateBrush Brush{};
-    //Brush.SetResourceObject(NewTexture);
-	//ScreenShotWidget->GetDisplayImage()->SetBrush(Brush);
-}
-
-void AC_Player::ExecuteFlashBangEffect(float Duration)
-{
-	// 현재의 남은 Duration 이하인 Duration이 들어왔다면 새로이 FlashBangEffect를 실행하지 않음
-	if (FlashBangEffectDuration >= Duration) return;
-
-	if (!IsValid(PostProcessVolume))
-	{
-		UC_Util::Print("From AC_Player::ExecuteFlashBangEffect : PostProcessVolume Invalid!", FColor::Cyan, 5.f);
-		return;
-	}
-	
-	FlashBangEffectDuration = Duration;
-
-	//CaptureScene();
-	//FString Temp{};
-	//FScreenshotRequest::RequestScreenshot(Temp, false, false);
-}
-
-
-
 void AC_Player::SetToAimDownSight()
 {
 	CrosshairWidgetComponent->SetCrosshairState(ECrosshairState::RIFLEAIMDOWNSIGHT);
@@ -1115,27 +924,28 @@ void AC_Player::SetToAimKeyPress()
 	//MainCamera->SetActive(false);
 	//bIsAimDownSight = true;
 }
-	void AC_Player::HandleCameraTransitionInterpolation(float Value)
+
+void AC_Player::HandleCameraTransitionInterpolation(float Value)
+{
+	FVector  NewLocation;
+	FRotator NewRotation;
+	if (bIsAimDownSight)
 	{
-		FVector  NewLocation;
-		FRotator NewRotation;
-		if (bIsAimDownSight)
-		{
-			NewLocation = FMath::Lerp(InitialCameraLocation, AimCamera->GetComponentLocation(), Value);
-			NewRotation = FMath::Lerp(InitialCameraRotation, AimCamera->GetComponentRotation(), Value);
-			MainCamera->SetWorldLocation(NewLocation);
-			MainCamera->SetWorldRotation(NewRotation);
-		}
-		else
-		{
-			NewLocation = FMath::Lerp(InitialCameraLocation, MainCamera->GetComponentLocation(), Value);
-			NewRotation = FMath::Lerp(InitialCameraRotation, MainCamera->GetComponentRotation(), Value);
-			AimCamera->SetWorldLocation(NewLocation);
-			AimCamera->SetWorldRotation(NewRotation);
-			//UC_Util::Print(NewLocation);
-			//UC_Util::Print(NewRotation);
-		}
+		NewLocation = FMath::Lerp(InitialCameraLocation, AimCamera->GetComponentLocation(), Value);
+		NewRotation = FMath::Lerp(InitialCameraRotation, AimCamera->GetComponentRotation(), Value);
+		MainCamera->SetWorldLocation(NewLocation);
+		MainCamera->SetWorldRotation(NewRotation);
 	}
+	else
+	{
+		NewLocation = FMath::Lerp(InitialCameraLocation, MainCamera->GetComponentLocation(), Value);
+		NewRotation = FMath::Lerp(InitialCameraRotation, MainCamera->GetComponentRotation(), Value);
+		AimCamera->SetWorldLocation(NewLocation);
+		AimCamera->SetWorldRotation(NewRotation);
+		//UC_Util::Print(NewLocation);
+		//UC_Util::Print(NewRotation);
+	}
+}
 
 void AC_Player::OnCameraTransitionTimelineFinished()
 {
@@ -1268,22 +1078,6 @@ void AC_Player::SetRecoilFactorByPose()
 	default:
 		break;
 	}
-}
-
-void AC_Player::SpawnConsumableItemForTesting()
-{
-	FActorSpawnParameters Param{};
-	Param.Owner = this;
-	//ConsumableItem = GetWorld()->SpawnActor<AC_FirstAidKit>(ConsumableItemClass, Param);
-	//ConsumableItem = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClass, Param);
-
-	for (auto& ItemClass : ConsumableItemClasses)
-	{
-		AC_ConsumableItem* cItem = GetWorld()->SpawnActor<AC_ConsumableItem>(ItemClass, Param);
-		cItem->SetOwnerCharacter(this);
-		ConsumableItems.Add(cItem);
-	}
-
 }
 
 void AC_Player::PoolingBullets()

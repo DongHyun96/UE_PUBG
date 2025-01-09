@@ -7,6 +7,49 @@
 #include "HUD/C_OxygenWidget.h"
 #include "Utility/C_Util.h"	
 
+const float UC_StatComponent::MAX_HP		= 100.f;
+const float UC_StatComponent::MAX_BOOSTING	= 100.f;
+const float UC_StatComponent::HEAL_UP_LIMIT = 75.f; // 구급상자, 붕대로 채울 수 있는 총 힐량 limit
+const float UC_StatComponent::MAX_OXYGEN_HP = 100.f; // 숨 HP Max
+
+const float UC_StatComponent::BOOST_ONE_BLOCK_EFFECT_TIME = 8.f;
+const float UC_StatComponent::BOOST_ONE_BLOCK_AMOUNT		= 2.631f; // 한 블록 당 줄어드는 Boost 량
+
+// 20 40 30 10
+const TArray<float> UC_StatComponent::EACH_BOOST_PHASE_BORDER = { 20.f, 60.f, 90.f, 100.f };
+
+const TArray<FBoostingEffectFactor> UC_StatComponent::BOOSTING_EFFECT_FACTORS =
+{
+	{1.f, 1.f},		// 1페이즈 8초당 체력 회복량 & 이동 속도 증가(factor)
+	{2.f, 1.01f},	// 2페이즈
+	{3.f, 1.025f},	// 3페이즈
+	{4.f, 1.0625f}	// 4페이즈
+};
+
+const float UC_StatComponent::OXYGEN_EXHAUSTED_DAMAGE_PER_SEC = 20.f;
+
+const TMap<FName, EDamagingPartType> UC_StatComponent::DAMAGINGPARTS_MAP =
+{
+	{"Neck",		EDamagingPartType::HEAD},
+
+	{"Hips",		EDamagingPartType::HIPS},
+
+	{"LeftUpLeg",	EDamagingPartType::LEFT_LEG},
+	{"LeftFoot",	EDamagingPartType::LEFT_FOOT},
+	{"RightUpLeg",	EDamagingPartType::RIGHT_LEG},
+	{"RightFoot",	EDamagingPartType::RIGHT_FOOT},
+
+	{"Spine",		EDamagingPartType::LOWER_STOMACH},
+	{"Spine1",		EDamagingPartType::UPPER_STOMACH},
+	{"Spine2",		EDamagingPartType::SHOULDER},
+
+	{"LeftArm",		EDamagingPartType::LEFT_ARM},
+	{"LeftHand",	EDamagingPartType::LEFT_HAND},
+
+	{"RightArm",	EDamagingPartType::RIGHT_ARM},
+	{"RightHand",	EDamagingPartType::RIGHT_HAND}
+};
+
 UC_StatComponent::UC_StatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;

@@ -40,6 +40,6 @@ protected:
 private:
 
 	// 500m 찍히는 거리 및 보이는 거리 제한
-	const float WORLD_PING_DISTANCE_LIMIT = 50000.f;
+	static const float WORLD_PING_DISTANCE_LIMIT;
 
 };

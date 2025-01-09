@@ -97,11 +97,11 @@ public:
 
 protected:
 
-	const FVector2D MINIMAP_MINIMIZED_SIZE	= { 300.f, 300.f };
-	const FVector2D MINIMAP_MINIMIZED_POS	= { -175.921875f, -175.921875f };
+	static const FVector2D MINIMAP_MINIMIZED_SIZE;
+	static const FVector2D MINIMAP_MINIMIZED_POS;
 
-	const FVector2D MINIMAP_ENLARGED_SIZE	= { 600.f, 600.f };
-	const FVector2D MINIMAP_ENLARGED_POS	= { -329.921875f, -325.081055f };
+	static const FVector2D MINIMAP_ENLARGED_SIZE;
+	static const FVector2D MINIMAP_ENLARGED_POS;
 
 	UPROPERTY(BlueprintReadOnly)
 	FVector2D MiniMapLerpSizeDest = MINIMAP_MINIMIZED_SIZE;

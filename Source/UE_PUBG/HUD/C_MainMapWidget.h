@@ -7,7 +7,7 @@
 #include "C_MainMapWidget.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class UE_PUBG_API UC_MainMapWidget : public UC_MapWidget
@@ -127,15 +127,13 @@ private:
 
 private:
 
-	const float		MAP_SCALE_MAX			= 5.f;
-	const float		SCROLL_DELTA_STEP		= 0.5f;
-	const float		CANVAS_SIZE				= 1080.f;
-	const FVector2D MID_POINT				= {960.f, 540.f};
-	const float		WORLD_MAP_SIZE			= 100000.f;
-
-	const float		FIXED_LANDSCAPE_HEIGHT	= 3400.f;
-
-	const float		PING_BORDER_SIZE		= 30.f;
+	static const float		MAP_SCALE_MAX;
+	static const float		SCROLL_DELTA_STEP;
+	static const float		CANVAS_SIZE;
+	static const FVector2D	MID_POINT;
+	static const float		WORLD_MAP_SIZE;
+	static const float		FIXED_LANDSCAPE_HEIGHT;
+	static const float		PING_BORDER_SIZE;
 
 private:
 
