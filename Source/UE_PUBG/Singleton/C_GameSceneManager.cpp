@@ -60,6 +60,7 @@ void UC_GameSceneManager::Deinitialize()
 	NonGCObjects.Empty();
 
 	HUDWidgets.Empty();
+	MiniMapWidget = nullptr;
 }
 
 void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)

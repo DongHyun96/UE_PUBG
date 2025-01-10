@@ -46,8 +46,6 @@ void UC_InvenUiWidget::SetVisibility(ESlateVisibility InVisibility)
 {
     UUserWidget::SetVisibility(InVisibility);
 
-    UC_Util::Print("asdfkjgakjadshgf", FColor::Red, 10.f);
-
     APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 
     if (InVisibility == ESlateVisibility::Visible)
@@ -58,15 +56,25 @@ void UC_InvenUiWidget::SetVisibility(ESlateVisibility InVisibility)
             UC_Util::Print("Adding to viewport", FColor::Red, 10.f);
         }
 
-	    PlayerController->SetIgnoreLookInput(true);
+	    //PlayerController->SetIgnoreLookInput(true);
 
-	    FInputModeGameAndUI InputMode;
-	    InputMode.SetWidgetToFocus(this->TakeWidget());
-	    InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-        InputMode.SetHideCursorDuringCapture(false);
+        //FInputModeGameAndUI InputMode{};
+	    //InputMode.SetWidgetToFocus(this->TakeWidget());
+	    //InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+        //InputMode.SetHideCursorDuringCapture(false);
+	    //PlayerController->SetInputMode(InputMode);
+        
 
-	    PlayerController->SetInputMode(InputMode);
+        PlayerController->SetInputMode
+        (
+            FInputModeGameAndUI()
+            .SetWidgetToFocus(this->TakeWidget())
+            .SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock)
+            .SetHideCursorDuringCapture(false)
+        );
+
 	    PlayerController->bShowMouseCursor = true;
+        PlayerController->SetIgnoreLookInput(true);
     }
 
     if (InVisibility == ESlateVisibility::Hidden)
