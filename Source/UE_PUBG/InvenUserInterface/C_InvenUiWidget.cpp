@@ -122,7 +122,7 @@ void UC_InvenUiWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    if (!isPanelOpened) return;
+    if (!GetIsPanelOpened()) return;
 
     if (!OwnerCharacter->GetIsActivatingConsumableItem()) return;
     

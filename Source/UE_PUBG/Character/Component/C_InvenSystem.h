@@ -58,6 +58,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UC_InvenUiWidget* GetInvenUI() { return InvenUI; }
 
+	APlayerController* GetPlayerController() { return PlayerController; }
 protected:
 	UPROPERTY()
 	class UC_InvenUiWidget* InvenUI = nullptr;

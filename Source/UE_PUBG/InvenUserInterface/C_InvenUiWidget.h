@@ -117,5 +117,4 @@ protected:
 
 	AC_Item* UsingItem = nullptr;
 
-	bool isPanelOpened = false;
 };
