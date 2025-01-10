@@ -8,9 +8,17 @@
 
 #define GAMESCENE_MANAGER GetWorld()->GetSubsystem<UC_GameSceneManager>()
 
-/**
- * 
- */
+/// <summary>
+/// GameScene 현 HUD Mode
+/// </summary>
+enum class EHUDMode : uint8
+{
+	IDLE,
+	INVEN,
+	MAINMAP,
+	MAX
+};
+
 
 /// <summary>
 /// GameScene에서 사용할 Singleton class
@@ -49,6 +57,9 @@ public: // Getters and setters
 	/// </summary>
 	void AddNonGCObject(UObject* Object) { NonGCObjects.Add(Object); }
 
+	EHUDMode GetCurrentHUDMode() const { return CurrentHUDMode; }
+	void SetCurrentHUDMode(EHUDMode InHUDMode);
+
 private:
 
 	class AC_Player*				Player{};
@@ -64,5 +75,13 @@ private:
 
 	// InGameScene내에서 Unreal GC로부터 보호된 객체들 -> GameScene이 끝날 때 해제할 예정
 	TSet<UObject*> NonGCObjects{};
+
+private:
+
+	// Main Player의 Widget들, 현재 어떤 WidgetMode인지에 따른 Visibility setting 처리
+	EHUDMode CurrentHUDMode{};
+
+	TMap<EHUDMode, class UUserWidget*> HUDWidgets{};
+	UUserWidget*					   MiniMapWidget{};
 
 };

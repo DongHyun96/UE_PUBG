@@ -31,6 +31,8 @@
 
 #include "GameFramework/PhysicsVolume.h"
 
+#include "Singleton/C_GameSceneManager.h"
+
 // Sets default values for this component's properties
 UC_InputComponent::UC_InputComponent()
 {
@@ -421,7 +423,7 @@ void UC_InputComponent::OnNum1()
 void UC_InputComponent::OnNum2()
 {
 	// Testing 용 Boosting TODO : 이 라인 지우기
-	Player->GetStatComponent()->AddBoost(40.f);
+	//Player->GetStatComponent()->AddBoost(40.f);
 
 	Player->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::SUB_GUN);
 
@@ -576,6 +578,13 @@ void UC_InputComponent::OnFKey()
 		return;
 	}
 
+	// Consumable Item 관련 F키 - Consumable 활성화 취소
+	if (Player->GetIsActivatingConsumableItem() && Player->GetCurActivatingConsumableItem())
+	{
+		Player->GetCurActivatingConsumableItem()->CancelActivating();
+		return;
+	}
+		
 	// TODO : Consumable Item 사용 중이라면 취소 시키기
 	// Testing용 ConsumableItem 작동 취소 TODO : 이 라인 지우기
 	//if (IsValid(Player->ConsumableItems[Player->ConsumableIterator]))
@@ -613,21 +622,9 @@ void UC_InputComponent::OnNKey()
 
 void UC_InputComponent::OnMKey()
 {
-	if (Player->GetHUDWidget()->GetMainMapWidget()->GetVisibility() != ESlateVisibility::Visible)
-	{
-		// MainMap 열기
-		Player->GetInvenSystem()->CloseInvenUI();
-		Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		Player->GetHUDWidget()->GetMainMapWidget()->SetVisibility(ESlateVisibility::Visible);
-		Player->GetHUDWidget()->GetMiniMapWidget()->SetVisibility(ESlateVisibility::Hidden);
-		return;
-	}
-
-	// MainMap 닫기 Idle 상태로 돌아가기
-	Player->GetInvenSystem()->CloseInvenUI();
-	Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	Player->GetHUDWidget()->GetMainMapWidget()->SetVisibility(ESlateVisibility::Hidden);
-	Player->GetHUDWidget()->GetMiniMapWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (GAMESCENE_MANAGER->GetCurrentHUDMode() == EHUDMode::MAINMAP)
+		GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
+	else GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::MAINMAP);
 }
 
 void UC_InputComponent::OnIKey()
@@ -638,26 +635,18 @@ void UC_InputComponent::OnIKey()
 void UC_InputComponent::OnTabKey()
 {
 	// Inven 켜기 / 끄기 기능
-	UC_Util::Print("OnTabKey", FColor::Red, 2.f);
 
-	if (!Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened())
+	if (GAMESCENE_MANAGER->GetCurrentHUDMode() == EHUDMode::INVEN)
+		GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
+	else
 	{
-		Player->GetInvenSystem()->ShowInvenUI();
-		Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Hidden);
+		GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::INVEN);
 
 		AC_Gun* CurGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
 		if (IsValid(CurGun))
 		{
 			CurGun->BackToMainCamera();
 		}
-	}
-	else 
-	{
-		// Idle 기본 상황
-		Player->GetInvenSystem()->CloseInvenUI();
-		Player->GetHUDWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		Player->GetHUDWidget()->GetMainMapWidget()->SetVisibility(ESlateVisibility::Hidden);
-		Player->GetHUDWidget()->GetMiniMapWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 }
 
