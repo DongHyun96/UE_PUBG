@@ -14,6 +14,9 @@
 
 #include "HUD/C_HUDWidget.h"
 
+const float AC_MedKit::SWITCHING_TIME = 3.2f;
+const float AC_MedKit::BAND_USAGE_MESH_SHOW_TIME = 10.f;
+
 AC_MedKit::AC_MedKit()
 {
 	PrimaryActorTick.bCanEverTick = true;

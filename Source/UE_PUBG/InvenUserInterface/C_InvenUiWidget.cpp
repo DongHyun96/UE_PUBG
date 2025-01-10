@@ -6,7 +6,7 @@
 #include "InvenUserInterface/C_MainGunWidget.h"
 #include "InvenUserInterface/C_ThrowableWidget.h"
 #include "InvenUserInterface/C_EquipSlot.h"
-#include "InvenUserInterface/C_EquipmentPanel.h"\
+#include "InvenUserInterface/C_EquipmentPanel.h"
 
 #include "Character/Component/C_InvenComponent.h"
 
@@ -21,9 +21,9 @@
 
 #include "TimerManager.h"
 
-#include "InvenUserInterface/C_ItemBarWidget.h"
-
 #include "Utility/C_Util.h"
+
+#include "Kismet/GameplayStatics.h"
 
 void UC_InvenUiWidget::NativeConstruct()
 {
@@ -40,6 +40,50 @@ void UC_InvenUiWidget::NativeConstruct()
 
     InitListView();
 
+}
+
+void UC_InvenUiWidget::SetVisibility(ESlateVisibility InVisibility)
+{
+    UUserWidget::SetVisibility(InVisibility);
+
+    UC_Util::Print("asdfkjgakjadshgf", FColor::Red, 10.f);
+
+    APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+
+    if (InVisibility == ESlateVisibility::Visible)
+    {
+        if (!this->IsInViewport())
+        {
+            this->AddToViewport();
+            UC_Util::Print("Adding to viewport", FColor::Red, 10.f);
+        }
+
+	    PlayerController->SetIgnoreLookInput(true);
+
+	    FInputModeGameAndUI InputMode;
+	    InputMode.SetWidgetToFocus(this->TakeWidget());
+	    InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+        InputMode.SetHideCursorDuringCapture(false);
+
+	    PlayerController->SetInputMode(InputMode);
+	    PlayerController->bShowMouseCursor = true;
+    }
+
+    if (InVisibility == ESlateVisibility::Hidden)
+    {
+        PlayerController->SetIgnoreLookInput(false);
+        PlayerController->SetInputMode(FInputModeGameOnly());
+        PlayerController->bShowMouseCursor = false;
+    }
+}
+
+bool UC_InvenUiWidget::GetIsPanelOpened()
+{
+    switch (this->GetVisibility())
+    {
+    case ESlateVisibility::Visible: case ESlateVisibility::SelfHitTestInvisible: case ESlateVisibility::HitTestInvisible: return true;
+    default: return false;
+    }
 }
 
 void UC_InvenUiWidget::InitWidget()

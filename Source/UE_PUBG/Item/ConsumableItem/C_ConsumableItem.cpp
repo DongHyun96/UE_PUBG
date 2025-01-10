@@ -92,7 +92,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 		OnActivatingFinish(); // Template method
 
-		ItemUser->SetIsActivatingConsumableItem(false);
+		ItemUser->SetIsActivatingConsumableItem(false, nullptr);
 	}
 		return;
 	case EConsumableItemState::ACTIVATE_COMPLETED:
@@ -110,7 +110,9 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
 			if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
 				OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
+
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
+
 		}
 		
 		if (ItemDatas.ItemCurStack == 0)
@@ -158,14 +160,20 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 
 	// 사용 시작하기
 	ConsumableItemState = EConsumableItemState::ACTIVATING;
-	Cast<AC_Player>(OwnerCharacter)->GetInvenSystem()->GetInvenUI()->SetUsingItem(this); //InvenUI에 현재 사용중인 아이템 설정.
+
+	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
+	{
+		//InvenUI에 현재 사용중인 아이템 설정. InvenUI UsingItem이 있을 때 Tick에서 visibility 조정하는 중
+		UserPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(this); 
+	}
+	
 	OnStartUsing(); // Template method
 
 	// 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기 시도
 	ItemUser->GetEquippedComponent()->TryAttachCurWeaponToHolsterWithoutSheathMotion();
 
 	// 사용자의 bIsActivatingConsumableItem 세팅
-	ItemUser->SetIsActivatingConsumableItem(true);
+	ItemUser->SetIsActivatingConsumableItem(true, this);
 
 	//ItemDatas.ItemStack--;
 
@@ -211,6 +219,14 @@ bool AC_ConsumableItem::CancelActivating()
 	LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 	UsingTimer			= 0.f;
 	//ItemUser			= nullptr;
+
+	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
+	{
+		UserPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr); //InvenUI click input 활성화
+
+		// TODO : GameSceneManager의 HUDMode 확인해서 할 것 (CrossHair도 마찬가지)
+		UserPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
+	}
 
 	return true;
 }

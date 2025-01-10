@@ -160,15 +160,15 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class USkeletalMeshComponent* ParachuteSkeletalMesh{};
 
-	const FName PARABACKPACK_SOCKET_NAME = "ParachuteBackPackSocket";
-	const FName PARACHUTE_SOCKET_NAME    = "ParachuteSocket";
+	static const FName PARABACKPACK_SOCKET_NAME;
+	static const FName PARACHUTE_SOCKET_NAME;
 
 private: // Player Main camera spring arm 거리 조절 관련
 
-	const float PLAYER_READY_MAINCAM_ARMLENGTH = 3000.f; // 비행기 안에 탑승했을 때의 ArmLength
-	const float PLAYER_PARACHUTE_MAINCAM_ARMLENGTH = 600.f;
-	const float PLAYER_SKYDIVE_MAINCAM_ARMLENGTH = 400.f;
-	const float PLAYER_ORIGIN_MAINCAM_ARMLENGTH  = 220.f;
+	static const float PLAYER_READY_MAINCAM_ARMLENGTH;// 비행기 안에 탑승했을 때의 ArmLength
+	static const float PLAYER_PARACHUTE_MAINCAM_ARMLENGTH;
+	static const float PLAYER_SKYDIVE_MAINCAM_ARMLENGTH;
+	static const float PLAYER_ORIGIN_MAINCAM_ARMLENGTH;
 
 protected: // Character AnimMontages
 
@@ -192,9 +192,9 @@ private:
 	//const float PARACHUTE_DEPLOY_LIMIT_HEIGHT = 43000.f;
 	//const float MAX_SKYDIVE_JUMP_ALTITUDE = 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
 
-	const float PARACHUTE_DEPLOY_LIMIT_HEIGHT	= 10000.f;
+	static const float PARACHUTE_DEPLOY_LIMIT_HEIGHT;
 	//const float MAX_SKYDIVE_JUMP_ALTITUDE		= 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
-	const float MAX_SKYDIVE_JUMP_ALTITUDE = 1e9; // Testing 값
+	static const float MAX_SKYDIVE_JUMP_ALTITUDE;
 
 
 private:

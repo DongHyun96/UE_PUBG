@@ -22,6 +22,9 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_OxygenWidget.h"
 
+const float UC_SwimmingComponent::CAN_WALK_DEPTH_LIMIT = 100.f;
+
+
 UC_SwimmingComponent::UC_SwimmingComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;

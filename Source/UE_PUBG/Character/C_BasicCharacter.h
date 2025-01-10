@@ -232,8 +232,10 @@ public:
 
 	void SetBoostingSpeedFactor(const float& InBoostingSpeedFactor) { BoostingSpeedFactor = InBoostingSpeedFactor; }
 
-	void SetIsActivatingConsumableItem(bool InIsActivatingConsumableItem) { bIsActivatingConsumableItem = InIsActivatingConsumableItem; }
+	void SetIsActivatingConsumableItem(bool InIsActivatingConsumableItem, class AC_ConsumableItem* ActivatingConsumableItem);
 	bool GetIsActivatingConsumableItem() const { return bIsActivatingConsumableItem; }
+
+	AC_ConsumableItem* GetCurActivatingConsumableItem() const { return CurActivatingConsumableItem; }
 
 	void SetIsAltPressed(bool InIsAltPressed) { bIsAltPressed = InIsAltPressed; }
 	bool GetIsAltPressed() const { return bIsAltPressed; }
@@ -394,6 +396,9 @@ protected: // Consumable 관련
 	
 	// 현재 Consumable Item Activating 중인 상태인지
 	bool bIsActivatingConsumableItem{};
+
+	// 현재 활성화 중인 Consumable Item
+	class AC_ConsumableItem* CurActivatingConsumableItem{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_ConsumableUsageMeshComponent* ConsumableUsageMeshComponent{};

@@ -8,6 +8,7 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_StatComponent.h"
+#include "Character/Component/C_CameraEffectComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 
@@ -18,49 +19,51 @@
 
 #include "PhysicsEngine/PhysicsAsset.h"
 
+const TMap<FName, float> AC_GrenadeExplode::BodyPartsDamageRate =
+{
+	{"Neck",		0.9f},
+
+	{"Hips",		0.5f},
+
+	{"LeftUpLeg",	0.2f},
+	{"LeftFoot",	0.1f},
+	{"RightUpLeg",	0.2f},
+	{"RightFoot",	0.1f},
+
+	{"Spine",		0.7f},
+	{"Spine1",		0.7f},
+	{"Spine2",		0.7f},
+
+	{"LeftArm",		0.2f},
+	{"LeftHand",	0.1f},
+
+	{"RightArm",	0.2f},
+	{"RightHand",	0.1f}
+};
+
+const TArray<FName> AC_GrenadeExplode::LineTraceDestBoneNames =
+{
+	"Head",				// 머리
+
+	"Spine1",			// 몸통
+
+	"LeftForeArm",		// 팔 쪽
+	"LeftHand",
+	"RightForeArm",
+	"RightHand",
+
+	"Hips",				// 사타구니
+
+	"LeftLeg",			// 다리 쪽
+	"LeftFoot",
+	"RightLeg",
+	"RightFoot"
+};
+
+const float AC_GrenadeExplode::DAMAGE_BASE = 50.f;
 
 AC_GrenadeExplode::AC_GrenadeExplode()
 {
-	BodyPartsDamageRate =
-	{
-		{"Neck",		0.9f},
-
-		{"Hips",		0.5f},
-
-		{"LeftUpLeg",	0.2f},
-		{"LeftFoot",	0.1f},
-		{"RightUpLeg",	0.2f},
-		{"RightFoot",	0.1f},
-
-		{"Spine",		0.7f},
-		{"Spine1",		0.7f},
-		{"Spine2",		0.7f},
-
-		{"LeftArm",		0.2f},
-		{"LeftHand",	0.1f},
-
-		{"RightArm",	0.2f},
-		{"RightHand",	0.1f}
-	};
-
-	LineTraceDestBoneNames =
-	{
-		"Head",				// 머리
-
-		"Spine1",			// 몸통
-
-		"LeftForeArm",		// 팔 쪽
-		"LeftHand",
-		"RightForeArm",
-		"RightHand",
-
-		"Hips",				// 사타구니
-
-		"LeftLeg",			// 다리 쪽
-		"LeftFoot",
-		"RightLeg",
-		"RightFoot"
-	};
 }
 
 bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
@@ -71,7 +74,7 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 
 	// 수류탄 터지는 VFX
 	if (ThrowingWeapon->GetParticleExplodeEffect())
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ThrowingWeapon->GetParticleExplodeEffect(), ThrowingWeapon->GetActorLocation());
+		UGameplayStatics::SpawnEmitterAtLocation(ThrowingWeapon->GetWorld(), ThrowingWeapon->GetParticleExplodeEffect(), ThrowingWeapon->GetActorLocation());
 
 	FVector ExplosionLocation = ThrowingWeapon->GetActorLocation();
 
@@ -126,11 +129,11 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 	}
 
 	//UC_Util::Print("DamagedCharacter Cnt : " + FString::FromInt(DamagedCharacterCnt), FColor::Cyan, 10.f);
-	
+
 	// 모든 캐릭터의 Physics Asset Colliders 다시 켜두기
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
 		SetPhysicsAssetCollidersEnabled(Character, true);
-		//SetPhysicsAssetCollidersEnabled(Character->GetMesh()->GetPhysicsAsset(), true);
+	//SetPhysicsAssetCollidersEnabled(Character->GetMesh()->GetPhysicsAsset(), true);
 
 	return true;
 }
@@ -143,7 +146,7 @@ void AC_GrenadeExplode::SetPhysicsAssetCollidersEnabled(AC_BasicCharacter* Chara
 
 	for (USkeletalBodySetup* BodySetup : PhysicsAsset->SkeletalBodySetups)
 		BodySetup->AggGeom.SphylElems[0].SetCollisionEnabled(CollisionType);
-		//BodySetup->InvalidatePhysicsData(); // Mark the body setup as modified.
+	//BodySetup->InvalidatePhysicsData(); // Mark the body setup as modified.
 
 	Character->GetMesh()->RecreatePhysicsState();
 }
@@ -211,18 +214,18 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 	float		TotalDamage{};
 	bool		Hitted{};
 
-	FVector ExplosionLocation	= ThrowingWeapon->GetActorLocation();
-	float   ExplosionRad		= ExplosionSphere->GetScaledSphereRadius();
+	FVector ExplosionLocation = ThrowingWeapon->GetActorLocation();
+	float   ExplosionRad = ExplosionSphere->GetScaledSphereRadius();
 
 	// 각 피격 부위에 Ray casting 시도
-	for (FName& DestBoneName : LineTraceDestBoneNames)
+	for (const FName& DestBoneName : LineTraceDestBoneNames)
 	{
 		// 해당 부위만 Collider 켜놓기
-		FName ColliderBoneName =	(DestBoneName == "Head")			? "Neck" :
-									(DestBoneName == "LeftForeArm")		? "LeftArm" :
-									(DestBoneName == "RightForeArm")	? "RightArm" :
-									(DestBoneName == "LeftLeg")			? "LeftUpLeg" :
-									(DestBoneName == "RightLeg")		? "RightUpLeg" : DestBoneName;
+		FName ColliderBoneName = (DestBoneName == "Head")			? "Neck" :
+								 (DestBoneName == "LeftForeArm")	? "LeftArm" :
+								 (DestBoneName == "RightForeArm")	? "RightArm" :
+								 (DestBoneName == "LeftLeg")		? "LeftUpLeg" :
+								 (DestBoneName == "RightLeg")		? "RightUpLeg" : DestBoneName;
 
 		//SetPhysicsAssetColliderEnabled(Character->GetMesh()->GetPhysicsAsset(), ColliderBoneName, true);
 		SetPhysicsAssetColliderEnabled(Character, ColliderBoneName, true);
@@ -235,7 +238,7 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 
 		HitResult = {};
 
-		bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, ExplosionLocation, DestLocation, ECC_Visibility, CollisionParams);
+		bool HasHit = ThrowingWeapon->GetWorld()->LineTraceSingleByChannel(HitResult, ExplosionLocation, DestLocation, ECC_Visibility, CollisionParams);
 
 		// Collision 만족 x
 		if (!HasHit || HitResult.GetActor() != Character || !BodyPartsDamageRate.Contains(HitResult.BoneName))
@@ -245,7 +248,7 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 			continue;
 		}
 
-		DrawDebugLine(GetWorld(), ExplosionLocation, HitResult.ImpactPoint, FColor::Red, true);
+		DrawDebugLine(ThrowingWeapon->GetWorld(), ExplosionLocation, HitResult.ImpactPoint, FColor::Red, true);
 
 		// Apply Damage to character
 		float DamageAmount = DAMAGE_BASE * (ExplosionRad - HitResult.Distance) / ExplosionRad; // 거리 비례 Damage base
@@ -276,7 +279,7 @@ void AC_GrenadeExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* Cha
 	if (IsValid(Player))
 	{
 		// TODO : 현재 ADS 상태이면 실행x
-		
+
 		// 거리 및 방향 계산
 		FVector PlayerToExplode = ExplosionLocation - Player->GetActorLocation();
 		PlayerToExplode.Normalize();
@@ -295,8 +298,8 @@ void AC_GrenadeExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* Cha
 
 		//Player->ExecuteCameraAimPunching({ 0.f, 1.f, 0.f }, 100.f, 35.f); // Maximum 값
 		//Player->ExecuteCameraShake(1.f);
-		Player->ExecuteCameraAimPunching(PunchingDirection, PunchingIntensity, XRotDelta);
-		Player->ExecuteCameraShake(CamShakeScale);
+		Player->GetCameraEffectComponent()->ExecuteCameraAimPunching(PunchingDirection, PunchingIntensity, XRotDelta);
+		Player->GetCameraEffectComponent()->ExecuteCameraShake(CamShakeScale);
 	}
 	// TODO : Enemy AI 또한 방해주기
 }

@@ -66,8 +66,8 @@ private: // 낙하 고도 관련 값들
 
 private: // 낙하 높이 Box Widget 위치 관련 상수
 	
-	const FVector2D ALTITUDE_BOX_MAX_TO_PARACHUTE = { -252.f, 99.f };
-	const FVector2D ALTITUDE_BOX_PARACHUTE_TO_MIN = { 99.f, 190.f };
+	static const FVector2D ALTITUDE_BOX_MAX_TO_PARACHUTE;
+	static const FVector2D ALTITUDE_BOX_PARACHUTE_TO_MIN;
 
 protected: // Speed 관련 fields
 
@@ -82,9 +82,9 @@ private:
 	TArray<class UTextBlock*> SpeedTextBlocks{};
 	TArray<class UCanvasPanelSlot*> SpeedTextBlockSlots{};
 
-	const FVector2D SPEEDTEXTBLOCKS_Y_RANGE = FVector2D(278, -268);
-	const float SPEEDTEXT_MID_Y_POS = 5.f;
-	const float SPEEDTEXTBLOCKS_STEP = -91.f;
-	const float TEXTBLOCKSCALING_FACTOR = 1.82f;
+	static const FVector2D SPEEDTEXTBLOCKS_Y_RANGE;
+	static const float SPEEDTEXT_MID_Y_POS;
+	static const float SPEEDTEXTBLOCKS_STEP;
+	static const float TEXTBLOCKSCALING_FACTOR;
 	
 };

@@ -53,3 +53,8 @@ void UC_Util::Print(AActor* Actor, const FColor& InColor, const float& TimeToDis
 	FString AddressString = FString::Printf(TEXT("%p"), Actor);
 	GEngine->AddOnScreenDebugMessage(-1, TimeToDisplay, InColor, AddressString);
 }
+
+void UC_Util::PrintLogMessage(const FString& str)
+{
+	UE_LOG(LogTemp, Log, TEXT("&s"), *str);
+}

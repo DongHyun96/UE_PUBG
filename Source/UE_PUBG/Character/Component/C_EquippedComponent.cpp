@@ -370,7 +370,7 @@ void UC_EquippedComponent::SpawnWeaponsForTesting()
 
     SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, ThrowTemp);
 
-    AC_ThrowingWeapon::InitTestPool(OwnerCharacter, WeaponClasses[EWeaponSlot::THROWABLE_WEAPON], this);
+    //AC_ThrowingWeapon::InitTestPool(OwnerCharacter, WeaponClasses[EWeaponSlot::THROWABLE_WEAPON], this);
 }
 
 void UC_EquippedComponent::SetMainGunOrSubGun(EWeaponSlot InSlot)

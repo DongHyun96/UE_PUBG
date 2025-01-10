@@ -13,9 +13,11 @@
 #include "Utility/C_Util.h"
 
 #include "Character/C_Player.h"
+#include "Character/Component/C_CameraEffectComponent.h"
 
 #include "PhysicsEngine/PhysicsAsset.h"
 
+const float AC_FlashBangExplode::EFFECT_DURATION_MAX = 6.f;
 
 bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 {
@@ -23,7 +25,7 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 	// 청각장애는 모두 동일 
 
 	if (ThrowingWeapon->GetParticleExplodeEffect())
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ThrowingWeapon->GetParticleExplodeEffect(), ThrowingWeapon->GetActorLocation());
+		UGameplayStatics::SpawnEmitterAtLocation(ThrowingWeapon->GetWorld(), ThrowingWeapon->GetParticleExplodeEffect(), ThrowingWeapon->GetActorLocation());
 	
 	FVector ExplosionLocation = ThrowingWeapon->GetActorLocation();
 
@@ -75,7 +77,7 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		// 머리 부위 Collider만 켜기
 		SetPhysicsAssetColliderEnabled(Character, "Neck", true);
 
-		bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, ExplosionLocation, DestLocation, ECC_Visibility, CollisionParams);
+		bool HasHit = ThrowingWeapon->GetWorld()->LineTraceSingleByChannel(HitResult, ExplosionLocation, DestLocation, ECC_Visibility, CollisionParams);
 
 		if (!HasHit || HitResult.GetActor() != Character || HitResult.BoneName != "Neck")
 		{
@@ -83,7 +85,7 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 			continue;
 		}
 
-		DrawDebugLine(GetWorld(), ExplosionLocation, HitResult.ImpactPoint, FColor::Red, true);
+		DrawDebugLine(ThrowingWeapon->GetWorld(), ExplosionLocation, HitResult.ImpactPoint, FColor::Red, true);
 
 		// Apply FlashBang effect to character
 		ExecuteExplosionEffectToCharacter(Character, ExplosionLocation, ExplosionRad);
@@ -158,7 +160,7 @@ void AC_FlashBangExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* C
 		UC_Util::Print("DistanceRateFactor : " + FString::SanitizeFloat(DistanceRateFactor), FColor::Green, 5.f);
 		UC_Util::Print("Degree : " + FString::SanitizeFloat(Degree), FColor::Green, 5.f);
 
-		Player->ExecuteFlashBangEffect(EffectDuration);
+		Player->GetCameraEffectComponent()->ExecuteFlashBangEffect(EffectDuration);
 	}
 
 	// TODO : Enemy의 경우 적절한 방해 주기

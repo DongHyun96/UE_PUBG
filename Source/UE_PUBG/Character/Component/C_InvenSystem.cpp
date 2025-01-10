@@ -90,6 +90,7 @@ void UC_InvenSystem::OpenInvenUI()
 
 	if (!IsValid(OwnerCharacter)) return;
 
+	// TODO : È®ÀÎ
 	UCharacterMovementComponent* CharacterMovement = OwnerCharacter->GetCharacterMovement();
 	if (CharacterMovement)
 		CharacterMovement->SetMovementMode(EMovementMode::MOVE_Walking);
@@ -98,53 +99,24 @@ void UC_InvenSystem::OpenInvenUI()
 
 void UC_InvenSystem::ShowInvenUI()
 {
-	//isPanelOpened = true;
-	InvenUI->SetIsPanelOpened(true);
-	//InvenUI->AddToViewport();
-
-	if (!InvenUI->IsInViewport())
+	if (!InvenUI)
 	{
-		InvenUI->AddToViewport();
+		UC_Util::Print("From UC_InvenSystem::ShowInvenUI : InvenUI Nullptr", FColor::Red, 10.f);
+		return;
 	}
-
-	if (!PlayerController)
-		PlayerController = GetWorld()->GetFirstPlayerController();
-	
-	PlayerController->SetIgnoreLookInput(true);
-
-	FInputModeGameAndUI InputMode;
-	InputMode.SetWidgetToFocus(InvenUI->TakeWidget());
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	InputMode.SetHideCursorDuringCapture(false);
-	PlayerController->SetInputMode(InputMode);
-	PlayerController->bShowMouseCursor = true;
-
+	PlayerController = GetWorld()->GetFirstPlayerController();
 	InvenUI->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UC_InvenSystem::CloseInvenUI()
 {
-	UC_Util::Print("CloseInvenUI");
-
-	//isPanelOpened = false;
-	InvenUI->SetIsPanelOpened(false);
-	if (!PlayerController) 
-		PlayerController = GetWorld()->GetFirstPlayerController();
-
-
-	PlayerController->SetIgnoreLookInput(false);
-
-	FInputModeGameOnly InputMode;
-	PlayerController->SetInputMode(InputMode);
-
-	PlayerController->bShowMouseCursor = false;
-
-
-	if (InvenUI)
+	if (!InvenUI)
 	{
-		//InvenUI->RemoveFromViewport();
-		InvenUI->SetVisibility(ESlateVisibility::Hidden);
+		UC_Util::Print("From UC_InvenSystem::CloseInvenUI : InvenUI Nullptr", FColor::Red, 10.f);
+		return;
 	}
+	PlayerController = GetWorld()->GetFirstPlayerController();
+	InvenUI->SetVisibility(ESlateVisibility::Hidden);
 }
 
 

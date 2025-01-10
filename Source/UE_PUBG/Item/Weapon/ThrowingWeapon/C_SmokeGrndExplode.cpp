@@ -15,9 +15,8 @@ bool AC_SmokeGrndExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		FVector SpawnLocation = ThrowingWeapon->GetActorLocation();
 		SpawnLocation.Z += 25.f;
 
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ThrowingWeapon->GetNiagaraExplodeEffect(), SpawnLocation);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(ThrowingWeapon->GetWorld(), ThrowingWeapon->GetNiagaraExplodeEffect(), SpawnLocation);
 	}
 
-	UC_Util::Print("Smoke Grenade Explode!");
 	return true;
 }

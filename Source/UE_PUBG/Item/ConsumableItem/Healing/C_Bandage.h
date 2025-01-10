@@ -43,7 +43,7 @@ private:
 private:
 
 	struct FTimerHandle TimerHandle{};
-	const float USAGE_MESH_SHOWN_TIME = 10.f;
+	static const float USAGE_MESH_SHOWN_TIME;
 
 private:
 

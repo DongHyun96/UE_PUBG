@@ -15,15 +15,12 @@
 #include "HUD/C_MainMapWidget.h"
 #include "HUD/C_InstructionWidget.h"
 
-// Sets default values
 AC_AirplaneManager::AC_AirplaneManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-// Called when the game starts or when spawned
 void AC_AirplaneManager::BeginPlay()
 {
 	Super::BeginPlay();

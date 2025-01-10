@@ -21,6 +21,22 @@
 #include "Airplane/C_AirplaneManager.h"
 #include "Airplane/C_Airplane.h"
 
+const FName UC_SkyDivingComponent::PARABACKPACK_SOCKET_NAME = "ParachuteBackPackSocket";
+const FName UC_SkyDivingComponent::PARACHUTE_SOCKET_NAME    = "ParachuteSocket";
+
+const float UC_SkyDivingComponent::PLAYER_READY_MAINCAM_ARMLENGTH		= 3000.f; // 비행기 안에 탑승했을 때의 ArmLength
+const float UC_SkyDivingComponent::PLAYER_PARACHUTE_MAINCAM_ARMLENGTH	= 600.f;
+const float UC_SkyDivingComponent::PLAYER_SKYDIVE_MAINCAM_ARMLENGTH		= 400.f;
+const float UC_SkyDivingComponent::PLAYER_ORIGIN_MAINCAM_ARMLENGTH		= 220.f;
+
+// 원작 수치
+//const float PARACHUTE_DEPLOY_LIMIT_HEIGHT = 43000.f;
+//const float MAX_SKYDIVE_JUMP_ALTITUDE = 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
+
+const float UC_SkyDivingComponent::PARACHUTE_DEPLOY_LIMIT_HEIGHT = 10000.f;
+//const float MAX_SKYDIVE_JUMP_ALTITUDE		= 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
+const float UC_SkyDivingComponent::MAX_SKYDIVE_JUMP_ALTITUDE = 1e9; // Testing 값
+
 UC_SkyDivingComponent::UC_SkyDivingComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;

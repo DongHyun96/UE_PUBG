@@ -15,6 +15,9 @@
 
 #include "Components/Border.h"
 
+const float UC_MapWidget::BACKGROUND_SIZE		  = 2500.f;
+const float UC_MapWidget::WORLD_TO_BG_SIZE_FACTOR = 0.025f;
+
 void UC_MapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);

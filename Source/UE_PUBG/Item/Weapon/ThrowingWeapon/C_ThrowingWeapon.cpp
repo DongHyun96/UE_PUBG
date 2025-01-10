@@ -38,8 +38,20 @@
 
 #include "Utility/C_Util.h"
 
+#include "Singleton/C_GameSceneManager.h"
 
-TArray<AC_ThrowingWeapon*> AC_ThrowingWeapon::ThrowablePool{};
+const float AC_ThrowingWeapon::UP_DIR_BOOST_OFFSET = 500.f;
+
+int AC_ThrowingWeapon::ThrowingWeaponCount{};
+
+TMap<EThrowableType, II_ExplodeStrategy*> AC_ThrowingWeapon::ExplodeStrategies{};
+
+const TMap<EThrowableType, FString> AC_ThrowingWeapon::THROWABLETYPE_ITEMNAME_MAP =
+{
+	{EThrowableType::GRENADE,		"Grenade"},
+	{EThrowableType::FLASH_BANG,	"FlashBang"},
+	{EThrowableType::SMOKE,			"Smoke Grenade"},
+};
 
 USkeletalMeshComponent* AC_ThrowingWeapon::OwnerMeshTemp{};
 
@@ -72,14 +84,50 @@ void AC_ThrowingWeapon::BeginPlay()
 
 	ProjectileMovement->Deactivate();
 
-	// Spawn actor를 실행한 다음에야 OwnerCharacter를 Setting하는중이라 시점이 안맞음
-	//if (OwnerCharacter)
-	//	OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(this, &AC_ThrowingWeapon::OnOwnerCharacterPoseTransitionFin);
+	ThrowingWeaponCount++;
+
+	// Init ExplodeStrategies
+	if (ExplodeStrategies.IsEmpty())
+	{
+		II_ExplodeStrategy* GrenadeExplode = NewObject<AC_GrenadeExplode>();
+		GrenadeExplode->_getUObject()->AddToRoot(); // GC 방지
+
+		II_ExplodeStrategy* FlashBangExplode = NewObject<AC_FlashBangExplode>();
+		FlashBangExplode->_getUObject()->AddToRoot();
+
+		II_ExplodeStrategy* SmokeExplode = NewObject<AC_SmokeGrndExplode>();
+		SmokeExplode->_getUObject()->AddToRoot();
+
+		GAMESCENE_MANAGER->AddNonGCObject(GrenadeExplode->_getUObject());
+		GAMESCENE_MANAGER->AddNonGCObject(FlashBangExplode->_getUObject());
+		GAMESCENE_MANAGER->AddNonGCObject(SmokeExplode->_getUObject());
+
+		ExplodeStrategies.Add(EThrowableType::GRENADE,		GrenadeExplode);
+		ExplodeStrategies.Add(EThrowableType::FLASH_BANG,	FlashBangExplode);
+		ExplodeStrategies.Add(EThrowableType::SMOKE,		SmokeExplode);
+	}
+
+	// Init Explode Strategy
+	ExplodeStrategy = ExplodeStrategies[ThrowableType];
 }
 
 void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (EndPlayReason == EEndPlayReason::Destroyed) return;
+
+	if (EndPlayReason == EEndPlayReason::Destroyed)
+	{
+		if (--ThrowingWeaponCount <= 0) // World에 배치된 마지막 ThrowingWeapon이 Destroy되었을 때
+		{
+			if (OwnerMeshTemp)
+			{
+				OwnerMeshTemp->DestroyComponent();
+				OwnerMeshTemp = nullptr;
+			}
+
+			if (!ExplodeStrategies.IsEmpty()) ExplodeStrategies.Empty(); // GC는 GameSceneManager에서 처리
+		}
+		return;
+	}
 
 	if (OwnerMeshTemp)
 	{
@@ -87,10 +135,7 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		OwnerMeshTemp = nullptr;
 	}
 
-	for (auto& item : ThrowablePool)
-		item->Destroy();
-
-	ThrowablePool.Empty();
+	if (!ExplodeStrategies.IsEmpty()) ExplodeStrategies.Empty(); // GC는 GameSceneManager에서 처리
 }
 
 void AC_ThrowingWeapon::Tick(float DeltaTime)
@@ -110,7 +155,10 @@ bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
 	// 투척류를 핀까지만 뽑았고 쿠킹을 안했을 시 다시 집어넣음
 	// 투척류를 안전손잡이까지 뽑았다면 현재 위치에 현재 투척류 그냥 바닥에 떨굼
 
+	UC_Util::Print("AttachToHolster");
+
 	SetActorHiddenInGame(true);
+	
 
 	ProjectileMovement->Deactivate();
 
@@ -126,6 +174,8 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 {
 	//this->SetHidden(false);
 
+	UC_Util::Print("AttachToHand");
+
 	SetActorHiddenInGame(false);
 	//SetActorHiddenInGame(true);
 
@@ -138,8 +188,6 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 	// Self init
 	bIsCharging = false;
 	bIsOnThrowProcess = false;
-
-	UC_Util::Print("Left Grenade Count : " + FString::FromInt(ThrowablePool.Num() + 1));
 
 	return AttachToComponent
 	(
@@ -391,8 +439,8 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 		// 기존에 slot에 장착된 ThrowableWeapon이 ThrowProcess 중이라면 return false
 		if (CurSlotThrowWeapon->GetIsOnThrowProcess()) return false;
 
-		AC_Weapon* OutToSlotWeapon = nullptr;
-		AC_Item* FoundItem		   = nullptr;
+		AC_Weapon* PrevSlotWeapon = nullptr;
+		AC_Item* FoundItem		  = nullptr;
 		//int nextVolume = invenComp->GetCurVolume() - ItemDatas.ItemVolume + curWeapaon->GetItemDatas().ItemVolume; //이건 인벤에 존재하는 아이템을 옮길때만 유효 한거 같은데?
 		int nextVolume = 0;
 
@@ -414,7 +462,7 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 			if (this->ItemDatas.ItemPlace == EItemPlace::INVEN)       invenComp->RemoveItemToMyList(this);//아마 InvenUI를 초기화 시켜주는 작업이 추가적으로 필요할것.
 			else if (this->ItemDatas.ItemPlace == EItemPlace::AROUND) invenComp->RemoveItemToAroundList(this);
 
-			OutToSlotWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
+			PrevSlotWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
 		}
 		else
 		{
@@ -426,7 +474,7 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 			//else if (ItemDatas.ItemPlace == EItemPlace::INVEN) return true;
 			//else return false;
 
-			OutToSlotWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, InToSlotWeapon);
+			PrevSlotWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, InToSlotWeapon);
 
 		}
 
@@ -435,25 +483,25 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 		{
 			// 기존 투척류 AttachToHolster 처리하고 새로운 투척류 꺼내기
 			UC_Util::Print("HandState Throwable set slot Exception Handling", FColor::Red, 10.f);
-			OutToSlotWeapon->AttachToHolster(Character->GetMesh());
+			PrevSlotWeapon->AttachToHolster(Character->GetMesh());
 			equipComp->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
 			Character->PlayAnimMontage(this->GetCurDrawMontage());
 		}
 
 		//if (OutToSlotWeapon->MoveToInven(Character)) return true;
 
-		FoundItem = invenComp->FindMyItem(OutToSlotWeapon); //인벤에 해당 아이템이 존재하는지 확인
+		FoundItem = invenComp->FindMyItem(PrevSlotWeapon); //인벤에 해당 아이템이 존재하는지 확인
 
 		if (IsValid(FoundItem))
 		{
 			//FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + 1);
 			FoundItem->AddItemStack();
 			//TODO:잔상이 생긴다면 추가 작업 필요.
-			OutToSlotWeapon->Destroy();
+			PrevSlotWeapon->Destroy();
 			return true;
 		}
 
-		invenComp->AddItemToMyList(OutToSlotWeapon);
+		invenComp->AddItemToMyList(PrevSlotWeapon);
 		return true;
 	}
 
@@ -715,27 +763,6 @@ bool AC_ThrowingWeapon::MoveAroundToSlot(AC_BasicCharacter* Character)
 	return true;
 }
 
-void AC_ThrowingWeapon::InitTestPool(AC_BasicCharacter* InOwnerCharacter, UClass* Class, UC_EquippedComponent* EquippedComponent)
-{
-	ThrowablePool.Empty();
-
-	// 배낭에 있는 것처럼 세팅
-	for (int i = 0; i < TESTPOOLCNT; i++)
-	{
-		FActorSpawnParameters Param{};
-		Param.Owner = InOwnerCharacter;
-
-		AC_ThrowingWeapon* ThrowWeapon = EquippedComponent->GetWorld()->SpawnActor<AC_ThrowingWeapon>(Class, Param);
-
-		if (ThrowWeapon)
-		{
-			ThrowWeapon->SetOwnerCharacter(InOwnerCharacter);
-			//ThrowWeapon->OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(ThrowWeapon, &AC_ThrowingWeapon::OnOwnerCharacterPoseTransitionFin);
-			ThrowablePool.Add(ThrowWeapon);
-		}
-	}
-}
-
 void AC_ThrowingWeapon::OnRemovePinFin()
 {
 	OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
@@ -923,26 +950,6 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 
 }
 
-void AC_ThrowingWeapon::InitExplodeStrategy(EThrowableType InThrowableType)
-{
-	this->ThrowableType = InThrowableType;
-
-	switch (ThrowableType)
-	{
-	case EThrowableType::GRENADE:
-		ExplodeStrategy = NewObject<AC_GrenadeExplode>(this);
-		return;
-	case EThrowableType::FLASH_BANG:
-		ExplodeStrategy = NewObject<AC_FlashBangExplode>(this);
-		return;
-	case EThrowableType::SMOKE:
-		ExplodeStrategy = NewObject<AC_SmokeGrndExplode>(this);
-		return;
-	default:
-		break;
-	}
-}
-
 void AC_ThrowingWeapon::StartCooking()
 {
 	bIsCooked = true;
@@ -975,7 +982,7 @@ void AC_ThrowingWeapon::Explode()
 {
 	if (!ExplodeStrategy)
 	{
-		UC_Util::Print("From AC_ThrowingWeapon::Explode : Explode Strategy nullptr!");
+		UC_Util::Print("From AC_ThrowingWeapon::Explode : Explode Strategy nullptr!", FColor::Red, 10.f);
 		return;
 	}
 
@@ -987,12 +994,13 @@ void AC_ThrowingWeapon::Explode()
 	if (Exploded)
 	{
 		this->SetActorHiddenInGame(true);
-		
+
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
 			{
 				this->Destroy();
 			}, 10.f, false);
 	}
+	else UC_Util::Print("Not Exploded!", FColor::Red, 10.f);
 }
 
 FVector AC_ThrowingWeapon::GetPredictedThrowStartLocation()

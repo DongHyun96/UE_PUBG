@@ -170,7 +170,6 @@ protected:
 	class UCanvasPanelSlot* AirplaneRouteImageCanvasSlot{};
 
 private:
-	const float BACKGROUND_SIZE = 2500.f;
-	const float WORLD_TO_BG_SIZE_FACTOR = 0.025f;
-
+	static const float BACKGROUND_SIZE;
+	static const float WORLD_TO_BG_SIZE_FACTOR;
 };

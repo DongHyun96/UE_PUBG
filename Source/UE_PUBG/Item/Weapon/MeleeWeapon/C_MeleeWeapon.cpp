@@ -15,6 +15,8 @@
 
 #include "UObject/ConstructorHelpers.h"
 
+const FName AC_MeleeWeapon::HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
+const FName AC_MeleeWeapon::EQUIPPED_SOCKET_NAME = "Pan_Equip"; // 무기가 손에 부착될 socket 이름
 
 AC_MeleeWeapon::AC_MeleeWeapon()
 {

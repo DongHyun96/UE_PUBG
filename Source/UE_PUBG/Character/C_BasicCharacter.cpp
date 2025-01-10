@@ -335,6 +335,12 @@ bool AC_BasicCharacter::GetIsHighEnoughToFall()
 	return false;
 }
 
+void AC_BasicCharacter::SetIsActivatingConsumableItem(bool InIsActivatingConsumableItem, AC_ConsumableItem* ActivatingConsumableItem)
+{
+	bIsActivatingConsumableItem = InIsActivatingConsumableItem;
+	CurActivatingConsumableItem = ActivatingConsumableItem;
+}
+
 void AC_BasicCharacter::OnPoseTransitionGoing()
 {
 	PoseState = NextPoseState;

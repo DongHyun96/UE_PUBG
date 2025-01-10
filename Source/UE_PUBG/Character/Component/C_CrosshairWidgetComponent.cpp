@@ -8,6 +8,8 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 
+#include "Singleton/C_GameSceneManager.h"
+
 // Sets default values for this component's properties
 
 
@@ -162,6 +164,12 @@ void UC_CrosshairWidgetComponent::ManageAimWidgetImages()
 {
 	AC_Gun* CurGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
+
+	// 현재 Player가 ConsumableItem을 활성화 중인지에 따른 OnScreen 체크
+	OnScreen = OwnerCharacter->GetIsActivatingConsumableItem() ? false : OnScreen;
+
+	// 현재 HUDMode에 따른 OnScreen 체크
+	OnScreen = (GAMESCENE_MANAGER->GetCurrentHUDMode() != EHUDMode::IDLE) ? false : OnScreen;
 
 	if (!IsValid(CurGun))
 		SetCrosshairState(ECrosshairState::NORIFLE);
