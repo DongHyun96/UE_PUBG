@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+
+#include "Components/CanvasPanel.h"
+
 #include "C_HUDWidget.generated.h"
 
 /**
@@ -13,6 +16,10 @@ UCLASS()
 class UE_PUBG_API UC_HUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+
+	void SetVisibility(ESlateVisibility InVisibility) override { OtherPanel->SetVisibility(InVisibility); }
 
 public:
 
@@ -133,10 +140,22 @@ protected: // SkyDive Widget
 protected: // Key Instruction Widget
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class  UC_InstructionWidget* InstructionWidget{};
+	class UC_InstructionWidget* InstructionWidget{};
 
 
 private:
 
 	bool bIsMiniMapEnlarged{};
+
+protected:
+
+	// 항상 상위에 켜져 있을 요소들의 최상위 parent panel (ex - InstructionWidget / HP bar ... )
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UCanvasPanel* AlwaysOnPanel{};
+
+	// 기타 다른 아이템들 최상위 parent
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UCanvasPanel* OtherPanel{};
+
+
 };

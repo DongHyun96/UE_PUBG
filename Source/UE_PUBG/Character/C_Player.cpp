@@ -123,7 +123,7 @@ void AC_Player::BeginPlay()
 	AimCamera->SetRelativeRotation(FQuat(0));
 	if (HUDWidget)
 	{
-		HUDWidget->AddToViewport();
+		HUDWidget->AddToViewport(10);
 		StatComponent->SetOwnerHUDWidget(HUDWidget);
 		PingSystemComponent->SetOwnerPlayer(this);
 		HUDWidget->GetSkyDiveWidget()->SetOwnerPlayer(this);
