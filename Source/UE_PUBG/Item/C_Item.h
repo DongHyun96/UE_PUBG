@@ -158,11 +158,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//UFUNCTION()
-	//virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	//virtual void Interaction(class AC_BasicCharacter* character) PURE_VIRTUAL(AC_Item::Interaction, );
-
 	//æ∆¿Ã≈€¿« ¿Â¬¯¿ª «ÿ¡¶«œ∞Ì ∂•ø° ∂≥±∏∞‘ «ÿ¡‹.
 	UFUNCTION(BlueprintCallable)
 	virtual void DetachItem();
@@ -213,13 +208,13 @@ public:
 	void DeductItemStack() { ItemDatas.ItemCurStack -= 1; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool LegacyMoveToInven(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToInven, return false;);
+	virtual bool LegacyMoveToInven(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToInven, return false;);
 	
 	UFUNCTION(BlueprintCallable)
-	virtual bool LegacyMoveToAround(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToAround, return false;);
+	virtual bool LegacyMoveToAround(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToAround, return false;);
 	
 	UFUNCTION(BlueprintCallable)
-	virtual bool LegacyMoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:MoveToSlot, return false;);
+	virtual bool LegacyMoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToSlot, return false;);
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool MoveToInven(AC_BasicCharacter* Character);
@@ -268,17 +263,6 @@ public:
 
 
 protected:
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	//EItemTypes MyItemType;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	//FString ItemName;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	//UTexture2D* ItemIcon;		
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	//uint8 ItemStatck;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	FItemData ItemDatas;

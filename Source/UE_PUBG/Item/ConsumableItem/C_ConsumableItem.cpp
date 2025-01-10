@@ -110,7 +110,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
 			if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
 				OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
-			//OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
+			OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
 		}
 		
 		if (ItemDatas.ItemCurStack == 0)
@@ -120,9 +120,6 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			HandleDestroy(); // 각 아이템 별 Destroy 하는 시점이 다름
 			return;
 		}
-
-
-
 	}
 		return;
 	default:
@@ -193,10 +190,21 @@ bool AC_ConsumableItem::CancelActivating()
 		}
 	}
 
+
+
 	// 착용 중인 무기가 있었을 때 재착용 시도
 	ItemUser->GetEquippedComponent()->TryReAttachCurWeaponToHand();
 
 	ItemUser->SetIsActivatingConsumableItem(false);
+	
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	{
+		OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
+		if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
+			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
+		OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
+	}
+
 	OnCancelActivating();
 
 	ConsumableItemState = EConsumableItemState::IDLE;

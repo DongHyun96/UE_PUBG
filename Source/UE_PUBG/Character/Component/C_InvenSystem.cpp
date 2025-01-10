@@ -115,6 +115,7 @@ void UC_InvenSystem::ShowInvenUI()
 	FInputModeGameAndUI InputMode;
 	InputMode.SetWidgetToFocus(InvenUI->TakeWidget());
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	InputMode.SetHideCursorDuringCapture(false);
 	PlayerController->SetInputMode(InputMode);
 	PlayerController->bShowMouseCursor = true;
 

@@ -60,10 +60,13 @@ public:
 	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
 	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
+private:
+	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
+
+	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 
 protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//uint8 Level;
 
-private:
 };

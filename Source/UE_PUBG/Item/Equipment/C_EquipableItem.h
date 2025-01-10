@@ -47,6 +47,12 @@ public:
 	virtual void AttachToSocket(class AC_BasicCharacter* InParent);
 
 	void SetItemLevel(EEquipableItemLevel inItemLevel) { ItemLevel = inItemLevel; }
+	
+private:
+	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
+
+	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
+
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
