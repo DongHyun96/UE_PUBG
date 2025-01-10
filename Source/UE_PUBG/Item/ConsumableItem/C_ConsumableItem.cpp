@@ -203,7 +203,7 @@ bool AC_ConsumableItem::CancelActivating()
 	// 착용 중인 무기가 있었을 때 재착용 시도
 	ItemUser->GetEquippedComponent()->TryReAttachCurWeaponToHand();
 
-	ItemUser->SetIsActivatingConsumableItem(false);
+	ItemUser->SetIsActivatingConsumableItem(false, nullptr);
 	
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 	{

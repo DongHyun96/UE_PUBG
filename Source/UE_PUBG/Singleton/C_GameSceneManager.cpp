@@ -60,6 +60,7 @@ void UC_GameSceneManager::Deinitialize()
 	NonGCObjects.Empty();
 
 	HUDWidgets.Empty();
+	MiniMapWidget = nullptr;
 }
 
 void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
@@ -81,11 +82,11 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
 		return;
 	case EHUDMode::INVEN:
-		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Visible);
-
 		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Hidden);
 		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Hidden);
 		MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
+
+		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Visible);
 		return;
 	case EHUDMode::MAINMAP:
 		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
