@@ -215,9 +215,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_InvenUiWidget* InvenUI;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	APlayerController* PlayerController;
-
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> InvenUiClass;
 protected:

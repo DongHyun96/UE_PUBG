@@ -16,4 +16,10 @@ class UE_PUBG_API AC_PlayerController : public APlayerController
 	
 public:
 	void BeginPlay() override;
+
+	//void SetupInputComponent() override;
+	//
+	//void HandleTurn(float Value);
+	//
+	//void HandleLookUp(float Value);
 };

@@ -24,6 +24,7 @@
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_ParkourComponent.h"
 #include "Character/Component/C_CameraEffectComponent.h"
+#include "Character/Component/C_PlayerController.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -142,7 +143,7 @@ void AC_Player::BeginPlay()
 	CrosshairWidgetComponent->SetOwnerCharacter(this);
 	AimCamera->SetActive(false);
 
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetController());
 
 	if (PlayerController != nullptr)
 	{

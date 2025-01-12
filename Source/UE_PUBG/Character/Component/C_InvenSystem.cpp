@@ -3,6 +3,7 @@
 
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_PlayerController.h"
 #include "Character/C_BasicCharacter.h"
 
 #include "Item/Weapon/Gun/C_Gun.h"
@@ -31,7 +32,9 @@ void UC_InvenSystem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerController = GetWorld()->GetFirstPlayerController();
+	PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
+	PlayerController->SetIgnoreLookInput(false);
+
 	if (!InvenUI && InvenUiClass)
 	{
 		InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
@@ -39,7 +42,13 @@ void UC_InvenSystem::BeginPlay()
 		{
 			InvenUI->SetOwnerCharacter(OwnerCharacter);
 			//InvenUI->SetWidgetsOwner(OwnerCharacter);
-			//InvenUI->AddToViewport();
+			if (!InvenUI->IsInViewport())
+			{
+				//InvenUI->AddToViewport();
+
+				UC_Util::Print("Adding to viewport", FColor::Red, 10.f);
+			}
+
 			//InvenUI->SetVisibility(ESlateVisibility::Hidden);
 		}
 		else
@@ -56,9 +65,18 @@ void UC_InvenSystem::InitializeList()
 	//if (!IsValid(InvenUI)) return;
 	if (!IsValid(InvenUI))
 	{
-		PlayerController = GetWorld()->GetFirstPlayerController();
+		//PlayerController = GetWorld()->GetFirstPlayerController();
 		InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
 		InvenUI->SetOwnerCharacter(OwnerCharacter);
+		if (!InvenUI->IsInViewport())
+		{
+			//InvenUI->AddToViewport();
+
+			UC_Util::Print("Adding to viewport", FColor::Red, 10.f);
+		}
+
+		//InvenUI->SetVisibility(ESlateVisibility::Hidden);
+
 	}
 	
 	//InvenUI->InitListView();
@@ -75,9 +93,6 @@ void UC_InvenSystem::OpenInvenUI()
 	//	InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
 	//	InvenUI->SetOwnerCharacter(OwnerCharacter);
 	//}
-
-
-	
 
 	if (InvenUI->GetIsPanelOpened())
 	{
@@ -105,7 +120,7 @@ void UC_InvenSystem::ShowInvenUI()
 		UC_Util::Print("From UC_InvenSystem::ShowInvenUI : InvenUI Nullptr", FColor::Red, 10.f);
 		return;
 	}
-	PlayerController = GetWorld()->GetFirstPlayerController();
+	//PlayerController = GetWorld()->GetFirstPlayerController();
 	InvenUI->SetVisibility(ESlateVisibility::Visible);
 }
 
@@ -116,7 +131,7 @@ void UC_InvenSystem::CloseInvenUI()
 		UC_Util::Print("From UC_InvenSystem::CloseInvenUI : InvenUI Nullptr", FColor::Red, 10.f);
 		return;
 	}
-	PlayerController = GetWorld()->GetFirstPlayerController();
+	//PlayerController = GetWorld()->GetFirstPlayerController();
 	InvenUI->SetVisibility(ESlateVisibility::Hidden);
 }
 

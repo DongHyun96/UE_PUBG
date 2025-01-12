@@ -220,13 +220,6 @@ bool AC_ConsumableItem::CancelActivating()
 	UsingTimer			= 0.f;
 	//ItemUser			= nullptr;
 
-	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
-	{
-		UserPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr); //InvenUI click input 활성화
-
-		// TODO : GameSceneManager의 HUDMode 확인해서 할 것 (CrossHair도 마찬가지)
-		UserPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
-	}
 
 	return true;
 }
