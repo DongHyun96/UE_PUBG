@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/CanvasPanel.h"
 #include "C_InstructionWidget.generated.h"
 
 /**
@@ -14,6 +15,14 @@ class UE_PUBG_API UC_InstructionWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+protected:
+
+	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+private:
+
+	void HandleConsumableInstructionFlicker(const float& DeltaTime);
+
 public:
 
 	UFUNCTION(BlueprintImplementableEvent)
@@ -21,5 +30,16 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ToggleDeployParachuteInstructionVisibility(bool Visible);
-	
+
+	bool ActivateConsumableInstruction(FString UsingTextContent);
+
+	void DeActivateConsumableInstruction() { ConsumableInstruction->SetVisibility(ESlateVisibility::Hidden); }
+
+protected: // Consumable Item Activating cancel instruction ฐüทร
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UCanvasPanel* ConsumableInstruction{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UTextBlock* ConsumableCurrentUsingTextBlock{};
 };

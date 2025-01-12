@@ -11,6 +11,9 @@
 #include "Character/Component/C_ConsumableUsageMeshComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_InstructionWidget.h"
+
 
 AC_EnergyDrink::AC_EnergyDrink()
 {
@@ -38,6 +41,9 @@ void AC_EnergyDrink::OnStartUsing()
 	UC_Util::Print("Starts to use EnergyDrink!");
 
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::DRINK, true);
+
+	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
+		UserPlayer->GetHUDWidget()->GetInstructionWidget()->ActivateConsumableInstruction("Using Energy Drink");
 }
 
 void AC_EnergyDrink::OnActivatingFinish()

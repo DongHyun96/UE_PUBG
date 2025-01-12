@@ -12,6 +12,7 @@
 #include "Item/Weapon/C_Weapon.h"
 
 #include "HUD/C_HUDWidget.h"
+#include "HUD/C_InstructionWidget.h"
 
 #include "Utility/C_Util.h"
 
@@ -54,6 +55,9 @@ void AC_FirstAidKit::OnStartUsing()
 	BlockUsed	= 0;
 	UC_Util::Print("Starts to use FirstAidKit!");
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, true);
+
+	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
+		UserPlayer->GetHUDWidget()->GetInstructionWidget()->ActivateConsumableInstruction("Using First Aid Kit");
 }
 
 void AC_FirstAidKit::OnActivatingFinish()
