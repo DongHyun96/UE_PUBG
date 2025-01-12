@@ -9,7 +9,7 @@
 #include "Character/C_Player.h"
 #include "Character/Component/C_PingSystemComponent.h"
 #include "Character/Component/C_SkyDivingComponent.h"
-
+#include "Character/Component/C_PlayerController.h"
 #include "HUD/C_SkyDiveWidget.h"
 #include "HUD/C_MapWidget.h"
 
@@ -53,7 +53,7 @@ void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
 		InVisibility = ESlateVisibility::Visible;
 	}
 
-	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AC_PlayerController* PC = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	if (InVisibility == ESlateVisibility::Visible)
 	{
@@ -95,6 +95,7 @@ void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
 
 		PC->bShowMouseCursor = false;
 		PC->SetInputMode(FInputModeGameOnly());
+		//PC->GetPawn()->bUseControllerRotationYaw = true;
 
 		PC->SetIgnoreLookInput(false);  // 마우스 이동에 의한 카메라 회전을 막음
 		//PC->SetIgnoreMoveInput(false);  // 마우스 클릭에 의한 움직임을 막음

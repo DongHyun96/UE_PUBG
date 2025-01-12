@@ -58,12 +58,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UC_InvenUiWidget* GetInvenUI() { return InvenUI; }
 
+	class AC_PlayerController* GetPlayerController() { return PlayerController; }
 protected:
 	UPROPERTY()
 	class UC_InvenUiWidget* InvenUI = nullptr;
 
 	UPROPERTY()
-	APlayerController* PlayerController = nullptr;
+	AC_PlayerController* PlayerController = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> InvenUiClass;
