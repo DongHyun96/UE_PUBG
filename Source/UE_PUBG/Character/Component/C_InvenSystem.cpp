@@ -127,7 +127,7 @@ void UC_InvenSystem::ShowInvenUI()
 void UC_InvenSystem::CloseInvenUI()
 {
 	if (!InvenUI)
-	{
+	{  
 		UC_Util::Print("From UC_InvenSystem::CloseInvenUI : InvenUI Nullptr", FColor::Red, 10.f);
 		return;
 	}

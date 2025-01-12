@@ -89,7 +89,7 @@ void UC_InvenUiWidget::SetVisibility(ESlateVisibility InVisibility)
         //PlayerController->bEnableTouchEvents = true; // 터치 이벤트 활성화
         //PlayerController->bEnableMouseOverEvents = true; // 마우스 오버 이벤트 활성화
 	    PlayerController->bShowMouseCursor = true;
-        //PlayerController->SetIgnoreLookInput(true);
+        PlayerController->SetIgnoreLookInput(true);
         //SetIsFocusable(true);
 
     }
