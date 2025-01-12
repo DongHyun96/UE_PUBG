@@ -80,7 +80,7 @@ void UC_InvenUiWidget::SetVisibility(ESlateVisibility InVisibility)
         PlayerController->SetInputMode
         (
             FInputModeGameAndUI()
-            .SetWidgetToFocus(nullptr)
+            .SetWidgetToFocus(this->TakeWidget())
             .SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock)
             .SetHideCursorDuringCapture(false)
         );
@@ -101,7 +101,7 @@ void UC_InvenUiWidget::SetVisibility(ESlateVisibility InVisibility)
         //PlayerController->SetInputMode(FInputModeGameAndUI());
 
         PlayerController->bShowMouseCursor = false;
-        PlayerController->SetIgnoreLookInput(false);
+        //PlayerController->SetIgnoreLookInput(false);
     }
 
     UC_Util::Print(PlayerController->GetCurrentInputModeDebugString(), FColor::Black, 50.f);
