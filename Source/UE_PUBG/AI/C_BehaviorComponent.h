@@ -6,6 +6,16 @@
 #include "Components/ActorComponent.h"
 #include "C_BehaviorComponent.generated.h"
 
+UENUM(BlueprintType)
+enum class EServiceType : uint8
+{
+	IDLE,
+	COMBAT,
+	FARMING,
+	STAT_CARE,
+	MAX
+};
+
 // TODO : Behavior type 카테고리 수정
 UENUM(BlueprintType)
 enum class EBehaviorType : uint8
@@ -15,7 +25,8 @@ enum class EBehaviorType : uint8
 	TRACE,
 	ATTACK,
 	HIT,
-	DEATH
+	DEATH,
+	MAX
 };
 
 
@@ -40,16 +51,21 @@ public:
 	class AC_BasicCharacter* GetPlayer();
 
 
-	void ChangeType(EBehaviorType Type);
+	bool ChangeType(EBehaviorType Type);
+
+	bool ChangeServiceType(EServiceType Type);
 
 protected:
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FName ServiceKey = "Service";
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName BehaviorKey = "Behavior";
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName PlayerKey = "Player";
-
+	
 
 private:
 	class UBlackboardComponent* Blackboard{};

@@ -12,6 +12,10 @@
 
 #include "Item/Weapon/C_Weapon.h"
 
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_InstructionWidget.h"
+
+
 AC_PainKiller::AC_PainKiller()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -38,6 +42,9 @@ void AC_PainKiller::OnStartUsing()
 	BoostAmount = 60.f;
 	UC_Util::Print("Starts to use PainKiller!");
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::PAIN_KILLER, true);
+
+	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
+		UserPlayer->GetHUDWidget()->GetInstructionWidget()->ActivateConsumableInstruction("Using Pain Killer");
 }
 
 void AC_PainKiller::OnActivatingFinish()

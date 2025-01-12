@@ -38,6 +38,8 @@ public:
 	
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
+	void SetCurWeaponTypeToNone() { CurWeaponType = EWeaponSlot::NONE; }
+
 	UFUNCTION(BlueprintCallable)
 	class AC_Weapon* GetCurWeapon() const { return Weapons[CurWeaponType]; }
 	
@@ -58,7 +60,7 @@ public:
 	void DetachmentWeapon(EWeaponSlot InSlot);
 
 	void SetNextWeaponType(EWeaponSlot InNextWeaponType) { NextWeaponType = InNextWeaponType; }
-	EWeaponSlot GetNextWeaponType() const { return NextWeaponType; }
+	//EWeaponSlot GetNextWeaponType() const { return NextWeaponType; }
 	
 	EWeaponSlot GetCurWeaponType() const { return CurWeaponType; }
 
