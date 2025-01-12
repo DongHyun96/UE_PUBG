@@ -56,7 +56,6 @@ private:
 
 private:
 
-	const float EFFECT_DURATION_MAX = 6.f;
-
+	static const float EFFECT_DURATION_MAX;
 
 };

@@ -191,8 +191,9 @@ private:
 
 private:
 
+	// 생성된 총 ParkourComponent 개수 ParkourActionStrategies 해제 시 사용 예정
+	static int ParkourComponentCount;
 	static TMap<EParkourActionType, class II_ParkourActionStrategy*> ParkourActionStrategies;
-
 	class II_ParkourActionStrategy* CurParkourActionStrategy{};
 
 protected:
@@ -218,7 +219,7 @@ protected:
 
 
 private:
-	// TODO : 이 묶음으로 Anim Montage 관리할 것
+	
 	TMap<EParkourActionType, TArray<FPriorityAnimMontage>> ParkourMontageMap{};
 
 private:

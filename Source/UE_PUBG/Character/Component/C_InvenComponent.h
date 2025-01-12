@@ -130,10 +130,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values);
 
-	void OpenInvenUI();
-
-	void InitInvenUI();
-
 	void SetMyBackPack(AC_BackPack* inBackPack) { MyBackPack = inBackPack; }
 
 	void CheckBackPackOnCharacter();
@@ -154,8 +150,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
-
-	UC_InvenUiWidget* GetInvenUI() { return InvenUI; }
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
@@ -220,9 +214,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_InvenUiWidget* InvenUI;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	APlayerController* PlayerController;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> InvenUiClass;

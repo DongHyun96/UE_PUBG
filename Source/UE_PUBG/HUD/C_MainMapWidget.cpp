@@ -9,7 +9,7 @@
 #include "Character/C_Player.h"
 #include "Character/Component/C_PingSystemComponent.h"
 #include "Character/Component/C_SkyDivingComponent.h"
-
+#include "Character/Component/C_PlayerController.h"
 #include "HUD/C_SkyDiveWidget.h"
 #include "HUD/C_MapWidget.h"
 
@@ -20,6 +20,15 @@
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Kismet/GameplayStatics.h"
+
+const float		UC_MainMapWidget::MAP_SCALE_MAX				= 5.f;
+const float		UC_MainMapWidget::SCROLL_DELTA_STEP			= 0.5f;
+const float		UC_MainMapWidget::CANVAS_SIZE				= 1080.f;
+const FVector2D UC_MainMapWidget::MID_POINT					= { 960.f, 540.f };
+const float		UC_MainMapWidget::WORLD_MAP_SIZE			= 100000.f;
+
+const float		UC_MainMapWidget::FIXED_LANDSCAPE_HEIGHT	= 3400.f;
+const float		UC_MainMapWidget::PING_BORDER_SIZE			= 30.f;
 
 void UC_MainMapWidget::NativeConstruct()
 {
@@ -44,7 +53,7 @@ void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
 		InVisibility = ESlateVisibility::Visible;
 	}
 
-	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AC_PlayerController* PC = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	if (InVisibility == ESlateVisibility::Visible)
 	{
@@ -86,6 +95,7 @@ void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
 
 		PC->bShowMouseCursor = false;
 		PC->SetInputMode(FInputModeGameOnly());
+		//PC->GetPawn()->bUseControllerRotationYaw = true;
 
 		PC->SetIgnoreLookInput(false);  // 마우스 이동에 의한 카메라 회전을 막음
 		//PC->SetIgnoreMoveInput(false);  // 마우스 클릭에 의한 움직임을 막음
@@ -116,7 +126,7 @@ void UC_MainMapWidget::HandleUpdateMainMapImage(float InDeltaTime)
 	MainMapPos = FMath::Lerp(MainMapPos, MainMapPosLerpDest, InDeltaTime * 12.f);
 
 	// Border check
-	float PosLimit = (MainMapScale * CANVAS_SIZE - CANVAS_SIZE) * 0.5f; 
+	float PosLimit = (MainMapScale * CANVAS_SIZE - CANVAS_SIZE) * 0.5f;
 	MainMapPos.X = FMath::Clamp(MainMapPos.X, -PosLimit, PosLimit);
 	MainMapPos.Y = FMath::Clamp(MainMapPos.Y, -PosLimit, PosLimit);
 
@@ -139,8 +149,8 @@ void UC_MainMapWidget::HandleUpdateMarkers()
 	}
 
 	// 위치 잡기
-	FVector2D PlayerPos			 = { OwnerPlayer->GetActorLocation().Y, -OwnerPlayer->GetActorLocation().X };
-	FVector2D PlayerMarkerPos	 = PlayerPos * (CANVAS_SIZE / WORLD_MAP_SIZE) * MainMapScale;
+	FVector2D PlayerPos = { OwnerPlayer->GetActorLocation().Y, -OwnerPlayer->GetActorLocation().X };
+	FVector2D PlayerMarkerPos = PlayerPos * (CANVAS_SIZE / WORLD_MAP_SIZE) * MainMapScale;
 
 	//PlayerMarkerPos += MainMapImg->GetRenderTransform().Translation * (1 / MainMapScale);
 	PlayerMarkerPos += MainMapImg->GetRenderTransform().Translation;
@@ -183,16 +193,16 @@ void UC_MainMapWidget::HandleUpdatePlaneRouteTransform()
 
 	// PlaneRoute 이미지 크기 조정
 	if (!AirplaneRouteImageCanvasSlot) AirplaneRouteImageCanvasSlot = Cast<UCanvasPanelSlot>(AirplaneRouteImage->Slot);
-	FVector2D NewSize	= AirplaneRouteImageCanvasSlot->GetSize();
-	NewSize.X			= FVector2D::Distance(StartPos, DestPos);
+	FVector2D NewSize = AirplaneRouteImageCanvasSlot->GetSize();
+	NewSize.X = FVector2D::Distance(StartPos, DestPos);
 	AirplaneRouteImageCanvasSlot->SetSize(NewSize);
-	
+
 }
 
 FReply UC_MainMapWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	return (HandleLMBDown(InGeometry, InMouseEvent) || HandleRMBDown(InGeometry, InMouseEvent)) ?
-			FReply::Handled() : FReply::Unhandled();
+		FReply::Handled() : FReply::Unhandled();
 }
 
 FReply UC_MainMapWidget::NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -216,7 +226,7 @@ FReply UC_MainMapWidget::NativeOnMouseMove(const FGeometry& InGeometry, const FP
 	//float PosLimit		= (MainMapScale * CANVAS_SIZE - CANVAS_SIZE) * 0.5f;
 	//MainMapPosition.X	= FMath::Clamp(MainMapPosition.X, -PosLimit, PosLimit);
 	//MainMapPosition.Y	= FMath::Clamp(MainMapPosition.Y, -PosLimit, PosLimit);
-	float PosLimit = (MainMapScaleLerpDest * CANVAS_SIZE - CANVAS_SIZE) * 0.5f; 
+	float PosLimit = (MainMapScaleLerpDest * CANVAS_SIZE - CANVAS_SIZE) * 0.5f;
 	MainMapPosLerpDest.X = FMath::Clamp(MainMapPosLerpDest.X, -PosLimit, PosLimit);
 	MainMapPosLerpDest.Y = FMath::Clamp(MainMapPosLerpDest.Y, -PosLimit, PosLimit);
 	//MainMapImg->SetRenderTranslation(MainMapPosition);
@@ -297,17 +307,17 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 	// Spawn MainMap Ping
 	PingMarkerBorder->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
-	FVector2D WorldPingPos2D	= PingMarkerPos * (WORLD_MAP_SIZE / CANVAS_SIZE);
+	FVector2D WorldPingPos2D = PingMarkerPos * (WORLD_MAP_SIZE / CANVAS_SIZE);
 
 	// Landscape쪽으로 LineTrace 처리
 	FCollisionQueryParams CollisionParams{};
 	FHitResult HitResult{};
 
 	static const float LINETRACE_START_HEIGHT = 25000.f;
-	FVector LineTraceStartPos	= { -WorldPingPos2D.Y, WorldPingPos2D.X, LINETRACE_START_HEIGHT };
-	FVector LineTraceEndPos		= LineTraceStartPos - FVector(0.f, 0.f, LINETRACE_START_HEIGHT);
+	FVector LineTraceStartPos = { -WorldPingPos2D.Y, WorldPingPos2D.X, LINETRACE_START_HEIGHT };
+	FVector LineTraceEndPos = LineTraceStartPos - FVector(0.f, 0.f, LINETRACE_START_HEIGHT);
 
-	bool HasHit	= 
+	bool HasHit =
 		GetWorld()->LineTraceSingleByChannel
 		(
 			HitResult,
@@ -317,8 +327,8 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 			CollisionParams
 		);
 
-	FVector WorldPingPos = (HasHit) ?	HitResult.ImpactPoint :
-										FVector( -WorldPingPos2D.Y, WorldPingPos2D.X, FIXED_LANDSCAPE_HEIGHT);
+	FVector WorldPingPos = (HasHit) ? HitResult.ImpactPoint :
+		FVector(-WorldPingPos2D.Y, WorldPingPos2D.X, FIXED_LANDSCAPE_HEIGHT);
 
 	// Spawn World ping
 	OwnerPlayer->GetPingSystemComponent()->SpawnWorldPingActor(WorldPingPos);
@@ -403,7 +413,7 @@ bool UC_MainMapWidget::HandleRMBDown(const FGeometry& InGeometry, const FPointer
 
 	// Border 처리
 	float BorderXBottom = MID_POINT.X - CANVAS_SIZE * 0.5f;
-	float BorderXTop	= MID_POINT.X + CANVAS_SIZE * 0.5f;
+	float BorderXTop = MID_POINT.X + CANVAS_SIZE * 0.5f;
 
 	if (MousePos.X < BorderXBottom || MousePos.X > BorderXTop) return false;
 

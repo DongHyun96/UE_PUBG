@@ -77,6 +77,10 @@ public: // Getters and setters
 	UFUNCTION(BlueprintCallable)
 	class UC_InvenSystem* GetInvenSystem() { return InvenSystem; }
 
+	class UC_CameraEffectComponent* GetCameraEffectComponent() const { return CameraEffectComponent; }
+
+
+
 private:
 	void SetPoseState(EPoseState InPoseState) { Super::SetPoseState(InPoseState); }
 
@@ -131,6 +135,7 @@ protected: // Camera
 
 public:
 	UCameraComponent* GetMainCamera() { return MainCamera; }
+	UCameraComponent* GetAimCamera() const { return AimCamera; }
 protected:
 	//Aim Press Camera 위치 조정 함수
 	void SetAimPressCameraLocation();
@@ -183,56 +188,6 @@ private:
 	/// Turn Anim Montage 초기화
 	/// </summary>
 	void InitTurnAnimMontageMap();
-
-private:
-	/// <summary>
-	/// Tick 함수에서 호출될 함수 / AimPunching 관여
-	/// </summary>
-	void HandleCameraAimPunching(float DeltaTime);
-
-public:
-
-	/// <summary>
-	/// Camera AimPunching 실시
-	/// </summary>
-	/// <param name="CamPunchingDirection"> : 카메라를 Aim Punching할 방향 </param>
-	/// <param name="CamPunchIntensity"> : 해당 방향으로 얼마나 보낼지 </param>
-	/// <param name="CamRotationPunchingXDelta"> : X Rotation(Roll) 회전량 </param>
-	/// <param name="InPunchingLerpFactor"> : Punching Lerp 인자 </param>
-	void ExecuteCameraAimPunching
-	(
-		FVector CamPunchingDirection,
-		float CamPunchIntensity,
-		float CamRotationPunchingXDelta = 0.f,
-		float InPunchingLerpFactor = 8.f
-	);
-
-	/// <summary>
-	/// 카메라 Shake 수행
-	/// </summary>
-	/// <param name="ShakeScale"></param>
-	void ExecuteCameraShake(float ShakeScale = 1.f);
-
-private:
-
-	/// <summary>
-	/// Tick 함수에서 호출될 함수 / FlashBangEffect 관련 처리
-	/// </summary>
-	void HandleFlashBangEffect(float DeltaTime);
-
-	/// <summary>
-	/// 플레이어가 현재 바라보는 화면을 캡쳐하기
-	/// </summary>
-	void CaptureScene();
-
-public:
-
-	/// <summary>
-	/// FlashBangEffect 수행
-	/// </summary>
-	/// <param name="Duration"> : 지속시간 / 지속시간이 현재 진행중인 effect의 지속시간보다 짧으면  Update하지 않음 </param>
-	void ExecuteFlashBangEffect(float Duration);
-
 
 public:
 
@@ -287,8 +242,6 @@ public:
 private:
 	float PlayerRecoilFactorByPose = 1.0f;
 
-	void SpawnConsumableItemForTesting();
-
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly) 
@@ -308,46 +261,6 @@ protected: // Turn in place 애님 몽타주 관련
 	UPROPERTY(BluePrintReadWrite, EditDefaultsOnly)
 	TMap<EHandState, FPoseTurnInPlaceAnimMontage> LowerBodyTurnAnimMontageMap{};
 
-private: // Camera Aim Punching 관련
-	
-	// 기존 Camera local location & local rotation
-	FVector		MainCamOriginLocalLocation{};
-	FVector		AimCamOriginLocalLocation{};
-	FRotator	MainCamOriginLocalRotation{};
-	FRotator	AimCamOriginLocalRotation{};
-
-	// AimCamera 또한 필요
-
-	// AimPunching을 적용시킬 Camera Local Location 위치 좌표
-	FVector MainCamPunchingDestLocation{};
-	FVector AimCamPunchingDestLocation{};
-
-	// AimPunching을 적용시킬 Camera Local Rotation 위치 좌표
-	FRotator MainCamPunchingDestRotation{};
-	FRotator AimCamPunchingDestRotation{};
-
-	float PunchingLerpFactor = 8.f;
-
-protected: 
-	// Camera Shake
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "CameraShake")
-	TSubclassOf<UCameraShakeBase> CameraShakeClass{};
-
-protected: // Flash Bang 피격 Effect 관련
-
-	class APostProcessVolume* PostProcessVolume{};
-	float FlashBangEffectDuration{};
-
-	float PostProcessInitialIntensity{};
-
-	class USceneCaptureComponent2D* SceneCaptureComponent{};
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UTextureRenderTarget2D* RenderTarget{};
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_ScreenShotWidget* ScreenShotWidget{};
-
 protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -360,22 +273,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_PingSystemComponent* PingSystemComponent{};
 
+protected:
 
-public: // Consumable Item Testing
-	
-	//// TODO : 지우기
-	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	//class AC_ConsumableItem* ConsumableItem{};
-	//
-	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	//TSubclassOf<class AC_ConsumableItem> ConsumableItemClass{};
-	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TArray<TSubclassOf<class AC_ConsumableItem>> ConsumableItemClasses{};
-	
-	int ConsumableIterator{};
-
-	TArray<class AC_ConsumableItem*> ConsumableItems{};
+	class UC_CameraEffectComponent* CameraEffectComponent{};
 
 private:
 

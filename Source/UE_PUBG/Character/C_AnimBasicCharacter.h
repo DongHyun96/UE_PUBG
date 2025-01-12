@@ -27,7 +27,7 @@ public:
 
 	virtual void NativeBeginPlay() override;
 
-private:
+protected:
 
 	/// <summary>
 	/// AnimGraph에서의 transition용 data들 업데이트
@@ -121,6 +121,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
 	void AnimNotify_OnEndTransition_Falling_To_Standing();
+
+	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
+	void AnimNotify_OnEndTransition_Falling_To_HardLand();
 
 	void ControlHeadRotation();
 

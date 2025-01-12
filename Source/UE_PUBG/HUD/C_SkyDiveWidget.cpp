@@ -14,6 +14,14 @@
 
 #include "Utility/C_Util.h"
 
+const FVector2D UC_SkyDiveWidget::ALTITUDE_BOX_MAX_TO_PARACHUTE = { -252.f, 99.f };
+const FVector2D UC_SkyDiveWidget::ALTITUDE_BOX_PARACHUTE_TO_MIN = { 99.f, 190.f };
+
+const FVector2D UC_SkyDiveWidget::SPEEDTEXTBLOCKS_Y_RANGE = FVector2D(278, -268);
+const float		UC_SkyDiveWidget::SPEEDTEXT_MID_Y_POS = 5.f;
+const float		UC_SkyDiveWidget::SPEEDTEXTBLOCKS_STEP = -91.f;
+const float		UC_SkyDiveWidget::TEXTBLOCKSCALING_FACTOR = 1.82f;
+
 void UC_SkyDiveWidget::NativeConstruct()
 {
 	Super::NativeConstruct();

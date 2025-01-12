@@ -58,16 +58,6 @@ void AttachToSocket(USceneComponent* InParent)
 
 }
 
-//AC_Item* SpawnItem(AC_Item* OriginalItem, const AC_BasicCharacter* Character)
-//{
-//	FActorSpawnParameters SpawnParams;
-//
-//	AC_Item* SpawnedItme = Character->GetWorld()->SpawnActor<AC_Item>(OriginalItem->GetClass(), Character->GetActorLocation(), Character->GetActorRotation(), SpawnParams);
-//
-//
-//	return nullptr;
-//}
-
 FVector AC_Item::GetGroundLocation(AC_BasicCharacter* Character)
 {
 	// 캐릭터의 위치

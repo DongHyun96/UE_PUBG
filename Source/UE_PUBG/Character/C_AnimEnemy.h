@@ -13,5 +13,12 @@ UCLASS()
 class UE_PUBG_API UC_AnimEnemy : public UC_AnimBasicCharacter
 {
 	GENERATED_BODY()
+
+private:
+
+	/// <summary>
+	/// AnimGraph에서의 transition용 data들 업데이트
+	/// </summary>
+	void NativeUpdateAnimation(float DeltaSeconds) override;
 	
 };

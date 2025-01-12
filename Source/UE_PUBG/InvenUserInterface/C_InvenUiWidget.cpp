@@ -6,9 +6,9 @@
 #include "InvenUserInterface/C_MainGunWidget.h"
 #include "InvenUserInterface/C_ThrowableWidget.h"
 #include "InvenUserInterface/C_EquipSlot.h"
-#include "InvenUserInterface/C_EquipmentPanel.h"\
-
+#include "InvenUserInterface/C_EquipmentPanel.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_PlayerController.h"
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/TextBlock.h"
@@ -21,9 +21,9 @@
 
 #include "TimerManager.h"
 
-#include "InvenUserInterface/C_ItemBarWidget.h"
-
 #include "Utility/C_Util.h"
+
+#include "Kismet/GameplayStatics.h"
 
 void UC_InvenUiWidget::NativeConstruct()
 {
@@ -40,6 +40,85 @@ void UC_InvenUiWidget::NativeConstruct()
 
     InitListView();
 
+    AC_PlayerController* PlayerController = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+}
+
+void UC_InvenUiWidget::SetVisibility(ESlateVisibility InVisibility)
+{
+    UUserWidget::SetVisibility(InVisibility);
+
+    AC_PlayerController* PlayerController = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+    //PlayerController->SetIgnoreMoveInput(false);
+    UC_Util::Print(PlayerController->GetCurrentInputModeDebugString(),FColor::Magenta,50.f);
+    //PlayerController->SetIgnoreLookInput(false);
+    //if (InVisibility == ESlateVisibility::HitTestInvisible) return;
+
+    if (InVisibility == ESlateVisibility::Visible)
+    {
+        //if (!this->IsInViewport())
+        //{
+        //    this->AddToViewport();
+        //    UC_Util::Print("Adding to viewport", FColor::Red, 10.f);
+        //}
+
+        //if (!GetIsPanelOpened() && (GetVisibility() == ESlateVisibility::HitTestInvisible)) return;
+
+        //if (GetVisibility() == ESlateVisibility::HitTestInvisible)
+        //{
+        //    UUserWidget::SetVisibility(InVisibility);
+        //    return;
+        //}
+	    //PlayerController->SetIgnoreLookInput(true);
+
+        //FInputModeGameAndUI InputMode{};
+	    //InputMode.SetWidgetToFocus(this->TakeWidget());
+	    //InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+        //InputMode.SetHideCursorDuringCapture(false);
+	    //PlayerController->SetInputMode(InputMode);
+
+        PlayerController->SetInputMode
+        (
+            FInputModeGameAndUI()
+            .SetWidgetToFocus(nullptr)
+            .SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock)
+            .SetHideCursorDuringCapture(false)
+        );
+        PlayerController->GetPawn()->bUseControllerRotationYaw = false;
+        //PlayerController->bEnableClickEvents = true;  // UI 클릭 이벤트 활성화
+        //PlayerController->bEnableTouchEvents = true; // 터치 이벤트 활성화
+        //PlayerController->bEnableMouseOverEvents = true; // 마우스 오버 이벤트 활성화
+	    PlayerController->bShowMouseCursor = true;
+        PlayerController->SetIgnoreLookInput(true);
+        //SetIsFocusable(true);
+
+    }
+
+    if (InVisibility == ESlateVisibility::Hidden)
+    {
+        PlayerController->GetPawn()->bUseControllerRotationYaw = true;
+        PlayerController->SetInputMode(FInputModeGameOnly());
+        //PlayerController->SetInputMode(FInputModeGameAndUI());
+
+        PlayerController->bShowMouseCursor = false;
+        PlayerController->SetIgnoreLookInput(false);
+    }
+
+    UC_Util::Print(PlayerController->GetCurrentInputModeDebugString(), FColor::Black, 50.f);
+
+    //PlayerController->SetIgnoreMoveInput(false);
+
+    //PlayerController->SetIgnoreLookInput(false);
+
+}
+
+bool UC_InvenUiWidget::GetIsPanelOpened()
+{
+    switch (this->GetVisibility())
+    {
+    case ESlateVisibility::Visible: case ESlateVisibility::SelfHitTestInvisible: case ESlateVisibility::HitTestInvisible: return true;
+    default: return false;
+    }
 }
 
 void UC_InvenUiWidget::InitWidget()
@@ -77,9 +156,12 @@ void UC_InvenUiWidget::InitWidget()
 void UC_InvenUiWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
-    if (UsingItem)
-        this->SetVisibility(ESlateVisibility::HitTestInvisible);
 
+    if (!GetIsPanelOpened()) return;
+    
+    if (!OwnerCharacter->GetIsActivatingConsumableItem()) return;
+    
+    //this->SetVisibility(ESlateVisibility::HitTestInvisible);
 }
 
 void UC_InvenUiWidget::SetWidgetsOwner(AC_BasicCharacter* Character)

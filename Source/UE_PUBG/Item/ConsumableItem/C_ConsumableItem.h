@@ -9,8 +9,6 @@
 #include "C_ConsumableItem.generated.h"
 
 
-// TODO : Cancel 기능 넣어야 함
-
 UENUM(BlueprintType)
 enum class EConsumableItemState : uint8
 {
@@ -38,7 +36,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SetLinkedItemBarWidget(class UC_ItemBarWidget* InItemBarWidget); //{ LinkedItemBarWidget = InItemBarWidget; }
+	void SetLinkedItemBarWidget(class UC_ItemBarWidget* InItemBarWidget);
 
 	//void SetConsumableItemState(EConsumableItemState NewState);
 

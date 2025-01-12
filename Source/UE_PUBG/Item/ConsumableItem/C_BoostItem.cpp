@@ -34,6 +34,7 @@ void AC_BoostItem::HandleActivatingState()
 {
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->OnActivatingBooster(UsageTime, UsingTimer);
+
 }
 
 void AC_BoostItem::HandleActivateCompletedState()

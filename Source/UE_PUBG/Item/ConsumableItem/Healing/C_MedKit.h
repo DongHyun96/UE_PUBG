@@ -7,7 +7,7 @@
 #include "C_MedKit.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class UE_PUBG_API AC_MedKit : public AC_HealItem
@@ -45,6 +45,6 @@ private:
 private:
 
 	struct FTimerHandle TimerHandle {};
-	const float SWITCHING_TIME = 3.2f;
-	const float BAND_USAGE_MESH_SHOW_TIME = 10.f;
+	static const float SWITCHING_TIME;
+	static const float BAND_USAGE_MESH_SHOW_TIME;
 };

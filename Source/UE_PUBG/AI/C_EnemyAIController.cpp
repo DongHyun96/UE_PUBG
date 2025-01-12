@@ -82,7 +82,7 @@ void AC_EnemyAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	UC_Util::Print("OnPossess", FColor::Red, 10.f);
+	UC_Util::Print("Enemy OnPossess", FColor::Red, 10.f);
 
 	OwnerCharacter = Cast<AC_Enemy>(InPawn);
 

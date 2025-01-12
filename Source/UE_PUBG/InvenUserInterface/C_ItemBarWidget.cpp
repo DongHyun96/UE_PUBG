@@ -18,6 +18,7 @@
 #include "TimerManager.h"
 
 #include "Character/Component/C_InvenSystem.h"
+#include "Character/Component/C_PlayerController.h"
 //#include "NavigationSystem.h"
 #include "Utility/C_Util.h"
 
@@ -34,7 +35,7 @@ void UC_ItemBarWidget::NativeConstruct()
 	//ItemStackBlock = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), FName("ItemStackBlock1"));
 	//this->SetIsFocusable(true);
 
-	SetIsFocusable(false);
+	//SetIsFocusable(false);
 
 	if (!OwnerCharacter)
 	{
@@ -90,8 +91,13 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 
 			//if (CachedItem->)
 			//SetVisibility(ESlateVisibility::Visible);
-			
+			//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
+			//PlayerController->SetIgnoreMoveInput(false); // 이동 허용
+			//return FReply::Unhandled();
+		
+
 			return FReply::Handled();
+
 		}
 	}
 	else
@@ -103,24 +109,25 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 	//return FReply::Unhandled();
 }
 
-FReply UC_ItemBarWidget::NativeOnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
-{
-	// Tab 키가 눌렸는지 확인
-	if (InKeyEvent.GetKey() == EKeys::Tab)
-	{
-		// Tab 키 입력을 처리하고 더 이상 전파되지 않도록 함
-		//OwnerCharacter->GetInvenSystem()->OpenInvenUI();
-		return FReply::Unhandled();
-
-	}
-
-	// 다른 키 입력은 기본 처리로 넘어감
-	return Super::NativeOnKeyDown(MyGeometry, InKeyEvent);
-	//return FReply::Unhandled();
-}
+//FReply UC_ItemBarWidget::NativeOnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
+//{
+//	// Tab 키가 눌렸는지 확인
+//	if (InKeyEvent.GetKey() == EKeys::Tab)
+//	{
+//		// Tab 키 입력을 처리하고 더 이상 전파되지 않도록 함
+//		//OwnerCharacter->GetInvenSystem()->OpenInvenUI();
+//		return FReply::Handled();
+//
+//	}
+//
+//	// 다른 키 입력은 기본 처리로 넘어감
+//	return Super::NativeOnKeyDown(MyGeometry, InKeyEvent);
+//}
 
 void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
+	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
+	PlayerController->SetIgnoreMoveInput(false); // 이동 허용
 	//dragdrop class를 새로 만들어 사용해야 할 수 있음.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 	
@@ -140,6 +147,7 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	Border->SetContent(DragVisual);
 
 	DragOperation->DefaultDragVisual = Border;
+	//Border->SetUserFocus(Cast<AC_PlayerController>(OwnerCharacter->GetController()));
 
 	//UObject* ResourceObject = ItemImage1->Brush.GetResourceObject();
 	//UTexture2D* Texture = Cast<UTexture2D>(ResourceObject);
@@ -178,22 +186,29 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 
 FReply UC_ItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-
+	//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
+	//PlayerController->SetIgnoreMoveInput(false); // 이동 허용
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
+		//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
+		//PlayerController->SetIgnoreMoveInput(false); // 이동 허용
 		if (CachedItem)
 		{
 			//드래그 이벤트 실행.
-
+			//OwnerCharacter->GetController()->SetIgnoreMoveInput(false);
 			// 드래그를 시작하고 반응함
 			FEventReply RePlyResult =
 				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 			UC_Util::Print("LeftMouseButton");
 			OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 
+			//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
+			//PlayerController->SetIgnoreMoveInput(false); // 이동 허용
+			//PlayerController->GetCurrentInputModeDebugString();
+
 			return RePlyResult.NativeReply;
 
-			//return FReply::Handled();
+			//return FReply::Unhandled();
 		}
 	}
 	return Super::NativeOnPreviewMouseButtonDown(InGeometry,InMouseEvent);

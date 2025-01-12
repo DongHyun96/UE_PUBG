@@ -3,6 +3,7 @@
 
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_PlayerController.h"
 #include "Character/C_BasicCharacter.h"
 
 #include "Item/Weapon/Gun/C_Gun.h"
@@ -31,7 +32,9 @@ void UC_InvenSystem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerController = GetWorld()->GetFirstPlayerController();
+	PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
+	PlayerController->SetIgnoreLookInput(false);
+
 	if (!InvenUI && InvenUiClass)
 	{
 		InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
@@ -39,7 +42,13 @@ void UC_InvenSystem::BeginPlay()
 		{
 			InvenUI->SetOwnerCharacter(OwnerCharacter);
 			//InvenUI->SetWidgetsOwner(OwnerCharacter);
-			//InvenUI->AddToViewport();
+			if (!InvenUI->IsInViewport())
+			{
+				//InvenUI->AddToViewport();
+
+				UC_Util::Print("Adding to viewport", FColor::Red, 10.f);
+			}
+
 			//InvenUI->SetVisibility(ESlateVisibility::Hidden);
 		}
 		else
@@ -56,10 +65,20 @@ void UC_InvenSystem::InitializeList()
 	//if (!IsValid(InvenUI)) return;
 	if (!IsValid(InvenUI))
 	{
-		PlayerController = GetWorld()->GetFirstPlayerController();
+		//PlayerController = GetWorld()->GetFirstPlayerController();
 		InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
 		InvenUI->SetOwnerCharacter(OwnerCharacter);
+		if (!InvenUI->IsInViewport())
+		{
+			//InvenUI->AddToViewport();
+
+			UC_Util::Print("Adding to viewport", FColor::Red, 10.f);
+		}
+
+		//InvenUI->SetVisibility(ESlateVisibility::Hidden);
+
 	}
+	
 	//InvenUI->InitListView();
 	InvenUI->InitWidget();
 }
@@ -75,9 +94,6 @@ void UC_InvenSystem::OpenInvenUI()
 	//	InvenUI->SetOwnerCharacter(OwnerCharacter);
 	//}
 
-
-	
-
 	if (InvenUI->GetIsPanelOpened())
 	{
 		CloseInvenUI();
@@ -90,6 +106,7 @@ void UC_InvenSystem::OpenInvenUI()
 
 	if (!IsValid(OwnerCharacter)) return;
 
+	// TODO : È®ÀÎ
 	UCharacterMovementComponent* CharacterMovement = OwnerCharacter->GetCharacterMovement();
 	if (CharacterMovement)
 		CharacterMovement->SetMovementMode(EMovementMode::MOVE_Walking);
@@ -98,52 +115,24 @@ void UC_InvenSystem::OpenInvenUI()
 
 void UC_InvenSystem::ShowInvenUI()
 {
-	//isPanelOpened = true;
-	InvenUI->SetIsPanelOpened(true);
-	//InvenUI->AddToViewport();
-
-	if (!InvenUI->IsInViewport())
+	if (!InvenUI)
 	{
-		InvenUI->AddToViewport();
+		UC_Util::Print("From UC_InvenSystem::ShowInvenUI : InvenUI Nullptr", FColor::Red, 10.f);
+		return;
 	}
-
-	if (!PlayerController)
-		PlayerController = GetWorld()->GetFirstPlayerController();
-	
-	PlayerController->SetIgnoreLookInput(true);
-
-	FInputModeGameAndUI InputMode;
-	InputMode.SetWidgetToFocus(InvenUI->TakeWidget());
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	PlayerController->SetInputMode(InputMode);
-	PlayerController->bShowMouseCursor = true;
-
+	//PlayerController = GetWorld()->GetFirstPlayerController();
 	InvenUI->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UC_InvenSystem::CloseInvenUI()
 {
-	UC_Util::Print("CloseInvenUI");
-
-	//isPanelOpened = false;
-	InvenUI->SetIsPanelOpened(false);
-	if (!PlayerController) 
-		PlayerController = GetWorld()->GetFirstPlayerController();
-
-
-	PlayerController->SetIgnoreLookInput(false);
-
-	FInputModeGameOnly InputMode;
-	PlayerController->SetInputMode(InputMode);
-
-	PlayerController->bShowMouseCursor = false;
-
-
-	if (InvenUI)
-	{
-		//InvenUI->RemoveFromViewport();
-		InvenUI->SetVisibility(ESlateVisibility::Hidden);
+	if (!InvenUI)
+	{  
+		UC_Util::Print("From UC_InvenSystem::CloseInvenUI : InvenUI Nullptr", FColor::Red, 10.f);
+		return;
 	}
+	//PlayerController = GetWorld()->GetFirstPlayerController();
+	InvenUI->SetVisibility(ESlateVisibility::Hidden);
 }
 
 

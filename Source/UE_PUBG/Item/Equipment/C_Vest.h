@@ -24,6 +24,11 @@ public:
 	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 
 	void AttachToSocket(class AC_BasicCharacter* InParent);
+
+private:
+	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
+
+	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 protected:
 	float Durability = 0;
 

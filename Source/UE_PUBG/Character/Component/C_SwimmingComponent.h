@@ -126,7 +126,7 @@ private:
 
 private:
 
-	const float CAN_WALK_DEPTH_LIMIT = 100.f;
+	static const float CAN_WALK_DEPTH_LIMIT;
 
 private:
 

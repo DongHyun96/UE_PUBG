@@ -138,22 +138,10 @@ protected:
 private:
 
 	// 자세별 CapsuleComponent(RootComponent) Collider 높이와 Radius
-	const TMap<EPoseState, TPair<float, float>> POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS =
-	{
-		{EPoseState::STAND,		{88.f, 34.f}},
-		{EPoseState::CROUCH,	{67.f, 34.f}},
-		{EPoseState::CRAWL,		{20.f, 20.f}}
-		//{EPoseState::CRAWL,		{1.f, 1.f}}
-
-	};
+	static const TMap<EPoseState, TPair<float, float>> POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS;
 
 	// 자세 별 Mesh Z Pos
-	const TMap<EPoseState, float> POSE_BY_MESH_Z_POS =
-	{
-		{EPoseState::STAND,		-90.f},
-		{EPoseState::CROUCH,	-64.f},
-		{EPoseState::CRAWL,		-20.f}
-	};
+	static const TMap<EPoseState, float> POSE_BY_MESH_Z_POS;
 
 	// 자세별 크기 및 위치 Lerp Destination
 	TPair<float, float> RootColliderHeightRadiusLerpDest = POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[EPoseState::STAND];
@@ -165,15 +153,14 @@ private:
 
 private: // ChangePose Sweep testing constants
 
-	const float SWEEP_SPHERE_RAD			= 34.f;
-	const float CROUCH_TO_STAND_SWEEP_DIST	= (POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[EPoseState::STAND].Key -
-											   POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[EPoseState::CROUCH].Key) * 2.f;
-	const float CRAWL_TO_STAND_SWEEP_DIST	= 105.f;
-	const float CRAWL_TO_CROUCH_SWEEP_DIST	= 60.f;
-
-	const float CRAWL_LINETRACE_TEST_DIST	= 500.f;
-	const float CRAWL_DEGREE_LIMIT			= 35.f; // 기어갈 수 없는 경사도 Limit
-	const float CRAWL_GROUND_DIST_LIMIT		= 50.f;
+	static const float SWEEP_SPHERE_RAD;
+	static const float CROUCH_TO_STAND_SWEEP_DIST;
+	static const float CRAWL_TO_STAND_SWEEP_DIST;
+	static const float CRAWL_TO_CROUCH_SWEEP_DIST;
+	
+	static const float CRAWL_LINETRACE_TEST_DIST;
+	static const float CRAWL_DEGREE_LIMIT;			// 기어갈 수 없는 경사도 Limit
+	static const float CRAWL_GROUND_DIST_LIMIT;
 
 private: // Crawl Collider Rotation Lerp 관련
 

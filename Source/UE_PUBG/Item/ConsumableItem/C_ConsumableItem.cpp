@@ -21,6 +21,8 @@
 
 #include "Utility/C_Util.h"
 
+#include "HUD/C_InstructionWidget.h"
+
 AC_ConsumableItem::AC_ConsumableItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -92,7 +94,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 		OnActivatingFinish(); // Template method
 
-		ItemUser->SetIsActivatingConsumableItem(false);
+		ItemUser->SetIsActivatingConsumableItem(false, nullptr);
 	}
 		return;
 	case EConsumableItemState::ACTIVATE_COMPLETED:
@@ -110,6 +112,10 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
 			if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
 				OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
+
+			OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
+
+			OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
 		}
 		
 		if (ItemDatas.ItemCurStack == 0)
@@ -119,9 +125,6 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			HandleDestroy(); // 각 아이템 별 Destroy 하는 시점이 다름
 			return;
 		}
-
-
-
 	}
 		return;
 	default:
@@ -160,14 +163,20 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 
 	// 사용 시작하기
 	ConsumableItemState = EConsumableItemState::ACTIVATING;
-	Cast<AC_Player>(OwnerCharacter)->GetInvenSystem()->GetInvenUI()->SetUsingItem(this); //InvenUI에 현재 사용중인 아이템 설정.
+
+	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
+	{
+		//InvenUI에 현재 사용중인 아이템 설정. InvenUI UsingItem이 있을 때 Tick에서 visibility 조정하는 중
+		UserPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(this); 
+	}
+	
 	OnStartUsing(); // Template method
 
 	// 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기 시도
 	ItemUser->GetEquippedComponent()->TryAttachCurWeaponToHolsterWithoutSheathMotion();
 
 	// 사용자의 bIsActivatingConsumableItem 세팅
-	ItemUser->SetIsActivatingConsumableItem(true);
+	ItemUser->SetIsActivatingConsumableItem(true, this);
 
 	//ItemDatas.ItemStack--;
 
@@ -192,10 +201,23 @@ bool AC_ConsumableItem::CancelActivating()
 		}
 	}
 
+
+
 	// 착용 중인 무기가 있었을 때 재착용 시도
 	ItemUser->GetEquippedComponent()->TryReAttachCurWeaponToHand();
 
-	ItemUser->SetIsActivatingConsumableItem(false);
+	ItemUser->SetIsActivatingConsumableItem(false, nullptr);
+	
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	{
+		OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
+		if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
+			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
+		OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
+
+		OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
+	}
+
 	OnCancelActivating();
 
 	ConsumableItemState = EConsumableItemState::IDLE;

@@ -14,6 +14,9 @@
 #include "Item/Weapon/C_Weapon.h"
 
 #include "HUD/C_HUDWidget.h"
+#include "HUD/C_InstructionWidget.h"
+
+const float AC_Bandage::USAGE_MESH_SHOWN_TIME = 10.f;
 
 AC_Bandage::AC_Bandage()
 {
@@ -53,6 +56,9 @@ void AC_Bandage::OnStartUsing()
 	BlockUsed	= 0;
 
 	UC_Util::Print("Starts to use Bandage!");
+
+	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
+		UserPlayer->GetHUDWidget()->GetInstructionWidget()->ActivateConsumableInstruction("Using Bandage");
 }
 
 void AC_Bandage::OnActivatingFinish()

@@ -61,12 +61,6 @@ protected:
 private:
 
 	//const FName HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
-	const TMap<EConsumableUsageMeshType, FName> SocketNames =
-	{
-		{EConsumableUsageMeshType::BANDAGE,		"Bandage_ArmSocket"},
-		{EConsumableUsageMeshType::SYRINGE,		"SyringeSocket"},
-		{EConsumableUsageMeshType::DRINK,		"DrinkUsageSocket"},
-		{EConsumableUsageMeshType::PAIN_KILLER, "PainKillerUsageSocket"},
-
-	};
+	static const TMap<EConsumableUsageMeshType, FName> SocketNames;
+	
 };

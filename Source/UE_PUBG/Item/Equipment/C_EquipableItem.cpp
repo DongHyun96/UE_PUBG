@@ -61,3 +61,13 @@ void AC_EquipableItem::AttachToSocket(AC_BasicCharacter* InParent)
 
 	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);
 }
+
+bool AC_EquipableItem::MoveSlotToAround(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_EquipableItem::MoveAroundToSlot(AC_BasicCharacter* Character)
+{
+	return false;
+}

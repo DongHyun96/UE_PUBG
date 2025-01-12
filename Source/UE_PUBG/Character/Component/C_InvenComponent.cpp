@@ -392,6 +392,8 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 		MyBackPack = Cast<AC_BackPack>(GetEquipmentItems()[EEquipSlot::BACKPACK]); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기. 및 BackPack의 쓸데없이 Level이 2개임 하나로 통일하기.
 		MaxVolume += CheckBackPackVolume(MyBackPack->GetLevel());
 	}
+	EquipmentItems[InSlot]->SetItemPlace(EItemPlace::SLOT);
+
 	EquipmentItems[InSlot]->AttachToSocket(OwnerCharacter);
 
 	EquipmentItems[InSlot]->SetActorEnableCollision(false);
@@ -474,43 +476,6 @@ void UC_InvenComponent::GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<
 {
 	Map.GenerateValueArray(Values);
 
-}
-
-void UC_InvenComponent::OpenInvenUI()
-{
-	UC_Util::Print("Down I Key");
-
-	if (InvenUI)
-	{
-		if (InvenUI->IsVisible())
-		{
-			UC_Util::Print("Hidden Inven UI");
-			InvenUI->SetVisibility(ESlateVisibility::Hidden);
-			InvenUI->RemoveFromViewport();
-			//InvenUI = nullptr;
-			PlayerController->bShowMouseCursor = false;
-		}
-		else
-		{
-			UC_Util::Print("Visible Inven UI");
-			PlayerController->bShowMouseCursor = true;
-			InvenUI->SetVisibility(ESlateVisibility::Visible);
-			InvenUI->AddToViewport();
-		}
-	}
-	else
-	{
-		UC_Util::Print("No InvenUI");
-	}
-
-}
-
-void UC_InvenComponent::InitInvenUI()
-{
-	if (!InvenUI) return;
-
-	//InvenUI->InitListView();
-	//InvenUI->initial
 }
 
 void UC_InvenComponent::CheckBackPackOnCharacter()

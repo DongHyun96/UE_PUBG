@@ -105,8 +105,8 @@ private:
 
 protected:
 	
-	const FName HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
-	const FName EQUIPPED_SOCKET_NAME = "Pan_Equip"; // 무기가 손에 부착될 socket 이름
+	static const FName HOLSTER_SOCKET_NAME; // 무기집 socket 이름
+	static const FName EQUIPPED_SOCKET_NAME; // 무기가 손에 부착될 socket 이름
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	struct FPriorityAnimMontage AttackMontage{};

@@ -36,11 +36,14 @@ public:
 
 	void SetUsingItem(AC_Item* inItem) { UsingItem = inItem; }
 
-	void SetIsPanelOpened(bool bisPanelOpened) { isPanelOpened = bisPanelOpened; }
+	//void SetIsPanelOpened(bool bisPanelOpened) { isPanelOpened = bisPanelOpened; }
+
+	void SetVisibility(ESlateVisibility InVisibility) override;
+
 public:
 	bool GetIsDragging() { return bIsDragging; }
 
-	bool GetIsPanelOpened() { return isPanelOpened; }
+	bool GetIsPanelOpened();
 
 	AC_Item* GetUsingItem() { return UsingItem; }
 protected:
@@ -114,5 +117,4 @@ protected:
 
 	AC_Item* UsingItem = nullptr;
 
-	bool isPanelOpened = false;
 };

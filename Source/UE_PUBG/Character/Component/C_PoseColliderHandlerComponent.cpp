@@ -6,6 +6,29 @@
 #include "Components/CapsuleComponent.h"
 #include "Utility/C_Util.h"
 
+const TMap<EPoseState, TPair<float, float>> UC_PoseColliderHandlerComponent::POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS =
+{
+	{EPoseState::STAND,		{88.f, 34.f}},
+	{EPoseState::CROUCH,	{67.f, 34.f}},
+	{EPoseState::CRAWL,		{20.f, 20.f}}
+	//{EPoseState::CRAWL,		{1.f, 1.f}}
+};
+
+const TMap<EPoseState, float> UC_PoseColliderHandlerComponent::POSE_BY_MESH_Z_POS =
+{
+	{EPoseState::STAND,		-90.f},
+	{EPoseState::CROUCH,	-64.f},
+	{EPoseState::CRAWL,		-20.f}
+};
+
+const float UC_PoseColliderHandlerComponent::SWEEP_SPHERE_RAD				= 34.f;
+const float UC_PoseColliderHandlerComponent::CROUCH_TO_STAND_SWEEP_DIST		= (88.f - 67.f) * 2.f;
+const float UC_PoseColliderHandlerComponent::CRAWL_TO_STAND_SWEEP_DIST		= 105.f;
+const float UC_PoseColliderHandlerComponent::CRAWL_TO_CROUCH_SWEEP_DIST		= 60.f;
+const float UC_PoseColliderHandlerComponent::CRAWL_LINETRACE_TEST_DIST		= 500.f;
+const float UC_PoseColliderHandlerComponent::CRAWL_DEGREE_LIMIT				= 35.f; // 기어갈 수 없는 경사도 Limit
+const float UC_PoseColliderHandlerComponent::CRAWL_GROUND_DIST_LIMIT		= 50.f;
+
 UC_PoseColliderHandlerComponent::UC_PoseColliderHandlerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;

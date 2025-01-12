@@ -130,12 +130,10 @@ protected:
 	class UC_HUDWidget*			OwnerHUDWidget{};
 private:
 
-	const float MAX_HP			= 100.f;
-	const float MAX_BOOSTING	= 100.f;
-
-	const float HEAL_UP_LIMIT = 75.f; // 구급상자, 붕대로 채울 수 있는 총 힐량 limit
-
-	const float MAX_OXYGEN_HP = 100.f; // 숨 HP Max
+	static const float MAX_HP;
+	static const float MAX_BOOSTING;
+	static const float HEAL_UP_LIMIT; // 구급상자, 붕대로 채울 수 있는 총 힐량 limit
+	static const float MAX_OXYGEN_HP; // 숨 HP Max
 
 protected:
 
@@ -152,46 +150,21 @@ private:
 
 	float BoostTimer{};
 
-	const float BOOST_ONE_BLOCK_EFFECT_TIME = 8.f;
-	const float BOOST_ONE_BLOCK_AMOUNT		= 2.631f; // 한 블록 당 줄어드는 Boost 량
+	static const float BOOST_ONE_BLOCK_EFFECT_TIME;
+	static const float BOOST_ONE_BLOCK_AMOUNT; // 한 블록 당 줄어드는 Boost 량
 
 	// 20 40 30 10
-	const TArray<float> EACH_BOOST_PHASE_BORDER = { 20.f, 60.f, 90.f, 100.f };
-	const TArray<FBoostingEffectFactor> BOOSTING_EFFECT_FACTORS =
-	{
-		{1.f, 1.f},		// 1페이즈 8초당 체력 회복량 & 이동 속도 증가(factor)
-		{2.f, 1.01f},	// 2페이즈
-		{3.f, 1.025f},	// 3페이즈
-		{4.f, 1.0625f}	// 4페이즈
-	};
+	static const TArray<float> EACH_BOOST_PHASE_BORDER;
+	static const TArray<FBoostingEffectFactor> BOOSTING_EFFECT_FACTORS;
 
 private: // Oxygen Exhausted 관련
 
-	const float OXYGEN_EXHAUSTED_DAMAGE_PER_SEC = 20.f;
+	static const float OXYGEN_EXHAUSTED_DAMAGE_PER_SEC;
+
 	float OxygenExhaustedTimer{};
 
 private:
 	// 피격 판정 부위 Mapping TPair<PhysicsAssetBoneName, EDamagingPartType>
-	const TMap<FName, EDamagingPartType> DAMAGINGPARTS_MAP =	
-	{
-		{"Neck",		EDamagingPartType::HEAD},
-
-		{"Hips",		EDamagingPartType::HIPS},
-
-		{"LeftUpLeg",	EDamagingPartType::LEFT_LEG},
-		{"LeftFoot",	EDamagingPartType::LEFT_FOOT},
-		{"RightUpLeg",	EDamagingPartType::RIGHT_LEG},
-		{"RightFoot",	EDamagingPartType::RIGHT_FOOT},
-
-		{"Spine",		EDamagingPartType::LOWER_STOMACH},
-		{"Spine1",		EDamagingPartType::UPPER_STOMACH},
-		{"Spine2",		EDamagingPartType::SHOULDER},
-
-		{"LeftArm",		EDamagingPartType::LEFT_ARM},
-		{"LeftHand",	EDamagingPartType::LEFT_HAND},
-
-		{"RightArm",	EDamagingPartType::RIGHT_ARM},
-		{"RightHand",	EDamagingPartType::RIGHT_HAND}
-	};
+	static const TMap<FName, EDamagingPartType> DAMAGINGPARTS_MAP;
 
 };
