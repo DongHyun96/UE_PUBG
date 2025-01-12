@@ -128,6 +128,9 @@ void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_HardLand_To_Stand()
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	UE_LOG(LogTemp, Warning, TEXT("Transition Ended"));
 	//OwnerCharacter->SetCanMove(true);
+
+	OwnerCharacter->SetCanMove(true);
+
 	AnimNotify_OnEndTransition_Falling_To_Standing();
 
 
@@ -140,6 +143,11 @@ void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_Falling_To_Standing()
 	OwnerCharacter->GetCharacterMovement()->MaxAcceleration = 2048;
 
 
+}
+
+void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_Falling_To_HardLand()
+{
+	OwnerCharacter->SetCanMove(false);
 }
 
 void UC_AnimBasicCharacter::ControlHeadRotation()

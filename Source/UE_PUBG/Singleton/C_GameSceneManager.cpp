@@ -75,25 +75,22 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 	switch (InHUDMode)
 	{
 	case EHUDMode::IDLE:
-		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		MiniMapWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-
 		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Hidden);
 		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
+		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		return;
 	case EHUDMode::INVEN:
 		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Hidden);
 		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Hidden);
 		MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
-
 		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Visible);
 		return;
 	case EHUDMode::MAINMAP:
 		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
 		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Visible);
-
 		MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
+		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Visible);
 		return;
 	case EHUDMode::MAX: default: return;
 	}

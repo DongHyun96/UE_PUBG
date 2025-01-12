@@ -21,6 +21,8 @@
 
 #include "Utility/C_Util.h"
 
+#include "HUD/C_InstructionWidget.h"
+
 AC_ConsumableItem::AC_ConsumableItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -113,6 +115,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
 
+			OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
 		}
 		
 		if (ItemDatas.ItemCurStack == 0)
@@ -211,6 +214,8 @@ bool AC_ConsumableItem::CancelActivating()
 		if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
 		OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
+
+		OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
 	}
 
 	OnCancelActivating();
@@ -219,14 +224,6 @@ bool AC_ConsumableItem::CancelActivating()
 	LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 	UsingTimer			= 0.f;
 	//ItemUser			= nullptr;
-
-	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
-	{
-		UserPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr); //InvenUI click input 활성화
-
-		// TODO : GameSceneManager의 HUDMode 확인해서 할 것 (CrossHair도 마찬가지)
-		UserPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
-	}
 
 	return true;
 }

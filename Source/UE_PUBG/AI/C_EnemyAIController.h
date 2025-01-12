@@ -29,6 +29,8 @@ public:
 	UFUNCTION()
 	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
+	class UC_BehaviorComponent* GetBehaviorComponent() const { return BehaviorComponent; }
+
 protected:
 
 	class UAISenseConfig_Sight* Sight{};

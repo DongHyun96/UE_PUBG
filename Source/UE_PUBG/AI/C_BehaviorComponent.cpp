@@ -34,8 +34,19 @@ AC_BasicCharacter* UC_BehaviorComponent::GetPlayer()
 	return Cast<AC_BasicCharacter>(Blackboard->GetValueAsObject(PlayerKey));
 }
 
-void UC_BehaviorComponent::ChangeType(EBehaviorType Type)
+bool UC_BehaviorComponent::ChangeType(EBehaviorType Type)
 {
+	if (Type == EBehaviorType::MAX) return false;
+
 	Blackboard->SetValueAsEnum(BehaviorKey, (uint8)Type);
+	return true;
+}
+
+bool UC_BehaviorComponent::ChangeServiceType(EServiceType Type)
+{
+	if (Type == EServiceType::MAX) return false;
+
+	Blackboard->SetValueAsEnum(ServiceKey, (uint8)Type);
+	return true;
 }
 

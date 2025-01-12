@@ -131,7 +131,7 @@ void UC_InvenUiWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
     Super::NativeTick(MyGeometry, InDeltaTime);
 
     if (!GetIsPanelOpened()) return;
-
+    
     if (!OwnerCharacter->GetIsActivatingConsumableItem()) return;
     
     this->SetVisibility(ESlateVisibility::HitTestInvisible);
