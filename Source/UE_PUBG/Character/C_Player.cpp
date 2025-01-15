@@ -143,21 +143,8 @@ void AC_Player::BeginPlay()
 	CrosshairWidgetComponent->SetOwnerCharacter(this);
 	AimCamera->SetActive(false);
 
-	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetController());
 
-	if (PlayerController != nullptr)
-	{
-		//if (UEnhancedInputLocalPlayerSubsystem)
-		UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-
-		if (IsValid(SubSystem))
-		{
-			SubSystem->AddMappingContext(MyInputComponent->MappingContext, 0);
-		}
-		//FSlateApplication::Get().SetNavigationConfig(MakeShared<FNavigationConfig>());
-	}
-
-	
+	SetPlayerMappingContext();
 
 	// 자세별 MainSpringArm 위치 초기화
 	MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::STAND, C_MainSpringArm->GetRelativeLocation());
@@ -238,6 +225,23 @@ void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	MyInputComponent->BindAction(PlayerInputComponent, this);
 
+}
+
+void AC_Player::SetPlayerMappingContext()
+{
+	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetController());
+
+	if (PlayerController != nullptr)
+	{
+		//if (UEnhancedInputLocalPlayerSubsystem)
+		UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+
+		if (IsValid(SubSystem))
+		{
+			SubSystem->AddMappingContext(MyInputComponent->MappingContext, 0);
+		}
+		//FSlateApplication::Get().SetNavigationConfig(MakeShared<FNavigationConfig>());
+	}
 }
 
 void AC_Player::HandleControllerRotation(float DeltaTime)

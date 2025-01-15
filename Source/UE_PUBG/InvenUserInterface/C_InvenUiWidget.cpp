@@ -19,6 +19,11 @@
 #include "Components/CanvasPanel.h"
 #include "Components/ProgressBar.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+#include "EnhancedInputSubsystems.h" 
+#include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
+
 #include "TimerManager.h"
 
 #include "Utility/C_Util.h"
@@ -84,25 +89,27 @@ void UC_InvenUiWidget::SetVisibility(ESlateVisibility InVisibility)
             .SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock)
             .SetHideCursorDuringCapture(false)
         );
-        PlayerController->GetPawn()->bUseControllerRotationYaw = false;
+	    PlayerController->bShowMouseCursor = true;
+        PlayerController->SetIgnoreLookInput(true);
+        //PlayerController->GetPawn()->bUseControllerRotationYaw = false;
         //PlayerController->bEnableClickEvents = true;  // UI 클릭 이벤트 활성화
         //PlayerController->bEnableTouchEvents = true; // 터치 이벤트 활성화
         //PlayerController->bEnableMouseOverEvents = true; // 마우스 오버 이벤트 활성화
-	    PlayerController->bShowMouseCursor = true;
-        PlayerController->SetIgnoreLookInput(true);
         //SetIsFocusable(true);
 
     }
 
     if (InVisibility == ESlateVisibility::Hidden)
     {
-        PlayerController->GetPawn()->bUseControllerRotationYaw = true;
+        //PlayerController->GetPawn()->bUseControllerRotationYaw = true;
         PlayerController->SetInputMode(FInputModeGameOnly());
         //PlayerController->SetInputMode(FInputModeGameAndUI());
 
         PlayerController->bShowMouseCursor = false;
-        //PlayerController->SetIgnoreLookInput(false);
+        PlayerController->SetIgnoreLookInput(false);
     }
+
+    //Cast<AC_Player>(OwnerCharacter)->SetPlayerMappingContext();
 
     UC_Util::Print(PlayerController->GetCurrentInputModeDebugString(), FColor::Black, 50.f);
 
