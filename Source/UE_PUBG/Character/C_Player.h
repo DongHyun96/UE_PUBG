@@ -44,6 +44,7 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void SetPlayerMappingContext();
 private:
 
 	/// <summary>
