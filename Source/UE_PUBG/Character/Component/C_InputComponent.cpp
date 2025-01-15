@@ -649,13 +649,6 @@ void UC_InputComponent::OnFKey()
 
 void UC_InputComponent::OnNKey()
 {
-	static bool Flag{};
-	
-	if (!Flag) ChangeTestWeapon = Player->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
-	else Player->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, ChangeTestWeapon);
-	
-	Flag = !Flag;
-
 	Player->GetHUDWidget()->ToggleMiniMapEnlarged();
 }
 

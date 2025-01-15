@@ -308,7 +308,8 @@ void UC_SwimmingComponent::StartSwimming()
 	UC_Util::Print("Start Swimming", FColor::Red, 10.f);
 
 	// SkyDiving Parachuting state 도중 물로 착지했을 때의 예외처리
-	OwnerCharacter->GetSkyDivingComponent()->OnCharacterLandedOnWater();
+	if (OwnerCharacter->GetMainState() == EMainState::SKYDIVING)
+		OwnerCharacter->GetSkyDivingComponent()->OnCharacterLandedOnWater();
 
 	OwnerCharacter->GetPhysicsVolume()->bWaterVolume = true;
 	OwnerCharacter->SetCanMove(true);
@@ -322,6 +323,12 @@ void UC_SwimmingComponent::StartSwimming()
 
 	// Player의 HUD 업데이트
 	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetOxygenWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+	// Pawn과의 충돌 block 끄기 (Pawn과의 충돌처리를 하면서 물 밖으로 나가버릴 수 있는 버그가 있음)
+	/*OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+	OwnerCharacter->GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	OwnerCharacter->GetMesh()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);*/
 }
 
 void UC_SwimmingComponent::StopSwimming()
@@ -333,6 +340,12 @@ void UC_SwimmingComponent::StopSwimming()
 	OwnerCharacter->GetPoseColliderHandlerComponent()->SetColliderBySwimmingMovingState(false);
 
 	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetOxygenWidget()->SetVisibility(ESlateVisibility::Hidden);
+
+	// Pawn과의 충돌 다시 켜주기
+	/*OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
+	OwnerCharacter->GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	OwnerCharacter->GetMesh()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);*/
 }
 
 float UC_SwimmingComponent::GetWaterDepth(const FVector& Position)

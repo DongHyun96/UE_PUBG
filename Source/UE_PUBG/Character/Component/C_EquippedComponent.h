@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "C_EquippedComponent.generated.h"
 
-
 UENUM(BlueprintType)
 enum class EWeaponSlot : uint8
 {
@@ -127,6 +126,19 @@ private:
 	/// </summary>
 	void SpawnWeaponsForTesting();
 
+public:
+
+
+	TSubclassOf<class AC_Weapon> GetSubclassOfWeapon(EWeaponSlot WeaponSlot) const { return WeaponClasses[WeaponSlot]; }
+
+	TSubclassOf<class AC_ThrowingWeapon> GetGrenadeWeaponClass() const { return GrenadeWeaponClass; }
+	TSubclassOf<class AC_ThrowingWeapon> GetFlashBangWeaponClass () const { return FlashBangClass; }
+	TSubclassOf<class AC_ThrowingWeapon> GetSmokeGrenadeWeaponClass() const { return SmokeGrenadeClass; }
+
+
+	//TSubclassOf<class AC_ThrowingWeapon> GetSubClassOfThrowingWeapon(EThrowableType ThrowableType) const { return ThrowingWeaponClasses[ThrowableType]; }
+
+	//TMap<EThrowableType, TSubclassOf<class AC_ThrowingWeapon>>& GetThrowableClassMap() { return ThrowingWeaponClasses; }
 
 protected:
 
@@ -154,9 +166,18 @@ protected:
 
 protected:
 
-	// Weapon Test ¿ë
+	// Enemy Weapon setting ¿ë
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EWeaponSlot, TSubclassOf<class AC_Weapon>> WeaponClasses{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TSubclassOf<class AC_ThrowingWeapon> GrenadeWeaponClass{};
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TSubclassOf<class AC_ThrowingWeapon> FlashBangClass{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TSubclassOf<class AC_ThrowingWeapon> SmokeGrenadeClass{};
 
 protected:
 	void SetMainGunOrSubGun(EWeaponSlot InSlot);

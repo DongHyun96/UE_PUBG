@@ -23,7 +23,7 @@ AC_EnemyAIController::AC_EnemyAIController()
 
 	Sight->SightRadius								= 600.f;
 	Sight->LoseSightRadius							= 800.f;
-	Sight->PeripheralVisionAngleDegrees				= 90.f;
+	Sight->PeripheralVisionAngleDegrees				= 360.f;
 	Sight->SetMaxAge(2);											// LoseSight를 넘어갔을 때 2초 있다가 놓침
 	
 	// Affiliation - 소속, 그룹 | 그룹을 설정해서 사용가능

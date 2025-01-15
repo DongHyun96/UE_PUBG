@@ -155,10 +155,10 @@ private: // SkyDiving & Parachuting 자세 speed 관련
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UStaticMeshComponent* ParachuteBackpackStaticMesh{};
+	class UStaticMeshComponent* ParachuteBackpackStaticMeshComponent{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class USkeletalMeshComponent* ParachuteSkeletalMesh{};
+	class USkeletalMeshComponent* ParachuteSkeletalMeshComponent{};
 
 	static const FName PARABACKPACK_SOCKET_NAME;
 	static const FName PARACHUTE_SOCKET_NAME;

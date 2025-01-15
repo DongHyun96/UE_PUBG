@@ -55,7 +55,7 @@ void UC_InvenUiWidget::SetVisibility(ESlateVisibility InVisibility)
 
     AC_PlayerController* PlayerController = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
     //PlayerController->SetIgnoreMoveInput(false);
-    UC_Util::Print(PlayerController->GetCurrentInputModeDebugString(),FColor::Magenta,50.f);
+    //UC_Util::Print(PlayerController->GetCurrentInputModeDebugString(),FColor::Magenta,50.f);
     //PlayerController->SetIgnoreLookInput(false);
     //if (InVisibility == ESlateVisibility::HitTestInvisible) return;
 
@@ -110,8 +110,8 @@ void UC_InvenUiWidget::SetVisibility(ESlateVisibility InVisibility)
     }
 
     //Cast<AC_Player>(OwnerCharacter)->SetPlayerMappingContext();
-
-    UC_Util::Print(PlayerController->GetCurrentInputModeDebugString(), FColor::Black, 50.f);
+    
+    //UC_Util::Print(PlayerController->GetCurrentInputModeDebugString(), FColor::Black, 50.f);
 
     //PlayerController->SetIgnoreMoveInput(false);
 

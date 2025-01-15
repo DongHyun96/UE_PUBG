@@ -34,7 +34,7 @@ AC_BasicCharacter* UC_BehaviorComponent::GetPlayer()
 	return Cast<AC_BasicCharacter>(Blackboard->GetValueAsObject(PlayerKey));
 }
 
-bool UC_BehaviorComponent::ChangeType(EBehaviorType Type)
+bool UC_BehaviorComponent::SetBehaviorType(EBehaviorType Type)
 {
 	if (Type == EBehaviorType::MAX) return false;
 
@@ -42,7 +42,7 @@ bool UC_BehaviorComponent::ChangeType(EBehaviorType Type)
 	return true;
 }
 
-bool UC_BehaviorComponent::ChangeServiceType(EServiceType Type)
+bool UC_BehaviorComponent::SetServiceType(EServiceType Type)
 {
 	if (Type == EServiceType::MAX) return false;
 

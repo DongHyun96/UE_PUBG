@@ -175,6 +175,5 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* TabKeyAction{};
-private:
-	class AC_Weapon* ChangeTestWeapon{};
+
 };
