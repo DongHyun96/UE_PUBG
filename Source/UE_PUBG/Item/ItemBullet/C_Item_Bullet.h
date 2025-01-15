@@ -9,6 +9,14 @@
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class EBulletType : uint8
+{
+	FIVEMM,
+	SEVENMM,
+	NONE
+};
 UCLASS()
 class UE_PUBG_API AC_Item_Bullet : public AC_Item
 {
@@ -22,4 +30,12 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	bool Interaction(AC_BasicCharacter* Character) override;
+	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
+	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
+	void AddBulletStackToCharacter();
+protected:
+	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+
+	EBulletType CurBulletType;
 };

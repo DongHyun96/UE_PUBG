@@ -30,6 +30,8 @@ bool AC_SR::ExecuteReloadMontage()
 {
 	if (!IsValid(OwnerCharacter)) return false;
 	if (SniperReloadMontages.IsEmpty()) return false;
+	if (OwnerCharacter->GetCurrentSevenmmBulletCount() == 0) return false;
+
 	AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
 
 	if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;

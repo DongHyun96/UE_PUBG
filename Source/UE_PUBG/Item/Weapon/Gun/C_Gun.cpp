@@ -33,7 +33,8 @@
 #include "Character/C_Player.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
-
+#include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
@@ -43,6 +44,8 @@
 #include "Item/AttachmentActors/AttachmentActor.h"
 
 #include "Item/Weapon/Gun/C_Bullet.h"
+#include "Item/ItemBullet/C_Item_Bullet.h"
+
 
 //UCameraComponent* AC_Gun::AimSightCamera;
 // Sets default values
@@ -653,8 +656,45 @@ bool AC_Gun::FireBullet()
 
 bool AC_Gun::ReloadBullet()
 {
+	if (CurBulletCount == MaxBulletCount) return false;
+	
 	OwnerCharacter->SetIsReloadingBullet(false);
-	CurBulletCount = MaxBulletCount;
+	int BeforeChangeAmmo = CurBulletCount;
+	int RemainAmmo;
+	int ChangedStack;
+	AC_Item_Bullet* CarryingBullet;
+
+	switch (CurGunBulletType)
+	{
+	case EBulletType::FIVEMM:
+		if (OwnerCharacter->GetCurrentFivemmBulletCount() == 0) return false;
+		CurBulletCount = FMath::Min(MaxBulletCount, OwnerCharacter->GetCurrentFivemmBulletCount());
+		RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
+
+		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("5.56mm Ammo"));
+		ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - RemainAmmo;
+		CarryingBullet->SetItemStack(ChangedStack);
+		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+		return true;
+
+		break;
+	case EBulletType::SEVENMM:
+		if (OwnerCharacter->GetCurrentSevenmmBulletCount() == 0) return false;
+
+		CurBulletCount = FMath::Min(MaxBulletCount, OwnerCharacter->GetCurrentSevenmmBulletCount());
+		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("5.56mm Ammo"));
+		RemainAmmo = - BeforeChangeAmmo + CurBulletCount;
+		ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - RemainAmmo;
+		CarryingBullet->SetItemStack(ChangedStack);
+		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+		return true;
+
+		break;
+	case EBulletType::NONE:
+		break;
+	default:
+		break;
+	}
 	return true;
 }
 
