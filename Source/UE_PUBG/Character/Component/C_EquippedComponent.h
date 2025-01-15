@@ -16,6 +16,8 @@ enum class EWeaponSlot : uint8
 	THROWABLE_WEAPON
 };
 
+enum class EThrowableType : uint8;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_EquippedComponent : public UActorComponent
 {
@@ -130,15 +132,8 @@ public:
 
 
 	TSubclassOf<class AC_Weapon> GetSubclassOfWeapon(EWeaponSlot WeaponSlot) const { return WeaponClasses[WeaponSlot]; }
-
-	TSubclassOf<class AC_ThrowingWeapon> GetGrenadeWeaponClass() const { return GrenadeWeaponClass; }
-	TSubclassOf<class AC_ThrowingWeapon> GetFlashBangWeaponClass () const { return FlashBangClass; }
-	TSubclassOf<class AC_ThrowingWeapon> GetSmokeGrenadeWeaponClass() const { return SmokeGrenadeClass; }
-
-
-	//TSubclassOf<class AC_ThrowingWeapon> GetSubClassOfThrowingWeapon(EThrowableType ThrowableType) const { return ThrowingWeaponClasses[ThrowableType]; }
-
-	//TMap<EThrowableType, TSubclassOf<class AC_ThrowingWeapon>>& GetThrowableClassMap() { return ThrowingWeaponClasses; }
+	
+	TMap<EThrowableType, TSubclassOf<class AC_ThrowingWeapon>>& GetSubclassOfThrowingWeapon() { return ThrowableClasses; }
 
 protected:
 
@@ -169,15 +164,9 @@ protected:
 	// Enemy Weapon setting ¿ë
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EWeaponSlot, TSubclassOf<class AC_Weapon>> WeaponClasses{};
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSubclassOf<class AC_ThrowingWeapon> GrenadeWeaponClass{};
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSubclassOf<class AC_ThrowingWeapon> FlashBangClass{};
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSubclassOf<class AC_ThrowingWeapon> SmokeGrenadeClass{};
+	TMap<EThrowableType, TSubclassOf<class AC_ThrowingWeapon>> ThrowableClasses{};
 
 protected:
 	void SetMainGunOrSubGun(EWeaponSlot InSlot);

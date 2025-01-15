@@ -30,33 +30,6 @@ void AC_Enemy::BeginPlay()
 
 void AC_Enemy::SpawnDefaultWeaponsAndItemsForSelf()
 {
-    // Test용 weapon spawn들
-    /*FActorSpawnParameters Param{};
-    Param.Owner = OwnerCharacter;
-    AC_MeleeWeapon* MeleeTemp = GetWorld()->SpawnActor<AC_MeleeWeapon>(WeaponClasses[EWeaponSlot::MELEE_WEAPON], Param);
-    MeleeTemp->SetOwnerCharacter(OwnerCharacter);
-    MeleeTemp->AttachToHolster(OwnerCharacter->GetMesh());
-
-    SetSlotWeapon(EWeaponSlot::MELEE_WEAPON, MeleeTemp);
-
-    FActorSpawnParameters Param2{};
-    Param2.Owner = OwnerCharacter;
-    AC_Gun* ARTemp = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::MAIN_GUN], Param2);
-    ARTemp->SetOwnerCharacter(OwnerCharacter);
-    ARTemp->AttachToHolster(OwnerCharacter->GetMesh());
-
-    SetSlotWeapon(EWeaponSlot::MAIN_GUN, ARTemp);*/
-
-    /*FActorSpawnParameters Param3{};
-    Param3.Owner = OwnerCharacter;
-    AC_ThrowingWeapon* ThrowTemp = GetWorld()->SpawnActor<AC_ThrowingWeapon>(WeaponClasses[EWeaponSlot::THROWABLE_WEAPON], Param3);
-    ThrowTemp->SetOwnerCharacter(OwnerCharacter);
-    ThrowTemp->AttachToHolster(OwnerCharacter->GetMesh());
-
-    SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, ThrowTemp);*/
-
-    //AC_ThrowingWeapon::InitTestPool(OwnerCharacter, WeaponClasses[EWeaponSlot::THROWABLE_WEAPON], this);
-
     FActorSpawnParameters Param{};
     Param.Owner = this;
 
@@ -76,24 +49,11 @@ void AC_Enemy::SpawnDefaultWeaponsAndItemsForSelf()
     //EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, SubGun);
 
     // Throwable Weapon setting 하기
-    TSubclassOf<AC_ThrowingWeapon> GrenadeClass         = EquippedComponent->GetGrenadeWeaponClass();
-    TSubclassOf<AC_ThrowingWeapon> FlashBangClass       = EquippedComponent->GetFlashBangWeaponClass();
-    TSubclassOf<AC_ThrowingWeapon> SmokeGrenadeClass    = EquippedComponent->GetSmokeGrenadeWeaponClass();
-
-    AC_ThrowingWeapon* ThrowingWeapon = GetWorld()->SpawnActor<AC_ThrowingWeapon>(GrenadeClass, Param);
-    ThrowingWeapon->MoveToSlot(this);
-
-    ThrowingWeapon = GetWorld()->SpawnActor<AC_ThrowingWeapon>(FlashBangClass, Param);
-    ThrowingWeapon->MoveToSlot(this);
-
-    ThrowingWeapon = GetWorld()->SpawnActor<AC_ThrowingWeapon>(SmokeGrenadeClass, Param);
-    ThrowingWeapon->MoveToSlot(this);
-
-    //for (auto& pair : EquippedComponent->GetThrowableClassMap())
-    //{
-    //    AC_ThrowingWeapon* ThrowableWeapon = GetWorld()->SpawnActor<AC_ThrowingWeapon>(pair.Value);
-    //    ThrowableWeapon->MoveToSlot(this);
-    //}
+    for (auto& pair : EquippedComponent->GetSubclassOfThrowingWeapon())
+    {
+        AC_ThrowingWeapon* ThrowWeapon = GetWorld()->SpawnActor<AC_ThrowingWeapon>(pair.Value, Param);
+        ThrowWeapon->MoveToSlot(this);
+    }
 
     // TODO : 다른 Item들 (탄, Consumable item 등등 inven에 넣어두기)
 }
