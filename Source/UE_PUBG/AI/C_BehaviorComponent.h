@@ -51,9 +51,9 @@ public:
 	class AC_BasicCharacter* GetPlayer();
 
 
-	bool ChangeType(EBehaviorType Type);
+	bool SetBehaviorType(EBehaviorType Type);
 
-	bool ChangeServiceType(EServiceType Type);
+	bool SetServiceType(EServiceType Type);
 
 protected:
 

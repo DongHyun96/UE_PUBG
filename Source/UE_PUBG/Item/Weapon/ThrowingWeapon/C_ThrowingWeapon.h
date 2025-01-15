@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "C_ThrowingWeapon.generated.h"
-//#include "C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/ApplicationCore/Public/Mac/MacApplication.h"
-//#include "C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/ApplicationCore/Public/Mac/MacApplication.h"
 
 USTRUCT(BlueprintType)
 struct FThrowProcessMontages
@@ -182,7 +180,7 @@ private:
 	/// 투척류 터치기
 	/// </summary>
 	void Explode();
-
+	
 protected:
 	
 	// Get Predicted Projectile path start location

@@ -40,6 +40,9 @@ const float UC_SkyDivingComponent::MAX_SKYDIVE_JUMP_ALTITUDE = 1e9; // Testing �
 UC_SkyDivingComponent::UC_SkyDivingComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	ParachuteBackpackStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("ParachuteBackpackStaticMeshComponent");
+	ParachuteSkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>("ParachuteSkeletalMeshComponent");
 }
 
 
@@ -47,28 +50,28 @@ void UC_SkyDivingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ParachuteBackpackStaticMesh)
+	if (ParachuteBackpackStaticMeshComponent)
 	{
-		ParachuteBackpackStaticMesh->AttachToComponent
+		ParachuteBackpackStaticMeshComponent->AttachToComponent
 		(
 			OwnerCharacter->GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 			PARABACKPACK_SOCKET_NAME
 		);
 
-		ParachuteBackpackStaticMesh->SetVisibility(false);
+		ParachuteBackpackStaticMeshComponent->SetVisibility(false);
 	}
 	
-	if (ParachuteSkeletalMesh)
+	if (ParachuteSkeletalMeshComponent)
 	{
-		ParachuteSkeletalMesh->AttachToComponent
+		ParachuteSkeletalMeshComponent->AttachToComponent
 		(
 			OwnerCharacter->GetMesh(),
 			FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 			PARACHUTE_SOCKET_NAME
 		);
 
-		ParachuteSkeletalMesh->SetVisibility(false);
+		ParachuteSkeletalMeshComponent->SetVisibility(false);
 	}
 
 	// OwnerPlayer로 Casting 시도
@@ -89,7 +92,7 @@ void UC_SkyDivingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 	OwnerCharacter->GetVelocity().Size();
 
-	if (!IsValid(ParachuteSkeletalMesh) || !IsValid(ParachuteBackpackStaticMesh)) UC_Util::Print("WARNING");
+	if (!IsValid(ParachuteSkeletalMeshComponent) || !IsValid(ParachuteBackpackStaticMeshComponent)) UC_Util::Print("WARNING");
 
 	
 
@@ -208,7 +211,7 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 
 		// TODO : 비행기 위치에 Character spawn(Visibility on) & Player일 경우 MainCamera Player로 다시 잡아주기
 		OwnerCharacter->SetActorHiddenInGame(false);
-		ParachuteBackpackStaticMesh->SetVisibility(true);
+		ParachuteBackpackStaticMeshComponent->SetVisibility(true);
 
 		UCharacterMovementComponent* OwnerMovement = OwnerCharacter->GetCharacterMovement();
 
@@ -250,11 +253,11 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 	}
 	case ESkyDivingState::PARACHUTING:
 	{
-		ParachuteSkeletalMesh->SetVisibility(true);
+		ParachuteSkeletalMeshComponent->SetVisibility(true);
 		VelocityZLerpDest = State_DivingSpeeds[SkyDivingState].BackKeyZSpeed;
 		SkyDivingState = ESkyDivingState::PARACHUTING;
 		OwnerCharacter->PlayAnimMontage(DeployParachuteMontage);
-		ParachuteSkeletalMesh->GetAnimInstance()->Montage_Play(ParachuteDeployMontage);
+		ParachuteSkeletalMeshComponent->GetAnimInstance()->Montage_Play(ParachuteDeployMontage);
 		//ParachuteSkeletalMesh->PlayAnimation()
 
 		// Instruction Key HUD 업데이트
@@ -266,12 +269,12 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 	{
 		// 낙하산 animation
 		//ParachuteSkeletalMesh->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
-		ParachuteSkeletalMesh->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+		ParachuteSkeletalMeshComponent->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 
-		ParachuteSkeletalMesh->GetAnimInstance()->Montage_Play(ParachuteEjectMontage);
+		ParachuteSkeletalMeshComponent->GetAnimInstance()->Montage_Play(ParachuteEjectMontage);
 
 		// 가방 숨기기
-		ParachuteBackpackStaticMesh->SetVisibility(false);
+		ParachuteBackpackStaticMeshComponent->SetVisibility(false);
 
 		OwnerCharacter->PlayAnimMontage(LandingMontage);
 		SkyDivingState = ESkyDivingState::LANDING;
@@ -286,10 +289,10 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 
 void UC_SkyDivingComponent::OnCharacterLandedOnWater()
 {
-	ParachuteSkeletalMesh->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	ParachuteSkeletalMesh->GetAnimInstance()->Montage_Play(ParachuteEjectMontage);
+	ParachuteSkeletalMeshComponent->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	ParachuteSkeletalMeshComponent->GetAnimInstance()->Montage_Play(ParachuteEjectMontage);
 
-	ParachuteBackpackStaticMesh->SetVisibility(false);
+	ParachuteBackpackStaticMeshComponent->SetVisibility(false);
 
 	UCharacterMovementComponent* OwnerMovement = OwnerCharacter->GetCharacterMovement();
 	OwnerMovement->AirControl					= 0.f;
@@ -324,7 +327,7 @@ void UC_SkyDivingComponent::OnLandingMontageEnd()
 
 void UC_SkyDivingComponent::OnParachuteLandingMontageEnd()
 {
-	ParachuteSkeletalMesh->SetVisibility(false);
+	ParachuteSkeletalMeshComponent->SetVisibility(false);
 }
 
 void UC_SkyDivingComponent::LerpPlayerMainCameraArmLength(const float& DeltaTime)

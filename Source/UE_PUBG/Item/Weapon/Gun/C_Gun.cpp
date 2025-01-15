@@ -31,6 +31,7 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/C_Player.h"
+#include "Character/C_Enemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 
@@ -142,8 +143,8 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 {
 
 	if (!IsValid(OwnerCharacter)) return false;
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-	OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::NORIFLE);
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::NORIFLE);
 
 	EBackPackLevel BackPackLevel = OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel();
 
@@ -229,10 +230,11 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 		}
 	}
 	OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-	OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
-	
-	OwnerPlayer->SetRecoilTimelineValues(BulletRPM);
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	{
+		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
+		OwnerPlayer->SetRecoilTimelineValues(BulletRPM);
+	}
 	return AttachToComponent
 	(
 		InParent,
@@ -498,10 +500,11 @@ void AC_Gun::CheckPlayerIsRunning()
 {
 	//Aim Press 혹은 Aim Down 상태일 때 스프린트 실행하면 다시 main 카메라로 돌아가기
 	float NextSpeed = OwnerCharacter->GetNextSpeed();
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-
-	if (NextSpeed > 600 && OwnerPlayer->GetIsAimDown())
-		BackToMainCamera();
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	{
+		if (NextSpeed > 600 && OwnerPlayer->GetIsAimDown())
+			BackToMainCamera();
+	}
 
 
 }
@@ -686,6 +689,10 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	FHitResult HitResult;
 	//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
+	// 동현 주석 : Enemy 총기 BulletDirection에 대한 처리가 필요함)
+	if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
+		return false;
+
 	AController* Controller = OwnerCharacter->GetController();
 	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
 	FVector StartLocation = PlayerCamera->GetCameraLocation();
@@ -824,6 +831,9 @@ void AC_Gun::ShowAndHideWhileAiming()
 	if (!OwnerCharacter) return;
 	if (OwnerCharacter->GetEquippedComponent()->GetCurWeapon() != this) return;
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+
+	if (!IsValid(OwnerPlayer)) return;
+
 	if (!OwnerPlayer->GetIsWatchingSight()) return;
 	FVector StartLocation = AimSightCamera->GetComponentLocation();
 	FVector ForwardVector = AimSightCamera->GetForwardVector() * 15;
