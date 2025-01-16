@@ -46,6 +46,7 @@ private:
 public: // Getters and setters
 
 	class AC_Player* GetPlayer() const { return Player; }
+	class AC_Enemy* GetEnemy() const { return Enemy; }
 
 	class AC_MagneticFieldManager* GetMagneticFieldManager() const { return MagneticFieldManager; }
 	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
@@ -70,6 +71,10 @@ private:
 
 	// 인게임 모든 캐릭터들(Player + Enemies)
 	TArray<class AC_BasicCharacter*> AllCharacters{};
+
+private: // Test용 Enemy
+
+	class AC_Enemy* Enemy{};
 
 private:
 

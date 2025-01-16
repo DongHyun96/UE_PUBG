@@ -355,7 +355,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			SetSpringArmRelativeLocationDest(EPoseState::STAND);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::STAND);
 
-			SetPoseState(EPoseState::STAND);
+			Super::SetPoseState(EPoseState::STAND);
 			return true;
 
 		case EPoseState::CRAWL: // Crawl To Stand
@@ -367,7 +367,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (SwimmingComponent->GetSwimmingState() != ESwimmingState::ON_GROUND)
 			{
-				SetPoseState(EPoseState::STAND);
+				Super::SetPoseState(EPoseState::STAND);
 				return true;
 			}
 
@@ -389,7 +389,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CROUCH);
 
-			SetPoseState(EPoseState::CROUCH);
+			Super::SetPoseState(EPoseState::CROUCH);
 			return true;
 
 		case EPoseState::CRAWL: // Crawl To Crouch

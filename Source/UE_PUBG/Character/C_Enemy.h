@@ -21,6 +21,10 @@ public:
 
 	class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 
+public:
+
+	bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) override;
+
 private:
 
 	/// <summary>
