@@ -472,6 +472,33 @@ void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 	CurVolume -= item->GetAllVolume();
 }
 
+void UC_InvenComponent::DestroyMyItem(AC_Item* DestroyedItem)
+{
+	if (testMyItems.Contains(DestroyedItem->GetItemDatas().ItemName))
+	{
+		TArray<AC_Item*>& ItemArray = testMyItems[DestroyedItem->GetItemDatas().ItemName];
+
+		if (ItemArray.Num() > 0) // 배열에 요소가 있는지 확인
+		{
+			// 마지막 요소 가져오기
+			AC_Item* LastItem = ItemArray.Last();
+
+			if (LastItem)
+			{
+				// 안전하게 Destroy 호출
+				LastItem->Destroy();
+			}
+
+			// 배열에서 마지막 요소 제거
+			ItemArray.RemoveAt(ItemArray.Num() - 1);
+		}
+		else
+		{
+
+		}
+	}
+}
+
 void UC_InvenComponent::GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values)
 {
 	Map.GenerateValueArray(Values);

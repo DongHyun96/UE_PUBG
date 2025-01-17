@@ -190,7 +190,7 @@ public:
 	/// Around -> MyItems로 아이템이 이동할 때, 이미 해당 아이템이 존재할때 ItemStack을 C_Item내에서 Set하는 함수.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	void SetItemStack(uint8 inItemStack) { ItemDatas.ItemCurStack = inItemStack; }
+	void SetItemStack(uint8 inItemStack);// { ItemDatas.ItemCurStack = inItemStack; }
 	
 	/// <summary>
 	/// 플레이어가 아이템을 버릴 때 사용되는 함수.

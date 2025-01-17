@@ -13,5 +13,9 @@ UCLASS()
 class UE_PUBG_API UC_VestSlotWidget : public UC_EquipmentSlotWidget
 {
 	GENERATED_BODY()
-	
+
+public:
+
+	//void UpdateWidget() override;
+
 };

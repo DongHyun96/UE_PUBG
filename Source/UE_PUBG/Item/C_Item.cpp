@@ -4,7 +4,7 @@
 #include "Item/C_Item.h"
 #include "Utility/C_Util.h"
 #include "Character/C_BasicCharacter.h"
-
+#include "Character/Component/C_InvenComponent.h"
 #include "Engine/World.h"
 
 #include "Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
@@ -219,4 +219,14 @@ void AC_Item::DropItem(AC_BasicCharacter* Character)
 
 	//바닥 레이 캐스팅 받아와서 바닥에 아이템 생성하기.
 	this->SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
+}
+
+void AC_Item::SetItemStack(uint8 inItemStack)
+{
+	ItemDatas.ItemCurStack = inItemStack;
+	
+	if (ItemDatas.ItemCurStack == 0)
+	{
+		OwnerCharacter->GetInvenComponent()->DestroyMyItem(this);
+	}
 }

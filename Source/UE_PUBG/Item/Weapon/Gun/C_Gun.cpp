@@ -672,12 +672,32 @@ bool AC_Gun::ReloadBullet()
 	case EBulletType::FIVEMM:
 		if (OwnerCharacter->GetCurrentFivemmBulletCount() == 0) return false;
 		CurBulletCount = FMath::Min(MaxBulletCount, OwnerCharacter->GetCurrentFivemmBulletCount());
-		RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
+		RemainAmmo = CurBulletCount - BeforeChangeAmmo;
 
 		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("5.56mm Ammo"));
-		ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - RemainAmmo;
-		CarryingBullet->SetItemStack(ChangedStack);
-		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+
+		UC_Util::Print(CarryingBullet->GetItemDatas().ItemCurStack);
+
+		if (CarryingBullet->GetItemDatas().ItemCurStack >= RemainAmmo)
+		{
+			ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - (uint8)RemainAmmo;
+
+			OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+
+		}
+		else
+		{
+			//TODO : 인벤에 총알이 없어도 장전으로 넘어감.
+			ChangedStack = 0;
+			OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+
+		}
+		CarryingBullet->SetItemStack((uint8)ChangedStack);
+		//OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+
+		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+			OwnerPlayer->GetInvenSystem()->InitializeList();
+
 		return true;
 
 		break;
@@ -687,9 +707,23 @@ bool AC_Gun::ReloadBullet()
 		CurBulletCount = FMath::Min(MaxBulletCount, OwnerCharacter->GetCurrentSevenmmBulletCount());
 		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("5.56mm Ammo"));
 		RemainAmmo = - BeforeChangeAmmo + CurBulletCount;
-		ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - RemainAmmo;
+
+		UC_Util::Print(CarryingBullet->GetItemDatas().ItemCurStack);
+
+		if (CarryingBullet->GetItemDatas().ItemCurStack >= RemainAmmo)
+		{
+			ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - (uint8)RemainAmmo;
+		}
+		else
+		{
+			ChangedStack = 0;
+		}
 		CarryingBullet->SetItemStack(ChangedStack);
 		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+
+		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+			OwnerPlayer->GetInvenSystem()->InitializeList();
+
 		return true;
 
 		break;
