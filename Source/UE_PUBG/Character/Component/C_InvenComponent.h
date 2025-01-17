@@ -118,6 +118,8 @@ public:
 
 	void RemoveItemToMyList(AC_Item* item);// { testMyItems.Remove(item->GetItemDatas().ItemName); }
 
+	void DestroyMyItem(AC_Item* DestroyedItem);
+
 	//
 	void AddItemToNearList(AC_Item* item) { NearItems.Add(item); }
 	void RemoveItemNearList(AC_Item* item) { NearItems.Remove(item); }
@@ -129,7 +131,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values);
-
+	
 	void SetMyBackPack(AC_BackPack* inBackPack) { MyBackPack = inBackPack; }
 
 	void CheckBackPackOnCharacter();
@@ -157,6 +159,7 @@ public:
 
 	const TMap<FString, TArray<class AC_Item*>>& GetTestMyItems() { return testMyItems; }
 
+	//TMap<FString, TArray<class AC_Item*>> GetTestMyItems() { return testMyItems; }
 	//const TMap<FString, class AC_Item*>& GetTestMyItems() { return testMyItems; }
 
 	TMap<FString, class AC_Item*>& GetTestAroundItems() { return testAroundItems; }

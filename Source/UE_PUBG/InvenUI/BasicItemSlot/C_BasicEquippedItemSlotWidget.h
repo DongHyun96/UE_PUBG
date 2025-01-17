@@ -3,15 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InvenUserInterface/C_BasicUserWidget.h"
+#include "InvenUI/C_CustomUserWidget.h"
 #include "C_BasicEquippedItemSlotWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_BasicEquippedItemSlotWidget : public UC_BasicUserWidget
+class UE_PUBG_API UC_BasicEquippedItemSlotWidget : public UC_CustomUserWidget
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void UpdateWidget();
 };

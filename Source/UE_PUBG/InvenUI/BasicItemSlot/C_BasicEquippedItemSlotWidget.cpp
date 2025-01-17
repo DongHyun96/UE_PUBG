@@ -3,3 +3,6 @@
 
 #include "InvenUI/BasicItemSlot/C_BasicEquippedItemSlotWidget.h"
 
+void UC_BasicEquippedItemSlotWidget::UpdateWidget()
+{
+}
