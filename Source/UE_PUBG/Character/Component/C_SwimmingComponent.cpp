@@ -308,7 +308,8 @@ void UC_SwimmingComponent::StartSwimming()
 	UC_Util::Print("Start Swimming", FColor::Red, 10.f);
 
 	// SkyDiving Parachuting state 도중 물로 착지했을 때의 예외처리
-	OwnerCharacter->GetSkyDivingComponent()->OnCharacterLandedOnWater();
+	if (OwnerCharacter->GetMainState() == EMainState::SKYDIVING)
+		OwnerCharacter->GetSkyDivingComponent()->OnCharacterLandedOnWater();
 
 	OwnerCharacter->GetPhysicsVolume()->bWaterVolume = true;
 	OwnerCharacter->SetCanMove(true);
@@ -322,6 +323,12 @@ void UC_SwimmingComponent::StartSwimming()
 
 	// Player의 HUD 업데이트
 	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetOxygenWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+	// Pawn과의 충돌 block 끄기 (Pawn과의 충돌처리를 하면서 물 밖으로 나가버릴 수 있는 버그가 있음)
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+	OwnerCharacter->GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	OwnerCharacter->GetMesh()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
 }
 
 void UC_SwimmingComponent::StopSwimming()
@@ -333,6 +340,12 @@ void UC_SwimmingComponent::StopSwimming()
 	OwnerCharacter->GetPoseColliderHandlerComponent()->SetColliderBySwimmingMovingState(false);
 
 	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetOxygenWidget()->SetVisibility(ESlateVisibility::Hidden);
+
+	// Pawn과의 충돌 다시 켜주기
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
+	OwnerCharacter->GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	OwnerCharacter->GetMesh()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
 }
 
 float UC_SwimmingComponent::GetWaterDepth(const FVector& Position)
@@ -344,13 +357,26 @@ float UC_SwimmingComponent::GetWaterDepth(const FVector& Position)
 	OwnerCharacter->GetAttachedActors(AttachedActors);
 	CollisionParams.AddIgnoredActors(AttachedActors);
 
+	// ObjectQueryParams 설정 (Pawn 채널 무시)
+	FCollisionObjectQueryParams ObjectQueryParams{};
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+
 	// OwnerCharacter의 현재 위치의 수심 체크하기
 	FHitResult HitResult{};
 	FVector CharacterLocation	= OwnerCharacter->GetActorLocation();
 	FVector StartLocation		= FVector(CharacterLocation.X, CharacterLocation.Y, EnteredWaterZ);
 	FVector DestLocation		= FVector(CharacterLocation.X, CharacterLocation.Y, EnteredWaterZ - 10000); // 100m 밑까지 수심 체크
 
-	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECC_Visibility, CollisionParams);
+	//bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECC_WorldStatic, CollisionParams);
+
+	bool HasHit = GetWorld()->LineTraceSingleByObjectType
+	(
+		HitResult,
+		StartLocation,
+		DestLocation,
+		ObjectQueryParams,
+		CollisionParams
+	);
 
 	return (!HasHit) ? 0.f : HitResult.Distance;
 }
@@ -364,12 +390,25 @@ float UC_SwimmingComponent::GetCharacterDepth()
 	OwnerCharacter->GetAttachedActors(AttachedActors);
 	CollisionParams.AddIgnoredActors(AttachedActors);
 
+	// ObjectQueryParams 설정
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+
 	// OwnerCharacter의 현재 위치의 수심 체크하기
 	FHitResult HitResult{};
 	FVector StartLocation		= WaterDetectionCollider->GetComponentLocation();
 	FVector DestLocation		= FVector(StartLocation.X, StartLocation.Y, StartLocation.Z - 10000.f); // 100m 밑까지 수심 체크
 
-	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECC_Visibility, CollisionParams);
+	//bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECC_WorldStatic, CollisionParams);
+
+	bool HasHit = GetWorld()->LineTraceSingleByObjectType
+	(
+		HitResult,
+		StartLocation,
+		DestLocation,
+		ObjectQueryParams,
+		CollisionParams
+	);
 
 	return (!HasHit) ? 0.f : HitResult.Distance;
 

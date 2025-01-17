@@ -30,7 +30,9 @@ void AC_AR::Tick(float DeltaTime)
 
 bool AC_AR::ExecuteReloadMontage()
 {
-	if (CurBulletCount > 0)
+	if (!OwnerCharacter) return false;
+	if (OwnerCharacter->GetCurrentFivemmBulletCount() == 0) return false;
+	if (CurBulletCount == MaxBulletCount)
 	{
 		return false;
 	}

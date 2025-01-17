@@ -5,6 +5,7 @@
 
 #include "EngineUtils.h"
 #include "Character/C_Player.h"
+#include "Character/C_Enemy.h"
 #include "MagneticField/C_MagneticFieldManager.h"
 #include "Airplane/C_AirplaneManager.h"
 #include "Utility/C_Util.h"
@@ -22,9 +23,13 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 
+	int DoorCount{};
+
 	// Level에 배치된 Actor들의 BeginPlay 호출되기 이전에 객체 초기화
 	for (FActorIterator Actor(&InWorld); Actor; ++Actor)
 	{
+		if (AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(*Actor)) AllCharacters.Add(Character);
+
 		if (AC_Player* P = Cast<AC_Player>(*Actor))
 		{
 			Player = P;
@@ -33,13 +38,19 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 			HUDWidgets.Add(EHUDMode::INVEN,   Player->GetInvenSystem()->GetInvenUI());
 			HUDWidgets.Add(EHUDMode::MAINMAP, Player->GetHUDWidget()->GetMainMapWidget());
 			MiniMapWidget = Player->GetHUDWidget()->GetMiniMapWidget();
-
-			//UC_Util::Print(Player, FColor::Red, 10.f);
-			AllCharacters.Add(Player); // TODO : AllCharacters Enemy들 add시키기
 		}
+
+		if (AC_Enemy* E = Cast<AC_Enemy>(*Actor)) Enemy = E;
 
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;
 		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor)) AirplaneManager = AP_Manager;
+
+		// 모든 문 확인해서 Enemy Nav 수정
+		//if (Actor->GetName().Contains(TEXT("Door")))
+		//{
+		//
+		//}
+			
 	}
 }
 

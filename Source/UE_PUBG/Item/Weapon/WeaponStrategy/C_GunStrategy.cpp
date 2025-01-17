@@ -45,15 +45,15 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	if (CurWeapon->GetIsPartAttached(EPartsName::GRIP))
-	{
-		WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);
-		WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::MUZZLE, EAttachmentNames::COMPENSATOR);
-		return true;
-	}
-	WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);
-	WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::MUZZLE, EAttachmentNames::COMPENSATOR);
-	//CurWeapon->ExecuteReloadMontage();
+	//if (CurWeapon->GetIsPartAttached(EPartsName::GRIP))
+	//{
+	//	WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);
+	//	WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::MUZZLE, EAttachmentNames::COMPENSATOR);
+	//	return true;
+	//}
+	//WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);
+	//WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::MUZZLE, EAttachmentNames::COMPENSATOR);
+	CurWeapon->ExecuteReloadMontage();
 	return false;
 }
 
@@ -73,11 +73,15 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	MlbPressTimeCount = 0;
 	if (CurWeapon->GetCurBulletCount() < CurWeapon->GetMaxBulletCount() && CurWeapon->GetCurBulletCount() > 0)
 	{
-		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SEMI_AUTO && !CurPlayer->GetIsAimDown())
+		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SEMI_AUTO && !CurPlayer->GetIsAimDown() && CurWeapon->GetGunType() == EGunType::SR)
 			CurWeapon->ExecuteReloadMontage();
 	}
-	else if(CurWeapon->GetCurBulletCount() == 0)
+	else if (CurWeapon->GetCurBulletCount() == 0)
+	{
+
 		CurWeapon->ExecuteReloadMontage();
+		return false;
+	}
 
 	return CurWeapon->FireBullet();
 }
@@ -101,7 +105,10 @@ bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	{
 		MlbPressTimeCount -= CurWeapon->GetBulletRPM();
 		if (CurWeapon->GetCurBulletCount() == 0)
+		{
 			CurWeapon->ExecuteReloadMontage();
+			return false;
+		}
 		CurWeapon->FireBullet();
 	}
 	return true;
@@ -142,7 +149,7 @@ bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 		return false;
 	}
 	CurWeapon->SetAimingPress();
-	UC_Util::Print("Mrb Clicked");
+	//UC_Util::Print("Mrb Clicked");
 
 
 

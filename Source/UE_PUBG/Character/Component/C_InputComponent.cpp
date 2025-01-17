@@ -18,6 +18,8 @@
 #include "Components/ActorComponent.h"
 #include "Components/CapsuleComponent.h"
 
+#include "Character/C_Enemy.h"
+
 #include "UE_PUBG/Character/C_Player.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -611,9 +613,15 @@ void UC_InputComponent::OnFKey()
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 	{
 		if (Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
+		{
 			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING);
+			GAMESCENE_MANAGER->GetEnemy()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING); // TODO : 이 라인 지우기
+		}
 		else if (Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::SKYDIVING)
+		{
 			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING);
+			GAMESCENE_MANAGER->GetEnemy()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING); // TODO : 이 라인 지우기
+		}
 		return;
 	}
 
@@ -649,13 +657,6 @@ void UC_InputComponent::OnFKey()
 
 void UC_InputComponent::OnNKey()
 {
-	static bool Flag{};
-	
-	if (!Flag) ChangeTestWeapon = Player->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
-	else Player->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, ChangeTestWeapon);
-	
-	Flag = !Flag;
-
 	Player->GetHUDWidget()->ToggleMiniMapEnlarged();
 }
 

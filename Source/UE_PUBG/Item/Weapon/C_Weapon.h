@@ -6,10 +6,10 @@
 #include "UE_PUBG/Item/C_Item.h"
 #include "GameFramework/Actor.h"
 #include "Character/C_BasicCharacter.h"
-#include "Character/Component/C_EquippedComponent.h"
 
 #include "C_Weapon.generated.h"
 
+enum class EWeaponSlot : uint8;
 
 UCLASS(Abstract)
 class UE_PUBG_API AC_Weapon : public AC_Item

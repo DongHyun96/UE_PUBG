@@ -94,9 +94,9 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 			//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
 			//PlayerController->SetIgnoreMoveInput(false); // 이동 허용
 			//return FReply::Unhandled();
-		
 
 			return FReply::Handled();
+			//return FReply::Unhandled();
 
 		}
 	}
@@ -121,7 +121,7 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 //	}
 //
 //	// 다른 키 입력은 기본 처리로 넘어감
-//	return Super::NativeOnKeyDown(MyGeometry, InKeyEvent);
+//	return FReply::Unhandled(); //Super::NativeOnKeyDown(MyGeometry, InKeyEvent);
 //}
 
 void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
@@ -182,11 +182,21 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	UC_Util::Print("OnDragDetected!!");
 
 	OutOperation = DragOperation;
+
+	PlayerController->SetInputMode
+	(
+		FInputModeGameAndUI()
+		.SetWidgetToFocus(nullptr)
+		.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock)
+		.SetHideCursorDuringCapture(false)
+	);
+	PlayerController->bShowMouseCursor = true;
+	PlayerController->SetIgnoreLookInput(true);
 }
 
 FReply UC_ItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
+	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
 	//PlayerController->SetIgnoreMoveInput(false); // 이동 허용
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
@@ -205,6 +215,15 @@ FReply UC_ItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeome
 			//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
 			//PlayerController->SetIgnoreMoveInput(false); // 이동 허용
 			//PlayerController->GetCurrentInputModeDebugString();
+			PlayerController->SetInputMode
+			(
+				FInputModeGameAndUI()
+				.SetWidgetToFocus(nullptr)
+				.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock)
+				.SetHideCursorDuringCapture(false)
+			);
+			PlayerController->bShowMouseCursor = true;
+			PlayerController->SetIgnoreLookInput(true);
 
 			return RePlyResult.NativeReply;
 

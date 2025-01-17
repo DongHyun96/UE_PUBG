@@ -59,7 +59,8 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 		Airplane->StartFlight();
 		HasAirplaneTakeOff = true;
 
-		GAMESCENE_MANAGER->GetAllCharacters();
+		//GAMESCENE_MANAGER->GetPlayer()->SetMainState(EMainState::SKYDIVING);
+		//GAMESCENE_MANAGER->GetPlayer()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::READY);
 		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
 		{
 			Character->SetMainState(EMainState::SKYDIVING);

@@ -6,6 +6,8 @@
 #include "Character/C_BasicCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+#include "Service/C_BTServiceIdle.h"
+
 
 UC_BehaviorComponent::UC_BehaviorComponent()
 {
@@ -34,7 +36,7 @@ AC_BasicCharacter* UC_BehaviorComponent::GetPlayer()
 	return Cast<AC_BasicCharacter>(Blackboard->GetValueAsObject(PlayerKey));
 }
 
-bool UC_BehaviorComponent::ChangeType(EBehaviorType Type)
+bool UC_BehaviorComponent::SetBehaviorType(EBehaviorType Type)
 {
 	if (Type == EBehaviorType::MAX) return false;
 
@@ -42,11 +44,20 @@ bool UC_BehaviorComponent::ChangeType(EBehaviorType Type)
 	return true;
 }
 
-bool UC_BehaviorComponent::ChangeServiceType(EServiceType Type)
+bool UC_BehaviorComponent::SetServiceType(EServiceType Type)
 {
 	if (Type == EServiceType::MAX) return false;
 
 	Blackboard->SetValueAsEnum(ServiceKey, (uint8)Type);
 	return true;
+}
+
+bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
+{
+	if (Type == EIdleTaskType::MAX) return false;
+
+	Blackboard->SetValueAsEnum(IdleTaskKey, (uint8)Type);
+
+	return false;
 }
 

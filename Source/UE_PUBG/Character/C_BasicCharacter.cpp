@@ -372,3 +372,13 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 
 	return true;
 }
+
+void AC_BasicCharacter::AddSevenmmBulletStack(int inBulletCount)
+{
+	SevenmmBulletCount += inBulletCount;
+}
+
+void AC_BasicCharacter::AddFivemmBulletStack(int inBulletCount)
+{
+	FivemmBulletCount += inBulletCount;
+}

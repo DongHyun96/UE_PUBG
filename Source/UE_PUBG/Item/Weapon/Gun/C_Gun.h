@@ -9,6 +9,7 @@
 #include "Containers/Array.h"
 #include "Templates/Tuple.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Item/ItemBullet/C_Item_Bullet.h"
 #include "C_Gun.generated.h"
 
 UENUM(BlueprintType)
@@ -223,6 +224,7 @@ protected:
 	class AC_AttachableItem* Magazine{};
 
 	void LoadMagazine();
+	EBulletType CurGunBulletType;
 
 public:
 	void SetMagazineVisibility(bool InIsVisible);

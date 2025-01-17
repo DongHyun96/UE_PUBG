@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "C_EquippedComponent.generated.h"
 
-
 UENUM(BlueprintType)
 enum class EWeaponSlot : uint8
 {
@@ -16,6 +15,8 @@ enum class EWeaponSlot : uint8
 	MELEE_WEAPON,
 	THROWABLE_WEAPON
 };
+
+enum class EThrowableType : uint8;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_EquippedComponent : public UActorComponent
@@ -127,6 +128,12 @@ private:
 	/// </summary>
 	void SpawnWeaponsForTesting();
 
+public:
+
+
+	TSubclassOf<class AC_Weapon> GetSubclassOfWeapon(EWeaponSlot WeaponSlot) const { return WeaponClasses[WeaponSlot]; }
+	
+	TMap<EThrowableType, TSubclassOf<class AC_ThrowingWeapon>>& GetSubclassOfThrowingWeapon() { return ThrowableClasses; }
 
 protected:
 
@@ -154,9 +161,12 @@ protected:
 
 protected:
 
-	// Weapon Test ¿ë
+	// Enemy Weapon setting ¿ë
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EWeaponSlot, TSubclassOf<class AC_Weapon>> WeaponClasses{};
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EThrowableType, TSubclassOf<class AC_ThrowingWeapon>> ThrowableClasses{};
 
 protected:
 	void SetMainGunOrSubGun(EWeaponSlot InSlot);

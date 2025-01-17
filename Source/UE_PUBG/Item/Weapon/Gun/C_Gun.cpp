@@ -31,9 +31,11 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/C_Player.h"
+#include "Character/C_Enemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
-
+#include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
@@ -43,6 +45,8 @@
 #include "Item/AttachmentActors/AttachmentActor.h"
 
 #include "Item/Weapon/Gun/C_Bullet.h"
+#include "Item/ItemBullet/C_Item_Bullet.h"
+
 
 //UCameraComponent* AC_Gun::AimSightCamera;
 // Sets default values
@@ -142,8 +146,8 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 {
 
 	if (!IsValid(OwnerCharacter)) return false;
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-	OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::NORIFLE);
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::NORIFLE);
 
 	EBackPackLevel BackPackLevel = OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel();
 
@@ -229,10 +233,11 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 		}
 	}
 	OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-	OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
-	
-	OwnerPlayer->SetRecoilTimelineValues(BulletRPM);
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	{
+		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
+		OwnerPlayer->SetRecoilTimelineValues(BulletRPM);
+	}
 	return AttachToComponent
 	(
 		InParent,
@@ -498,10 +503,11 @@ void AC_Gun::CheckPlayerIsRunning()
 {
 	//Aim Press 혹은 Aim Down 상태일 때 스프린트 실행하면 다시 main 카메라로 돌아가기
 	float NextSpeed = OwnerCharacter->GetNextSpeed();
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-
-	if (NextSpeed > 600 && OwnerPlayer->GetIsAimDown())
-		BackToMainCamera();
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	{
+		if (NextSpeed > 600 && OwnerPlayer->GetIsAimDown())
+			BackToMainCamera();
+	}
 
 
 }
@@ -653,8 +659,60 @@ bool AC_Gun::FireBullet()
 
 bool AC_Gun::ReloadBullet()
 {
+	if (CurBulletCount == MaxBulletCount) return false;
+	
 	OwnerCharacter->SetIsReloadingBullet(false);
-	CurBulletCount = MaxBulletCount;
+	int BeforeChangeAmmo = CurBulletCount;
+	UC_Util::Print(BeforeChangeAmmo);
+	int RemainAmmo;
+	int ChangedStack;
+	AC_Item_Bullet* CarryingBullet;
+
+	switch (CurGunBulletType)
+	{
+	case EBulletType::FIVEMM:
+		if (OwnerCharacter->GetCurrentFivemmBulletCount() == 0) return false;
+
+		CurBulletCount = FMath::Min(MaxBulletCount, CurBulletCount+OwnerCharacter->GetCurrentFivemmBulletCount());
+
+		RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
+
+		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("5.56mm Ammo"));
+		ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - RemainAmmo;
+		
+		CarryingBullet->SetItemStack(ChangedStack);
+		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+
+		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+			OwnerPlayer->GetInvenSystem()->InitializeList();
+
+		return true;
+
+		break;
+	case EBulletType::SEVENMM:
+		if (OwnerCharacter->GetCurrentSevenmmBulletCount() == 0) return false;
+
+		CurBulletCount = FMath::Min(MaxBulletCount, CurBulletCount + OwnerCharacter->GetCurrentFivemmBulletCount());
+
+		RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
+
+		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("5.56mm Ammo"));
+		ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - RemainAmmo;
+
+		CarryingBullet->SetItemStack(ChangedStack);
+		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+
+		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+			OwnerPlayer->GetInvenSystem()->InitializeList();
+
+		return true;
+
+		break;
+	case EBulletType::NONE:
+		break;
+	default:
+		break;
+	}
 	return true;
 }
 
@@ -685,6 +743,10 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 {
 	FHitResult HitResult;
 	//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+
+	// 동현 주석 : Enemy 총기 BulletDirection에 대한 처리가 필요함)
+	if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
+		return false;
 
 	AController* Controller = OwnerCharacter->GetController();
 	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
@@ -824,6 +886,9 @@ void AC_Gun::ShowAndHideWhileAiming()
 	if (!OwnerCharacter) return;
 	if (OwnerCharacter->GetEquippedComponent()->GetCurWeapon() != this) return;
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+
+	if (!IsValid(OwnerPlayer)) return;
+
 	if (!OwnerPlayer->GetIsWatchingSight()) return;
 	FVector StartLocation = AimSightCamera->GetComponentLocation();
 	FVector ForwardVector = AimSightCamera->GetForwardVector() * 15;

@@ -10,6 +10,7 @@ UENUM(BlueprintType)
 enum class EServiceType : uint8
 {
 	IDLE,
+	SKYDIVE,
 	COMBAT,
 	FARMING,
 	STAT_CARE,
@@ -29,6 +30,7 @@ enum class EBehaviorType : uint8
 	MAX
 };
 
+enum class EIdleTaskType : uint8;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_BehaviorComponent : public UActorComponent
@@ -51,9 +53,11 @@ public:
 	class AC_BasicCharacter* GetPlayer();
 
 
-	bool ChangeType(EBehaviorType Type);
+	bool SetBehaviorType(EBehaviorType Type);
 
-	bool ChangeServiceType(EServiceType Type);
+	bool SetServiceType(EServiceType Type);
+
+	bool SetIdleTaskType(EIdleTaskType Type);
 
 protected:
 
@@ -65,7 +69,11 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName PlayerKey = "Player";
-	
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FName IdleTaskKey = "IdleTask";
 
 private:
 	class UBlackboardComponent* Blackboard{};

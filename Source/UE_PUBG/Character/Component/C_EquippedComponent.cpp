@@ -174,11 +174,14 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
         }
     }
     //총을 들고 Aiming 중일 때 카메라 다시 원래대로 전환
-    if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
+    if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
     {
-        AC_Gun* TempWeapon = Cast<AC_Gun>(Weapons[CurWeaponType]);
-        if (IsValid(TempWeapon))
-            TempWeapon->BackToMainCamera();
+        if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
+        {
+            AC_Gun* TempWeapon = Cast<AC_Gun>(Weapons[CurWeaponType]);
+            if (IsValid(TempWeapon))
+                TempWeapon->BackToMainCamera();
+        }
     }
 
     OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환

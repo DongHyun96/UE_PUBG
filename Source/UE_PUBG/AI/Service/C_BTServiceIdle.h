@@ -6,6 +6,15 @@
 #include "BehaviorTree/BTService.h"
 #include "C_BTServiceIdle.generated.h"
 
+UENUM(BlueprintType)
+enum class EIdleTaskType : uint8
+{
+	WAIT,
+	BASIC_MOVETO,
+	CHANGE_POSE,
+	MAX
+};
+
 /**
  * 
  */

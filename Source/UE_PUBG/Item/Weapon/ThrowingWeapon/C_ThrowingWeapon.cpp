@@ -55,6 +55,16 @@ const TMap<EThrowableType, FString> AC_ThrowingWeapon::THROWABLETYPE_ITEMNAME_MA
 
 USkeletalMeshComponent* AC_ThrowingWeapon::OwnerMeshTemp{};
 
+const TMap<EThrowableType, FName> AC_ThrowingWeapon::EQUIPPED_SOCKET_NAMES =
+{
+	{EThrowableType::GRENADE,		"GrenadeEquipped"},
+	{EThrowableType::FLASH_BANG,	"FlashBangEquipped"},
+	{EThrowableType::SMOKE,			"SmokeEquipped"}
+};
+
+const FName AC_ThrowingWeapon::HOLSTER_SOCKET_NAME		= "Throwable_Holster";
+const FName AC_ThrowingWeapon::THROW_START_SOCKET_NAME	= "Throwable_ThrowStart";
+
 AC_ThrowingWeapon::AC_ThrowingWeapon()
 {
 	WeaponButtonStrategy = CreateDefaultSubobject<AC_ThrowingWeaponStrategy>("ThrowingWeaponStrategy");
@@ -193,7 +203,7 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 	(
 		InParent,
 		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
-		EQUIPPED_SOCKET_NAME
+		EQUIPPED_SOCKET_NAMES[ThrowableType]
 	);
 }
 
@@ -836,12 +846,6 @@ void AC_ThrowingWeapon::OnThrowThrowable()
 
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
-	//ECollisionResponse Response = Collider->GetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic);
-
-	//if (Response == ECollisionResponse::ECR_Block)
-	//	UC_Util::Print("Response Block", FColor::Red, 10.f);
-
-
 	this->SetActorLocation(ProjStartLocation);
 	
 	ProjectileMovement->Velocity = ProjLaunchVelocity;
@@ -1164,7 +1168,7 @@ void AC_ThrowingWeapon::HandlePredictedPath()
 	if (!IsValid(Player)) return;
 
 	// 현재 OwnerCharacter의 손에 장착된 상황인지 확인
-	if (!IsValid(this->GetAttachParentActor()) || this->GetAttachParentSocketName() != EQUIPPED_SOCKET_NAME) return;
+	if (!IsValid(this->GetAttachParentActor()) || this->GetAttachParentSocketName() != EQUIPPED_SOCKET_NAMES[ThrowableType]) return;
 
 	if (!OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(CurThrowProcessMontages.ThrowReadyMontage.AnimMontage))
 		return;
@@ -1195,22 +1199,6 @@ void AC_ThrowingWeapon::OnOwnerCharacterPoseTransitionFin()
 		OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
 		return;
 	}
-
-
-	//CurDrawMontage = DrawMontages[OwnerCharacter->GetPoseState()];
-
-	//// ThrowProcessEnd 이후 OnDrawEnd가 제대로 호출이 안되었을 경우
-	//// 조건식이 안걸릴 때가 있음
-	//if (
-	//	OwnerCharacter->GetHandState() == EHandState::WEAPON_THROWABLE &&
-	//	OwnerCharacter->GetEquippedComponent()->GetNextWeaponType() != EWeaponSlot::NONE //&&
-	//	//!OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(CurDrawMontage.AnimMontage)
-	//	)
-	//{
-	//	UC_Util::Print("Call OnDrawEnd Manually", FColor::Cyan, 5.f);
-	//	OwnerCharacter->GetEquippedComponent()->OnDrawEnd();
-	//}
-
 }
 
 void AC_ThrowingWeapon::ClearSpline()

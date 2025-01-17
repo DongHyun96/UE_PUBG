@@ -44,6 +44,7 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void SetPlayerMappingContext();
 private:
 
 	/// <summary>
@@ -79,10 +80,6 @@ public: // Getters and setters
 
 	class UC_CameraEffectComponent* GetCameraEffectComponent() const { return CameraEffectComponent; }
 
-
-
-private:
-	void SetPoseState(EPoseState InPoseState) { Super::SetPoseState(InPoseState); }
 
 	void SetCanFireWhileCrawl();
 public:
