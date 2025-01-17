@@ -31,7 +31,7 @@ enum class EThrowableType : uint8
 };
 
 /**
- * 
+ *
  */
 UCLASS()
 class UE_PUBG_API AC_ThrowingWeapon : public AC_Weapon
@@ -70,14 +70,14 @@ private:
 
 	//void SetItemStack(uint8 ItemStack) override;
 
-	void EquipToCharacter(AC_BasicCharacter* Character);	
-//protected:
-	/// <summary>
-	/// 해당 아이템(객체)를 얼마나 인벤에 넣을 수 있는지 계산해서 넣는다. -> 일부만 넣는 경우에는 인벤에 넣을 때 Spawn을 통해 새로운 객체를 만들어 
-	/// 갯수를 설정해주고 원본의 갯수도 수정. (원본stack = 수정된 원본의 stack + 생성객체의 stack)
-	/// </summary>
-	/// <param name="Character"></param>
-	/// <returns></returns>
+	void EquipToCharacter(AC_BasicCharacter* Character);
+	//protected:
+		/// <summary>
+		/// 해당 아이템(객체)를 얼마나 인벤에 넣을 수 있는지 계산해서 넣는다. -> 일부만 넣는 경우에는 인벤에 넣을 때 Spawn을 통해 새로운 객체를 만들어 
+		/// 갯수를 설정해주고 원본의 갯수도 수정. (원본stack = 수정된 원본의 stack + 생성객체의 stack)
+		/// </summary>
+		/// <param name="Character"></param>
+		/// <returns></returns>
 	bool LegacyMoveToInven(AC_BasicCharacter* Character) override;
 
 	/// <summary>
@@ -180,9 +180,9 @@ private:
 	/// 투척류 터치기
 	/// </summary>
 	void Explode();
-	
+
 protected:
-	
+
 	// Get Predicted Projectile path start location
 	UFUNCTION(BlueprintCallable)
 	FVector GetPredictedThrowStartLocation();
@@ -220,11 +220,10 @@ protected:
 
 protected:
 
-	const FName EQUIPPED_SOCKET_NAME = "Throwable_Equip";
-	const FName HOLSTER_SOCKET_NAME = "Throwable_Holster";
+	static const TMap<EThrowableType, FName> EQUIPPED_SOCKET_NAMES;
 
-	// TODO : crawl은 또 다른 socket 위치를 사용해야 함
-	const FName THROW_START_SOCKET_NAME = "Throwable_ThrowStart";
+	static const FName HOLSTER_SOCKET_NAME;
+	static const FName THROW_START_SOCKET_NAME;
 
 protected:
 
@@ -276,7 +275,7 @@ protected: // Predicted Path 관련
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UStaticMeshComponent* PredictedEndPoint{};
-	
+
 	TArray<class USplineMeshComponent*> SplineMeshes{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -291,20 +290,20 @@ private:
 	static int ThrowingWeaponCount;
 
 private:
-	
+
 	bool bIsCooked{};
 
-	struct FTimerHandle TimerHandle{};
+	struct FTimerHandle TimerHandle {};
 
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	float CookingTime = 5.f;
 
-//protected:
-//
-//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-//	TScriptInterface<class II_ExplodeStrategy> ExplodeStrategy{};
+	//protected:
+	//
+	//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	//	TScriptInterface<class II_ExplodeStrategy> ExplodeStrategy{};
 
 private:
 

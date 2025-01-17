@@ -6,6 +6,10 @@
 #include "AI/C_EnemyAIController.h"
 #include "AI/C_BehaviorComponent.h"
 
+#include "Character/C_Enemy.h"
+
+#include "Character/Component/C_SkyDivingComponent.h"
+
 #include "Utility/C_Util.h"
 
 UC_BTServiceStateMachine::UC_BTServiceStateMachine()
@@ -18,9 +22,20 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 
 	//AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
 
-	if (!IsValid(OwnerController)) OwnerController = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
-	if (!IsValid(OwnerBehaviorComponent)) OwnerBehaviorComponent = OwnerController->GetBehaviorComponent();
+	if (!IsValid(OwnerController))
+	{
+		OwnerController			= Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
+		OwnerEnemy				= Cast<AC_Enemy>(OwnerController->GetPawn());
+		OwnerBehaviorComponent	= OwnerController->GetBehaviorComponent();
+	}
 
-	// TODO : 총괄 FSM 및 기타 Main 처리 담당하기
-	OwnerBehaviorComponent->SetServiceType(EServiceType::COMBAT);
+	// 총괄 FSM 및 기타 Main 처리 담당하기
+	if (OwnerEnemy->GetMainState() == EMainState::SKYDIVING)
+		OwnerBehaviorComponent->SetServiceType(EServiceType::SKYDIVE);
+
+	// Testing Pose Transition
+
+
+
+		
 }

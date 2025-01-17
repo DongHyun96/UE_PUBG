@@ -4,28 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "C_BTServiceIdle.generated.h"
-
-UENUM(BlueprintType)
-enum class EIdleTaskType : uint8
-{
-	WAIT,
-	BASIC_MOVETO,
-	CHANGE_POSE,
-	MAX
-};
+#include "C_BTServiceSkyDive.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_BTServiceIdle : public UBTService
+class UE_PUBG_API UC_BTServiceSkyDive : public UBTService
 {
 	GENERATED_BODY()
 
 public:
 
-	UC_BTServiceIdle();
+	UC_BTServiceSkyDive();
 
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	

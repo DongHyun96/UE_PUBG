@@ -22,6 +22,7 @@ public:
 	
 private:
 
+	class AC_Enemy*				OwnerEnemy{};
 	class AC_EnemyAIController* OwnerController{};
 	class UC_BehaviorComponent* OwnerBehaviorComponent{};
 
