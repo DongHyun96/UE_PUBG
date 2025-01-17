@@ -73,11 +73,15 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	MlbPressTimeCount = 0;
 	if (CurWeapon->GetCurBulletCount() < CurWeapon->GetMaxBulletCount() && CurWeapon->GetCurBulletCount() > 0)
 	{
-		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SEMI_AUTO && !CurPlayer->GetIsAimDown())
+		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SEMI_AUTO && !CurPlayer->GetIsAimDown() && CurWeapon->GetGunType() == EGunType::SR)
 			CurWeapon->ExecuteReloadMontage();
 	}
-	else if(CurWeapon->GetCurBulletCount() == 0)
+	else if (CurWeapon->GetCurBulletCount() == 0)
+	{
+
 		CurWeapon->ExecuteReloadMontage();
+		return false;
+	}
 
 	return CurWeapon->FireBullet();
 }
@@ -101,7 +105,10 @@ bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	{
 		MlbPressTimeCount -= CurWeapon->GetBulletRPM();
 		if (CurWeapon->GetCurBulletCount() == 0)
+		{
 			CurWeapon->ExecuteReloadMontage();
+			return false;
+		}
 		CurWeapon->FireBullet();
 	}
 	return true;
@@ -142,7 +149,7 @@ bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 		return false;
 	}
 	CurWeapon->SetAimingPress();
-	UC_Util::Print("Mrb Clicked");
+	//UC_Util::Print("Mrb Clicked");
 
 
 

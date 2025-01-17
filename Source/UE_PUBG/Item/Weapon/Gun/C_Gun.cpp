@@ -663,6 +663,7 @@ bool AC_Gun::ReloadBullet()
 	
 	OwnerCharacter->SetIsReloadingBullet(false);
 	int BeforeChangeAmmo = CurBulletCount;
+	UC_Util::Print(BeforeChangeAmmo);
 	int RemainAmmo;
 	int ChangedStack;
 	AC_Item_Bullet* CarryingBullet;
@@ -671,13 +672,16 @@ bool AC_Gun::ReloadBullet()
 	{
 	case EBulletType::FIVEMM:
 		if (OwnerCharacter->GetCurrentFivemmBulletCount() == 0) return false;
-		CurBulletCount = FMath::Min(MaxBulletCount, OwnerCharacter->GetCurrentFivemmBulletCount());
+		CurBulletCount = FMath::Min(MaxBulletCount, CurBulletCount+OwnerCharacter->GetCurrentFivemmBulletCount());
+
 		RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
 
 		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("5.56mm Ammo"));
 		ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - RemainAmmo;
 		CarryingBullet->SetItemStack(ChangedStack);
 		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+		UC_Util::Print(OwnerCharacter->GetCurrentFivemmBulletCount(),FColor::Blue);
+		UC_Util::Print(CurBulletCount);
 		return true;
 
 		break;

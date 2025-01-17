@@ -408,8 +408,8 @@ protected: // 총알 Object Pooling(AC_Item으로 만들어진 Bullet은 사용X)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<class AC_Item*> Bullets;
 
-	int SevenmmBulletCount;
-	int FivemmBulletCount;
+	int SevenmmBulletCount = 0;
+	int FivemmBulletCount  = 0;
 public:
 	int GetCurrentSevenmmBulletCount() { return SevenmmBulletCount; }
 	int GetCurrentFivemmBulletCount()  { return FivemmBulletCount;}
