@@ -378,9 +378,6 @@ float UC_SwimmingComponent::GetWaterDepth(const FVector& Position)
 		CollisionParams
 	);
 
-	// Character Mesh 0
-	if (OwnerPlayer) UC_Util::Print(HitResult.GetComponent()->GetName());
-
 	return (!HasHit) ? 0.f : HitResult.Distance;
 }
 

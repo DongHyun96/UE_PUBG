@@ -30,6 +30,7 @@ enum class EBehaviorType : uint8
 	MAX
 };
 
+enum class EIdleTaskType : uint8;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_BehaviorComponent : public UActorComponent
@@ -56,6 +57,8 @@ public:
 
 	bool SetServiceType(EServiceType Type);
 
+	bool SetIdleTaskType(EIdleTaskType Type);
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
@@ -66,7 +69,11 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName PlayerKey = "Player";
-	
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FName IdleTaskKey = "IdleTask";
 
 private:
 	class UBlackboardComponent* Blackboard{};

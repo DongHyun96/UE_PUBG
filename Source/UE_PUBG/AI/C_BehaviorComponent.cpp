@@ -6,6 +6,8 @@
 #include "Character/C_BasicCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+#include "Service/C_BTServiceIdle.h"
+
 
 UC_BehaviorComponent::UC_BehaviorComponent()
 {
@@ -48,5 +50,14 @@ bool UC_BehaviorComponent::SetServiceType(EServiceType Type)
 
 	Blackboard->SetValueAsEnum(ServiceKey, (uint8)Type);
 	return true;
+}
+
+bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
+{
+	if (Type == EIdleTaskType::MAX) return false;
+
+	Blackboard->SetValueAsEnum(IdleTaskKey, (uint8)Type);
+
+	return false;
 }
 

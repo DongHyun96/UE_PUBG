@@ -33,7 +33,9 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	if (OwnerEnemy->GetMainState() == EMainState::SKYDIVING)
 		OwnerBehaviorComponent->SetServiceType(EServiceType::SKYDIVE);
 
-	//OwnerBehaviorComponent->SetServiceType(EServiceType::COMBAT);
+	// Testing Pose Transition
 
-	
+
+
+		
 }
