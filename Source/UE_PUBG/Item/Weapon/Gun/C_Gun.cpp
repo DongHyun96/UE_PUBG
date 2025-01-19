@@ -46,6 +46,7 @@
 
 #include "Item/Weapon/Gun/C_Bullet.h"
 #include "Item/ItemBullet/C_Item_Bullet.h"
+#include "Item/Weapon/Gun/C_SR.h"
 
 
 //UCameraComponent* AC_Gun::AimSightCamera;
@@ -542,7 +543,7 @@ bool AC_Gun::GetIsPlayingMontagesOfAny()
 		CurAnimInstance->Montage_IsPlaying(DrawMontage)   || 
 		CurAnimInstance->Montage_IsPlaying(SheathMontage) ||
 		CurAnimInstance->Montage_IsPlaying(ReloadMontage);
-	UC_Util::Print(IsPlayingMontagesOfAny, FColor::Magenta, 10);
+	//UC_Util::Print(IsPlayingMontagesOfAny, FColor::Magenta, 10);
 	return IsPlayingMontagesOfAny;
 }
 
@@ -628,8 +629,8 @@ bool AC_Gun::FireBullet()
 	FVector HitLocation;
 	bool HasHit;
 	if (!SetBulletDirection(FireLocation, FireDirection,HitLocation, HasHit)) return false;
-	UC_Util::Print(FireLocation);
-	UC_Util::Print(FireDirection);
+	//UC_Util::Print(FireLocation);
+	//UC_Util::Print(FireDirection);
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 	bool ApplyGravity = OwnerPlayer->GetIsWatchingSight() || !HasHit;
 	int BulletCount = 0;
@@ -667,7 +668,9 @@ bool AC_Gun::ReloadBullet()
 	int RemainAmmo;
 	int ChangedStack;
 	AC_Item_Bullet* CarryingBullet;
-
+	AC_SR* CurrentSR = Cast<AC_SR>(this);
+	if (IsValid(CurrentSR))
+		CurrentSR->SetIsReloadingSR(false);
 	switch (CurGunBulletType)
 	{
 	case EBulletType::FIVEMM:
@@ -692,15 +695,15 @@ bool AC_Gun::ReloadBullet()
 	case EBulletType::SEVENMM:
 		if (OwnerCharacter->GetCurrentSevenmmBulletCount() == 0) return false;
 
-		CurBulletCount = FMath::Min(MaxBulletCount, CurBulletCount + OwnerCharacter->GetCurrentFivemmBulletCount());
+		CurBulletCount = FMath::Min(MaxBulletCount, CurBulletCount + OwnerCharacter->GetCurrentSevenmmBulletCount());
 
 		RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
 
-		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("5.56mm Ammo"));
+		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("7.7mm Ammo"));
 		ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - RemainAmmo;
 
 		CarryingBullet->SetItemStack(ChangedStack);
-		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+		OwnerCharacter->AddSevenmmBulletStack(-RemainAmmo);
 
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 			OwnerPlayer->GetInvenSystem()->InitializeList();
@@ -828,7 +831,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, DestLocation, ECC_Visibility, CollisionParams);
 
 	DrawDebugSphere(GetWorld(), HitResult.Location, 1.0f, 12, FColor::Red, true);
-	UC_Util::Print(float(HitResult.Distance));
+	//UC_Util::Print(float(HitResult.Distance));
 	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
 	//FVector FireLocation2 = GunMesh->GetSocketLocation(FName("MuzzleSocke"));
 	//UC_Util::Print(FireLocation);
@@ -840,8 +843,8 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 		FireDirection = HitResult.Location - FireLocation;
 		FireDirection = FireDirection.GetSafeNormal();
 		
-		UC_Util::Print(HitResult.Location, FColor::Emerald);
-		UC_Util::Print(HitResult.Distance, FColor::Cyan);
+		//UC_Util::Print(HitResult.Location, FColor::Emerald);
+		//UC_Util::Print(HitResult.Distance, FColor::Cyan);
 	}
 	else
 	{

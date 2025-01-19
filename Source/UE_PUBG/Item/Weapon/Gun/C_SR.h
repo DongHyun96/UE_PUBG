@@ -28,10 +28,16 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> SniperReloadMontages{};
 	virtual bool GetIsPlayingMontagesOfAny();
+	bool IsReloadingSR = false;
+	void SetIsReloadingSR(bool InIsReloadingSR) { IsReloadingSR = InIsReloadingSR; }
+	bool GetIsReloadingSR() { return IsReloadingSR; }
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FRotator RelativeRotationOnCrawl = FRotator(0.0f, 0.0f, 0.0f); // Pitch, Yaw, Roll
 	void SetRelativeRotationOnCrawl();
 public:
 	FRotator GetNewRelativeRotationOnCrawl() { return RelativeRotationOnCrawl; }
+
+protected:
+	//bool ReloadBullet() override;
 };
