@@ -28,8 +28,8 @@ public:
 	/// <returns></returns>
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
-protected:
 	virtual void UpdateWidget() override;
+protected:
 
 
 protected:

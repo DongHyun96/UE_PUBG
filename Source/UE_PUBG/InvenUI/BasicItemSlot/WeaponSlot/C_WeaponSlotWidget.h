@@ -22,7 +22,6 @@ class UE_PUBG_API UC_WeaponSlotWidget : public UC_BasicEquippedItemSlotWidget
 
 public:
 	virtual void UpdateWidget() override;
-
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UImage* WeaponImage = nullptr;

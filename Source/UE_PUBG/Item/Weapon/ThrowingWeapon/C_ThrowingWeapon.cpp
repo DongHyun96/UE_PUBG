@@ -522,7 +522,7 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 		//this의 stack이 1 이라면 실행.
 		//this를 슬롯에 장착 하고 목록에서 제거
 
-		if      (ItemDatas.ItemPlace == EItemPlace::AROUND) invenComp->RemoveItemNearList(this);
+		if      (ItemDatas.ItemPlace == EItemPlace::AROUND) invenComp->RemoveItemToAroundList(this);
 		else if (ItemDatas.ItemPlace == EItemPlace::INVEN)  invenComp->RemoveItemToMyList(this);
 
 		equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);

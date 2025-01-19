@@ -3,16 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InvenUI/C_CustomUserWidget.h"
+#include "Blueprint/UserWidget.h"
 #include "Blueprint/IUserObjectListEntry.h"
-//#include "Item/C_Item.h"
+#include "Item/C_Item.h"
 #include "C_BasicItemBarWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_BasicItemBarWidget : public UC_CustomUserWidget, public IUserObjectListEntry
+class UE_PUBG_API UC_BasicItemBarWidget : public UUserWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
 	
@@ -44,6 +44,10 @@ public:
 	/// <param name="OutOperation"></param>
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 
+	// 이벤트 함수 선언
+	// ListView에서 항목 객체가 설정될 때 호출되는 함수
+	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+
 	void UpdateWidget(AC_Item* MyItem);
 
 	/// <summary>
@@ -54,6 +58,10 @@ public:
     UFUNCTION(BlueprintCallable)
     void SetPercent(float curTime, float endTime);
 
+	/// <summary>
+	/// Interaction후 InvenUI를 업데이트하는 함수.
+	/// </summary>
+	void UpdateInvenUIWidget();
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UImage* ItemImage = nullptr;

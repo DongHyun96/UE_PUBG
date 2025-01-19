@@ -455,7 +455,7 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 
 		{
 			if (!IsValid(Inventory)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
-			Inventory->AddItemToNearList(OverlappedItem);
+			Inventory->AddItemToAroundList(OverlappedItem);
 			//Inventory->InitInvenUI();
 			//if (!IsValid(InvenSystem)) return;
 		}
@@ -478,7 +478,7 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 		//Inventory->GetNearItems().Remove(OverlappedItem);
 		//Inventory->RemoveItemToAroundList(OverlappedItem);
 		if (!IsValid(Inventory)) return;
-		Inventory->RemoveItemNearList(OverlappedItem);
+		Inventory->RemoveItemToAroundList(OverlappedItem);
 		//Inventory->InitInvenUI();
 		//if (!IsValid(InvenSystem)) return;
 		InvenSystem->InitializeList();

@@ -70,8 +70,8 @@ public:
 	float LoopCheckVolume(AC_Item* item);
 
 	//가방과 용량을 검사해서 가방 교체 및 장착.
-	UFUNCTION(BlueprintCallable)
-	bool CheckMyBackPack(class AC_BackPack* backpack);
+	//UFUNCTION(BlueprintCallable)
+	//bool CheckMyBackPack(class AC_BackPack* backpack);
 
 	//UFUNCTION(BlueprintCallable)
 	void Interaction(AC_Item* wilditem);
@@ -85,9 +85,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveBackPack();
-
-	UFUNCTION(BlueprintCallable)
-	void EquippedBackPack(AC_BackPack* backpack);
+	
+	//UFUNCTION(BlueprintCallable)
+	//void EquippedBackPack(AC_BackPack* backpack);
 
 	/// <summary>
 	/// 아이템을 내 인벤에 추가하는 함수.
@@ -98,8 +98,8 @@ public:
 	/// </summary>
 	/// <param name="item"></param>
 	/// <returns></returns>
-	UFUNCTION(BlueprintCallable)
-	bool AddItem(AC_Item* item);
+	//UFUNCTION(BlueprintCallable)
+	//bool AddItem(AC_Item* item);
 
 	UFUNCTION(BlueprintCallable)
 	class AC_EquipableItem* SetSlotEquipment(EEquipSlot InSlot, AC_EquipableItem* EquipItem);
@@ -120,14 +120,9 @@ public:
 
 	void DestroyMyItem(AC_Item* DestroyedItem);
 
-	//
-	void AddItemToNearList(AC_Item* item) { NearItems.Add(item); }
-	void RemoveItemNearList(AC_Item* item) { NearItems.Remove(item); }
-	//
+	void AddItemToAroundList(AC_Item* item) { testAroundItems.Add(item); }
 
-	void AddItemToAroundList(AC_Item* item) { testAroundItems.Add(item->GetItemDatas().ItemName, item); }
-
-	void RemoveItemToAroundList(AC_Item* item) { testAroundItems.Remove(item->GetItemDatas().ItemName); }
+	void RemoveItemToAroundList(AC_Item* item) { testAroundItems.Remove(item); }
 
 	UFUNCTION(BlueprintCallable)
 	void GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values);
@@ -157,15 +152,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	TMap<EEquipSlot, AC_EquipableItem*> GetEquipmentItems() { return EquipmentItems; }
 
-	const TMap<FString, TArray<class AC_Item*>>& GetTestMyItems() { return testMyItems; }
+	const TMap<FString, class AC_Item*>& GetTestMyItems() { return testMyItems; }
 
-	//TMap<FString, TArray<class AC_Item*>> GetTestMyItems() { return testMyItems; }
-	//const TMap<FString, class AC_Item*>& GetTestMyItems() { return testMyItems; }
+	TArray<AC_Item*>& GetTestAroundItems() { return testAroundItems; }
 
-	TMap<FString, class AC_Item*>& GetTestAroundItems() { return testAroundItems; }
-
-
-	TArray<class AC_Item*>& GetNearItems() { return NearItems; }
 
 protected:
 	void InitMyitems();
@@ -189,22 +179,13 @@ protected:
 	/// 첫번째는 일일이 떨꾸어주는것. 
 	/// 두번째는 MyItem에 다 넣고 한번에 떨구는 것.
 	/// </summary>
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TArray<AC_Item*> MyItems;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "NearItmes Array")
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TArray<AC_Item*> NearItems;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//TMap<FString, AC_Item*> testMyItems;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<FString, TArray<AC_Item*>> testMyItems;
+	TMap<FString, AC_Item*> testMyItems;
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<FString, AC_Item*> testAroundItems;
+	TArray<AC_Item*> testAroundItems;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EEquipSlot, AC_EquipableItem*> EquipmentItems = 

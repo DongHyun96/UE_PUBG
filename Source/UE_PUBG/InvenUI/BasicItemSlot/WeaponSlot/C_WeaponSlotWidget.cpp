@@ -28,15 +28,16 @@ void UC_WeaponSlotWidget::UpdateWidget()
 	default:
 		return;
 	}
-
+	AC_Weapon* CachedWeapon = OwnerPlayer->GetEquippedComponent()->GetWeapons()[curWeaponSlot];
 	//TODO : Gun의 경우 사용하는 총알의 종류와 갯수를 표시해줌. 하위 클래스에서 진행할 예정.
-	if (AC_Weapon* CachedWeapon = OwnerPlayer->GetEquippedComponent()->GetWeapons()[curWeaponSlot])
+	if (CachedWeapon)
 	{
 		WeaponImage->SetBrushFromTexture(CachedWeapon->GetItemDatas().ItemSlotImage);
 		WeaponName->SetText(FText::FromString(CachedWeapon->GetItemDatas().ItemName));
 		FSlateBrush Brush = WeaponImage->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		WeaponImage->SetBrush(Brush);
+		SetVisibility(ESlateVisibility::Visible);
 	}
 	else
 	{

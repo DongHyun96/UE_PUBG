@@ -35,8 +35,10 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
 	void SetLinkedItemBarWidget(class UC_ItemBarWidget* InItemBarWidget);
+	
+	void SetLinkedItemBarWidget(class UC_BasicItemBarWidget* InItemBarWidget);
 
 	//void SetConsumableItemState(EConsumableItemState NewState);
 
@@ -116,8 +118,12 @@ public: // getters and setters
 	EConsumableItemState GetConsumableItemState() const { return ConsumableItemState; }
 
 	float GetUsingTimer() const { return UsingTimer; }
-
+	
+	//이전 코드
 	class UC_ItemBarWidget* GetLinkedItemBarWidget() { return LinkedItemBarWidget; }
+
+	//리팩토링중인 ItemBar
+	class UC_BasicItemBarWidget* GetTestLinkedItemBarWidget() { return TestLinkedItemBarWidget; }
 
 protected:
 	
@@ -144,5 +150,10 @@ protected:
 
 	// 이 Consumable Item과 연결된 ItemBarWidget 객체
 	UC_ItemBarWidget* LinkedItemBarWidget{};
+
+	//// 이 Consumable Item과 연결된 ItemBarWidget 객체
+	//UI리팩토링중에 사용중인 ItemBar
+	UC_BasicItemBarWidget* TestLinkedItemBarWidget{};
+
 
 };

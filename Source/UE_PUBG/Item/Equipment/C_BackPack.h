@@ -55,7 +55,7 @@ public:
 	//USkeletalMeshComponent* BackpackMesh;
 	bool Interaction(AC_BasicCharacter* Character) override;
 	
-	void PickUpItem(AC_BasicCharacter* Character) override;
+	//void PickUpItem(AC_BasicCharacter* Character) override;
 
 	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 

@@ -16,7 +16,7 @@
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 //#include "Item/ConsumableItem/C_ConsumableItem.h"
-
+#include "InvenUI/ItemBar/C_BasicItemBarWidget.h"
 #include "InvenUserInterface/C_ItemBarWidget.h"
 
 #include "Utility/C_Util.h"
@@ -65,7 +65,9 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) // 방해 받지 않았을 때
 				{
 					
-					LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
+					//LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
+					TestLinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
+
 					return;
 				}
 			}
@@ -104,7 +106,9 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 	{
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser)) Player->GetHUDWidget()->OnConsumableUsed();
 
-		LinkedItemBarWidget->SetPercent(0.f, UsageTime);
+		//LinkedItemBarWidget->SetPercent(0.f, UsageTime);
+		TestLinkedItemBarWidget->SetPercent(0.f, UsageTime);
+
 		ConsumableItemState = EConsumableItemState::IDLE;
 		
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
@@ -113,8 +117,8 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
 				OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
 
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
-
+			//OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
+			OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 			OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
 		}
 		
@@ -135,11 +139,17 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 void AC_ConsumableItem::SetLinkedItemBarWidget(UC_ItemBarWidget* InItemBarWidget)
 {
 	LinkedItemBarWidget = InItemBarWidget;
+
 	//if (LinkedItemBarWidget)
 	//{
 	//	// 현재 진행 상태 동기화
 	//	LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
 	//}
+}
+
+void AC_ConsumableItem::SetLinkedItemBarWidget(UC_BasicItemBarWidget* InItemBarWidget)
+{
+	TestLinkedItemBarWidget = InItemBarWidget;
 }
 
 
@@ -213,7 +223,8 @@ bool AC_ConsumableItem::CancelActivating()
 		OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
 		if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
-		OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
+		//OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
+		OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 
 		OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
 	}
@@ -221,7 +232,9 @@ bool AC_ConsumableItem::CancelActivating()
 	OnCancelActivating();
 
 	ConsumableItemState = EConsumableItemState::IDLE;
-	LinkedItemBarWidget->SetPercent(0.f, UsageTime);
+	//LinkedItemBarWidget->SetPercent(0.f, UsageTime);
+	TestLinkedItemBarWidget->SetPercent(0.f, UsageTime);
+
 	UsingTimer			= 0.f;
 	//ItemUser			= nullptr;
 

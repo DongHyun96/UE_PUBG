@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Item/C_Item.h"
 #include "InvenUserInterface/C_InvenUiWidget.h"
+#include "InvenUI/C_InventoryUIWidget.h"
 #include "C_InvenSystem.generated.h"
 
 
@@ -55,14 +56,17 @@ public:
 	void CloseInvenUI();
 
 public:
-	UFUNCTION(BlueprintCallable)
-	UC_InvenUiWidget* GetInvenUI() { return InvenUI; }
+	//UFUNCTION(BlueprintCallable)
+	//UC_InvenUiWidget* GetInvenUI() { return InvenUI; }
+
+	UC_InventoryUIWidget* GetInvenUI() { return InvenUI; }
 
 	class AC_PlayerController* GetPlayerController() { return PlayerController; }
 protected:
+	//UPROPERTY()
+	//class UC_InvenUiWidget* InvenUI = nullptr;
 	UPROPERTY()
-	class UC_InvenUiWidget* InvenUI = nullptr;
-
+	UC_InventoryUIWidget* InvenUI = nullptr;
 	UPROPERTY()
 	AC_PlayerController* PlayerController = nullptr;
 
