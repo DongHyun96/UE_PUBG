@@ -20,6 +20,7 @@ void UC_BTTaskChangePose::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
 	if (!OwnerEnemy->GetIsPoseTransitioning()) FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	else UC_Util::Print("PoseTransitioning going");
 }
 
 EBTNodeResult::Type UC_BTTaskChangePose::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)

@@ -19,6 +19,9 @@ UC_BehaviorComponent::UC_BehaviorComponent()
 void UC_BehaviorComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetServiceType(EServiceType::IDLE);
+	SetIdleTaskType(EIdleTaskType::WAIT);
 }
 
 void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

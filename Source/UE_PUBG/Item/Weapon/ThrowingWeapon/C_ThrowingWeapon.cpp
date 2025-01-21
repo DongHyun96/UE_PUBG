@@ -30,6 +30,7 @@
 
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
+#include "HUD/C_AmmoWidget.h"
 
 #include "I_ExplodeStrategy.h"
 #include "C_GrenadeExplode.h"
@@ -198,6 +199,13 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 	// Self init
 	bIsCharging = false;
 	bIsOnThrowProcess = false;
+
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	{
+		UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
+		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, false);
+		// TODO : AmmoWidget 남은 Throwable 개수 표현하기
+	}
 
 	return AttachToComponent
 	(

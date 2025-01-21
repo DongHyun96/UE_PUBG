@@ -101,6 +101,7 @@ public:
 	class UC_OxygenWidget* GetOxygenWidget() const { return OxygenWidget; }
 	class UC_SkyDiveWidget* GetSkyDiveWidget() const { return SkyDiveWidget; }
 	class UC_InstructionWidget* GetInstructionWidget() const { return InstructionWidget; }
+	class UC_AmmoWidget* GetAmmoWidget() const { return AmmoWidget; }
 
 protected:
 
@@ -149,6 +150,11 @@ private:
 
 protected:
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_AmmoWidget* AmmoWidget{};
+
+protected:
+
 	// 항상 상위에 켜져 있을 요소들의 최상위 parent panel (ex - InstructionWidget / HP bar ... )
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UCanvasPanel* AlwaysOnPanel{};
@@ -156,6 +162,7 @@ protected:
 	// 기타 다른 아이템들 최상위 parent
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UCanvasPanel* OtherPanel{};
+
 
 
 };

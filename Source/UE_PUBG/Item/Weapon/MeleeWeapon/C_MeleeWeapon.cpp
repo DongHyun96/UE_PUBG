@@ -6,6 +6,7 @@
 #include "Item/Weapon/WeaponStrategy/C_MeleeWeaponStrategy.h"
 
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 
@@ -14,6 +15,9 @@
 #include "Kismet/GamePlayStatics.h"
 
 #include "UObject/ConstructorHelpers.h"
+
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_AmmoWidget.h"
 
 const FName AC_MeleeWeapon::HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
 const FName AC_MeleeWeapon::EQUIPPED_SOCKET_NAME = "Pan_Equip"; // 무기가 손에 부착될 socket 이름
