@@ -105,6 +105,8 @@ void AC_Gun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	
+
 	//if (IsValid(Magazine))
 	//{
 	//	UC_Util::Print(Magazine->GetActorLocation());	
@@ -148,8 +150,8 @@ void AC_Gun::Tick(float DeltaTime)
 
 bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 {
-
 	if (!IsValid(OwnerCharacter)) return false;
+
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::NORIFLE);
 
@@ -626,6 +628,10 @@ bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character)
 	if (!currentMainGun)
 	{
 		equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
+
+		//SetRelativeTranformToInitial();
+		//AttachToHolster(OwnerCharacter->GetMesh());
+
 		invenComp->RemoveItemToAroundList(this);
 		return true;
 	}
@@ -633,12 +639,18 @@ bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character)
 	if (!currentSubGun)
 	{
 		equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+		//SetRelativeTranformToInitial();
+		//AttachToHolster(OwnerCharacter->GetMesh());
+
 		invenComp->RemoveItemToAroundList(this);
 		return true;
 	}
 	else
 	{
 		AC_Weapon* DroppedGun = equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+		//SetRelativeTranformToInitial();
+		//AttachToHolster(OwnerCharacter->GetMesh());
+
 		invenComp->RemoveItemToAroundList(this);
 		DroppedGun->DropItem(Character);
 		return true;

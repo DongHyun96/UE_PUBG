@@ -21,5 +21,5 @@ public:
 protected:
 	//bool HandleDrop(class AC_Item* DroppedItem) override;
 
-	bool ChangedGunSlot(AC_Weapon* gun) override;
+	bool ChangedGunSlot(AC_Gun* gun) override;
 };

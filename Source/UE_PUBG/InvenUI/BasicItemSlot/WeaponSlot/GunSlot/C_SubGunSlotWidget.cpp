@@ -33,16 +33,17 @@
 //
 //	UpdateSlotItemImage(SlotItem);
 //}
-
-
-bool UC_SubGunSlotWidget::ChangedGunSlot(AC_Weapon* gun)
+bool UC_SubGunSlotWidget::ChangedGunSlot(AC_Gun* gun)
 {
 	if (!gun) return false;
 	UC_EquippedComponent* EquipComp = OwnerPlayer->GetEquippedComponent();
 
+	if (OwnerPlayer->GetHandState() == EHandState::WEAPON_GUN)
+		if (EquipComp->SwapSlotsWhileGunHandState()) return true;
+
 	EquipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);//우선 드래그된 아이템 슬롯의 장착을 해제.
 
-	AC_Weapon* curSlotGun = EquipComp->SetSlotWeapon(WeaponType, gun);//드랍된 슬롯에 드래그된 아이템을 장착
+	AC_Gun* curSlotGun = Cast<AC_Gun>(EquipComp->SetSlotWeapon(WeaponType, gun));//드랍된 슬롯에 드래그된 아이템을 장착
 
 	if (IsValid(EquipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, curSlotGun)))//드랍된 슬롯에 장착되어 있었던 아이템을 드래그된 아이템 슬롯에 장착.
 		return true;

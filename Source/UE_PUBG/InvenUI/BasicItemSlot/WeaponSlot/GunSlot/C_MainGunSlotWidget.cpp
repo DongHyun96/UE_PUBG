@@ -3,6 +3,7 @@
 
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_MainGunSlotWidget.h"
 #include "InvenUI/C_InventoryUIWidget.h"
+#include "Item/Weapon/Gun/C_Gun.h"
 
 //FReply UC_MainGunSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 //{
@@ -35,10 +36,15 @@
 //}
 
 
-bool UC_MainGunSlotWidget::ChangedGunSlot(AC_Weapon* gun)
+
+
+bool UC_MainGunSlotWidget::ChangedGunSlot(AC_Gun* gun)
 {
 	if (!gun) return false;
 	UC_EquippedComponent* EquipComp = OwnerPlayer->GetEquippedComponent();
+
+	if (OwnerPlayer->GetHandState() == EHandState::WEAPON_GUN)
+		if (EquipComp->SwapSlotsWhileGunHandState()) return true;
 
 	EquipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, nullptr);//우선 드래그된 아이템 슬롯의 장착을 해제.
 

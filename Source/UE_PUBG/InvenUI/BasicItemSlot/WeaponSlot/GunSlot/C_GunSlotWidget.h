@@ -19,7 +19,7 @@ public:
 
 	bool MouseRBDownInteraction(AC_Weapon* inSlotWeapon) override;
 protected:
-	virtual bool HandleDrop(class AC_Item* DroppedItem); //TODO: 순수가상함수로
+	virtual bool HandleDrop(class UC_DragDropOperation* InOperation); //TODO: 순수가상함수로
 
-	virtual bool ChangedGunSlot(AC_Weapon* gun);
+	virtual bool ChangedGunSlot(class AC_Gun* gun);
 };
