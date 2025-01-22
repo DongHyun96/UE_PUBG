@@ -204,6 +204,12 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 	{
 		UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
 		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, false);
+		//AmmoWidget->Set
+		AC_Item* InvenThrowable = OwnerCharacter->GetInvenComponent()->FindMyItem(ItemDatas.ItemName);
+		int MagazineCount = !InvenThrowable ? 1 : InvenThrowable->GetItemDatas().ItemCurStack + 1;
+		AmmoWidget->SetMagazineText(MagazineCount);
+
+		//ItemDatas.ItemCurStack;
 		// TODO : AmmoWidget 남은 Throwable 개수 표현하기
 	}
 
