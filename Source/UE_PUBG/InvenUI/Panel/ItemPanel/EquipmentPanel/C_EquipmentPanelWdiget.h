@@ -14,9 +14,15 @@ class UE_PUBG_API UC_EquipmentPanelWdiget : public UC_BasicPanelWidget
 {
 	GENERATED_BODY()
 public:
+	bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
 	void UpdateWidget();
 
 	void SetOwnerPlayer(class AC_Player* InOwnerPlayer) override;
+
+protected:
+	bool HandleDrop(class AC_Item* DroppedItem) override;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UC_MainGunSlotWidget*	MainGunSlot = nullptr;

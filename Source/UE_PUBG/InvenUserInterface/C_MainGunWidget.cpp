@@ -36,7 +36,7 @@ void UC_MainGunWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	UTexture2D* Texture = nullptr;
 
 	if (CachedItem->GetItemDatas().ItemType == EItemTypes::MAINGUN)
-		Texture = Cast<UTexture2D>(Cast<AC_Gun>(CachedItem)->GetDragIcon());
+		Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemBarIcon);
 	else
 		Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemSlotImage);//크기및 형태 조절하기.
 

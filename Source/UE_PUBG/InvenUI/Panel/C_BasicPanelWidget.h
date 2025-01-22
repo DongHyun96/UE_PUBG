@@ -13,5 +13,9 @@ UCLASS()
 class UE_PUBG_API UC_BasicPanelWidget : public UC_CustomUserWidget
 {
 	GENERATED_BODY()
-	
+public:
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
+protected:
+	virtual bool HandleDrop(class AC_Item* DroppedItem); //TODO: 순수가상함수로
 };

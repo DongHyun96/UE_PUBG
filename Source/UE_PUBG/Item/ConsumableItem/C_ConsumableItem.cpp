@@ -473,5 +473,5 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character)
 
 bool AC_ConsumableItem::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
-	return false;
+	return MoveToInven(Character);
 }

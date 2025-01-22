@@ -100,7 +100,7 @@ private:
 
 	AC_Item* SpawnItem(AC_BasicCharacter* Character) override;
 
-private:
+protected:
 	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
 	bool MoveSlotToInven(AC_BasicCharacter* Character) override;
 	bool MoveSlotToSlot(AC_BasicCharacter* Character) override;

@@ -437,24 +437,26 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 		int sum = FoundItem->GetItemDatas().ItemCurStack + item->GetItemDatas().ItemCurStack;
 
 		FoundItem->SetItemStack(sum);
-		
+
+		CurVolume += item->GetAllVolume();
+
 		item->Destroy();//가지고 있던 아이템에 새로 넣는 아이템을 다 넣었으므로 삭제.
 	}
 	else 
 	{
 		// 해당키의 값이 추가.
 		testMyItems.Add(item->GetItemDatas().ItemName, item);
-	}
 
-	if (IsValid(OwnerCharacter))
-	{
-		item->SetOwnerCharacter(OwnerCharacter);
-	}
-	item->SetItemPlace(EItemPlace::INVEN);
-	item->SetActorHiddenInGame(true);
-	item->SetActorEnableCollision(false);
+		if (IsValid(OwnerCharacter))
+		{
+			item->SetOwnerCharacter(OwnerCharacter);
+		}
+		item->SetItemPlace(EItemPlace::INVEN);
+		item->SetActorHiddenInGame(true);
+		item->SetActorEnableCollision(false);
 
-	CurVolume += item->GetAllVolume();
+		CurVolume += item->GetAllVolume();
+	}
 }
 
 void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)

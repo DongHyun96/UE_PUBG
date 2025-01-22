@@ -28,14 +28,32 @@ public:
 	/// <returns></returns>
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
+	/// <summary>
+	/// 좌클릭으로 드래그 이벤트 이벤트를 시작.
+	/// </summary>
+	/// <param name="InGeometry"></param>
+	/// <param name="InMouseEvent"></param>
+	/// <returns></returns>
+	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
+
+	/// <summary>
+	/// 드래그 중인 ItemBar의 아이템을 감지.
+	/// </summary>
+	/// <param name="InGeometry"></param>
+	/// <param name="InMouseEvent"></param>
+	/// <param name="OutOperation"></param>
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+
 	virtual void UpdateWidget() override;
+
 protected:
+	void UpdateSlotItemImage(AC_EquipableItem* SlotItem);
 
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	class UImage* ItemImage;
+	class UImage* ItemImage = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	EItemTypes SlotItemType{};
+	EEquipSlot EquipSlot{};
 };

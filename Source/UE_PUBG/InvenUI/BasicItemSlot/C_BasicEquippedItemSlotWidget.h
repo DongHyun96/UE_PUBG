@@ -14,5 +14,7 @@ class UE_PUBG_API UC_BasicEquippedItemSlotWidget : public UC_CustomUserWidget
 {
 	GENERATED_BODY()
 public:
+	//virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
 	virtual void UpdateWidget();
 };

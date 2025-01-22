@@ -14,4 +14,8 @@ class UE_PUBG_API UC_BackPackSlotWidget : public UC_EquipmentSlotWidget
 {
 	GENERATED_BODY()
 	
+public:
+	//virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	//void UpdateWidget() override;
 };

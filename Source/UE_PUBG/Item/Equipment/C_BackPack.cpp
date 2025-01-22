@@ -222,7 +222,7 @@ bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
 	if (curBackPack)
 	{
 		//curBackPack->SetOwnerCharacter(nullptr);
-		InvenComp->SetSlotEquipment(EEquipSlot::BACKPACK, curBackPack);
+		InvenComp->SetSlotEquipment(EEquipSlot::BACKPACK, nullptr);
 		//InvenComp->RemoveBackPack();
 		//curBackPack->DetachItem();
 	}
@@ -237,7 +237,7 @@ bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
 bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
 	//TODO : PickUpItem 내용으로 우선 구현한 것. 다시 구현하기.
-//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
+	//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	UC_EquippedComponent* EquipComp = Character->GetEquippedComponent();
 
@@ -250,7 +250,7 @@ bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character)
 	if (curVolume > preMaxVolume) return false;
 
 	if (curBackPack)
-		curBackPack->LegacyMoveToAround(Character);
+		curBackPack->MoveToAround(Character);
 
 	//InvenComp->EquippedBackPack(this);
 

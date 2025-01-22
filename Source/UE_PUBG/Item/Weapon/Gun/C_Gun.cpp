@@ -608,6 +608,11 @@ bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character)
 	}
 }
 
+bool AC_Gun::MoveSlotToInven(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
 FVector2D AC_Gun::GetRecoilFactors()
 {
 	float VerticalFactor   = RecoilFactorVertical * RecoilMultiplierByGripVert * RecoilMultiplierMuzzleVert;

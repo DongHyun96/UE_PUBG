@@ -693,13 +693,14 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 		this->DeductItemStack();
 		AC_ThrowingWeapon* SwapItem = Cast<AC_ThrowingWeapon>(SpawnItem(Character));
 		SwapItem->SetItemStack(1);
+		invenComp->AddInvenCurVolume(-SwapItem->GetItemDatas().ItemVolume);
 		curWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
 	}
 
 	if (Character->GetHandState() == EHandState::WEAPON_THROWABLE)
 		AttachToHand(Character->GetMesh());
 
-	Character->PlayAnimMontage(this->GetCurDrawMontage());
+	//Character->PlayAnimMontage(this->GetCurDrawMontage());
 	invenComp->AddItemToMyList(curWeapon);//내부에서 매개변수 nullptr가 들어오면 return시켜버림. TODO : curWeapon을 정의한 뒤에 equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]의 값이 바뀌었으므로 역참조를 하면 문제가 생김. 확인 할 것.
 	//if (curWeapon) //TODO : InvenComp->AddItemToMyList(nullptr)이 문제 생기면 활성화 
 	
@@ -909,7 +910,10 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 			UC_Util::Print("OnProcessEnd Change to Last New Throwing Weapon casting failed!", FColor::Red, 10.f);
 			return;
 		}
-		TargetThrowWeapon->LegacyMoveToSlot(PrevOwnerCharacter);
+		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter);
+
+		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+			OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 
 		// 바로 다음 투척류 꺼내기
 		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
@@ -938,8 +942,9 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 			return;
 		}
 
-		TargetThrowWeapon->LegacyMoveToSlot(PrevOwnerCharacter);
-
+		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter);
+		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+			OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 		// 바로 다음 투척류 꺼내기
 		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
 		PrevOwnerCharacter->PlayAnimMontage(TargetThrowWeapon->GetCurDrawMontage());

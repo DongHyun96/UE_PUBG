@@ -12,6 +12,33 @@
 #include "InvenUI/BasicItemSlot/EquipmentSlot/C_VestSlotWidget.h"
 #include "InvenUI/BasicItemSlot/EquipmentSlot/C_BackPackSlotWidget.h"
 
+#include "InvenUI/C_InventoryUIWidget.h"
+#include "Character/Component/C_InvenSystem.h"
+
+#include "InvenUserInterface/C_DragDropOperation.h"
+
+#include "Item/C_Item.h"
+
+#include "Utility/C_Util.h"
+
+bool UC_EquipmentPanelWdiget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+	// 자식 위젯이 드롭을 처리하도록 우선 호출
+	if (SubGunSlot && SubGunSlot->IsHovered())
+	{
+		bool bChildHandled = SubGunSlot->NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+		if (bChildHandled)
+		{
+			// 자식 위젯이 드롭을 처리했으면 부모는 처리하지 않음
+			return true;
+		}
+	}
+
+	// 부모 위젯에서 드롭 처리
+	UE_LOG(LogTemp, Warning, TEXT("Item dropped on EquipmentPanel"));
+	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation); // 부모 위젯에서 드롭 처리 완료
+}
+
 void UC_EquipmentPanelWdiget::UpdateWidget()
 {
 	if (MainGunSlot)
@@ -55,4 +82,10 @@ void UC_EquipmentPanelWdiget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
 
 	VestSlot->SetOwnerPlayer(InOwnerPlayer);
 
+}
+
+bool UC_EquipmentPanelWdiget::HandleDrop(AC_Item* DroppedItem)
+{
+	UC_Util::Print("MoveToSlot");
+	return DroppedItem->MoveToSlot(OwnerPlayer);
 }

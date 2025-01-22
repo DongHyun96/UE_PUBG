@@ -29,7 +29,7 @@ public:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	/// <summary>
-	/// 드래그 이벤트 이벤트를 시작.
+	/// 좌클릭으로 드래그 이벤트 이벤트를 시작.
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
