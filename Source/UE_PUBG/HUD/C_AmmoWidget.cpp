@@ -20,9 +20,10 @@ void UC_AmmoWidget::NativeConstruct()
 
 	static TMap<EShootingMode, FString> ImageNames =
 	{
-		{EShootingMode::SEMI_AUTO,	"Single"},
-		{EShootingMode::BURST,		"Burst"},
-		{EShootingMode::FULL_AUTO,	"Full"}
+		{EShootingMode::SEMI_AUTO,		"Single"},
+		{EShootingMode::BURST,			"Burst"},
+		{EShootingMode::FULL_AUTO,		"Full"},
+		{EShootingMode::SINGLE_SHOT,	"Single"}
 	};
 
 	// Init Shooting Mode Images
@@ -54,6 +55,7 @@ void UC_AmmoWidget::NativeConstruct()
 
 
 	ShootingModePanelSlots.Add(EShootingMode::SEMI_AUTO,	Cast<UCanvasPanelSlot>(SingleCanvasPanel->Slot));
+	ShootingModePanelSlots.Add(EShootingMode::SINGLE_SHOT,  Cast<UCanvasPanelSlot>(SingleCanvasPanel->Slot));
 	ShootingModePanelSlots.Add(EShootingMode::BURST,		Cast<UCanvasPanelSlot>(BurstCanvasPanel->Slot));
 	ShootingModePanelSlots.Add(EShootingMode::FULL_AUTO,	Cast<UCanvasPanelSlot>(FullAutoCanvasPanel->Slot));
 
