@@ -24,16 +24,6 @@ void AC_SR::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	SetRelativeRotationOnCrawl();
-
-	switch (CurState)
-	{
-	case EGunState::MAIN_GUN: UC_Util::Print("MAINGUN");
-		break;
-	case EGunState::SUB_GUN: UC_Util::Print("SUB_GUN");
-		break;
-	default:
-		break;
-	}
 }
 
 bool AC_SR::ExecuteReloadMontage()

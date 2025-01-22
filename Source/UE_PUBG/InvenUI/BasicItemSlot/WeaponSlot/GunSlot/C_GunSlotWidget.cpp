@@ -56,7 +56,12 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 	{
 		if (InOperation->curWeaponSlot == EWeaponSlot::MAIN_GUN || InOperation->curWeaponSlot == EWeaponSlot::SUB_GUN)
 			if (InOperation->curWeaponSlot != WeaponType)
+			{
+				// ºó ½½·Ô°ú Gun ½½·Ô SwapÇÏ´Â »óÈ²
+				if (OwnerPlayer->GetHandState() == EHandState::WEAPON_GUN)
+					if (EquipComp->SwapSlotsWhileGunHandState()) return true;
 				EquipComp->SetSlotWeapon(InOperation->curWeaponSlot, nullptr);
+			}
 		EquipComp->SetSlotWeapon(WeaponType, DroppedItem);
 		//DroppedItem->MoveToSlot(OwnerPlayer);
 		return true;
