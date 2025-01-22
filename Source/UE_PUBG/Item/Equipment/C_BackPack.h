@@ -55,12 +55,12 @@ public:
 	//USkeletalMeshComponent* BackpackMesh;
 	bool Interaction(AC_BasicCharacter* Character) override;
 	
-	void PickUpItem(AC_BasicCharacter* Character) override;
+	//void PickUpItem(AC_BasicCharacter* Character) override;
 
 	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
 	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
-private:
+protected:
 	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
 
 	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;

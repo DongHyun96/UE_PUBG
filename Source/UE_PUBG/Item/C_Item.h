@@ -123,10 +123,10 @@ struct FItemData : public FTableRowBase
 	//FSoftObjectPath ItemMeshPath{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	uint8 ItemCurStack = 0;
+	int ItemCurStack = 0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	uint8 ItemMaxStack = 0;
+	int ItemMaxStack = 0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	float ItemVolume = 0;

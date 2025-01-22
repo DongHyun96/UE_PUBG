@@ -2,4 +2,4 @@
 
 
 #include "InvenUI/BasicItemSlot/EquipmentSlot/C_AttachableItemSlotWidget.h"
-
+#include "InvenUI/C_InventoryUIWidget.h"

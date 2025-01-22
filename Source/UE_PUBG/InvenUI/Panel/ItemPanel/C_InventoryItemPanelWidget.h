@@ -13,5 +13,7 @@ UCLASS()
 class UE_PUBG_API UC_InventoryItemPanelWidget : public UC_BasicItemPanelWidget
 {
 	GENERATED_BODY()
-	
+
+protected:
+	bool HandleDrop(class AC_Item* DroppedItem) override;
 };

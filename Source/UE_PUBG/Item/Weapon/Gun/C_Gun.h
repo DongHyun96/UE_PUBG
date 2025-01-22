@@ -184,11 +184,12 @@ protected:
 	float RecoilMultiplierByGripHorizon = 1;
 	float RecoilMultiplierMuzzleVert = 1;
 	float RecoilMultiplierMuzzleHorizon = 1;
-private:
+protected:
 	//bool MoveSlotToAround(AC_BasicCharacter* Character) override;
 	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
 	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 
+	bool MoveSlotToInven(AC_BasicCharacter* Character) override;
 public:
 	void SetRecoilMultiplierGripVert(float InValue)      { RecoilMultiplierByGripVert    = InValue; }
 	void SetRecoilMultiplierGripHorizon(float InValue)   { RecoilMultiplierByGripHorizon = InValue; }

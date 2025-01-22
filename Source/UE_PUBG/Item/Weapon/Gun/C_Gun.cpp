@@ -645,6 +645,11 @@ bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character)
 	}
 }
 
+bool AC_Gun::MoveSlotToInven(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
 FVector2D AC_Gun::GetRecoilFactors()
 {
 	float VerticalFactor   = RecoilFactorVertical * RecoilMultiplierByGripVert * RecoilMultiplierMuzzleVert;
@@ -730,6 +735,9 @@ bool AC_Gun::ReloadBullet()
 		
 		CarryingBullet->SetItemStack(ChangedStack);
 		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+		
+		//장전한 총알 갯수만큼 curVolume 조절
+		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas().ItemVolume));
 
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 		{
@@ -752,6 +760,9 @@ bool AC_Gun::ReloadBullet()
 
 		CarryingBullet->SetItemStack(ChangedStack);
 		OwnerCharacter->AddSevenmmBulletStack(-RemainAmmo);
+
+		//장전한 총알 갯수만큼 curVolume 조절
+		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas().ItemVolume));
 
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 		{

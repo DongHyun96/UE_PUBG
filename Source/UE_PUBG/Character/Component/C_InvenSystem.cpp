@@ -37,10 +37,13 @@ void UC_InvenSystem::BeginPlay()
 
 	if (!InvenUI && InvenUiClass)
 	{
-		InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
+		//InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
+		InvenUI = CreateWidget<UC_InventoryUIWidget>(PlayerController, InvenUiClass);
 		if (InvenUI)
 		{
-			InvenUI->SetOwnerCharacter(OwnerCharacter);
+			//InvenUI->SetOwnerCharacter(OwnerCharacter);
+			InvenUI->SetOwnerPlayer(Cast<AC_Player>(OwnerCharacter));
+			
 			//InvenUI->SetWidgetsOwner(OwnerCharacter);
 			if (!InvenUI->IsInViewport())
 			{
@@ -48,7 +51,7 @@ void UC_InvenSystem::BeginPlay()
 
 				UC_Util::Print("Adding to viewport", FColor::Red, 10.f);
 			}
-
+			InvenUI->UpdateWidget();
 			//InvenUI->SetVisibility(ESlateVisibility::Hidden);
 		}
 		else
@@ -66,8 +69,12 @@ void UC_InvenSystem::InitializeList()
 	if (!IsValid(InvenUI))
 	{
 		//PlayerController = GetWorld()->GetFirstPlayerController();
-		InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
-		InvenUI->SetOwnerCharacter(OwnerCharacter);
+		//InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
+		//InvenUI->SetOwnerCharacter(OwnerCharacter);
+
+		InvenUI = CreateWidget<UC_InventoryUIWidget>(PlayerController, InvenUiClass);
+		InvenUI->SetOwnerPlayer(Cast<AC_Player>(OwnerCharacter));
+
 		if (!InvenUI->IsInViewport())
 		{
 			//InvenUI->AddToViewport();
@@ -80,7 +87,8 @@ void UC_InvenSystem::InitializeList()
 	}
 	
 	//InvenUI->InitListView();
-	InvenUI->InitWidget();
+	//InvenUI->InitWidget();
+	InvenUI->UpdateWidget();
 }
 
 void UC_InvenSystem::OpenInvenUI()
@@ -102,6 +110,8 @@ void UC_InvenSystem::OpenInvenUI()
 	{
 		//InitializeList();
 		ShowInvenUI();
+
+
 	}
 
 	if (!IsValid(OwnerCharacter)) return;

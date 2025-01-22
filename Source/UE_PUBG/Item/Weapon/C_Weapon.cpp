@@ -227,7 +227,7 @@ bool AC_Weapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 
 	if (this->GetItemDatas().ItemCurStack == 1)//MeleeWeapon의 갯수는 0으로 해놨음;; TODO : 새로운 방법 찾기, 찾지 못한다면 우선 MeleeWeapon의 stack을 1로 사용하기.
 	{
-		equipComp->SetSlotWeapon(curWeaponSlot, this);
+		curWeapon = equipComp->SetSlotWeapon(curWeaponSlot, this);
 		invenComp->RemoveItemToMyList(this);
 	}
 	else
@@ -235,7 +235,7 @@ bool AC_Weapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 		this->DeductItemStack();
 		AC_ThrowingWeapon* SwapItem = Cast<AC_ThrowingWeapon>(SpawnItem(Character));
 		SwapItem->SetItemStack(1);
-		equipComp->SetSlotWeapon(curWeaponSlot, SwapItem);
+		curWeapon = equipComp->SetSlotWeapon(curWeaponSlot, SwapItem);
 	}
 	invenComp->AddItemToMyList(curWeapon);//내부에서 매개변수 nullptr가 들어오면 return시켜버림. TODO : curWeapon을 정의한 뒤에 equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]의 값이 바뀌었으므로 역참조를 하면 문제가 생김. 확인 할 것.
 	

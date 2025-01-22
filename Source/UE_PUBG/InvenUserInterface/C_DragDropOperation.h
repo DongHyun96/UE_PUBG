@@ -21,11 +21,12 @@ public:
 		curWeaponSlot = EWeaponSlot::NONE;
 	}
 
+public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UUserWidget* WidgetReference = nullptr;
 
 	UPROPERTY(BlueprintReadWrite)
-	UObject* DraggedItem;
+	class AC_Item* DraggedItem;
 
 
 	UPROPERTY(BlueprintReadWrite)
