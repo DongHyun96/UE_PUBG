@@ -33,6 +33,8 @@ public:
 	bool Interaction(AC_BasicCharacter* Character) override;
 	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
 	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
+
+
 	void AddBulletStackToCharacter();
 protected:
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
