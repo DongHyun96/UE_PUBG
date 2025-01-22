@@ -95,9 +95,10 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
     //꺼주면 제자리 파쿠르 방지.
     Weapons[InSlot]->SetActorEnableCollision(false); 
     // Attach to Holster 하기 전에 Local transform 초기화
-    //Weapons[InSlot]->SetActorRelativeTransform(FTransform::Identity);
  
-    Weapons[InSlot]->SetRelativeTranformToInitial();
+    //Weapons[InSlot]->SetActorRelativeTransform(FTransform::Identity);
+    //Weapons[InSlot]->SetRelativeTranformToInitial();
+
     Weapons[InSlot]->AttachToHolster(OwnerCharacter->GetMesh());
 
     // 새로 장착된 무기에 대한 PoseTransitionEnd 델리게이트 callback 걸기
@@ -105,6 +106,8 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
     
     return PrevSlotWeapon;
 }
+
+
 
 
 void UC_EquippedComponent::DetachmentWeapon(EWeaponSlot InSlot)

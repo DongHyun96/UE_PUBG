@@ -3,6 +3,7 @@
 
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_MainGunSlotWidget.h"
 #include "InvenUI/C_InventoryUIWidget.h"
+#include "Item/Weapon/Gun/C_Gun.h"
 
 //FReply UC_MainGunSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 //{
@@ -35,7 +36,9 @@
 //}
 
 
-bool UC_MainGunSlotWidget::ChangedGunSlot(AC_Weapon* gun)
+
+
+bool UC_MainGunSlotWidget::ChangedGunSlot(AC_Gun* gun)
 {
 	if (!gun) return false;
 	UC_EquippedComponent* EquipComp = OwnerPlayer->GetEquippedComponent();

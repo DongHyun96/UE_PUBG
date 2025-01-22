@@ -111,6 +111,7 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 
 	DragOperation->DraggedItem = CachedItem;
 
+	DragOperation->curWeaponSlot = EWeaponSlot::NONE;
 
 	//오너캐릭터 체크
 	if (!OwnerPlayer)
