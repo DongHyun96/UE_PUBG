@@ -53,21 +53,10 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
     // 들어온 슬롯의 이전 무기가 존재할 때 이전 무기 해제
     if (PrevSlotWeapon)
     {
-        // 현재 들고 있는 무기의 slot에 새로운 무기로 바꿔버리려 할 때
-        // TODO : 윗줄 상황에서 잘못될 수도? 잘못되면 아래 if문 주석 풀기
-        /*if (GetCurWeapon() == PrevSlotWeapon)
-        {
-            OwnerCharacter->SetHandState(EHandState::UNARMED);
-            if (!Weapon) CurWeaponType = EWeaponSlot::NONE;
-        }*/
-        //PrevSlotWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
         Weapons[InSlot]->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 
         // 이전 무기 해제에 대한 PoseTransitionEnd 델리게이트 해제
         OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(PrevSlotWeapon);
-
-        //C_Item의 detachment에서 처리중, 혹시몰라 남겨둠.
-        //PrevSlotWeapon->SetOwnerCharacter(nullptr);
     }
 
     Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
@@ -94,17 +83,53 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
     //꺼주면 제자리 파쿠르 방지.
     Weapons[InSlot]->SetActorEnableCollision(false); 
-    // Attach to Holster 하기 전에 Local transform 초기화
  
-    //Weapons[InSlot]->SetActorRelativeTransform(FTransform::Identity);
-    //Weapons[InSlot]->SetRelativeTranformToInitial();
-
+    Weapons[InSlot]->SetRelativeTranformToInitial();
     Weapons[InSlot]->AttachToHolster(OwnerCharacter->GetMesh());
 
     // 새로 장착된 무기에 대한 PoseTransitionEnd 델리게이트 callback 걸기
     OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(Weapons[InSlot], &AC_Weapon::OnOwnerCharacterPoseTransitionFin);
     
     return PrevSlotWeapon;
+}
+
+bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
+{
+    AC_Gun* CurMainGun  = Cast<AC_Gun>(Weapons[EWeaponSlot::MAIN_GUN]);
+    AC_Gun* CurSubGun   = Cast<AC_Gun>(Weapons[EWeaponSlot::SUB_GUN]);
+
+
+    // 예외 상황이 아닌 상황
+    if (!IsValid(CurMainGun) && !IsValid(CurSubGun))                                        return false;
+    if (CurWeaponType != EWeaponSlot::MAIN_GUN && CurWeaponType != EWeaponSlot::SUB_GUN)    return false;
+    
+    Weapons[EWeaponSlot::SUB_GUN]   = CurMainGun;
+    Weapons[EWeaponSlot::MAIN_GUN]  = CurSubGun;
+
+    if (CurMainGun) CurMainGun->ChangeGunState(EGunState::SUB_GUN);
+    if (CurSubGun)  CurSubGun->ChangeGunState(EGunState::MAIN_GUN);
+
+    // CurMainGun과 CurSubGun 서로 Slot Swap
+    // 현재 CurWeaponType -> 다른 종류의 GunType으로 Swap시키기
+    // Gun 무기 Type 바꾸기
+    if (CurWeaponType == EWeaponSlot::MAIN_GUN)
+    {
+        CurWeaponType = EWeaponSlot::SUB_GUN;
+
+        // MainGun인 총기를 Holster에 집어넣기
+        if (Weapons[EWeaponSlot::MAIN_GUN])
+            Weapons[EWeaponSlot::MAIN_GUN]->AttachToHolster(OwnerCharacter->GetMesh());
+    }
+    else if (CurWeaponType == EWeaponSlot::SUB_GUN)
+    {
+        CurWeaponType = EWeaponSlot::MAIN_GUN;
+
+        // SubGun인 총기를 Holster에 집어넣기
+        if (Weapons[EWeaponSlot::SUB_GUN])
+            Weapons[EWeaponSlot::SUB_GUN]->AttachToHolster(OwnerCharacter->GetMesh());
+    }
+
+    return true;
 }
 
 
