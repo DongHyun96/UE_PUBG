@@ -60,7 +60,7 @@ bool UC_GunSlotWidget::HandleDrop(AC_Item* DroppedItem)
 	if (curWeapon == DroppedItem) return false; //드래그된 아이템과 드랍된 슬롯의 아이템이 같은 아이템이라면 return false;
 	
 	//Around의 아이템과 Slot의 아이템을 교체하는 것과 다른 슬롯으로 아이템을 이동하는 것 구현하기.
-	
+
 	//Around의 아이템과 Slot의 아이템을 교체하는 작업은 간단하게 MoveToSlot으로 처리
 	if (DroppedItem->GetItemDatas().ItemPlace == EItemPlace::AROUND)
 		return DroppedItem->MoveToSlot(OwnerPlayer);

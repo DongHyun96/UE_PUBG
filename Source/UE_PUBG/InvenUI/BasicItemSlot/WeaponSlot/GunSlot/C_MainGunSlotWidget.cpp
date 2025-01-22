@@ -40,6 +40,9 @@ bool UC_MainGunSlotWidget::ChangedGunSlot(AC_Weapon* gun)
 	if (!gun) return false;
 	UC_EquippedComponent* EquipComp = OwnerPlayer->GetEquippedComponent();
 
+	if (OwnerPlayer->GetHandState() == EHandState::WEAPON_GUN)
+		if (EquipComp->SwapSlotsWhileGunHandState()) return true;
+
 	EquipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, nullptr);//우선 드래그된 아이템 슬롯의 장착을 해제.
 
 	AC_Weapon* curSlotGun = EquipComp->SetSlotWeapon(WeaponType, gun);//드랍된 슬롯에 드래그된 아이템을 장착

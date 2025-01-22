@@ -54,6 +54,12 @@ public:
 	AC_Weapon* SetSlotWeapon(EWeaponSlot InSlot, class AC_Weapon* Weapon);
 
 	/// <summary>
+	/// HandState Gun인 경우(현재 총기를 들고 있는 상태인 경우), Gun slot끼리 Swap하는 상황에 대한 SetSlotWeapon 예외처리 함수
+	/// </summary>
+	/// <returns> Slot끼리 Swap이 제대로 이루어졌다면 return true </returns>
+	bool SwapSlotsWhileGunHandState();
+
+	/// <summary>
 	/// 슬롯에 장착된 무기를 떨구기.
 	/// </summary>
 	/// <param name="InSlot"> : 떨구고 싶은 아이템이 있는 슬롯 </param>
