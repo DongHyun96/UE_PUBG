@@ -3,15 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InvenUI/BasicItemSlot/EquipmentSlot/C_EquipmentSlotWidget.h"
+#include "InvenUI/BasicItemSlot/C_BasicEquippedItemSlotWidget.h"
 #include "C_AttachableItemSlotWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_AttachableItemSlotWidget : public UC_EquipmentSlotWidget
+class UE_PUBG_API UC_AttachableItemSlotWidget : public UC_BasicEquippedItemSlotWidget
 {
 	GENERATED_BODY()
 	
+public:
+	//void UpdateWidget() override;
 };

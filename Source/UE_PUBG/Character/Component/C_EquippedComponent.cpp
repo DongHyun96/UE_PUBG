@@ -13,6 +13,9 @@
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_InvenSystem.h"
 
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_AmmoWidget.h"
+
 #include "Utility/C_Util.h"
 
 // Sets default values for this component's properties
@@ -248,6 +251,13 @@ bool UC_EquippedComponent::TryReAttachCurWeaponToHand()
 
 void UC_EquippedComponent::OnSheathEnd()
 {
+    // Player HUD 업데이트
+    if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+    {
+        UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
+        AmmoWidget->SetVisibility(ESlateVisibility::Hidden);
+    }
+
     // 무기를 바꾸는 도중에 SlotWeapon 장착 해제 예외 처리
     if (!GetCurWeapon())
     {

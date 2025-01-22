@@ -20,8 +20,9 @@ class UE_PUBG_API UC_CustomUserWidget : public UUserWidget
 public:
 	class AC_Player* GetOwnerPlayer() { return OwnerPlayer; }
 
-	void SetOwnerPlayer(AC_Player* InOwnerPlayer) { OwnerPlayer = InOwnerPlayer; }
+	virtual void SetOwnerPlayer(AC_Player* InOwnerPlayer) { OwnerPlayer = InOwnerPlayer; }
 
 protected:
+	UPROPERTY()
 	AC_Player* OwnerPlayer = nullptr;
 };

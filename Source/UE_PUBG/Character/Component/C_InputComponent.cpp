@@ -636,23 +636,6 @@ void UC_InputComponent::OnFKey()
 	// Testing용 ConsumableItem 작동 취소 TODO : 이 라인 지우기
 	//if (IsValid(Player->ConsumableItems[Player->ConsumableIterator]))
 	//	Player->ConsumableItems[Player->ConsumableIterator]->CancelActivating();
-
-	if (Player->GetInventory()->GetNearItems().Num() > 0)
-	{
-		//AC_Item* Item = *NearInventory.CreateIterator();
-		AC_Item* item = Player->GetInventory()->GetNearItems()[0];
-
-		//NearInventory.Add(Item);
-		//item->Interaction(Player);
-		//item->SetActorHiddenInGame(true); // Hide item from the world
-		item->SetActorEnableCollision(false); // Disable collision
-		Player->GetInventory()->GetNearItems().Remove(item);
-
-	}
-	else
-	{
-		UC_Util::Print("NONE");
-	}
 }
 
 void UC_InputComponent::OnNKey()

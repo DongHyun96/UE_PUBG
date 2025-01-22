@@ -225,6 +225,8 @@ void AC_Item::SetItemStack(uint8 inItemStack)
 {
 	ItemDatas.ItemCurStack = inItemStack;
 	
+	if (!OwnerCharacter) return;
+
 	if (ItemDatas.ItemCurStack == 0)
 	{
 		OwnerCharacter->GetInvenComponent()->DestroyMyItem(this);

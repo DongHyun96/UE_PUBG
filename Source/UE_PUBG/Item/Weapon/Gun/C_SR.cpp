@@ -36,7 +36,7 @@ bool AC_SR::ExecuteReloadMontage()
 
 	if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
 
-	if (CurBulletCount > 0)
+	if (CurBulletCount > 0 && CurrentShootingMode == EShootingMode::SINGLE_SHOT &&!IsReloadingSR)
 	{
 		UAnimMontage* DrawMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
 		OwnerCharacter->PlayAnimMontage(SniperReloadMontages[OwnerCharacter->GetPoseState()]);
@@ -103,3 +103,10 @@ void AC_SR::SetRelativeRotationOnCrawl()
 		break;
 	}
 }
+
+//bool AC_SR::ReloadBullet()
+//{
+//	Super::ReloadBullet();
+//	IsReloadingSR = false;
+//	return false;
+//}

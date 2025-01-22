@@ -22,6 +22,14 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
+	bool Interaction(AC_BasicCharacter* Character) override;
+	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
+	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
+
+	bool MoveInvenToSlot(AC_BasicCharacter* Character);
+	bool MoveSlotToInven(AC_BasicCharacter* Character);
+	bool MoveSlotToSlot(AC_BasicCharacter* Character);
+
 
 	void SetIsAttached(bool InIsAttachedToWeapon);
 	void SetMeshVisibility(bool InIsVisible);

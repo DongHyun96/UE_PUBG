@@ -178,10 +178,10 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 {
 	
 	AC_Gun* ParentGun = Cast<AC_Gun>(InParent->GetOuter());
-
 	AAttachmentActor* AttachmentMesh = GetAttachablePartMesh(InPartsName, InAttachmentName);
 	if (!IsValid(AttachmentMesh)) return false;
 	if (!IsValid(ParentGun))      return false;
+	if (!ParentGun->GetAttachableParts().Contains(InPartsName)) return false;
 	UC_Util::Print("Attached Attachment!", FColor::Black, 20);
 
 	AttachmentMesh->SetActorHiddenInGame(false);

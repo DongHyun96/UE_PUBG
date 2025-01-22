@@ -13,5 +13,10 @@ UCLASS()
 class UE_PUBG_API UC_MeleeWeaponSlotWidget : public UC_WeaponSlotWidget
 {
 	GENERATED_BODY()
-	
+public:
+	//virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	//void UpdateWidget() override;
+
+	bool MouseRBDownInteraction(AC_Weapon* inSlotWeapon) override;
 };

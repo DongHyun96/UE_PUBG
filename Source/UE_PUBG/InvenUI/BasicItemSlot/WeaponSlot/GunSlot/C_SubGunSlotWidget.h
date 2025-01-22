@@ -14,4 +14,12 @@ class UE_PUBG_API UC_SubGunSlotWidget : public UC_GunSlotWidget
 {
 	GENERATED_BODY()
 	
+public:
+	//virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	//void UpdateWidget() override;
+protected:
+	//bool HandleDrop(class AC_Item* DroppedItem) override;
+
+	bool ChangedGunSlot(AC_Weapon* gun) override;
 };

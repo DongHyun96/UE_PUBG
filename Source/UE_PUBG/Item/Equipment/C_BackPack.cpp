@@ -132,26 +132,26 @@ bool AC_BackPack::Interaction(AC_BasicCharacter* Character)
 	//return false;//Character->GetInvenComponent()->CheckMyBackPack(this);
 }
 
-void AC_BackPack::PickUpItem(AC_BasicCharacter* Character)
-{
-	//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
-	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
-	AC_BackPack* curBackPack = nullptr;
-	curBackPack = InvenComp->GetMyBackPack();
-
-	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//갑빠가 더해주는 Volume 추가해야함.
-
-	if (curVolume > preMaxVolume) return;
-
-	if (curBackPack) 
-		curBackPack->DetachItem();
-	
-	InvenComp->EquippedBackPack(this);
-
-	this->SetItemPlace(EItemPlace::SLOT);
-
-}
+//void AC_BackPack::PickUpItem(AC_BasicCharacter* Character)
+//{
+//	//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
+//	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
+//	AC_BackPack* curBackPack = nullptr;
+//	curBackPack = InvenComp->GetMyBackPack();
+//
+//	float curVolume = InvenComp->GetCurVolume();
+//	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//갑빠가 더해주는 Volume 추가해야함.
+//
+//	if (curVolume > preMaxVolume) return;
+//
+//	if (curBackPack) 
+//		curBackPack->DetachItem();
+//	
+//	InvenComp->EquippedBackPack(this);
+//
+//	this->SetItemPlace(EItemPlace::SLOT);
+//
+//}
 
 bool AC_BackPack::LegacyMoveToAround(AC_BasicCharacter* Character)
 {
@@ -222,7 +222,7 @@ bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
 	if (curBackPack)
 	{
 		//curBackPack->SetOwnerCharacter(nullptr);
-		InvenComp->SetSlotEquipment(EEquipSlot::BACKPACK, curBackPack);
+		InvenComp->SetSlotEquipment(EEquipSlot::BACKPACK, nullptr);
 		//InvenComp->RemoveBackPack();
 		//curBackPack->DetachItem();
 	}
@@ -237,7 +237,7 @@ bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
 bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
 	//TODO : PickUpItem 내용으로 우선 구현한 것. 다시 구현하기.
-//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
+	//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	UC_EquippedComponent* EquipComp = Character->GetEquippedComponent();
 
@@ -250,7 +250,7 @@ bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character)
 	if (curVolume > preMaxVolume) return false;
 
 	if (curBackPack)
-		curBackPack->LegacyMoveToAround(Character);
+		curBackPack->MoveToAround(Character);
 
 	//InvenComp->EquippedBackPack(this);
 

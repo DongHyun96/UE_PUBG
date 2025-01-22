@@ -22,6 +22,7 @@
 #include "Character/Component/C_InvenSystem.h"
 
 #include "Character/Component/C_AttachableItemMeshComponent.h"
+#include "Item/Weapon/Gun/C_SR.h"
 
 
 
@@ -32,7 +33,7 @@ bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	UC_Util::Print("Change Weapon Mode");
+	//UC_Util::Print("Change Weapon Mode");
 	CurWeapon->ChangeCurShootingMode();	
 	return false;
 }
@@ -53,6 +54,10 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	//}
 	//WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);
 	//WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::MUZZLE, EAttachmentNames::COMPENSATOR);
+
+	AC_SR* CurrentSR = Cast<AC_SR>(CurWeapon);
+	if (IsValid(CurrentSR))
+		CurrentSR->SetIsReloadingSR(true);
 	CurWeapon->ExecuteReloadMontage();
 	return false;
 }
@@ -73,7 +78,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	MlbPressTimeCount = 0;
 	if (CurWeapon->GetCurBulletCount() < CurWeapon->GetMaxBulletCount() && CurWeapon->GetCurBulletCount() > 0)
 	{
-		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SEMI_AUTO && !CurPlayer->GetIsAimDown() && CurWeapon->GetGunType() == EGunType::SR)
+		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SINGLE_SHOT && !CurPlayer->GetIsAimDown())
 			CurWeapon->ExecuteReloadMontage();
 	}
 	else if (CurWeapon->GetCurBulletCount() == 0)
@@ -123,7 +128,7 @@ bool AC_GunStrategy::UseMlb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 	if (!WeaponUser->GetCanFireBullet()) return false;
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	if (CurPlayer->GetIsAimDown() && CurWeapon->GetCurrentShootingMode() == EShootingMode::SEMI_AUTO && CurWeapon->GetCurBulletCount() >= 0)
+	if (CurPlayer->GetIsAimDown() && CurWeapon->GetCurrentShootingMode() == EShootingMode::SINGLE_SHOT && CurWeapon->GetCurBulletCount() >= 0)
 		CurWeapon->ExecuteReloadMontage();
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
 

@@ -46,6 +46,10 @@
 
 #include "Item/Weapon/Gun/C_Bullet.h"
 #include "Item/ItemBullet/C_Item_Bullet.h"
+#include "Item/Weapon/Gun/C_SR.h"
+
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_AmmoWidget.h"
 
 
 //UCameraComponent* AC_Gun::AimSightCamera;
@@ -217,6 +221,18 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 	// 만일 SUB_GUN의 Draw가 실행된다면 왼손으로 먼저 Attach
 	//현재 왼손으로 옮겨지고 있다면 다시 어태치 하지 않고 If문 밑으로 진행
 	FName CurSocketName = GetAttachParentSocketName();
+
+	// 총기 HUD 켜주기
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	{
+		UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
+
+		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, true);
+		AmmoWidget->SetShootingMode(CurrentShootingMode);
+		AmmoWidget->SetLeftAmmoText(OwnerCharacter->GetCurrentFivemmBulletCount());
+		AmmoWidget->SetMagazineText(CurBulletCount);
+	}
+
 
 	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(DrawMontage) && CurSocketName != SUB_DRAW_SOCKET_NAME)
 	{
@@ -542,7 +558,7 @@ bool AC_Gun::GetIsPlayingMontagesOfAny()
 		CurAnimInstance->Montage_IsPlaying(DrawMontage)   || 
 		CurAnimInstance->Montage_IsPlaying(SheathMontage) ||
 		CurAnimInstance->Montage_IsPlaying(ReloadMontage);
-	UC_Util::Print(IsPlayingMontagesOfAny, FColor::Magenta, 10);
+	//UC_Util::Print(IsPlayingMontagesOfAny, FColor::Magenta, 10);
 	return IsPlayingMontagesOfAny;
 }
 
@@ -557,7 +573,28 @@ void AC_Gun::ChangeCurShootingMode()
 	int CurMode = int(CurrentShootingMode);
 	++CurMode %= 3;
 	CurrentShootingMode = EShootingMode(CurMode);
-	UC_Util::Print(CurMode);
+
+	switch (CurrentShootingMode)
+	{
+	case EShootingMode::SEMI_AUTO: UC_Util::Print("SEMI_AUTO", FColor::MakeRandomColor(), 10.f);
+		break;
+	case EShootingMode::FULL_AUTO: UC_Util::Print("FULL AUTO", FColor::MakeRandomColor(), 10.f);
+		break;
+	case EShootingMode::BURST: UC_Util::Print("BURST", FColor::MakeRandomColor(), 10.f);
+		break;
+	case EShootingMode::MAX: UC_Util::Print("MAX", FColor::MakeRandomColor(), 10.f);
+		break;
+	default:
+		break;
+	}
+
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	{
+		// AmmoWidget 업데이트
+		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetShootingMode(CurrentShootingMode);
+	}
+
+	//UC_Util::Print(CurMode);
 }
 
 bool AC_Gun::ExecuteReloadMontage()
@@ -608,6 +645,11 @@ bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character)
 	}
 }
 
+bool AC_Gun::MoveSlotToInven(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
 FVector2D AC_Gun::GetRecoilFactors()
 {
 	float VerticalFactor   = RecoilFactorVertical * RecoilMultiplierByGripVert * RecoilMultiplierMuzzleVert;
@@ -628,9 +670,10 @@ bool AC_Gun::FireBullet()
 	FVector HitLocation;
 	bool HasHit;
 	if (!SetBulletDirection(FireLocation, FireDirection,HitLocation, HasHit)) return false;
-	UC_Util::Print(FireLocation);
-	UC_Util::Print(FireDirection);
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+
+	//UC_Util::Print(FireLocation);
+	//UC_Util::Print(FireDirection);
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter); // TODO : OwnerPlayer -> Enemy도 총을 쏠 수 있으니 예외처리 시켜야 함
 	bool ApplyGravity = OwnerPlayer->GetIsWatchingSight() || !HasHit;
 	int BulletCount = 0;
 	for (auto& Bullet : OwnerPlayer->GetBullets())
@@ -645,9 +688,17 @@ bool AC_Gun::FireBullet()
 		CurBulletCount--;
 		OwnerPlayer->RecoilController();
 		if (HasHit)
-			return Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity, HitLocation);
+		{
+			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity, HitLocation);
+			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
+			return Succeeded;
+		}
 		else
-			return Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+		{
+			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
+			return Succeeded;
+		}
 
 		//Bullet->Fire(this, FireLocation, FireDirection);
 		//if (BulletCount > 100)
@@ -667,7 +718,9 @@ bool AC_Gun::ReloadBullet()
 	int RemainAmmo;
 	int ChangedStack;
 	AC_Item_Bullet* CarryingBullet;
-
+	AC_SR* CurrentSR = Cast<AC_SR>(this);
+	if (IsValid(CurrentSR))
+		CurrentSR->SetIsReloadingSR(false);
 	switch (CurGunBulletType)
 	{
 	case EBulletType::FIVEMM:
@@ -682,28 +735,41 @@ bool AC_Gun::ReloadBullet()
 		
 		CarryingBullet->SetItemStack(ChangedStack);
 		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+		
+		//장전한 총알 갯수만큼 curVolume 조절
+		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas().ItemVolume));
 
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+		{
 			OwnerPlayer->GetInvenSystem()->InitializeList();
-
+			OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(OwnerCharacter->GetCurrentFivemmBulletCount(), true);
+			OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
+		}
 		return true;
 
 		break;
 	case EBulletType::SEVENMM:
 		if (OwnerCharacter->GetCurrentSevenmmBulletCount() == 0) return false;
 
-		CurBulletCount = FMath::Min(MaxBulletCount, CurBulletCount + OwnerCharacter->GetCurrentFivemmBulletCount());
+		CurBulletCount = FMath::Min(MaxBulletCount, CurBulletCount + OwnerCharacter->GetCurrentSevenmmBulletCount());
 
 		RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
 
-		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("5.56mm Ammo"));
+		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("7.7mm Ammo"));
 		ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - RemainAmmo;
 
 		CarryingBullet->SetItemStack(ChangedStack);
-		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
+		OwnerCharacter->AddSevenmmBulletStack(-RemainAmmo);
+
+		//장전한 총알 갯수만큼 curVolume 조절
+		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas().ItemVolume));
 
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+		{
 			OwnerPlayer->GetInvenSystem()->InitializeList();
+			OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(OwnerCharacter->GetCurrentSevenmmBulletCount(), true);
+			OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
+		}
 
 		return true;
 
@@ -828,7 +894,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, DestLocation, ECC_Visibility, CollisionParams);
 
 	DrawDebugSphere(GetWorld(), HitResult.Location, 1.0f, 12, FColor::Red, true);
-	UC_Util::Print(float(HitResult.Distance));
+	//UC_Util::Print(float(HitResult.Distance));
 	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
 	//FVector FireLocation2 = GunMesh->GetSocketLocation(FName("MuzzleSocke"));
 	//UC_Util::Print(FireLocation);
@@ -840,8 +906,8 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 		FireDirection = HitResult.Location - FireLocation;
 		FireDirection = FireDirection.GetSafeNormal();
 		
-		UC_Util::Print(HitResult.Location, FColor::Emerald);
-		UC_Util::Print(HitResult.Distance, FColor::Cyan);
+		//UC_Util::Print(HitResult.Location, FColor::Emerald);
+		//UC_Util::Print(HitResult.Distance, FColor::Cyan);
 	}
 	else
 	{

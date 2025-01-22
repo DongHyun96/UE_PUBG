@@ -62,6 +62,36 @@ void AC_AttachableItem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+bool AC_AttachableItem::Interaction(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_AttachableItem::MoveAroundToInven(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_AttachableItem::MoveInvenToAround(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_AttachableItem::MoveInvenToSlot(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_AttachableItem::MoveSlotToInven(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
+bool AC_AttachableItem::MoveSlotToSlot(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
 void AC_AttachableItem::SetIsAttached(bool InIsAttachedToWeapon)
 {
 	if (InIsAttachedToWeapon)

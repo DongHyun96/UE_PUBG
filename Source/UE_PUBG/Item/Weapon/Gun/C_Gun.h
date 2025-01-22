@@ -32,7 +32,9 @@ enum class EShootingMode : uint8
 {
 	SEMI_AUTO,
 	FULL_AUTO,
-	BURST		
+	BURST,
+	SINGLE_SHOT,
+	MAX
 };
 
 USTRUCT(BlueprintType)
@@ -175,18 +177,19 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 	float RecoilFactorHorizontal;
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EShootingMode CurrentShootingMode = EShootingMode::FULL_AUTO;
 
 	float RecoilMultiplierByGripVert = 1;
 	float RecoilMultiplierByGripHorizon = 1;
 	float RecoilMultiplierMuzzleVert = 1;
 	float RecoilMultiplierMuzzleHorizon = 1;
-private:
+protected:
 	//bool MoveSlotToAround(AC_BasicCharacter* Character) override;
 	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
 	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 
+	bool MoveSlotToInven(AC_BasicCharacter* Character) override;
 public:
 	void SetRecoilMultiplierGripVert(float InValue)      { RecoilMultiplierByGripVert    = InValue; }
 	void SetRecoilMultiplierGripHorizon(float InValue)   { RecoilMultiplierByGripHorizon = InValue; }
@@ -224,6 +227,7 @@ protected:
 	class AC_AttachableItem* Magazine{};
 
 	void LoadMagazine();
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EBulletType CurGunBulletType;
 
 public:
