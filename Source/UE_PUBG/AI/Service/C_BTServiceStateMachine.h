@@ -26,4 +26,7 @@ private:
 	class AC_EnemyAIController* OwnerController{};
 	class UC_BehaviorComponent* OwnerBehaviorComponent{};
 
+private:
+
+	float Timer{};
 };

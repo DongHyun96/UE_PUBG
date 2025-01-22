@@ -5,12 +5,14 @@
 
 #include "AI/C_EnemyAIController.h"
 #include "AI/C_BehaviorComponent.h"
+#include "AI/Service/C_BTServiceIdle.h"
 
 #include "Character/C_Enemy.h"
 
 #include "Character/Component/C_SkyDivingComponent.h"
 
 #include "Utility/C_Util.h"
+
 
 UC_BTServiceStateMachine::UC_BTServiceStateMachine()
 {
@@ -34,8 +36,13 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		OwnerBehaviorComponent->SetServiceType(EServiceType::SKYDIVE);
 
 	// Testing Pose Transition
+	Timer += DeltaSeconds;
 
-
-
+	if (Timer > 3.f) // Set IdleTaskType to PoseChange
+	{
+		Timer = 0.f;
+		OwnerBehaviorComponent->SetIdleTaskType(EIdleTaskType::CHANGE_POSE);
+	}
+	else OwnerBehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
 		
 }

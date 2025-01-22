@@ -33,7 +33,7 @@ bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	UC_Util::Print("Change Weapon Mode");
+	//UC_Util::Print("Change Weapon Mode");
 	CurWeapon->ChangeCurShootingMode();	
 	return false;
 }

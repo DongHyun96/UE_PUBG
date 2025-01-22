@@ -33,7 +33,8 @@ enum class EShootingMode : uint8
 	SEMI_AUTO,
 	FULL_AUTO,
 	BURST,
-	SINGLE_SHOT
+	SINGLE_SHOT,
+	MAX
 };
 
 USTRUCT(BlueprintType)
