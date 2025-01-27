@@ -565,6 +565,8 @@ AC_AttachableItem* AC_Gun::SetAttachableItemSlot(EPartsName InPartsName, AC_Atta
 		//	PrevSlotAttachableItem->MoveToAround(OwnerCharacter);
 		//}
 		
+		//PrevSlotAttachableItem->SetOwnerGun(nullptr);
+
 		//부착물의 mesh를 총에서 장착해제
 		AttachableMeshComp->DetachFromGun(this->GetGunMesh(), InPartsName, PrevSlotAttachableItem->GetAttachmentName());
 	}
@@ -579,7 +581,7 @@ AC_AttachableItem* AC_Gun::SetAttachableItemSlot(EPartsName InPartsName, AC_Atta
 	//AttachableItem[InPartsName]->SetActorEnableCollision(true);	//Overlap 불가능 하도록 Collision Off
 
 	AttachableItem[InPartsName]->SetOwnerCharacter(OwnerCharacter);
-
+	
 	AttachableItem[InPartsName]->SetItemPlace(EItemPlace::SLOT);
 
 	AttachableMeshComp->AttachToGun(this->GetGunMesh(), InPartsName, AttachableItem[InPartsName]->GetAttachmentName());

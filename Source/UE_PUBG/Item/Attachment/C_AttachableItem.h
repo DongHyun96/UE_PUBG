@@ -37,6 +37,8 @@ public:
 	AC_Gun* GetOwnerGun() { return OwnerGun; }
 
 	void SetOwnerGun(class AC_Gun* InOwnerGun) { OwnerGun = InOwnerGun; }
+
+	EPartsName GetName() { return Name; }
 protected:
 	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
 	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
@@ -44,6 +46,7 @@ protected:
 	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
 	bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
 
+	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
 	bool MoveSlotToInven(AC_BasicCharacter* Character) override;
 	bool MoveSlotToSlot(AC_BasicCharacter* Character) override;
 

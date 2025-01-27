@@ -235,7 +235,7 @@ public:
 	virtual bool MoveToAround(AC_BasicCharacter* Character);
 	
 	/// <summary>
-	/// 아이템을 Slot으로 보낼 때 사용하면 현재 Place에 맞게 작동.
+	/// 아이템을 Slot으로 보낼 때 Place에 따라 작동.
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns></returns>

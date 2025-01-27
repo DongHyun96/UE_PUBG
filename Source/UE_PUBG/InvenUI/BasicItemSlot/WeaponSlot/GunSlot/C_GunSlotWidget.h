@@ -24,11 +24,13 @@ public:
 	void UpdateWidget() override;
 
 	void UpdateAttachableSlotVisibility();
+	
+	bool SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, class AC_AttachableItem* InAttachableItem);
 protected:
 	virtual bool HandleDrop(class UC_DragDropOperation* InOperation); //TODO: 순수가상함수로
 
 	virtual bool ChangedGunSlot(class AC_Gun* gun);
-
+	
 private:
 	void InitializeAttachSlotMap();
 
@@ -47,10 +49,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UC_AttachableItemSlotWidget* WB_StockSlot = nullptr;
-
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UC_AttachableItemSlotWidget* WB_GripSlot = nullptr;
-
-
-
 };

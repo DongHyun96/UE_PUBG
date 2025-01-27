@@ -10,6 +10,7 @@
 
 #include "Item/C_Item.h"
 #include "Item/Weapon/Gun/C_Gun.h"
+#include "Item/Attachment/C_AttachableItem.h"
 
 #include "Utility/C_Util.h"
 
@@ -96,15 +97,31 @@ void UC_GunSlotWidget::UpdateAttachableSlotVisibility()
 
 }
 
+bool UC_GunSlotWidget::SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, AC_AttachableItem* InAttachableItem)
+{
+	AC_Gun* SlotGun = Cast<AC_Gun>(InSlotWeapon);
+	
+	if (!SlotGun) return false;
+
+	AC_AttachableItem* ChangedItem = SlotGun->SetAttachableItemSlot(InAttachableItem->GetName(), InAttachableItem);
+
+	if (!ChangedItem) return true;
+
+	return ChangedItem->MoveToInven(OwnerPlayer);
+
+	
+}
+
 bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 {
 	UC_EquippedComponent* EquipComp = OwnerPlayer->GetEquippedComponent();
-	AC_Weapon* curWeapon = EquipComp->GetWeapons()[WeaponType];
+	AC_Weapon* curWeapon = EquipComp->GetWeapons()[WeaponType];//드랍된 슬롯의 Weapon
 	//AC_Item* DroppedItem = Cast<AC_Item>(InOperation->DraggedItem);
 	AC_Item* DroppedItem =InOperation->DraggedItem;
 
 	if (!curWeapon) //return DroppedItem->MoveToSlot(OwnerPlayer); //드랍된 슬롯에 아이템이 없다면 바로 장착
 	{
+		//드롭된 슬롯에 아이템이 없다면 실행
 		if (InOperation->curWeaponSlot == EWeaponSlot::MAIN_GUN || InOperation->curWeaponSlot == EWeaponSlot::SUB_GUN)
 			if (InOperation->curWeaponSlot != WeaponType)
 			{
@@ -118,12 +135,20 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 		return true;
 	}
 	if (curWeapon == DroppedItem) return false; //드래그된 아이템과 드랍된 슬롯의 아이템이 같은 아이템이라면 return false;
-	
+	//드롭된 슬롯에 아이템이 있다면 실행
+	// 
 	//Around의 아이템과 Slot의 아이템을 교체하는 것과 다른 슬롯으로 아이템을 이동하는 것 구현하기.
 
 	//Around의 아이템과 Slot의 아이템을 교체하는 작업은 간단하게 MoveToSlot으로 처리
 	if (DroppedItem->GetItemDatas().ItemPlace == EItemPlace::AROUND)
+	{
+		if (DroppedItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT)
+		{
+			//드롭된 아이템이 부착물이라면 드롭된 슬롯에 우선 장착.
+			if (SetAttachmentSlotOnDrop(curWeapon, Cast<AC_AttachableItem>(DroppedItem))) return true;
+		}
 		return DroppedItem->MoveToSlot(OwnerPlayer);
+	}
 
 	AC_Gun* Gun = Cast<AC_Gun>(DroppedItem);
 	

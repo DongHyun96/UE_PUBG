@@ -110,6 +110,8 @@ bool AC_AttachableItem::MoveInvenToAround(AC_BasicCharacter* Character)
 
 	invenComp->RemoveItemToMyList(this);
 
+
+
 	//SetOwnerCharacter(nullptr);
 
 	DropItem(Character);
@@ -136,6 +138,11 @@ bool AC_AttachableItem::MoveInvenToSlot(AC_BasicCharacter* Character)
 	return false;
 }
 
+bool AC_AttachableItem::MoveSlotToAround(AC_BasicCharacter* Character)
+{
+	return false;
+}
+
 bool AC_AttachableItem::MoveSlotToInven(AC_BasicCharacter* Character)
 {
 	if (!GetOwnerGun()) return false;
@@ -145,6 +152,8 @@ bool AC_AttachableItem::MoveSlotToInven(AC_BasicCharacter* Character)
 	if (!invenComp->CheckVolume(this)) return false; //인벤에 공간이 부족하면 return false;
 
 	GetOwnerGun()->SetAttachableItemSlot(this->Name, nullptr);
+
+	SetOwnerGun(nullptr);
 
 	invenComp->AddItemToMyList(this);
 
