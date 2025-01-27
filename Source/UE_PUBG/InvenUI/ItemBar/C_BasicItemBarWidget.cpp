@@ -110,7 +110,7 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	//DragOperation->Pivot = EDragPivot::CenterCenter;
 	FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
 	 // 현재 마우스 클릭 위치 가져오기 (화면 좌표)
-	FVector2D Offset = FVector2D(64.f) * 0.5f;
+	FVector2D Offset = DragVisual->Brush.ImageSize * 0.5f;
 	FVector2D CenteredPosition = MousePosition - Offset;
 
 	// 현재 위젯(ItemBar)의 화면 좌표 가져오기

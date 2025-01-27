@@ -574,7 +574,6 @@ AC_AttachableItem* AC_Gun::SetAttachableItemSlot(EPartsName InPartsName, AC_Atta
 	if (AttachableItem[InPartsName] == nullptr) return PrevSlotAttachableItem; 
 	
 	//새로 장착하는 부착물의 mesh를 총에 장착
-	AttachableMeshComp->AttachToGun(this->GetGunMesh(), InPartsName, AttachableItem[InPartsName]->GetAttachmentName());
 
 	//AttachableItem[InPartsName]->SetActorHiddenInGame(false);	//모습이 안보이도록 보이도록 
 	//AttachableItem[InPartsName]->SetActorEnableCollision(true);	//Overlap 불가능 하도록 Collision Off
@@ -583,6 +582,7 @@ AC_AttachableItem* AC_Gun::SetAttachableItemSlot(EPartsName InPartsName, AC_Atta
 
 	AttachableItem[InPartsName]->SetItemPlace(EItemPlace::SLOT);
 
+	AttachableMeshComp->AttachToGun(this->GetGunMesh(), InPartsName, AttachableItem[InPartsName]->GetAttachmentName());
 	//아이템의 정확한 위치 이동은 다른 곳에서 처리하기.
 	//AttachableItem[InPartsName]->MoveToSlot(OwnerCharacter);
 
