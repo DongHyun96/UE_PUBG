@@ -215,7 +215,7 @@ bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
 	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
 
 	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//TODO : 갑빠가 더해주는 Volume 추가해야함.
+	float preMaxVolume = 70.f;// +InvenComp->CheckBackPackVolume(this->GetLevel());//TODO : 갑빠가 더해주는 Volume 추가해야함.
 
 	if (curVolume > preMaxVolume) return false;
 
@@ -245,9 +245,9 @@ bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character)
 	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
 
 	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//갑빠가 더해주는 Volume 추가해야함.
+	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel()) + InvenComp->GetVestVolume();//갑빠가 더해주는 Volume 추가해야함.
 
-	if (curVolume > preMaxVolume) return false;
+	if (curVolume >= preMaxVolume) return false;
 
 	if (curBackPack)
 		curBackPack->MoveToAround(Character);

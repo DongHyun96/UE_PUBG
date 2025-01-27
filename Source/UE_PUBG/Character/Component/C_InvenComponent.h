@@ -133,6 +133,8 @@ public:
 
 	void AddInvenCurVolume(float ItemVolume);
 
+	float GetVestVolume();
+
 	//void SetEquipmentItem(EEquipSlot inSlot, AC_EquipableItem EquipableItem);
 	//Getter and Seter
 public:

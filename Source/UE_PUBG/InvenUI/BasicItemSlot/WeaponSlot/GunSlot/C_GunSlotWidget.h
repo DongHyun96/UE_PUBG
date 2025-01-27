@@ -15,11 +15,42 @@ class UE_PUBG_API UC_GunSlotWidget : public UC_WeaponSlotWidget
 	GENERATED_BODY()
 
 public:
+	virtual void NativeConstruct() override;
+
 	bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 	bool MouseRBDownInteraction(AC_Weapon* inSlotWeapon) override;
+
+	void UpdateWidget() override;
+
+	void UpdateAttachableSlotVisibility();
 protected:
 	virtual bool HandleDrop(class UC_DragDropOperation* InOperation); //TODO: 순수가상함수로
 
 	virtual bool ChangedGunSlot(class AC_Gun* gun);
+
+private:
+	void InitializeAttachSlotMap();
+
+protected:
+
+	TMap<EPartsName, class UC_AttachableItemSlotWidget*> AttachSlotWidgets;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UC_AttachableItemSlotWidget* WB_MuzzleSlot = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UC_AttachableItemSlotWidget* WB_MagazineSlot = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UC_AttachableItemSlotWidget* WB_ScopeSlot = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UC_AttachableItemSlotWidget* WB_StockSlot = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UC_AttachableItemSlotWidget* WB_GripSlot = nullptr;
+
+
+
 };

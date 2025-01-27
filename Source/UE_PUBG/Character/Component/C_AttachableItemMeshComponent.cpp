@@ -176,7 +176,6 @@ AAttachmentActor* UC_AttachableItemMeshComponent::GetCurrentAttachment(USceneCom
 /// <returns></returns>
 bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName)
 {
-	
 	AC_Gun* ParentGun = Cast<AC_Gun>(InParent->GetOuter());
 	AAttachmentActor* AttachmentMesh = GetAttachablePartMesh(InPartsName, InAttachmentName);
 	if (!IsValid(AttachmentMesh)) return false;

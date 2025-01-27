@@ -64,7 +64,7 @@ AC_BasicCharacter::AC_BasicCharacter()
 	PoseColliderHandlerComponent->SetOwnerCharacter(this);
 
 	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
-	DetectionSphere->InitSphereRadius(100.0f); // 탐지 반경 설정
+	DetectionSphere->InitSphereRadius(120.0f); // 탐지 반경 설정
 	DetectionSphere->SetupAttachment(RootComponent);
 
 	//DetectionSphere->SetGenerateOverlapEvents(true);

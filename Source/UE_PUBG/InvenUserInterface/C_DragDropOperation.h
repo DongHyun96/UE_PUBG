@@ -18,6 +18,7 @@ class UE_PUBG_API UC_DragDropOperation : public UDragDropOperation
 public:
 	UC_DragDropOperation()
 	{
+		//Offset = FVector2D(-32, 32);
 		curWeaponSlot = EWeaponSlot::NONE;
 	}
 

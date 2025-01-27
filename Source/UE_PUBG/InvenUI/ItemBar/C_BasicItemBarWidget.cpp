@@ -106,8 +106,18 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	//DragOperation->DefaultDragVisual = this; // 드래그 시 아이템의 미리보기 이미지
 
 	DragOperation->Payload = CachedItem; // 드래그 중 전달할 데이터 (아이템)
-	//DragOperation->Pivot = EDragPivot::MouseDown;
-	DragOperation->Pivot = EDragPivot::CenterCenter;
+	DragOperation->Pivot = EDragPivot::MouseDown;
+	//DragOperation->Pivot = EDragPivot::CenterCenter;
+	FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
+	 // 현재 마우스 클릭 위치 가져오기 (화면 좌표)
+	FVector2D Offset = FVector2D(64.f) * 0.5f;
+	FVector2D CenteredPosition = MousePosition - Offset;
+
+	// 현재 위젯(ItemBar)의 화면 좌표 가져오기
+	FVector2D WidgetScreenPosition = InGeometry.AbsoluteToLocal(CenteredPosition); //왜 이걸 써야만 하는가?
+
+	// 드래그 비주얼 위치를 강제로 설정 (렌더링 기준으로 설정)
+	Border->SetRenderTranslation(WidgetScreenPosition);
 
 	DragOperation->DraggedItem = CachedItem;
 

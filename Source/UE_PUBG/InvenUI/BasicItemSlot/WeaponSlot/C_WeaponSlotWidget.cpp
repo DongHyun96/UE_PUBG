@@ -21,7 +21,7 @@ FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 		{  
 			// 우클릭 이벤트 실행
 			// slot에서는 장착아이템이 존재하면 해제하는 함수를 실행한다.
-			if (MouseRBDownInteraction(SlotItem))
+			MouseRBDownInteraction(SlotItem);
 			//{
 			//	OwnerPlayer->GetEquippedComponent()->SetSlotWeapon(WeaponType, nullptr);
 			//}
@@ -90,8 +90,8 @@ void UC_WeaponSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, cons
 	//DragOperation->DefaultDragVisual = this; // 드래그 시 아이템의 미리보기 이미지
 
 	DragOperation->Payload = SlotItem; // 드래그 중 전달할 데이터 (아이템)
-	//DragOperation->Pivot = EDragPivot::MouseDown;
-	DragOperation->Pivot = EDragPivot::CenterCenter;
+	DragOperation->Pivot = EDragPivot::MouseDown;
+	//DragOperation->Pivot = EDragPivot::CenterCenter;
 
 	DragOperation->DraggedItem = SlotItem;
 

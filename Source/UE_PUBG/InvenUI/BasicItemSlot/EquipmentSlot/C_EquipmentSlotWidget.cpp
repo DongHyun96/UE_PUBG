@@ -102,8 +102,8 @@ void UC_EquipmentSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, c
 	//DragOperation->DefaultDragVisual = this; // 드래그 시 아이템의 미리보기 이미지
 
 	DragOperation->Payload = SlotItem; // 드래그 중 전달할 데이터 (아이템)
-	//DragOperation->Pivot = EDragPivot::MouseDown;
-	DragOperation->Pivot = EDragPivot::CenterCenter;
+	DragOperation->Pivot = EDragPivot::MouseDown;
+	//DragOperation->Pivot = EDragPivot::CenterCenter;
 
 	DragOperation->DraggedItem = SlotItem;
 
