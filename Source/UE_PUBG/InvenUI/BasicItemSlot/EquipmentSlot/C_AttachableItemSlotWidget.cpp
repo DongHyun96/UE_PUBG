@@ -18,7 +18,29 @@
 
 FReply UC_AttachableItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
+	
+	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+	{
+		AC_Gun* curGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetWeapons()[GunSlot]);
+
+		if (!curGun) return FReply::Unhandled();
+
+		AC_AttachableItem* SlotItem = curGun->GetAttachableItem()[SlotName];
+
+		if (SlotItem)
+		{
+			//드래그 이벤트 실행.
+			//드래그를 시작하고 반응함
+			FEventReply RePlyResult =
+				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
+
+			//UC_Util::Print("LeftMouseButton");
+			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
+
+			return RePlyResult.NativeReply;
+		}
+	}
+	else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
 		AC_Gun* curGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetWeapons()[GunSlot]);
 
@@ -42,42 +64,38 @@ FReply UC_AttachableItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InG
 			return FReply::Handled();
 		}
 	}
-	else 
-	{
-		//UC_Util::Print("No cached item to interact with!", FColor::Red, 5.0f);
-	}
 	// 다른 버튼 클릭 처리
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
-FReply UC_AttachableItemSlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-	{
-		//AC_EquipableItem* SlotItem = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EquipSlot];
-		//AC_AttachableItem* SlotItem = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetWeapons()[GunSlot])->GetAttachableItem()[SlotName];
-
-		AC_Gun* curGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetWeapons()[GunSlot]);
-
-		if (!curGun) return FReply::Unhandled();
-
-		AC_AttachableItem* SlotItem = curGun->GetAttachableItem()[SlotName];
-
-		if (SlotItem)
-		{
-			//드래그 이벤트 실행.
-			//드래그를 시작하고 반응함
-			FEventReply RePlyResult =
-				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-
-			//UC_Util::Print("LeftMouseButton");
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
-
-			return RePlyResult.NativeReply;
-		}
-	}
-	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
-}
+//FReply UC_AttachableItemSlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+//{
+//	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+//	{
+//		//AC_EquipableItem* SlotItem = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EquipSlot];
+//		//AC_AttachableItem* SlotItem = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetWeapons()[GunSlot])->GetAttachableItem()[SlotName];
+//
+//		AC_Gun* curGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetWeapons()[GunSlot]);
+//
+//		if (!curGun) return FReply::Unhandled();
+//
+//		AC_AttachableItem* SlotItem = curGun->GetAttachableItem()[SlotName];
+//
+//		if (SlotItem)
+//		{
+//			//드래그 이벤트 실행.
+//			//드래그를 시작하고 반응함
+//			FEventReply RePlyResult =
+//				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
+//
+//			//UC_Util::Print("LeftMouseButton");
+//			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
+//
+//			return RePlyResult.NativeReply;
+//		}
+//	}
+//	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+//}
 
 void UC_AttachableItemSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
@@ -123,6 +141,8 @@ void UC_AttachableItemSlotWidget::NativeOnDragDetected(const FGeometry& InGeomet
 	Border->SetRenderTranslation(WidgetScreenPosition);
 
 	DragOperation->DraggedItem = SlotItem;
+
+	DragOperation->curWeaponSlot = SlotItem->GetOwnerGun()->GetWeaponSlot();
 
 	this->Visibility = ESlateVisibility::SelfHitTestInvisible;
 	OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);

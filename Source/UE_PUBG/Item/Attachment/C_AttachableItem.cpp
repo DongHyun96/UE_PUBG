@@ -91,12 +91,14 @@ bool AC_AttachableItem::MoveAroundToSlot(AC_BasicCharacter* Character)
 	
 	if (curWeapon = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]))
 	{
-		return this->AttachItemToWeaponAndMove(curWeapon, Character);
+		if (this->AttachItemToWeaponAndMove(curWeapon, Character))
+			return true;
 	}
 
 	if (curWeapon = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]))
 	{
-		return this->AttachItemToWeaponAndMove(curWeapon, Character);
+		if (this->AttachItemToWeaponAndMove(curWeapon, Character))
+			return true;
 	}
 
 	return MoveToInven(Character);
@@ -140,12 +142,20 @@ bool AC_AttachableItem::MoveInvenToSlot(AC_BasicCharacter* Character)
 
 bool AC_AttachableItem::MoveSlotToAround(AC_BasicCharacter* Character)
 {
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
+
+	GetOwnerGun()->SetAttachableItemSlot(this->Name, nullptr);
+
+	SetOwnerGun(nullptr);
+
+	DropItem(Character);
+	
 	return false;
 }
 
 bool AC_AttachableItem::MoveSlotToInven(AC_BasicCharacter* Character)
 {
-	if (!GetOwnerGun()) return false;
+	//if (!GetOwnerGun()) return false;
 
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 
@@ -204,20 +214,19 @@ bool AC_AttachableItem::AttachItemToWeaponAndMove(AC_Gun* Weapon, AC_BasicCharac
 	if (!Weapon->GetAttachableParts().Contains(this->Name)) return false; // 부착 가능 여부 확인
 
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
-	AC_AttachableItem* ChangedItem = Weapon->SetAttachableItemSlot(this->Name, this);
-	
+	AC_AttachableItem* ChangedItem = Weapon->GetAttachableItem()[Name];
+
+	if (ChangedItem) //return false; // ChangedItem이 nullptr 라면 return false;
+	{
+		// 부착된 아이템을 인벤토리 또는 주변 리스트로 이동
+		if (!ChangedItem->MoveToInven(Character)) //왜 중간에 return false를 넘어가서 마지막 return true까지 갔는데도 결과가 false지?-> MoveTo~에서 return을 제대로 안해줬음.
+			ChangedItem->MoveToAround(Character);
+	}
+	Weapon->SetAttachableItemSlot(this->Name, this);
+
 	SetOwnerGun(Weapon);
 	
 	invenComp->RemoveItemToAroundList(this);
-
-	if (!ChangedItem) return false; // ChangedItem이 nullptr 라면 return false;
-
-	// 부착된 아이템을 인벤토리 또는 주변 리스트로 이동
-	if (ChangedItem->MoveToInven(Character)) {}
-	else
-	{
-		ChangedItem->MoveToAround(Character);
-	}
 
 	// TODO: AroundList에서 사라지는지 확인하기
 	return true;
@@ -226,10 +235,22 @@ bool AC_AttachableItem::AttachItemToWeaponAndMove(AC_Gun* Weapon, AC_BasicCharac
 bool AC_AttachableItem::AttachItemToWeaponAndMoveInven(AC_Gun* Weapon, UC_InvenComponent* invenComp)
 {
 	if (!Weapon->GetAttachableParts().Contains(this->Name)) return false; // 부착 가능 여부 확인
-
-	Weapon->SetAttachableItemSlot(this->Name, this);  // 부착물 설정
+	
+	AC_AttachableItem* ChangedItem = Weapon->GetAttachableItem()[Name];
+	
 	invenComp->RemoveItemToMyList(this);  // 인벤토리에서 아이템 제거
-	SetOwnerGun(Weapon);  // 주인 총 설정
+	
+	if (ChangedItem)
+	{
+		if (!ChangedItem->MoveToInven(OwnerCharacter))
+			ChangedItem->MoveToAround(OwnerCharacter);
+	}
+	Weapon->SetAttachableItemSlot(this->Name, this);  // 부착물 설정
+
+	SetOwnerGun(Weapon);
+
+	invenComp->RemoveItemToMyList(this);
+
 
 	// TODO: AroundList에서 사라지는지 확인하기
 

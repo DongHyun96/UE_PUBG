@@ -13,7 +13,24 @@
 FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	// 우클릭인지 체크
-	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
+	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+	{
+		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
+
+		if (SlotItem)
+		{
+			//드래그 이벤트 실행.
+			//드래그를 시작하고 반응함
+			FEventReply RePlyResult =
+				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
+
+			//UC_Util::Print("LeftMouseButton");
+			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
+
+			return RePlyResult.NativeReply;
+		}
+	}
+	else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
 		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
 
@@ -37,27 +54,27 @@ FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
-FReply UC_WeaponSlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-	{
-		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
-
-		if (SlotItem)
-		{
-			//드래그 이벤트 실행.
-			//드래그를 시작하고 반응함
-			FEventReply RePlyResult =
-				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-			
-			//UC_Util::Print("LeftMouseButton");
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
-
-			return RePlyResult.NativeReply;
-		}
-	}
-	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
-}
+//FReply UC_WeaponSlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+//{
+//	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+//	{
+//		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
+//
+//		if (SlotItem)
+//		{
+//			//드래그 이벤트 실행.
+//			//드래그를 시작하고 반응함
+//			FEventReply RePlyResult =
+//				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
+//			
+//			//UC_Util::Print("LeftMouseButton");
+//			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
+//
+//			return RePlyResult.NativeReply;
+//		}
+//	}
+//	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+//}
 
 void UC_WeaponSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {

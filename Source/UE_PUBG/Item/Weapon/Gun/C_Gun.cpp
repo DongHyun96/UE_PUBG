@@ -580,6 +580,8 @@ AC_AttachableItem* AC_Gun::SetAttachableItemSlot(EPartsName InPartsName, AC_Atta
 	//AttachableItem[InPartsName]->SetActorHiddenInGame(false);	//모습이 안보이도록 보이도록 
 	//AttachableItem[InPartsName]->SetActorEnableCollision(true);	//Overlap 불가능 하도록 Collision Off
 
+	//AttachableItem[InPartsName]->SetCurWeaponSlot(this->GetWeaponSlot())
+	AttachableItem[InPartsName]->SetOwnerGun(this);
 	AttachableItem[InPartsName]->SetOwnerCharacter(OwnerCharacter);
 	
 	AttachableItem[InPartsName]->SetItemPlace(EItemPlace::SLOT);

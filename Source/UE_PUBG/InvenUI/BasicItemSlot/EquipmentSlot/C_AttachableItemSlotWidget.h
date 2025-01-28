@@ -32,7 +32,7 @@ public:
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
 	/// <returns></returns>
-	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
+	//virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 
 	/// <summary>
 	/// 드래그 중인 Slot의 아이템을 감지.

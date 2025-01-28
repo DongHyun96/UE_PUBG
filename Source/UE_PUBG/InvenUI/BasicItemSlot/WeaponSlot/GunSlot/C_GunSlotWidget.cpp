@@ -22,42 +22,42 @@ void UC_GunSlotWidget::NativeConstruct()
 }
 
 
-FReply UC_GunSlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-	{
-		//for (auto& AttachSlot : AttachSlotWidgets)
-		//{
-		//	if (UC_AttachableItemSlotWidget* PartSlot = AttachSlot.Value)
-		//	{
-		//		// 자식 위젯의 이벤트 처리 결과 확인
-		//		FReply ChildReply = PartSlot->NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
-		//
-		//		if (ChildReply.IsEventHandled()) // 자식 위젯이 이벤트를 처리한 경우
-		//		{
-		//			return ChildReply; // 처리된 결과 반환
-		//		}
-		//	}
-		//}sd
-		return FReply::Unhandled();
-
-		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
-
-		if (SlotItem)
-		{
-			//드래그 이벤트 실행.
-			//드래그를 시작하고 반응함
-			FEventReply RePlyResult =
-				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-
-			//UC_Util::Print("LeftMouseButton");
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
-
-			return RePlyResult.NativeReply;
-		}
-	}
-	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
-}
+//FReply UC_GunSlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+//{
+//	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+//	{
+//		//for (auto& AttachSlot : AttachSlotWidgets)
+//		//{
+//		//	if (UC_AttachableItemSlotWidget* PartSlot = AttachSlot.Value)
+//		//	{
+//		//		// 자식 위젯의 이벤트 처리 결과 확인
+//		//		FReply ChildReply = PartSlot->NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+//		//
+//		//		if (ChildReply.IsEventHandled()) // 자식 위젯이 이벤트를 처리한 경우
+//		//		{
+//		//			return ChildReply; // 처리된 결과 반환
+//		//		}
+//		//	}
+//		//}sd
+//		return FReply::Unhandled();
+//
+//		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
+//
+//		if (SlotItem)
+//		{
+//			//드래그 이벤트 실행.
+//			//드래그를 시작하고 반응함
+//			FEventReply RePlyResult =
+//				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
+//
+//			//UC_Util::Print("LeftMouseButton");
+//			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
+//
+//			return RePlyResult.NativeReply;
+//		}
+//	}
+//	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+//}
 
 bool UC_GunSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
@@ -141,11 +141,28 @@ bool UC_GunSlotWidget::SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, AC_Attac
 	
 	if (!SlotGun) return false;
 
-	AC_AttachableItem* ChangedItem = SlotGun->SetAttachableItemSlot(InAttachableItem->GetName(), InAttachableItem);
+	if (InAttachableItem->GetItemDatas().ItemPlace == EItemPlace::INVEN)
+	{
+		OwnerPlayer->GetInvenComponent()->RemoveItemToMyList(InAttachableItem);
+	}
+	else if (InAttachableItem->GetItemDatas().ItemPlace == EItemPlace::AROUND)
+	{
+		OwnerPlayer->GetInvenComponent()->RemoveItemToAroundList(InAttachableItem);
+	}
 
-	if (!ChangedItem) return true;
+	AC_AttachableItem* ChangedItem = SlotGun->GetAttachableItem()[InAttachableItem->GetName()];
 
-	return ChangedItem->MoveToInven(OwnerPlayer);
+	if (ChangedItem)
+	{
+		if (!ChangedItem->MoveToInven(OwnerPlayer))
+			ChangedItem->MoveToAround(OwnerPlayer);
+	}
+	SlotGun->SetAttachableItemSlot(InAttachableItem->GetName(), InAttachableItem);
+
+	return true;
+	//if (!ChangedItem) return true;
+	//
+	//return ChangedItem->MoveToInven(OwnerPlayer);
 
 	
 }
@@ -178,10 +195,11 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 	//AC_Item* DroppedItem = Cast<AC_Item>(InOperation->DraggedItem);
 	AC_Item* DroppedItem =InOperation->DraggedItem;
 
-	if (!curWeapon) //return DroppedItem->MoveToSlot(OwnerPlayer); //드랍된 슬롯에 아이템이 없다면 바로 장착
+	if (!curWeapon) //return DroppedItem->MoveToSlot(OwnerPlayer); //드랍된 슬롯에 무기가 없다면 바로 장착
 	{
 		//드롭된 슬롯에 아이템이 없다면 실행
 		if (InOperation->curWeaponSlot == EWeaponSlot::MAIN_GUN || InOperation->curWeaponSlot == EWeaponSlot::SUB_GUN)
+		{
 			if (InOperation->curWeaponSlot != WeaponType)
 			{
 				// 빈 슬롯과 Gun 슬롯 Swap하는 상황
@@ -189,9 +207,10 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 					if (EquipComp->SwapSlotsWhileGunHandState()) return true;
 				EquipComp->SetSlotWeapon(InOperation->curWeaponSlot, nullptr);
 			}
-		EquipComp->SetSlotWeapon(WeaponType, Cast<AC_Weapon>(DroppedItem));
-		//DroppedItem->MoveToSlot(OwnerPlayer);
-		return true;
+			EquipComp->SetSlotWeapon(WeaponType, Cast<AC_Weapon>(DroppedItem));
+			//DroppedItem->MoveToSlot(OwnerPlayer);
+			return true;
+		}
 	}
 	if (curWeapon == DroppedItem) return false; //드래그된 아이템과 드랍된 슬롯의 아이템이 같은 아이템이라면 return false;
 	//드롭된 슬롯에 아이템이 있다면 실행
@@ -199,15 +218,36 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 	//Around의 아이템과 Slot의 아이템을 교체하는 것과 다른 슬롯으로 아이템을 이동하는 것 구현하기.
 
 	//Around의 아이템과 Slot의 아이템을 교체하는 작업은 간단하게 MoveToSlot으로 처리
-	if (DroppedItem->GetItemDatas().ItemPlace == EItemPlace::AROUND)
+	if (DroppedItem->GetItemDatas().ItemPlace == EItemPlace::AROUND || DroppedItem->GetItemDatas().ItemPlace == EItemPlace::INVEN)
 	{
 		if (DroppedItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT)
 		{
+			
+
 			//드롭된 아이템이 부착물이라면 드롭된 슬롯에 우선 장착.
 			if (SetAttachmentSlotOnDrop(curWeapon, Cast<AC_AttachableItem>(DroppedItem))) return true;
 		}
 		return DroppedItem->MoveToSlot(OwnerPlayer);
 	}
+
+	if (DroppedItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT)
+	{
+		if (InOperation->curWeaponSlot != WeaponType)
+			Cast<AC_AttachableItem>(DroppedItem)->MoveToSlot(OwnerPlayer);
+
+		//if (InOperation->curWeaponSlot == EWeaponSlot::MAIN_GUN && WeaponType == EWeaponSlot::SUB_GUN)
+		//{
+		//	Cast<AC_AttachableItem>(DroppedItem)->MoveToSlot(OwnerPlayer);
+		//}
+		//
+		//if (InOperation->curWeaponSlot == EWeaponSlot::SUB_GUN && WeaponType == EWeaponSlot::MAIN_GUN)
+		//{
+		//	Cast<AC_AttachableItem>(DroppedItem)->MoveToSlot(OwnerPlayer);
+		//}
+	}
+
+	//if (InOperation->curWeaponSlot == EWeaponSlot::SUB_GUN && WeaponType == EWeaponSlot::MAIN_GUN)
+
 
 	AC_Gun* Gun = Cast<AC_Gun>(DroppedItem);
 	

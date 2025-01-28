@@ -6,6 +6,8 @@
 #include "Item/C_Item.h"
 #include "C_AttachableItem.generated.h"
 
+enum class EWeaponSlot : uint8;
+
 
 /**
  * 
@@ -39,6 +41,8 @@ public:
 	void SetOwnerGun(class AC_Gun* InOwnerGun) { OwnerGun = InOwnerGun; }
 
 	EPartsName GetName() { return Name; }
+
+	void SetCurWeaponSlot(EWeaponSlot InWeaponSlot) { curWeaponSlot = InWeaponSlot; }
 protected:
 	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
 	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
@@ -58,6 +62,11 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPartsName Name{};
+
+	//curWeaponSlot을 만들어서 이놈이 어디총에 붙어 있는지 알아야 할듯.
+
+	EWeaponSlot curWeaponSlot{};
+
 private:
 	class UCapsuleComponent* CapsuleCollider{};
 	class USkeletalMeshComponent* AttachableItemMesh{};
