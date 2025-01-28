@@ -6,6 +6,9 @@
 #include "InvenUI/BasicItemSlot/C_BasicEquippedItemSlotWidget.h"
 #include "C_AttachableItemSlotWidget.generated.h"
 
+//UENUM(BlueprintType)
+enum class EWeaponSlot : uint8;
+
 /**
  * 
  */
@@ -15,6 +18,30 @@ class UE_PUBG_API UC_AttachableItemSlotWidget : public UC_BasicEquippedItemSlotW
 	GENERATED_BODY()
 	
 public:
+	/// <summary>
+	/// 우클릭 이벤트
+	/// </summary>
+	/// <param name="InGeometry"></param>
+	/// <param name="InMouseEvent"></param>
+	/// <returns></returns>
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	/// <summary>
+	/// 좌클릭으로 드래그 이벤트 이벤트를 시작.
+	/// </summary>
+	/// <param name="InGeometry"></param>
+	/// <param name="InMouseEvent"></param>
+	/// <returns></returns>
+	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
+
+	/// <summary>
+	/// 드래그 중인 Slot의 아이템을 감지.
+	/// </summary>
+	/// <param name="InGeometry"></param>
+	/// <param name="InMouseEvent"></param>
+	/// <param name="OutOperation"></param>
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+
 	void UpdateSlotItemImage(class AC_Gun* SlotItem);
 
 	/// <summary>
@@ -31,4 +58,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UImage* ItemImage = nullptr;
+
+	//Main,SubGunSlot을 변수로? 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EWeaponSlot GunSlot{};
 };

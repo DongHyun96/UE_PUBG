@@ -17,6 +17,8 @@ FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 	{
 		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
 
+
+
 		if (SlotItem)
 		{  
 			// 우클릭 이벤트 실행
@@ -127,7 +129,7 @@ void UC_WeaponSlotWidget::UpdateSlotItemImage(AC_Weapon* SlotItem)
 		FSlateBrush Brush = WeaponImage->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		WeaponImage->SetBrush(Brush);
-		WeaponSlotPanel->SetVisibility(ESlateVisibility::Visible);
+		WeaponSlotPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		//SetVisibility(ESlateVisibility::Visible);
 	}
 	else

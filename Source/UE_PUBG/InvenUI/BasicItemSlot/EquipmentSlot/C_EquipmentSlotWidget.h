@@ -37,7 +37,7 @@ public:
 	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 
 	/// <summary>
-	/// 드래그 중인 ItemBar의 아이템을 감지.
+	/// 드래그 중인 Slot의 아이템을 감지.
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>

@@ -21,6 +21,44 @@ void UC_GunSlotWidget::NativeConstruct()
 	InitializeAttachSlotMap();
 }
 
+
+FReply UC_GunSlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+	{
+		//for (auto& AttachSlot : AttachSlotWidgets)
+		//{
+		//	if (UC_AttachableItemSlotWidget* PartSlot = AttachSlot.Value)
+		//	{
+		//		// 자식 위젯의 이벤트 처리 결과 확인
+		//		FReply ChildReply = PartSlot->NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+		//
+		//		if (ChildReply.IsEventHandled()) // 자식 위젯이 이벤트를 처리한 경우
+		//		{
+		//			return ChildReply; // 처리된 결과 반환
+		//		}
+		//	}
+		//}sd
+		return FReply::Unhandled();
+
+		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
+
+		if (SlotItem)
+		{
+			//드래그 이벤트 실행.
+			//드래그를 시작하고 반응함
+			FEventReply RePlyResult =
+				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
+
+			//UC_Util::Print("LeftMouseButton");
+			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
+
+			return RePlyResult.NativeReply;
+		}
+	}
+	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+}
+
 bool UC_GunSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	UC_Util::Print("Dropped Item");
@@ -110,6 +148,27 @@ bool UC_GunSlotWidget::SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, AC_Attac
 	return ChangedItem->MoveToInven(OwnerPlayer);
 
 	
+}
+
+void UC_GunSlotWidget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
+{
+	OwnerPlayer = InOwnerPlayer;
+
+	if (WB_MuzzleSlot)
+		WB_MuzzleSlot->SetOwnerPlayer(InOwnerPlayer);
+
+	if (WB_MagazineSlot)
+		WB_MagazineSlot->SetOwnerPlayer(InOwnerPlayer);
+
+	if (WB_ScopeSlot)
+		WB_ScopeSlot->SetOwnerPlayer(InOwnerPlayer);
+
+	if (WB_StockSlot)
+		WB_StockSlot->SetOwnerPlayer(InOwnerPlayer);
+
+	if (WB_GripSlot)
+		WB_GripSlot->SetOwnerPlayer(InOwnerPlayer);
+
 }
 
 bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
