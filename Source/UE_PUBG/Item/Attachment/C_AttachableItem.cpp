@@ -79,6 +79,9 @@ bool AC_AttachableItem::MoveAroundToInven(AC_BasicCharacter* Character)
 	
 	invenComp->AddItemToMyList(this);
 
+	SetActorHiddenInGame(true);
+
+	SetActorEnableCollision(false);
 
 	return true;
 }
@@ -223,6 +226,10 @@ bool AC_AttachableItem::AttachItemToWeaponAndMove(AC_Gun* Weapon, AC_BasicCharac
 			ChangedItem->MoveToAround(Character);
 	}
 	Weapon->SetAttachableItemSlot(this->Name, this);
+
+	SetActorHiddenInGame(true);
+
+	SetActorEnableCollision(false);
 
 	SetOwnerGun(Weapon);
 	

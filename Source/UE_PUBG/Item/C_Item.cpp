@@ -206,7 +206,8 @@ void AC_Item::DropItem(AC_BasicCharacter* Character)
 
 	SetOwnerCharacter(nullptr);               //OwnerCharacter 해제
 	SetActorHiddenInGame(false);			  //모습이 보이도록 Hidden 해제.
-	SetActorEnableCollision(false);			  
+
+	SetActorEnableCollision(false);			  //Attachable Item 이 Around로 갈 때 바로 List에 추가가 안되서 껏다 켜줌.
 	SetActorEnableCollision(true);			  //Overlap가능 하도록 Collision On
 	//Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);//이건 투척류만 사용하는 기능.
 
