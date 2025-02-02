@@ -384,6 +384,20 @@ void UC_EquippedComponent::OnSniperReloadEnd()
     }
 }
 
+void UC_EquippedComponent::AddAttachedPartsActorsToIgnoreActors(FCollisionQueryParams& CollisionParams)
+{
+    for (auto& WeaponPair : Weapons)
+    {
+        AC_Weapon* Weapon = WeaponPair.Value;
+        if (!Weapon) continue;
+
+        TArray<AActor*> AttachedActors{};
+
+        Weapon->GetAttachedActors(AttachedActors);
+        CollisionParams.AddIgnoredActors(AttachedActors);
+    }
+}
+
 void UC_EquippedComponent::SpawnWeaponsForTesting()
 {
     // Test¿ë weapon spawnµé

@@ -196,8 +196,6 @@ void AC_Player::Tick(float DeltaTime)
 	//UC_Util::Print(AimCamera->IsActive());
 	//UC_Util::Print(MainCamera->IsActive());
 
-	UC_Util::Print(GetCharacterMovement()->Velocity.Length());
-
 	HandleTurnInPlace();
 	HandleTurnInPlaceWhileAiming();
 	HandlePlayerRotationWhileAiming();

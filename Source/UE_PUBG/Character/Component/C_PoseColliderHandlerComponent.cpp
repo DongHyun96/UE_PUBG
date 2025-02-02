@@ -4,6 +4,7 @@
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Character/Component/C_EquippedComponent.h"
 #include "Utility/C_Util.h"
 
 const TMap<EPoseState, TPair<float, float>> UC_PoseColliderHandlerComponent::POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS =
@@ -101,6 +102,8 @@ bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(
 		OwnerCharacter->GetAttachedActors(AttachedActors);
 		CollisionParams.AddIgnoredActors(AttachedActors);
 
+		OwnerCharacter->GetEquippedComponent()->AddAttachedPartsActorsToIgnoreActors(CollisionParams);
+
 		FHitResult HitResult{};
 
 		bool HasHit = GetWorld()->SweepSingleByChannel
@@ -113,6 +116,8 @@ bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(
 			FCollisionShape::MakeSphere(SWEEP_SPHERE_RAD),
 			CollisionParams
 		);
+
+		UC_Util::Print("Try Stand");
 
 		if (HasHit) UC_Util::Print(HitResult.GetActor()->GetName());
 		
