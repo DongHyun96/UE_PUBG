@@ -132,6 +132,7 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 {
 	if (Player->GetSwimmingComponent()->IsSwimming()) Player->SetCanMove(true);
 	if (!Player->GetCanMove()) return;
+	if (Player->GetIsActivatingConsumableItem() && Player->GetPoseState() == EPoseState::CRAWL) return;
 
 	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
 	CancelTurnInPlaceMotion();
@@ -163,6 +164,7 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		PlayerMovement->bOrientRotationToMovement		= false;
 	}
 
+	// SkyDiving Movement 처리
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 	{
 		Player->GetSkyDivingComponent()->HandlePlayerMovement(MovementVector);
@@ -615,12 +617,12 @@ void UC_InputComponent::OnFKey()
 		if (Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
 		{
 			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING);
-			GAMESCENE_MANAGER->GetEnemy()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING); // TODO : 이 라인 지우기
+			//GAMESCENE_MANAGER->GetEnemy()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING); // TODO : 이 라인 지우기
 		}
 		else if (Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::SKYDIVING)
 		{
 			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING);
-			GAMESCENE_MANAGER->GetEnemy()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING); // TODO : 이 라인 지우기
+			//GAMESCENE_MANAGER->GetEnemy()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING); // TODO : 이 라인 지우기
 		}
 		return;
 	}

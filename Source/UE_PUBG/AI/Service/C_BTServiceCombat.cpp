@@ -11,6 +11,6 @@ UC_BTServiceCombat::UC_BTServiceCombat()
 void UC_BTServiceCombat::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
-
+	
 
 }

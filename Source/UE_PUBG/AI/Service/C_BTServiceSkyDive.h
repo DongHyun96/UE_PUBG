@@ -19,5 +19,5 @@ public:
 	UC_BTServiceSkyDive();
 
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-	
+
 };

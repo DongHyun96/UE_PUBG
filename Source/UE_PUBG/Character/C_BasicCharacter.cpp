@@ -108,7 +108,7 @@ void AC_BasicCharacter::Tick(float DeltaTime)
 // Called to bind functionality to input
 void AC_BasicCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	Super::SetupPlayerInputComponent(PlayerInputComponent); 
 	
 }
 
@@ -136,7 +136,7 @@ float AC_BasicCharacter::PlayAnimMontage(UAnimMontage* AnimMontage, float InPlay
 /// <param name="SweepResult"></param>
 void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
+	
 
 	FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetCurVolume());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);

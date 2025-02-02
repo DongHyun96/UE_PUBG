@@ -31,6 +31,11 @@ void AC_Enemy::BeginPlay()
 	
 }
 
+void AC_Enemy::Tick(float DeltaSeoncds)
+{
+	Super::Tick(DeltaSeoncds);
+}
+
 bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 {
 	if (!bCanMove)											return false;

@@ -164,7 +164,7 @@ protected:
 
 public:
 
-	void ClampControllerRotationPitchWhileCrawl(EPoseState InCurrentState);
+	void SetControllerPitchLimits(EPoseState InCurrentState);
 	
 public:
 

@@ -103,6 +103,9 @@ void AC_EnemyAIController::OnPossess(APawn* InPawn)
 
 void AC_EnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
+	FString str = "OnPerceptionUpdated " + FString::FromInt(UpdatedActors.Num());
+	UC_Util::Print(str, FColor::Red, 10.f);
+
 	for (AActor* actor : UpdatedActors)
 	{
 		if (AC_Player* Player = Cast<AC_Player>(actor))
