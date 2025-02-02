@@ -12,6 +12,8 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Kismet/GameplayStatics.h"
+
 #include "Utility/C_Util.h"
 
 // Sets default values for this component's properties
@@ -32,8 +34,10 @@ void UC_InvenSystem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
-	PlayerController->SetIgnoreLookInput(false);
+	PlayerController = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	//PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PlayerController)
+		PlayerController->SetIgnoreLookInput(false);
 
 	if (!InvenUI && InvenUiClass)
 	{

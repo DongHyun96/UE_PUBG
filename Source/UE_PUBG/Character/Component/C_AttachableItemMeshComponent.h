@@ -28,7 +28,10 @@ public:
 	AAttachmentActor* GetAttachablePartMesh(EPartsName InPartsName, EAttachmentNames InAttachmentName);
 	AAttachmentActor* GetCurrentAttachment(class USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName);
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+
+	//총에 실제 mesh를 붙이는 함수.
 	bool AttachToGun(class USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName);
+	//총에 실제 붙은 mesh를 때는 함수.
 	void DetachFromGun(class USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName);
 
 	void UseAttachmentStrategy(USceneComponent* InParent);

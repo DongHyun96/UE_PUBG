@@ -64,7 +64,7 @@ AC_BasicCharacter::AC_BasicCharacter()
 	PoseColliderHandlerComponent->SetOwnerCharacter(this);
 
 	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
-	DetectionSphere->InitSphereRadius(100.0f); // 탐지 반경 설정
+	DetectionSphere->InitSphereRadius(120.0f); // 탐지 반경 설정
 	DetectionSphere->SetupAttachment(RootComponent);
 
 	//DetectionSphere->SetGenerateOverlapEvents(true);
@@ -142,34 +142,6 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
 
 	HandleOverlapBegin(OtherActor);
-	//AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
-
-	////if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
-
-	//if (IsValid(OverlappedItem))
-	//{
-	//	UC_Util::Print("OverlappedItem");
-	//	//UC_Util::Print(*OverlappedItem->GetName());
-
-	//	//Inventory->GetNearItems().Add(OverlappedItem);
-	//	//Inventory->AddItemToAroundList(OverlappedItem);
-
-	//	if (OverlappedItem->GetOwnerCharacter() == nullptr)
-
-	//	{
-	//		if (!IsValid(Inventory)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
-	//		Inventory->AddItemToNearList(OverlappedItem);
-	//		Inventory->InitInvenUI();
-	//		//if (!IsValid(InvenSystem)) return;
-	//	}
-	//    //InvenSystem->InitializeList();
-	//}
-	//else
-	//{
-	//	UC_Util::Print("No item");
-
-	//	return;
-	//}
 }
 
 /// <summary>
@@ -182,18 +154,6 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	HandleOverlapEnd(OtherActor);
-	//AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
-
-	//if (OverlappedItem)
-	//{
-	//	//Inventory->GetNearItems().Remove(OverlappedItem);
-	//	//Inventory->RemoveItemToAroundList(OverlappedItem);
-	//	if (!IsValid(Inventory)) return;
-	//	Inventory->RemoveItemNearList(OverlappedItem);
-	//	Inventory->InitInvenUI();
-	//	//if (!IsValid(InvenSystem)) return;
-	//	//InvenSystem->InitializeList();
-	//}
 }
 float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate, FName StartSectionName)
 {

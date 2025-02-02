@@ -148,14 +148,14 @@ bool AC_Weapon::MoveSlotToAround(AC_BasicCharacter* Character)
 
 	AC_Weapon* curWeapon = equipComp->GetWeapons()[curWeaponSlot];
 
-	if (curWeapon != this) return false; //장착된 아이템이 자신이 아니라면 return.
+	//if (curWeapon != this) return false; //장착된 아이템이 자신이 아니라면 return.
 	
 	//if (curWeaponSlot == EWeaponSlot::MAIN_GUN)
 	//	curWeapon->DetachmentItem();
 	//else
-	DropItem(Character);
-
 	equipComp->SetSlotWeapon(curWeaponSlot, nullptr); //장착된 아이템이 자신이면, 장착해제를 진행.
+
+	DropItem(Character);
 
 	return true;
 }

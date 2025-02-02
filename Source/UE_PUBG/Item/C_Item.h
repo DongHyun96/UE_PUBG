@@ -218,12 +218,27 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool LegacyMoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToSlot, return false;);
 
+	/// <summary>
+	/// 아이템이 Inven으로 보낼 때 사용하면 현재 Place에 맞게  작동
+	/// </summary>
+	/// <param name="Character"></param>
+	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
 	virtual bool MoveToInven(AC_BasicCharacter* Character);
 	
+	/// <summary>
+	/// 아이템을 Around로 보낼 때 사용하면 현재 Place에 맞게 작동.
+	/// </summary>
+	/// <param name="Character"></param>
+	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
 	virtual bool MoveToAround(AC_BasicCharacter* Character);
 	
+	/// <summary>
+	/// 아이템을 Slot으로 보낼 때 Place에 따라 작동.
+	/// </summary>
+	/// <param name="Character"></param>
+	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
 	virtual bool MoveToSlot(AC_BasicCharacter* Character);
 
@@ -235,7 +250,8 @@ public:
 	//캐릭터의 밑바닥을 라인 트레이스로 location을 반환해줌.
 	FVector GetGroundLocation(AC_BasicCharacter* Character);
 
-private:
+protected:
+	//MoveTo~에 사용되는 Template Methode Patern 9개.
 	virtual bool MoveSlotToAround(AC_BasicCharacter* Character);
 	virtual bool MoveSlotToInven(AC_BasicCharacter* Character);
 	virtual bool MoveSlotToSlot(AC_BasicCharacter* Character);

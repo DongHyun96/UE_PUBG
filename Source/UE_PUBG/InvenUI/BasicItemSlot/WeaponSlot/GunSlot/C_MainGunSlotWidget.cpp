@@ -35,9 +35,6 @@
 //	UpdateSlotItemImage(SlotItem);
 //}
 
-
-
-
 bool UC_MainGunSlotWidget::ChangedGunSlot(AC_Gun* gun)
 {
 	if (!gun) return false;
