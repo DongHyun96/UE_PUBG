@@ -333,4 +333,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "DragIcon")
 	UTexture2D* DragIcon = nullptr; 
 
+public:
+	//AI 총알 발사 관련 함수
+	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+
+
+
 };

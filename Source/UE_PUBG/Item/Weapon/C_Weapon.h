@@ -158,4 +158,10 @@ private:
 	
 	FTransform InitialRelativeTransform{};
 
+public:
+	/// <summary>
+	/// AI 공격 순수 가상함수
+	/// </summary>
+	/// <returns> 공격을 할 수 없는 상황이라면 return false </returns>
+	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) PURE_VIRTUAL(AC_Weapon::ExecuteAIAttack, return false;);
 };

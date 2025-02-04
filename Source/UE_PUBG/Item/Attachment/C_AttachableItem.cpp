@@ -207,9 +207,6 @@ void AC_AttachableItem::SetIsAttached(bool InIsAttachedToWeapon)
 void AC_AttachableItem::SetMeshVisibility(bool InIsVisible)
 {
 	AttachableItemMesh->SetHiddenInGame(!InIsVisible);
-	//CapsuleCollider->SetVisibility(InIsVisible);
-	//AttachableItemMesh->SetVisibility(InIsVisible);
-	//UC_Util::Print("jasyhdfbuiayersyhgbfbaueysdhyfbgasodudyfgbasdudlkyfgbaeruoyfgbbaweuoyfgbeqaouryfgvbwaeuikyrf");
 }
 
 bool AC_AttachableItem::AttachItemToWeaponAndMove(AC_Gun* Weapon, AC_BasicCharacter* Character)

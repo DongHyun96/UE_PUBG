@@ -31,6 +31,7 @@
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
+#include "Item/Weapon/Gun/C_Bullet.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
@@ -331,6 +332,30 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 	bIsPoseTransitioning	= true;
 
 	return true;
+}
+
+void AC_BasicCharacter::PoolingBullets()
+{
+	FActorSpawnParameters Param2{};
+	Param2.Owner = this;
+	for (int i = 0; i < 1000; i++)
+	{
+		UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
+		AC_Bullet* Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
+		Bullet->SetInstanceNum(i);
+		Bullet->DeactivateInstance();
+		if (IsValid(Bullet))
+		{
+			Bullet->SetOwnerCharacter(this);
+			//UC_Util::Print("Created Bullet");
+			PooledBullets.Add(Bullet);
+		}
+	}
+	for (auto& Bullet : PooledBullets)
+	{
+		Bullet->ActivateInstance();
+		Bullet->DeactivateInstance();
+	}
 }
 
 void AC_BasicCharacter::AddSevenmmBulletStack(int inBulletCount)

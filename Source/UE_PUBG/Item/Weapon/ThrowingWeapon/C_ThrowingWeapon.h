@@ -329,4 +329,7 @@ protected:
 private:
 
 	static const TMap<EThrowableType, FString> THROWABLETYPE_ITEMNAME_MAP;
+
+public:
+	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
 };

@@ -243,6 +243,11 @@ void AC_MeleeWeapon::OnOwnerCharacterPoseTransitionFin()
 {
 }
 
+bool AC_MeleeWeapon::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
+{
+	return false;
+}
+
 //void AC_MeleeWeapon::InitPriorityAnimMontages()
 //{
 //	AttackMontage.Priority = EMontagePriority::ATTACK;

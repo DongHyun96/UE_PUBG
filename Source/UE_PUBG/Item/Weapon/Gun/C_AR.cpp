@@ -46,3 +46,8 @@ bool AC_AR::ExecuteReloadMontage()
 	BackToMainCamera();
 	return true;
 }
+
+bool AC_AR::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
+{
+	return false;
+}

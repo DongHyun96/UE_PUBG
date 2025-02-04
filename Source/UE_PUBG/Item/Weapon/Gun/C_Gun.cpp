@@ -48,6 +48,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
+
+#include "Character/C_Enemy.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_AmmoWidget.h"
 
@@ -716,6 +718,7 @@ FVector2D AC_Gun::GetRecoilFactors()
 
 bool AC_Gun::FireBullet()
 {
+	if (!IsValid(OwnerCharacter)) return false;
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
 	if (!OnScreen) return false;
 	//ExecuteReloadMontage();
@@ -1165,16 +1168,45 @@ void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
 
 }
 
-//void AC_Gun::SpawnBulletForTest()
-//{
-//
-//	//FActorSpawnParameters Param2{};
-//	//Param2.Owner = this;
-//	//UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
-//	//Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
-//	//if (IsValid(Bullet))
-//	//	UC_Util::Print("Created Bullet");
-//
-//}
+bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
+{
+	if (!IsValid(OwnerCharacter)) return false;
+	if (!IsValid(InTargetCharacter)) return false;
 
+	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
+	if (!OnScreen) return false;
+	//ExecuteReloadMontage();
+
+	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
+	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+
+	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * BulletSpeed;
+
+	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
+
+	//UC_Util::Print(FireLocation);
+	//UC_Util::Print(FireDirection);
+	AC_Enemy* OwnerPlayer = Cast<AC_Enemy>(OwnerCharacter); // TODO : OwnerPlayer -> Enemy도 총을 쏠 수 있으니 예외처리 시켜야 함
+	if (!IsValid(OwnerPlayer)) return false;
+	bool ApplyGravity = true;
+	for (auto& Bullet : OwnerPlayer->GetBullets())
+	{
+		if (Bullet->GetIsActive())
+		{
+			//UC_Util::Print("Can't fire");
+			continue;
+		}
+		//UC_Util::Print("FIRE!!!!!!!");
+		CurBulletCount--;
+		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+		return Succeeded;
+
+		//Bullet->Fire(this, FireLocation, FireDirection);
+		//if (BulletCount > 100)
+		//	return true;
+	}
+	UC_Util::Print("No More Bullets in Pool");
+	return false;
+
+}
 

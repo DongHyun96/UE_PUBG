@@ -1229,3 +1229,8 @@ void AC_ThrowingWeapon::ClearSpline()
 
 	PathSpline->ClearSplinePoints();
 }
+
+bool AC_ThrowingWeapon::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
+{
+	return false;
+}

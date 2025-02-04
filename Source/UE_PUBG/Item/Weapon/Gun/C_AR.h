@@ -25,4 +25,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual bool ExecuteReloadMontage() override;
+
+public:
+	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
 };
