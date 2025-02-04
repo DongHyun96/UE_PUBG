@@ -33,8 +33,6 @@ UC_EquippedComponent::UC_EquippedComponent()
 void UC_EquippedComponent::BeginPlay()
 {
     Super::BeginPlay();
-
-    //SpawnWeaponsForTesting();
 }
 
 
@@ -67,7 +65,17 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
         Player->GetInvenSystem()->InitializeList(); 
     }
 
-    if (!Weapons[InSlot]) return PrevSlotWeapon; // Slot에 새로 지정한 무기가 nullptr -> early return
+    if (!Weapons[InSlot]) // Slot에 새로 지정한 무기가 nullptr -> early return
+    {
+        //if (PrevSlotWeapon) // 현재 손에 들고 있는 무기가 있었을 때, Slot에서 강제로 뺀 상황
+        //{
+        //    NextWeaponType  = EWeaponSlot::NONE;
+        //    CurWeaponType   = EWeaponSlot::NONE;
+        //    OwnerCharacter->SetHandState(EHandState::UNARMED);
+        //}
+
+        return PrevSlotWeapon;
+    }
     
     //아이템의 위치 변경,1108 상연
     Weapons[InSlot]->SetItemPlace(EItemPlace::SLOT);
@@ -132,12 +140,11 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
     return true;
 }
 
-
-
-
 void UC_EquippedComponent::DetachmentWeapon(EWeaponSlot InSlot)
 {
     AC_Weapon* curWeapon = Weapons[InSlot];
+
+    UC_Util::Print("Try DetachmentWeapon", FColor::MakeRandomColor(), 10.f);    
     
     //아이템이 없다면 종료
     if (!curWeapon) return;
@@ -396,36 +403,6 @@ void UC_EquippedComponent::AddAttachedPartsActorsToIgnoreActors(FCollisionQueryP
         Weapon->GetAttachedActors(AttachedActors);
         CollisionParams.AddIgnoredActors(AttachedActors);
     }
-}
-
-void UC_EquippedComponent::SpawnWeaponsForTesting()
-{
-    // Test용 weapon spawn들
-    /*FActorSpawnParameters Param{};
-    Param.Owner = OwnerCharacter;
-    AC_MeleeWeapon* MeleeTemp = GetWorld()->SpawnActor<AC_MeleeWeapon>(WeaponClasses[EWeaponSlot::MELEE_WEAPON], Param);
-    MeleeTemp->SetOwnerCharacter(OwnerCharacter);
-    MeleeTemp->AttachToHolster(OwnerCharacter->GetMesh());
-
-    SetSlotWeapon(EWeaponSlot::MELEE_WEAPON, MeleeTemp);
-
-    FActorSpawnParameters Param2{};
-    Param2.Owner = OwnerCharacter;
-    AC_Gun* ARTemp = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::MAIN_GUN], Param2);
-    ARTemp->SetOwnerCharacter(OwnerCharacter);
-    ARTemp->AttachToHolster(OwnerCharacter->GetMesh());
-
-    SetSlotWeapon(EWeaponSlot::MAIN_GUN, ARTemp);*/
-
-    FActorSpawnParameters Param3{};
-    Param3.Owner = OwnerCharacter;
-    AC_ThrowingWeapon* ThrowTemp = GetWorld()->SpawnActor<AC_ThrowingWeapon>(WeaponClasses[EWeaponSlot::THROWABLE_WEAPON], Param3);
-    ThrowTemp->SetOwnerCharacter(OwnerCharacter);
-    ThrowTemp->AttachToHolster(OwnerCharacter->GetMesh());
-
-    SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, ThrowTemp);
-
-    //AC_ThrowingWeapon::InitTestPool(OwnerCharacter, WeaponClasses[EWeaponSlot::THROWABLE_WEAPON], this);
 }
 
 void UC_EquippedComponent::SetMainGunOrSubGun(EWeaponSlot InSlot)
