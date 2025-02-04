@@ -144,7 +144,17 @@ private:
 
 	// TODO : 정확한 값으로 나중에 수정, 현재 Test 값
 	// FPhaseInfo(해당 Phase때 줄어들 자기장 rad | 줄어들기까지 대기시간 | 줄어드는 총 시간)
-	TMap<int, FPhaseInfo> PhaseInfos = 
+	//TMap<int, FPhaseInfo> PhaseInfos = 
+	//{
+	//	{1, FPhaseInfo(71300.f, 5.f, 20.f)},	// 713m
+	//	{2, FPhaseInfo(40000.f, 5.f, 20.f)},	// 400m
+	//	{3, FPhaseInfo(20000.f, 5.f, 20.f)},	// 200m
+	//	{4, FPhaseInfo(10000.f, 5.f, 20.f)},	// 100m
+	//	{5, FPhaseInfo(5000.f, 5.f, 20.f)},		// 50m
+	//	{6, FPhaseInfo(0.f, 0.f, 0.f)}			// 제일 마지막 도착 지점 (전체 Phase보다 하나 더 많게끔 만들어놔야 정상 작동함)
+	//};
+
+	TMap<int, FPhaseInfo> PhaseInfos =
 	{
 		{1, FPhaseInfo(71300.f, 5.f, 20.f)},	// 713m
 		{2, FPhaseInfo(40000.f, 5.f, 20.f)},	// 400m
@@ -153,6 +163,7 @@ private:
 		{5, FPhaseInfo(5000.f, 5.f, 20.f)},		// 50m
 		{6, FPhaseInfo(0.f, 0.f, 0.f)}			// 제일 마지막 도착 지점 (전체 Phase보다 하나 더 많게끔 만들어놔야 정상 작동함)
 	};
+
 
 	// 시간 재기용
 	float Timer{};

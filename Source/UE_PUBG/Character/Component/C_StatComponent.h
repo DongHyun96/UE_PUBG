@@ -7,7 +7,7 @@
 #include "C_StatComponent.generated.h"
 
 /// <summary>
-/// ÇÇ°Ý ÆÇÁ¤ ºÎÀ§
+/// ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 UENUM(BlueprintType)
 enum class EDamagingPartType : uint8
@@ -38,7 +38,7 @@ struct FBoostingEffectFactor
 };
 
 /// <summary>
-/// TODO : ¿©±â¿¡¼­´Â UI °ÇµéÁö ¾Ê°í ¿À·ÎÁö Stat °ü·ÃÇÑ ¼öÄ¡¸¸ °Çµå¸®±â
+/// TODO : ï¿½ï¿½ï¿½â¿¡ï¿½ï¿½ï¿½ï¿½ UI ï¿½Çµï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Stat ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Çµå¸®ï¿½ï¿½
 /// </summary>
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_StatComponent : public UActorComponent
@@ -51,7 +51,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public: // Getters and setters
@@ -75,28 +75,28 @@ public: // Getters and setters
 public:
 
 	/// <summary>
-	/// ½ÇÁúÀûÀÎ CurHP ¼öÄ¡ Á¶Á¤
+	/// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ CurHP ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
 	/// </summary>
-	/// <param name="Damage"> : Damage ·® </param>
+	/// <param name="Damage"> : Damage ï¿½ï¿½ </param>
 	/// <returns></returns>
 	bool TakeDamage(const float& Damage);
 
 	/// <summary>
-	/// <para> ÀÚÃ¼·Î ¸¸µç TakeDamage ÇÔ¼ö, ºÎÀ§º° Damage¸¦ ÁÙ ¶§ »ç¿ë </para>
-	/// <para> ÁÖÀÇ : ÀÌ ÇÔ¼ö´Â Armor°¡ Àû¿ëµÈ ºÎÀ§ÀÇ µ¥¹ÌÁö °¨¼Ò¸¸ ±¸Çö, ½ÇÁúÀûÀÎ ºÎÀ§º° Damage·®Àº ¿ÜºÎÈ£Ãâ¿¡¼­ Ã³¸® </para>
+	/// <para> ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ TakeDamage ï¿½Ô¼ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Damageï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ </para>
+	/// <para> ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ Armorï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ò¸ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Damageï¿½ï¿½ï¿½ï¿½ ï¿½Üºï¿½È£ï¿½â¿¡ï¿½ï¿½ Ã³ï¿½ï¿½ </para>
 	/// </summary>
-	/// <param name="DamageAmount">		: Damage ¾ç </param>
-	/// <param name="DamagingPartType"> : Damage¸¦ ÁÙ ºÎÀ§ </param>
-	/// <param name="DamageCauser">		: Damage¸¦ ÁÖ´Â Actor </param>
+	/// <param name="DamageAmount">		: Damage ï¿½ï¿½ </param>
+	/// <param name="DamagingPartType"> : Damageï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ </param>
+	/// <param name="DamageCauser">		: Damageï¿½ï¿½ ï¿½Ö´ï¿½ Actor </param>
 	/// <returns> : The amount of damage actually applied. </returns>
 	float TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser);
 
 	/// <summary>
-	/// Bone Name(ºÎÀ§)ÂÊÀ¸·Î Damage ÁÖ±â ½Ãµµ, ÇØ´ç Bone¿¡ Armor°¡ Àû¿ëµÇ¾î ÀÖÀ¸¸é ÀûÀýÈ÷ Damage·® ¹× Armor Ã¼·Â Á¶Àý
+	/// Bone Name(ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Damage ï¿½Ö±ï¿½ ï¿½Ãµï¿½, ï¿½Ø´ï¿½ Boneï¿½ï¿½ Armorï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Damageï¿½ï¿½ ï¿½ï¿½ Armor Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	/// </summary>
-	/// <param name="DamageAmount"> : Damage ·® </param>
-	/// <param name="DamagingPhyiscsAssetBoneName"> : Damage¸¦ ÁÙ Bone ÂÊ Name </param>
-	/// <param name="DamageCauser"> : Damage¸¦ ÁÖ´Â Actor </param>
+	/// <param name="DamageAmount"> : Damage ï¿½ï¿½ </param>
+	/// <param name="DamagingPhyiscsAssetBoneName"> : Damageï¿½ï¿½ ï¿½ï¿½ Bone ï¿½ï¿½ Name </param>
+	/// <param name="DamageCauser"> : Damageï¿½ï¿½ ï¿½Ö´ï¿½ Actor </param>
 	/// <returns> : The amount of damage actually applied. </returns>
 	float TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser);
 
@@ -107,9 +107,9 @@ public:
 	bool AddBoost(const float& BoostAmount);
 
 	/// <summary>
-	/// Oxygen·® ´õÇÏ°í »©±â ÅëÇÕ
+	/// Oxygenï¿½ï¿½ ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	/// </summary>
-	/// <param name="OxygenAmount"> : ´õÇÒ Oxygen ·® </param>
+	/// <param name="OxygenAmount"> : ï¿½ï¿½ï¿½ï¿½ Oxygen ï¿½ï¿½ </param>
 	void AddOxygen(const float& OxygenAmount);
 
 private:
@@ -117,7 +117,7 @@ private:
 	void UpdateBoostEffect(const float& DeltaTime);
 
 	/// <summary>
-	/// »ê¼Ò °í°¥ ½Ã Damage ÁÖ±â ´ã´ç, 1ÃÊ¿¡ ÇÇÇØ·® 20¾¿ ÁÖ±â
+	/// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Damage ï¿½Ö±ï¿½ ï¿½ï¿½ï¿½, 1ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½Ø·ï¿½ 20ï¿½ï¿½ ï¿½Ö±ï¿½
 	/// </summary>
 	/// <param name="DeltaTime"></param>
 	void HandleOxygenExhausted(const float& DeltaTime);
@@ -132,16 +132,16 @@ private:
 
 	static const float MAX_HP;
 	static const float MAX_BOOSTING;
-	static const float HEAL_UP_LIMIT; // ±¸±Þ»óÀÚ, ºØ´ë·Î Ã¤¿ï ¼ö ÀÖ´Â ÃÑ Èú·® limit
-	static const float MAX_OXYGEN_HP; // ¼û HP Max
+	static const float HEAL_UP_LIMIT; // ï¿½ï¿½ï¿½Þ»ï¿½ï¿½ï¿½, ï¿½Ø´ï¿½ï¿½ Ã¤ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ limit
+	static const float MAX_OXYGEN_HP; // ï¿½ï¿½ HP Max
 
 protected:
 
 	UPROPERTY(BlueprintReadOnly)
-	float CurHP = 100.f; // ÇöÀç Ä³¸¯ÅÍ ½ÇÁ¦ Ã¼·Â
+	float CurHP = 100.f; // ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½
 	
 	UPROPERTY(BlueprintReadOnly)
-	float CurBoosting{}; // ÇöÀç Ä³¸¯ÅÍÀÇ ½ÇÁ¦ ºÎ½ºÆÃ ·®
+	float CurBoosting{}; // ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Î½ï¿½ï¿½ï¿½ ï¿½ï¿½
 
 	UPROPERTY(BlueprintReadOnly)
 	float CurOxygen = 100.f;
@@ -151,20 +151,20 @@ private:
 	float BoostTimer{};
 
 	static const float BOOST_ONE_BLOCK_EFFECT_TIME;
-	static const float BOOST_ONE_BLOCK_AMOUNT; // ÇÑ ºí·Ï ´ç ÁÙ¾îµå´Â Boost ·®
+	static const float BOOST_ONE_BLOCK_AMOUNT; // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ù¾ï¿½ï¿½ï¿½ Boost ï¿½ï¿½
 
 	// 20 40 30 10
 	static const TArray<float> EACH_BOOST_PHASE_BORDER;
 	static const TArray<FBoostingEffectFactor> BOOSTING_EFFECT_FACTORS;
 
-private: // Oxygen Exhausted °ü·Ã
+private: // Oxygen Exhausted ï¿½ï¿½ï¿½ï¿½
 
 	static const float OXYGEN_EXHAUSTED_DAMAGE_PER_SEC;
 
 	float OxygenExhaustedTimer{};
 
 private:
-	// ÇÇ°Ý ÆÇÁ¤ ºÎÀ§ Mapping TPair<PhysicsAssetBoneName, EDamagingPartType>
+	// ï¿½Ç°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Mapping TPair<PhysicsAssetBoneName, EDamagingPartType>
 	static const TMap<FName, EDamagingPartType> DAMAGINGPARTS_MAP;
 
 };

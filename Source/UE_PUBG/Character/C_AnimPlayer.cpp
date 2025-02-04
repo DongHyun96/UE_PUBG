@@ -4,6 +4,7 @@
 #include "Character/C_AnimPlayer.h"
 
 #include "Character/C_Player.h"
+#include "Character/Component/C_EquippedComponent.h"
 #include "Utility/C_Util.h"
 
 void UC_AnimPlayer::NativeBeginPlay()
@@ -24,7 +25,7 @@ void UC_AnimPlayer::SetAimOffsetRotation()
 	Super::SetAimOffsetRotation();
 
 	if (!IsValid(OwnerPlayer)) return;
-
+	
 	AC_Gun* CurGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetCurWeapon());
 
 	if (OwnerPlayer->GetIsWatchingSight() && OwnerPlayer->GetPoseState() == EPoseState::CRAWL)

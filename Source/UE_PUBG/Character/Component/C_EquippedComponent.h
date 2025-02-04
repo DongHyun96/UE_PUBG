@@ -134,15 +134,7 @@ public:
 	/// <param name="CollisionParams"> : Param </param>
 	void AddAttachedPartsActorsToIgnoreActors(FCollisionQueryParams& CollisionParams);
 
-private:
-
-	/// <summary>
-	/// Weapon Testing용 스폰 함수 - TODO(생성자 쪽 & 이 함수 지워버리기)
-	/// </summary>
-	void SpawnWeaponsForTesting();
-
 public:
-
 
 	TSubclassOf<class AC_Weapon> GetSubclassOfWeapon(EWeaponSlot WeaponSlot) const { return WeaponClasses[WeaponSlot]; }
 	

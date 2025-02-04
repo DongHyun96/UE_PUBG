@@ -9,21 +9,21 @@
 
 const float UC_StatComponent::MAX_HP		= 100.f;
 const float UC_StatComponent::MAX_BOOSTING	= 100.f;
-const float UC_StatComponent::HEAL_UP_LIMIT = 75.f; // ±¸±Þ»óÀÚ, ºØ´ë·Î Ã¤¿ï ¼ö ÀÖ´Â ÃÑ Èú·® limit
-const float UC_StatComponent::MAX_OXYGEN_HP = 100.f; // ¼û HP Max
+const float UC_StatComponent::HEAL_UP_LIMIT = 75.f; // ï¿½ï¿½ï¿½Þ»ï¿½ï¿½ï¿½, ï¿½Ø´ï¿½ï¿½ Ã¤ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ limit
+const float UC_StatComponent::MAX_OXYGEN_HP = 100.f; // ï¿½ï¿½ HP Max
 
 const float UC_StatComponent::BOOST_ONE_BLOCK_EFFECT_TIME = 8.f;
-const float UC_StatComponent::BOOST_ONE_BLOCK_AMOUNT		= 2.631f; // ÇÑ ºí·Ï ´ç ÁÙ¾îµå´Â Boost ·®
+const float UC_StatComponent::BOOST_ONE_BLOCK_AMOUNT		= 2.631f; // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ù¾ï¿½ï¿½ï¿½ Boost ï¿½ï¿½
 
 // 20 40 30 10
 const TArray<float> UC_StatComponent::EACH_BOOST_PHASE_BORDER = { 20.f, 60.f, 90.f, 100.f };
 
 const TArray<FBoostingEffectFactor> UC_StatComponent::BOOSTING_EFFECT_FACTORS =
 {
-	{1.f, 1.f},		// 1ÆäÀÌÁî 8ÃÊ´ç Ã¼·Â È¸º¹·® & ÀÌµ¿ ¼Óµµ Áõ°¡(factor)
-	{2.f, 1.01f},	// 2ÆäÀÌÁî
-	{3.f, 1.025f},	// 3ÆäÀÌÁî
-	{4.f, 1.0625f}	// 4ÆäÀÌÁî
+	{1.f, 1.f},		// 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 8ï¿½Ê´ï¿½ Ã¼ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ & ï¿½Ìµï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½(factor)
+	{2.f, 1.01f},	// 2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	{3.f, 1.025f},	// 3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	{4.f, 1.0625f}	// 4ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 };
 
 const float UC_StatComponent::OXYGEN_EXHAUSTED_DAMAGE_PER_SEC = 20.f;
@@ -95,11 +95,11 @@ bool UC_StatComponent::TakeDamage(const float& Damage)
 
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
 
-	// »ç¸Á
+	// ï¿½ï¿½ï¿½
 	if (CurHP <= 0.f)
 	{
-		// »ç¸Á Ã³¸®
-		// TODO : OwnwerCharacter¿¡°Ô call backÀ» ÀÌ¿ëÇÑ »ç¸Á ¾Ë¸®±â
+		// ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
+		// TODO : OwnwerCharacterï¿½ï¿½ï¿½ï¿½ call backï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½ï¿½ï¿½
 	}
 
 	return true;
@@ -110,8 +110,8 @@ float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType Damagin
 	//FString Str = "Character Damaged on certain damaging part! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
 	//UC_Util::Print(Str, FColor::Cyan, 3.f);
 
-	// TODO : Armor È®ÀÎÇØ¼­ Armor ºÎºÐÀÌ¶ó¸é Damage °¨¼Ò Àû¿ë
-	// TODO : Armor ¶ÇÇÑ ÇÇ ±ð±â
+	// TODO : Armor È®ï¿½ï¿½ï¿½Ø¼ï¿½ Armor ï¿½Îºï¿½ï¿½Ì¶ï¿½ï¿½ Damage ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	// TODO : Armor ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
 
 	TakeDamage(DamageAmount);
 	return DamageAmount;
@@ -133,7 +133,7 @@ float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhyiscsAsse
 
 bool UC_StatComponent::ApplyHeal(const float& HealAmount)
 {
-	if (CurHP >= MAX_HP)  return false; // ÀÌ¹Ì Ã¼·ÂÀÌ ¸ðµÎ Ã¡À» ¶§
+	if (CurHP >= MAX_HP)  return false; // ï¿½Ì¹ï¿½ Ã¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã¡ï¿½ï¿½ ï¿½ï¿½
 	if (HealAmount < 0.f) return false;
 
 	CurHP += HealAmount;
@@ -169,7 +169,7 @@ void UC_StatComponent::AddOxygen(const float& OxygenAmount)
 
 void UC_StatComponent::UpdateBoostEffect(const float& DeltaTime)
 {
-	// Boost °ÔÀÌÁö°¡ ¾ø°Å³ª ÀÌ¹Ì »ç¸Á Ã³¸®µÇ¾úÀ» ¶§
+	// Boost ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Å³ï¿½ ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ ï¿½ï¿½
 	if (CurBoosting <= 0.f || CurHP <= 0.f)
 	{
 		BoostTimer = 0.f;

@@ -64,7 +64,7 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 			return;
 		}
 
-		// TODO : 일정한 속력 및 방향으로 MainCircle을 줄이고 중앙점도 일정한 속력과 방향으로 옮기기
+		// 일정한 속력 및 방향으로 MainCircle을 줄이고 중앙점도 일정한 속력과 방향으로 옮기기
 		MainCircle.Radius -= PhaseInfos[CurrentPhase].RadiusShrinkSpeed * DeltaTime;
 
 		MainCircle.MidLocation +=	PhaseInfos[CurrentPhase].MidPointMoveDirection * 
