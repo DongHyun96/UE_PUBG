@@ -1131,7 +1131,6 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 	AC_Enemy* OwnerPlayer = Cast<AC_Enemy>(OwnerCharacter); // TODO : OwnerPlayer -> Enemy도 총을 쏠 수 있으니 예외처리 시켜야 함
 	if (!IsValid(OwnerPlayer)) return false;
 	bool ApplyGravity = true;
-	int BulletCount = 0;
 	for (auto& Bullet : OwnerPlayer->GetBullets())
 	{
 		if (Bullet->GetIsActive())
@@ -1139,7 +1138,6 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 			//UC_Util::Print("Can't fire");
 			continue;
 		}
-		BulletCount++;
 		//UC_Util::Print("FIRE!!!!!!!");
 		CurBulletCount--;
 		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
