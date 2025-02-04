@@ -170,43 +170,6 @@ bool AC_GrenadeExplode::SetPhysicsAssetColliderEnabled(AC_BasicCharacter* Charac
 	return false;
 }
 
-//void AC_GrenadeExplode::SetPhysicsAssetCollidersEnabled(UPhysicsAsset* PhysicsAsset, bool Enabled)
-//{
-//	ECollisionEnabled::Type CollisionType = Enabled ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
-//
-//	for (USkeletalBodySetup* BodySetup : PhysicsAsset->SkeletalBodySetups)
-//	{
-//		//FKAggregateGeom&	AggGeom  = BodySetup->AggGeom;
-//		//FKSphylElem&		Collider = AggGeom.SphylElems[0];
-//		//
-//		//Collider.SetCollisionEnabled(CollisionType);
-//
-//		BodySetup->AggGeom.SphylElems[0].SetCollisionEnabled(CollisionType);
-//		//BodySetup->InvalidatePhysicsData(); // Mark the body setup as modified.
-//	}
-//}
-//
-//bool AC_GrenadeExplode::SetPhysicsAssetColliderEnabled(UPhysicsAsset* PhysicsAsset, FName BoneName, bool Enabled)
-//{
-//	ECollisionEnabled::Type CollisionType = Enabled ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
-//
-//	for (USkeletalBodySetup* BodySetup : PhysicsAsset->SkeletalBodySetups)
-//	{
-//		if (BodySetup->BoneName == BoneName)
-//		{
-//			//FKAggregateGeom&	AggGeom = BodySetup->AggGeom;
-//			//FKSphylElem&		Collider = AggGeom.SphylElems[0];
-//			//
-//			//Collider.SetCollisionEnabled(CollisionType);
-//
-//			BodySetup->AggGeom.SphylElems[0].SetCollisionEnabled(CollisionType);
-//			//BodySetup->InvalidatePhysicsData(); // Mark the body setup as modified.
-//			return true;
-//		}
-//	}
-//	return false;
-//}
-
 bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_ThrowingWeapon* ThrowingWeapon, USphereComponent* ExplosionSphere)
 {
 	FHitResult	HitResult{};
@@ -274,9 +237,7 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 
 void AC_GrenadeExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* Character, FVector ExplosionLocation, float ExplosionRad)
 {
-	AC_Player* Player = Cast<AC_Player>(Character);
-
-	if (IsValid(Player))
+	if (AC_Player* Player = Cast<AC_Player>(Character))
 	{
 		// TODO : 현재 ADS 상태이면 실행x
 
@@ -301,5 +262,6 @@ void AC_GrenadeExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* Cha
 		Player->GetCameraEffectComponent()->ExecuteCameraAimPunching(PunchingDirection, PunchingIntensity, XRotDelta);
 		Player->GetCameraEffectComponent()->ExecuteCameraShake(CamShakeScale);
 	}
+
 	// TODO : Enemy AI 또한 방해주기
 }

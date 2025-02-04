@@ -20,21 +20,21 @@ UC_BTTaskSwapWeapon::UC_BTTaskSwapWeapon()
 void UC_BTTaskSwapWeapon::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+	
+	//static int SlotIterator = 1;
+	//if (SlotIterator == 5) SlotIterator = 0;
 
-	static int SlotIterator = 1;
-	if (SlotIterator == 5) SlotIterator = 0;
+	//TotalTime += DeltaSeconds;
 
-	TotalTime += DeltaSeconds;
+	//if (TotalTime > 5.f) // Task 끝났다고 간주
+	//{
+	//	EWeaponSlot CurSlot = static_cast<EWeaponSlot>(SlotIterator++);
 
-	if (TotalTime > 5.f) // Task 끝났다고 간주
-	{
-		EWeaponSlot CurSlot = static_cast<EWeaponSlot>(SlotIterator++);
-
-		OwnerEnemy->GetEquippedComponent()->ChangeCurWeapon(CurSlot);
-		TotalTime = 0.f;
-		//OwnerBehaviorComponent->SetServiceType(EServiceType::IDLE);
-		//FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	}
+	//	OwnerEnemy->GetEquippedComponent()->ChangeCurWeapon(CurSlot);
+	//	TotalTime = 0.f;
+	//	//OwnerBehaviorComponent->SetServiceType(EServiceType::IDLE);
+	//	//FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	//}
 }
 
 EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -67,18 +67,15 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 			return EBTNodeResult::Failed;
 		}
 	}
-
-	return EBTNodeResult::InProgress;
+	
 	// Testing
-	//bool Succeeded = OwnerEnemy->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::SUB_GUN);
-	//
-	///*
-	//	Succeeded,
-	//	Failed,
-	//	Aborted,
-	//	InProgress,
-	//*/
-	//return Succeeded ? EBTNodeResult::InProgress : EBTNodeResult::Failed;
+	bool Succeeded = OwnerEnemy->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::SUB_GUN);
 
-	//return EBTNodeResult::Type();
+	/*Succeeded,
+	Failed,
+	Aborted,
+	InProgress,*/
+	
+	// TickTask 없이 바로 종료
+	return Succeeded ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
 }

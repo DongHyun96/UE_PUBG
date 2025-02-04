@@ -60,6 +60,16 @@ public:
 	/// <returns>true면 이동 성공, false면 실패</returns>
 	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 
+protected:
+	//bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
+	//bool MoveAroundToInven(AC_BasicCharacter* Character) override;
+	//
+	//bool MoveInvenToAround(AC_BasicCharacter* Character) override;
+	//bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
+	//
+	//bool MoveSlotToAround(AC_BasicCharacter* Character) override;
+	//bool MoveSlotToInven(AC_BasicCharacter* Character) override;
+
 public:
 
 	struct FPriorityAnimMontage GetAttackMontage() const { return AttackMontage; }
@@ -120,5 +130,6 @@ protected:
 protected:
 
 	class UShapeComponent* AttackCollider{};
-
+public:
+	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
 };

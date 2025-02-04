@@ -100,6 +100,12 @@ public:
 
 	virtual bool Interaction(AC_BasicCharacter* Character) override;
 
+	/// <summary>
+	/// 아이템의 type에 따라 알맞는 WeaponSlot을 반환
+	/// </summary>
+	/// <returns>WeaponSlot을 반환</returns>
+	EWeaponSlot GetWeaponSlot();
+
 public:
 
 	void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
@@ -119,7 +125,7 @@ public:
 
 	void SetRelativeTranformToInitial() { SetActorRelativeTransform(InitialRelativeTransform); }
 
-private:
+protected:
 	virtual bool MoveSlotToAround(AC_BasicCharacter* Character) override;
 	virtual bool MoveSlotToInven(AC_BasicCharacter* Character) override;
 	virtual bool MoveSlotToSlot(AC_BasicCharacter* Character) override;
@@ -132,11 +138,7 @@ private:
 	virtual bool MoveAroundToInven(AC_BasicCharacter* Character) override;
 	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 
-	/// <summary>
-	/// 아이템의 type에 따라 알맞는 WeaponSlot을 반환
-	/// </summary>
-	/// <returns>WeaponSlot을 반환</returns>
-	EWeaponSlot GetWeaponSlot();
+
 protected:
 
 	// 무기에 따른 각 버튼에 대한 strategy 알고리즘 객체
@@ -156,4 +158,10 @@ private:
 	
 	FTransform InitialRelativeTransform{};
 
+public:
+	/// <summary>
+	/// AI 공격 순수 가상함수
+	/// </summary>
+	/// <returns> 공격을 할 수 없는 상황이라면 return false </returns>
+	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) PURE_VIRTUAL(AC_Weapon::ExecuteAIAttack, return false;);
 };

@@ -104,6 +104,11 @@ void AC_SR::SetRelativeRotationOnCrawl()
 	}
 }
 
+bool AC_SR::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
+{
+	return false;
+}
+
 //bool AC_SR::ReloadBullet()
 //{
 //	Super::ReloadBullet();

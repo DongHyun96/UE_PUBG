@@ -13,15 +13,34 @@
 FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	// 우클릭인지 체크
-	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
+	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
 		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
+
+		if (SlotItem)
+		{
+			//드래그 이벤트 실행.
+			//드래그를 시작하고 반응함
+			FEventReply RePlyResult =
+				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
+
+			//UC_Util::Print("LeftMouseButton");
+			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
+
+			return RePlyResult.NativeReply;
+		}
+	}
+	else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
+	{
+		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
+
+
 
 		if (SlotItem)
 		{  
 			// 우클릭 이벤트 실행
 			// slot에서는 장착아이템이 존재하면 해제하는 함수를 실행한다.
-			if (MouseRBDownInteraction(SlotItem))
+			MouseRBDownInteraction(SlotItem);
 			//{
 			//	OwnerPlayer->GetEquippedComponent()->SetSlotWeapon(WeaponType, nullptr);
 			//}
@@ -35,27 +54,27 @@ FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
-FReply UC_WeaponSlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-	{
-		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
-
-		if (SlotItem)
-		{
-			//드래그 이벤트 실행.
-			//드래그를 시작하고 반응함
-			FEventReply RePlyResult =
-				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-			
-			//UC_Util::Print("LeftMouseButton");
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
-
-			return RePlyResult.NativeReply;
-		}
-	}
-	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
-}
+//FReply UC_WeaponSlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+//{
+//	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
+//	{
+//		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
+//
+//		if (SlotItem)
+//		{
+//			//드래그 이벤트 실행.
+//			//드래그를 시작하고 반응함
+//			FEventReply RePlyResult =
+//				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
+//			
+//			//UC_Util::Print("LeftMouseButton");
+//			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
+//
+//			return RePlyResult.NativeReply;
+//		}
+//	}
+//	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+//}
 
 void UC_WeaponSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
@@ -75,32 +94,35 @@ void UC_WeaponSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, cons
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
 	Border->SetBrushColor(BorderColor);
 
-	//Border->SetPadding(FMargin(2.0f)); 패딩이 필요하면 사용하기.
-
 	UImage* DragVisual = NewObject<UImage>(Texture);
 
 	DragVisual->SetBrushFromTexture(Texture);
-	//DragVisual->SetBrushFromTexture(Texture);
 	DragVisual->Brush.ImageSize = FVector2D(64.f, 64.f);
+
 	Border->SetContent(DragVisual);
 
 	DragOperation->DefaultDragVisual = Border;
-
-	//DragOperation->DefaultDragVisual = ItemImage1; // 드래그 시 아이템의 미리보기 이미지
-	//DragOperation->DefaultDragVisual = this; // 드래그 시 아이템의 미리보기 이미지
-
 	DragOperation->Payload = SlotItem; // 드래그 중 전달할 데이터 (아이템)
-	//DragOperation->Pivot = EDragPivot::MouseDown;
-	DragOperation->Pivot = EDragPivot::CenterCenter;
+	DragOperation->Pivot = EDragPivot::MouseDown;
+
+	FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
+	// 현재 마우스 클릭 위치 가져오기 (화면 좌표)
+	FVector2D Offset = DragVisual->Brush.ImageSize * 0.5f;
+	FVector2D CenteredPosition = MousePosition - Offset;
+
+	// 현재 위젯(ItemBar)의 화면 좌표 가져오기
+	FVector2D WidgetScreenPosition = InGeometry.AbsoluteToLocal(CenteredPosition); //왜 이걸 써야만 하는가?
+
+	// 드래그 비주얼 위치를 강제로 설정 (렌더링 기준으로 설정)
+	Border->SetRenderTranslation(WidgetScreenPosition);
 
 	DragOperation->DraggedItem = SlotItem;
 
 	DragOperation->curWeaponSlot = WeaponType;
 
 	this->Visibility = ESlateVisibility::SelfHitTestInvisible;
-	OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 
-	//OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetItemListZorder(CachedItem->GetOwnerCharacter());
+	OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 
 	OutOperation = DragOperation;
 }
@@ -124,7 +146,7 @@ void UC_WeaponSlotWidget::UpdateSlotItemImage(AC_Weapon* SlotItem)
 		FSlateBrush Brush = WeaponImage->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		WeaponImage->SetBrush(Brush);
-		WeaponSlotPanel->SetVisibility(ESlateVisibility::Visible);
+		WeaponSlotPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		//SetVisibility(ESlateVisibility::Visible);
 	}
 	else

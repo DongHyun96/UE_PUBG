@@ -127,15 +127,14 @@ public:
 	void OnReloadEnd();
 	UFUNCTION(BlueprintCallable)
 	void OnSniperReloadEnd();
-private:
 
 	/// <summary>
-	/// Weapon Testing용 스폰 함수 - TODO(생성자 쪽 & 이 함수 지워버리기)
+	/// 각 무기에 부착된 Attachment -> Param으로 들어온 CollisionParams ignoreActors에 추가
 	/// </summary>
-	void SpawnWeaponsForTesting();
+	/// <param name="CollisionParams"> : Param </param>
+	void AddAttachedPartsActorsToIgnoreActors(FCollisionQueryParams& CollisionParams);
 
 public:
-
 
 	TSubclassOf<class AC_Weapon> GetSubclassOfWeapon(EWeaponSlot WeaponSlot) const { return WeaponClasses[WeaponSlot]; }
 	

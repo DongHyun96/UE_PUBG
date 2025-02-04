@@ -3,51 +3,53 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Item/Weapon/Gun/C_Gun.h"
-#include "Components/Image.h"
-#include "Components/Widget.h"
+
 #include "Blueprint/UserWidget.h"
-
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "UMG.h"
-#include "Components/CanvasPanelSlot.h"
-#include "Components/Image.h"
-#include "Character/Component/C_EquippedComponent.h"
-#include "Character/Component/C_InvenComponent.h"
-#include "Character/Component/C_InvenSystem.h"
-
-#include "Components/PanelWidget.h"
-#include "Components/NamedSlotInterface.h"
-#include "Utility/C_Util.h"
-#include "UObject/ConstructorHelpers.h"
-#include "Components/CanvasPanelSlot.h"
-#include "Character/C_BasicCharacter.h"
-#include "Character/Component/C_EquippedComponent.h"
-#include "GameFramework/Actor.h"
-#include "Components/ShapeComponent.h"
-#include "Components/SceneComponent.h"
-#include "Animation/AnimInstance.h"
-#include "Animation/AnimMontage.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "Camera/CameraComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Character/C_Player.h"
-#include "Character/C_Enemy.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "Character/Component/C_CrosshairWidgetComponent.h"
-#include "Character/Component/C_EquippedComponent.h"
-#include "Character/Component/C_InvenComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 #include "Item/Attachment/C_AttachableItem.h"
-#include "Character/Component/C_AttachableItemMeshComponent.h"
-#include "Components/ChildActorComponent.h"
 #include "Item/AttachmentActors/AttachmentActor.h"
-
 #include "Item/Weapon/Gun/C_Bullet.h"
 #include "Item/ItemBullet/C_Item_Bullet.h"
 #include "Item/Weapon/Gun/C_SR.h"
 
+#include "UMG.h"
+
+#include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_InvenSystem.h"
+#include "Character/Component/C_CrosshairWidgetComponent.h"
+#include "Character/Component/C_AttachableItemMeshComponent.h"
+
+//#include "Components/Image.h"
+//#include "Components/Widget.h"
+//#include "Components/CanvasPanelSlot.h"
+//#include "Components/PanelWidget.h"
+#include "Components/NamedSlotInterface.h"
+#include "Components/ShapeComponent.h"
+#include "Components/SceneComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/ChildActorComponent.h"
+
+#include "Utility/C_Util.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
+
+//#include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
+#include "Character/C_Enemy.h"
+
+#include "GameFramework/Actor.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+
+
+#include "Character/C_Enemy.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_AmmoWidget.h"
 
@@ -549,6 +551,50 @@ void AC_Gun::DropItem(AC_BasicCharacter* Character)
 	ItemDatas.ItemPlace = EItemPlace::AROUND;
 }
 
+AC_AttachableItem* AC_Gun::SetAttachableItemSlot(EPartsName InPartsName, AC_AttachableItem* InAttachableItem)
+{
+	AC_AttachableItem* PrevSlotAttachableItem = AttachableItem[InPartsName];
+
+	UC_AttachableItemMeshComponent* AttachableMeshComp = OwnerCharacter->GetAttachmentMeshComponent();
+
+	if (PrevSlotAttachableItem)
+	{
+		//장착된 부착물을 해체하는 작업
+		//교체된 부착물은 Inven에 공간이 있으면 Inven으로, 없으면 Around로 간다.
+		//if (PrevSlotAttachableItem->MoveToInven(OwnerCharacter)) {}
+		//else
+		//{
+		//	PrevSlotAttachableItem->MoveToAround(OwnerCharacter);
+		//}
+		
+		//PrevSlotAttachableItem->SetOwnerGun(nullptr);
+
+		//부착물의 mesh를 총에서 장착해제
+		AttachableMeshComp->DetachFromGun(this->GetGunMesh(), InPartsName, PrevSlotAttachableItem->GetAttachmentName());
+	}
+
+	AttachableItem[InPartsName] = InAttachableItem;
+
+	if (AttachableItem[InPartsName] == nullptr) return PrevSlotAttachableItem; 
+	
+	//새로 장착하는 부착물의 mesh를 총에 장착
+
+	//AttachableItem[InPartsName]->SetActorHiddenInGame(false);	//모습이 안보이도록 보이도록 
+	//AttachableItem[InPartsName]->SetActorEnableCollision(true);	//Overlap 불가능 하도록 Collision Off
+
+	//AttachableItem[InPartsName]->SetCurWeaponSlot(this->GetWeaponSlot())
+	AttachableItem[InPartsName]->SetOwnerGun(this);
+	AttachableItem[InPartsName]->SetOwnerCharacter(OwnerCharacter);
+	
+	AttachableItem[InPartsName]->SetItemPlace(EItemPlace::SLOT);
+
+	AttachableMeshComp->AttachToGun(this->GetGunMesh(), InPartsName, AttachableItem[InPartsName]->GetAttachmentName());
+	//아이템의 정확한 위치 이동은 다른 곳에서 처리하기.
+	//AttachableItem[InPartsName]->MoveToSlot(OwnerCharacter);
+
+	return PrevSlotAttachableItem;
+}
+
 bool AC_Gun::GetIsPlayingMontagesOfAny()
 {
 	UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
@@ -672,6 +718,7 @@ FVector2D AC_Gun::GetRecoilFactors()
 
 bool AC_Gun::FireBullet()
 {
+	if (!IsValid(OwnerCharacter)) return false;
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
 	if (!OnScreen) return false;
 	//ExecuteReloadMontage();
@@ -1121,16 +1168,45 @@ void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
 
 }
 
-//void AC_Gun::SpawnBulletForTest()
-//{
-//
-//	//FActorSpawnParameters Param2{};
-//	//Param2.Owner = this;
-//	//UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
-//	//Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
-//	//if (IsValid(Bullet))
-//	//	UC_Util::Print("Created Bullet");
-//
-//}
+bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
+{
+	if (!IsValid(OwnerCharacter)) return false;
+	if (!IsValid(InTargetCharacter)) return false;
 
+	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
+	if (!OnScreen) return false;
+	//ExecuteReloadMontage();
+
+	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
+	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+
+	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * BulletSpeed;
+
+	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
+
+	//UC_Util::Print(FireLocation);
+	//UC_Util::Print(FireDirection);
+	AC_Enemy* OwnerPlayer = Cast<AC_Enemy>(OwnerCharacter); // TODO : OwnerPlayer -> Enemy도 총을 쏠 수 있으니 예외처리 시켜야 함
+	if (!IsValid(OwnerPlayer)) return false;
+	bool ApplyGravity = true;
+	for (auto& Bullet : OwnerPlayer->GetBullets())
+	{
+		if (Bullet->GetIsActive())
+		{
+			//UC_Util::Print("Can't fire");
+			continue;
+		}
+		//UC_Util::Print("FIRE!!!!!!!");
+		CurBulletCount--;
+		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+		return Succeeded;
+
+		//Bullet->Fire(this, FireLocation, FireDirection);
+		//if (BulletCount > 100)
+		//	return true;
+	}
+	UC_Util::Print("No More Bullets in Pool");
+	return false;
+
+}
 

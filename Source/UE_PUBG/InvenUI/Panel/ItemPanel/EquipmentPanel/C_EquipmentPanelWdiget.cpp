@@ -30,6 +30,8 @@ bool UC_EquipmentPanelWdiget::NativeOnDrop(const FGeometry& InGeometry, const FD
 		if (bChildHandled)
 		{
 			// 자식 위젯이 드롭을 처리했으면 부모는 처리하지 않음
+			if (UC_InventoryUIWidget* InvenUiWidget = GetTypedOuter<UC_InventoryUIWidget>())
+				InvenUiWidget->UpdateWidget();
 			return true;
 		}
 	}

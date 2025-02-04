@@ -31,6 +31,7 @@
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
+#include "Item/Weapon/Gun/C_Bullet.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
@@ -64,7 +65,7 @@ AC_BasicCharacter::AC_BasicCharacter()
 	PoseColliderHandlerComponent->SetOwnerCharacter(this);
 
 	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
-	DetectionSphere->InitSphereRadius(100.0f); // 탐지 반경 설정
+	DetectionSphere->InitSphereRadius(120.0f); // 탐지 반경 설정
 	DetectionSphere->SetupAttachment(RootComponent);
 
 	//DetectionSphere->SetGenerateOverlapEvents(true);
@@ -108,7 +109,7 @@ void AC_BasicCharacter::Tick(float DeltaTime)
 // Called to bind functionality to input
 void AC_BasicCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	Super::SetupPlayerInputComponent(PlayerInputComponent); 
 	
 }
 
@@ -136,40 +137,12 @@ float AC_BasicCharacter::PlayAnimMontage(UAnimMontage* AnimMontage, float InPlay
 /// <param name="SweepResult"></param>
 void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
+	
 
 	FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetCurVolume());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
 
 	HandleOverlapBegin(OtherActor);
-	//AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
-
-	////if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
-
-	//if (IsValid(OverlappedItem))
-	//{
-	//	UC_Util::Print("OverlappedItem");
-	//	//UC_Util::Print(*OverlappedItem->GetName());
-
-	//	//Inventory->GetNearItems().Add(OverlappedItem);
-	//	//Inventory->AddItemToAroundList(OverlappedItem);
-
-	//	if (OverlappedItem->GetOwnerCharacter() == nullptr)
-
-	//	{
-	//		if (!IsValid(Inventory)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
-	//		Inventory->AddItemToNearList(OverlappedItem);
-	//		Inventory->InitInvenUI();
-	//		//if (!IsValid(InvenSystem)) return;
-	//	}
-	//    //InvenSystem->InitializeList();
-	//}
-	//else
-	//{
-	//	UC_Util::Print("No item");
-
-	//	return;
-	//}
 }
 
 /// <summary>
@@ -182,18 +155,6 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	HandleOverlapEnd(OtherActor);
-	//AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
-
-	//if (OverlappedItem)
-	//{
-	//	//Inventory->GetNearItems().Remove(OverlappedItem);
-	//	//Inventory->RemoveItemToAroundList(OverlappedItem);
-	//	if (!IsValid(Inventory)) return;
-	//	Inventory->RemoveItemNearList(OverlappedItem);
-	//	Inventory->InitInvenUI();
-	//	//if (!IsValid(InvenSystem)) return;
-	//	//InvenSystem->InitializeList();
-	//}
 }
 float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate, FName StartSectionName)
 {
@@ -371,6 +332,30 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 	bIsPoseTransitioning	= true;
 
 	return true;
+}
+
+void AC_BasicCharacter::PoolingBullets()
+{
+	FActorSpawnParameters Param2{};
+	Param2.Owner = this;
+	for (int i = 0; i < 1000; i++)
+	{
+		UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
+		AC_Bullet* Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
+		Bullet->SetInstanceNum(i);
+		Bullet->DeactivateInstance();
+		if (IsValid(Bullet))
+		{
+			Bullet->SetOwnerCharacter(this);
+			//UC_Util::Print("Created Bullet");
+			PooledBullets.Add(Bullet);
+		}
+	}
+	for (auto& Bullet : PooledBullets)
+	{
+		Bullet->ActivateInstance();
+		Bullet->DeactivateInstance();
+	}
 }
 
 void AC_BasicCharacter::AddSevenmmBulletStack(int inBulletCount)

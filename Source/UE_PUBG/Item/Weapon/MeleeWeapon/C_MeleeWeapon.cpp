@@ -101,9 +101,11 @@ bool AC_MeleeWeapon::Interaction(AC_BasicCharacter* Character)
 	switch (ItemDatas.ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		if (curWeapaon) return LegacyMoveToInven(Character);
+		if (curWeapaon) return MoveToInven(Character);
 	case EItemPlace::INVEN:
-		return LegacyMoveToSlot(Character);
+		return MoveToSlot(Character);
+	case EItemPlace::SLOT:
+		return MoveToInven(Character);
 	default:
 		break;
 	}
@@ -187,6 +189,36 @@ bool AC_MeleeWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 	//return false;
 }
 
+//bool AC_MeleeWeapon::MoveAroundToSlot(AC_BasicCharacter* Character)
+//{
+//	return false;
+//}
+//
+//bool AC_MeleeWeapon::MoveAroundToInven(AC_BasicCharacter* Character)
+//{
+//	return false;
+//}
+//
+//bool AC_MeleeWeapon::MoveInvenToAround(AC_BasicCharacter* Character)
+//{
+//	return false;
+//}
+//
+//bool AC_MeleeWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
+//{
+//	return false;
+//}
+//
+//bool AC_MeleeWeapon::MoveSlotToAround(AC_BasicCharacter* Character)
+//{
+//	return false;
+//}
+//
+//bool AC_MeleeWeapon::MoveSlotToInven(AC_BasicCharacter* Character)
+//{
+//	return false;
+//}
+
 void AC_MeleeWeapon::SetAttackColliderEnabled(const bool& Enabled)
 {
 	if (Enabled) AttackCollider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -209,6 +241,11 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 
 void AC_MeleeWeapon::OnOwnerCharacterPoseTransitionFin()
 {
+}
+
+bool AC_MeleeWeapon::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
+{
+	return false;
 }
 
 //void AC_MeleeWeapon::InitPriorityAnimMontages()

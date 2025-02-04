@@ -410,7 +410,16 @@ protected: // 총알 Object Pooling(AC_Item으로 만들어진 Bullet은 사용X)
 
 	int SevenmmBulletCount = 0;
 	int FivemmBulletCount  = 0;
+
+protected:
+	//총알 Object Pooling (World에서 작업할 예정)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TArray<class AC_Bullet*> PooledBullets;
+
+	void PoolingBullets();
+
 public:
+	TArray<AC_Bullet*>& GetBullets() { return PooledBullets; }
 	int GetCurrentSevenmmBulletCount() { return SevenmmBulletCount; }
 	int GetCurrentFivemmBulletCount()  { return FivemmBulletCount;}
 	void AddSevenmmBulletStack(int inBulletCount);

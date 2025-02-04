@@ -93,6 +93,22 @@ public:
 	void CheckBackPackLevelChange();
 
 	void DropItem(AC_BasicCharacter* Character) override;
+
+	/// <summary>
+	/// 총기 부착물을 부착하는 함수.
+	/// Mesh에 대한 처리도 포함하고 있다.
+	/// </summary>
+	/// <param name="InPartsName">부착하려는 부위</param>
+	/// <param name="InAttachableItem">부착하려는 부착물</param>
+	/// <returns>교체되어 나온 부착물</returns>
+	class AC_AttachableItem* SetAttachableItemSlot(EPartsName InPartsName, AC_AttachableItem* InAttachableItem);
+protected:
+	//bool MoveSlotToAround(AC_BasicCharacter* Character) override;
+	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
+	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
+
+	bool MoveSlotToInven(AC_BasicCharacter* Character) override;
+
 protected:
 	/// <summary>
 	/// OwnerCharacter의 Pose Transition 모션이 끝났을 때 Delegate를 통해 call back을 받는 함수 (현재 캐릭터의 slot에 장착된 무기만 call back 될 예정) 
@@ -142,8 +158,10 @@ protected:
 	USkeletalMeshComponent* GunMesh;
 public:
 	void SetMainOrSubSlot(EGunState InState) { CurState = InState; }
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FTransform LeftHandSocketLocation;
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	bool bIsPlayerAimDownPress = false;
 
@@ -177,6 +195,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 	float RecoilFactorHorizontal;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EShootingMode CurrentShootingMode = EShootingMode::FULL_AUTO;
 
@@ -184,12 +203,7 @@ protected:
 	float RecoilMultiplierByGripHorizon = 1;
 	float RecoilMultiplierMuzzleVert = 1;
 	float RecoilMultiplierMuzzleHorizon = 1;
-protected:
-	//bool MoveSlotToAround(AC_BasicCharacter* Character) override;
-	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
-	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 
-	bool MoveSlotToInven(AC_BasicCharacter* Character) override;
 public:
 	void SetRecoilMultiplierGripVert(float InValue)      { RecoilMultiplierByGripVert    = InValue; }
 	void SetRecoilMultiplierGripHorizon(float InValue)   { RecoilMultiplierByGripHorizon = InValue; }
@@ -235,26 +249,54 @@ public:
 	TArray<EPartsName> GetAttachableParts() { return AttachableParts; }
 	bool GetGunHasGrip();
 protected:
+	//어떤 파츠를 장착 할 수있는가
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<EPartsName> AttachableParts{};
+
+	//안쓰는듯?
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EPartsName, class UMeshComponent*> AttachedParts{};
 
+	//홀스터 이름
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 	TMap<EAttachmentNames, FName> AttachmentPartsHolsterNames{};
+
+	//해당 부위 파츠가 장착중인지 -> 아래 AttachedItem으로 통합 예정
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 	TMap<EPartsName, bool> IsPartAttached{};
 
+	//해당 부위에 어떤 파츠가 붙어있는가 -> 아래 AttachedItem으로 통합 예정
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 	TMap<EPartsName, EAttachmentNames> AttachedItemName{};
+
+	//스코프 카메라 위치 정보
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 	TMap<EAttachmentNames, FVector4> ScopeCameraLocations{};
 
+	//해당 부위 장착된 파츠(AAttachmentActor) mesh 객체 
 	TMap<EPartsName, class AAttachmentActor*> AttachedItem{};
+
+	//해당 부위에 장착된 파츠(C_AttachableItem)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<EPartsName, AC_AttachableItem*> AttachableItem{};
+
+public:
+
+	/// <summary>
+	/// 총에 직접 부착되는 부착물의 Mesh TMap을 반환한다.
+	/// </summary>
+	/// <returns></returns>
+	TMap<EPartsName, AAttachmentActor*> GetAttachedItem() { return AttachedItem; }
+
+	/// <summary>
+	/// 인벤에서 사용하는 부착물 TMap을 반환한다.(Mesh가 아님)
+	/// </summary>
+	/// <returns></returns>
+	TMap<EPartsName, class AC_AttachableItem*> GetAttachableItem() { return AttachableItem; }
 
 public:
 	TMap<EAttachmentNames, FName> GetAttachmentPartsHolsterNames() { return AttachmentPartsHolsterNames; }
@@ -290,5 +332,11 @@ protected:
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "DragIcon")
 	UTexture2D* DragIcon = nullptr; 
+
+public:
+	//AI 총알 발사 관련 함수
+	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+
+
 
 };

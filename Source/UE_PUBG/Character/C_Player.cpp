@@ -186,6 +186,7 @@ void AC_Player::BeginPlay()
 
 	PoolingBullets();
 
+	SetControllerPitchLimits(PoseState);
 }
 
 void AC_Player::Tick(float DeltaTime)
@@ -354,7 +355,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			SetSpringArmRelativeLocationDest(EPoseState::STAND);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::STAND);
-
+			SetControllerPitchLimits(EPoseState::STAND);
 			Super::SetPoseState(EPoseState::STAND);
 			return true;
 
@@ -362,7 +363,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (bIsActivatingConsumableItem) return false; // TODO : 일어설 수 없습니다 UI 띄우기
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
-			ClampControllerRotationPitchWhileCrawl(PoseState);
+			SetControllerPitchLimits(EPoseState::STAND);
 			SetSpringArmRelativeLocationDest(EPoseState::STAND);
 
 			if (SwimmingComponent->GetSwimmingState() != ESwimmingState::ON_GROUND)
@@ -388,7 +389,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CROUCH);
-
+			SetControllerPitchLimits(EPoseState::CROUCH);
 			Super::SetPoseState(EPoseState::CROUCH);
 			return true;
 
@@ -396,7 +397,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (bIsActivatingConsumableItem) return false; // TODO : 일어설 수 없습니다 UI 띄우기
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
-			ClampControllerRotationPitchWhileCrawl(PoseState);
+			SetControllerPitchLimits(EPoseState::CROUCH);
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToCrouch, EPoseState::CROUCH);
 			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CROUCH);
@@ -412,7 +413,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (bIsActivatingConsumableItem) return false; // TODO : 없드릴 수 없습니다 UI 띄우기
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
-			ClampControllerRotationPitchWhileCrawl(PoseState);
+			SetControllerPitchLimits(EPoseState::CRAWL);
 
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).StandToCrawl, EPoseState::CRAWL);
 			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
@@ -424,7 +425,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (bIsActivatingConsumableItem) return false; // TODO : 없드릴 수 없습니다 UI 띄우기
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
-			ClampControllerRotationPitchWhileCrawl(PoseState);
+			SetControllerPitchLimits(EPoseState::CRAWL);
 			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CRAWL);
 
@@ -564,6 +565,7 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되�
 	if (GetCharacterMovement()->IsSwimming())	return;
 	if (GetVelocity().Size() > 0.f)				return;
 	if (bIsHoldDirection)						return;
+	if (bIsActivatingConsumableItem)			return;
 	//if (ParkourComponent->GetIsCurrentlyWarping()) return;
 
 	// 0 360
@@ -763,47 +765,26 @@ void AC_Player::HandlePlayerRotationWhileAiming()
 	//UC_Util::Print(float(GetActorRotation().Yaw));
 }
 
-void AC_Player::ClampControllerRotationPitchWhileCrawl(EPoseState InCurrentState)
+void AC_Player::SetControllerPitchLimits(EPoseState InCurrentState)
 {
 	APlayerCameraManager* Camera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
 
 	switch (InCurrentState)
 	{
 	case EPoseState::STAND:
-		Camera->ViewPitchMax = 30;
-		Camera->ViewPitchMin = -10;
-		break;
+		Camera->ViewPitchMax = 90;
+		Camera->ViewPitchMin = -65;
+		return;
 	case EPoseState::CROUCH:
+		Camera->ViewPitchMax = 90;
+		Camera->ViewPitchMin = -65;
+		return;
+	case EPoseState::CRAWL:
 		Camera->ViewPitchMax = 30;
 		Camera->ViewPitchMin = -10;
-		break;
-	case EPoseState::CRAWL:
-		Camera->ViewPitchMax = 90;
-		Camera->ViewPitchMin = -90;
-		break;
-	case EPoseState::POSE_MAX:
-		Camera->ViewPitchMax = 90;
-		Camera->ViewPitchMin = -90;
-		break;
-	default:
-		break;
+		return;
+	case EPoseState::POSE_MAX: default: return;
 	}
-
-	//FRotator NewRotation = GetController()->GetControlRotation();
-	//if (PoseState == EPoseState::CRAWL)
-	//{
-	//	APlayerCameraManager* Camera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
-	//	Camera->ViewPitchMax = 30;
-	//	Camera->ViewPitchMin = -10;
-
-	//	//AimCamera->GetCameraView();
-	//	if (NewRotation.Pitch > 180.f)
-	//		NewRotation.Pitch -= 360.0f;
-	//	NewRotation.Pitch = UKismetMathLibrary::FClamp(NewRotation.Pitch, -10, 30);
-	//	GetController()->SetControlRotation(NewRotation);
-	//}
-
-
 }
 
 void AC_Player::SetStrafeRotationToIdleStop()
@@ -1083,32 +1064,6 @@ void AC_Player::SetRecoilFactorByPose()
 	default:
 		break;
 	}
-}
-
-void AC_Player::PoolingBullets()
-{
-
-	FActorSpawnParameters Param2{};
-	Param2.Owner = this;
-	for (int i = 0; i < 1000; i++)
-	{
-		UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
-		AC_Bullet* Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
-		Bullet->SetInstanceNum(i);
-		Bullet->DeactivateInstance();
-		if (IsValid(Bullet))
-		{
-			Bullet->SetOwnerCharacter(this);
-			//UC_Util::Print("Created Bullet");
-			PooledBullets.Add(Bullet);
-		}
-	}
-	for (auto& Bullet : PooledBullets)
-	{
-		Bullet->ActivateInstance();
-		Bullet->DeactivateInstance();
-	}
-	
 }
 
 void AC_Player::SetLineTraceCollisionIgnore()

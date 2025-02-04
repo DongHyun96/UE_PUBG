@@ -19,6 +19,9 @@ public:
 
 	void BeginPlay() override;
 
+	void Tick(float DeltaSeoncds) override;
+
+
 	class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 
 public:
