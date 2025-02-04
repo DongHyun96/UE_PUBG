@@ -286,17 +286,16 @@ private:
 
 protected:
 	//총알 Object Pooling (World에서 작업할 예정)
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TArray<class AC_Bullet*> PooledBullets;
+	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	//TArray<class AC_Bullet*> PooledBullets;
 
-	void PoolingBullets();
+	//void PoolingBullets();
 
 	FCollisionQueryParams LineTraceCollisionParams{};
 
 	void SetLineTraceCollisionIgnore();
 
 public:
-	TArray<AC_Bullet*>& GetBullets() { return PooledBullets; }
 
 	FCollisionQueryParams& GetLineTraceCollisionParams() { return LineTraceCollisionParams; }
 

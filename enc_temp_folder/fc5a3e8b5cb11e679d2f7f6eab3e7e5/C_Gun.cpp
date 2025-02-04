@@ -1113,44 +1113,67 @@ void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
 bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
 	if (!IsValid(OwnerCharacter)) return false;
-	if (!IsValid(InTargetCharacter)) return false;
+
 
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
 	if (!OnScreen) return false;
 	//ExecuteReloadMontage();
 
 	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
-	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
-
-	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * BulletSpeed;
-
-	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
+	FVector FireLocation;
+	FVector FireDirection;
+	FVector HitLocation;
+	bool HasHit;
+	if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
 
 	//UC_Util::Print(FireLocation);
 	//UC_Util::Print(FireDirection);
 	AC_Enemy* OwnerPlayer = Cast<AC_Enemy>(OwnerCharacter); // TODO : OwnerPlayer -> Enemy도 총을 쏠 수 있으니 예외처리 시켜야 함
-	if (!IsValid(OwnerPlayer)) return false;
-	bool ApplyGravity = true;
+	bool ApplyGravity = OwnerPlayer->GetIsWatchingSight() || !HasHit;
 	int BulletCount = 0;
-	for (auto& Bullet : OwnerPlayer->GetBullets())
-	{
-		if (Bullet->GetIsActive())
-		{
-			//UC_Util::Print("Can't fire");
-			continue;
-		}
-		BulletCount++;
-		//UC_Util::Print("FIRE!!!!!!!");
-		CurBulletCount--;
-		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
-		return Succeeded;
+	//for (auto& Bullet : OwnerPlayer->GetBullets())
+	//{
+	//	if (Bullet->GetIsActive())
+	//	{
+	//		//UC_Util::Print("Can't fire");
+	//		continue;
+	//	}
+	//	BulletCount++;
+	//	//UC_Util::Print("FIRE!!!!!!!");
+	//	CurBulletCount--;
+	//	OwnerPlayer->RecoilController();
+	//	if (HasHit)
+	//	{
+	//		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity, HitLocation);
+	//		if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
+	//		return Succeeded;
+	//	}
+	//	else
+	//	{
+	//		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+	//		if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
+	//		return Succeeded;
+	//	}
 
-		//Bullet->Fire(this, FireLocation, FireDirection);
-		//if (BulletCount > 100)
-		//	return true;
-	}
+	//	//Bullet->Fire(this, FireLocation, FireDirection);
+	//	//if (BulletCount > 100)
+	//	//	return true;
+	//}
 	UC_Util::Print("No More Bullets in Pool");
 	return false;
 
 }
+
+//void AC_Gun::SpawnBulletForTest()
+//{
+//
+//	//FActorSpawnParameters Param2{};
+//	//Param2.Owner = this;
+//	//UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
+//	//Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
+//	//if (IsValid(Bullet))
+//	//	UC_Util::Print("Created Bullet");
+//
+//}
+
 

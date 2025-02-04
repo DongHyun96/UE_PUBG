@@ -1085,32 +1085,6 @@ void AC_Player::SetRecoilFactorByPose()
 	}
 }
 
-void AC_Player::PoolingBullets()
-{
-
-	FActorSpawnParameters Param2{};
-	Param2.Owner = this;
-	for (int i = 0; i < 1000; i++)
-	{
-		UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
-		AC_Bullet* Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
-		Bullet->SetInstanceNum(i);
-		Bullet->DeactivateInstance();
-		if (IsValid(Bullet))
-		{
-			Bullet->SetOwnerCharacter(this);
-			//UC_Util::Print("Created Bullet");
-			PooledBullets.Add(Bullet);
-		}
-	}
-	for (auto& Bullet : PooledBullets)
-	{
-		Bullet->ActivateInstance();
-		Bullet->DeactivateInstance();
-	}
-	
-}
-
 void AC_Player::SetLineTraceCollisionIgnore()
 {
 	LineTraceCollisionParams.AddIgnoredActor(this);

@@ -40,4 +40,6 @@ public:
 
 protected:
 	//bool ReloadBullet() override;
+public:
+	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
 };
