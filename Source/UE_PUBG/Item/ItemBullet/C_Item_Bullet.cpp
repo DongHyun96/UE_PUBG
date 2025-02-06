@@ -96,7 +96,7 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 			AddBulletStackToCharacter();
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player�� ����.
+				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 
 			this->Destroy();
 		}
@@ -107,7 +107,7 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 			AddBulletStackToCharacter();
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player�� ����.
+				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 		}
 
 
