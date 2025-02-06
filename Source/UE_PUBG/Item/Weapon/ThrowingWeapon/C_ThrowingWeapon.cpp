@@ -204,14 +204,12 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 	{
 		UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
 		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, false);
-		//AmmoWidget->Set
+		
 		AC_Item* InvenThrowable = OwnerCharacter->GetInvenComponent()->FindMyItem(ItemDatas.ItemName);
 		int MagazineCount = !InvenThrowable ? 1 : InvenThrowable->GetItemDatas().ItemCurStack + 1;
 		AmmoWidget->SetMagazineText(MagazineCount);
-
-		//ItemDatas.ItemCurStack;
-		// TODO : AmmoWidget 남은 Throwable 개수 표현하기
 	}
+	else UC_Util::Print("From AttachToHand OwnerPlayer NULLPTR", FColor::Red, 10.f);
 
 	return AttachToComponent
 	(
@@ -711,8 +709,24 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 		curWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
 	}
 
+	// 손에 Throwable이 들려있는 상황에서 새로운 투척류로 slot을 교체했을 때
 	if (Character->GetHandState() == EHandState::WEAPON_THROWABLE)
-		AttachToHand(Character->GetMesh());
+	{
+		// curWeapon == prevSlotWeapon
+		AC_ThrowingWeapon* prevThrowWeapon = Cast<AC_ThrowingWeapon>(curWeapon);
+		if (!prevThrowWeapon) return false;
+
+		// 이전과 같은 종류의 Throwable일 때, this를 손에 붙임
+		if (prevThrowWeapon->ThrowableType == this->ThrowableType)
+			this->AttachToHand(Character->GetMesh());
+		else
+		{
+			// 이전과 같은 종류의 무기가 아닐 때에는 무기 전환 animation 처리
+			curWeapon->AttachToHolster(Character->GetMesh());
+			equipComp->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
+			Character->PlayAnimMontage(this->GetCurDrawMontage());
+		}
+	}
 
 	//Character->PlayAnimMontage(this->GetCurDrawMontage());
 	invenComp->AddItemToMyList(curWeapon);//내부에서 매개변수 nullptr가 들어오면 return시켜버림. TODO : curWeapon을 정의한 뒤에 equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]의 값이 바뀌었으므로 역참조를 하면 문제가 생김. 확인 할 것.
@@ -871,11 +885,10 @@ void AC_ThrowingWeapon::OnThrowThrowable()
 
 void AC_ThrowingWeapon::OnThrowProcessEnd()
 {
-	//UC_Util::Print("OnThrowProcessEnd", FColor::Cyan, 5.f);
-
-	bIsOnThrowProcess = false;
-
-	bIsCharging = false;
+	bIsOnThrowProcess	= false;
+	bIsCharging			= false;
+	
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
 	SetActorEnableCollision(true);//장착 할 때 껏던 충돌 켜주기.
 
@@ -926,8 +939,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 		}
 		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter);
 
-		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+		if (OwnerPlayer) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 
 		// 바로 다음 투척류 꺼내기
 		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
@@ -957,8 +969,9 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 		}
 
 		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter);
-		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+
+		if (OwnerPlayer) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+
 		// 바로 다음 투척류 꺼내기
 		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
 		PrevOwnerCharacter->PlayAnimMontage(TargetThrowWeapon->GetCurDrawMontage());
@@ -970,7 +983,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::SUB_GUN))		return;
 
 	OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::NONE);
-
+	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void AC_ThrowingWeapon::StartCooking()

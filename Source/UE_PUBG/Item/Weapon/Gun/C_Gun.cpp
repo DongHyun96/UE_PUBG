@@ -622,20 +622,6 @@ void AC_Gun::ChangeCurShootingMode()
 	++CurMode %= 3;
 	CurrentShootingMode = EShootingMode(CurMode);
 
-	switch (CurrentShootingMode)
-	{
-	case EShootingMode::SEMI_AUTO: UC_Util::Print("SEMI_AUTO", FColor::MakeRandomColor(), 10.f);
-		break;
-	case EShootingMode::FULL_AUTO: UC_Util::Print("FULL AUTO", FColor::MakeRandomColor(), 10.f);
-		break;
-	case EShootingMode::BURST: UC_Util::Print("BURST", FColor::MakeRandomColor(), 10.f);
-		break;
-	case EShootingMode::MAX: UC_Util::Print("MAX", FColor::MakeRandomColor(), 10.f);
-		break;
-	default:
-		break;
-	}
-
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 	{
 		// AmmoWidget 업데이트

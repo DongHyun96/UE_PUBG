@@ -160,6 +160,8 @@ public: // Getters & Setters
 	class UParticleSystem* GetParticleExplodeEffect() const { return ParticleExplodeEffect; }
 	class UNiagaraSystem* GetNiagaraExplodeEffect() const { return NiagaraExplodeEffect; }
 
+	//EThrowableType GetThrowableType() const { return ThrowableType; }
+
 public:
 
 	/// <summary>

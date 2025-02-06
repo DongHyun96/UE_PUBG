@@ -67,12 +67,12 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
     if (!Weapons[InSlot]) // Slot에 새로 지정한 무기가 nullptr -> early return
     {
-        //if (PrevSlotWeapon) // 현재 손에 들고 있는 무기가 있었을 때, Slot에서 강제로 뺀 상황
-        //{
-        //    NextWeaponType  = EWeaponSlot::NONE;
-        //    CurWeaponType   = EWeaponSlot::NONE;
-        //    OwnerCharacter->SetHandState(EHandState::UNARMED);
-        //}
+        if (CurWeaponType == InSlot) // 현재 손에 들고 있는 무기를 Slot에서 강제로 뺀 상황
+        {
+            NextWeaponType  = EWeaponSlot::NONE;
+            CurWeaponType   = EWeaponSlot::NONE;
+            OwnerCharacter->SetHandState(EHandState::UNARMED);
+        }
 
         return PrevSlotWeapon;
     }
