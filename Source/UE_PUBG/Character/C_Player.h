@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,10 +9,11 @@
 #include "C_Player.generated.h"
 
 
-// 二쇱꽍 Test
+// 주석 테스트
+// 주석 테스트
 
 /// <summary>
-/// Pose蹂?Turn left, right anim montage 援ъ“泥?
+/// Pose 별 Turn left, right anim montage 구조체
 /// </summary>
 USTRUCT(BlueprintType)
 struct FPoseTurnInPlaceAnimMontage
@@ -50,13 +51,13 @@ public:
 private:
 
 	/// <summary>
-	/// Alt??(Hold Direction) Handling
+	/// Alt키 (Hold Direction) Handling
 	/// </summary>
 	/// <param name="DeltaTime"></param>
 	void HandleControllerRotation(float DeltaTime);
 
 	/// <summary>
-	/// MainSpringArm 濡쒖뺄 ?꾩튂 Dest蹂?섍컪?쇰줈 怨꾩냽 Lerp ?쒗궎湲?
+	/// MainSpringArm 로컬 위치 Dest변수값으로 계속 Lerp 시키기
 	/// </summary>
 	void HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime);
 
@@ -88,18 +89,18 @@ public:
 	bool GetIsHighEnoughToFall() override;
 public:
 	/// <summary>
-	/// ?먯꽭 諛붽씀湲??듯빀 泥섎━
+	/// 자세 바꾸기 통합 처리
 	/// </summary>
-	/// <param name="InChangeFrom"> : 諛붽씀湲????먯꽭 </param>
-	/// <param name="InChangeTo"> : 諛붽? ?먯꽭 </param>
-	/// <returns> : ?쒕?濡?諛붽씀?덈떎硫?return true </returns>
+	/// <param name="InChangeFrom"> : 바꾸기 전 자세 </param>
+	/// <param name="InChangeTo"> : 바꿀 자세 </param>
+	/// <returns> : 제대로 바꾸었다면 return true </returns>
 	bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) override;
 
 protected:
 
 	/// <summary>
-	/// ?꾩씠???곹샇?묒슜???꾪븳 蹂?섏? ?⑥닔.
-	/// 援щ? ?듯빐 ?꾩씠?쒓낵??異⑸룞??媛먯??섎뒗 ?⑥닔.
+	/// 아이템 상호작용을 위한 변수와 함수.
+	/// 구를 통해 아이템과의 충동을 감지하는 함수.
 	/// </summary>
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	//class USphereComponent* DetectionSphere;
@@ -110,10 +111,10 @@ protected:
 	//UFUNCTION()
 	//void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	// 
-	//?먯떇 ?④퀎?먯꽌 OverlapBegin?먯꽌 ?ъ슜???⑥닔 Template method
+	//자식 단계에서 OverlapBegin에서 사용할 함수 Template method
 	virtual void HandleOverlapBegin(AActor* OtherActor) override;
 
-	//?먯떇 ?④퀎?먯꽌 OverlapBegin?먯꽌 ?ъ슜???⑥닔 Template method
+	//자식 단계에서 OverlapBegin에서 사용할 함수 Template method
 	virtual void HandleOverlapEnd(AActor* OtherActor) override;
 protected:
 	//Aim Press Camera
@@ -136,29 +137,29 @@ public:
 	UCameraComponent* GetMainCamera() { return MainCamera; }
 	UCameraComponent* GetAimCamera() const { return AimCamera; }
 protected:
-	//Aim Press Camera ?꾩튂 議곗젙 ?⑥닔
+	//Aim Press Camera 위치 조정 함수
 	void SetAimPressCameraLocation();
 
 protected:
 
 	/*
-	移대찓?쇨? 諛붾씪蹂대뒗 諛⑺뼢?쇰줈 紐몄껜媛 ?뚯븘媛??湲곕낯 StrafeOn ?ㅼ젙 :
+	카메라가 바라보는 방향으로 몸체가 돌아가는 기본 StrafeOn 설정 :
 	BPC_Player(self) : Use Control Rotation Yaw			= true
 	Spring Arm : Use Pawn Control Rotation				= true
 	Character Movement : Orient Rotation to Movement	= false;
 
-	媛留뚰엳 ?덉쓣 ??Use Control Rotation Yaw : false
+	가만히 있을 시 Use Control Rotation Yaw : false
 
 	*/
 
 	/// <summary>
-	/// <para> 罹먮┃?곌? 硫덉떠?덉쓣 ?? 罹먮┃?곌? ?ㅻ툕?앺듃媛 諛붾씪蹂대뒗 諛⑺뼢怨?而⑦듃濡ㅻ윭(移대찓??媛 </para>
-	/// <para> 諛붾씪蹂대뒗 諛⑺뼢??媛곸씠 90???댁긽?대㈃, Turn In place濡?罹먮┃??議곗젙 </para>
+	/// <para> 캐릭터가 멈춰있을 때, 캐릭터가 오브젝트가 바라보는 방향과 컨트롤러(카메라)가 </para>
+	/// <para> 바라보는 방향의 각이 90도 이상이면, Turn In place로 캐릭터 조정 </para>
 	/// </summary>
 	void HandleTurnInPlace();
 
 	/// <summary>
-	/// <para> 罹먮┃?곌? Aiming 以묒씪 ??而⑦듃濡ㅻ윭(移대찓??諛⑺뼢 ?濡?Turn In place濡?罹먮┃??議곗젙</para>
+	/// <para> 캐릭터가 Aiming 중일 때,컨트롤러(카메라)방향 대로 Turn In place로 캐릭터 조정</para>
 	/// </summary>
 	void HandleTurnInPlaceWhileAiming();
 
@@ -171,7 +172,7 @@ public:
 public:
 
 	/// <summary>
-	/// Turn in place媛 ?앸궗????anim notify???섑빐 ?몄텧, 硫덉떠 ?덉쓣 ?뚯쓽 Rotation ?명똿 媛믩뱾濡??뚯븘媛湲?
+	/// Turn in place가 끝났을 시 anim notify에 의해 호출, 멈춰 있을 때의 Rotation 세팅 값들로 돌아가기
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void SetStrafeRotationToIdleStop();
@@ -184,14 +185,14 @@ protected:
 private:
 
 	/// <summary>
-	/// Turn Anim Montage 珥덇린??
+	/// Turn Anim Montage 초기화
 	/// </summary>
 	void InitTurnAnimMontageMap();
 
 public:
 
 	/// <summary>
-	/// 議곗????곕Ⅸ 移대찓??蹂寃?
+	/// 조준에 따른 카메라 변경
 	/// </summary>
 	void SetToAimKeyPress();
 	void SetToAimDownSight();
@@ -219,7 +220,7 @@ public:
 
 public:
 	/// <summary>
-	/// 議곗????곕Ⅸ 移대찓??蹂寃?
+	/// 조준에 따른 카메라 변경
 	/// </summary>
 
 	void RecoilController();
@@ -246,16 +247,16 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly) 
 	class UC_InputComponent* MyInputComponent{};
 
-protected: // Turn in place ?좊떂 紐쏀?二?愿??
+protected: // Turn in place 애님 몽타주 관련
 
 	/// <summary>
-	/// 媛?HandState? PoseState???곕Ⅸ TurnAnimMontage 留?
+	/// 각 HandState와 PoseState에 따른 TurnAnimMontage 맵
 	/// </summary>
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	TMap<EHandState, FPoseTurnInPlaceAnimMontage> TurnAnimMontageMap{};
 
 	/// <summary>
-	/// 媛?HandState? PoseState???곕Ⅸ Lower Body TurnAnimMontage 留?: Lower body留??곕줈 ?ъ깮???꾩슂?????ъ슜
+	/// 각 HandState와 PoseState에 따른 Lower Body TurnAnimMontage 맵 : Lower body만 따로 재생이 필요할 시 사용
 	/// </summary>
 	UPROPERTY(BluePrintReadWrite, EditDefaultsOnly)
 	TMap<EHandState, FPoseTurnInPlaceAnimMontage> LowerBodyTurnAnimMontageMap{};
@@ -280,14 +281,14 @@ protected:
 private:
 
 	TMap<EPoseState, FVector> MainSpringArmRelativeLocationByPoseMap{};
-	FVector MainSpringArmRelativeLocationDest{}; // Spring Arm Relative Location ?꾩튂 Lerp?쒗궗 Destination 媛?
+	FVector MainSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
 
 	TMap<EPoseState, FVector> AimingSpringArmRelativeLocationByPoseMap{};
-	FVector AimingSpringArmRelativeLocationDest{}; // Spring Arm Relative Location ?꾩튂 Lerp?쒗궗 Destination 媛?
+	FVector AimingSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
 
 
 protected:
-	//珥앹븣 Object Pooling (World?먯꽌 ?묒뾽???덉젙)
+	//총알 Object Pooling (World에서 작업할 예정)
 	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	//TArray<class AC_Bullet*> PooledBullets;
 
