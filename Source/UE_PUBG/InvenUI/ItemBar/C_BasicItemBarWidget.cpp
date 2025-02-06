@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/ItemBar/C_BasicItemBarWidget.h"
@@ -28,11 +28,11 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 {
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		//¿ìÅ¬¸¯ ÀÌº¥Æ® ½ÇÇà
-		//TODO : ±¸Çö
+		//ìš°í´ë¦­ ì´ë²¤íŠ¸ ì‹¤í–‰
+		//TODO : êµ¬í˜„
 		if (!CachedItem) return FReply::Handled();
 
-		AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));//ItemBar°¡ º¯¼ö·Î OwnerPlayer¸¦ °¡Áö¸é ¸Ş¸ğ¸® ³¶ºñ°¡ ½ÉÇÒ°Å °°¾Æ¼­ »ç¿ë
+		AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));//ItemBarê°€ ë³€ìˆ˜ë¡œ OwnerPlayerë¥¼ ê°€ì§€ë©´ ë©”ëª¨ë¦¬ ë‚­ë¹„ê°€ ì‹¬í• ê±° ê°™ì•„ì„œ ì‚¬ìš©
 		
 		CachedItem->Interaction(OwnerPlayer);
 
@@ -52,8 +52,8 @@ FReply UC_BasicItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& In
 	{
 		if (CachedItem)
 		{
-			//µå·¡±× ÀÌº¥Æ® ½ÇÇà.
-			//µå·¡±×¸¦ ½ÃÀÛÇÏ°í ¹İÀÀÇÔ
+			//ë“œë˜ê·¸ ì´ë²¤íŠ¸ ì‹¤í–‰.
+			//ë“œë˜ê·¸ë¥¼ ì‹œì‘í•˜ê³  ë°˜ì‘í•¨
 			FEventReply RePlyResult =
 				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 			AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
@@ -72,17 +72,17 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
-	PlayerController->SetIgnoreMoveInput(false); // ÀÌµ¿ Çã¿ë
-	//dragdrop class¸¦ »õ·Î ¸¸µé¾î »ç¿ëÇØ¾ß ÇÒ ¼ö ÀÖÀ½.
+	PlayerController->SetIgnoreMoveInput(false); // ì´ë™ í—ˆìš©
+	//dragdrop classë¥¼ ìƒˆë¡œ ë§Œë“¤ì–´ ì‚¬ìš©í•´ì•¼ í•  ìˆ˜ ìˆìŒ.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 
-	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemBarIcon);//Å©±â¹× ÇüÅÂ Á¶ÀıÇÏ±â.
+	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemBarIcon);//í¬ê¸°ë° í˜•íƒœ ì¡°ì ˆí•˜ê¸°.
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
 	Border->SetBrushColor(BorderColor);
 
-	//Border->SetPadding(FMargin(2.0f)); ÆĞµùÀÌ ÇÊ¿äÇÏ¸é »ç¿ëÇÏ±â.
+	//Border->SetPadding(FMargin(2.0f)); íŒ¨ë”©ì´ í•„ìš”í•˜ë©´ ì‚¬ìš©í•˜ê¸°.
 
 	UImage* DragVisual = NewObject<UImage>(Texture);
 
@@ -102,28 +102,28 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	//
 	//DragOperation->DefaultDragVisual = DragVisual;
 
-	//DragOperation->DefaultDragVisual = ItemImage1; // µå·¡±× ½Ã ¾ÆÀÌÅÛÀÇ ¹Ì¸®º¸±â ÀÌ¹ÌÁö
-	//DragOperation->DefaultDragVisual = this; // µå·¡±× ½Ã ¾ÆÀÌÅÛÀÇ ¹Ì¸®º¸±â ÀÌ¹ÌÁö
+	//DragOperation->DefaultDragVisual = ItemImage1; // ë“œë˜ê·¸ ì‹œ ì•„ì´í…œì˜ ë¯¸ë¦¬ë³´ê¸° ì´ë¯¸ì§€
+	//DragOperation->DefaultDragVisual = this; // ë“œë˜ê·¸ ì‹œ ì•„ì´í…œì˜ ë¯¸ë¦¬ë³´ê¸° ì´ë¯¸ì§€
 
-	DragOperation->Payload = CachedItem; // µå·¡±× Áß Àü´ŞÇÒ µ¥ÀÌÅÍ (¾ÆÀÌÅÛ)
+	DragOperation->Payload = CachedItem; // ë“œë˜ê·¸ ì¤‘ ì „ë‹¬í•  ë°ì´í„° (ì•„ì´í…œ)
 	DragOperation->Pivot = EDragPivot::MouseDown;
 	//DragOperation->Pivot = EDragPivot::CenterCenter;
 	FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
-	 // ÇöÀç ¸¶¿ì½º Å¬¸¯ À§Ä¡ °¡Á®¿À±â (È­¸é ÁÂÇ¥)
+	 // í˜„ì¬ ë§ˆìš°ìŠ¤ í´ë¦­ ìœ„ì¹˜ ê°€ì ¸ì˜¤ê¸° (í™”ë©´ ì¢Œí‘œ)
 	FVector2D Offset = DragVisual->Brush.ImageSize * 0.5f;
 	FVector2D CenteredPosition = MousePosition - Offset;
 
-	// ÇöÀç À§Á¬(ItemBar)ÀÇ È­¸é ÁÂÇ¥ °¡Á®¿À±â
-	FVector2D WidgetScreenPosition = InGeometry.AbsoluteToLocal(CenteredPosition); //¿Ö ÀÌ°É ½á¾ß¸¸ ÇÏ´Â°¡?
+	// í˜„ì¬ ìœ„ì ¯(ItemBar)ì˜ í™”ë©´ ì¢Œí‘œ ê°€ì ¸ì˜¤ê¸°
+	FVector2D WidgetScreenPosition = InGeometry.AbsoluteToLocal(CenteredPosition); //ì™œ ì´ê±¸ ì¨ì•¼ë§Œ í•˜ëŠ”ê°€?
 
-	// µå·¡±× ºñÁÖ¾ó À§Ä¡¸¦ °­Á¦·Î ¼³Á¤ (·»´õ¸µ ±âÁØÀ¸·Î ¼³Á¤)
+	// ë“œë˜ê·¸ ë¹„ì£¼ì–¼ ìœ„ì¹˜ë¥¼ ê°•ì œë¡œ ì„¤ì • (ë Œë”ë§ ê¸°ì¤€ìœ¼ë¡œ ì„¤ì •)
 	Border->SetRenderTranslation(WidgetScreenPosition);
 
 	DragOperation->DraggedItem = CachedItem;
 
 	DragOperation->curWeaponSlot = EWeaponSlot::NONE;
 
-	//¿À³ÊÄ³¸¯ÅÍ Ã¼Å©
+	//ì˜¤ë„ˆìºë¦­í„° ì²´í¬
 	if (!OwnerPlayer)
 	{
 		//UC_Util::Print("ItemBarWidget have not OwnerCharacter!!");
@@ -143,7 +143,7 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
-	// ListItemObject¸¦ UC_Item Å¬·¡½º·Î Ä³½ºÆÃÇÏ¿© ¾ÆÀÌÅÛ µ¥ÀÌÅÍ »ç¿ë
+	// ListItemObjectë¥¼ UC_Item í´ë˜ìŠ¤ë¡œ ìºìŠ¤íŒ…í•˜ì—¬ ì•„ì´í…œ ë°ì´í„° ì‚¬ìš©
 	CachedItem = Cast<AC_Item>(ListItemObject);
 
 	if (!CachedItem) return;
@@ -169,7 +169,7 @@ void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
 
 		if (MyItem->GetItemDatas().ItemCurStack == 0)
 		{
-			//TODO : ±ÙÁ¢¹«±â¿Í ºÎÂø¹°À» Á¦¿ÜÇÑ ¾ÆÀÌÅÛÀº curStackÀÌ 0ÀÌ µÇ¸é »ç¶óÁöµµ·Ï Inven¿¡¼­ °ü¸®ÇÏ±â.
+			//TODO : ê·¼ì ‘ë¬´ê¸°ì™€ ë¶€ì°©ë¬¼ì„ ì œì™¸í•œ ì•„ì´í…œì€ curStackì´ 0ì´ ë˜ë©´ ì‚¬ë¼ì§€ë„ë¡ Invenì—ì„œ ê´€ë¦¬í•˜ê¸°.
 			if (MyItem->GetItemDatas().ItemType == EItemTypes::MELEEWEAPON && MyItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT)
 			{
 				ItemStackBlock->SetVisibility(ESlateVisibility::Hidden);
@@ -213,3 +213,5 @@ void UC_BasicItemBarWidget::UpdateInvenUIWidget()
 		InvenUiWidget->UpdateWidget();
 	}
 }
+
+

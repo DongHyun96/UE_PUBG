@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/ParkourActionStrategy/C_VaultHighActionStrategy.h"
@@ -17,18 +17,18 @@ void UC_VaultHighActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* 
 {
 	UC_Util::Print("VaultHigh Strategy", FColor::Red, 10.f);
 
-	static const float CHARACTER_CLIMB_ACTION_HEIGHT = 200.f; // Ä³¸¯ÅÍ°¡ ÆÈ »¸¾î¼­ ¿À¸£·Á ÇÒ ¶§ÀÇ ÃÑÀå ±æÀÌ
-	static const float WARP_START_FORWARD_OFFSET	 = 25.f; // º®¸é¿¡ ³Ê¹« ´Ş¶óºÙ¾î¼­ ¿À¸£¸é ÀÌ»óÇØ¼­ offset ÁöÁ¤
+	static const float CHARACTER_CLIMB_ACTION_HEIGHT = 200.f; // ìºë¦­í„°ê°€ íŒ” ë»—ì–´ì„œ ì˜¤ë¥´ë ¤ í•  ë•Œì˜ ì´ì¥ ê¸¸ì´
+	static const float WARP_START_FORWARD_OFFSET	 = 25.f; // ë²½ë©´ì— ë„ˆë¬´ ë‹¬ë¼ë¶™ì–´ì„œ ì˜¤ë¥´ë©´ ì´ìƒí•´ì„œ offset ì§€ì •
 
-	// Ä³¸¯ÅÍÀÇ ÇöÀç ¹ß ³ôÀÌ
+	// ìºë¦­í„°ì˜ í˜„ì¬ ë°œ ë†’ì´
 	static const FName RIGHT_TOE_NAME = "RightToeBase";
 	float FootWorldHeight			  = TargetCharacter->GetMesh()->GetBoneTransform(RIGHT_TOE_NAME).GetTranslation().Z;
 
 	FVector WarpMiddlePos = CurParkourDesc.VerticalHitPositions[0] - TargetCharacter->GetActorForwardVector() * WARP_START_FORWARD_OFFSET;
 
-	// Warp Start Pos ±¸ÇÏ±â
+	// Warp Start Pos êµ¬í•˜ê¸°
 	FVector WarpStartPos = WarpMiddlePos - FVector::UnitZ() * CHARACTER_CLIMB_ACTION_HEIGHT;
-	if (WarpStartPos.Z < FootWorldHeight) WarpStartPos.Z = FootWorldHeight; // ÆÄÄí¸£ ¾×¼Ç µ¿ÀÛ ³ôÀÌ ¿¹¿ÜÃ³¸®
+	if (WarpStartPos.Z < FootWorldHeight) WarpStartPos.Z = FootWorldHeight; // íŒŒì¿ ë¥´ ì•¡ì…˜ ë™ì‘ ë†’ì´ ì˜ˆì™¸ì²˜ë¦¬
 
 	FVector WarpLandPos = WarpMiddlePos + TargetCharacter->GetActorForwardVector() * 120.f;
 
@@ -61,16 +61,18 @@ void UC_VaultHighActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* 
 
 	MotionWarping->AddOrUpdateWarpTarget(Target);
 
-	// TODO : ParkourMontageMap ÃÊ±âÈ­
+	// TODO : ParkourMontageMap ì´ˆê¸°í™”
 
 	UC_ParkourComponent* TargetParkourComponent = TargetCharacter->GetParkourComponent();
 
-	// ÇöÀç Parkour Action¿¡ ÇØ´çÇÏ´Â RandomÇÑ parkourAction Àç»ı
+	// í˜„ì¬ Parkour Actionì— í•´ë‹¹í•˜ëŠ” Randomí•œ parkourAction ì¬ìƒ
 	TArray<FPriorityAnimMontage> HighMantleMontages = TargetParkourComponent->GetParkourMontages(EParkourActionType::VAULTING_HIGH);
 	int RandIdx = FMath::RandRange(0, HighMantleMontages.Num() - 1);
 
 	TargetCharacter->PlayAnimMontage(HighMantleMontages[RandIdx]);
 
-	// CanMoveÇÒ ¼ö ¾ø´Â ½Ã°£´ë¸¦ ´Ã¸± ¿¹Á¤
+	// CanMoveí•  ìˆ˜ ì—†ëŠ” ì‹œê°„ëŒ€ë¥¼ ëŠ˜ë¦´ ì˜ˆì •
 	TargetParkourComponent->SetCanMoveTimerAfterWarpActionFin(0.5f);
 }
+
+

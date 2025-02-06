@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/BasicItemSlot/WeaponSlot/C_WeaponSlotWidget.h"
@@ -12,15 +12,15 @@
 
 FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	// ¿ìÅ¬¸¯ÀÎÁö Ã¼Å©
+	// ìš°í´ë¦­ì¸ì§€ ì²´í¬
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
 		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
 
 		if (SlotItem)
 		{
-			//µå·¡±× ÀÌº¥Æ® ½ÇÇà.
-			//µå·¡±×¸¦ ½ÃÀÛÇÏ°í ¹İÀÀÇÔ
+			//ë“œë˜ê·¸ ì´ë²¤íŠ¸ ì‹¤í–‰.
+			//ë“œë˜ê·¸ë¥¼ ì‹œì‘í•˜ê³  ë°˜ì‘í•¨
 			FEventReply RePlyResult =
 				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 
@@ -38,8 +38,8 @@ FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 
 		if (SlotItem)
 		{  
-			// ¿ìÅ¬¸¯ ÀÌº¥Æ® ½ÇÇà
-			// slot¿¡¼­´Â ÀåÂø¾ÆÀÌÅÛÀÌ Á¸ÀçÇÏ¸é ÇØÁ¦ÇÏ´Â ÇÔ¼ö¸¦ ½ÇÇàÇÑ´Ù.
+			// ìš°í´ë¦­ ì´ë²¤íŠ¸ ì‹¤í–‰
+			// slotì—ì„œëŠ” ì¥ì°©ì•„ì´í…œì´ ì¡´ì¬í•˜ë©´ í•´ì œí•˜ëŠ” í•¨ìˆ˜ë¥¼ ì‹¤í–‰í•œë‹¤.
 			MouseRBDownInteraction(SlotItem);
 			//{
 			//	OwnerPlayer->GetEquippedComponent()->SetSlotWeapon(WeaponType, nullptr);
@@ -50,7 +50,7 @@ FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 			return FReply::Handled();
 		}
 	}
-	// ´Ù¸¥ ¹öÆ° Å¬¸¯ Ã³¸®
+	// ë‹¤ë¥¸ ë²„íŠ¼ í´ë¦­ ì²˜ë¦¬
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
@@ -62,8 +62,8 @@ FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 //
 //		if (SlotItem)
 //		{
-//			//µå·¡±× ÀÌº¥Æ® ½ÇÇà.
-//			//µå·¡±×¸¦ ½ÃÀÛÇÏ°í ¹İÀÀÇÔ
+//			//ë“œë˜ê·¸ ì´ë²¤íŠ¸ ì‹¤í–‰.
+//			//ë“œë˜ê·¸ë¥¼ ì‹œì‘í•˜ê³  ë°˜ì‘í•¨
 //			FEventReply RePlyResult =
 //				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 //			
@@ -78,10 +78,10 @@ FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 
 void UC_WeaponSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
-	//dragdrop class¸¦ »õ·Î ¸¸µé¾î »ç¿ëÇØ¾ß ÇÒ ¼ö ÀÖÀ½.
+	//dragdrop classë¥¼ ìƒˆë¡œ ë§Œë“¤ì–´ ì‚¬ìš©í•´ì•¼ í•  ìˆ˜ ìˆìŒ.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 	//if (!CachedItem) return;
-	//UObject* ResourceObject = Cast<UImage>(CachedItem->GetItemDatas().ItemIcon)->Brush.GetResourceObject();//UTexture2DÀÎµ¥ ¾Æ·§ÁÙ¿¡¼­ ¹Ù·Î »ç¿ë °¡´ÉÇÒ °Í °°Àºµ¥?
+	//UObject* ResourceObject = Cast<UImage>(CachedItem->GetItemDatas().ItemIcon)->Brush.GetResourceObject();//UTexture2Dì¸ë° ì•„ë«ì¤„ì—ì„œ ë°”ë¡œ ì‚¬ìš© ê°€ëŠ¥í•  ê²ƒ ê°™ì€ë°?
 	UTexture2D* Texture = nullptr;
 
 	AC_Item* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
@@ -102,18 +102,18 @@ void UC_WeaponSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, cons
 	Border->SetContent(DragVisual);
 
 	DragOperation->DefaultDragVisual = Border;
-	DragOperation->Payload = SlotItem; // µå·¡±× Áß Àü´ŞÇÒ µ¥ÀÌÅÍ (¾ÆÀÌÅÛ)
+	DragOperation->Payload = SlotItem; // ë“œë˜ê·¸ ì¤‘ ì „ë‹¬í•  ë°ì´í„° (ì•„ì´í…œ)
 	DragOperation->Pivot = EDragPivot::MouseDown;
 
 	FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
-	// ÇöÀç ¸¶¿ì½º Å¬¸¯ À§Ä¡ °¡Á®¿À±â (È­¸é ÁÂÇ¥)
+	// í˜„ì¬ ë§ˆìš°ìŠ¤ í´ë¦­ ìœ„ì¹˜ ê°€ì ¸ì˜¤ê¸° (í™”ë©´ ì¢Œí‘œ)
 	FVector2D Offset = DragVisual->Brush.ImageSize * 0.5f;
 	FVector2D CenteredPosition = MousePosition - Offset;
 
-	// ÇöÀç À§Á¬(ItemBar)ÀÇ È­¸é ÁÂÇ¥ °¡Á®¿À±â
-	FVector2D WidgetScreenPosition = InGeometry.AbsoluteToLocal(CenteredPosition); //¿Ö ÀÌ°É ½á¾ß¸¸ ÇÏ´Â°¡?
+	// í˜„ì¬ ìœ„ì ¯(ItemBar)ì˜ í™”ë©´ ì¢Œí‘œ ê°€ì ¸ì˜¤ê¸°
+	FVector2D WidgetScreenPosition = InGeometry.AbsoluteToLocal(CenteredPosition); //ì™œ ì´ê±¸ ì¨ì•¼ë§Œ í•˜ëŠ”ê°€?
 
-	// µå·¡±× ºñÁÖ¾ó À§Ä¡¸¦ °­Á¦·Î ¼³Á¤ (·»´õ¸µ ±âÁØÀ¸·Î ¼³Á¤)
+	// ë“œë˜ê·¸ ë¹„ì£¼ì–¼ ìœ„ì¹˜ë¥¼ ê°•ì œë¡œ ì„¤ì • (ë Œë”ë§ ê¸°ì¤€ìœ¼ë¡œ ì„¤ì •)
 	Border->SetRenderTranslation(WidgetScreenPosition);
 
 	DragOperation->DraggedItem = SlotItem;
@@ -132,7 +132,7 @@ void UC_WeaponSlotWidget::UpdateWidget()
 	if (!OwnerPlayer) return;
 
 	AC_Weapon* CachedWeapon = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
-	//TODO : GunÀÇ °æ¿ì »ç¿ëÇÏ´Â ÃÑ¾ËÀÇ Á¾·ù¿Í °¹¼ö¸¦ Ç¥½ÃÇØÁÜ. ÇÏÀ§ Å¬·¡½º¿¡¼­ ÁøÇàÇÒ ¿¹Á¤.
+	//TODO : Gunì˜ ê²½ìš° ì‚¬ìš©í•˜ëŠ” ì´ì•Œì˜ ì¢…ë¥˜ì™€ ê°¯ìˆ˜ë¥¼ í‘œì‹œí•´ì¤Œ. í•˜ìœ„ í´ë˜ìŠ¤ì—ì„œ ì§„í–‰í•  ì˜ˆì •.
 
 	UpdateSlotItemImage(CachedWeapon);
 }
@@ -155,7 +155,7 @@ void UC_WeaponSlotWidget::UpdateSlotItemImage(AC_Weapon* SlotItem)
 		FSlateBrush Brush = WeaponImage->GetBrush();
 		Brush.TintColor = FLinearColor(0.0f, 0.0f, 0.0f, 0.3f);
 		WeaponImage->SetBrush(Brush);
-		WeaponSlotPanel->SetVisibility(ESlateVisibility::Hidden); //TODO : Hidden°ú Collaps? ÀÌ°Å Â÷ÀÌ »ı°¢ÇÏ±â.
+		WeaponSlotPanel->SetVisibility(ESlateVisibility::Hidden); //TODO : Hiddenê³¼ Collaps? ì´ê±° ì°¨ì´ ìƒê°í•˜ê¸°.
 	}
 }
 
@@ -163,3 +163,5 @@ bool UC_WeaponSlotWidget::MouseRBDownInteraction(AC_Weapon* inSlotWeapon)
 {
 	return false;
 }
+
+

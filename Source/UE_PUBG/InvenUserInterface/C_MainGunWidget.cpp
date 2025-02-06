@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUserInterface/C_MainGunWidget.h"
@@ -29,22 +29,22 @@ void UC_MainGunWidget::NativeConstruct()
 
 void UC_MainGunWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
-	//dragdrop class¸¦ »õ·Î ¸¸µé¾î »ç¿ëÇØ¾ß ÇÒ ¼ö ÀÖÀ½.
+	//dragdrop classë¥¼ ìƒˆë¡œ ë§Œë“¤ì–´ ì‚¬ìš©í•´ì•¼ í•  ìˆ˜ ìˆìŒ.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 	//if (!CachedItem) return;
-	//UObject* ResourceObject = Cast<UImage>(CachedItem->GetItemDatas().ItemIcon)->Brush.GetResourceObject();//UTexture2DÀÎµ¥ ¾Æ·§ÁÙ¿¡¼­ ¹Ù·Î »ç¿ë °¡´ÉÇÒ °Í °°Àºµ¥?
+	//UObject* ResourceObject = Cast<UImage>(CachedItem->GetItemDatas().ItemIcon)->Brush.GetResourceObject();//UTexture2Dì¸ë° ì•„ë«ì¤„ì—ì„œ ë°”ë¡œ ì‚¬ìš© ê°€ëŠ¥í•  ê²ƒ ê°™ì€ë°?
 	UTexture2D* Texture = nullptr;
 
 	if (CachedItem->GetItemDatas().ItemType == EItemTypes::MAINGUN)
 		Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemBarIcon);
 	else
-		Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemSlotImage);//Å©±â¹× ÇüÅÂ Á¶ÀıÇÏ±â.
+		Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemSlotImage);//í¬ê¸°ë° í˜•íƒœ ì¡°ì ˆí•˜ê¸°.
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
 	Border->SetBrushColor(BorderColor);
 
-	//Border->SetPadding(FMargin(2.0f)); ÆĞµùÀÌ ÇÊ¿äÇÏ¸é »ç¿ëÇÏ±â.
+	//Border->SetPadding(FMargin(2.0f)); íŒ¨ë”©ì´ í•„ìš”í•˜ë©´ ì‚¬ìš©í•˜ê¸°.
 
 	UImage* DragVisual = NewObject<UImage>(Texture);
 
@@ -55,10 +55,10 @@ void UC_MainGunWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 
 	DragOperation->DefaultDragVisual = Border;
 
-	//DragOperation->DefaultDragVisual = ItemImage1; // µå·¡±× ½Ã ¾ÆÀÌÅÛÀÇ ¹Ì¸®º¸±â ÀÌ¹ÌÁö
-	//DragOperation->DefaultDragVisual = this; // µå·¡±× ½Ã ¾ÆÀÌÅÛÀÇ ¹Ì¸®º¸±â ÀÌ¹ÌÁö
+	//DragOperation->DefaultDragVisual = ItemImage1; // ë“œë˜ê·¸ ì‹œ ì•„ì´í…œì˜ ë¯¸ë¦¬ë³´ê¸° ì´ë¯¸ì§€
+	//DragOperation->DefaultDragVisual = this; // ë“œë˜ê·¸ ì‹œ ì•„ì´í…œì˜ ë¯¸ë¦¬ë³´ê¸° ì´ë¯¸ì§€
 
-	DragOperation->Payload = CachedItem; // µå·¡±× Áß Àü´ŞÇÒ µ¥ÀÌÅÍ (¾ÆÀÌÅÛ)
+	DragOperation->Payload = CachedItem; // ë“œë˜ê·¸ ì¤‘ ì „ë‹¬í•  ë°ì´í„° (ì•„ì´í…œ)
 	//DragOperation->Pivot = EDragPivot::MouseDown;
 	DragOperation->Pivot = EDragPivot::CenterCenter;
 
@@ -67,7 +67,7 @@ void UC_MainGunWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	DragOperation->curWeaponSlot = WeaponType;
 
 
-		//¿À³ÊÄ³¸¯ÅÍ Ã¼Å©
+		//ì˜¤ë„ˆìºë¦­í„° ì²´í¬
 		if (!OwnerCharacter)
 		{
 			UC_Util::Print("ItemBarWidget have not OwnerCharacter!!");
@@ -86,11 +86,11 @@ void UC_MainGunWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 
 FReply UC_MainGunWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	// ¿ìÅ¬¸¯ÀÎÁö Ã¼Å©
+	// ìš°í´ë¦­ì¸ì§€ ì²´í¬
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
 		if (CachedItem)
-		{   // ¿ìÅ¬¸¯ ÀÌº¥Æ® ½ÇÇà
+		{   // ìš°í´ë¦­ ì´ë²¤íŠ¸ ì‹¤í–‰
 			if (CachedItem->LegacyMoveToAround(OwnerCharacter))
 			{
 				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
@@ -111,7 +111,7 @@ FReply UC_MainGunWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 	{
 		UC_Util::Print("No cached item to interact with!", FColor::Red, 5.0f);
 	}
-	// ´Ù¸¥ ¹öÆ° Å¬¸¯ Ã³¸®
+	// ë‹¤ë¥¸ ë²„íŠ¼ í´ë¦­ ì²˜ë¦¬
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
@@ -130,7 +130,7 @@ void UC_MainGunWidget::Init()
 		GunName->SetText(FText::FromString(CachedItem->GetItemDatas().ItemName));
 		SetVisibility(ESlateVisibility::Visible);
 		FSlateBrush Brush = GunImage->GetBrush();
-		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // ¿ÏÀü ºÒÅõ¸í
+		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // ì™„ì „ ë¶ˆíˆ¬ëª…
 		GunImage->SetBrush(Brush);
 	}
 	else
@@ -165,3 +165,5 @@ void UC_MainGunWidget::SetWeaponBoxNum(uint8 Num)
 
 	Init();
 }
+
+

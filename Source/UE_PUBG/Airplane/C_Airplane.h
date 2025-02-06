@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -34,7 +34,7 @@ public:
 public:
 
 	/// <summary>
-	/// ºñÇà ½ÃÀÛÇÏ±â
+	/// ë¹„í–‰ ì‹œì‘í•˜ê¸°
 	/// </summary>
 	void StartFlight();
 
@@ -43,17 +43,17 @@ private:
 	void Move(const float& DeltaTime);
 
 	/// <summary>
-	/// PlayerÀÇ Map¿¡ ºñÇà±â Ç¥½Ã Update
+	/// Playerì˜ Mapì— ë¹„í–‰ê¸° í‘œì‹œ Update
 	/// </summary>
 	void UpdatePlayerMapHUD();
 
 	/// <summary>
-	/// ½Â°´µé À§Ä¡ Á¶Á¤
+	/// ìŠ¹ê°ë“¤ ìœ„ì¹˜ ì¡°ì •
 	/// </summary>
 	void UpdatePassengersPosition();
 
 	/// <summary>
-	/// ÇÁ·ÎÆç·¯ È¸Àü½ÃÅ°±â
+	/// í”„ë¡œí ëŸ¬ íšŒì „ì‹œí‚¤ê¸°
 	/// </summary>
 	void UpdateProps(const float& DeltaTime);
 
@@ -79,3 +79,5 @@ private:
 	class UC_HUDWidget* PlayerHUDWidget{};
 
 };
+
+

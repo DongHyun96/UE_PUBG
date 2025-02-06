@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -28,7 +28,7 @@ private:
 
 
 	/// <summary>
-	/// PhysicsAssetÀÇ Colliderµé ²ô±â / ÄÑ±â
+	/// PhysicsAssetì˜ Colliderë“¤ ë„ê¸° / ì¼œê¸°
 	/// </summary>
 	/// <param name="Character"> : Target Character </param>
 	/// <param name="CollisionEnabled"> : Collision Enabled if true </param>
@@ -36,22 +36,22 @@ private:
 
 
 	/// <summary>
-	/// Æ¯Á¤ bone¿¡ ´ëÇÑ Collider ²ô±â / ÄÑ±â
+	/// íŠ¹ì • boneì— ëŒ€í•œ Collider ë„ê¸° / ì¼œê¸°
 	/// </summary>
 	/// <param name="Character"> : Target Character </param>
-	/// <param name="BoneName"> : Collider ²ô°í Å³ BoneÀÇ BoneName </param>
+	/// <param name="BoneName"> : Collider ë„ê³  í‚¬ Boneì˜ BoneName </param>
 	/// <param name="CollisionEnabled"> : Collision Enabled if true </param>
-	/// <returns> : BoneNameÀÌ ÀÖ´Ù¸é SettingÇÏ°í return true </returns>
+	/// <returns> : BoneNameì´ ìˆë‹¤ë©´ Settingí•˜ê³  return true </returns>
 	bool SetPhysicsAssetColliderEnabled(class AC_BasicCharacter* Character, FName BoneName, bool Enabled);
 
 private:
 
 	/// <summary>
-	/// ÇÇ°İ ÆÇÁ¤ÀÌ ³­ Character¿¡°Ô ÁÙ ÇÇ°İ Effect ½ÇÇà
+	/// í”¼ê²© íŒì •ì´ ë‚œ Characterì—ê²Œ ì¤„ í”¼ê²© Effect ì‹¤í–‰
 	/// </summary>
-	/// <param name="Character"> : ÇÇ°İ ´çÇÑ Character </param>
-	/// <param name="ExplosionLocation"> : ¼¶±¤Åº Æø¹ß À§Ä¡ </param>
-	/// <param name="ExplosionRad"> : Æø¹ß ¹İ°æ </param>
+	/// <param name="Character"> : í”¼ê²© ë‹¹í•œ Character </param>
+	/// <param name="ExplosionLocation"> : ì„¬ê´‘íƒ„ í­ë°œ ìœ„ì¹˜ </param>
+	/// <param name="ExplosionRad"> : í­ë°œ ë°˜ê²½ </param>
 	void ExecuteExplosionEffectToCharacter(class AC_BasicCharacter* Character, FVector ExplosionLocation, float ExplosionRad);
 
 private:
@@ -59,3 +59,5 @@ private:
 	static const float EFFECT_DURATION_MAX;
 
 };
+
+

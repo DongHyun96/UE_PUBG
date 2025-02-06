@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -21,7 +21,7 @@ public:
 	void NativeConstruct() override;
 
 	/// <summary>
-	/// ItemBar¸¦ ¿ìÅ¬¸¯ÇßÀ» ¶§ ÀÌº¥Æ® ±¸Çö.(ItemÀÇ Interaction ÇÔ¼ö È£Ãâ)
+	/// ItemBarë¥¼ ìš°í´ë¦­í–ˆì„ ë•Œ ì´ë²¤íŠ¸ êµ¬í˜„.(Itemì˜ Interaction í•¨ìˆ˜ í˜¸ì¶œ)
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -29,7 +29,7 @@ public:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	/// <summary>
-	/// ÁÂÅ¬¸¯À¸·Î µå·¡±× ÀÌº¥Æ® ÀÌº¥Æ®¸¦ ½ÃÀÛ.
+	/// ì¢Œí´ë¦­ìœ¼ë¡œ ë“œë˜ê·¸ ì´ë²¤íŠ¸ ì´ë²¤íŠ¸ë¥¼ ì‹œì‘.
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -37,21 +37,21 @@ public:
 	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 
 	/// <summary>
-	/// µå·¡±× ÁßÀÎ ItemBarÀÇ ¾ÆÀÌÅÛÀ» °¨Áö.
+	/// ë“œë˜ê·¸ ì¤‘ì¸ ItemBarì˜ ì•„ì´í…œì„ ê°ì§€.
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
 	/// <param name="OutOperation"></param>
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 
-	// ÀÌº¥Æ® ÇÔ¼ö ¼±¾ğ
-	// ListView¿¡¼­ Ç×¸ñ °´Ã¼°¡ ¼³Á¤µÉ ¶§ È£ÃâµÇ´Â ÇÔ¼ö
+	// ì´ë²¤íŠ¸ í•¨ìˆ˜ ì„ ì–¸
+	// ListViewì—ì„œ í•­ëª© ê°ì²´ê°€ ì„¤ì •ë  ë•Œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 	void UpdateWidget(AC_Item* MyItem);
 
 	/// <summary>
-    /// ¾ÆÀÌÅÛ »ç¿ë½Ã ´«À¸·Î ¾Ë·ÁÁÖ´Â progressbarÅ¸ÀÌ¸Ó.
+    /// ì•„ì´í…œ ì‚¬ìš©ì‹œ ëˆˆìœ¼ë¡œ ì•Œë ¤ì£¼ëŠ” progressbaríƒ€ì´ë¨¸.
     /// </summary>
     /// <param name="curTime"></param>
     /// <param name="endTime"></param>
@@ -59,7 +59,7 @@ public:
     void SetPercent(float curTime, float endTime);
 
 	/// <summary>
-	/// InteractionÈÄ InvenUI¸¦ ¾÷µ¥ÀÌÆ®ÇÏ´Â ÇÔ¼ö.
+	/// Interactioní›„ InvenUIë¥¼ ì—…ë°ì´íŠ¸í•˜ëŠ” í•¨ìˆ˜.
 	/// </summary>
 	void UpdateInvenUIWidget();
 protected:
@@ -69,7 +69,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UTextBlock* ItemName = nullptr;
 
-	//ÇöÀç UI¿¡¼­ ¹ÙÀÎµùÇÏÁö ¾ÊÀ½.
+	//í˜„ì¬ UIì—ì„œ ë°”ì¸ë”©í•˜ì§€ ì•ŠìŒ.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UTextBlock* ItemStackBlock = nullptr;
 
@@ -79,8 +79,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	EItemTypes ItemType{};
 
-	// C++¿¡¼­ Ã³¸®ÇÒ ¾ÆÀÌÅÛ
+	// C++ì—ì„œ ì²˜ë¦¬í•  ì•„ì´í…œ
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_Item* CachedItem;
 
 };
+
+

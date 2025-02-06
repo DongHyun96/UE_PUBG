@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AI/Task/CombatTask/C_BTTaskSwapWeapon.h"
@@ -26,7 +26,7 @@ void UC_BTTaskSwapWeapon::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 
 	//TotalTime += DeltaSeconds;
 
-	//if (TotalTime > 5.f) // Task ³¡³µ´Ù°í °£ÁÖ
+	//if (TotalTime > 5.f) // Task ëë‚¬ë‹¤ê³  ê°„ì£¼
 	//{
 	//	EWeaponSlot CurSlot = static_cast<EWeaponSlot>(SlotIterator++);
 
@@ -76,6 +76,8 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	Aborted,
 	InProgress,*/
 	
-	// TickTask ¾øÀÌ ¹Ù·Î Á¾·á
+	// TickTask ì—†ì´ ë°”ë¡œ ì¢…ë£Œ
 	return Succeeded ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
 }
+
+

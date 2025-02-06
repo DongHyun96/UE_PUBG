@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/AttachmentActors/C_Attachment_Scope4X.h"
@@ -71,3 +71,5 @@ bool AC_Attachment_Scope4X::UseMrbStrategy()
 		SceneCaptureComponent->SetActive(CurrentGun->GetIsAimPress());
 	return false;
 }
+
+

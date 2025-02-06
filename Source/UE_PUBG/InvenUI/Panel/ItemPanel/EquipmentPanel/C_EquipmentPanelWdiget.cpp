@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWdiget.h"
@@ -23,22 +23,22 @@
 
 bool UC_EquipmentPanelWdiget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
-	// ÀÚ½Ä À§Á¬ÀÌ µå·ÓÀ» Ã³¸®ÇÏµµ·Ï ¿ì¼± È£Ãâ
+	// ìì‹ ìœ„ì ¯ì´ ë“œë¡­ì„ ì²˜ë¦¬í•˜ë„ë¡ ìš°ì„  í˜¸ì¶œ
 	if (SubGunSlot && SubGunSlot->IsHovered())
 	{
 		bool bChildHandled = SubGunSlot->NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 		if (bChildHandled)
 		{
-			// ÀÚ½Ä À§Á¬ÀÌ µå·ÓÀ» Ã³¸®ÇßÀ¸¸é ºÎ¸ğ´Â Ã³¸®ÇÏÁö ¾ÊÀ½
+			// ìì‹ ìœ„ì ¯ì´ ë“œë¡­ì„ ì²˜ë¦¬í–ˆìœ¼ë©´ ë¶€ëª¨ëŠ” ì²˜ë¦¬í•˜ì§€ ì•ŠìŒ
 			if (UC_InventoryUIWidget* InvenUiWidget = GetTypedOuter<UC_InventoryUIWidget>())
 				InvenUiWidget->UpdateWidget();
 			return true;
 		}
 	}
 
-	// ºÎ¸ğ À§Á¬¿¡¼­ µå·Ó Ã³¸®
+	// ë¶€ëª¨ ìœ„ì ¯ì—ì„œ ë“œë¡­ ì²˜ë¦¬
 	UE_LOG(LogTemp, Warning, TEXT("Item dropped on EquipmentPanel"));
-	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation); // ºÎ¸ğ À§Á¬¿¡¼­ µå·Ó Ã³¸® ¿Ï·á
+	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation); // ë¶€ëª¨ ìœ„ì ¯ì—ì„œ ë“œë¡­ ì²˜ë¦¬ ì™„ë£Œ
 }
 
 void UC_EquipmentPanelWdiget::UpdateWidget()
@@ -91,3 +91,5 @@ bool UC_EquipmentPanelWdiget::HandleDrop(AC_Item* DroppedItem)
 	UC_Util::Print("MoveToSlot");
 	return DroppedItem->MoveToSlot(OwnerPlayer);
 }
+
+

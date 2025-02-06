@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_InputComponent.h"
@@ -134,11 +134,11 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 	if (!Player->GetCanMove()) return;
 	if (Player->GetIsActivatingConsumableItem() && Player->GetPoseState() == EPoseState::CRAWL) return;
 
-	//Turn In PlaceÁß ¿òÁ÷ÀÌ¸é Tunr In place ¸ùÅ¸ÁÖ ²÷°í ÇØ´ç ¹æÇâÀ¸·Î ¹Ù·Î ¿òÁ÷ÀÌ°Ô ÇÏ±â
+	//Turn In Placeì¤‘ ì›€ì§ì´ë©´ Tunr In place ëª½íƒ€ì£¼ ëŠê³  í•´ë‹¹ ë°©í–¥ìœ¼ë¡œ ë°”ë¡œ ì›€ì§ì´ê²Œ í•˜ê¸°
 	CancelTurnInPlaceMotion();
 
-	// ¿òÁ÷ÀÏ ¶© Ä«¸Ş¶ó°¡ ¹Ù¶óº¸´Â ¹æÇâÀ¸·Î ¸öÃ¼µµ µ¹·Á¹ö¸² (¼ö¾÷ ±âº» StrafeOn ¼¼ÆÃ)
-	//Alt Å° ´©¸¦¶§¾Æ´Ò‹š ±¸ºĞÇØ¼­ ¼³Á¤
+	// ì›€ì§ì¼ ë• ì¹´ë©”ë¼ê°€ ë°”ë¼ë³´ëŠ” ë°©í–¥ìœ¼ë¡œ ëª¸ì²´ë„ ëŒë ¤ë²„ë¦¼ (ìˆ˜ì—… ê¸°ë³¸ StrafeOn ì„¸íŒ…)
+	//Alt í‚¤ ëˆ„ë¥¼ë•Œì•„ë‹ë–„ êµ¬ë¶„í•´ì„œ ì„¤ì •
 
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -164,7 +164,7 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		PlayerMovement->bOrientRotationToMovement		= false;
 	}
 
-	// SkyDiving Movement Ã³¸®
+	// SkyDiving Movement ì²˜ë¦¬
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 	{
 		Player->GetSkyDivingComponent()->HandlePlayerMovement(MovementVector);
@@ -184,7 +184,7 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		Player->AddMovementInput(ForwardDirection, MovementVector.X);
 		Player->AddMovementInput(RightDirection, MovementVector.Y);
 
-		Player->SetNextSpeed(PlayerMovement->MaxWalkSpeed); // AnimCharacter¿¡¼­ Speed LerpÇÒ °ª setting
+		Player->SetNextSpeed(PlayerMovement->MaxWalkSpeed); // AnimCharacterì—ì„œ Speed Lerpí•  ê°’ setting
 	}
 }
 
@@ -211,7 +211,7 @@ void UC_InputComponent::Look(const FInputActionValue& Value)
 	{
 		Player->AddControllerYawInput(LookAxisVector.X);
 		Player->AddControllerPitchInput(LookAxisVector.Y);
-		//TODO : Aim Down Sight ÀÏ ¶§ ¸Ş½¬ ¼û±â±â
+		//TODO : Aim Down Sight ì¼ ë•Œ ë©”ì‰¬ ìˆ¨ê¸°ê¸°
 		//if (PoseState == EPoseState::CRAWL)
 		//{
 		//if (GetControlRotation().Pitch >= 350.f && GetControlRotation().Pitch < 360.f)
@@ -234,10 +234,10 @@ void UC_InputComponent::Crouch()
 
 	switch (Player->GetPoseState())
 	{
-	case EPoseState::STAND: // Stand to crouch (Pose transition ¾øÀÌ ¹Ù·Î Ã³¸®)
+	case EPoseState::STAND: // Stand to crouch (Pose transition ì—†ì´ ë°”ë¡œ ì²˜ë¦¬)
 		Player->SetPoseState(EPoseState::STAND, EPoseState::CROUCH);
 		return;
-	case EPoseState::CROUCH: // Crouch to stand (Pose transition ¾øÀÌ ¹Ù·Î Ã³¸®)
+	case EPoseState::CROUCH: // Crouch to stand (Pose transition ì—†ì´ ë°”ë¡œ ì²˜ë¦¬)
 		Player->SetPoseState(EPoseState::CROUCH, EPoseState::STAND);
 		return;
 	case EPoseState::CRAWL: // Crawl to crouch
@@ -285,7 +285,7 @@ void UC_InputComponent::OnJump()
 
 	CancelTurnInPlaceMotion();
 
-	// ÆÄÄí¸£ Action¿¡ ¼º°øÇß´Ù¸é return
+	// íŒŒì¿ ë¥´ Actionì— ì„±ê³µí–ˆë‹¤ë©´ return
 	if (Player->GetParkourComponent()->TryExecuteParkourAction()) return;
 
 	if (Player->GetPoseState() == EPoseState::CRAWL) // Crawl to crouch
@@ -321,7 +321,7 @@ void UC_InputComponent::OnSwimmingJumpCrouchEnd()
 
 void UC_InputComponent::CancelTurnInPlaceMotion()
 {
-	//Turn In PlaceÁß ¿òÁ÷ÀÌ¸é Turn In place ¸ùÅ¸ÁÖ ²÷°í ÇØ´ç ¹æÇâÀ¸·Î ¹Ù·Î ¿òÁ÷ÀÌ°Ô ÇÏ±â
+	//Turn In Placeì¤‘ ì›€ì§ì´ë©´ Turn In place ëª½íƒ€ì£¼ ëŠê³  í•´ë‹¹ ë°©í–¥ìœ¼ë¡œ ë°”ë¡œ ì›€ì§ì´ê²Œ í•˜ê¸°
 	
 	UAnimMontage* RightMontage = Player->GetPoseTurnAnimMontage(Player->GetHandState()).RightMontages[Player->GetPoseState()].AnimMontage;
 	UAnimInstance* AnimInstance = Player->GetMesh()->GetAnimInstance();
@@ -345,7 +345,7 @@ void UC_InputComponent::CancelTurnInPlaceMotion()
 		AnimInstance->Montage_Stop(0.2f, LeftMontage);
 	}
 
-	// Lower body partµµ È®ÀÎ
+	// Lower body partë„ í™•ì¸
 	if (!Player->GetLowerBodyTurnAnimMontageMap().Contains(Player->GetHandState())) return;
 
 	UAnimMontage* LowerRightMontage = Player->GetLowerPoseTurnAnimMontage(Player->GetHandState()).RightMontages[Player->GetPoseState()].AnimMontage;
@@ -369,7 +369,7 @@ void UC_InputComponent::CancelTurnInPlaceMotion()
 
 void UC_InputComponent::HoldDirection()
 {
-	// ¼ö·ùÅº ´øÁö´Â process ÁßÀÌ¶ó¸é AltÅ° ÁßÁö
+	// ìˆ˜ë¥˜íƒ„ ë˜ì§€ëŠ” process ì¤‘ì´ë¼ë©´ Altí‚¤ ì¤‘ì§€
 	if (Player->GetIsFiringBullet()) return;
 
 	AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(Player->GetEquippedComponent()->GetCurWeapon());
@@ -421,10 +421,10 @@ void UC_InputComponent::SetToNonAimCamera()
 
 void UC_InputComponent::OnNum1()
 {
-	// ÇØ´ç ½½·Ô¿¡ ¹«±â°¡ Á¸ÀçÇÏ°í Consumable È°¼ºÈ­ ÁßÀÏ ¶§
+	// í•´ë‹¹ ìŠ¬ë¡¯ì— ë¬´ê¸°ê°€ ì¡´ì¬í•˜ê³  Consumable í™œì„±í™” ì¤‘ì¼ ë•Œ
 	if (Player->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN] && Player->GetIsActivatingConsumableItem())
 	{
-		// ÀÌÀü¿¡ ¹«±â¸¦ µé°í ÀÖ¾ú´ø »óÈ²ÀÌ¾úÀ» °æ¿ì(== Àá½Ã Holster¿¡ ºÙÀÎ °æ¿ì) ÇöÀç ¹«±â·Î ¹Ù²Ù±â À§ÇÑ Ã³¸® ÇÊ¿ä
+		// ì´ì „ì— ë¬´ê¸°ë¥¼ ë“¤ê³  ìˆì—ˆë˜ ìƒí™©ì´ì—ˆì„ ê²½ìš°(== ì ì‹œ Holsterì— ë¶™ì¸ ê²½ìš°) í˜„ì¬ ë¬´ê¸°ë¡œ ë°”ê¾¸ê¸° ìœ„í•œ ì²˜ë¦¬ í•„ìš”
 		if (Player->GetEquippedComponent()->GetCurWeaponType() != EWeaponSlot::NONE)
 			Player->GetEquippedComponent()->SetCurWeaponTypeToNone();
 
@@ -438,14 +438,14 @@ void UC_InputComponent::OnNum2()
 {
 	if (Player->GetEquippedComponent()->GetWeapons()[EWeaponSlot::SUB_GUN] && Player->GetIsActivatingConsumableItem())
 	{
-		// ÀÌÀü¿¡ ¹«±â¸¦ µé°í ÀÖ¾ú´ø »óÈ²ÀÌ¾úÀ» °æ¿ì(== Àá½Ã Holster¿¡ ºÙÀÎ °æ¿ì) ÇöÀç ¹«±â·Î ¹Ù²Ù±â À§ÇÑ Ã³¸® ÇÊ¿ä
+		// ì´ì „ì— ë¬´ê¸°ë¥¼ ë“¤ê³  ìˆì—ˆë˜ ìƒí™©ì´ì—ˆì„ ê²½ìš°(== ì ì‹œ Holsterì— ë¶™ì¸ ê²½ìš°) í˜„ì¬ ë¬´ê¸°ë¡œ ë°”ê¾¸ê¸° ìœ„í•œ ì²˜ë¦¬ í•„ìš”
 		if (Player->GetEquippedComponent()->GetCurWeaponType() != EWeaponSlot::NONE)
 			Player->GetEquippedComponent()->SetCurWeaponTypeToNone();
 
 		Player->GetCurActivatingConsumableItem()->CancelActivating();
 	}
 
-	// Testing ¿ë Boosting TODO : ÀÌ ¶óÀÎ Áö¿ì±â
+	// Testing ìš© Boosting TODO : ì´ ë¼ì¸ ì§€ìš°ê¸°
 	//Player->GetStatComponent()->AddBoost(40.f);
 	if (Player->GetIsActivatingConsumableItem())
 		Player->GetCurActivatingConsumableItem()->CancelActivating();
@@ -458,7 +458,7 @@ void UC_InputComponent::OnNum4()
 {
 	if (Player->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MELEE_WEAPON] && Player->GetIsActivatingConsumableItem())
 	{
-		// ÀÌÀü¿¡ ¹«±â¸¦ µé°í ÀÖ¾ú´ø »óÈ²ÀÌ¾úÀ» °æ¿ì(== Àá½Ã Holster¿¡ ºÙÀÎ °æ¿ì) ÇöÀç ¹«±â·Î ¹Ù²Ù±â À§ÇÑ Ã³¸® ÇÊ¿ä
+		// ì´ì „ì— ë¬´ê¸°ë¥¼ ë“¤ê³  ìˆì—ˆë˜ ìƒí™©ì´ì—ˆì„ ê²½ìš°(== ì ì‹œ Holsterì— ë¶™ì¸ ê²½ìš°) í˜„ì¬ ë¬´ê¸°ë¡œ ë°”ê¾¸ê¸° ìœ„í•œ ì²˜ë¦¬ í•„ìš”
 		if (Player->GetEquippedComponent()->GetCurWeaponType() != EWeaponSlot::NONE)
 			Player->GetEquippedComponent()->SetCurWeaponTypeToNone();
 
@@ -472,7 +472,7 @@ void UC_InputComponent::OnNum5()
 {
 	if (Player->GetEquippedComponent()->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON] && Player->GetIsActivatingConsumableItem())
 	{
-		// ÀÌÀü¿¡ ¹«±â¸¦ µé°í ÀÖ¾ú´ø »óÈ²ÀÌ¾úÀ» °æ¿ì(== Àá½Ã Holster¿¡ ºÙÀÎ °æ¿ì) ÇöÀç ¹«±â·Î ¹Ù²Ù±â À§ÇÑ Ã³¸® ÇÊ¿ä
+		// ì´ì „ì— ë¬´ê¸°ë¥¼ ë“¤ê³  ìˆì—ˆë˜ ìƒí™©ì´ì—ˆì„ ê²½ìš°(== ì ì‹œ Holsterì— ë¶™ì¸ ê²½ìš°) í˜„ì¬ ë¬´ê¸°ë¡œ ë°”ê¾¸ê¸° ìœ„í•œ ì²˜ë¦¬ í•„ìš”
 		if (Player->GetEquippedComponent()->GetCurWeaponType() != EWeaponSlot::NONE)
 			Player->GetEquippedComponent()->SetCurWeaponTypeToNone();
 
@@ -484,7 +484,7 @@ void UC_InputComponent::OnNum5()
 
 void UC_InputComponent::OnXKey()
 {
-	// Testing ¿ë Damage ÁÖ±â TODO : ÀÌ ¶óÀÎ Áö¿ì±â
+	// Testing ìš© Damage ì£¼ê¸° TODO : ì´ ë¼ì¸ ì§€ìš°ê¸°
 	//TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor * DamageCauser);
 	//static bool SwimFlag = false;
 
@@ -517,7 +517,7 @@ void UC_InputComponent::OnXKey()
 
 void UC_InputComponent::OnBKey()
 {
-	// Testing ¿ë Heal ÁÖ±â TODO : ÀÌ ¶óÀÎ Áö¿ì±â
+	// Testing ìš© Heal ì£¼ê¸° TODO : ì´ ë¼ì¸ ì§€ìš°ê¸°
 	//if (IsValid(Player->ConsumableItems[Player->ConsumableIterator])) 
 	//	Player->ConsumableItems[Player->ConsumableIterator]->StartUsingConsumableItem(Player);
 
@@ -597,8 +597,8 @@ void UC_InputComponent::OnWalkReleased()
 }
 
 /// <summary>
-/// »óÈ£ÀÛ¿ë(F)¿Í ´ëÀÀµÇ´Â Å°·Î ±¸»óÁß.
-/// º¿µµ »óÈ£ÀÛ¿ëÇÔ.
+/// ìƒí˜¸ì‘ìš©(F)ì™€ ëŒ€ì‘ë˜ëŠ” í‚¤ë¡œ êµ¬ìƒì¤‘.
+/// ë´‡ë„ ìƒí˜¸ì‘ìš©í•¨.
 /// </summary>
 void UC_InputComponent::OnFKey()
 {
@@ -611,31 +611,31 @@ void UC_InputComponent::OnFKey()
 
 	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
 
-	// SkyDiving °ü·Ã FÅ°
+	// SkyDiving ê´€ë ¨ Fí‚¤
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 	{
 		if (Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
 		{
 			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING);
-			//GAMESCENE_MANAGER->GetEnemy()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING); // TODO : ÀÌ ¶óÀÎ Áö¿ì±â
+			//GAMESCENE_MANAGER->GetEnemy()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING); // TODO : ì´ ë¼ì¸ ì§€ìš°ê¸°
 		}
 		else if (Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::SKYDIVING)
 		{
 			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING);
-			//GAMESCENE_MANAGER->GetEnemy()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING); // TODO : ÀÌ ¶óÀÎ Áö¿ì±â
+			//GAMESCENE_MANAGER->GetEnemy()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING); // TODO : ì´ ë¼ì¸ ì§€ìš°ê¸°
 		}
 		return;
 	}
 
-	// Consumable Item °ü·Ã FÅ° - Consumable È°¼ºÈ­ Ãë¼Ò
+	// Consumable Item ê´€ë ¨ Fí‚¤ - Consumable í™œì„±í™” ì·¨ì†Œ
 	if (Player->GetIsActivatingConsumableItem() && Player->GetCurActivatingConsumableItem())
 	{
 		Player->GetCurActivatingConsumableItem()->CancelActivating();
 		return;
 	}
 		
-	// TODO : Consumable Item »ç¿ë ÁßÀÌ¶ó¸é Ãë¼Ò ½ÃÅ°±â
-	// Testing¿ë ConsumableItem ÀÛµ¿ Ãë¼Ò TODO : ÀÌ ¶óÀÎ Áö¿ì±â
+	// TODO : Consumable Item ì‚¬ìš© ì¤‘ì´ë¼ë©´ ì·¨ì†Œ ì‹œí‚¤ê¸°
+	// Testingìš© ConsumableItem ì‘ë™ ì·¨ì†Œ TODO : ì´ ë¼ì¸ ì§€ìš°ê¸°
 	//if (IsValid(Player->ConsumableItems[Player->ConsumableIterator]))
 	//	Player->ConsumableItems[Player->ConsumableIterator]->CancelActivating();
 }
@@ -654,12 +654,12 @@ void UC_InputComponent::OnMKey()
 
 void UC_InputComponent::OnIKey()
 {
-	OnTabKey(); // Inventory Åä±Û ±â´É ¶È°°À½
+	OnTabKey(); // Inventory í† ê¸€ ê¸°ëŠ¥ ë˜‘ê°™ìŒ
 }
 
 void UC_InputComponent::OnTabKey()
 {
-	// Inven ÄÑ±â / ²ô±â ±â´É
+	// Inven ì¼œê¸° / ë„ê¸° ê¸°ëŠ¥
 
 	if (GAMESCENE_MANAGER->GetCurrentHUDMode() == EHUDMode::INVEN)
 		GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
@@ -674,4 +674,6 @@ void UC_InputComponent::OnTabKey()
 		}
 	}
 }
+
+
 

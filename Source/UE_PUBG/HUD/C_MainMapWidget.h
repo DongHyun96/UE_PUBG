@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -28,12 +28,12 @@ private:
 	void HandleUpdateMainMapImage(float InDeltaTime);
 
 	/// <summary>
-	/// MainMap Transform¿¡ µû¸¥ Map¿ä¼Òµé À§Ä¡ Update
+	/// MainMap Transformì— ë”°ë¥¸ Mapìš”ì†Œë“¤ ìœ„ì¹˜ Update
 	/// </summary>
 	void HandleUpdateMarkers();
 
 	/// <summary>
-	/// ¸ÊÀÇ Transform ¶Ç´Â PlayerÀÇ À§Ä¡¿¡ µû¸¥ PlaneRoute °ü·Ã Image Transform Á¶Á¤
+	/// ë§µì˜ Transform ë˜ëŠ” Playerì˜ ìœ„ì¹˜ì— ë”°ë¥¸ PlaneRoute ê´€ë ¨ Image Transform ì¡°ì •
 	/// </summary>
 	void HandleUpdatePlaneRouteTransform() override;
 
@@ -49,17 +49,17 @@ private:
 public:
 
 	/// <summary>
-	/// ¿ÜºÎ¿¡¼­(World¿¡¼­ ÇÎÀ» Âï¾úÀ» ¶§) MainMapWidget¿¡¼­¸¸ SpawnPingImage Ã³¸® ½ÃÅ°±â
+	/// ì™¸ë¶€ì—ì„œ(Worldì—ì„œ í•‘ì„ ì°ì—ˆì„ ë•Œ) MainMapWidgetì—ì„œë§Œ SpawnPingImage ì²˜ë¦¬ ì‹œí‚¤ê¸°
 	/// </summary>
-	/// <param name="WorldPingLocation"> : SpawnµÈ WorldPing À§Ä¡ </param>
-	/// <returns> : Á¦´ë·Î Spawn µÇ¾ú´Ù¸é return true </returns>
+	/// <param name="WorldPingLocation"> : Spawnëœ WorldPing ìœ„ì¹˜ </param>
+	/// <returns> : ì œëŒ€ë¡œ Spawn ë˜ì—ˆë‹¤ë©´ return true </returns>
 	bool SpawnPingImage(FVector WorldPingLocation) override;
 
 	/// <summary>
-	/// MainMap ÀÌ¹ÌÁö ³»¿¡¼­ Ping Marker¸¦ Spawn½ÃÄ×À» ¶§ÀÇ Ã³¸®(´Ù¸¥ °÷¿¡µµ Ping Marker ½ºÆù½ÃÅ°±â)
+	/// MainMap ì´ë¯¸ì§€ ë‚´ì—ì„œ Ping Markerë¥¼ Spawnì‹œì¼°ì„ ë•Œì˜ ì²˜ë¦¬(ë‹¤ë¥¸ ê³³ì—ë„ Ping Marker ìŠ¤í°ì‹œí‚¤ê¸°)
 	/// </summary>
-	/// <param name="MousePos"> : Button down µÈ ¸¶¿ì½º Æ÷ÀÎÅÍ À§Ä¡</param>
-	/// <returns> : Á¦´ë·Î Spawn µÇ¾ú´Ù¸é return true </returns>
+	/// <param name="MousePos"> : Button down ëœ ë§ˆìš°ìŠ¤ í¬ì¸í„° ìœ„ì¹˜</param>
+	/// <returns> : ì œëŒ€ë¡œ Spawn ë˜ì—ˆë‹¤ë©´ return true </returns>
 	bool SpawnPingImage(FVector2D MousePos) override;
 
 protected:
@@ -70,9 +70,9 @@ protected:
 public:
 
 	/// <summary>
-	/// AirplaneLocation¿¡ µû¸¥ AirplaneImagePosition Àâ±â
+	/// AirplaneLocationì— ë”°ë¥¸ AirplaneImagePosition ì¡ê¸°
 	/// </summary>
-	/// <param name="AirplaneLocation"> : ºñÇà±â ÇöÀç À§Ä¡ </param>
+	/// <param name="AirplaneLocation"> : ë¹„í–‰ê¸° í˜„ì¬ ìœ„ì¹˜ </param>
 	void UpdateAirplaneImagePosition(const FVector& AirplaneLocation);
 
 	//void TogglePlayerMarkerImageVisibility(bool Visible);
@@ -97,10 +97,10 @@ private:
 
 protected:
 	/// <summary>
-	/// World ´ëºñ Map size Ã´µµ·Î Àû¿ëµÈ À§Ä¡ Ã£±â
+	/// World ëŒ€ë¹„ Map size ì²™ë„ë¡œ ì ìš©ëœ ìœ„ì¹˜ ì°¾ê¸°
 	/// </summary>
 	/// <param name="GameWorldLocation"> : World Location </param>
-	/// <returns> : Àû¿ëµÈ À§Ä¡ FVector2D </returns>
+	/// <returns> : ì ìš©ëœ ìœ„ì¹˜ FVector2D </returns>
 	FVector2D GetWorldToMapSizePos(FVector GameWorldLocation) override;
 
 protected:
@@ -143,3 +143,5 @@ private:
 
 
 };
+
+

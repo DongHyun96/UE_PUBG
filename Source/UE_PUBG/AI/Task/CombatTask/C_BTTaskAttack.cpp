@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AI/Task/CombatTask/C_BTTaskAttack.h"
@@ -48,12 +48,14 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 		EnemyEquippedComponent = OwnerEnemy->GetEquippedComponent();
 	}
 
-	// TODO : Focused targetÀÌ ÇÊ¿äÇÔ (¿ì¼±Àº ÇÃ·¹ÀÌ¾î·Î Ã³¸®)
+	// TODO : Focused targetì´ í•„ìš”í•¨ (ìš°ì„ ì€ í”Œë ˆì´ì–´ë¡œ ì²˜ë¦¬)
 	AC_Player* PlayerTarget = GAMESCENE_MANAGER->GetPlayer();
 	if (!EnemyEquippedComponent->GetCurWeapon()) return EBTNodeResult::Succeeded;
 
 	bool AttackSucceeded = EnemyEquippedComponent->GetCurWeapon()->ExecuteAIAttack(PlayerTarget);
 
-	// TODO : TickTask¿¡¼­ °ø°İÀ» °è¼ÓÇØ¼­ ÀÌ¾î³ª°¥Áö °í¹Î Áß
+	// TODO : TickTaskì—ì„œ ê³µê²©ì„ ê³„ì†í•´ì„œ ì´ì–´ë‚˜ê°ˆì§€ ê³ ë¯¼ ì¤‘
 	return AttackSucceeded ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
 }
+
+

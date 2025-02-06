@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -29,104 +29,104 @@ public:
 public:
 	
 	/// <summary>
-	/// ºí·çÇÁ¸°Æ® ÂÊ¿¡¼­ ±¸ÇöÇÑ Event Function (Map ÀÌ¹ÌÁöÀÇ MainCircle Material °ü·Ã information Á¶Á¤)
+	/// ë¸”ë£¨í”„ë¦°íŠ¸ ìª½ì—ì„œ êµ¬í˜„í•œ Event Function (Map ì´ë¯¸ì§€ì˜ MainCircle Material ê´€ë ¨ information ì¡°ì •)
 	/// </summary>
-	/// <param name="PosU"> : ÁßÁ¡ÀÇ UÁÂÇ¥ </param>
-	/// <param name="PosV"> : ÁßÁ¡ÀÇ VÁÂÇ¥ </param>
-	/// <param name="UVRad"> : ÁßÁ¡ÀÇ Radius(UVÁÂÇ¥°è ´ÜÀ§) </param>
+	/// <param name="PosU"> : ì¤‘ì ì˜ Uì¢Œí‘œ </param>
+	/// <param name="PosV"> : ì¤‘ì ì˜ Vì¢Œí‘œ </param>
+	/// <param name="UVRad"> : ì¤‘ì ì˜ Radius(UVì¢Œí‘œê³„ ë‹¨ìœ„) </param>
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetMainCircleInfo(float PosU, float PosV, float UVRad);
 
 	/// <summary>
-	/// ºí·çÇÁ¸°Æ® ÂÊ¿¡¼­ ±¸ÇöÇÑ Event Function (Map ÀÌ¹ÌÁöÀÇ NextCircle Material °ü·Ã information Á¶Á¤)
+	/// ë¸”ë£¨í”„ë¦°íŠ¸ ìª½ì—ì„œ êµ¬í˜„í•œ Event Function (Map ì´ë¯¸ì§€ì˜ NextCircle Material ê´€ë ¨ information ì¡°ì •)
 	/// </summary>
-	/// <param name="PosU"> : ÁßÁ¡ÀÇ UÁÂÇ¥ </param>
-	/// <param name="PosV"> : ÁßÁ¡ÀÇ VÁÂÇ¥ </param>
-	/// <param name="UVRad"> : ÁßÁ¡ÀÇ Radius(UVÁÂÇ¥°è ´ÜÀ§) </param>
+	/// <param name="PosU"> : ì¤‘ì ì˜ Uì¢Œí‘œ </param>
+	/// <param name="PosV"> : ì¤‘ì ì˜ Vì¢Œí‘œ </param>
+	/// <param name="UVRad"> : ì¤‘ì ì˜ Radius(UVì¢Œí‘œê³„ ë‹¨ìœ„) </param>
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetNextCircleInfo(float PosU, float PosV, float UVRad);
 
 protected:
 
 	/// <summary>
-	/// World¿¡¼­ ÂïÀº ÇÎ ¸¶Ä¿ Spawn Ã³¸® ½ÃÅ°±â
+	/// Worldì—ì„œ ì°ì€ í•‘ ë§ˆì»¤ Spawn ì²˜ë¦¬ ì‹œí‚¤ê¸°
 	/// </summary>
-	/// <param name="WorldPingLocation"> : World¿¡ ÂïÈù ÇÎÀÇ À§Ä¡ </param>
-	/// <returns> : SpawnÀÌ Á¦´ë·Î ÀÌ·ç¾îÁ³´Ù¸é return true </returns>
+	/// <param name="WorldPingLocation"> : Worldì— ì°íŒ í•‘ì˜ ìœ„ì¹˜ </param>
+	/// <returns> : Spawnì´ ì œëŒ€ë¡œ ì´ë£¨ì–´ì¡Œë‹¤ë©´ return true </returns>
 	UFUNCTION(BlueprintImplementableEvent)
 	bool SpawnPingImageWithWorldPingLocation(FVector WorldPingLocation);
 
 	/// <summary>
-	/// MainMap Áöµµ »óÀÇ À§Ä¡(MousePos)¿¡ ÂïÀº ÇÎ ¸¶Ä¿ Spawn Ã³¸® ½ÃÅ°±â
+	/// MainMap ì§€ë„ ìƒì˜ ìœ„ì¹˜(MousePos)ì— ì°ì€ í•‘ ë§ˆì»¤ Spawn ì²˜ë¦¬ ì‹œí‚¤ê¸°
 	/// </summary>
-	/// <param name="MousePos"> : Âï¾ú´ø ¸¶¿ì½º Æ÷ÀÎÅÍ À§Ä¡</param>
-	/// <returns> : SpawnÀÌ Á¦´ë·Î ÀÌ·ç¾îÁ³´Ù¸é return true </returns>
+	/// <param name="MousePos"> : ì°ì—ˆë˜ ë§ˆìš°ìŠ¤ í¬ì¸í„° ìœ„ì¹˜</param>
+	/// <returns> : Spawnì´ ì œëŒ€ë¡œ ì´ë£¨ì–´ì¡Œë‹¤ë©´ return true </returns>
 	UFUNCTION(BlueprintImplementableEvent)
 	bool SpawnPingImageWithMousePos(FVector2D MousePos);
 
 public:
 
 	/// <summary>
-	/// ÇÎ ¸¶Ä¿ Cancel Ã³¸®µÇ¾úÀ» ¶§ ºÒ·ÁÁú Callback Event
+	/// í•‘ ë§ˆì»¤ Cancel ì²˜ë¦¬ë˜ì—ˆì„ ë•Œ ë¶ˆë ¤ì§ˆ Callback Event
 	/// </summary>
-	/// <returns> : Ping Marker Cancel(Hidden)ÀÌ Á¦´ë·Î Ã³¸®µÇ¾ú´Ù¸é return true </returns>
+	/// <returns> : Ping Marker Cancel(Hidden)ì´ ì œëŒ€ë¡œ ì²˜ë¦¬ë˜ì—ˆë‹¤ë©´ return true </returns>
 	UFUNCTION(BlueprintImplementableEvent)
 	bool OnCancelPingMarker();
 
 public:
 
 	/// <summary>
-	/// World¿¡¼­ ÂïÀº ÇÎ ¸¶Ä¿ Spawn Ã³¸® ½ÃÅ°±â
+	/// Worldì—ì„œ ì°ì€ í•‘ ë§ˆì»¤ Spawn ì²˜ë¦¬ ì‹œí‚¤ê¸°
 	/// </summary>
-	/// <param name="WorldPingLocation"> : World¿¡ ÂïÈù ÇÎÀÇ À§Ä¡ </param>
-	/// <returns> : SpawnÀÌ Á¦´ë·Î ÀÌ·ç¾îÁ³´Ù¸é return true </returns>
+	/// <param name="WorldPingLocation"> : Worldì— ì°íŒ í•‘ì˜ ìœ„ì¹˜ </param>
+	/// <returns> : Spawnì´ ì œëŒ€ë¡œ ì´ë£¨ì–´ì¡Œë‹¤ë©´ return true </returns>
 	virtual bool SpawnPingImage(FVector WorldPingLocation);
 
 	/// <summary>
-	/// MainMap Áöµµ »óÀÇ À§Ä¡(MousePos)¿¡ ÂïÀº ÇÎ ¸¶Ä¿ Spawn Ã³¸® ½ÃÅ°±â
+	/// MainMap ì§€ë„ ìƒì˜ ìœ„ì¹˜(MousePos)ì— ì°ì€ í•‘ ë§ˆì»¤ Spawn ì²˜ë¦¬ ì‹œí‚¤ê¸°
 	/// </summary>
-	/// <param name="MousePos"> : Âï¾ú´ø ¸¶¿ì½º Æ÷ÀÎÅÍ À§Ä¡</param>
-	/// <returns> : SpawnÀÌ Á¦´ë·Î ÀÌ·ç¾îÁ³´Ù¸é return true </returns>
+	/// <param name="MousePos"> : ì°ì—ˆë˜ ë§ˆìš°ìŠ¤ í¬ì¸í„° ìœ„ì¹˜</param>
+	/// <returns> : Spawnì´ ì œëŒ€ë¡œ ì´ë£¨ì–´ì¡Œë‹¤ë©´ return true </returns>
 	virtual bool SpawnPingImage(FVector2D MousePos);
 
-public: // Airplane °ü·Ã
+public: // Airplane ê´€ë ¨
 
 	//virtual void SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest);
 
 	/// <summary>
-	/// Start, Dest¿¡ µû¸¥ ºñÇà±â °æ·Î ÀÌ¹ÌÁö °ü·Ã À§Ä¡ ¹× È¸Àü Àâ±â
+	/// Start, Destì— ë”°ë¥¸ ë¹„í–‰ê¸° ê²½ë¡œ ì´ë¯¸ì§€ ê´€ë ¨ ìœ„ì¹˜ ë° íšŒì „ ì¡ê¸°
 	/// </summary>
-	/// <param name="StartDest"> : ºñÇà±â ½ÃÀÛ(³«ÇÏ °¡´É ½ÃÀÛÀ§Ä¡), ³¡(³«ÇÏ °¡´É ³¡ À§Ä¡) À§Ä¡</param>
+	/// <param name="StartDest"> : ë¹„í–‰ê¸° ì‹œì‘(ë‚™í•˜ ê°€ëŠ¥ ì‹œì‘ìœ„ì¹˜), ë(ë‚™í•˜ ê°€ëŠ¥ ë ìœ„ì¹˜) ìœ„ì¹˜</param>
 	void SetAirplaneRoute(TPair<FVector, FVector> StartDest);
 
 	void ToggleAirplaneImageVisibility(bool Visible);
 
 	/// <summary>
-	/// AirplaneLocation¿¡ µû¸¥ AirplaneImagePosition Àâ±â
+	/// AirplaneLocationì— ë”°ë¥¸ AirplaneImagePosition ì¡ê¸°
 	/// </summary>
-	/// <param name="AirplaneLocation"> : ºñÇà±â ÇöÀç À§Ä¡ </param>
+	/// <param name="AirplaneLocation"> : ë¹„í–‰ê¸° í˜„ì¬ ìœ„ì¹˜ </param>
 	virtual void UpdateAirplaneImagePosition(const FVector& AirplaneLocation);
 
 protected:
 
 	/// <summary>
-	/// ¸ÊÀÇ Transform ¶Ç´Â PlayerÀÇ À§Ä¡¿¡ µû¸¥ PlaneRoute °ü·Ã Image Transform Á¶Á¤
+	/// ë§µì˜ Transform ë˜ëŠ” Playerì˜ ìœ„ì¹˜ì— ë”°ë¥¸ PlaneRoute ê´€ë ¨ Image Transform ì¡°ì •
 	/// </summary>
 	virtual void HandleUpdatePlaneRouteTransform();
 
 protected:
 
 	/// <summary>
-	/// World ´ëºñ Map size Ã´µµ·Î Àû¿ëµÈ À§Ä¡ Ã£±â
+	/// World ëŒ€ë¹„ Map size ì²™ë„ë¡œ ì ìš©ëœ ìœ„ì¹˜ ì°¾ê¸°
 	/// </summary>
 	/// <param name="GameWorldLocation"> : World Location </param>
-	/// <returns> : Àû¿ëµÈ À§Ä¡ FVector2D </returns>
+	/// <returns> : ì ìš©ëœ ìœ„ì¹˜ FVector2D </returns>
 	virtual FVector2D GetWorldToMapSizePos(FVector GameWorldLocation);
 
 private:
 
 	/// <summary>
-	/// PlayerÀ§Ä¡ OwnerPlayer World À§Ä¡¿¡ µû¶ó Update ½ÃÅ°±â
+	/// Playerìœ„ì¹˜ OwnerPlayer World ìœ„ì¹˜ì— ë”°ë¼ Update ì‹œí‚¤ê¸°
 	/// </summary>
 	void UpdatePlayerTranslationOnMap();
 
@@ -138,7 +138,7 @@ protected:
 	
 	FVector2D PlayerTranslationOnMap{};
 
-protected: // ºñÇà±â °æ·Î °ü·Ã
+protected: // ë¹„í–‰ê¸° ê²½ë¡œ ê´€ë ¨
 
 	//FVector2D AirplaneRouteStartPosOrigin{};
 	//FVector2D AirplaneRouteDestPosOrigin{};
@@ -166,10 +166,12 @@ protected:
 
 protected:
 
-	// AirplaneRouteImageÀÇ size X¸¦ Á¶Á¤ÇÏ±â À§ÇÔ
+	// AirplaneRouteImageì˜ size Xë¥¼ ì¡°ì •í•˜ê¸° ìœ„í•¨
 	class UCanvasPanelSlot* AirplaneRouteImageCanvasSlot{};
 
 private:
 	static const float BACKGROUND_SIZE;
 	static const float WORLD_TO_BG_SIZE_FACTOR;
 };
+
+

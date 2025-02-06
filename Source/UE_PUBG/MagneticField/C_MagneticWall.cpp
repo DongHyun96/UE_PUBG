@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "MagneticField/C_MagneticWall.h"
@@ -21,7 +21,7 @@ AC_MagneticWall::AC_MagneticWall()
 	//PlaneMesh->SetWorldRotation(FRotator(0.f, 90.f, 0.f));
 
 	PlaneMesh->SetRelativeScale3D(FVector(100.f, 1.f, 1.f));
-	PlaneMesh->SetRelativeRotation(FRotator(90.f, 0.f, 0.f)); // yÃà È¸ÀüÀ¸·Î ³ª¿È
+	PlaneMesh->SetRelativeRotation(FRotator(90.f, 0.f, 0.f)); // yì¶• íšŒì „ìœ¼ë¡œ ë‚˜ì˜´
 
 	//PlaneMesh->GetMaterial(0)->
 }
@@ -41,4 +41,6 @@ void AC_MagneticWall::UpdateMaterialVTiling()
 	if (UMaterialInstanceDynamic* MatInstance = PlaneMesh->CreateAndSetMaterialInstanceDynamic(0))
 		MatInstance->SetScalarParameterValue(FName("VTiling"), GetActorScale3D().Y);
 }
+
+
 

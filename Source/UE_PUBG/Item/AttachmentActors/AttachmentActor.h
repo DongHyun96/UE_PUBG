@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -40,3 +40,5 @@ public:
 	virtual bool UseDetachStrategy() PURE_VIRTUAL(AAttachmentActor::UseDetachStrategy, return false;);
 	virtual bool UseMrbStrategy() { return false; };
 };
+
+

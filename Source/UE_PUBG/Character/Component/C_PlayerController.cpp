@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_PlayerController.h"
@@ -16,13 +16,13 @@ void AC_PlayerController::BeginPlay()
 		FSlateApplication::Get().SetNavigationConfig(Navigation);
 	}
 
-	//// Input Mode¸¦ GameAndUI·Î ¼³Á¤
+	//// Input Modeë¥¼ GameAndUIë¡œ ì„¤ì •
 	//FInputModeGameAndUI InputMode;
-	//InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); // ¸¶¿ì½º°¡ ºäÆ÷Æ®¿¡ °íÁ¤µÇÁö ¾ÊÀ½
-	//InputMode.SetHideCursorDuringCapture(false); // Ä¸Ã³ Áß Ä¿¼­¸¦ ¼û±âÁö ¾ÊÀ½
+	//InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); // ë§ˆìš°ìŠ¤ê°€ ë·°í¬íŠ¸ì— ê³ ì •ë˜ì§€ ì•ŠìŒ
+	//InputMode.SetHideCursorDuringCapture(false); // ìº¡ì²˜ ì¤‘ ì»¤ì„œë¥¼ ìˆ¨ê¸°ì§€ ì•ŠìŒ
 	//SetInputMode(InputMode);
 	//
-	//// ¸¶¿ì½º Ä¿¼­ Ç¥½Ã
+	//// ë§ˆìš°ìŠ¤ ì»¤ì„œ í‘œì‹œ
 	//bShowMouseCursor = true;
 }
 
@@ -30,7 +30,7 @@ void AC_PlayerController::BeginPlay()
 //{
 //	Super::SetupInputComponent();
 //
-//	// ¸¶¿ì½º È¸Àü ÀÔ·Â ¹ÙÀÎµù
+//	// ë§ˆìš°ìŠ¤ íšŒì „ ìž…ë ¥ ë°”ì¸ë”©
 //	InputComponent->BindAxis("Turn", this, &AC_PlayerController::HandleTurn);
 //	InputComponent->BindAxis("LookUp", this, &AC_PlayerController::HandleLookUp);
 //}
@@ -42,7 +42,7 @@ void AC_PlayerController::BeginPlay()
 //		APawn* ControlledPawn = GetPawn();
 //		if (ControlledPawn)
 //		{
-//			ControlledPawn->AddControllerYawInput(Value); // Yaw È¸Àü
+//			ControlledPawn->AddControllerYawInput(Value); // Yaw íšŒì „
 //		}
 //	}
 //}
@@ -54,7 +54,9 @@ void AC_PlayerController::BeginPlay()
 //		APawn* ControlledPawn = GetPawn();
 //		if (ControlledPawn)
 //		{
-//			ControlledPawn->AddControllerPitchInput(Value); // Pitch È¸Àü
+//			ControlledPawn->AddControllerPitchInput(Value); // Pitch íšŒì „
 //		}
 //	}
 //}
+
+

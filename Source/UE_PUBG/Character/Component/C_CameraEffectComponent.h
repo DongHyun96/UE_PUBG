@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -25,19 +25,19 @@ public:
 
 private:
 	/// <summary>
-	/// Tick ÇÔ¼ö¿¡¼­ È£ÃâµÉ ÇÔ¼ö / AimPunching °ü¿©
+	/// Tick í•¨ìˆ˜ì—ì„œ í˜¸ì¶œë  í•¨ìˆ˜ / AimPunching ê´€ì—¬
 	/// </summary>
 	void HandleCameraAimPunching(const float& DeltaTime);
 
 public:
 
 	/// <summary>
-	/// Camera AimPunching ½Ç½Ã
+	/// Camera AimPunching ì‹¤ì‹œ
 	/// </summary>
-	/// <param name="CamPunchingDirection"> : Ä«¸Ş¶ó¸¦ Aim PunchingÇÒ ¹æÇâ </param>
-	/// <param name="CamPunchIntensity"> : ÇØ´ç ¹æÇâÀ¸·Î ¾ó¸¶³ª º¸³¾Áö </param>
-	/// <param name="CamRotationPunchingXDelta"> : X Rotation(Roll) È¸Àü·® </param>
-	/// <param name="InPunchingLerpFactor"> : Punching Lerp ÀÎÀÚ </param>
+	/// <param name="CamPunchingDirection"> : ì¹´ë©”ë¼ë¥¼ Aim Punchingí•  ë°©í–¥ </param>
+	/// <param name="CamPunchIntensity"> : í•´ë‹¹ ë°©í–¥ìœ¼ë¡œ ì–¼ë§ˆë‚˜ ë³´ë‚¼ì§€ </param>
+	/// <param name="CamRotationPunchingXDelta"> : X Rotation(Roll) íšŒì „ëŸ‰ </param>
+	/// <param name="InPunchingLerpFactor"> : Punching Lerp ì¸ì </param>
 	void ExecuteCameraAimPunching
 	(
 		FVector CamPunchingDirection,
@@ -47,7 +47,7 @@ public:
 	);
 
 	/// <summary>
-	/// Ä«¸Ş¶ó Shake ¼öÇà
+	/// ì¹´ë©”ë¼ Shake ìˆ˜í–‰
 	/// </summary>
 	/// <param name="ShakeScale"></param>
 	void ExecuteCameraShake(float ShakeScale = 1.f);
@@ -55,21 +55,21 @@ public:
 private:
 
 	/// <summary>
-	/// Tick ÇÔ¼ö¿¡¼­ È£ÃâµÉ ÇÔ¼ö / FlashBangEffect °ü·Ã Ã³¸®
+	/// Tick í•¨ìˆ˜ì—ì„œ í˜¸ì¶œë  í•¨ìˆ˜ / FlashBangEffect ê´€ë ¨ ì²˜ë¦¬
 	/// </summary>
 	void HandleFlashBangEffect(const float& DeltaTime);
 
 	/// <summary>
-	/// ÇÃ·¹ÀÌ¾î°¡ ÇöÀç ¹Ù¶óº¸´Â È­¸éÀ» Ä¸ÃÄÇÏ±â
+	/// í”Œë ˆì´ì–´ê°€ í˜„ì¬ ë°”ë¼ë³´ëŠ” í™”ë©´ì„ ìº¡ì³í•˜ê¸°
 	/// </summary>
 	void CaptureScene();
 
 public:
 
 	/// <summary>
-	/// FlashBangEffect ¼öÇà
+	/// FlashBangEffect ìˆ˜í–‰
 	/// </summary>
-	/// <param name="Duration"> : Áö¼Ó½Ã°£ / Áö¼Ó½Ã°£ÀÌ ÇöÀç ÁøÇàÁßÀÎ effectÀÇ Áö¼Ó½Ã°£º¸´Ù ÂªÀ¸¸é  UpdateÇÏÁö ¾ÊÀ½ </param>
+	/// <param name="Duration"> : ì§€ì†ì‹œê°„ / ì§€ì†ì‹œê°„ì´ í˜„ì¬ ì§„í–‰ì¤‘ì¸ effectì˜ ì§€ì†ì‹œê°„ë³´ë‹¤ ì§§ìœ¼ë©´  Updateí•˜ì§€ ì•ŠìŒ </param>
 	void ExecuteFlashBangEffect(float Duration);
 
 private:
@@ -81,19 +81,19 @@ private:
 
 private:
 
-	// ±âÁ¸ Camera local location & local rotation
+	// ê¸°ì¡´ Camera local location & local rotation
 	FVector		MainCamOriginLocalLocation{};
 	FVector		AimCamOriginLocalLocation{};
 	FRotator	MainCamOriginLocalRotation{};
 	FRotator	AimCamOriginLocalRotation{};
 
-private: // Camera Aim Punching °ü·Ã
+private: // Camera Aim Punching ê´€ë ¨
 
-	// AimPunchingÀ» Àû¿ë½ÃÅ³ Camera Local Location À§Ä¡ ÁÂÇ¥
+	// AimPunchingì„ ì ìš©ì‹œí‚¬ Camera Local Location ìœ„ì¹˜ ì¢Œí‘œ
 	FVector MainCamPunchingDestLocation{};
 	FVector AimCamPunchingDestLocation{};
 
-	// AimPunchingÀ» Àû¿ë½ÃÅ³ Camera Local Rotation À§Ä¡ ÁÂÇ¥
+	// AimPunchingì„ ì ìš©ì‹œí‚¬ Camera Local Rotation ìœ„ì¹˜ ì¢Œí‘œ
 	FRotator MainCamPunchingDestRotation{};
 	FRotator AimCamPunchingDestRotation{};
 
@@ -104,7 +104,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "CameraShake")
 	TSubclassOf<UCameraShakeBase> CameraShakeClass{};
 
-private: // Flash Bang ÇÇ°İ Effect °ü·Ã
+private: // Flash Bang í”¼ê²© Effect ê´€ë ¨
 
 	class APostProcessVolume* PostProcessVolume{};
 	float FlashBangEffectDuration{};
@@ -123,3 +123,5 @@ protected:
 
 		
 };
+
+

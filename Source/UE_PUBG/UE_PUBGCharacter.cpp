@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "UE_PUBGCharacter.h"
 #include "Engine/LocalPlayer.h"
@@ -128,3 +128,4 @@ void AUE_PUBGCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
+

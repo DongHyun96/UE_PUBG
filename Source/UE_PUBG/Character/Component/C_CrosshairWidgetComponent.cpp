@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 #include "UMG.h"
@@ -44,7 +44,7 @@ void UC_CrosshairWidgetComponent::InitializeAimSightWidget()
 	AimSightWidget->AddToViewport();
 
 	AimSightWidget->SetVisibility(ESlateVisibility::Hidden);
-	//Crosshair ÀÌ¹ÌÁö º¯¼ö ÀúÀå
+	//Crosshair ì´ë¯¸ì§€ ë³€ìˆ˜ ì €ì¥
 	BaseCrosshairImage = Cast<UImage>(AimSightWidget->WidgetTree->FindWidget(FName("Crosshair_Base")));
 	if (!BaseCrosshairImage)
 	{
@@ -165,10 +165,10 @@ void UC_CrosshairWidgetComponent::ManageAimWidgetImages()
 	AC_Gun* CurGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
 
-	// ÇöÀç Player°¡ ConsumableItemÀ» È°¼ºÈ­ ÁßÀÎÁö¿¡ µû¸¥ OnScreen Ã¼Å©
+	// í˜„ì¬ Playerê°€ ConsumableItemì„ í™œì„±í™” ì¤‘ì¸ì§€ì— ë”°ë¥¸ OnScreen ì²´í¬
 	OnScreen = OwnerCharacter->GetIsActivatingConsumableItem() ? false : OnScreen;
 
-	// ÇöÀç HUDMode¿¡ µû¸¥ OnScreen Ã¼Å©
+	// í˜„ì¬ HUDModeì— ë”°ë¥¸ OnScreen ì²´í¬
 	OnScreen = (GAMESCENE_MANAGER->GetCurrentHUDMode() != EHUDMode::IDLE) ? false : OnScreen;
 
 	if (!IsValid(CurGun))
@@ -238,3 +238,5 @@ void UC_CrosshairWidgetComponent::UpdateCrosshairBorderLocation(UCanvasPanelSlot
 	Cast<UCanvasPanelSlot>(CrosshairRight->Slot )->SetPosition( Horizontal);
 
 }
+
+

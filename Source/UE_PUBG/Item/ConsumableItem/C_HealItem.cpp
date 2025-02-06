@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/ConsumableItem/C_HealItem.h"
@@ -36,7 +36,7 @@ void AC_HealItem::HandleActivateCompletedState()
 		return;
 	}
 
-	// UsingTimer Block ½Ã°£ ´Ù Ã¤¿üÀ» ¶§
+	// UsingTimer Block ì‹œê°„ ë‹¤ ì±„ì› ì„ ë•Œ
 
 	ItemUser->GetStatComponent()->SetCurHP(NewHP);
 	BlockUsed++;
@@ -54,3 +54,5 @@ bool AC_HealItem::IsAvailableToStartUsing(AC_BasicCharacter* InItemUser)
 {
 	return InItemUser->GetStatComponent()->GetCurHP() < HealUpLimit;
 }
+
+

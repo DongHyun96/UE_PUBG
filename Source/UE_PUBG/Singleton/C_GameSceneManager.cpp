@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Singleton/C_GameSceneManager.h"
@@ -25,7 +25,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 
 	int DoorCount{};
 
-	// Level¿¡ ¹èÄ¡µÈ ActorµéÀÇ BeginPlay È£ÃâµÇ±â ÀÌÀü¿¡ °´Ã¼ ÃÊ±âÈ­
+	// Levelì— ë°°ì¹˜ëœ Actorë“¤ì˜ BeginPlay í˜¸ì¶œë˜ê¸° ì´ì „ì— ê°ì²´ ì´ˆê¸°í™”
 	for (FActorIterator Actor(&InWorld); Actor; ++Actor)
 	{
 		if (AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(*Actor)) AllCharacters.Add(Character);
@@ -45,7 +45,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;
 		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor)) AirplaneManager = AP_Manager;
 
-		// ¸ğµç ¹® È®ÀÎÇØ¼­ Enemy Nav ¼öÁ¤
+		// ëª¨ë“  ë¬¸ í™•ì¸í•´ì„œ Enemy Nav ìˆ˜ì •
 		//if (Actor->GetName().Contains(TEXT("Door")))
 		//{
 		//
@@ -57,7 +57,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 void UC_GameSceneManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	// ¿ùµå ÆÄ±« Àü È£ÃâµÇ´Â µ¨¸®°ÔÀÌÆ® µî·Ï
+	// ì›”ë“œ íŒŒê´´ ì „ í˜¸ì¶œë˜ëŠ” ë¸ë¦¬ê²Œì´íŠ¸ ë“±ë¡
 	//FWorldDelegates::OnPreWorldFinishDestroy.AddUObject(this, &UC_GameSceneManager::OnWorldEndPlay);
 }
 
@@ -113,3 +113,5 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 //
 //	
 //}
+
+

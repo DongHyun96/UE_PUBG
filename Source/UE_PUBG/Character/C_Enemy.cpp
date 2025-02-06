@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/C_Enemy.h"
@@ -26,7 +26,7 @@ void AC_Enemy::BeginPlay()
 
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
-    // TODO : ºñÇà±â Å¸±â ÀÌÀü¿¡ spawnÇÏ´Â °ÍÀ¸·Î ¼öÁ¤ÇÏ±â
+    // TODO : ë¹„í–‰ê¸° íƒ€ê¸° ì´ì „ì— spawní•˜ëŠ” ê²ƒìœ¼ë¡œ ìˆ˜ì •í•˜ê¸°
     SpawnDefaultWeaponsAndItemsForSelf();
 	
 }
@@ -48,7 +48,7 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 	case EPoseState::STAND:
 		switch (InChangeFrom)
 		{
-		case EPoseState::CROUCH: // Crouch To Stand (Pose transition ¾øÀÌ ¹Ù·Î Ã³¸®)
+		case EPoseState::CROUCH: // Crouch To Stand (Pose transition ì—†ì´ ë°”ë¡œ ì²˜ë¦¬)
 
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
 
@@ -82,7 +82,7 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CRAWL: // Crawl To Crouch
 
-			if (bIsActivatingConsumableItem) return false; // TODO : ÀÏ¾î¼³ ¼ö ¾ø½À´Ï´Ù UI ¶ç¿ì±â
+			if (bIsActivatingConsumableItem) return false; // TODO : ì¼ì–´ì„¤ ìˆ˜ ì—†ìŠµë‹ˆë‹¤ UI ë„ìš°ê¸°
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
 			
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToCrouch, EPoseState::CROUCH);
@@ -96,7 +96,7 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		{
 		case EPoseState::STAND: // Stand to Crawl
 
-			if (bIsActivatingConsumableItem) return false; // TODO : ¾øµå¸± ¼ö ¾ø½À´Ï´Ù UI ¶ç¿ì±â
+			if (bIsActivatingConsumableItem) return false; // TODO : ì—†ë“œë¦´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤ UI ë„ìš°ê¸°
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
 
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).StandToCrawl, EPoseState::CRAWL);
@@ -105,7 +105,7 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CROUCH: // Crouch to Crawl
 
-			if (bIsActivatingConsumableItem) return false; // TODO : ¾øµå¸± ¼ö ¾ø½À´Ï´Ù UI ¶ç¿ì±â
+			if (bIsActivatingConsumableItem) return false; // TODO : ì—†ë“œë¦´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤ UI ë„ìš°ê¸°
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
 
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrouchToCrawl, EPoseState::CRAWL);
@@ -138,13 +138,15 @@ void AC_Enemy::SpawnDefaultWeaponsAndItemsForSelf()
     SubGun->MoveToSlot(this);
     //EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, SubGun);
 
-    // Throwable Weapon setting ÇÏ±â
+    // Throwable Weapon setting í•˜ê¸°
     for (auto& pair : EquippedComponent->GetSubclassOfThrowingWeapon())
     {
         AC_ThrowingWeapon* ThrowWeapon = GetWorld()->SpawnActor<AC_ThrowingWeapon>(pair.Value, Param);
         ThrowWeapon->MoveToSlot(this);
     }
 
-    // TODO : ´Ù¸¥ Itemµé (Åº, Consumable item µîµî inven¿¡ ³Ö¾îµÎ±â)
+    // TODO : ë‹¤ë¥¸ Itemë“¤ (íƒ„, Consumable item ë“±ë“± invenì— ë„£ì–´ë‘ê¸°)
 }
+
+
 

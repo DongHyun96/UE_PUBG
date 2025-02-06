@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -26,7 +26,7 @@ public:
 private:
 
 	/// <summary>
-	/// ºñÇà±â ºñÇà ½ÃÀÛ ½Ã°£ Àç±â
+	/// ë¹„í–‰ê¸° ë¹„í–‰ ì‹œì‘ ì‹œê°„ ì¬ê¸°
 	/// </summary>
 	/// <param name="DeltaTime"></param>
 	void UpdateTakeOffTimer(const float& DeltaTime);
@@ -41,36 +41,36 @@ public:
 
 public:
 	/// <summary>
-	/// Random Start, Dest position ÁöÁ¤ÇÏ±â
+	/// Random Start, Dest position ì§€ì •í•˜ê¸°
 	/// </summary>
 	void InitRandomStartDestPosition();
 
 private:
 
 	/// <summary>
-	/// ºñÇà±â ÇöÀç À§Ä¡¿¡¼­ DiveÇÒ ¼ö ÀÖ´ÂÁö CanDive ¾÷µ¥ÀÌÆ®
+	/// ë¹„í–‰ê¸° í˜„ì¬ ìœ„ì¹˜ì—ì„œ Diveí•  ìˆ˜ ìˆëŠ”ì§€ CanDive ì—…ë°ì´íŠ¸
 	/// </summary>
 	void UpdateCanDive();
 
 	/// <summary>
-	/// Start Dest pos ÃÊ±âÈ­ ½Ã Border°¡ validÇÑÁö Ã¼Å©
+	/// Start Dest pos ì´ˆê¸°í™” ì‹œ Borderê°€ validí•œì§€ ì²´í¬
 	/// </summary>
 	/// <param name="PositionValue"></param>
 	/// <returns></returns>
 	bool IsValueValidInBorder(float PositionValue);
 
 	/// <summary>
-	/// ³«ÇÏÇØ¾ß ÇÏ´Â Limit °Å¸®±îÁö µµ´ŞÇß´ÂÁö Ã¼Å©ÇØ¼­ µµ´ŞÇß´Ù¸é, ³²¾ÆÀÖ´Â Ä³¸¯ÅÍµé ¸ğµÎ SkyDiving ½ÃÅ°±â
+	/// ë‚™í•˜í•´ì•¼ í•˜ëŠ” Limit ê±°ë¦¬ê¹Œì§€ ë„ë‹¬í–ˆëŠ”ì§€ ì²´í¬í•´ì„œ ë„ë‹¬í–ˆë‹¤ë©´, ë‚¨ì•„ìˆëŠ” ìºë¦­í„°ë“¤ ëª¨ë‘ SkyDiving ì‹œí‚¤ê¸°
 	/// </summary>
 	void CheckAirplaneArrivedToRouteDestLimit();
 
 	/// <summary>
-	/// ºñÇà±â µµÂø ÁöÁ¡( Dest¸¦ Áö³ª ¸Ê Á¶±İ ¹Û)¿¡ µµÂøÇß´ÂÁö Á¶»ç
+	/// ë¹„í–‰ê¸° ë„ì°© ì§€ì ( Destë¥¼ ì§€ë‚˜ ë§µ ì¡°ê¸ˆ ë°–)ì— ë„ì°©í–ˆëŠ”ì§€ ì¡°ì‚¬
 	/// </summary>
 	void CheckFlightFinished();
 
 	/// <summary>
-	/// AirplaneÀÇ StartPos¿Í FlightDirection Init
+	/// Airplaneì˜ StartPosì™€ FlightDirection Init
 	/// </summary>
 	void InitAirplaneStartPosAndFlightDirection();
 
@@ -90,7 +90,7 @@ private:
 
 	const float PLANE_START_DEST_BORDER_VALUE = 40000.f;
 
-	// ºñÇà±â °æ·Î ½ÃÀÛÁ¡, ³¡Á¡ (¸Ê¿¡ Ç¥½ÃµÈ °æ·ÎÀÇ ½ÃÀÛÁ¡, ³¡Á¡)
+	// ë¹„í–‰ê¸° ê²½ë¡œ ì‹œì‘ì , ëì  (ë§µì— í‘œì‹œëœ ê²½ë¡œì˜ ì‹œì‘ì , ëì )
 	FVector PlaneRouteStart{};
 	FVector PlaneRouteDest{};
 
@@ -98,10 +98,10 @@ private:
 
 	struct FTimerHandle TimerHandle{};
 
-	// ºñÇà±â Ãâ¹ß ½ÃÀÛ Àü±îÁöÀÇ Timer ½ÃÀÛÇß´ÂÁö
+	// ë¹„í–‰ê¸° ì¶œë°œ ì‹œì‘ ì „ê¹Œì§€ì˜ Timer ì‹œì‘í–ˆëŠ”ì§€
 	bool TakeOffTimerStarted{};
 
-	// ºñÇà±â Ãâ¹ß ½ÃÀÛÇß´ÂÁö
+	// ë¹„í–‰ê¸° ì¶œë°œ ì‹œì‘í–ˆëŠ”ì§€
 	bool HasAirplaneTakeOff{};
 
 	//const float TAKEOFF_TIME_TOTAL = 30.f;
@@ -110,10 +110,12 @@ private:
 
 private:
 
-	// ÇöÀç ºñÇà±â À§Ä¡¿¡¼­ SkyDiving ÇÒ ¼ö ÀÖ´ÂÁö
+	// í˜„ì¬ ë¹„í–‰ê¸° ìœ„ì¹˜ì—ì„œ SkyDiving í•  ìˆ˜ ìˆëŠ”ì§€
 	bool CanDive{};
 
-	// ³«ÇÏ °¡´É ÁöÁ¡ Limit¿¡ ³¡±îÁö µµ´ŞÇß´ÂÁö
+	// ë‚™í•˜ ê°€ëŠ¥ ì§€ì  Limitì— ëê¹Œì§€ ë„ë‹¬í–ˆëŠ”ì§€
 	bool RouteDestLimitReached{};
 
 };
+
+

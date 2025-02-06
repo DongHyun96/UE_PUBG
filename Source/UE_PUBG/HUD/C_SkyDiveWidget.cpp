@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "HUD/C_SkyDiveWidget.h"
@@ -83,12 +83,12 @@ void UC_SkyDiveWidget::UpdateSpeed()
 {
 	float Speed			= OwnerPlayer->GetVelocity().Size();
 	int KiloPerHour		= Speed * 0.036f;
-	float MatSpeedValue = (KiloPerHour) / 500.f; // Áß°£ °ªÀ» 0À¸·Î µÒ
+	float MatSpeedValue = (KiloPerHour) / 500.f; // ì¤‘ê°„ ê°’ì„ 0ìœ¼ë¡œ ë‘ 
 
-	// ScaleBar À§Ä¡ ¸ÂÃß±â
+	// ScaleBar ìœ„ì¹˜ ë§žì¶”ê¸°
 	if (SpeedScaleBarMatInstDynamic) SpeedScaleBarMatInstDynamic->SetScalarParameterValue("speed", MatSpeedValue);
 
-	// SpeedText ¶ç¿ì±â
+	// SpeedText ë„ìš°ê¸°
 	CurrentSpeedTextBlock->SetText(FText::FromString(FString::FromInt(KiloPerHour)));
 
 	// SpeedTextBlocks Update
@@ -120,3 +120,5 @@ void UC_SkyDiveWidget::UpdateSpeed()
 		SpeedTextBlocks[i]->SetColorAndOpacity(TextBlockColor);
 	}
 }
+
+

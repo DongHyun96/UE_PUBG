@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/BasicItemSlot/WeaponSlot/C_ThrowableWeaponSlotWidget.h"
@@ -6,12 +6,12 @@
 
 //FReply UC_ThrowableWeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 //{
-//	// ¿ìÅ¬¸¯ÀÎÁö Ã¼Å©
+//	// ìš°í´ë¦­ì¸ì§€ ì²´í¬
 //	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 //	{
 //		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
 //		if (SlotItem)
-//		{   // ¿ìÅ¬¸¯ ÀÌº¥Æ® ½ÇÇà
+//		{   // ìš°í´ë¦­ ì´ë²¤íŠ¸ ì‹¤í–‰
 //			if (SlotItem->MoveToAround(OwnerPlayer))
 //			{
 //				OwnerPlayer->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
@@ -22,7 +22,7 @@
 //			return FReply::Handled();
 //		}
 //	}
-//	// ´Ù¸¥ ¹öÆ° Å¬¸¯ Ã³¸®
+//	// ë‹¤ë¥¸ ë²„íŠ¼ í´ë¦­ ì²˜ë¦¬
 //	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 //}
 //
@@ -41,3 +41,5 @@ bool UC_ThrowableWeaponSlotWidget::MouseRBDownInteraction(AC_Weapon* inSlotWeapo
 {
 	return inSlotWeapon->MoveToInven(OwnerPlayer);
 }
+
+

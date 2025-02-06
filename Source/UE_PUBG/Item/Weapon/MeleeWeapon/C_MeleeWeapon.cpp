@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
@@ -19,8 +19,8 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_AmmoWidget.h"
 
-const FName AC_MeleeWeapon::HOLSTER_SOCKET_NAME = "Pan_Holster"; // π´±‚¡˝ socket ¿Ã∏ß
-const FName AC_MeleeWeapon::EQUIPPED_SOCKET_NAME = "Pan_Equip"; // π´±‚∞° º’ø° ∫Œ¬¯µ… socket ¿Ã∏ß
+const FName AC_MeleeWeapon::HOLSTER_SOCKET_NAME = "Pan_Holster"; // Î¨¥Í∏∞Ïßë socket Ïù¥Î¶Ñ
+const FName AC_MeleeWeapon::EQUIPPED_SOCKET_NAME = "Pan_Equip"; // Î¨¥Í∏∞Í∞Ä ÏÜêÏóê Î∂ÄÏ∞©Îê† socket Ïù¥Î¶Ñ
 
 AC_MeleeWeapon::AC_MeleeWeapon()
 {
@@ -31,7 +31,7 @@ AC_MeleeWeapon::AC_MeleeWeapon()
 	CurDrawMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
 	CurSheathMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
 
-	//ItemType º≥¡§.
+	//ItemType ÏÑ§Ï†ï.
 	ItemDatas.ItemType = EItemTypes::MELEEWEAPON;
 }
 
@@ -83,10 +83,10 @@ void AC_MeleeWeapon::PickUpItem(AC_BasicCharacter* Character)
 {
 	if (!Character->GetInvenComponent()->CheckVolume(this))
 	{
-		//∞¯∞£¿Ã æ¯¿∏∏È Ω««‡, ±Ÿ¡¢ƒ≠ø° æ∆π´∞Õµµ æ¯¥Ÿ∏È Ω««‡«ÿº≠ ¿Â¬¯.
+		//Í≥µÍ∞ÑÏù¥ ÏóÜÏúºÎ©¥ Ïã§Ìñâ, Í∑ºÏ†ëÏπ∏Ïóê ÏïÑÎ¨¥Í≤ÉÎèÑ ÏóÜÎã§Î©¥ Ïã§ÌñâÌï¥ÏÑú Ïû•Ï∞©.
 		if (!Character->GetEquippedComponent()->GetWeapons().Find(EWeaponSlot::MELEE_WEAPON))
 			Character->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MELEE_WEAPON, this);
-		return;  //±Ÿ¡¢ƒ≠ø°µµ π∫∞° ¿÷¥Ÿ∏È ∏Æ≈œ.
+		return;  //Í∑ºÏ†ëÏπ∏ÏóêÎèÑ Î≠îÍ∞Ä ÏûàÎã§Î©¥ Î¶¨ÌÑ¥.
 	}
 	 
 	SetOwnerCharacter(Character);
@@ -120,7 +120,7 @@ bool AC_MeleeWeapon::LegacyMoveToInven(AC_BasicCharacter* Character)
 
 	invenComp->AddItemToMyList(this);
 	//AttachToHolster(Character->GetMesh());
-	//¿Œ∫•ø°º≠ ¿Â¬¯¿ª «œ∏È ¿ÃªÛ«— ¿ßƒ°ø° ¿÷¥¯ πÆ¡¶∏¶ ¿Ã∞…∑Œ øÏº± «ÿ∞·.
+	//Ïù∏Î≤§ÏóêÏÑú Ïû•Ï∞©ÏùÑ ÌïòÎ©¥ Ïù¥ÏÉÅÌïú ÏúÑÏπòÏóê ÏûàÎçò Î¨∏Ï†úÎ•º Ïù¥Í±∏Î°ú Ïö∞ÏÑ† Ìï¥Í≤∞.
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
 	return true; 
@@ -132,16 +132,16 @@ bool AC_MeleeWeapon::LegacyMoveToAround(AC_BasicCharacter* Character)
 
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 	//if (ItemDatas.ItemPlace == EItemPlace::SLOT)
-	//TODO:ø©±‚ ∏ª∞Ì ¥Ÿ∏• «‘ºˆø°º≠ ∂ßæÓ ¡‡æﬂ «“ ∞≈ ∞∞¿Ω.
+	//TODO:Ïó¨Í∏∞ ÎßêÍ≥† Îã§Î•∏ Ìï®ÏàòÏóêÏÑú ÎïåÏñ¥ Ï§òÏïº Ìï† Í±∞ Í∞ôÏùå.
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	ItemDatas.ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 	//if (ItemDatas.ItemPlace == EItemPlace::INVEN)
-	invenComp->RemoveItemToMyList(this); //ø©±‚º≠ ¿”Ω√∑Œ ï˚¡÷∞Ì ¿÷¥¬µ• ∫∞∑Œ æ»¡¡æ∆ ∫∏¿”.
+	invenComp->RemoveItemToMyList(this); //Ïó¨Í∏∞ÏÑú ÏûÑÏãúÎ°ú Î∫¥Ï£ºÍ≥† ÏûàÎäîÎç∞ Î≥ÑÎ°ú ÏïàÏ¢ãÏïÑ Î≥¥ÏûÑ.
 		//invenComp->AddItemToAroundList(this);
-	//πŸ¥⁄ ∑π¿Ã ƒ≥Ω∫∆√ πﬁæ∆øÕº≠ πŸ¥⁄ø° æ∆¿Ã≈€ ª˝º∫«œ±‚.
+	//Î∞îÎã• Î†àÏù¥ Ï∫êÏä§ÌåÖ Î∞õÏïÑÏôÄÏÑú Î∞îÎã•Ïóê ÏïÑÏù¥ÌÖú ÏÉùÏÑ±ÌïòÍ∏∞.
 	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
 	return true;
 }
@@ -151,9 +151,9 @@ bool AC_MeleeWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 
-	AC_Item* unEquipItem = nullptr; //«ÿ¡¶«“ æ∆¿Ã≈€
+	AC_Item* unEquipItem = nullptr; //Ìï¥Ï†úÌï† ÏïÑÏù¥ÌÖú
 
-	AC_Item* inItem = nullptr; //¿Â¬¯«“ æ∆¿Ã≈€
+	AC_Item* inItem = nullptr; //Ïû•Ï∞©Ìï† ÏïÑÏù¥ÌÖú
 
 	AC_Weapon* curWeapaon = equipComp->GetWeapons()[EWeaponSlot::MELEE_WEAPON];
 
@@ -235,7 +235,7 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 	const FHitResult& SweepResult
 )
 {
-	// TODO : ««∞›√ºø° µ•πÃ¡ˆ ¡÷±‚
+	// TODO : ÌîºÍ≤©Ï≤¥Ïóê Îç∞ÎØ∏ÏßÄ Ï£ºÍ∏∞
 
 }
 
@@ -276,3 +276,5 @@ bool AC_MeleeWeapon::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 //	//CurDrawMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
 //	//CurSheathMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
 //}
+
+

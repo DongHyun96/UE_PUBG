@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -24,59 +24,59 @@ public:
 public:
 
 	/// <summary>
-	/// ºí·çÇÁ¸°Æ® ÂÊ¿¡¼­ ±¸ÇöÇÑ Event Function, HP Bar ¾÷µ¥ÀÌÆ®¸¦ ½ÃÄÑ¾ß ÇÒ ¶§ È£Ãâ
+	/// ë¸”ë£¨í”„ë¦°íŠ¸ ìª½ì—ì„œ êµ¬í˜„í•œ Event Function, HP Bar ì—…ë°ì´íŠ¸ë¥¼ ì‹œì¼œì•¼ í•  ë•Œ í˜¸ì¶œ
 	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnUpdateHP(float CurHP);
 
-public: // HUD event °ü·Ã
+public: // HUD event ê´€ë ¨
 
 	/// <summary>
-	/// ºí·çÇÁ¸°Æ® ÂÊ¿¡¼­ ±¸ÇöÇÑ Event Function
+	/// ë¸”ë£¨í”„ë¦°íŠ¸ ìª½ì—ì„œ êµ¬í˜„í•œ Event Function
 	/// </summary>
-	/// <param name="HealUpDestHPValue"> : ÇöÀç Heal up blockÀÇ Dest Value </param>
-	/// <param name="TimeRemain"> : ¹ßµ¿±îÁö ³²Àº ½Ã°£ </param>
+	/// <param name="HealUpDestHPValue"> : í˜„ì¬ Heal up blockì˜ Dest Value </param>
+	/// <param name="TimeRemain"> : ë°œë™ê¹Œì§€ ë‚¨ì€ ì‹œê°„ </param>
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnActivatingHealUp(float HealUpDestHPValue, float UsageTime, float UsingTimer);
 	//Player->OnActivatingHealUp(HealUpDestHPValue, UsageTime, UsingTimer);
 
 	/// <summary>
-	/// ºí·çÇÁ¸°Æ® ÂÊ¿¡¼­ ±¸ÇöÇÑ Event Function
+	/// ë¸”ë£¨í”„ë¦°íŠ¸ ìª½ì—ì„œ êµ¬í˜„í•œ Event Function
 	/// </summary>
-	/// <param name="TimeRemain"> : ¹ßµ¿±îÁö ³²Àº ½Ã°£ </param>
+	/// <param name="TimeRemain"> : ë°œë™ê¹Œì§€ ë‚¨ì€ ì‹œê°„ </param>
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnActivatingBooster(float UsageTime, float UsingTimer);
 
 	/// <summary>
-	/// ºí·çÇÁ¸°Æ® ÂÊ¿¡¼­ ±¸ÇöÇÑ Event Function, Activating ½Ã°£ÀÌ ´Ù Ã¡À» ¶§ È£Ãâ ¿¹Á¤ÀÎ Event
+	/// ë¸”ë£¨í”„ë¦°íŠ¸ ìª½ì—ì„œ êµ¬í˜„í•œ Event Function, Activating ì‹œê°„ì´ ë‹¤ ì°¼ì„ ë•Œ í˜¸ì¶œ ì˜ˆì •ì¸ Event
 	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnConsumableItemActivatingEnd();
 
 
 	/// <summary>
-	/// ºí·çÇÁ¸°Æ®¿¡¼­ ±¸ÇöÇÑ Event Function, Heal Consumable item ÂÊ ActivateCompleted State tick¿¡¼­ È£ÃâÇÒ Event
+	/// ë¸”ë£¨í”„ë¦°íŠ¸ì—ì„œ êµ¬í˜„í•œ Event Function, Heal Consumable item ìª½ ActivateCompleted State tickì—ì„œ í˜¸ì¶œí•  Event
 	/// </summary>
-	/// <param name="BlockDestHP"> : ÇöÀç BlockÀÇ ÇÇ Ã¤¿ì±â ÃÑ·® Destination HP </param>
-	/// <param name="BlockTimeRemainRate"> : ÇöÀç Heal up blockÀÇ ½Ã°£ ³²Àº ºñÀ²(0.f ~ 1.f) </param>
+	/// <param name="BlockDestHP"> : í˜„ì¬ Blockì˜ í”¼ ì±„ìš°ê¸° ì´ëŸ‰ Destination HP </param>
+	/// <param name="BlockTimeRemainRate"> : í˜„ì¬ Heal up blockì˜ ì‹œê°„ ë‚¨ì€ ë¹„ìœ¨(0.f ~ 1.f) </param>
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnActivateHealUpCompletedTick(float BlockDestHP, float BlockTimeRemainRate);
 
 	/// <summary>
-	/// ºí·çÇÁ¸°Æ®¿¡¼­ ±¸ÇöÇÑ Event Function, consumable item ÂÊ Used¿¡¼­ È£ÃâÇÒ Event
+	/// ë¸”ë£¨í”„ë¦°íŠ¸ì—ì„œ êµ¬í˜„í•œ Event Function, consumable item ìª½ Usedì—ì„œ í˜¸ì¶œí•  Event
 	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnConsumableUsed();
 
 
 	/// <summary>
-	/// ºí·çÇÁ¸°Æ®¿¡¼­ ±¸ÇöÇÑ Event Function, consumable item ÂÊ CancelActivating¿¡¼­ È£ÃâÇÒ Event
+	/// ë¸”ë£¨í”„ë¦°íŠ¸ì—ì„œ êµ¬í˜„í•œ Event Function, consumable item ìª½ CancelActivatingì—ì„œ í˜¸ì¶œí•  Event
 	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnCancelActivatingConsumableItem();
 
 	/// <summary>
-	/// ºí·çÇÁ¸°Æ®¿¡¼­ ±¸ÇöÇÑ Event Function, ºÎ½ºÆ® ·® ¾÷µ¥ÀÌÆ® ½Ã Àû¿ëµÉ Event
+	/// ë¸”ë£¨í”„ë¦°íŠ¸ì—ì„œ êµ¬í˜„í•œ Event Function, ë¶€ìŠ¤íŠ¸ ëŸ‰ ì—…ë°ì´íŠ¸ ì‹œ ì ìš©ë  Event
 	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnUpdateBoosting(float CurBoosting);
@@ -117,7 +117,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	FVector2D MiniMapLerpPosDest = MINIMAP_MINIMIZED_POS;
 
-protected: // Map °ü·Ã
+protected: // Map ê´€ë ¨
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_MapWidget* MiniMapWidget{};
@@ -155,14 +155,16 @@ protected:
 
 protected:
 
-	// Ç×»ó »óÀ§¿¡ ÄÑÁ® ÀÖÀ» ¿ä¼ÒµéÀÇ ÃÖ»óÀ§ parent panel (ex - InstructionWidget / HP bar ... )
+	// í•­ìƒ ìƒìœ„ì— ì¼œì ¸ ìˆì„ ìš”ì†Œë“¤ì˜ ìµœìƒìœ„ parent panel (ex - InstructionWidget / HP bar ... )
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UCanvasPanel* AlwaysOnPanel{};
 
-	// ±âÅ¸ ´Ù¸¥ ¾ÆÀÌÅÛµé ÃÖ»óÀ§ parent
+	// ê¸°íƒ€ ë‹¤ë¥¸ ì•„ì´í…œë“¤ ìµœìƒìœ„ parent
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UCanvasPanel* OtherPanel{};
 
 
 
 };
+
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 
@@ -43,18 +43,18 @@ const TMap<FName, float> AC_GrenadeExplode::BodyPartsDamageRate =
 
 const TArray<FName> AC_GrenadeExplode::LineTraceDestBoneNames =
 {
-	"Head",				// ¸Ó¸®
+	"Head",				// ë¨¸ë¦¬
 
-	"Spine1",			// ¸öÅë
+	"Spine1",			// ëª¸í†µ
 
-	"LeftForeArm",		// ÆÈ ÂÊ
+	"LeftForeArm",		// íŒ” ìª½
 	"LeftHand",
 	"RightForeArm",
 	"RightHand",
 
-	"Hips",				// »çÅ¸±¸´Ï
+	"Hips",				// ì‚¬íƒ€êµ¬ë‹ˆ
 
-	"LeftLeg",			// ´Ù¸® ÂÊ
+	"LeftLeg",			// ë‹¤ë¦¬ ìª½
 	"LeftFoot",
 	"RightLeg",
 	"RightFoot"
@@ -68,11 +68,11 @@ AC_GrenadeExplode::AC_GrenadeExplode()
 
 bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 {
-	// TODO : ÆøÆÄ sfx / 
-	// Æø¹ß ¹İ°æ ³»¿¡ Ä³¸¯ÅÍ°¡ Á¸ÀçÇÑ´Ù¸é ray cast -> ray cast hit -> damage ÁÖ±â
-	// ¹İ°æ ³»¿¡ Ä³¸¯ÅÍ°¡ Á¸ÀçÇÏ¸é aim punching & ÇÃ·¹ÀÌ¾îÀÇ °æ¿ì camera shake -> °Å¸®º° Camera Shake °­µµ Á¶Àı
+	// TODO : í­íŒŒ sfx / 
+	// í­ë°œ ë°˜ê²½ ë‚´ì— ìºë¦­í„°ê°€ ì¡´ì¬í•œë‹¤ë©´ ray cast -> ray cast hit -> damage ì£¼ê¸°
+	// ë°˜ê²½ ë‚´ì— ìºë¦­í„°ê°€ ì¡´ì¬í•˜ë©´ aim punching & í”Œë ˆì´ì–´ì˜ ê²½ìš° camera shake -> ê±°ë¦¬ë³„ Camera Shake ê°•ë„ ì¡°ì ˆ
 
-	// ¼ö·ùÅº ÅÍÁö´Â VFX
+	// ìˆ˜ë¥˜íƒ„ í„°ì§€ëŠ” VFX
 	if (ThrowingWeapon->GetParticleExplodeEffect())
 		UGameplayStatics::SpawnEmitterAtLocation(ThrowingWeapon->GetWorld(), ThrowingWeapon->GetParticleExplodeEffect(), ThrowingWeapon->GetActorLocation());
 
@@ -94,7 +94,7 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 
 	ExplosionSphere->GetOverlappingActors(OverlappingActors, TSubclassOf<AC_BasicCharacter>());
 
-	// Á¤È®ÇÑ ÇÇ°İ ÆÇÁ¤À» À§ÇØ ¸ğµç Ä³¸¯ÅÍÀÇ Physics Asset Colliders ²¨µÎ°í Á¶»çÇÒ ÇÇ°İ ºÎÀ§¸¸ Á¶»çÇÒ ¶§ ÄÑµÎ±â
+	// ì •í™•í•œ í”¼ê²© íŒì •ì„ ìœ„í•´ ëª¨ë“  ìºë¦­í„°ì˜ Physics Asset Colliders êº¼ë‘ê³  ì¡°ì‚¬í•  í”¼ê²© ë¶€ìœ„ë§Œ ì¡°ì‚¬í•  ë•Œ ì¼œë‘ê¸°
 	for (AActor* Actor : OverlappingActors)
 	{
 		AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(Actor);
@@ -120,7 +120,7 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
 	{
-		// Ä³¸¯ÅÍ¿¡°Ô Damage ÀÔÈ÷±â ½Ãµµ -> ¼º°øÇß´Ù¸é Æø¹ß effect Ä³¸¯ÅÍ¿¡ Àû¿ë½ÃÅ°±â(ex Ä«¸Ş¶ó aim punching)
+		// ìºë¦­í„°ì—ê²Œ Damage ì…íˆê¸° ì‹œë„ -> ì„±ê³µí–ˆë‹¤ë©´ í­ë°œ effect ìºë¦­í„°ì— ì ìš©ì‹œí‚¤ê¸°(ex ì¹´ë©”ë¼ aim punching)
 		if (TryDamagingCharacter(Character, ThrowingWeapon, ExplosionSphere))
 		{
 			ExecuteExplosionEffectToCharacter(Character, ExplosionLocation, ExplosionRad);
@@ -130,7 +130,7 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 
 	//UC_Util::Print("DamagedCharacter Cnt : " + FString::FromInt(DamagedCharacterCnt), FColor::Cyan, 10.f);
 
-	// ¸ğµç Ä³¸¯ÅÍÀÇ Physics Asset Colliders ´Ù½Ã ÄÑµÎ±â
+	// ëª¨ë“  ìºë¦­í„°ì˜ Physics Asset Colliders ë‹¤ì‹œ ì¼œë‘ê¸°
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
 		SetPhysicsAssetCollidersEnabled(Character, true);
 	//SetPhysicsAssetCollidersEnabled(Character->GetMesh()->GetPhysicsAsset(), true);
@@ -180,10 +180,10 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 	FVector ExplosionLocation = ThrowingWeapon->GetActorLocation();
 	float   ExplosionRad = ExplosionSphere->GetScaledSphereRadius();
 
-	// °¢ ÇÇ°İ ºÎÀ§¿¡ Ray casting ½Ãµµ
+	// ê° í”¼ê²© ë¶€ìœ„ì— Ray casting ì‹œë„
 	for (const FName& DestBoneName : LineTraceDestBoneNames)
 	{
-		// ÇØ´ç ºÎÀ§¸¸ Collider ÄÑ³õ±â
+		// í•´ë‹¹ ë¶€ìœ„ë§Œ Collider ì¼œë†“ê¸°
 		FName ColliderBoneName = (DestBoneName == "Head")			? "Neck" :
 								 (DestBoneName == "LeftForeArm")	? "LeftArm" :
 								 (DestBoneName == "RightForeArm")	? "RightArm" :
@@ -203,10 +203,10 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 
 		bool HasHit = ThrowingWeapon->GetWorld()->LineTraceSingleByChannel(HitResult, ExplosionLocation, DestLocation, ECC_Visibility, CollisionParams);
 
-		// Collision ¸¸Á· x
+		// Collision ë§Œì¡± x
 		if (!HasHit || HitResult.GetActor() != Character || !BodyPartsDamageRate.Contains(HitResult.BoneName))
 		{
-			// ÇØ´ç ºÎÀ§ Collider ´Ù½Ã ²ô±â
+			// í•´ë‹¹ ë¶€ìœ„ Collider ë‹¤ì‹œ ë„ê¸°
 			SetPhysicsAssetColliderEnabled(Character, ColliderBoneName, false);
 			continue;
 		}
@@ -214,8 +214,8 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 		DrawDebugLine(ThrowingWeapon->GetWorld(), ExplosionLocation, HitResult.ImpactPoint, FColor::Red, true);
 
 		// Apply Damage to character
-		float DamageAmount = DAMAGE_BASE * (ExplosionRad - HitResult.Distance) / ExplosionRad; // °Å¸® ºñ·Ê Damage base
-		DamageAmount *= BodyPartsDamageRate[HitResult.BoneName]; // ½ÅÃ¼ºÎÀ§º° µ¥¹ÌÁö °¨¼Ò Àû¿ë
+		float DamageAmount = DAMAGE_BASE * (ExplosionRad - HitResult.Distance) / ExplosionRad; // ê±°ë¦¬ ë¹„ë¡€ Damage base
+		DamageAmount *= BodyPartsDamageRate[HitResult.BoneName]; // ì‹ ì²´ë¶€ìœ„ë³„ ë°ë¯¸ì§€ ê°ì†Œ ì ìš©
 
 		TotalDamage += Character->GetStatComponent()->TakeDamage(DamageAmount, HitResult.BoneName, ThrowingWeapon);
 
@@ -225,7 +225,7 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 		HitCount++;
 		Hitted = true;
 
-		// ÇØ´ç ºÎÀ§ Collider ´Ù½Ã ²ô±â (µÚ¿¡ ÀÖÀ» Ä³¸¯ÅÍÀÇ ÁßÃ¸À» ÇÇÇÏ±â À§ÇÔ)
+		// í•´ë‹¹ ë¶€ìœ„ Collider ë‹¤ì‹œ ë„ê¸° (ë’¤ì— ìˆì„ ìºë¦­í„°ì˜ ì¤‘ì²©ì„ í”¼í•˜ê¸° ìœ„í•¨)
 		SetPhysicsAssetColliderEnabled(Character, ColliderBoneName, false);
 	}
 
@@ -239,15 +239,15 @@ void AC_GrenadeExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* Cha
 {
 	if (AC_Player* Player = Cast<AC_Player>(Character))
 	{
-		// TODO : ÇöÀç ADS »óÅÂÀÌ¸é ½ÇÇàx
+		// TODO : í˜„ì¬ ADS ìƒíƒœì´ë©´ ì‹¤í–‰x
 
-		// °Å¸® ¹× ¹æÇâ °è»ê
+		// ê±°ë¦¬ ë° ë°©í–¥ ê³„ì‚°
 		FVector PlayerToExplode = ExplosionLocation - Player->GetActorLocation();
 		PlayerToExplode.Normalize();
 
 		FVector Cross = FVector::CrossProduct(Player->GetActorForwardVector(), PlayerToExplode);
 
-		// Z°ª ¿ŞÂÊÀÌ À½¼ö, ¿À¸¥ÂÊÀÌ ¾ç¼ö
+		// Zê°’ ì™¼ìª½ì´ ìŒìˆ˜, ì˜¤ë¥¸ìª½ì´ ì–‘ìˆ˜
 		FVector PunchingDirection = (Cross.Z > 0.f) ? FVector(0, -1, 0) : FVector(0, 1, 0);
 
 		float Distance = FVector::Distance(Player->GetActorLocation(), ExplosionLocation);
@@ -257,11 +257,13 @@ void AC_GrenadeExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* Cha
 		float XRotDelta = (FMath::RandRange(0, 10) % 2 == 0) ? 35.f * DistanceRateFactor : -35.f * DistanceRateFactor;
 		float CamShakeScale = 1.f * DistanceRateFactor;
 
-		//Player->ExecuteCameraAimPunching({ 0.f, 1.f, 0.f }, 100.f, 35.f); // Maximum °ª
+		//Player->ExecuteCameraAimPunching({ 0.f, 1.f, 0.f }, 100.f, 35.f); // Maximum ê°’
 		//Player->ExecuteCameraShake(1.f);
 		Player->GetCameraEffectComponent()->ExecuteCameraAimPunching(PunchingDirection, PunchingIntensity, XRotDelta);
 		Player->GetCameraEffectComponent()->ExecuteCameraShake(CamShakeScale);
 	}
 
-	// TODO : Enemy AI ¶ÇÇÑ ¹æÇØÁÖ±â
+	// TODO : Enemy AI ë˜í•œ ë°©í•´ì£¼ê¸°
 }
+
+

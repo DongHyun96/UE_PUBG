@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Airplane/C_Airplane.h"
@@ -76,15 +76,15 @@ void AC_Airplane::StartFlight()
 	this->SetActorHiddenInGame(false);
 	this->SetActorLocation(StartPosition);
 
-	// ºñÇà±â ºñÇà ¹æÇâÀ¸·Î È¸Àü½ÃÅ°±â
+	// ë¹„í–‰ê¸° ë¹„í–‰ ë°©í–¥ìœ¼ë¡œ íšŒì „ì‹œí‚¤ê¸°
 	this->SetActorRotation(FlightDirection.Rotation());
 
-	// MainMap UI¿¡ ºñÇà±â ÀÌ¹ÌÁö Visibility Åä±Û
+	// MainMap UIì— ë¹„í–‰ê¸° ì´ë¯¸ì§€ Visibility í† ê¸€
 	if (!PlayerHUDWidget) PlayerHUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget();
 	PlayerHUDWidget->GetMainMapWidget()->ToggleAirplaneImageVisibility(true);
 	PlayerHUDWidget->GetMiniMapWidget()->ToggleAirplaneImageVisibility(true);
 
-	// MainMap UI¿¡ PlayerMarker ÀÌ¹ÌÁö Visibility Åä±Û
+	// MainMap UIì— PlayerMarker ì´ë¯¸ì§€ Visibility í† ê¸€
 	//PlayerHUDWidget->GetMainMapWidget()->TogglePlayerMarkerImageVisibility(false);
 }
 
@@ -123,5 +123,7 @@ void AC_Airplane::UpdateProps(const float& DeltaTime)
 	for (UStaticMeshComponent* Prop : Props)
 		Prop->SetRelativeRotation(FRotator(0.f, 0.f, PropRotZValue));
 }
+
+
 
 

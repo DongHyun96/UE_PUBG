@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/ConsumableItem/Healing/C_MedKit.h"
@@ -101,3 +101,5 @@ void AC_MedKit::HideBandageMesh()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::BANDAGE, false);
 }
+
+

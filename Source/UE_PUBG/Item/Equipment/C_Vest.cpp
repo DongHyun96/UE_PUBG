@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Equipment/C_Vest.h"
@@ -29,7 +29,7 @@ bool AC_Vest::LegacyMoveToAround(AC_BasicCharacter* Character)
 
 bool AC_Vest::LegacyMoveToSlot(AC_BasicCharacter* Character)
 {
-	//TODO : ÀåÂøµÇ¾î ÀÖ´ø Vest Ã³¸®ÇØÁÖ±â ¹× Á¦´ë·Î ±¸ÇöÇÏ±â, SetSlotEquipmentÇÔ¼ö Âü°íÇÏ±â.
+	//TODO : ìž¥ì°©ë˜ì–´ ìžˆë˜ Vest ì²˜ë¦¬í•´ì£¼ê¸° ë° ì œëŒ€ë¡œ êµ¬í˜„í•˜ê¸°, SetSlotEquipmentí•¨ìˆ˜ ì°¸ê³ í•˜ê¸°.
 	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, this);
 	return true;
 }
@@ -52,7 +52,7 @@ void AC_Vest::AttachToSocket(AC_BasicCharacter* InParent)
 		break;
 	}
 
-	//mobility°¡ MoveableÀÌ¿©¾ß ÀåÂø °¡´É. Áö±ÝÀº ¿¡µðÅÍ ³»¿¡¼­ ¼³Á¤ÇØ ³õ¾ÒÀ½.
+	//mobilityê°€ Moveableì´ì—¬ì•¼ ìž¥ì°© ê°€ëŠ¥. ì§€ê¸ˆì€ ì—ë””í„° ë‚´ì—ì„œ ì„¤ì •í•´ ë†“ì•˜ìŒ.
 	//BackpackMesh->SetMobility(EComponentMobility::Movable);
 
 	bool Attached = AttachToComponent
@@ -80,7 +80,9 @@ bool AC_Vest::MoveSlotToAround(AC_BasicCharacter* Character)
 
 bool AC_Vest::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
-	//TODO : ÀåÂøµÇ¾î ÀÖ´ø Vest Ã³¸®ÇØÁÖ±â ¹× Á¦´ë·Î ±¸ÇöÇÏ±â, SetSlotEquipmentÇÔ¼ö Âü°íÇÏ±â.
+	//TODO : ìž¥ì°©ë˜ì–´ ìžˆë˜ Vest ì²˜ë¦¬í•´ì£¼ê¸° ë° ì œëŒ€ë¡œ êµ¬í˜„í•˜ê¸°, SetSlotEquipmentí•¨ìˆ˜ ì°¸ê³ í•˜ê¸°.
 	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, this);
 	return true;
 }
+
+

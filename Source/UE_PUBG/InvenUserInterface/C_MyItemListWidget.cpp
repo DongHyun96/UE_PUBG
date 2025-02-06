@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUserInterface/C_MyItemListWidget.h"
@@ -27,14 +27,14 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItemlist
         return;
     }
 
-    ItemListView->ClearListItems(); // ±‚¡∏ æ∆¿Ã≈€ ªË¡¶
+    ItemListView->ClearListItems(); // Í∏∞Ï°¥ ÏïÑÏù¥ÌÖú ÏÇ≠Ï†ú
 
     //if (itemList)
 
     if (!(MyItemlist.Num() > 0)) return;
     for (const auto& ItemPairTArray : MyItemlist)
     {
-        TArray<AC_Item*> ItemTArray = ItemPairTArray.Value; // TMapø°º≠ æ∆¿Ã≈€ ∞°¡Æø¿±‚
+        TArray<AC_Item*> ItemTArray = ItemPairTArray.Value; // TMapÏóêÏÑú ÏïÑÏù¥ÌÖú Í∞ÄÏ†∏Ïò§Í∏∞
 
         for (const auto& Item : ItemTArray)
         {
@@ -47,7 +47,7 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItemlist
                 continue;
             }
 
-            //ItemBar∞ªΩ≈.
+            //ItemBarÍ∞±Ïã†.
             UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(ItemListView->GetEntryWidgetFromItem(Item));
             //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
 
@@ -78,7 +78,7 @@ void UC_MyItemListWidget::InitAroundItemList(const TArray<AC_Item*>& itemList)
         return;
     }
 
-    ItemListView->ClearListItems(); // ±‚¡∏ æ∆¿Ã≈€ ªË¡¶
+    ItemListView->ClearListItems(); // Í∏∞Ï°¥ ÏïÑÏù¥ÌÖú ÏÇ≠Ï†ú
 
     if (!(itemList.Num() > 0)) return;
 
@@ -104,4 +104,6 @@ void UC_MyItemListWidget::InitAroundItemList(const TArray<AC_Item*>& itemList)
 void UC_MyItemListWidget::InitMyItemList(const TMap<FString, AC_Item*> MyItemlist)
 {
 }
+
+
 

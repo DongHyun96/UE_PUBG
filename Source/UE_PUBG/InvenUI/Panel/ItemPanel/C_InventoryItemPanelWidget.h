@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,3 +17,5 @@ class UE_PUBG_API UC_InventoryItemPanelWidget : public UC_BasicItemPanelWidget
 protected:
 	bool HandleDrop(class AC_Item* DroppedItem) override;
 };
+
+

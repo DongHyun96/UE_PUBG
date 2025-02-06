@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,7 +7,7 @@
 #include "MyWaterBody.generated.h"
 
 /// <summary>
-/// «√∑Ø±◊¿Œ «Ï¥ı include øÎ Dummy class
+/// ÌîåÎü¨Í∑∏Ïù∏ Ìó§Îçî include Ïö© Dummy class
 /// </summary>
 UCLASS()
 class UE_PUBG_API AMyWaterBody : public AWaterBody
@@ -15,3 +15,5 @@ class UE_PUBG_API AMyWaterBody : public AWaterBody
 	GENERATED_BODY()
 	
 };
+
+

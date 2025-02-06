@@ -1,4 +1,4 @@
-
+ï»¿
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
@@ -22,7 +22,7 @@ AC_FirstAidKit::AC_FirstAidKit()
 
 	UsageTime = 6.f;
 
-	//0.24ÃÊ¾¿ -> +15 : ÃÑ 5¹ø ÇØ¼­ ÃÑ 2ÃÊ¿¡ ÃÖ´ë 75¸¸Å­ Èú
+	//0.24ì´ˆì”© -> +15 : ì´ 5ë²ˆ í•´ì„œ ì´ 2ì´ˆì— ìµœëŒ€ 75ë§Œí¼ íž
 	OneBlockHealAmount	= 15.f;
 	OneBlockTime		= 0.24f;
 	TotalUsingBlockCnt	= 5;
@@ -75,3 +75,5 @@ void AC_FirstAidKit::HandleDestroy()
 	UC_Util::Print("Destroying FirstAidKit", FColor::Red, 5.f);
 	this->Destroy();
 }
+
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -48,7 +48,7 @@ enum class EMontagePriority : uint8
 	ATTACK,					// Default Upper body
 	DRAW_SHEATH_WEAPON,		// Default Upper body
 	POSE_TRANSITION,		// Sub Full body
-	THROW_THROWABLE,		// ½ÇÁúÀûÀ¸·Î ´øÁö´Â ÀÚ¼¼ÀÏ ¶§, Default Upper body
+	THROW_THROWABLE,		// ì‹¤ì§ˆì ìœ¼ë¡œ ë˜ì§€ëŠ” ìì„¸ì¼ ë•Œ, Default Upper body
 	PRIORITY_MAX,
 	MAX
 };
@@ -74,7 +74,7 @@ public:
 };
 
 /// <summary>
-/// ÀÚ¼¼ º° ÀüÈ¯ »çÀÌ¸¦ ¸Å²Ü Anim Montageµé
+/// ìì„¸ ë³„ ì „í™˜ ì‚¬ì´ë¥¼ ë§¤ê¿€ Anim Montageë“¤
 /// </summary>
 USTRUCT(BlueprintType)
 struct FPoseTransitionMontages
@@ -120,14 +120,14 @@ public:
 private:
 
 	/// <summary>
-	/// Deprecated in current UE_PUBG Project : Priority¸¦ Àû¿ëÇÑ AC_PriorityAnimMontage·Î AnimMontage Àç»ıÇØ¾ß ÇÔ
+	/// Deprecated in current UE_PUBG Project : Priorityë¥¼ ì ìš©í•œ AC_PriorityAnimMontageë¡œ AnimMontage ì¬ìƒí•´ì•¼ í•¨
 	/// </summary>
 	float PlayAnimMontage(class UAnimMontage* AnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None) override;
 
 protected:
 	/// <summary>
-	/// ¾ÆÀÌÅÛ »óÈ£ÀÛ¿ëÀ» À§ÇÑ º¯¼ö¿Í ÇÔ¼ö.
-	/// ±¸¸¦ ÅëÇØ ¾ÆÀÌÅÛ°úÀÇ Ãæµ¿À» °¨ÁöÇÏ´Â ÇÔ¼ö.
+	/// ì•„ì´í…œ ìƒí˜¸ì‘ìš©ì„ ìœ„í•œ ë³€ìˆ˜ì™€ í•¨ìˆ˜.
+	/// êµ¬ë¥¼ í†µí•´ ì•„ì´í…œê³¼ì˜ ì¶©ë™ì„ ê°ì§€í•˜ëŠ” í•¨ìˆ˜.
 	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* DetectionSphere;
@@ -140,19 +140,19 @@ protected:
 public:
 
 	/// <summary>
-	/// ¸ùÅ¸ÁÖ Àç»ı ¿ì¼±¼øÀ§¿¡ µû¸¥ PlayAnimMontage ÇÔ¼ö
+	/// ëª½íƒ€ì£¼ ì¬ìƒ ìš°ì„ ìˆœìœ„ì— ë”°ë¥¸ PlayAnimMontage í•¨ìˆ˜
 	/// </summary>
-	/// <param name="PAnimMontage"> : Priority Àû¿ëµÈ AnimMontage </param>
+	/// <param name="PAnimMontage"> : Priority ì ìš©ëœ AnimMontage </param>
 	/// <returns> Animation Montage Duration </returns>
 	float PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
 
 protected:
 
 	/// <summary>
-	/// <para> UGameplayStatics::ApplyDamage¸¦ ÅëÇØ Damage¸¦ ¹Ş´Â ÇÔ¼ö </para>
-	/// <para> ºÎÀ§º° ÇÇ°İ Ã³¸® ½Ãµµ¸¦ ÇÏ·Á¸é StatComponentÀÇ TakeDamageÇÔ¼ö Âü°í </para>
+	/// <para> UGameplayStatics::ApplyDamageë¥¼ í†µí•´ Damageë¥¼ ë°›ëŠ” í•¨ìˆ˜ </para>
+	/// <para> ë¶€ìœ„ë³„ í”¼ê²© ì²˜ë¦¬ ì‹œë„ë¥¼ í•˜ë ¤ë©´ StatComponentì˜ TakeDamageí•¨ìˆ˜ ì°¸ê³  </para>
 	/// </summary>
-	/// <param name="DamageAmount"> : Damage ¾ç </param>
+	/// <param name="DamageAmount"> : Damage ì–‘ </param>
 	/// <param name="DamageEvent"></param>
 	/// <param name="EventInstigator"></param>
 	/// <param name="DamageCauser"></param>
@@ -165,16 +165,16 @@ protected:
 		AActor*				DamageCauser
 	) override;
 	
-	//ÀÚ½Ä ´Ü°è¿¡¼­ OverlapBegin¿¡¼­ »ç¿ëÇÒ ÇÔ¼ö Template method
+	//ìì‹ ë‹¨ê³„ì—ì„œ OverlapBeginì—ì„œ ì‚¬ìš©í•  í•¨ìˆ˜ Template method
 	virtual void HandleOverlapBegin(AActor* OtherActor);
 
-	//ÀÚ½Ä ´Ü°è¿¡¼­ OverlapBegin¿¡¼­ »ç¿ëÇÒ ÇÔ¼ö Template method
+	//ìì‹ ë‹¨ê³„ì—ì„œ OverlapBeginì—ì„œ ì‚¬ìš©í•  í•¨ìˆ˜ Template method
 	virtual void HandleOverlapEnd(AActor* OtherActor);
 
 public:
 
 	/// <summary>
-	/// Pose¿Í Ä³¸¯ÅÍ ÀÌµ¿¹æÇâ¿¡ µû¸¥ MaxWalkSpeed Á¶Á¤
+	/// Poseì™€ ìºë¦­í„° ì´ë™ë°©í–¥ì— ë”°ë¥¸ MaxWalkSpeed ì¡°ì •
 	/// </summary>
 	/// <param name="MovementVector"> : Input action movement vector </param>
 	void UpdateMaxWalkSpeed(const FVector2D& MovementVector);
@@ -194,11 +194,11 @@ protected:
 
 public:
 	/// <summary>
-	/// ÀÚ¼¼ ¹Ù²Ù±â ÅëÇÕ Ã³¸®
+	/// ìì„¸ ë°”ê¾¸ê¸° í†µí•© ì²˜ë¦¬
 	/// </summary>
-	/// <param name="InChangeFrom"> : ¹Ù²Ù±â Àü ÀÚ¼¼ </param>
-	/// <param name="InChangeTo"> : ¹Ù²Ü ÀÚ¼¼ </param>
-	/// <returns> : Á¦´ë·Î ¹Ù²Ù¾ú´Ù¸é return true </returns>
+	/// <param name="InChangeFrom"> : ë°”ê¾¸ê¸° ì „ ìì„¸ </param>
+	/// <param name="InChangeTo"> : ë°”ê¿€ ìì„¸ </param>
+	/// <returns> : ì œëŒ€ë¡œ ë°”ê¾¸ì—ˆë‹¤ë©´ return true </returns>
 	virtual bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo);
 
 	float GetNextSpeed() const { return NextSpeed; }
@@ -275,13 +275,13 @@ public:
 public:
 
 	/// <summary>
-	/// Pose Transition montage°¡ ÁøÇà ÁßÀÎ Áß°£¿¡ Call	µÇ´Â ÇÔ¼ö
+	/// Pose Transition montageê°€ ì§„í–‰ ì¤‘ì¸ ì¤‘ê°„ì— Call	ë˜ëŠ” í•¨ìˆ˜
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnPoseTransitionGoing();
 
 	/// <summary>
-	/// Pose Transition Montage°¡ ³¡³ª°í CallbackµÇ´Â ÇÔ¼ö
+	/// Pose Transition Montageê°€ ëë‚˜ê³  Callbackë˜ëŠ” í•¨ìˆ˜
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnPoseTransitionFinish();
@@ -289,11 +289,11 @@ public:
 public:
 
 	/// <summary>
-	/// Pose Transition ¸ğ¼Ç ½ÇÇàÇÏ±â
+	/// Pose Transition ëª¨ì…˜ ì‹¤í–‰í•˜ê¸°
 	/// </summary>
 	/// <param name="TransitionMontage"> : Pose Transition motion </param>
-	/// <param name="InNextPoseState"> : ´ÙÀ½ ÀÚ¼¼ </param>
-	/// <returns> Pose transition motionÀÌ Á¦´ë·Î ½ÇÇàµÇ¾ú´Ù¸é return true </returns>
+	/// <param name="InNextPoseState"> : ë‹¤ìŒ ìì„¸ </param>
+	/// <returns> Pose transition motionì´ ì œëŒ€ë¡œ ì‹¤í–‰ë˜ì—ˆë‹¤ë©´ return true </returns>
 	bool ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState);
 
 public:
@@ -315,21 +315,21 @@ protected:
 
 protected:
 
-	// ÀÚ¼¼º° Collider À§Ä¡, Å©±â ¹× Mesh À§Ä¡ Àâ¾ÆÁÖ´Â Component
+	// ìì„¸ë³„ Collider ìœ„ì¹˜, í¬ê¸° ë° Mesh ìœ„ì¹˜ ì¡ì•„ì£¼ëŠ” Component
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_PoseColliderHandlerComponent* PoseColliderHandlerComponent{};
 
-protected: // ÀÚ¼¼ º¯È¯ Transition °ü·Ã
+protected: // ìì„¸ ë³€í™˜ Transition ê´€ë ¨
 
-	// ÀÚ¼¼ ÀüÈ¯À» ÇÒ ½Ã¿¡, ´ÙÀ½À¸·Î ÀüÈ¯µÉ Pose State
+	// ìì„¸ ì „í™˜ì„ í•  ì‹œì—, ë‹¤ìŒìœ¼ë¡œ ì „í™˜ë  Pose State
 	UPROPERTY(BlueprintReadOnly)
 	EPoseState NextPoseState{};
 
-	// Crawl ÀÚ¼¼¿¡ °ü·ÃÇÑ ÀüÈ¯ ÀÚ¼¼¸¸ ÃëÇÒ °ÍÀÓ -> Crouch to stand, stand to crouch´Â ±×³É ÀüÈ¯ÇØµµ ¾î»öÇÏÁö ¾ÊÀ½
+	// Crawl ìì„¸ì— ê´€ë ¨í•œ ì „í™˜ ìì„¸ë§Œ ì·¨í•  ê²ƒì„ -> Crouch to stand, stand to crouchëŠ” ê·¸ëƒ¥ ì „í™˜í•´ë„ ì–´ìƒ‰í•˜ì§€ ì•ŠìŒ
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EHandState, FPoseTransitionMontages> PoseTransitionMontages{};
 
-	// ÇöÀç Pose Transition ¸ğ¼ÇÀÌ ÁøÇàÁßÀÎÁö
+	// í˜„ì¬ Pose Transition ëª¨ì…˜ì´ ì§„í–‰ì¤‘ì¸ì§€
 	bool bIsPoseTransitioning{};
 
 protected: // Sprint walk state
@@ -338,7 +338,7 @@ protected: // Sprint walk state
 	bool bIsSprinting{};
 
 public:
-	// OnTransitionFinish¿¡¼­ È£ÃâµÉ Multicast Delegate
+	// OnTransitionFinishì—ì„œ í˜¸ì¶œë  Multicast Delegate
 	FDele_PoseTransitionFin Delegate_OnPoseTransitionFin;
 
 
@@ -346,11 +346,11 @@ public:
 
 protected:
 
-	// AnimCharacter¿¡¼­ ÂüÁ¶ÇÒ SpeedÀÇ ´ÙÀ½ Lerp destination °ª
+	// AnimCharacterì—ì„œ ì°¸ì¡°í•  Speedì˜ ë‹¤ìŒ Lerp destination ê°’
 	float NextSpeed{};
-	// AltÅ° ´©¸£°í ÀÖ´ÂÁö Ã¼Å©
+	// Altí‚¤ ëˆ„ë¥´ê³  ìˆëŠ”ì§€ ì²´í¬
 	bool bIsHoldDirection = false;
-	// AltÅ° ´­·È¾ú´ÂÁö Ã¼Å©
+	// Altí‚¤ ëˆŒë ¸ì—ˆëŠ”ì§€ ì²´í¬
 	bool bIsAltPressed = false;
 	bool bCanFireBullet = true;
 	bool bIsAimDownSight = false;
@@ -367,11 +367,11 @@ protected:
 	bool bIsJumping = false;
 
 protected:
-	// ÀåÂøµÈ ¹«±â ¹× Àå±¸·ù component
+	// ì¥ì°©ëœ ë¬´ê¸° ë° ì¥êµ¬ë¥˜ component
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UC_EquippedComponent* EquippedComponent{};
 
-	// Stat°ü·Ã Component (ex HP)
+	// Statê´€ë ¨ Component (ex HP)
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_StatComponent* StatComponent{};
 
@@ -382,29 +382,29 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UC_InvenComponent* Inventory{};
 
-protected: // PriorityAnimMontage °ü·Ã
+protected: // PriorityAnimMontage ê´€ë ¨
 
-	// ÇöÀç Àç»ı ÁßÀÎ, ¶Ç´Â Á÷Àü¿¡ Àç»ıÇÑ PriorityAnimMontage |<GroupName, AnimMontage>
+	// í˜„ì¬ ì¬ìƒ ì¤‘ì¸, ë˜ëŠ” ì§ì „ì— ì¬ìƒí•œ PriorityAnimMontage |<GroupName, AnimMontage>
 	UPROPERTY(BlueprintReadOnly)
 	TMap<FName, FPriorityAnimMontage> CurPriorityAnimMontageMap{};
 	
 
-protected: // Consumable °ü·Ã
+protected: // Consumable ê´€ë ¨
 	
-	// Boosting¿¡ µû¸¥ Ä³¸¯ÅÍ ¼Ó·Â Á¶Àı factor
+	// Boostingì— ë”°ë¥¸ ìºë¦­í„° ì†ë ¥ ì¡°ì ˆ factor
 	float BoostingSpeedFactor = 1.f;
 	
-	// ÇöÀç Consumable Item Activating ÁßÀÎ »óÅÂÀÎÁö
+	// í˜„ì¬ Consumable Item Activating ì¤‘ì¸ ìƒíƒœì¸ì§€
 	bool bIsActivatingConsumableItem{};
 
-	// ÇöÀç È°¼ºÈ­ ÁßÀÎ Consumable Item
+	// í˜„ì¬ í™œì„±í™” ì¤‘ì¸ Consumable Item
 	class AC_ConsumableItem* CurActivatingConsumableItem{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_ConsumableUsageMeshComponent* ConsumableUsageMeshComponent{};
 
 
-protected: // ÃÑ¾Ë Object Pooling(AC_ItemÀ¸·Î ¸¸µé¾îÁø BulletÀº »ç¿ëX)
+protected: // ì´ì•Œ Object Pooling(AC_Itemìœ¼ë¡œ ë§Œë“¤ì–´ì§„ Bulletì€ ì‚¬ìš©X)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<class AC_Item*> Bullets;
 
@@ -412,7 +412,7 @@ protected: // ÃÑ¾Ë Object Pooling(AC_ItemÀ¸·Î ¸¸µé¾îÁø BulletÀº »ç¿ëX)
 	int FivemmBulletCount  = 0;
 
 protected:
-	//ÃÑ¾Ë Object Pooling (World¿¡¼­ ÀÛ¾÷ÇÒ ¿¹Á¤)
+	//ì´ì•Œ Object Pooling (Worldì—ì„œ ì‘ì—…í•  ì˜ˆì •)
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TArray<class AC_Bullet*> PooledBullets;
 
@@ -438,7 +438,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_AttachableItemMeshComponent* AttachmentMeshComponent{};
 
-protected: // ÆÄÄí¸£ °ü·Ã Components
+protected: // íŒŒì¿ ë¥´ ê´€ë ¨ Components
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_ParkourComponent* ParkourComponent{};
@@ -446,8 +446,10 @@ protected: // ÆÄÄí¸£ °ü·Ã Components
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UMotionWarpingComponent* MotionWarpingComponent{};
 
-protected: // AI ÇÇ¾Æ ½Äº° °ü·Ã
+protected: // AI í”¼ì•„ ì‹ë³„ ê´€ë ¨
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TEnumAsByte<ETeamAttitude::Type> TeamID = ETeamAttitude::Neutral;
 };
+
+

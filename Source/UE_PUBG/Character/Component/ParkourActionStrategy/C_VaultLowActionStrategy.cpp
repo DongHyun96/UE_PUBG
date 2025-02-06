@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/ParkourActionStrategy/C_VaultLowActionStrategy.h"
@@ -15,17 +15,17 @@
 
 void UC_VaultLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* TargetCharacter, const FParkourDescriptor& CurParkourDesc)
 {
-	// TODO : Vault ½Ã LandPos Çã°øÀÎÁö Ã¼Å©ÇØ¼­ ´Ù¸£°Ô Ã³¸®ÇØÁÖ¾î¾ß ÇÔ
+	// TODO : Vault ì‹œ LandPos í—ˆê³µì¸ì§€ ì²´í¬í•´ì„œ ë‹¤ë¥´ê²Œ ì²˜ë¦¬í•´ì£¼ì–´ì•¼ í•¨
 
-	// WarpStartPos, WarpMiddlePos, WarpLandPos Àâ¾ÆÁÖ±â
+	// WarpStartPos, WarpMiddlePos, WarpLandPos ì¡ì•„ì£¼ê¸°
 	FVector WarpStartPos	= CurParkourDesc.VerticalHitPositions[0];
 	FVector WarpMiddlePos	= CurParkourDesc.VerticalHitPositions.Last();
 	FVector WarpLandPos		= CurParkourDesc.LandPos;
 
-	// LandPos ¿¹¿ÜÃ³¸®
+	// LandPos ì˜ˆì™¸ì²˜ë¦¬
 	if (!CurParkourDesc.bLandPosInited || FMath::Abs(CurParkourDesc.LandPos.Z - TargetCharacter->GetActorLocation().Z) > 50.f)
 	{
-		// Ä³¸¯ÅÍÀÇ ÇöÀç ¹ß ³ôÀÌ
+		// ìºë¦­í„°ì˜ í˜„ì¬ ë°œ ë†’ì´
 		static const FName RIGHT_TOE_NAME = "RightToeBase";
 		float FootZ = TargetCharacter->GetMesh()->GetBoneTransform(RIGHT_TOE_NAME).GetTranslation().Z;
 
@@ -65,13 +65,15 @@ void UC_VaultLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* T
 
 	MotionWarping->AddOrUpdateWarpTarget(Target);
 
-	// TODO : ParkourMontageMap ÃÊ±âÈ­
+	// TODO : ParkourMontageMap ì´ˆê¸°í™”
 
 	UC_ParkourComponent* TargetParkourComponent = TargetCharacter->GetParkourComponent();
 
-	// ÇöÀç Parkour Action¿¡ ÇØ´çÇÏ´Â RandomÇÑ parkourAction Àç»ı
+	// í˜„ì¬ Parkour Actionì— í•´ë‹¹í•˜ëŠ” Randomí•œ parkourAction ì¬ìƒ
 	TArray<FPriorityAnimMontage> LowVaultMontageActions = TargetParkourComponent->GetParkourMontages(EParkourActionType::VAULTING_LOW);
 	int RandIdx = FMath::RandRange(0, LowVaultMontageActions.Num() - 1);
 
 	TargetCharacter->PlayAnimMontage(LowVaultMontageActions[RandIdx]);
 }
+
+

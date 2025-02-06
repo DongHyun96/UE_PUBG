@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -45,24 +45,24 @@ public:
 	class AC_Weapon* GetCurWeapon() const { return Weapons[CurWeaponType]; }
 	
 	/// <summary>
-	/// ½½·Ô¿¡ ¹«±â ÀåÂøÇÏ±â / ÇØÁ¦´Â Weapon¿¡ nullptr¸¦ ÁÙ °Í -> ÀåÂø/ÇØÁ¦´Â ÀÌ ÇÔ¼ö¸¦ ÅëÇØ¼­ ¹«Á¶°Ç ÇÒ °Í
+	/// ìŠ¬ë¡¯ì— ë¬´ê¸° ì¥ì°©í•˜ê¸° / í•´ì œëŠ” Weaponì— nullptrë¥¼ ì¤„ ê²ƒ -> ì¥ì°©/í•´ì œëŠ” ì´ í•¨ìˆ˜ë¥¼ í†µí•´ì„œ ë¬´ì¡°ê±´ í•  ê²ƒ
 	/// </summary>
-	/// <param name="InSlot"> : ÀåÂøÇÒ ½½·Ô </param>
-	/// <param name="Weapon"> : ÀåÂøÇÒ ¹«±â °´Ã¼ / ÀåÂø ÇØÁ¦´Â nullptr </param>
-	/// <returns> : ÇØ´ç slotÀÇ ÀÌÀü ¹«±â (¾ø¾ú´Ù¸é return nullptr) </returns>
+	/// <param name="InSlot"> : ì¥ì°©í•  ìŠ¬ë¡¯ </param>
+	/// <param name="Weapon"> : ì¥ì°©í•  ë¬´ê¸° ê°ì²´ / ì¥ì°© í•´ì œëŠ” nullptr </param>
+	/// <returns> : í•´ë‹¹ slotì˜ ì´ì „ ë¬´ê¸° (ì—†ì—ˆë‹¤ë©´ return nullptr) </returns>
 	UFUNCTION(BlueprintCallable)
 	AC_Weapon* SetSlotWeapon(EWeaponSlot InSlot, class AC_Weapon* Weapon);
 
 	/// <summary>
-	/// HandState GunÀÎ °æ¿ì(ÇöÀç ÃÑ±â¸¦ µé°í ÀÖ´Â »óÅÂÀÎ °æ¿ì), Gun slot³¢¸® SwapÇÏ´Â »óÈ²¿¡ ´ëÇÑ SetSlotWeapon ¿¹¿ÜÃ³¸® ÇÔ¼ö
+	/// HandState Gunì¸ ê²½ìš°(í˜„ì¬ ì´ê¸°ë¥¼ ë“¤ê³  ìˆëŠ” ìƒíƒœì¸ ê²½ìš°), Gun slotë¼ë¦¬ Swapí•˜ëŠ” ìƒí™©ì— ëŒ€í•œ SetSlotWeapon ì˜ˆì™¸ì²˜ë¦¬ í•¨ìˆ˜
 	/// </summary>
-	/// <returns> Slot³¢¸® SwapÀÌ Á¦´ë·Î ÀÌ·ç¾îÁ³´Ù¸é return true </returns>
+	/// <returns> Slotë¼ë¦¬ Swapì´ ì œëŒ€ë¡œ ì´ë£¨ì–´ì¡Œë‹¤ë©´ return true </returns>
 	bool SwapSlotsWhileGunHandState();
 
 	/// <summary>
-	/// ½½·Ô¿¡ ÀåÂøµÈ ¹«±â¸¦ ¶³±¸±â.
+	/// ìŠ¬ë¡¯ì— ì¥ì°©ëœ ë¬´ê¸°ë¥¼ ë–¨êµ¬ê¸°.
 	/// </summary>
-	/// <param name="InSlot"> : ¶³±¸°í ½ÍÀº ¾ÆÀÌÅÛÀÌ ÀÖ´Â ½½·Ô </param>
+	/// <param name="InSlot"> : ë–¨êµ¬ê³  ì‹¶ì€ ì•„ì´í…œì´ ìˆëŠ” ìŠ¬ë¡¯ </param>
 	UFUNCTION(BlueprintCallable)
 	void DetachmentWeapon(EWeaponSlot InSlot);
 
@@ -75,50 +75,50 @@ public:
 	TMap<EWeaponSlot, AC_Weapon*> GetWeapons() { return Weapons; }
 public:
 	/// <summary>
-	/// ÇöÀç ¼Õ¿¡ µç ¹«±â ¹Ù²Ù±â
+	/// í˜„ì¬ ì†ì— ë“  ë¬´ê¸° ë°”ê¾¸ê¸°
 	/// </summary>
-	/// <param name=""> : ¹Ù²ã¼­ µé·Á°í ÇÏ´Â ¹«±â ½½·Ô Á¾·ù </param>
-	/// <returns> ¹Ù²Ù±â ¼º°øÇß´Ù¸é return true </returns>
+	/// <param name=""> : ë°”ê¿”ì„œ ë“¤ë ¤ê³  í•˜ëŠ” ë¬´ê¸° ìŠ¬ë¡¯ ì¢…ë¥˜ </param>
+	/// <returns> ë°”ê¾¸ê¸° ì„±ê³µí–ˆë‹¤ë©´ return true </returns>
 	bool ChangeCurWeapon(EWeaponSlot InChangeTo);
 
 	/// <summary>
-	/// XÅ°¸¦ ÅëÇÑ ¹«±â Áı¾î³Ö±â ¹× Á÷Àü ¹«±â ²¨³»±â
+	/// Xí‚¤ë¥¼ í†µí•œ ë¬´ê¸° ì§‘ì–´ë„£ê¸° ë° ì§ì „ ë¬´ê¸° êº¼ë‚´ê¸°
 	/// </summary>
 	/// <returns></returns>
 	bool ToggleArmed();
 
-public: // Æ¯Á¤ µ¿ÀÛ Ã³¸®¿¡¼­ÀÇ µé°í ÀÖ´Â ¹«±â ÀÓ½Ã Ã³¸® °ü·Ã ( ex -> ¹«±â µé°í ÀÖ´Â Áß ÆÄÄí¸£, ¹«±â µé°í ÀÖ´Â Áß ConsumableItem »ç¿ë)
+public: // íŠ¹ì • ë™ì‘ ì²˜ë¦¬ì—ì„œì˜ ë“¤ê³  ìˆëŠ” ë¬´ê¸° ì„ì‹œ ì²˜ë¦¬ ê´€ë ¨ ( ex -> ë¬´ê¸° ë“¤ê³  ìˆëŠ” ì¤‘ íŒŒì¿ ë¥´, ë¬´ê¸° ë“¤ê³  ìˆëŠ” ì¤‘ ConsumableItem ì‚¬ìš©)
 
 	/// <summary>
-	/// ÇöÀç µé°í ÀÖ´Â ¹«±â°¡ ÀÖ´Ù¸é Sheath motion ¾øÀÌ ÀÓ½Ã·Î ¹Ù·Î Holster¿¡ ºÙÀÌ±â (ÁÖÀÇ : return trueÀÏ °æ¿ì, 
+	/// í˜„ì¬ ë“¤ê³  ìˆëŠ” ë¬´ê¸°ê°€ ìˆë‹¤ë©´ Sheath motion ì—†ì´ ì„ì‹œë¡œ ë°”ë¡œ Holsterì— ë¶™ì´ê¸° (ì£¼ì˜ : return trueì¼ ê²½ìš°, 
 	/// </summary>
-	/// <returns> : ÇöÀç µé°í ÀÖ´Â ¹«±â(CurWeapon)°¡ ¾ø´Ù¸é return false</returns>
+	/// <returns> : í˜„ì¬ ë“¤ê³  ìˆëŠ” ë¬´ê¸°(CurWeapon)ê°€ ì—†ë‹¤ë©´ return false</returns>
 	bool TryAttachCurWeaponToHolsterWithoutSheathMotion();
 
 	/// <summary>
-	/// <para> AttachCurWeaponToHolsterWithoutSheathMotion ÀÌÈÄ CurWeapon ¼Õ¿¡ ´Ù½Ã ºÎÂø </para>
-	/// <para> ÁÖÀÇ : AttachCurWeaponToHolsterWithoutSheathMotion°ú ½ÖÀ¸·Î »ç¿ëÇÒ °Í </para>
+	/// <para> AttachCurWeaponToHolsterWithoutSheathMotion ì´í›„ CurWeapon ì†ì— ë‹¤ì‹œ ë¶€ì°© </para>
+	/// <para> ì£¼ì˜ : AttachCurWeaponToHolsterWithoutSheathMotionê³¼ ìŒìœ¼ë¡œ ì‚¬ìš©í•  ê²ƒ </para>
 	/// </summary>
-	/// <returns> : ÇöÀç µé°í ÀÖ´Â ¹«±â(CurWeapon)°¡ ¾ø´Ù¸é return false</returns>
+	/// <returns> : í˜„ì¬ ë“¤ê³  ìˆëŠ” ë¬´ê¸°(CurWeapon)ê°€ ì—†ë‹¤ë©´ return false</returns>
 	bool TryReAttachCurWeaponToHand();
 
 public:
 
 	/// <summary>
-	/// ¹«±â Sheath°¡ ³¡³µÀ» ½Ã Notify·Î ºÒ·¯Áú call back ÇÔ¼ö
+	/// ë¬´ê¸° Sheathê°€ ëë‚¬ì„ ì‹œ Notifyë¡œ ë¶ˆëŸ¬ì§ˆ call back í•¨ìˆ˜
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnSheathEnd();
 
 	/// <summary>
-	/// ¹«±â Draw°¡ ½ÃÀÛ½Ã Notify·Î ºÒ·¯Áú call back ÇÔ¼ö
+	/// ë¬´ê¸° Drawê°€ ì‹œì‘ì‹œ Notifyë¡œ ë¶ˆëŸ¬ì§ˆ call back í•¨ìˆ˜
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnDrawStart();
 
 
 	/// <summary>
-	/// ¹«±â Draw°¡ ³¡³µÀ» ½Ã Notify·Î ºÒ·¯Áú call back ÇÔ¼ö
+	/// ë¬´ê¸° Drawê°€ ëë‚¬ì„ ì‹œ Notifyë¡œ ë¶ˆëŸ¬ì§ˆ call back í•¨ìˆ˜
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnDrawEnd();
@@ -129,7 +129,7 @@ public:
 	void OnSniperReloadEnd();
 
 	/// <summary>
-	/// °¢ ¹«±â¿¡ ºÎÂøµÈ Attachment -> ParamÀ¸·Î µé¾î¿Â CollisionParams ignoreActors¿¡ Ãß°¡
+	/// ê° ë¬´ê¸°ì— ë¶€ì°©ëœ Attachment -> Paramìœ¼ë¡œ ë“¤ì–´ì˜¨ CollisionParams ignoreActorsì— ì¶”ê°€
 	/// </summary>
 	/// <param name="CollisionParams"> : Param </param>
 	void AddAttachedPartsActorsToIgnoreActors(FCollisionQueryParams& CollisionParams);
@@ -155,7 +155,7 @@ protected:
 protected:
 
 	/// <summary>
-	/// ½½·Ô º° Weaponµé
+	/// ìŠ¬ë¡¯ ë³„ Weaponë“¤
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EWeaponSlot, class AC_Weapon*> Weapons{};
@@ -166,7 +166,7 @@ protected:
 
 protected:
 
-	// Enemy Weapon setting ¿ë
+	// Enemy Weapon setting ìš©
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EWeaponSlot, TSubclassOf<class AC_Weapon>> WeaponClasses{};
 	
@@ -177,3 +177,5 @@ protected:
 	void SetMainGunOrSubGun(EWeaponSlot InSlot);
 
 };
+
+

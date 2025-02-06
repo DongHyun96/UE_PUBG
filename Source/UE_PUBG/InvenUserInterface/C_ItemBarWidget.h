@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -24,8 +24,8 @@ class UE_PUBG_API UC_ItemBarWidget : public UUserWidget, public IUserObjectListE
 {
 	GENERATED_BODY()
 public:
-    // ÀÌº¥Æ® ÇÔ¼ö ¼±¾ğ
-    // ListView¿¡¼­ Ç×¸ñ °´Ã¼°¡ ¼³Á¤µÉ ¶§ È£ÃâµÇ´Â ÇÔ¼ö
+    // ì´ë²¤íŠ¸ í•¨ìˆ˜ ì„ ì–¸
+    // ListViewì—ì„œ í•­ëª© ê°ì²´ê°€ ì„¤ì •ë  ë•Œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
     virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
     virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
@@ -48,7 +48,7 @@ public:
     AC_Item* DropItem(AC_Item* myItem);
 
     /// <summary>
-    /// ¾ÆÀÌÅÛ »ç¿ë½Ã ´«À¸·Î ¾Ë·ÁÁÖ´Â progressbarÅ¸ÀÌ¸Ó.
+    /// ì•„ì´í…œ ì‚¬ìš©ì‹œ ëˆˆìœ¼ë¡œ ì•Œë ¤ì£¼ëŠ” progressbaríƒ€ì´ë¨¸.
     /// </summary>
     /// <param name="curTime"></param>
     /// <param name="endTime"></param>
@@ -57,12 +57,12 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void InitInvenUIWidget();
-    //µÎ ±â´ÉÀ» ÇÕÄ£ SetItem»ı°¢
+    //ë‘ ê¸°ëŠ¥ì„ í•©ì¹œ SetItemìƒê°
 
     void SetOwnerCharacter(AC_Player* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 public:
-    // UI¿¡ ¹ÙÀÎµùÇÒ º¯¼ö ¼±¾ğ (Blueprint¿¡¼­ ¿¬°á)
+    // UIì— ë°”ì¸ë”©í•  ë³€ìˆ˜ ì„ ì–¸ (Blueprintì—ì„œ ì—°ê²°)
     //UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (BindWidget))
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
@@ -71,7 +71,7 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
     class UTextBlock* ItemName1;
 
-    //ÇöÀç UI¿¡¼­ ¹ÙÀÎµùÇÏÁö ¾ÊÀ½.
+    //í˜„ì¬ UIì—ì„œ ë°”ì¸ë”©í•˜ì§€ ì•ŠìŒ.
     UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
     class UTextBlock* ItemStackBlock1;
 
@@ -82,10 +82,12 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
     EItemTypes ItemType{};
 
-    // C++¿¡¼­ Ã³¸®ÇÒ ¾ÆÀÌÅÛ
+    // C++ì—ì„œ ì²˜ë¦¬í•  ì•„ì´í…œ
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
     AC_Item* CachedItem;
 protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     class AC_Player* OwnerCharacter;
 };
+
+

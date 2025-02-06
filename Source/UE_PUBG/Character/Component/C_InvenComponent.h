@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -28,12 +28,12 @@ enum class EEquipSlot : uint8
 };
 
 /// <summary>
-/// ±âº» MaxVolumeÀº 70
-/// C_InvenComponent´Â 0~3·¹º§±îÁö Á¸ÀçÇÏ¸ç ÀÌ´Â °¡¹æÀÇ ·¹º§¿¡ µû¶ó¼­ º¯È­ÇÑ´Ù.
-///°¡¹æÀº ÀÚµ¿ÀåÂøµÇ¸ç ·¹º§À» ¿Ã¸®´Âµ¥´Â Á¦ÇÑÀÌ ¾øÁö¸¸
-///´Ù¿î±×·¹ÀÌµåÀÇ °æ¿ì ´Ù¿îµÇ´Â ·¹º§ÀÇ ¹«°Ô¸¦ ÃÊ°úÇÏ´Â ÀÎº¥»óÅÂ¶ó¸é
-///ºÒ°¡´ÉÇÏ´Ù.¿¡¼­ ¸¸µé¾î¼­ °Å±â¼­ InvenC
-/// EquipmentSystemÀ» Blueprintomponent¿Í EquippedComponent¸¦ »ç¿ëÇØ¼­ ÀÎº¥½Ã½ºÅÛ¿Í UI¸¦ Á¦ÀÛ.
+/// ê¸°ë³¸ MaxVolumeì€ 70
+/// C_InvenComponentëŠ” 0~3ë ˆë²¨ê¹Œì§€ ì¡´ìž¬í•˜ë©° ì´ëŠ” ê°€ë°©ì˜ ë ˆë²¨ì— ë”°ë¼ì„œ ë³€í™”í•œë‹¤.
+///ê°€ë°©ì€ ìžë™ìž¥ì°©ë˜ë©° ë ˆë²¨ì„ ì˜¬ë¦¬ëŠ”ë°ëŠ” ì œí•œì´ ì—†ì§€ë§Œ
+///ë‹¤ìš´ê·¸ë ˆì´ë“œì˜ ê²½ìš° ë‹¤ìš´ë˜ëŠ” ë ˆë²¨ì˜ ë¬´ê²Œë¥¼ ì´ˆê³¼í•˜ëŠ” ì¸ë²¤ìƒíƒœë¼ë©´
+///ë¶ˆê°€ëŠ¥í•˜ë‹¤.ì—ì„œ ë§Œë“¤ì–´ì„œ ê±°ê¸°ì„œ InvenC
+/// EquipmentSystemì„ Blueprintomponentì™€ EquippedComponentë¥¼ ì‚¬ìš©í•´ì„œ ì¸ë²¤ì‹œìŠ¤í…œì™€ UIë¥¼ ì œìž‘.
 /// </summary>
 //UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 
@@ -56,27 +56,27 @@ public:
 
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
-	//°¡¹æ±³Ã¼, ¾ÆÀÌÅÛÈ¹µæ½Ã ÇØ´çÇÔ¼ö·Î ¿ë·®ÀÌ ÃæºÐÇÑÁö È®ÀÎÇÏ¿© T or F¸¦ ¹ÝÈ¯. ºí·çÇÁ¸°Æ®¿¡¼­ »ç¿ë °¡´ÉÇÏµµ·Ï ¿­¾îÁà¾ß ÇÒ ¼ö ÀÖÀ½.
+	//ê°€ë°©êµì²´, ì•„ì´í…œíšë“ì‹œ í•´ë‹¹í•¨ìˆ˜ë¡œ ìš©ëŸ‰ì´ ì¶©ë¶„í•œì§€ í™•ì¸í•˜ì—¬ T or Fë¥¼ ë°˜í™˜. ë¸”ë£¨í”„ë¦°íŠ¸ì—ì„œ ì‚¬ìš© ê°€ëŠ¥í•˜ë„ë¡ ì—´ì–´ì¤˜ì•¼ í•  ìˆ˜ ìžˆìŒ.
 	
 	//UFUNCTION(BlueprintCallable)
-	//uint16Àº ÇØ´ç ¸ÅÅ©·Î°¡ Áö¿øÇÏÁö ¾Ê´Â´Ù. uint8, uint32´Â Áö¿øÇÑ´Ù.
+	//uint16ì€ í•´ë‹¹ ë§¤í¬ë¡œê°€ ì§€ì›í•˜ì§€ ì•ŠëŠ”ë‹¤. uint8, uint32ëŠ” ì§€ì›í•œë‹¤.
 	bool CheckVolume(class AC_Item* item);
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛÀ» ¸î°³±îÁö ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´ÂÁö loop Check
+	/// ì•„ì´í…œì„ ëª‡ê°œê¹Œì§€ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìžˆëŠ”ì§€ loop Check
 	/// </summary>
-	/// <param name="item">ÀÎº¥¿¡ ³ÖÀ» ¾ÆÀÌÅÛ</param>
-	/// <returns>³ÖÀ» ¼ö ÀÖ´Â ¾ÆÀÌÅÛÀÇ Stack(°¹¼ö)</returns>
+	/// <param name="item">ì¸ë²¤ì— ë„£ì„ ì•„ì´í…œ</param>
+	/// <returns>ë„£ì„ ìˆ˜ ìžˆëŠ” ì•„ì´í…œì˜ Stack(ê°¯ìˆ˜)</returns>
 	float LoopCheckVolume(AC_Item* item);
 
-	//°¡¹æ°ú ¿ë·®À» °Ë»çÇØ¼­ °¡¹æ ±³Ã¼ ¹× ÀåÂø.
+	//ê°€ë°©ê³¼ ìš©ëŸ‰ì„ ê²€ì‚¬í•´ì„œ ê°€ë°© êµì²´ ë° ìž¥ì°©.
 	//UFUNCTION(BlueprintCallable)
 	//bool CheckMyBackPack(class AC_BackPack* backpack);
 
 	//UFUNCTION(BlueprintCallable)
 	void Interaction(AC_Item* wilditem);
 
-	//°¡¹æÀÇ ¿ë·®À» ¹ÝÈ¯
+	//ê°€ë°©ì˜ ìš©ëŸ‰ì„ ë°˜í™˜
 	float CheckBackPackVolume(uint32 backpacklevel);
 	float CheckBackPackVolume(EBackPackLevel backpacklevel);
 
@@ -90,11 +90,11 @@ public:
 	//void EquippedBackPack(AC_BackPack* backpack);
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛÀ» ³» ÀÎº¥¿¡ Ãß°¡ÇÏ´Â ÇÔ¼ö.
+	/// ì•„ì´í…œì„ ë‚´ ì¸ë²¤ì— ì¶”ê°€í•˜ëŠ” í•¨ìˆ˜.
 	/// item->OwnerCharacter = this->OwnerCharacter
 	/// item->HiddeninGame = ture;
-	/// item->SetActorEnableCollision = false; »óÅÂ·Î ÀüÈ¯
-	/// ÀÎº¥Åä¸® °ø°£Ã¼Å©ÈÄ ¾ÆÀÌÅÛÀ» ½ÀµæÇÏ´Â °úÁ¤À» °ÅÄ§.
+	/// item->SetActorEnableCollision = false; ìƒíƒœë¡œ ì „í™˜
+	/// ì¸ë²¤í† ë¦¬ ê³µê°„ì²´í¬í›„ ì•„ì´í…œì„ ìŠµë“í•˜ëŠ” ê³¼ì •ì„ ê±°ì¹¨.
 	/// </summary>
 	/// <param name="item"></param>
 	/// <returns></returns>
@@ -107,8 +107,8 @@ public:
 	/// <summary>
 	/// 
 	/// </summary>
-	/// <param name="item">Ã£°íÀÚ ÇÏ´Â ¾ÆÀÌÅÛ</param>
-	/// <returns>Ã£°íÀÚ ÇÏ´Â ¾ÆÀÌÅÛ. (¾ø´Ù¸é nullptr ¹ÝÈ¯)</returns>
+	/// <param name="item">ì°¾ê³ ìž í•˜ëŠ” ì•„ì´í…œ</param>
+	/// <returns>ì°¾ê³ ìž í•˜ëŠ” ì•„ì´í…œ. (ì—†ë‹¤ë©´ nullptr ë°˜í™˜)</returns>
 	UFUNCTION(BlueprintCallable)
 	AC_Item* FindMyItem(AC_Item* item);
 
@@ -176,10 +176,10 @@ protected:
 	EBackPackLevel PreBackPackLevel = EBackPackLevel::LV0;
 
 	/// <summary>
-	/// ±âº» : Ui¿¡¼­ ÇöÀç ³» ¾ÆÀÌÅÛ¸ñ·ÏÀ» º¸¿©ÁÖ±â À§ÇÔ.
-	/// Ãß°¡ : Á×¾úÀ»¶§ ¶³±¼ ³» ¾ÆÀÌÅÛ ¸ñ·Ï.(ÃÑÀÌ³ª °¡¹æ°°ÀÌ ÀåÂø¾ÆÀÌÅÛµéµµ ¶³±¸¾î¾ßÇÏ´Âµ¥ ÀÌ°É Á×¾úÀ»¶§ ÇÑ¹ø¿¡ ¶³±¸±â À§ÇÑ ¹æ¹ýÀº 2°¡Áö·Î »ý°¢. 
-	/// Ã¹¹øÂ°´Â ÀÏÀÏÀÌ ¶³²Ù¾îÁÖ´Â°Í. 
-	/// µÎ¹øÂ°´Â MyItem¿¡ ´Ù ³Ö°í ÇÑ¹ø¿¡ ¶³±¸´Â °Í.
+	/// ê¸°ë³¸ : Uiì—ì„œ í˜„ìž¬ ë‚´ ì•„ì´í…œëª©ë¡ì„ ë³´ì—¬ì£¼ê¸° ìœ„í•¨.
+	/// ì¶”ê°€ : ì£½ì—ˆì„ë•Œ ë–¨êµ´ ë‚´ ì•„ì´í…œ ëª©ë¡.(ì´ì´ë‚˜ ê°€ë°©ê°™ì´ ìž¥ì°©ì•„ì´í…œë“¤ë„ ë–¨êµ¬ì–´ì•¼í•˜ëŠ”ë° ì´ê±¸ ì£½ì—ˆì„ë•Œ í•œë²ˆì— ë–¨êµ¬ê¸° ìœ„í•œ ë°©ë²•ì€ 2ê°€ì§€ë¡œ ìƒê°. 
+	/// ì²«ë²ˆì§¸ëŠ” ì¼ì¼ì´ ë–¨ê¾¸ì–´ì£¼ëŠ”ê²ƒ. 
+	/// ë‘ë²ˆì§¸ëŠ” MyItemì— ë‹¤ ë„£ê³  í•œë²ˆì— ë–¨êµ¬ëŠ” ê²ƒ.
 	/// </summary>
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -193,7 +193,7 @@ protected:
 	TMap<EEquipSlot, AC_EquipableItem*> EquipmentItems = 
 	{
 	{EEquipSlot::HELMET, nullptr},
-	{EEquipSlot::BACKPACK, nullptr},//ÀÌ°Ç ÇöÀç ¾È¾²°í ÀÖÀ½.
+	{EEquipSlot::BACKPACK, nullptr},//ì´ê±´ í˜„ìž¬ ì•ˆì“°ê³  ìžˆìŒ.
 	{EEquipSlot::VEST, nullptr}
 	};
 
@@ -212,3 +212,5 @@ private:
 
 	
 };
+
+

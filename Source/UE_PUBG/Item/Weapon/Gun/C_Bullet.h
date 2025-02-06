@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -60,8 +60,8 @@ public:
 protected:
 	float Drag_Coefficient = 0.0165;
 	float Air_Density = 1.225;// # kg / m ^ 3
-	float Bullet_Mass = 0.004;//  # kg(5.56mmÅºÀÇ ÃßÁ¤Ä¡)
-	float Bullet_Diameter = 0.00556;// # m(5.56mmÅºÀÇ Á÷°æ)
+	float Bullet_Mass = 0.004;//  # kg(5.56mmíƒ„ì˜ ì¶”ì •ì¹˜)
+	float Bullet_Diameter = 0.00556;// # m(5.56mmíƒ„ì˜ ì§ê²½)
 	float Cross_Sectional_Area = PI * FMath::Square(Bullet_Diameter / 2);//  # m ^ 2
 	float Distance_To_Target = 100;//  # m
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -84,3 +84,5 @@ public:
 	AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 
 };
+
+

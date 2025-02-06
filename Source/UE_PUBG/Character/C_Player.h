@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,8 +9,10 @@
 #include "C_Player.generated.h"
 
 
+// äºŒì‡±ê½ Test
+
 /// <summary>
-/// Poseº° Turn left, right anim montage ±¸Á¶Ã¼
+/// Poseè¹‚?Turn left, right anim montage æ´ÑŠâ€œï§£?
 /// </summary>
 USTRUCT(BlueprintType)
 struct FPoseTurnInPlaceAnimMontage
@@ -48,13 +50,13 @@ public:
 private:
 
 	/// <summary>
-	/// AltÅ° (Hold Direction) Handling
+	/// Alt??(Hold Direction) Handling
 	/// </summary>
 	/// <param name="DeltaTime"></param>
 	void HandleControllerRotation(float DeltaTime);
 
 	/// <summary>
-	/// MainSpringArm ·ÎÄÃ À§Ä¡ Destº¯¼ö°ªÀ¸·Î °è¼Ó Lerp ½ÃÅ°±â
+	/// MainSpringArm æ¿¡ì’–ëº„ ?ê¾©íŠ‚ Destè¹‚Â€?ì„ì»ª?ì‡°ì¤ˆ æ€¨ê¾©ëƒ½ Lerp ?ì’—ê¶æ¹²?
 	/// </summary>
 	void HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime);
 
@@ -86,18 +88,18 @@ public:
 	bool GetIsHighEnoughToFall() override;
 public:
 	/// <summary>
-	/// ÀÚ¼¼ ¹Ù²Ù±â ÅëÇÕ Ã³¸®
+	/// ?ë¨¯ê½­ è«›ë¶½ì”€æ¹²??ë“¯ë¹€ ï§£ì„â”
 	/// </summary>
-	/// <param name="InChangeFrom"> : ¹Ù²Ù±â Àü ÀÚ¼¼ </param>
-	/// <param name="InChangeTo"> : ¹Ù²Ü ÀÚ¼¼ </param>
-	/// <returns> : Á¦´ë·Î ¹Ù²Ù¾ú´Ù¸é return true </returns>
+	/// <param name="InChangeFrom"> : è«›ë¶½ì”€æ¹²????ë¨¯ê½­ </param>
+	/// <param name="InChangeTo"> : è«›ë¶½? ?ë¨¯ê½­ </param>
+	/// <returns> : ?ì’•?æ¿¡?è«›ë¶½ì”€?ëˆë–ï§?return true </returns>
 	bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) override;
 
 protected:
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛ »óÈ£ÀÛ¿ëÀ» À§ÇÑ º¯¼ö¿Í ÇÔ¼ö.
-	/// ±¸¸¦ ÅëÇØ ¾ÆÀÌÅÛ°úÀÇ Ãæµ¿À» °¨ÁöÇÏ´Â ÇÔ¼ö.
+	/// ?ê¾©ì” ???ê³¹ìƒ‡?ë¬’ìŠœ???ê¾ªë¸³ è¹‚Â€?ì„? ?â‘¥ë‹”.
+	/// æ´Ñ‰? ?ë“¯ë¹ ?ê¾©ì” ?ì’“ë‚µ??ç•°â‘¸ë£??åª›ë¨¯??ì„ë’— ?â‘¥ë‹”.
 	/// </summary>
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	//class USphereComponent* DetectionSphere;
@@ -108,10 +110,10 @@ protected:
 	//UFUNCTION()
 	//void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	// 
-	//ÀÚ½Ä ´Ü°è¿¡¼­ OverlapBegin¿¡¼­ »ç¿ëÇÒ ÇÔ¼ö Template method
+	//?ë¨¯ë–‡ ?â‘£í€?ë¨¯ê½Œ OverlapBegin?ë¨¯ê½Œ ?ÑŠìŠœ???â‘¥ë‹” Template method
 	virtual void HandleOverlapBegin(AActor* OtherActor) override;
 
-	//ÀÚ½Ä ´Ü°è¿¡¼­ OverlapBegin¿¡¼­ »ç¿ëÇÒ ÇÔ¼ö Template method
+	//?ë¨¯ë–‡ ?â‘£í€?ë¨¯ê½Œ OverlapBegin?ë¨¯ê½Œ ?ÑŠìŠœ???â‘¥ë‹” Template method
 	virtual void HandleOverlapEnd(AActor* OtherActor) override;
 protected:
 	//Aim Press Camera
@@ -134,29 +136,29 @@ public:
 	UCameraComponent* GetMainCamera() { return MainCamera; }
 	UCameraComponent* GetAimCamera() const { return AimCamera; }
 protected:
-	//Aim Press Camera À§Ä¡ Á¶Á¤ ÇÔ¼ö
+	//Aim Press Camera ?ê¾©íŠ‚ è­°ê³—ì ™ ?â‘¥ë‹”
 	void SetAimPressCameraLocation();
 
 protected:
 
 	/*
-	Ä«¸Ş¶ó°¡ ¹Ù¶óº¸´Â ¹æÇâÀ¸·Î ¸öÃ¼°¡ µ¹¾Æ°¡´Â ±âº» StrafeOn ¼³Á¤ :
+	ç§»ëŒ€ì°“?ì‡¨? è«›ë¶¾ì”ªè¹‚ëŒ€ë’— è«›â‘ºë¼¢?ì‡°ì¤ˆ ï§ëª„ê»œåª›Â€ ?ëš¯ë¸˜åª›Â€??æ¹²ê³•ë‚¯ StrafeOn ?ã…¼ì ™ :
 	BPC_Player(self) : Use Control Rotation Yaw			= true
 	Spring Arm : Use Pawn Control Rotation				= true
 	Character Movement : Orient Rotation to Movement	= false;
 
-	°¡¸¸È÷ ÀÖÀ» ½Ã Use Control Rotation Yaw : false
+	åª›Â€ï§ëš°ì—³ ?ë‰ì“£ ??Use Control Rotation Yaw : false
 
 	*/
 
 	/// <summary>
-	/// <para> Ä³¸¯ÅÍ°¡ ¸ØÃçÀÖÀ» ¶§, Ä³¸¯ÅÍ°¡ ¿ÀºêÁ§Æ®°¡ ¹Ù¶óº¸´Â ¹æÇâ°ú ÄÁÆ®·Ñ·¯(Ä«¸Ş¶ó)°¡ </para>
-	/// <para> ¹Ù¶óº¸´Â ¹æÇâÀÇ °¢ÀÌ 90µµ ÀÌ»óÀÌ¸é, Turn In place·Î Ä³¸¯ÅÍ Á¶Á¤ </para>
+	/// <para> ï§¦ë¨®â”ƒ?ê³Œ? ï§ë‰ë– ?ë‰ì“£ ?? ï§¦ë¨®â”ƒ?ê³Œ? ?ã…»íˆ•?ì•ºë“ƒåª›Â€ è«›ë¶¾ì”ªè¹‚ëŒ€ë’— è«›â‘ºë¼¢æ€¨?è€Œâ‘¦ë“ƒæ¿¡ã…»ìœ­(ç§»ëŒ€ì°“??åª›Â€ </para>
+	/// <para> è«›ë¶¾ì”ªè¹‚ëŒ€ë’— è«›â‘ºë¼¢??åª›ê³¸ì”  90???ëŒê¸½?ëŒ€ãˆƒ, Turn In placeæ¿¡?ï§¦ë¨®â”ƒ??è­°ê³—ì ™ </para>
 	/// </summary>
 	void HandleTurnInPlace();
 
 	/// <summary>
-	/// <para> Ä³¸¯ÅÍ°¡ Aiming ÁßÀÏ ¶§,ÄÁÆ®·Ñ·¯(Ä«¸Ş¶ó)¹æÇâ ´ë·Î Turn In place·Î Ä³¸¯ÅÍ Á¶Á¤</para>
+	/// <para> ï§¦ë¨®â”ƒ?ê³Œ? Aiming ä»¥ë¬’ì”ª ??è€Œâ‘¦ë“ƒæ¿¡ã…»ìœ­(ç§»ëŒ€ì°“??è«›â‘ºë¼¢ ?Â€æ¿¡?Turn In placeæ¿¡?ï§¦ë¨®â”ƒ??è­°ê³—ì ™</para>
 	/// </summary>
 	void HandleTurnInPlaceWhileAiming();
 
@@ -169,7 +171,7 @@ public:
 public:
 
 	/// <summary>
-	/// Turn in place°¡ ³¡³µÀ» ½Ã anim notify¿¡ ÀÇÇØ È£Ãâ, ¸ØÃç ÀÖÀ» ¶§ÀÇ Rotation ¼¼ÆÃ °ªµé·Î µ¹¾Æ°¡±â
+	/// Turn in placeåª›Â€ ?ì•¸ê¶—????anim notify???ì„‘ë¹ ?ëª„í…§, ï§ë‰ë–  ?ë‰ì“£ ?ëš¯ì“½ Rotation ?ëª…ë˜¿ åª›ë¯©ë±¾æ¿¡??ëš¯ë¸˜åª›Â€æ¹²?
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void SetStrafeRotationToIdleStop();
@@ -182,14 +184,14 @@ protected:
 private:
 
 	/// <summary>
-	/// Turn Anim Montage ÃÊ±âÈ­
+	/// Turn Anim Montage ç¥ë‡ë¦°??
 	/// </summary>
 	void InitTurnAnimMontageMap();
 
 public:
 
 	/// <summary>
-	/// Á¶ÁØ¿¡ µû¸¥ Ä«¸Ş¶ó º¯°æ
+	/// è­°ê³—????ê³•â…¨ ç§»ëŒ€ì°“??è¹‚Â€å¯ƒ?
 	/// </summary>
 	void SetToAimKeyPress();
 	void SetToAimDownSight();
@@ -217,7 +219,7 @@ public:
 
 public:
 	/// <summary>
-	/// Á¶ÁØ¿¡ µû¸¥ Ä«¸Ş¶ó º¯°æ
+	/// è­°ê³—????ê³•â…¨ ç§»ëŒ€ì°“??è¹‚Â€å¯ƒ?
 	/// </summary>
 
 	void RecoilController();
@@ -244,16 +246,16 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly) 
 	class UC_InputComponent* MyInputComponent{};
 
-protected: // Turn in place ¾Ö´Ô ¸ùÅ¸ÁÖ °ü·Ã
+protected: // Turn in place ?ì¢Šë–‚ ï§ì€?äºŒ?æ„¿Â€??
 
 	/// <summary>
-	/// °¢ HandState¿Í PoseState¿¡ µû¸¥ TurnAnimMontage ¸Ê
+	/// åª›?HandState?Â€ PoseState???ê³•â…¨ TurnAnimMontage ï§?
 	/// </summary>
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	TMap<EHandState, FPoseTurnInPlaceAnimMontage> TurnAnimMontageMap{};
 
 	/// <summary>
-	/// °¢ HandState¿Í PoseState¿¡ µû¸¥ Lower Body TurnAnimMontage ¸Ê : Lower body¸¸ µû·Î Àç»ıÀÌ ÇÊ¿äÇÒ ½Ã »ç¿ë
+	/// åª›?HandState?Â€ PoseState???ê³•â…¨ Lower Body TurnAnimMontage ï§?: Lower bodyï§??ê³•ì¤ˆ ?ÑŠê¹®???ê¾©ìŠ‚?????ÑŠìŠœ
 	/// </summary>
 	UPROPERTY(BluePrintReadWrite, EditDefaultsOnly)
 	TMap<EHandState, FPoseTurnInPlaceAnimMontage> LowerBodyTurnAnimMontageMap{};
@@ -278,14 +280,14 @@ protected:
 private:
 
 	TMap<EPoseState, FVector> MainSpringArmRelativeLocationByPoseMap{};
-	FVector MainSpringArmRelativeLocationDest{}; // Spring Arm Relative Location À§Ä¡ Lerp½ÃÅ³ Destination °ª
+	FVector MainSpringArmRelativeLocationDest{}; // Spring Arm Relative Location ?ê¾©íŠ‚ Lerp?ì’—ê¶— Destination åª›?
 
 	TMap<EPoseState, FVector> AimingSpringArmRelativeLocationByPoseMap{};
-	FVector AimingSpringArmRelativeLocationDest{}; // Spring Arm Relative Location À§Ä¡ Lerp½ÃÅ³ Destination °ª
+	FVector AimingSpringArmRelativeLocationDest{}; // Spring Arm Relative Location ?ê¾©íŠ‚ Lerp?ì’—ê¶— Destination åª›?
 
 
 protected:
-	//ÃÑ¾Ë Object Pooling (World¿¡¼­ ÀÛ¾÷ÇÒ ¿¹Á¤)
+	//ç¥ì•¹ë¸£ Object Pooling (World?ë¨¯ê½Œ ?ë¬’ë¾½???ë‰ì ™)
 	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	//TArray<class AC_Bullet*> PooledBullets;
 
@@ -307,3 +309,5 @@ public:
 	UC_CrosshairWidgetComponent* GetCrosshairWidgetComponent() { return CrosshairWidgetComponent; }
 	
 };
+
+

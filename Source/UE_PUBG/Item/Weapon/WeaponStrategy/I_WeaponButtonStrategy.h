@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -14,7 +14,7 @@ class UI_WeaponButtonStrategy : public UInterface
 };
 
 /**
- * °¢ ¹öÆ°¿¡ µû¸¥ Weapon Àü·« ¾Ë°í¸®Áò interface
+ * ê° ë²„íŠ¼ì— ë”°ë¥¸ Weapon ì „ëµ ì•Œê³ ë¦¬ì¦˜ interface
  */
 class UE_PUBG_API II_WeaponButtonStrategy
 {
@@ -28,24 +28,24 @@ public:
 	/// B key mapped weapon strategy
 	/// </summary>
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
-	/// <param name="Weapon">     : ÇØ´ç Àü·«À» »ç¿ëÇÒ Weapon °´Ã¼ </param>
-	/// <returns> ÇØ´çÇÏ´Â ¹«±â Àü·«ÀÌ ¾ø°Å³ª Àü·« ½ÇÇà ½ÇÆĞ ½Ã return false </returns>
+	/// <param name="Weapon">     : í•´ë‹¹ ì „ëµì„ ì‚¬ìš©í•  Weapon ê°ì²´ </param>
+	/// <returns> í•´ë‹¹í•˜ëŠ” ë¬´ê¸° ì „ëµì´ ì—†ê±°ë‚˜ ì „ëµ ì‹¤í–‰ ì‹¤íŒ¨ ì‹œ return false </returns>
 	virtual bool UseBKeyStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// R key mapped weapon strategy
 	/// </summary>
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
-	/// <param name="Weapon">     : ÇØ´ç Àü·«À» »ç¿ëÇÒ Weapon °´Ã¼ </param>
-	/// <returns> ÇØ´çÇÏ´Â ¹«±â Àü·«ÀÌ ¾ø°Å³ª Àü·« ½ÇÇà ½ÇÆĞ ½Ã return false </returns>
+	/// <param name="Weapon">     : í•´ë‹¹ ì „ëµì„ ì‚¬ìš©í•  Weapon ê°ì²´ </param>
+	/// <returns> í•´ë‹¹í•˜ëŠ” ë¬´ê¸° ì „ëµì´ ì—†ê±°ë‚˜ ì „ëµ ì‹¤í–‰ ì‹¤íŒ¨ ì‹œ return false </returns>
 	virtual bool UseRKeyStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// MLB Click Started mapped weapon strategy
 	/// </summary>
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
-	/// <param name="Weapon">     : ÇØ´ç Àü·«À» »ç¿ëÇÒ Weapon °´Ã¼ </param>
-	/// <returns> ÇØ´çÇÏ´Â ¹«±â Àü·«ÀÌ ¾ø°Å³ª Àü·« ½ÇÇà ½ÇÆĞ ½Ã return false </returns>
+	/// <param name="Weapon">     : í•´ë‹¹ ì „ëµì„ ì‚¬ìš©í•  Weapon ê°ì²´ </param>
+	/// <returns> í•´ë‹¹í•˜ëŠ” ë¬´ê¸° ì „ëµì´ ì—†ê±°ë‚˜ ì „ëµ ì‹¤í–‰ ì‹¤íŒ¨ ì‹œ return false </returns>
 	virtual bool UseMlb_StartedStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 
@@ -53,40 +53,42 @@ public:
 	/// MLB Click OnGoing mapped weapon strategy
 	/// </summary>
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
-	/// <param name="Weapon">     : ÇØ´ç Àü·«À» »ç¿ëÇÒ Weapon °´Ã¼ </param>
-	/// <returns> ÇØ´çÇÏ´Â ¹«±â Àü·«ÀÌ ¾ø°Å³ª Àü·« ½ÇÇà ½ÇÆĞ ½Ã return false </returns>
+	/// <param name="Weapon">     : í•´ë‹¹ ì „ëµì„ ì‚¬ìš©í•  Weapon ê°ì²´ </param>
+	/// <returns> í•´ë‹¹í•˜ëŠ” ë¬´ê¸° ì „ëµì´ ì—†ê±°ë‚˜ ì „ëµ ì‹¤í–‰ ì‹¤íŒ¨ ì‹œ return false </returns>
 	virtual bool UseMlb_OnGoingStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// MLB Click Completed mapped weapon strategy
 	/// </summary>
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
-	/// <param name="Weapon">     : ÇØ´ç Àü·«À» »ç¿ëÇÒ Weapon °´Ã¼ </param>
-	/// <returns> ÇØ´çÇÏ´Â ¹«±â Àü·«ÀÌ ¾ø°Å³ª Àü·« ½ÇÇà ½ÇÆĞ ½Ã return false </returns>
+	/// <param name="Weapon">     : í•´ë‹¹ ì „ëµì„ ì‚¬ìš©í•  Weapon ê°ì²´ </param>
+	/// <returns> í•´ë‹¹í•˜ëŠ” ë¬´ê¸° ì „ëµì´ ì—†ê±°ë‚˜ ì „ëµ ì‹¤í–‰ ì‹¤íŒ¨ ì‹œ return false </returns>
 	virtual bool UseMlb_CompletedStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// MRB Click Started mapped weapon strategy
 	/// </summary>
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
-	/// <param name="Weapon">     : ÇØ´ç Àü·«À» »ç¿ëÇÒ Weapon °´Ã¼ </param>
-	/// <returns> ÇØ´çÇÏ´Â ¹«±â Àü·«ÀÌ ¾ø°Å³ª Àü·« ½ÇÇà ½ÇÆĞ ½Ã return false </returns>
+	/// <param name="Weapon">     : í•´ë‹¹ ì „ëµì„ ì‚¬ìš©í•  Weapon ê°ì²´ </param>
+	/// <returns> í•´ë‹¹í•˜ëŠ” ë¬´ê¸° ì „ëµì´ ì—†ê±°ë‚˜ ì „ëµ ì‹¤í–‰ ì‹¤íŒ¨ ì‹œ return false </returns>
 	virtual bool UseMrb_StartedStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// MRB Click OnGoing mapped weapon strategy
 	/// </summary>
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
-	/// <param name="Weapon">     : ÇØ´ç Àü·«À» »ç¿ëÇÒ Weapon °´Ã¼ </param>
-	/// <returns> ÇØ´çÇÏ´Â ¹«±â Àü·«ÀÌ ¾ø°Å³ª Àü·« ½ÇÇà ½ÇÆĞ ½Ã return false </returns>
+	/// <param name="Weapon">     : í•´ë‹¹ ì „ëµì„ ì‚¬ìš©í•  Weapon ê°ì²´ </param>
+	/// <returns> í•´ë‹¹í•˜ëŠ” ë¬´ê¸° ì „ëµì´ ì—†ê±°ë‚˜ ì „ëµ ì‹¤í–‰ ì‹¤íŒ¨ ì‹œ return false </returns>
 	virtual bool UseMrb_OnGoingStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 	/// <summary>
 	/// MRB Click Completed mapped weapon strategy
 	/// </summary>
 	/// <param name="WeaponUser"> : Weapon Owner Character </param>
-	/// <param name="Weapon">     : ÇØ´ç Àü·«À» »ç¿ëÇÒ Weapon °´Ã¼ </param>
-	/// <returns> ÇØ´çÇÏ´Â ¹«±â Àü·«ÀÌ ¾ø°Å³ª Àü·« ½ÇÇà ½ÇÆĞ ½Ã return false </returns>
+	/// <param name="Weapon">     : í•´ë‹¹ ì „ëµì„ ì‚¬ìš©í•  Weapon ê°ì²´ </param>
+	/// <returns> í•´ë‹¹í•˜ëŠ” ë¬´ê¸° ì „ëµì´ ì—†ê±°ë‚˜ ì „ëµ ì‹¤í–‰ ì‹¤íŒ¨ ì‹œ return false </returns>
 	virtual bool UseMrb_CompletedStrategy(class AC_BasicCharacter* WeaponUser, class AC_Weapon* Weapon) = 0;
 
 };
+
+

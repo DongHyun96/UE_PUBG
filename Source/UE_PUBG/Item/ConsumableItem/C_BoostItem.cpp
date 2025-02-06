@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/ConsumableItem/C_BoostItem.h"
@@ -50,3 +50,5 @@ void AC_BoostItem::HandleDestroy()
 	UC_Util::Print("Destroying Boost Item", FColor::Red, 5.f);
 	this->Destroy();
 }
+
+

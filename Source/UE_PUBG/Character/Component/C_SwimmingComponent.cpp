@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_SwimmingComponent.h"
@@ -50,7 +50,7 @@ void UC_SwimmingComponent::BeginPlay()
 		ATTACH_SOCKET_NAME
 	);
 
-	// Player·Î Casting ½Ãµµ
+	// Playerë¡œ Casting ì‹œë„
 	OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 }
 
@@ -102,9 +102,9 @@ void UC_SwimmingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
 
 		if (SwimmingState == ESwimmingState::SWIMMING_SURFACE)
 		{
-			if ((0.f <= Rotation.Pitch && Rotation.Pitch < 90.f) || 275.f < Rotation.Pitch) // À§ ¹× ¾Æ·¡·Î °¡´Â È¸Àü Á¦°Å
+			if ((0.f <= Rotation.Pitch && Rotation.Pitch < 90.f) || 275.f < Rotation.Pitch) // ìœ„ ë° ì•„ë˜ë¡œ ê°€ëŠ” íšŒì „ ì œê±°
 				Rotation = FRotator(0.f, Rotation.Yaw, Rotation.Roll);
-			else if (Rotation.Pitch < 275.f) // SwimmingSurface ÇØÁ¦ ÀÓ°èÄ¡
+			else if (Rotation.Pitch < 275.f) // SwimmingSurface í•´ì œ ì„ê³„ì¹˜
 				SwimmingState = ESwimmingState::SWIMMING_UNDER;
 		}
 
@@ -115,7 +115,7 @@ void UC_SwimmingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
 		OwnerPlayer->AddMovementInput(ForwardDirection, MovementVector.X);
 		OwnerPlayer->AddMovementInput(RightDirection, MovementVector.Y);
 
-		OwnerPlayer->SetNextSpeed(OwnerPlayer->GetCharacterMovement()->MaxWalkSpeed); // AnimCharacter¿¡¼­ Speed LerpÇÒ °ª setting
+		OwnerPlayer->SetNextSpeed(OwnerPlayer->GetCharacterMovement()->MaxWalkSpeed); // AnimCharacterì—ì„œ Speed Lerpí•  ê°’ setting
 	}
 }
 
@@ -131,7 +131,7 @@ void UC_SwimmingComponent::OnSwimmingCKey()
 		//OwnerPlayer->GetCharacterMovement()->bOrientRotationToMovement = false;
 	}
 
-	OwnerPlayer->UpdateMaxWalkSpeed(FVector2D::Zero()); // SwimmingÀÏ ¶§ ¹æÇâÀº »ó°ü ¾øÀ½
+	OwnerPlayer->UpdateMaxWalkSpeed(FVector2D::Zero()); // Swimmingì¼ ë•Œ ë°©í–¥ì€ ìƒê´€ ì—†ìŒ
 
 	if (OwnerPlayer->Controller)
 	{
@@ -159,7 +159,7 @@ void UC_SwimmingComponent::OnSwimmingSpaceBarKey()
 		//OwnerPlayer->GetCharacterMovement()->bOrientRotationToMovement = false;
 	}
 
-	OwnerPlayer->UpdateMaxWalkSpeed(FVector2D::Zero()); // SwimmingÀÏ ¶§ ¹æÇâÀº »ó°ü ¾øÀ½
+	OwnerPlayer->UpdateMaxWalkSpeed(FVector2D::Zero()); // Swimmingì¼ ë•Œ ë°©í–¥ì€ ìƒê´€ ì—†ìŒ
 
 	if (OwnerPlayer->Controller)
 	{
@@ -198,7 +198,7 @@ void UC_SwimmingComponent::HandleSwimmingState()
 
 	float WaterDepth = GetWaterDepth(CharacterLocation);
 
-	// ¼ö¿µ °¡´ÉÇÑ ±íÀÌÀÎÁö check
+	// ìˆ˜ì˜ ê°€ëŠ¥í•œ ê¹Šì´ì¸ì§€ check
 	if (WaterDepth <= CAN_WALK_DEPTH_LIMIT)
 	{
 		StopSwimming();
@@ -210,7 +210,7 @@ void UC_SwimmingComponent::HandleSwimmingState()
 
 	float CharacterDepth = GetCharacterDepth();
 
-	// ¼ö¸é À§·Î ³ª°¨ ¹æÁö
+	// ìˆ˜ë©´ ìœ„ë¡œ ë‚˜ê° ë°©ì§€
 	if (CharacterDepth > WaterDepth)
 	{
 		SwimmingState = ESwimmingState::SWIMMING_SURFACE;
@@ -227,7 +227,7 @@ void UC_SwimmingComponent::HandleSwimmingState()
 	SwimmingState = (WaterDepth - CharacterDepth < SURFACE_SWIM_DELTA_LIMIT) ? 
 					 ESwimmingState::SWIMMING_SURFACE : ESwimmingState::SWIMMING_UNDER;
 
-	// Surface¿¡¼­ ¼ö¿µÁßÀÌ°í ¸ØÃçÀÖÀ» ¶§ Ã³¸®
+	// Surfaceì—ì„œ ìˆ˜ì˜ì¤‘ì´ê³  ë©ˆì¶°ìˆì„ ë•Œ ì²˜ë¦¬
 	if (SwimmingState == ESwimmingState::SWIMMING_SURFACE && OwnerCharacter->GetNextSpeed() == 0.f)
 	{
 		float DetectionColliderZ = WaterDetectionCollider->GetComponentLocation().Z;
@@ -242,16 +242,16 @@ void UC_SwimmingComponent::HandleSwimmingState()
 
 void UC_SwimmingComponent::UpdateOxygenAmount(const float& DeltaTime)
 {
-	static const float OXYGEN_INCREASE_PER_SEC = 10.f;  // 0 -> 100 È¸º¹½Ã°£ ÃÑ 15ÃÊ
-	static const float OXYGEN_DECREASE_PER_SEC = 6.66f; // 100 -> 0 ÇÇÇØ½Ã°£ ÃÑ 20ÃÊ
+	static const float OXYGEN_INCREASE_PER_SEC = 10.f;  // 0 -> 100 íšŒë³µì‹œê°„ ì´ 15ì´ˆ
+	static const float OXYGEN_DECREASE_PER_SEC = 6.66f; // 100 -> 0 í”¼í•´ì‹œê°„ ì´ 20ì´ˆ
 
 	switch (SwimmingState)
 	{
-	case ESwimmingState::ON_GROUND: case ESwimmingState::SWIMMING_SURFACE: // ¼û È¸º¹
+	case ESwimmingState::ON_GROUND: case ESwimmingState::SWIMMING_SURFACE: // ìˆ¨ íšŒë³µ
 		if (OwnerCharacter->GetStatComponent()->GetCurOxygen() >= 100.f) return;
 		OwnerCharacter->GetStatComponent()->AddOxygen(OXYGEN_INCREASE_PER_SEC * DeltaTime);
 		return;
-	case ESwimmingState::SWIMMING_UNDER: // ¼û ±ğ±â
+	case ESwimmingState::SWIMMING_UNDER: // ìˆ¨ ê¹ê¸°
 		if (OwnerCharacter->GetStatComponent()->GetCurOxygen() <= 0.f) return;
 		OwnerCharacter->GetStatComponent()->AddOxygen(-OXYGEN_DECREASE_PER_SEC * DeltaTime);
 		return;
@@ -274,11 +274,11 @@ void UC_SwimmingComponent::OnWaterDetectionColliderBeginOverlap
 	UC_Util::Print(OtherActor->GetName(), FColor::Cyan, 10.f);
 
 
-	// PostProcessVolumeÀÇ À§Ä¡¿Í Å©±â Á¤º¸¸¦ °¡Á®¿È
+	// PostProcessVolumeì˜ ìœ„ì¹˜ì™€ í¬ê¸° ì •ë³´ë¥¼ ê°€ì ¸ì˜´
 	FVector PostProcessLocation = OtherActor->GetActorLocation();
 	FBoxSphereBounds Bounds = OtherActor->GetComponentsBoundingBox();
 
-	// À­¸é Z ÁÂÇ¥ °è»ê (Áß½É Z ÁÂÇ¥ + Àı¹İ ³ôÀÌ)
+	// ìœ—ë©´ Z ì¢Œí‘œ ê³„ì‚° (ì¤‘ì‹¬ Z ì¢Œí‘œ + ì ˆë°˜ ë†’ì´)
 	EnteredWaterZ = PostProcessLocation.Z + Bounds.BoxExtent.Z;
 	//EnteredWaterZ	= WaterDetectionCollider->GetComponentLocation().Z - WaterDetectionCollider->GetScaledCapsuleHalfHeight();
 	
@@ -302,12 +302,12 @@ void UC_SwimmingComponent::OnWaterDetectionColliderEndOverlap
 
 void UC_SwimmingComponent::StartSwimming()
 {
-	// ÀÌ¹Ì ¼ö¿µÇÏ´Â Áß
+	// ì´ë¯¸ ìˆ˜ì˜í•˜ëŠ” ì¤‘
 	if (SwimmingState != ESwimmingState::ON_GROUND) return;
 
 	UC_Util::Print("Start Swimming", FColor::Red, 10.f);
 
-	// SkyDiving Parachuting state µµÁß ¹°·Î ÂøÁöÇßÀ» ¶§ÀÇ ¿¹¿ÜÃ³¸®
+	// SkyDiving Parachuting state ë„ì¤‘ ë¬¼ë¡œ ì°©ì§€í–ˆì„ ë•Œì˜ ì˜ˆì™¸ì²˜ë¦¬
 	if (OwnerCharacter->GetMainState() == EMainState::SKYDIVING)
 		OwnerCharacter->GetSkyDivingComponent()->OnCharacterLandedOnWater();
 
@@ -321,10 +321,10 @@ void UC_SwimmingComponent::StartSwimming()
 	SwimmingState = ESwimmingState::SWIMMING_SURFACE;
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Swimming);
 
-	// PlayerÀÇ HUD ¾÷µ¥ÀÌÆ®
+	// Playerì˜ HUD ì—…ë°ì´íŠ¸
 	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetOxygenWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
-	// Pawn°úÀÇ Ãæµ¹ block ²ô±â (Pawn°úÀÇ Ãæµ¹Ã³¸®¸¦ ÇÏ¸é¼­ ¹° ¹ÛÀ¸·Î ³ª°¡¹ö¸± ¼ö ÀÖ´Â ¹ö±×°¡ ÀÖÀ½)
+	// Pawnê³¼ì˜ ì¶©ëŒ block ë„ê¸° (Pawnê³¼ì˜ ì¶©ëŒì²˜ë¦¬ë¥¼ í•˜ë©´ì„œ ë¬¼ ë°–ìœ¼ë¡œ ë‚˜ê°€ë²„ë¦´ ìˆ˜ ìˆëŠ” ë²„ê·¸ê°€ ìˆìŒ)
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
 	OwnerCharacter->GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
@@ -336,12 +336,12 @@ void UC_SwimmingComponent::StopSwimming()
 	OwnerCharacter->GetPhysicsVolume()->bWaterVolume = false;
 	SwimmingState = ESwimmingState::ON_GROUND;
 
-	// PoseCollider ¿øÇüÀ¸·Î ´Ù½Ã Àç¹èÄ¡
+	// PoseCollider ì›í˜•ìœ¼ë¡œ ë‹¤ì‹œ ì¬ë°°ì¹˜
 	OwnerCharacter->GetPoseColliderHandlerComponent()->SetColliderBySwimmingMovingState(false);
 
 	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetOxygenWidget()->SetVisibility(ESlateVisibility::Hidden);
 
-	// Pawn°úÀÇ Ãæµ¹ ´Ù½Ã ÄÑÁÖ±â
+	// Pawnê³¼ì˜ ì¶©ëŒ ë‹¤ì‹œ ì¼œì£¼ê¸°
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
 	OwnerCharacter->GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
@@ -357,15 +357,15 @@ float UC_SwimmingComponent::GetWaterDepth(const FVector& Position)
 	OwnerCharacter->GetAttachedActors(AttachedActors);
 	CollisionParams.AddIgnoredActors(AttachedActors);
 
-	// ObjectQueryParams ¼³Á¤ (Pawn Ã¤³Î ¹«½Ã)
+	// ObjectQueryParams ì„¤ì • (Pawn ì±„ë„ ë¬´ì‹œ)
 	FCollisionObjectQueryParams ObjectQueryParams{};
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
 
-	// OwnerCharacterÀÇ ÇöÀç À§Ä¡ÀÇ ¼ö½É Ã¼Å©ÇÏ±â
+	// OwnerCharacterì˜ í˜„ì¬ ìœ„ì¹˜ì˜ ìˆ˜ì‹¬ ì²´í¬í•˜ê¸°
 	FHitResult HitResult{};
 	FVector CharacterLocation	= OwnerCharacter->GetActorLocation();
 	FVector StartLocation		= FVector(CharacterLocation.X, CharacterLocation.Y, EnteredWaterZ);
-	FVector DestLocation		= FVector(CharacterLocation.X, CharacterLocation.Y, EnteredWaterZ - 10000); // 100m ¹Ø±îÁö ¼ö½É Ã¼Å©
+	FVector DestLocation		= FVector(CharacterLocation.X, CharacterLocation.Y, EnteredWaterZ - 10000); // 100m ë°‘ê¹Œì§€ ìˆ˜ì‹¬ ì²´í¬
 
 	//bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECC_WorldStatic, CollisionParams);
 
@@ -390,14 +390,14 @@ float UC_SwimmingComponent::GetCharacterDepth()
 	OwnerCharacter->GetAttachedActors(AttachedActors);
 	CollisionParams.AddIgnoredActors(AttachedActors);
 
-	// ObjectQueryParams ¼³Á¤
+	// ObjectQueryParams ì„¤ì •
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
 
-	// OwnerCharacterÀÇ ÇöÀç À§Ä¡ÀÇ ¼ö½É Ã¼Å©ÇÏ±â
+	// OwnerCharacterì˜ í˜„ì¬ ìœ„ì¹˜ì˜ ìˆ˜ì‹¬ ì²´í¬í•˜ê¸°
 	FHitResult HitResult{};
 	FVector StartLocation		= WaterDetectionCollider->GetComponentLocation();
-	FVector DestLocation		= FVector(StartLocation.X, StartLocation.Y, StartLocation.Z - 10000.f); // 100m ¹Ø±îÁö ¼ö½É Ã¼Å©
+	FVector DestLocation		= FVector(StartLocation.X, StartLocation.Y, StartLocation.Z - 10000.f); // 100m ë°‘ê¹Œì§€ ìˆ˜ì‹¬ ì²´í¬
 
 	//bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECC_WorldStatic, CollisionParams);
 
@@ -413,4 +413,6 @@ float UC_SwimmingComponent::GetCharacterDepth()
 	return (!HasHit) ? 0.f : HitResult.Distance;
 
 }
+
+
 

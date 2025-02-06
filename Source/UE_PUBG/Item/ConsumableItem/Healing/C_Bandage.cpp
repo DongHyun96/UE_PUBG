@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/ConsumableItem/Healing/C_Bandage.h"
@@ -65,13 +65,13 @@ void AC_Bandage::OnActivatingFinish()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::BANDAGE, true);
 	
-	// 10ÃÊ µÚ ÆÈ¿¡ °¨Àº ºØ´ë °¨Ãß±â
+	// 10ì´ˆ ë’¤ íŒ”ì— ê°ì€ ë¶•ëŒ€ ê°ì¶”ê¸°
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_Bandage::HideUsageMesh, USAGE_MESH_SHOWN_TIME, false);
 }
 
 void AC_Bandage::OnCancelActivating()
 {
-	// ¾Æ¹« actionµµ ¾ÈÃëÇØµµ µÊ
+	// ì•„ë¬´ actionë„ ì•ˆì·¨í•´ë„ ë¨
 }
 
 void AC_Bandage::HandleDestroy()
@@ -88,3 +88,5 @@ void AC_Bandage::HideUsageMesh()
 		this->Destroy();
 	}
 }
+
+

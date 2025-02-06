@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -31,7 +31,7 @@ public:
 	void SetColliderByPoseState(EPoseState InPoseState);
 
 	/// <summary>
-	/// Swimming ÁßÀÌ°í ¿òÁ÷ÀÌ´Â ÁßÀÎÁö ¾Æ´ÑÁö¿¡ µû¸¥ Collider Á¶Á¤½ÃÅ°±â
+	/// Swimming ì¤‘ì´ê³  ì›€ì§ì´ëŠ” ì¤‘ì¸ì§€ ì•„ë‹Œì§€ì— ë”°ë¥¸ Collider ì¡°ì •ì‹œí‚¤ê¸°
 	/// </summary>
 	/// <param name="IsMoving"> : true if currently moving on the water </param>
 	void SetColliderBySwimmingMovingState(const bool& IsMoving);
@@ -41,84 +41,84 @@ public:
 public:
 
 	/// <summary>
-	/// ÇöÀç ÁÖº¯È¯°æ¿¡¼­ ÇÃ·¹ÀÌ¾î Ä³¸¯ÅÍ°¡ ÀÚ¼¼¸¦ ¹Ù²Ü ¼ö ÀÖ´ÂÁö Ã¼Å©
+	/// í˜„ì¬ ì£¼ë³€í™˜ê²½ì—ì„œ í”Œë ˆì´ì–´ ìºë¦­í„°ê°€ ìì„¸ë¥¼ ë°”ê¿€ ìˆ˜ ìˆëŠ”ì§€ ì²´í¬
 	/// </summary>
-	/// <param name="InChangeTo"> : ¹Ù²Ù·Á°í ÇÏ´Â ÀÚ¼¼ </param>
-	/// <returns> : ¹Ù²Ü ¼ö ÀÖ´Ù¸é return true </returns>
+	/// <param name="InChangeTo"> : ë°”ê¾¸ë ¤ê³  í•˜ëŠ” ìì„¸ </param>
+	/// <returns> : ë°”ê¿€ ìˆ˜ ìˆë‹¤ë©´ return true </returns>
 	bool CanChangePoseOnCurrentSurroundEnvironment(EPoseState InChangeTo);
 
 private:
 
 	/// <summary>
-	/// ÀÚ¼¼ ÀüÈ¯¿¡ µû¸¥ Body Collider size ¹× Mesh À§Ä¡ Lerp·Î ¸ÂÃß±â
+	/// ìì„¸ ì „í™˜ì— ë”°ë¥¸ Body Collider size ë° Mesh ìœ„ì¹˜ Lerpë¡œ ë§ì¶”ê¸°
 	/// </summary>
 	/// <param name="DeltaTime"></param>
 	void HandleLerpBodySizeByPose(const float& DeltaTime);
 
 	/// <summary>
-	/// Crawl »óÅÂ ½Ã, Crawl Collider ÁöÇüÁö¹°¿¡ µû¶ó È¸Àü ½ÃÄÑÁÖ±â
+	/// Crawl ìƒíƒœ ì‹œ, Crawl Collider ì§€í˜•ì§€ë¬¼ì— ë”°ë¼ íšŒì „ ì‹œì¼œì£¼ê¸°
 	/// </summary>
 	/// <param name="DeltaTime"></param>
 	void HandleCrawlColliderRotation(const float& DeltaTime);
 
 private:
 
-	// TODO : Parameter·Î Start¿Í Dest Location °¡Á®¿À±â
+	// TODO : Parameterë¡œ Startì™€ Dest Location ê°€ì ¸ì˜¤ê¸°
 
 	/// <summary>
-	/// Ä³¸¯ÅÍ ÇöÀç À§Ä¡ÀÇ °æ»çµµ ±¸ÇÏ±â (Radian°ª)
+	/// ìºë¦­í„° í˜„ì¬ ìœ„ì¹˜ì˜ ê²½ì‚¬ë„ êµ¬í•˜ê¸° (Radianê°’)
 	/// </summary>
-	/// <param name="ImpactDistances"> : Head Pelvis ¼ø LineTrace Impact °Å¸® </param>
+	/// <param name="ImpactDistances"> : Head Pelvis ìˆœ LineTrace Impact ê±°ë¦¬ </param>
 	 /// <param name="HeightOffset"> : LineTrace Start Height(Z) Offset </param>
-	/// <param name="EnableDebugLine"> : DebugLineÀ» ±×¸±Áö </param>
-	/// <returns> : °æ»çµµ </returns>
+	/// <param name="EnableDebugLine"> : DebugLineì„ ê·¸ë¦´ì§€ </param>
+	/// <returns> : ê²½ì‚¬ë„ </returns>
 	float GetCrawlSlopeAngle(OUT TPair<float, float>& ImpactDistances, const float& HeightOffset = 0.f, const bool& EnableDebugLine = false);
 
 
 	/// <summary>
-	/// ÀÓÀÇÀÇ HeadLocation°ú PelvisLocationÀÌ ÁÖ¾îÁú ¶§, ÇØ´ç À§Ä¡ÀÇ °æ»çµµ ±¸ÇÏ±â (Radian°ª)
+	/// ì„ì˜ì˜ HeadLocationê³¼ PelvisLocationì´ ì£¼ì–´ì§ˆ ë•Œ, í•´ë‹¹ ìœ„ì¹˜ì˜ ê²½ì‚¬ë„ êµ¬í•˜ê¸° (Radianê°’)
 	/// </summary>
-	/// <param name="HeadLocation"> : ÀÓÀÇÀÇ Head Location LineTrace ½ÃÀÛÁ¡ </param>
-	/// <param name="PelvisLocation"> : ÀÓÀÇÀÇ Pelvis Location LineTrace ½ÃÀÛÁ¡ </param>
-	/// <param name="ImpactDistances"> : Head Pelvis ¼ø LineTrace Impact °Å¸® </param>
-	/// <param name="EnableDebugLine"> : DebugLineÀ» ±×¸±Áö </param>
-	/// <returns> : °æ»çµµ </returns>
+	/// <param name="HeadLocation"> : ì„ì˜ì˜ Head Location LineTrace ì‹œì‘ì  </param>
+	/// <param name="PelvisLocation"> : ì„ì˜ì˜ Pelvis Location LineTrace ì‹œì‘ì  </param>
+	/// <param name="ImpactDistances"> : Head Pelvis ìˆœ LineTrace Impact ê±°ë¦¬ </param>
+	/// <param name="EnableDebugLine"> : DebugLineì„ ê·¸ë¦´ì§€ </param>
+	/// <returns> : ê²½ì‚¬ë„ </returns>
 	float GetCrawlSlopeAngle(const FVector& HeadStartLocation, const FVector& PelvisStartLocation, OUT TPair<float, float>& ImpactDistances, const bool& EnableDebugLine = false);
 
 	/// <summary>
-	/// Ä³¸¯ÅÍ ÇöÀç À§Ä¡ÀÇ °æ»çµµ ±¸ÇÏ±â
+	/// ìºë¦­í„° í˜„ì¬ ìœ„ì¹˜ì˜ ê²½ì‚¬ë„ êµ¬í•˜ê¸°
 	/// </summary>
-	/// <param name="ImpactDistances"> : Head Pelvis ¼ø LineTrace Impact °Å¸® </param>
+	/// <param name="ImpactDistances"> : Head Pelvis ìˆœ LineTrace Impact ê±°ë¦¬ </param>
 	 /// <param name="HeightOffset"> : LineTrace Start Height(Z) Offset </param>
-	/// <param name="EnableDebugLine"> : DebugLineÀ» ±×¸±Áö </param>
-	/// <returns> : °æ»çµµ </returns>
+	/// <param name="EnableDebugLine"> : DebugLineì„ ê·¸ë¦´ì§€ </param>
+	/// <returns> : ê²½ì‚¬ë„ </returns>
 	float GetCrawlSlopeDegree(OUT TPair<float, float>& ImpactDistances, const float& HeightOffset = 0.f, const bool& EnableDebugLine = false);
 
 //public:
 
 	/// <summary>
-	/// ÀÓÀÇÀÇ HeadLocation°ú PelvisLocationÀÌ ÁÖ¾îÁú ¶§, ÇØ´ç À§Ä¡ÀÇ °æ»çµµ ±¸ÇÏ±â
+	/// ì„ì˜ì˜ HeadLocationê³¼ PelvisLocationì´ ì£¼ì–´ì§ˆ ë•Œ, í•´ë‹¹ ìœ„ì¹˜ì˜ ê²½ì‚¬ë„ êµ¬í•˜ê¸°
 	/// </summary>
-	/// <param name="HeadLocation"> : ÀÓÀÇÀÇ Head Location LineTrace ½ÃÀÛÁ¡ </param>
-	/// <param name="PelvisLocation"> : ÀÓÀÇÀÇ Pelvis Location LineTrace ½ÃÀÛÁ¡ </param>
-	/// <param name="ImpactDistances"> : Head Pelvis ¼ø LineTrace Impact °Å¸® </param>
-	/// <param name="EnableDebugLine"> : DebugLineÀ» ±×¸±Áö </param>
-	/// <returns> : °æ»çµµ </returns>
+	/// <param name="HeadLocation"> : ì„ì˜ì˜ Head Location LineTrace ì‹œì‘ì  </param>
+	/// <param name="PelvisLocation"> : ì„ì˜ì˜ Pelvis Location LineTrace ì‹œì‘ì  </param>
+	/// <param name="ImpactDistances"> : Head Pelvis ìˆœ LineTrace Impact ê±°ë¦¬ </param>
+	/// <param name="EnableDebugLine"> : DebugLineì„ ê·¸ë¦´ì§€ </param>
+	/// <returns> : ê²½ì‚¬ë„ </returns>
 	float GetCrawlSlopeDegree(const FVector& HeadStartLocation, const FVector& PelvisStartLocation, OUT TPair<float, float>& ImpactDistances, const bool& EnableDebugLine = false);
 
 public:
 
 	/// <summary>
-	/// ÇØ´ç À§Ä¡¿¡¼­ Ä³¸¯ÅÍ°¡ ¾şµå¸± ¼ö ÀÖ´ÂÁö Ã¼Å©
+	/// í•´ë‹¹ ìœ„ì¹˜ì—ì„œ ìºë¦­í„°ê°€ ì—ë“œë¦´ ìˆ˜ ìˆëŠ”ì§€ ì²´í¬
 	/// </summary>
-	/// <param name="HeadStartLocation"> : Line Trace Head À§Ä¡ ½ÃÀÛÁ¡ </param>
-	/// <param name="PelvisStartLocation"> : Line Trace Pelvis À§Ä¡ ½ÃÀÛÁ¡ </param>
-	/// <returns> : ¾şµå¸± ¼ö ÀÖ´Ù¸é return true </returns>
+	/// <param name="HeadStartLocation"> : Line Trace Head ìœ„ì¹˜ ì‹œì‘ì  </param>
+	/// <param name="PelvisStartLocation"> : Line Trace Pelvis ìœ„ì¹˜ ì‹œì‘ì  </param>
+	/// <returns> : ì—ë“œë¦´ ìˆ˜ ìˆë‹¤ë©´ return true </returns>
 	bool CanCrawlOnSlope(const FVector& HeadStartLocation, const FVector& PelvisStartLocation);
 
 
 	/// <summary>
-	/// ÇØ´ç À§Ä¡¿¡¼­ Ä³¸¯ÅÍ°¡ ¾şµå¸± ¼ö ÀÖ´ÂÁö Ã¼Å©
+	/// í•´ë‹¹ ìœ„ì¹˜ì—ì„œ ìºë¦­í„°ê°€ ì—ë“œë¦´ ìˆ˜ ìˆëŠ”ì§€ ì²´í¬
 	/// </summary>
 	/// <param name="SlopeDegree"></param>
 	/// <param name="ImpactDistances"></param>
@@ -137,18 +137,18 @@ protected:
 
 private:
 
-	// ÀÚ¼¼º° CapsuleComponent(RootComponent) Collider ³ôÀÌ¿Í Radius
+	// ìì„¸ë³„ CapsuleComponent(RootComponent) Collider ë†’ì´ì™€ Radius
 	static const TMap<EPoseState, TPair<float, float>> POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS;
 
-	// ÀÚ¼¼ º° Mesh Z Pos
+	// ìì„¸ ë³„ Mesh Z Pos
 	static const TMap<EPoseState, float> POSE_BY_MESH_Z_POS;
 
-	// ÀÚ¼¼º° Å©±â ¹× À§Ä¡ Lerp Destination
+	// ìì„¸ë³„ í¬ê¸° ë° ìœ„ì¹˜ Lerp Destination
 	TPair<float, float> RootColliderHeightRadiusLerpDest = POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[EPoseState::STAND];
 	float MeshZPosLerpDest = POSE_BY_MESH_Z_POS[EPoseState::STAND];
 	float PoseBySizePosLerpSpeed = 10.f;
 	
-	// Lerp¸¦ ÁøÇàÇÏ´ÂÁö Ã¼Å©
+	// Lerpë¥¼ ì§„í–‰í•˜ëŠ”ì§€ ì²´í¬
 	bool PoseBySizeLerpFlag{};
 
 private: // ChangePose Sweep testing constants
@@ -159,10 +159,10 @@ private: // ChangePose Sweep testing constants
 	static const float CRAWL_TO_CROUCH_SWEEP_DIST;
 	
 	static const float CRAWL_LINETRACE_TEST_DIST;
-	static const float CRAWL_DEGREE_LIMIT;			// ±â¾î°¥ ¼ö ¾ø´Â °æ»çµµ Limit
+	static const float CRAWL_DEGREE_LIMIT;			// ê¸°ì–´ê°ˆ ìˆ˜ ì—†ëŠ” ê²½ì‚¬ë„ Limit
 	static const float CRAWL_GROUND_DIST_LIMIT;
 
-private: // Crawl Collider Rotation Lerp °ü·Ã
+private: // Crawl Collider Rotation Lerp ê´€ë ¨
 
 	float CrawlColliderPitchLerpDest{};
 
@@ -171,3 +171,5 @@ private:
 	float CrawlSlopeAngle{};
 
 };
+
+

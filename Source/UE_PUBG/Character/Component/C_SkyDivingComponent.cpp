@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_SkyDivingComponent.h"
@@ -24,18 +24,18 @@
 const FName UC_SkyDivingComponent::PARABACKPACK_SOCKET_NAME = "ParachuteBackPackSocket";
 const FName UC_SkyDivingComponent::PARACHUTE_SOCKET_NAME    = "ParachuteSocket";
 
-const float UC_SkyDivingComponent::PLAYER_READY_MAINCAM_ARMLENGTH		= 3000.f; // ºñÇà±â ¾È¿¡ Å¾½ÂÇßÀ» ¶§ÀÇ ArmLength
+const float UC_SkyDivingComponent::PLAYER_READY_MAINCAM_ARMLENGTH		= 3000.f; // ë¹„í–‰ê¸° ì•ˆì— íƒ‘ìŠ¹í–ˆì„ ë•Œì˜ ArmLength
 const float UC_SkyDivingComponent::PLAYER_PARACHUTE_MAINCAM_ARMLENGTH	= 600.f;
 const float UC_SkyDivingComponent::PLAYER_SKYDIVE_MAINCAM_ARMLENGTH		= 400.f;
 const float UC_SkyDivingComponent::PLAYER_ORIGIN_MAINCAM_ARMLENGTH		= 220.f;
 
-// ¿øÀÛ ¼öÄ¡
+// ì›ì‘ ìˆ˜ì¹˜
 //const float PARACHUTE_DEPLOY_LIMIT_HEIGHT = 43000.f;
-//const float MAX_SKYDIVE_JUMP_ALTITUDE = 155000.f; // ¿øÀÛ ±âÁØ 8 x 8 ¸Ê 1.5km »ó°ø ¸Æ½Ã¸Ø¿¡¼­ ¶Ù¾î³»¸²
+//const float MAX_SKYDIVE_JUMP_ALTITUDE = 155000.f; // ì›ì‘ ê¸°ì¤€ 8 x 8 ë§µ 1.5km ìƒê³µ ë§¥ì‹œë©ˆì—ì„œ ë›°ì–´ë‚´ë¦¼
 
 const float UC_SkyDivingComponent::PARACHUTE_DEPLOY_LIMIT_HEIGHT = 10000.f;
-//const float MAX_SKYDIVE_JUMP_ALTITUDE		= 155000.f; // ¿øÀÛ ±âÁØ 8 x 8 ¸Ê 1.5km »ó°ø ¸Æ½Ã¸Ø¿¡¼­ ¶Ù¾î³»¸²
-const float UC_SkyDivingComponent::MAX_SKYDIVE_JUMP_ALTITUDE = 1e9; // Testing °ª
+//const float MAX_SKYDIVE_JUMP_ALTITUDE		= 155000.f; // ì›ì‘ ê¸°ì¤€ 8 x 8 ë§µ 1.5km ìƒê³µ ë§¥ì‹œë©ˆì—ì„œ ë›°ì–´ë‚´ë¦¼
+const float UC_SkyDivingComponent::MAX_SKYDIVE_JUMP_ALTITUDE = 1e9; // Testing ê°’
 
 UC_SkyDivingComponent::UC_SkyDivingComponent()
 {
@@ -74,7 +74,7 @@ void UC_SkyDivingComponent::BeginPlay()
 		ParachuteSkeletalMeshComponent->SetVisibility(false);
 	}
 
-	// OwnerPlayer·Î Casting ½Ãµµ
+	// OwnerPlayerë¡œ Casting ì‹œë„
 	OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 }
 
@@ -124,7 +124,7 @@ void UC_SkyDivingComponent::HandlePlayerMovement(const FVector2D& MovementVector
 	case ESkyDivingState::READY: case ESkyDivingState::LANDING: case ESkyDivingState::MAX: return;
 	}
 
-	if (MovementVector.X == -1)  // µŞ¹æÇâ input ³«ÇÏ¼Óµµ ÀûÀıÈ÷ Á¶Á¤
+	if (MovementVector.X == -1)  // ë’·ë°©í–¥ input ë‚™í•˜ì†ë„ ì ì ˆíˆ ì¡°ì •
 	{
 		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = 0.f;
 		//VelocityZLerpDest = SKYDIVE_BACKKEY_ZSPEED;
@@ -144,7 +144,7 @@ void UC_SkyDivingComponent::HandlePlayerMovement(const FVector2D& MovementVector
 
 	UCharacterMovementComponent* OwnerMovement = OwnerCharacter->GetCharacterMovement();
 
-	// Update MaxWalkSpeed & Áß·Â ¶ÇÇÑ Pitch¿¡ µû¶ó Á¶Á¤Ã³¸®
+	// Update MaxWalkSpeed & ì¤‘ë ¥ ë˜í•œ Pitchì— ë”°ë¼ ì¡°ì •ì²˜ë¦¬
 	if (!HoldingDirection)
 	{
 		if (270.f <= Rotation.Pitch)
@@ -167,16 +167,16 @@ void UC_SkyDivingComponent::HandlePlayerMovement(const FVector2D& MovementVector
 	OwnerCharacter->AddMovementInput(ForwardDirection, MovementVector.X);
 	OwnerCharacter->AddMovementInput(RightDirection, MovementVector.Y);
 
-	// Pitch¿¡ µû¸¥ NextSpeed Á¶Á¤À¸·Î ¶³¾îÁö´Â animation ´Ù¸£°Ô ÁÖ±â & Áß·Â Á¶Àı
-	// Pitch 0 ~ 89.99 -> À­ ¹æÇâ / 360 ~ 270 ¾Æ·§¹æÇâ
+	// Pitchì— ë”°ë¥¸ NextSpeed ì¡°ì •ìœ¼ë¡œ ë–¨ì–´ì§€ëŠ” animation ë‹¤ë¥´ê²Œ ì£¼ê¸° & ì¤‘ë ¥ ì¡°ì ˆ
+	// Pitch 0 ~ 89.99 -> ìœ— ë°©í–¥ / 360 ~ 270 ì•„ë«ë°©í–¥
 
-	if (HoldingDirection) return; // HoldDirection ÁßÀÌ¶ó¸é return (HoldDirection ÀÌÀü¿¡ Á¶Á¤ÇÑ °ªÀ¸·Î °è¼Ó À¯Áö)
+	if (HoldingDirection) return; // HoldDirection ì¤‘ì´ë¼ë©´ return (HoldDirection ì´ì „ì— ì¡°ì •í•œ ê°’ìœ¼ë¡œ ê³„ì† ìœ ì§€)
 
 	float AnimNextSpeed = (270.f <= Rotation.Pitch) ? 
 		                  FMath::GetMappedRangeValueClamped(FVector2D(360.f, 270.f), FVector2D(2000.f, 4000.f), Rotation.Pitch) :
 						  2000.f;
 
-	OwnerCharacter->SetNextSpeed(AnimNextSpeed); // AnimCharacter¿¡¼­ Speed LerpÇÒ °ª setting
+	OwnerCharacter->SetNextSpeed(AnimNextSpeed); // AnimCharacterì—ì„œ Speed Lerpí•  ê°’ setting
 }
 
 void UC_SkyDivingComponent::OnSkyMoveEnd()
@@ -196,7 +196,7 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		return;
 	case ESkyDivingState::SKYDIVING:
 	{
-		// SkyDiving °¡´ÉÇÑÁö Ã¼Å©
+		// SkyDiving ê°€ëŠ¥í•œì§€ ì²´í¬
 		if (!GAMESCENE_MANAGER->GetAirplaneManager()->GetCanDive())
 		{
 			UC_Util::Print("Cannot SkyDive at the current pos");
@@ -207,7 +207,7 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 
 		SkyDivingState = InSkyDivingState;
 
-		// TODO : ºñÇà±â À§Ä¡¿¡ Character spawn(Visibility on) & PlayerÀÏ °æ¿ì MainCamera Player·Î ´Ù½Ã Àâ¾ÆÁÖ±â
+		// TODO : ë¹„í–‰ê¸° ìœ„ì¹˜ì— Character spawn(Visibility on) & Playerì¼ ê²½ìš° MainCamera Playerë¡œ ë‹¤ì‹œ ì¡ì•„ì£¼ê¸°
 		OwnerCharacter->SetActorHiddenInGame(false);
 		ParachuteBackpackStaticMeshComponent->SetVisibility(true);
 
@@ -223,7 +223,7 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		//OwnerMovement->MaxFlySpeed = 1000.f;
 		//OwnerMovement->BrakingDecelerationFlying = 2048.f;
 
-		// SkyDive Widget Jumped°íµµ Àâ¾ÆÁÖ±â
+		// SkyDive Widget Jumpedê³ ë„ ì¡ì•„ì£¼ê¸°
 		if (OwnerPlayer)
 		{
 			UpdateCurrentHeight();
@@ -234,14 +234,14 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 
 			PlayerSkyDiveWidget->SetJumpedAltitude(CurrentHeight);
 
-			// TODO: ¸Ê¿¡ µû¸¥ parachute Limit °íµµ ¼³Á¤(SkyDiveWidget¿¡¼­ »ç¿ë)
+			// TODO: ë§µì— ë”°ë¥¸ parachute Limit ê³ ë„ ì„¤ì •(SkyDiveWidgetì—ì„œ ì‚¬ìš©)
 			PlayerSkyDiveWidget->SetParachuteLimitAltitude(PARACHUTE_DEPLOY_LIMIT_HEIGHT);
 
-			// Player ¸¶Ä¿ MainMap¿¡ ´Ù½Ã Ç¥½ÃÇÏ±â
+			// Player ë§ˆì»¤ MainMapì— ë‹¤ì‹œ í‘œì‹œí•˜ê¸°
 			//UC_MainMapWidget* PlayerMainMapWidget = OwnerPlayer->GetHUDWidget()->GetMainMapWidget();
 			//PlayerMainMapWidget->TogglePlayerMarkerImageVisibility(true);
 
-			// Instruction Key HUD ¾÷µ¥ÀÌÆ®
+			// Instruction Key HUD ì—…ë°ì´íŠ¸
 			UC_InstructionWidget* InstructionWidget = OwnerPlayer->GetHUDWidget()->GetInstructionWidget();
 			InstructionWidget->ToggleDeployParachuteInstructionVisibility(true);
 			InstructionWidget->ToggleEjectInstructionVisibility(false);
@@ -258,26 +258,26 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		ParachuteSkeletalMeshComponent->GetAnimInstance()->Montage_Play(ParachuteDeployMontage);
 		//ParachuteSkeletalMesh->PlayAnimation()
 
-		// Instruction Key HUD ¾÷µ¥ÀÌÆ®
+		// Instruction Key HUD ì—…ë°ì´íŠ¸
 		if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->ToggleDeployParachuteInstructionVisibility(false);
 
 		return;
 	}
 	case ESkyDivingState::LANDING:
 	{
-		// ³«ÇÏ»ê animation
+		// ë‚™í•˜ì‚° animation
 		//ParachuteSkeletalMesh->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
 		ParachuteSkeletalMeshComponent->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 
 		ParachuteSkeletalMeshComponent->GetAnimInstance()->Montage_Play(ParachuteEjectMontage);
 
-		// °¡¹æ ¼û±â±â
+		// ê°€ë°© ìˆ¨ê¸°ê¸°
 		ParachuteBackpackStaticMeshComponent->SetVisibility(false);
 
 		OwnerCharacter->PlayAnimMontage(LandingMontage);
 		SkyDivingState = ESkyDivingState::LANDING;
 
-		// HUD ²ô±â
+		// HUD ë„ê¸°
 		if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden);
 		return;
 	}
@@ -301,7 +301,7 @@ void UC_SkyDivingComponent::OnCharacterLandedOnWater()
 	OwnerCharacter->SetMainState(EMainState::IDLE);
 	SkyDivingState = ESkyDivingState::LANDING;
 
-	// HUD ²ô±â
+	// HUD ë„ê¸°
 	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden);
 }
 
@@ -336,7 +336,7 @@ void UC_SkyDivingComponent::LerpPlayerMainCameraArmLength(const float& DeltaTime
 
 	if (OwnerPlayer->GetMainState() != EMainState::SKYDIVING)
 	{
-		// LandingÇÑ ÀÌÈÄ·Î TargetArmLength°¡ ¿øÀ§Ä¡ µÇÁö ¾Ê¾ÒÀ» ¶§ÀÇ ¿¹¿ÜÃ³¸®
+		// Landingí•œ ì´í›„ë¡œ TargetArmLengthê°€ ì›ìœ„ì¹˜ ë˜ì§€ ì•Šì•˜ì„ ë•Œì˜ ì˜ˆì™¸ì²˜ë¦¬
 		if (FMath::Abs(MainCamSpringArm->TargetArmLength - PLAYER_ORIGIN_MAINCAM_ARMLENGTH) > 0.1f)
 			MainCamSpringArm->TargetArmLength = FMath::Lerp(MainCamSpringArm->TargetArmLength, PLAYER_ORIGIN_MAINCAM_ARMLENGTH, DeltaTime * 5.f);
 
@@ -352,7 +352,7 @@ void UC_SkyDivingComponent::LerpPlayerMainCameraArmLength(const float& DeltaTime
 	case ESkyDivingState::PARACHUTING:
 		MainCamSpringArm->TargetArmLength = FMath::Lerp(MainCamSpringArm->TargetArmLength, PLAYER_PARACHUTE_MAINCAM_ARMLENGTH, DeltaTime * 5.f);
 		return;
-	case ESkyDivingState::LANDING: // TODO : Landing ÇÑ ÀÌÈÄ·Î TargetArmLength ¿øÀ§Ä¡ µÇ¾îÀÖ´ÂÁö È®ÀÎ(LANDING ´Ü°è¿¡¼­ AnimMontage·Î Landing µ¿ÀÛ Àç»ıÇÒ ¿¹Á¤)
+	case ESkyDivingState::LANDING: // TODO : Landing í•œ ì´í›„ë¡œ TargetArmLength ì›ìœ„ì¹˜ ë˜ì–´ìˆëŠ”ì§€ í™•ì¸(LANDING ë‹¨ê³„ì—ì„œ AnimMontageë¡œ Landing ë™ì‘ ì¬ìƒí•  ì˜ˆì •)
 		MainCamSpringArm->TargetArmLength = FMath::Lerp(MainCamSpringArm->TargetArmLength, PLAYER_ORIGIN_MAINCAM_ARMLENGTH, DeltaTime * 5.f);
 		return;
 	case ESkyDivingState::READY:
@@ -425,7 +425,7 @@ void UC_SkyDivingComponent::UpdateCurrentHeight()
 
 void UC_SkyDivingComponent::UpdatePlayerSkyDiveHUD()
 {
-	// SkyDive HUD Widget °¡Á®¿À±â
+	// SkyDive HUD Widget ê°€ì ¸ì˜¤ê¸°
 	if (!OwnerPlayer) return;
 
 	UC_SkyDiveWidget* SkyDiveWidget = OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget();
@@ -434,3 +434,5 @@ void UC_SkyDivingComponent::UpdatePlayerSkyDiveHUD()
 	// Update Height
 	SkyDiveWidget->SetAltitude(CurrentHeight);
 }
+
+

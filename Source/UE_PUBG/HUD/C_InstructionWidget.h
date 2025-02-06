@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -35,7 +35,7 @@ public:
 
 	void DeActivateConsumableInstruction() { ConsumableInstruction->SetVisibility(ESlateVisibility::Hidden); }
 
-protected: // Consumable Item Activating cancel instruction °ü·Ã
+protected: // Consumable Item Activating cancel instruction ê´€ë ¨
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UCanvasPanel* ConsumableInstruction{};
@@ -43,3 +43,5 @@ protected: // Consumable Item Activating cancel instruction °ü·Ã
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UTextBlock* ConsumableCurrentUsingTextBlock{};
 };
+
+

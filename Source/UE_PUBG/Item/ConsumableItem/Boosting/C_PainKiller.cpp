@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/ConsumableItem/Boosting/C_PainKiller.h"
@@ -56,3 +56,5 @@ void AC_PainKiller::OnCancelActivating()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::PAIN_KILLER, false);
 }
+
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -33,13 +33,13 @@ public:
 	/// <summary>
 	/// Altitude Text setting & Altitude Box position setting
 	/// </summary>
-	/// <param name="Altitude"> : °íµµ(cm) </param>
+	/// <param name="Altitude"> : ê³ ë„(cm) </param>
 	void SetAltitude(const float& Altitude);
 
 private:
 
 	/// <summary>
-	/// Speed HUD ¾÷µ¥ÀÌÆ®
+	/// Speed HUD ì—…ë°ì´íŠ¸
 	/// </summary>
 	void UpdateSpeed();
 
@@ -56,20 +56,20 @@ protected:
 	class UCanvasPanel* AltitudeBoxPanel{};
 
 private:
-	// AltitudeBox ½ÇÁúÀûÀÎ Slot obj
+	// AltitudeBox ì‹¤ì§ˆì ì¸ Slot obj
 	class UCanvasPanelSlot* AltitudeBoxPanelSlot{};
 
-private: // ³«ÇÏ °íµµ °ü·Ã °ªµé  
+private: // ë‚™í•˜ ê³ ë„ ê´€ë ¨ ê°’ë“¤  
 	
-	float JumpedAltitude{}; // ÃÖ´ë ³ôÀÌ
+	float JumpedAltitude{}; // ìµœëŒ€ ë†’ì´
 	float ParachuteLimitAltitude{}; // Parachute Limit Altitude
 
-private: // ³«ÇÏ ³ôÀÌ Box Widget À§Ä¡ °ü·Ã »ó¼ö
+private: // ë‚™í•˜ ë†’ì´ Box Widget ìœ„ì¹˜ ê´€ë ¨ ìƒìˆ˜
 	
 	static const FVector2D ALTITUDE_BOX_MAX_TO_PARACHUTE;
 	static const FVector2D ALTITUDE_BOX_PARACHUTE_TO_MIN;
 
-protected: // Speed °ü·Ã fields
+protected: // Speed ê´€ë ¨ fields
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UMaterialInstanceDynamic* SpeedScaleBarMatInstDynamic{};
@@ -88,3 +88,5 @@ private:
 	static const float TEXTBLOCKSCALING_FACTOR;
 	
 };
+
+
