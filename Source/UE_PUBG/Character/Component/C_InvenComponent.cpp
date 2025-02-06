@@ -445,7 +445,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 
 		CurVolume += item->GetAllVolume();
 
-		item->Destroy();//가지고 있던 아이템에 새로 넣는 아이템을 다 넣었으므로 삭제.
+		//item->Destroy();//가지고 있던 아이템에 새로 넣는 아이템을 다 넣었으므로 삭제.
 	}
 	else 
 	{

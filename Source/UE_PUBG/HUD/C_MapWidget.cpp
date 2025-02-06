@@ -27,6 +27,8 @@ void UC_MapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 	//HandleUpdatePlaneRouteStartDest();
 	HandleUpdatePlaneRouteTransform();
+
+	
 }
 
 void UC_MapWidget::SetVisibility(ESlateVisibility InVisibility)

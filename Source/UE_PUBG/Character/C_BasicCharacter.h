@@ -146,6 +146,9 @@ public:
 	/// <returns> Animation Montage Duration </returns>
 	float PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
 
+	UFUNCTION(BlueprintCallable)
+	void CharacterDead();
+
 protected:
 
 	/// <summary>
@@ -388,6 +391,8 @@ protected: // PriorityAnimMontage 관련
 	UPROPERTY(BlueprintReadOnly)
 	TMap<FName, FPriorityAnimMontage> CurPriorityAnimMontageMap{};
 	
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FPriorityAnimMontage DyingMontage{};
 
 protected: // Consumable 관련
 	
@@ -450,4 +455,6 @@ protected: // AI 피아 식별 관련
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TEnumAsByte<ETeamAttitude::Type> TeamID = ETeamAttitude::Neutral;
+
+
 };

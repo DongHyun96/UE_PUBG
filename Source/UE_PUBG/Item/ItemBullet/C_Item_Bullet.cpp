@@ -2,13 +2,18 @@
 
 
 #include "Item/ItemBullet/C_Item_Bullet.h"
+#include "Item/Weapon/Gun/C_Gun.h"
+
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_EquippedComponent.h"
-#include "Character/Component/C_InvenSystem.h"	
+
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_AmmoWidget.h"
+
 #include "Utility/C_Util.h"
 AC_Item_Bullet::AC_Item_Bullet()
 {
@@ -51,18 +56,59 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 	if (ItemStackCount == this->GetItemDatas().ItemCurStack)
 	{
 		//아이템을 전부 인벤에 넣을 수 있는 경우.
-		invenComp->AddItemToMyList(this);
-		AddBulletStackToCharacter();
+
+		if (invenComp->FindMyItem(this->GetItemDatas().ItemName))
+		{
+			//인벤에 동일한 이름의 아이템이 존재 한다면 실행.
+
+			invenComp->AddItemToMyList(this);
+			AddBulletStackToCharacter();
+
+			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
+				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
+
+			this->Destroy(); //Inven에 존재하던 동일한 아이템과 합쳐졌으므로 삭제.
+		}
+		else
+		{
+			invenComp->AddItemToMyList(this);
+			AddBulletStackToCharacter();
+
+			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
+				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
+		}
+		
+
 		return true;
 	}
 	else
 	{
-		//아이템을 전부 넣을 수 없는 경우.
+		//아이템을 일부만 넣을 수 있는 경우.
 		this->SetItemStack(GetItemDatas().ItemCurStack - ItemStackCount);//현재 객체의 stack을 조절
 		AC_Item_Bullet* SpawnedItem = Cast<AC_Item_Bullet>(SpawnItem(Character));  //동일한 아이템 객체를 생성
 		SpawnedItem->SetItemStack(ItemStackCount);						 //생성한 아이템 stack을 설정
-		invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가.
-		AddBulletStackToCharacter();
+
+		if (invenComp->FindMyItem(this->GetItemDatas().ItemName))
+		{
+			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가.
+
+			AddBulletStackToCharacter();
+
+			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
+				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
+
+			this->Destroy();
+		}
+		else
+		{
+			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가.
+
+			AddBulletStackToCharacter();
+
+			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
+				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
+		}
+
 		return true;
 	}
 }
@@ -76,11 +122,35 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character)
 
 	invenComp->RemoveItemToMyList(this);				 //내 아이템 리스트에서 아이템 제거.
 
+	DeBulletStackToCharacter();
+
 	//invenComp->AddInvenCurVolume(-this->GetAllVolume()); //버리는 아이템만큼 curVolume 조절하기. TODO : Inven에서 아이템 버릴 때 문제 생기면 체크하기.
 
 	DropItem(Character);
+	//AddFivemmBulletStack을 통해서 총에 또 정보를 전달 해 주어야 함.
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
+		UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 
 	return true;
+}
+
+void AC_Item_Bullet::UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer)
+{
+	if (InOwnerPlayer->GetHandState() == EHandState::WEAPON_GUN) //총을 들고 있다면 실행
+	{
+		AC_Gun* curGun = Cast<AC_Gun>(InOwnerPlayer->GetEquippedComponent()->GetCurWeapon());
+
+		if (curGun->GetCurBulletType() == CurBulletType) //들고 있는 총이 사용하는 탄과 지금 습득한 이 총알과 Type이 같다면 실행.
+		{
+			AC_Item* curItem = InOwnerPlayer->GetInvenComponent()->FindMyItem(this->GetItemDatas().ItemName);
+			int LeftAmmoStack = 0;
+			if (curItem != nullptr)
+			{
+				LeftAmmoStack = curItem->GetItemDatas().ItemCurStack;
+			}
+			InOwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(LeftAmmoStack);
+		}
+	}
 }
 
 
@@ -97,6 +167,26 @@ void AC_Item_Bullet::AddBulletStackToCharacter()
 		break;
 	case EBulletType::SEVENMM:
 		OwnerCharacter->AddSevenmmBulletStack(ItemDatas.ItemCurStack);
+
+		break;
+	case EBulletType::NONE:
+		break;
+	default:
+		break;
+	}
+}
+
+void AC_Item_Bullet::DeBulletStackToCharacter()
+{
+	if (!OwnerCharacter) return;
+
+	switch (CurBulletType)
+	{
+	case EBulletType::FIVEMM:
+		OwnerCharacter->AddFivemmBulletStack(-ItemDatas.ItemCurStack);
+		break;
+	case EBulletType::SEVENMM:
+		OwnerCharacter->AddSevenmmBulletStack(-ItemDatas.ItemCurStack);
 
 		break;
 	case EBulletType::NONE:

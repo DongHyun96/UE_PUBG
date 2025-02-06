@@ -191,6 +191,18 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 	return 0.0f;
 }
 
+void AC_BasicCharacter::CharacterDead()
+{
+	GetMesh()->SetSimulatePhysics(true);  // 물리 활성화
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));  // 충돌 설정
+	GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("Spine"), true, true);  // 물리 적용
+
+	DetachFromControllerPendingDestroy();  // 컨트롤러 분리
+
+	GetMesh()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+	GetMesh()->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+}
+
 float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
