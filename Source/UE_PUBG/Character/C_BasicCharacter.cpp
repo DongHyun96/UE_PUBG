@@ -1,4 +1,4 @@
-ï»¿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/C_BasicCharacter.h"
@@ -149,7 +149,7 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 /// ì•„ì´í…œì´ ìºë¦­í„°ì˜ ê°ì§€ë²”ìœ„ë¥¼ ë²—ì–´ë‚¬ì„ ë•Œ.
 /// </summary>
 /// <param name="OverlappedComp"></param>
-/// <param name="OtherActor"></param>
+/// <param name="OtherActor"></param
 /// <param name="OtherComp"></param>
 /// <param name="OtherBodyIndex"></param>
 void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -193,11 +193,11 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 void AC_BasicCharacter::CharacterDead()
 {
-	GetMesh()->SetSimulatePhysics(true);  // ¹°¸® È°¼ºÈ­
-	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));  // Ãæµ¹ ¼³Á¤
-	GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("Spine"), true, true);  // ¹°¸® Àû¿ë
+	GetMesh()->SetSimulatePhysics(true);  // ë¬¼ë¦¬ í™œì„±í™”
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));  // ì¶©ëŒ ì„¤ì •
+	GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("Spine"), true, true);  // ë¬¼ë¦¬ ì ìš©
 
-	DetachFromControllerPendingDestroy();  // ÄÁÆ®·Ñ·¯ ºĞ¸®
+	DetachFromControllerPendingDestroy();  // ì»¨íŠ¸ë¡¤ëŸ¬ ë¶„ë¦¬
 
 	GetMesh()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
 	GetMesh()->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);

@@ -1,4 +1,4 @@
-ï»¿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -35,12 +35,12 @@ public:
 	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
 
 	/// <summary>
-	/// ÀÌ ¾ÆÀÌÅÛÀÇ ÁÖÀÎÀÌ playerÀÎ °æ¿ì ½ÇÇàÇÏ¿©
-	/// ÇöÀç ÃÑÀ» µé°í ÀÖ´ÂÁö Ã¼Å©
-	/// ÇöÀç µé°í ÀÖ´Â ÃÑ°ú ½ÀµæÇÑ ÃÑ¾ËÀÇ TpyeÀÌ ÀÏÄ¡ÇÏ¸é
-	/// AmmoWidgetÀÇ Update¸¦ ÁøÇà.
+	/// ì´ ì•„ì´í…œì˜ ì£¼ì¸ì´ playerì¸ ê²½ìš° ì‹¤í–‰í•˜ì—¬
+	/// í˜„ì¬ ì´ì„ ë“¤ê³  ìˆëŠ”ì§€ ì²´í¬
+	/// í˜„ì¬ ë“¤ê³  ìˆëŠ” ì´ê³¼ ìŠµë“í•œ ì´ì•Œì˜ Tpyeì´ ì¼ì¹˜í•˜ë©´
+	/// AmmoWidgetì˜ Updateë¥¼ ì§„í–‰.
 	/// </summary>
-	/// <param name="InOwnerPlayer">ÀÌ ¾ÆÀÌÅÛÀÇ ÁÖÀÎ</param>
+	/// <param name="InOwnerPlayer">ì´ ì•„ì´í…œì˜ ì£¼ì¸</param>
 	void UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer);
 
 
