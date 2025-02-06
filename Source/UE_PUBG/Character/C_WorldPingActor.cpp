@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/C_WorldPingActor.h"
@@ -67,7 +67,7 @@ void AC_WorldPingActor::HandleUpdateWorldPingScale()
 		return;
 	}
 	
-	// 30m æ»∆∆¿Ã∏È scale 1∑Œ ¡∂¡§
+	// 30m ÏïàÌåéÏù¥Î©¥ scale 1Î°ú Ï°∞Ï†ï
 	if (DistanceToPlayer <= 300.f)
 	{
 		PingWidgetComponent->GetUserWidgetObject()->SetRenderScale( {1.f, 1.f} );
@@ -80,4 +80,6 @@ void AC_WorldPingActor::HandleUpdateWorldPingScale()
 
 
 }
+
+
 

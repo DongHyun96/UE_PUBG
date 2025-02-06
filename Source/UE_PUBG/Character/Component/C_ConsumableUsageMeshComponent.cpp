@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_ConsumableUsageMeshComponent.h"
@@ -87,4 +87,6 @@ FString UC_ConsumableUsageMeshComponent::GetMeshTypeName(EConsumableUsageMeshTyp
 		case EConsumableUsageMeshType::MAX: default:	return "";
 	}
 }
+
+
 

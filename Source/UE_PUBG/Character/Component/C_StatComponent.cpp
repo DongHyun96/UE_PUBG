@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_StatComponent.h"
@@ -9,21 +9,21 @@
 
 const float UC_StatComponent::MAX_HP		= 100.f;
 const float UC_StatComponent::MAX_BOOSTING	= 100.f;
-const float UC_StatComponent::HEAL_UP_LIMIT = 75.f; // ���޻���, �ش�� ä�� �� �ִ� �� ���� limit
-const float UC_StatComponent::MAX_OXYGEN_HP = 100.f; // �� HP Max
+const float UC_StatComponent::HEAL_UP_LIMIT = 75.f; // 占쏙옙占쌨삼옙占쏙옙, 占쌔댐옙占?채占쏙옙 占쏙옙 占쌍댐옙 占쏙옙 占쏙옙占쏙옙 limit
+const float UC_StatComponent::MAX_OXYGEN_HP = 100.f; // 占쏙옙 HP Max
 
 const float UC_StatComponent::BOOST_ONE_BLOCK_EFFECT_TIME = 8.f;
-const float UC_StatComponent::BOOST_ONE_BLOCK_AMOUNT		= 2.631f; // �� ���� �� �پ��� Boost ��
+const float UC_StatComponent::BOOST_ONE_BLOCK_AMOUNT		= 2.631f; // 占쏙옙 占쏙옙占쏙옙 占쏙옙 占쌕억옙占쏙옙 Boost 占쏙옙
 
 // 20 40 30 10
 const TArray<float> UC_StatComponent::EACH_BOOST_PHASE_BORDER = { 20.f, 60.f, 90.f, 100.f };
 
 const TArray<FBoostingEffectFactor> UC_StatComponent::BOOSTING_EFFECT_FACTORS =
 {
-	{1.f, 1.f},		// 1������ 8�ʴ� ü�� ȸ���� & �̵� �ӵ� ����(factor)
-	{2.f, 1.01f},	// 2������
-	{3.f, 1.025f},	// 3������
-	{4.f, 1.0625f}	// 4������
+	{1.f, 1.f},		// 1占쏙옙占쏙옙占쏙옙 8占십댐옙 체占쏙옙 회占쏙옙占쏙옙 & 占싱듸옙 占쌈듸옙 占쏙옙占쏙옙(factor)
+	{2.f, 1.01f},	// 2占쏙옙占쏙옙占쏙옙
+	{3.f, 1.025f},	// 3占쏙옙占쏙옙占쏙옙
+	{4.f, 1.0625f}	// 4占쏙옙占쏙옙占쏙옙
 };
 
 const float UC_StatComponent::OXYGEN_EXHAUSTED_DAMAGE_PER_SEC = 20.f;
@@ -95,11 +95,11 @@ bool UC_StatComponent::TakeDamage(const float& Damage)
 
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
 
-	// ���
+	// 占쏙옙占?
 	if (CurHP <= 0.f)
 	{
-		// ��� ó��
-		// TODO : OwnwerCharacter���� call back�� �̿��� ��� �˸���
+		// 占쏙옙占?처占쏙옙
+		// TODO : OwnwerCharacter占쏙옙占쏙옙 call back占쏙옙 占싱울옙占쏙옙 占쏙옙占?占싯몌옙占쏙옙
 	}
 
 	return true;
@@ -110,8 +110,8 @@ float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType Damagin
 	//FString Str = "Character Damaged on certain damaging part! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
 	//UC_Util::Print(Str, FColor::Cyan, 3.f);
 
-	// TODO : Armor Ȯ���ؼ� Armor �κ��̶�� Damage ���� ����
-	// TODO : Armor ���� �� ���
+	// TODO : Armor 확占쏙옙占쌔쇽옙 Armor 占싸븝옙占싱띰옙占?Damage 占쏙옙占쏙옙 占쏙옙占쏙옙
+	// TODO : Armor 占쏙옙占쏙옙 占쏙옙 占쏙옙占?
 
 	TakeDamage(DamageAmount);
 	return DamageAmount;
@@ -133,7 +133,7 @@ float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhyiscsAsse
 
 bool UC_StatComponent::ApplyHeal(const float& HealAmount)
 {
-	if (CurHP >= MAX_HP)  return false; // �̹� ü���� ��� á�� ��
+	if (CurHP >= MAX_HP)  return false; // 占싱뱄옙 체占쏙옙占쏙옙 占쏙옙占?찼占쏙옙 占쏙옙
 	if (HealAmount < 0.f) return false;
 
 	CurHP += HealAmount;
@@ -169,7 +169,7 @@ void UC_StatComponent::AddOxygen(const float& OxygenAmount)
 
 void UC_StatComponent::UpdateBoostEffect(const float& DeltaTime)
 {
-	// Boost �������� ���ų� �̹� ��� ó���Ǿ��� ��
+	// Boost 占쏙옙占쏙옙占쏙옙占쏙옙 占쏙옙占신놂옙 占싱뱄옙 占쏙옙占?처占쏙옙占실억옙占쏙옙 占쏙옙
 	if (CurBoosting <= 0.f || CurHP <= 0.f)
 	{
 		BoostTimer = 0.f;
@@ -216,4 +216,6 @@ FBoostingEffectFactor UC_StatComponent::GetBoostingEffectFactorByCurBoostingAmou
 
 	return FBoostingEffectFactor();
 }
+
+
 

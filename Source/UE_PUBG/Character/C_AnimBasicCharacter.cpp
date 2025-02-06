@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/C_AnimBasicCharacter.h"
@@ -104,7 +104,7 @@ void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_Stand_To_Falling()
 
 void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_RunningJump_To_Falling()
 {
-	// Start Transition ½Ã ¼öÇàÇÒ ·ÎÁ÷ Ãß°¡
+	// Start Transition ì‹œ ìˆ˜í–‰í•  ë¡œì§ ì¶”ê°€
 	FString TheFloatStr = "Start RunningJump To Falling Transition";
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	UE_LOG(LogTemp, Warning, TEXT("Transition Started"));
@@ -123,7 +123,7 @@ void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_RunningJump_To_Falling(
 
 void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_HardLand_To_Stand()
 {
-	// End Transition ½Ã ¼öÇàÇÒ ·ÎÁ÷ Ãß°¡
+	// End Transition ì‹œ ìˆ˜í–‰í•  ë¡œì§ ì¶”ê°€
 	FString TheFloatStr = "End Transition";
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	UE_LOG(LogTemp, Warning, TEXT("Transition Ended"));
@@ -303,4 +303,6 @@ void UC_AnimBasicCharacter::SetIsLeftHandIKOn()
 
 	bIsLeftHandIKOn = Condition3;
 }
+
+
 

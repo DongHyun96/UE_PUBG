@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/C_Player.h"
@@ -79,7 +79,7 @@ AC_Player::AC_Player()
 	InitTurnAnimMontageMap();
 
 	//DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
-	//DetectionSphere->InitSphereRadius(100.0f); // Å½Áö ¹İ°æ ¼³Á¤
+	//DetectionSphere->InitSphereRadius(100.0f); // íƒì§€ ë°˜ê²½ ì„¤ì •
 	//DetectionSphere->SetupAttachment(RootComponent);
 	//
 	////DetectionSphere->SetGenerateOverlapEvents(true);
@@ -146,7 +146,7 @@ void AC_Player::BeginPlay()
 
 	SetPlayerMappingContext();
 
-	// ÀÚ¼¼º° MainSpringArm À§Ä¡ ÃÊ±âÈ­
+	// ìì„¸ë³„ MainSpringArm ìœ„ì¹˜ ì´ˆê¸°í™”
 	MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::STAND, C_MainSpringArm->GetRelativeLocation());
 	MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CROUCH, C_MainSpringArm->GetRelativeLocation() + FVector(0.f, 0.f, -32.f));
 	//MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CRAWL, C_MainSpringArm->GetRelativeLocation()  + FVector(0.f, 0.f, -99.f));
@@ -161,7 +161,7 @@ void AC_Player::BeginPlay()
 	//	UPrimitiveComponent* MeshToIgnore = GetCapsuleComponent();
 	//	if (MeshToIgnore)
 	//	{
-	//		// Ä«¸Ş¶ó ÇÁ·Îºê Ã¤³Î¿¡ ´ëÇØ Æ¯Á¤ ¸Ş½¬¿Í Ãæµ¹ ¹«½Ã ¼³Á¤
+	//		// ì¹´ë©”ë¼ í”„ë¡œë¸Œ ì±„ë„ì— ëŒ€í•´ íŠ¹ì • ë©”ì‰¬ì™€ ì¶©ëŒ ë¬´ì‹œ ì„¤ì •
 	//		MeshToIgnore->SetCollisionResponseToChannel(C_MainSpringArm->ProbeChannel, ECR_Ignore);
 	//	}
 	//}
@@ -175,10 +175,10 @@ void AC_Player::BeginPlay()
 	//	{
 	//		if (IsValid(C_MainSpringArm))
 	//			PrimitiveComp->SetCollisionResponseToChannel(C_MainSpringArm->ProbeChannel, ECR_Ignore);
-	//		// Spring ArmÀÇ ProbeChannel¿¡ ´ëÇÑ Ãæµ¹À» ¹«½ÃÇÏµµ·Ï ¼³Á¤ÇÕ´Ï´Ù.
+	//		// Spring Armì˜ ProbeChannelì— ëŒ€í•œ ì¶©ëŒì„ ë¬´ì‹œí•˜ë„ë¡ ì„¤ì •í•©ë‹ˆë‹¤.
 
-	//		// ÇÊ¿ä¿¡ µû¶ó ´Ù¸¥ Ã¤³Îµµ ¹«½ÃÇÏµµ·Ï ¼³Á¤ÇÒ ¼ö ÀÖ½À´Ï´Ù.
-	//		// ¿¹: PrimitiveComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+	//		// í•„ìš”ì— ë”°ë¼ ë‹¤ë¥¸ ì±„ë„ë„ ë¬´ì‹œí•˜ë„ë¡ ì„¤ì •í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
+	//		// ì˜ˆ: PrimitiveComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 	//	}
 	//}
 
@@ -247,7 +247,7 @@ void AC_Player::SetPlayerMappingContext()
 
 void AC_Player::HandleControllerRotation(float DeltaTime)
 {
-	//Alt ¸¦ ´©¸¥Àû ¾øÀ¸¸é ¸®ÅÏ
+	//Alt ë¥¼ ëˆ„ë¥¸ì  ì—†ìœ¼ë©´ ë¦¬í„´
 		// Debugging
 
 	if (!bIsAltPressed) return;
@@ -262,7 +262,7 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 	{
 		Controller->SetControlRotation(FMath::Lerp(Controller->GetControlRotation(), CharacterMovingDirection, DeltaTime * 10.0f));
 	}
-	//ÀÏÁ¤°¢µµ ÀÌÇÏ·Î Â÷ÀÌ³ª¸é Ä³¸¯ÅÍ ·ÎÅ×ÀÌ¼ÇÀ¸·Î Á¤ÇØ¹ö¸®±â(°¡²û Àû¿ëÀÌ ¾ÈµÇ´Âµ¥ ÀÌÀ¯¸¦ ¾ÆÁ÷ ¸øÃ£À½)
+	//ì¼ì •ê°ë„ ì´í•˜ë¡œ ì°¨ì´ë‚˜ë©´ ìºë¦­í„° ë¡œí…Œì´ì…˜ìœ¼ë¡œ ì •í•´ë²„ë¦¬ê¸°(ê°€ë” ì ìš©ì´ ì•ˆë˜ëŠ”ë° ì´ìœ ë¥¼ ì•„ì§ ëª»ì°¾ìŒ)
 	float DeltaYawTemp= FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Yaw);
 	float DeltaPitchTemp = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Pitch);
 
@@ -276,7 +276,7 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 
 void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime)
 {
-	// SkyDiving & Parachuting Áß¿¡¼­ÀÇ Lerp Destination Àû¿ë
+	// SkyDiving & Parachuting ì¤‘ì—ì„œì˜ Lerp Destination ì ìš©
 
 
 	C_MainSpringArm->SetRelativeLocation
@@ -349,7 +349,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 	case EPoseState::STAND:
 		switch (InChangeFrom)
 		{
-		case EPoseState::CROUCH: // Crouch To Stand (Pose transition ¾øÀÌ ¹Ù·Î Ã³¸®)
+		case EPoseState::CROUCH: // Crouch To Stand (Pose transition ì—†ì´ ë°”ë¡œ ì²˜ë¦¬)
 
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
 
@@ -361,7 +361,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CRAWL: // Crawl To Stand
 
-			if (bIsActivatingConsumableItem) return false; // TODO : ÀÏ¾î¼³ ¼ö ¾ø½À´Ï´Ù UI ¶ç¿ì±â
+			if (bIsActivatingConsumableItem) return false; // TODO : ì¼ì–´ì„¤ ìˆ˜ ì—†ìŠµë‹ˆë‹¤ UI ë„ìš°ê¸°
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
 			SetControllerPitchLimits(EPoseState::STAND);
 			SetSpringArmRelativeLocationDest(EPoseState::STAND);
@@ -395,7 +395,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CRAWL: // Crawl To Crouch
 
-			if (bIsActivatingConsumableItem) return false; // TODO : ÀÏ¾î¼³ ¼ö ¾ø½À´Ï´Ù UI ¶ç¿ì±â
+			if (bIsActivatingConsumableItem) return false; // TODO : ì¼ì–´ì„¤ ìˆ˜ ì—†ìŠµë‹ˆë‹¤ UI ë„ìš°ê¸°
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
 			SetControllerPitchLimits(EPoseState::CROUCH);
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToCrouch, EPoseState::CROUCH);
@@ -411,7 +411,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		{
 		case EPoseState::STAND: // Stand to Crawl
 
-			if (bIsActivatingConsumableItem) return false; // TODO : ¾øµå¸± ¼ö ¾ø½À´Ï´Ù UI ¶ç¿ì±â
+			if (bIsActivatingConsumableItem) return false; // TODO : ì—†ë“œë¦´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤ UI ë„ìš°ê¸°
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
 			SetControllerPitchLimits(EPoseState::CRAWL);
 
@@ -423,7 +423,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CROUCH: // Crouch to Crawl
 
-			if (bIsActivatingConsumableItem) return false; // TODO : ¾øµå¸± ¼ö ¾ø½À´Ï´Ù UI ¶ç¿ì±â
+			if (bIsActivatingConsumableItem) return false; // TODO : ì—†ë“œë¦´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤ UI ë„ìš°ê¸°
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
 			SetControllerPitchLimits(EPoseState::CRAWL);
 			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
@@ -455,7 +455,7 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 		if (OverlappedItem->GetOwnerCharacter() == nullptr)
 
 		{
-			if (!IsValid(Inventory)) return;//ÀÌ ºÎºĞµé¿¡¼­ °è¼Ó ÅÍÁø´Ù¸é ¾Æ¿¹ ¾øÀ»¶§ »ı¼ºÇØ¹ö¸®±â.
+			if (!IsValid(Inventory)) return;//ì´ ë¶€ë¶„ë“¤ì—ì„œ ê³„ì† í„°ì§„ë‹¤ë©´ ì•„ì˜ˆ ì—†ì„ë•Œ ìƒì„±í•´ë²„ë¦¬ê¸°.
 			Inventory->AddItemToAroundList(OverlappedItem);
 			//Inventory->InitInvenUI();
 			//if (!IsValid(InvenSystem)) return;
@@ -487,7 +487,7 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 }
 
 /// <summary>
-/// ¾ÆÀÌÅÛÀÌ Ä³¸¯ÅÍÀÇ ±ÙÃ³¿¡ ÀÖÀ» ¶§.
+/// ì•„ì´í…œì´ ìºë¦­í„°ì˜ ê·¼ì²˜ì— ìˆì„ ë•Œ.
 /// </summary>
 /// <param name="OverlappedComp"></param>
 /// <param name="OtherActor"></param>
@@ -519,7 +519,7 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 //	}
 //}
 ///// <summary>
-///// ¾ÆÀÌÅÛÀÌ Ä³¸¯ÅÍÀÇ °¨Áö¹üÀ§¸¦ ¹ş¾î³µÀ» ¶§.
+///// ì•„ì´í…œì´ ìºë¦­í„°ì˜ ê°ì§€ë²”ìœ„ë¥¼ ë²—ì–´ë‚¬ì„ ë•Œ.
 ///// </summary>
 ///// <param name="OverlappedComp"></param>
 ///// <param name="OtherActor"></param>
@@ -556,9 +556,9 @@ void AC_Player::SetAimPressCameraLocation()
 }
 
 
-void AC_Player::HandleTurnInPlace() // UpdateÇÔ¼ö ¾È¿¡ ÀÖ¾î¼­ Á» °è¼Ó È£ÃâÀÌ µÇ¾î¼­ ¹ö±×°¡ ÀÖ´Âµí?
+void AC_Player::HandleTurnInPlace() // Updateí•¨ìˆ˜ ì•ˆì— ìˆì–´ì„œ ì¢€ ê³„ì† í˜¸ì¶œì´ ë˜ì–´ì„œ ë²„ê·¸ê°€ ìˆëŠ”ë“¯?
 {
-	// ÇöÀç ¸ØÃçÀÖ´Â »óÈ²ÀÌ ¾Æ´Ï¸é Ã³¸® x
+	// í˜„ì¬ ë©ˆì¶°ìˆëŠ” ìƒí™©ì´ ì•„ë‹ˆë©´ ì²˜ë¦¬ x
 	if (!bCanMove)								return;
 
 	//if (MainState != EMainState::IDLE)			return;
@@ -573,7 +573,7 @@ void AC_Player::HandleTurnInPlace() // UpdateÇÔ¼ö ¾È¿¡ ÀÖ¾î¼­ Á» °è¼Ó È£ÃâÀÌ µÇ¾
 
 	if (-90.f <= Delta && Delta <= 90.f) return;
 
-	// Crawl Slope ¿¹¿ÜÃ³¸®
+	// Crawl Slope ì˜ˆì™¸ì²˜ë¦¬
 	if (PoseState == EPoseState::CRAWL)
 	{
 		//UC_Util::Print(Controller->GetControlRotation());
@@ -602,7 +602,7 @@ void AC_Player::HandleTurnInPlace() // UpdateÇÔ¼ö ¾È¿¡ ÀÖ¾î¼­ Á» °è¼Ó È£ÃâÀÌ µÇ¾
 
 	PlayAnimMontage(TurnInPlaceMontage);
 
-	// Lower Bodyµµ Ã¼Å©
+	// Lower Bodyë„ ì²´í¬
 	if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
 
 	FPriorityAnimMontage LowerMontage = (Delta > 90.f) ? LowerBodyTurnAnimMontageMap[HandState].RightMontages[PoseState] :
@@ -616,7 +616,7 @@ void AC_Player::HandleTurnInPlace() // UpdateÇÔ¼ö ¾È¿¡ ÀÖ¾î¼­ Á» °è¼Ó È£ÃâÀÌ µÇ¾
 
 void AC_Player::HandleTurnInPlaceWhileAiming()
 {
-	// ÇöÀç ¸ØÃçÀÖ´Â »óÈ²ÀÌ ¾Æ´Ï¸é Ã³¸® x
+	// í˜„ì¬ ë©ˆì¶°ìˆëŠ” ìƒí™©ì´ ì•„ë‹ˆë©´ ì²˜ë¦¬ x
 	
 	if (!bCanMove) return;
 	if (HandState != EHandState::WEAPON_GUN) return;
@@ -721,7 +721,7 @@ void AC_Player::HandleTurnInPlaceWhileAiming()
 		//GetCharacterMovement()->bOrientRotationToMovement = false;
 
 
-		// Lower Bodyµµ Ã¼Å©
+		// Lower Bodyë„ ì²´í¬
 		if (!LowerBodyTurnAnimMontageMap.Contains(HandState)) return;
 
 		FPriorityAnimMontage LowerLeftPriorityMontage = LowerBodyTurnAnimMontageMap[HandState].LeftMontages[PoseState];
@@ -741,7 +741,7 @@ void AC_Player::HandlePlayerRotationWhileAiming()
 	//bUseControllerRotationYaw = true;
 
 
-	// ÇöÀç Ä³¸¯ÅÍ È¸Àü
+	// í˜„ì¬ ìºë¦­í„° íšŒì „
 	//if (FMath::Abs(GetActorRotation().Yaw - GetControlRotation().Yaw) <= 3.0f)
 	//{
 	//	bUseControllerRotationYaw = true;
@@ -750,7 +750,7 @@ void AC_Player::HandlePlayerRotationWhileAiming()
 	//else
 	//	bUseControllerRotationYaw = false;
 
-	// ¸ñÇ¥ È¸Àü°ªÀ¸·Î Lerp
+	// ëª©í‘œ íšŒì „ê°’ìœ¼ë¡œ Lerp
 	float DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(GetActorRotation(), GetControlRotation()).Yaw;
 
 	float LerpAlpha = UKismetMathLibrary::Abs(DeltaRotation);
@@ -759,7 +759,7 @@ void AC_Player::HandlePlayerRotationWhileAiming()
 
 	FRotator NewRotationTemp = UKismetMathLibrary::RLerp(GetActorRotation(), GetControlRotation(), GetWorld()->DeltaTimeSeconds * 15.f, true);
 	float NewRotationYaw = NewRotationTemp.Yaw;
-	// Ä³¸¯ÅÍ È¸Àü ¼³Á¤
+	// ìºë¦­í„° íšŒì „ ì„¤ì •
 	FRotator NewRotation = FRotator(GetActorRotation().Pitch, NewRotationYaw, GetActorRotation().Roll);
 	SetActorRotation(NewRotation);
 	//UC_Util::Print(float(GetActorRotation().Yaw));
@@ -806,7 +806,7 @@ void AC_Player::InitTurnAnimMontageMap()
 			EPoseState currentPose = static_cast<EPoseState>(poseState);
 
 			// Left side
-			// ¿ø·¡ staticÀ¸·Î µÎ´Â°Ô Á¤¼®ÀÌ¶ó°í ÇÔ
+			// ì›ë˜ staticìœ¼ë¡œ ë‘ëŠ”ê²Œ ì •ì„ì´ë¼ê³  í•¨
 			FString leftMontagePath = FString::Printf
 			(
 				TEXT("/Game/Project_PUBG/DongHyun/Character/Animation/Turn_In_Place/Montages/%u%u_TurnLeft_Montage"),
@@ -896,7 +896,7 @@ void AC_Player::SetToAimKeyPress()
 	InitialCameraLocation = MainCamera->GetComponentLocation();
 	InitialCameraRotation = MainCamera->GetComponentRotation();
 
-	// Å¸ÀÓ¶óÀÎ ½ÇÇà
+	// íƒ€ì„ë¼ì¸ ì‹¤í–‰
 	if (CameraTransitionTimelineComponent)
 	{
 		bIsAimDownSight = true;
@@ -1040,8 +1040,8 @@ void AC_Player::SetRecoilTimelineValues(float InGunRPM)
 		PlayRate /= InGunRPM;
 	UC_Util::Print(PlayRate, FColor::Red, 10);
 	RecoilTimeline->SetTimelinePlayRate(PlayRate);
-	//CameraTransitionTimeline->SetPlayRate(PlayRate);  // Àç»ı ¼Óµµ ¼³Á¤
-	//CameraTransitionTimeline->SetLooping(false);  // ¹İº¹ÇÏÁö ¾Êµµ·Ï ¼³Á¤
+	//CameraTransitionTimeline->SetPlayRate(PlayRate);  // ì¬ìƒ ì†ë„ ì„¤ì •
+	//CameraTransitionTimeline->SetLooping(false);  // ë°˜ë³µí•˜ì§€ ì•Šë„ë¡ ì„¤ì •
 }
 
 void AC_Player::SetRecoilFactorByPose()
@@ -1078,4 +1078,6 @@ void AC_Player::SetLineTraceCollisionIgnore()
 		LineTraceCollisionParams.AddIgnoredActor(Bullet);
 	}
 }
+
+
 

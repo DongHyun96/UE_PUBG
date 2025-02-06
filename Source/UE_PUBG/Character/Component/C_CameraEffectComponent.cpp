@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_CameraEffectComponent.h"
@@ -26,7 +26,7 @@ void UC_CameraEffectComponent::BeginPlay()
 	MainCamera	= OwnerPlayer->GetMainCamera();
 	AimCamera	= OwnerPlayer->GetAimCamera();
 
-	// AimPunching µ¹¾Æ¿Ã ¶§ ¾²ÀÏ Local ÁÂÇ¥µé
+	// AimPunching ëŒì•„ì˜¬ ë•Œ ì“°ì¼ Local ì¢Œí‘œë“¤
 	MainCamOriginLocalLocation	= MainCamera->GetRelativeLocation();
 	MainCamOriginLocalRotation	= MainCamera->GetRelativeRotation();
 	MainCamPunchingDestLocation = MainCamOriginLocalLocation;
@@ -37,7 +37,7 @@ void UC_CameraEffectComponent::BeginPlay()
 	AimCamPunchingDestLocation	= AimCamOriginLocalLocation;
 	AimCamPunchingDestRotation	= AimCamOriginLocalRotation;
 
-	// PostProcessVolume ÃÊ±âÈ­
+	// PostProcessVolume ì´ˆê¸°í™”
 	TArray<AActor*> PPVolumes{};
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APostProcessVolume::StaticClass(), PPVolumes);
 
@@ -65,9 +65,9 @@ void UC_CameraEffectComponent::HandleCameraAimPunching(const float& DeltaTime)
 	FRotator	MainCamRot = MainCamera->GetRelativeRotation();
 	FRotator	AimCamRot = AimCamera->GetRelativeRotation();
 
-	if (FVector::Dist(MainCamPos, MainCamPunchingDestLocation) < 0.1f) // DestinationÀ¸·Î µµ´ÞÇß´Ù°í ÆÇ´Ü
+	if (FVector::Dist(MainCamPos, MainCamPunchingDestLocation) < 0.1f) // Destinationìœ¼ë¡œ ë„ë‹¬í–ˆë‹¤ê³  íŒë‹¨
 	{
-		// ´Ù½Ã±Ý ¿øÀ§Ä¡·Î Á¶Á¤
+		// ë‹¤ì‹œê¸ˆ ì›ìœ„ì¹˜ë¡œ ì¡°ì •
 		MainCamPunchingDestLocation = MainCamOriginLocalLocation;
 		MainCamPunchingDestRotation.Roll = MainCamOriginLocalRotation.Roll;
 	}
@@ -105,8 +105,8 @@ void UC_CameraEffectComponent::ExecuteCameraAimPunching
 	float InPunchingLerpFactor
 )
 {
-	// TODO : ÇöÀç AimDownSightÀÌ¸é ´Ù¸£°Ô Ã³¸® (Character AnimationÀ¸·Î Ã³¸®ÇØ¾ß ÇÒ µí)
-	// TODO : Aim DownÀÏ ¶§¿Í Main Camera´Â µ¿ÀÏÇÏ°Ô ¸ðµÎ ÀÏ°ý Ã³¸® (ÀÚ¼¼ ¹Ù²ð ¶§µµ ´ÙÀ½ Ä«¸Þ¶ó ¶ÇÇÑ ¿¡ÀÓ ÆÝÄªÀÌ ÀÏ¾î³ª´Â ÁßÀ¸·Î ÇØÁà¾ß ÇÔ)
+	// TODO : í˜„ìž¬ AimDownSightì´ë©´ ë‹¤ë¥´ê²Œ ì²˜ë¦¬ (Character Animationìœ¼ë¡œ ì²˜ë¦¬í•´ì•¼ í•  ë“¯)
+	// TODO : Aim Downì¼ ë•Œì™€ Main CameraëŠ” ë™ì¼í•˜ê²Œ ëª¨ë‘ ì¼ê´„ ì²˜ë¦¬ (ìžì„¸ ë°”ë€” ë•Œë„ ë‹¤ìŒ ì¹´ë©”ë¼ ë˜í•œ ì—ìž„ íŽ€ì¹­ì´ ì¼ì–´ë‚˜ëŠ” ì¤‘ìœ¼ë¡œ í•´ì¤˜ì•¼ í•¨)
 
 	CamPunchingDirection.Normalize();
 
@@ -138,7 +138,7 @@ void UC_CameraEffectComponent::HandleFlashBangEffect(const float& DeltaTime)
 
 		PostProcessVolume->Settings.BloomIntensity = FMath::Lerp(PostProcessVolume->Settings.BloomIntensity, PostProcessInitialIntensity, DeltaTime * 10.f);
 
-		// TODO : CaptureµÈ ÀÜ»ó ³²±â±â
+		// TODO : Captureëœ ìž”ìƒ ë‚¨ê¸°ê¸°
 
 		return;
 	}
@@ -197,7 +197,7 @@ void UC_CameraEffectComponent::CaptureScene()
 		return;
 	}
 
-	// ÇÊ¿ä¿¡ µû¶ó ÅØ½ºÃÄ¸¦ ´õ ¼öÁ¤ÇÒ ¼ö ÀÖÀ½ (¹«½¼ ¼Ò¸°Áö Àß ¸ð¸£°ÚÀ½)
+	// í•„ìš”ì— ë”°ë¼ í…ìŠ¤ì³ë¥¼ ë” ìˆ˜ì •í•  ìˆ˜ ìžˆìŒ (ë¬´ìŠ¨ ì†Œë¦°ì§€ ìž˜ ëª¨ë¥´ê² ìŒ)
 	NewTexture->UpdateResource();
 
 	//FSlateBrush Brush{};
@@ -207,8 +207,8 @@ void UC_CameraEffectComponent::CaptureScene()
 
 void UC_CameraEffectComponent::ExecuteFlashBangEffect(float Duration)
 {
-	// ÇöÀçÀÇ ³²Àº Duration ÀÌÇÏÀÎ DurationÀÌ µé¾î¿Ô´Ù¸é »õ·ÎÀÌ FlashBangEffect¸¦ ½ÇÇàÇÏÁö ¾ÊÀ½
-	// TODO PostProcess Bloom intensity Á¶Á¤
+	// í˜„ìž¬ì˜ ë‚¨ì€ Duration ì´í•˜ì¸ Durationì´ ë“¤ì–´ì™”ë‹¤ë©´ ìƒˆë¡œì´ FlashBangEffectë¥¼ ì‹¤í–‰í•˜ì§€ ì•ŠìŒ
+	// TODO PostProcess Bloom intensity ì¡°ì •
 	if (FlashBangEffectDuration >= Duration) return;
 
 	if (!IsValid(PostProcessVolume))
@@ -223,5 +223,7 @@ void UC_CameraEffectComponent::ExecuteFlashBangEffect(float Duration)
 	//FString Temp{};
 	//FScreenshotRequest::RequestScreenshot(Temp, false, false);
 }
+
+
 
 

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -45,16 +45,16 @@ public:
 public:
 
 	/// <summary>
-	/// ¼Ò¸ğ ¾ÆÀÌÅÛ »ç¿ëÇÏ±â ½ÃÀÛ
+	/// ì†Œëª¨ ì•„ì´í…œ ì‚¬ìš©í•˜ê¸° ì‹œì‘
 	/// </summary>
-	/// <param name="ItemUser"> : ¾ÆÀÌÅÛ »ç¿ë Character </param>
-	/// <returns> : »ç¿ë ½ÃÀÛÀÌ ÀûÀıÈ÷ µÇ¾ú´Ù¸é return true </returns>
+	/// <param name="ItemUser"> : ì•„ì´í…œ ì‚¬ìš© Character </param>
+	/// <returns> : ì‚¬ìš© ì‹œì‘ì´ ì ì ˆíˆ ë˜ì—ˆë‹¤ë©´ return true </returns>
 	bool StartUsingConsumableItem(class AC_BasicCharacter* InItemUser);
 
 	/// <summary>
-	/// »ç¿ë È°¼ºÈ­ ½Ãµµ Áß Item »ç¿ë Ãë¼Ò ½Ãµµ
+	/// ì‚¬ìš© í™œì„±í™” ì‹œë„ ì¤‘ Item ì‚¬ìš© ì·¨ì†Œ ì‹œë„
 	/// </summary>
-	/// <returns> : Á¤»óÀûÀ¸·Î Ãë¼ÒµÇ¾ú´Ù¸é return true </returns>
+	/// <returns> : ì •ìƒì ìœ¼ë¡œ ì·¨ì†Œë˜ì—ˆë‹¤ë©´ return true </returns>
 	bool CancelActivating();
 
 	bool Interaction(AC_BasicCharacter* Character) override;
@@ -69,34 +69,34 @@ public:
 protected:
 
 	/// <summary>
-	/// °¢ ¾ÆÀÌÅÛ º° »ç¿ë ½ÃÀÛ °¡´ÉÇÑ Á¶°ÇÀÎÁö check
+	/// ê° ì•„ì´í…œ ë³„ ì‚¬ìš© ì‹œì‘ ê°€ëŠ¥í•œ ì¡°ê±´ì¸ì§€ check
 	/// </summary>
 	virtual bool IsAvailableToStartUsing(class AC_BasicCharacter* InItemUser) PURE_VIRTUAL(AC_ConsumableItem::IsAvailableToStartUsing, return false;);
 
 	/// <summary>
-	/// °¢ ¾ÆÀÌÅÛ º° »ç¿ë ½ÃÀÛ ½Ã È£ÃâµÉ Template method
+	/// ê° ì•„ì´í…œ ë³„ ì‚¬ìš© ì‹œì‘ ì‹œ í˜¸ì¶œë  Template method
 	/// </summary>
 	virtual void OnStartUsing() PURE_VIRTUAL(AC_ConsumableItem::OnStartUsing, );
 
 	/// <summary>
-	/// °¢ ¾ÆÀÌÅÛ º° ActivatingÀÌ ³¡³µÀ» ½Ã È£ÃâµÉ Template method
+	/// ê° ì•„ì´í…œ ë³„ Activatingì´ ëë‚¬ì„ ì‹œ í˜¸ì¶œë  Template method
 	/// </summary>
 	virtual void OnActivatingFinish() PURE_VIRTUAL(AC_ConsumableItem::OnActivatingFinish, );
 	
 protected:
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛ ¹ßµ¿ ½ÃÀÛ°ú ½ÇÁ¦ ¹ßµ¿ »çÀÌÀÇ »ç¿ë´ë±â½Ã°£¿¡ È£ÃâµÉ Tick Activating State Template method
+	/// ì•„ì´í…œ ë°œë™ ì‹œì‘ê³¼ ì‹¤ì œ ë°œë™ ì‚¬ì´ì˜ ì‚¬ìš©ëŒ€ê¸°ì‹œê°„ì— í˜¸ì¶œë  Tick Activating State Template method
 	/// </summary>
 	virtual void HandleActivatingState() PURE_VIRTUAL(AC_ConsumableItem::HandleActivatingState, );
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛ »ç¿ë ½Ã°£±îÁö ¹æÇØ ¹ŞÁö ¾Ê°í ¸ğµÎ ½Ã°£À» ¼Ò¸ğÇß´Ù¸é, »ç¿ëÇÏ±â Àû¿ë(Tick ActivatedCompleted Template method)
+	/// ì•„ì´í…œ ì‚¬ìš© ì‹œê°„ê¹Œì§€ ë°©í•´ ë°›ì§€ ì•Šê³  ëª¨ë‘ ì‹œê°„ì„ ì†Œëª¨í–ˆë‹¤ë©´, ì‚¬ìš©í•˜ê¸° ì ìš©(Tick ActivatedCompleted Template method)
 	/// </summary>
 	virtual void HandleActivateCompletedState() PURE_VIRTUAL(AC_ConsumableItem::HandleActivateCompletedState, );
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛ ¹ßµ¿ ÀÌÀü¿¡ Cancel ´çÇßÀ» ½Ã È£ÃâµÉ Template method
+	/// ì•„ì´í…œ ë°œë™ ì´ì „ì— Cancel ë‹¹í–ˆì„ ì‹œ í˜¸ì¶œë  Template method
 	/// </summary>
 	virtual void OnCancelActivating() PURE_VIRTUAL(AC_ConsumableItem::OnCancelActivating, );
 
@@ -119,41 +119,43 @@ public: // getters and setters
 
 	float GetUsingTimer() const { return UsingTimer; }
 	
-	//ÀÌÀü ÄÚµå
+	//ì´ì „ ì½”ë“œ
 	class UC_ItemBarWidget* GetLinkedItemBarWidget() { return LinkedItemBarWidget; }
 
-	//¸®ÆÑÅä¸µÁßÀÎ ItemBar
+	//ë¦¬íŒ©í† ë§ì¤‘ì¸ ItemBar
 	class UC_BasicItemBarWidget* GetTestLinkedItemBarWidget() { return TestLinkedItemBarWidget; }
 
 protected:
 	
 	EConsumableItemState ConsumableItemState{};
 	
-	// »ç¿ë ½Ã°£ (¾ÆÀÌÅÛ È¿°ú Àû¿ëÇÏ´Âµ¥±îÁö °É¸®´Â ½Ã°£)
+	// ì‚¬ìš© ì‹œê°„ (ì•„ì´í…œ íš¨ê³¼ ì ìš©í•˜ëŠ”ë°ê¹Œì§€ ê±¸ë¦¬ëŠ” ì‹œê°„)
 	UPROPERTY(BlueprintReadOnly)
 	float UsageTime{};
 
-	// »ç¿ë ½Ã°£ ¹× ¾ÆÀÌÅÛ È¿°ú Àû¿ë ½Ã°£ Ã¼Å© Timer
+	// ì‚¬ìš© ì‹œê°„ ë° ì•„ì´í…œ íš¨ê³¼ ì ìš© ì‹œê°„ ì²´í¬ Timer
 	float UsingTimer{};
 
 protected:
 
-	// ¾ÆÀÌÅÛ »ç¿ë Ä³¸¯ÅÍ °´Ã¼
+	// ì•„ì´í…œ ì‚¬ìš© ìºë¦­í„° ê°ì²´
 	AC_BasicCharacter* ItemUser{};
 
-	// ÀÚ¼¼º° ¾ÆÀÌÅÛ »ç¿ë µ¿ÀÛ
+	// ìì„¸ë³„ ì•„ì´í…œ ì‚¬ìš© ë™ì‘
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> UsingMontageMap{};
 
 
 protected:
 
-	// ÀÌ Consumable Item°ú ¿¬°áµÈ ItemBarWidget °´Ã¼
+	// ì´ Consumable Itemê³¼ ì—°ê²°ëœ ItemBarWidget ê°ì²´
 	UC_ItemBarWidget* LinkedItemBarWidget{};
 
-	//// ÀÌ Consumable Item°ú ¿¬°áµÈ ItemBarWidget °´Ã¼
-	//UI¸®ÆÑÅä¸µÁß¿¡ »ç¿ëÁßÀÎ ItemBar
+	//// ì´ Consumable Itemê³¼ ì—°ê²°ëœ ItemBarWidget ê°ì²´
+	//UIë¦¬íŒ©í† ë§ì¤‘ì— ì‚¬ìš©ì¤‘ì¸ ItemBar
 	UC_BasicItemBarWidget* TestLinkedItemBarWidget{};
 
 
 };
+
+

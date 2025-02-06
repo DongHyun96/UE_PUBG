@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -30,7 +30,7 @@ public:
 protected:
 
 	/// <summary>
-	/// AnimGraph¿¡¼­ÀÇ transition¿ë dataµé ¾÷µ¥ÀÌÆ®
+	/// AnimGraphì—ì„œì˜ transitionìš© dataë“¤ ì—…ë°ì´íŠ¸
 	/// </summary>
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
@@ -159,3 +159,5 @@ protected:
 	ESkyDivingState SkyDivingState{};
 
 };
+
+

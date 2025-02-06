@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -21,14 +21,14 @@ protected:
 
 public:
     /// <summary>
-    /// MyItemListWidget(UI¿¡ º¸ÀÌ´Â InventoryÀÇ itemlist)¸¦ ÃÊ±âÈ­ ÇÏ´Â ÇÔ¼ö.
+    /// MyItemListWidget(UIì— ë³´ì´ëŠ” Inventoryì˜ itemlist)ë¥¼ ì´ˆê¸°í™” í•˜ëŠ” í•¨ìˆ˜.
     /// </summary>
     /// <param name="itemlist"></param>
     //UFUNCTION(BlueprintCallable)
     void AddTMapItem(TMap<FString, TArray<AC_Item*>> itemlist);
 
     /// <summary>
-    /// AroundItemListWidget¸¦ ÃÊ±âÈ­ ÇÏ´Â ÇÔ¼ö.
+    /// AroundItemListWidgetë¥¼ ì´ˆê¸°í™” í•˜ëŠ” í•¨ìˆ˜.
     /// </summary>
     /// <param name="AroundItemList"></param>
     UFUNCTION(BlueprintCallable)
@@ -50,3 +50,5 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
     class AC_BasicCharacter* OwnerCharacter;
 };
+
+

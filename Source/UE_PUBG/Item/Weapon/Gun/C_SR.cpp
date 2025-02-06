@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Weapon/Gun/C_SR.h"
@@ -7,10 +7,10 @@
 AC_SR::AC_SR()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	//ItemType º≥¡§.
+	//ItemType ÏÑ§Ï†ï.
 	ItemDatas.ItemType = EItemTypes::MAINGUN;
 	CurGunType = EGunType::SR;
-	EQUIPPED_SOCKET_NAME = FName("Sniper_Equip"); // π´±‚∞° º’ø° ∫Œ¬¯µ… socket ¿Ã∏ß
+	EQUIPPED_SOCKET_NAME = FName("Sniper_Equip"); // Î¨¥Í∏∞Í∞Ä ÏÜêÏóê Î∂ÄÏ∞©Îê† socket Ïù¥Î¶Ñ
 	IronSightWindowLocation = FVector2D(0.5f, 0.5f);
 	CurrentShootingMode = EShootingMode::SEMI_AUTO;
 }
@@ -115,3 +115,5 @@ bool AC_SR::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 //	IsReloadingSR = false;
 //	return false;
 //}
+
+

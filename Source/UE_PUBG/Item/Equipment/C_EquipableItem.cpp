@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Equipment/C_EquipableItem.h"
@@ -44,7 +44,7 @@ void AC_EquipableItem::AttachToSocket(AC_BasicCharacter* InParent)
 		break;
 	}
 
-	//mobility°¡ MoveableÀÌ¿©¾ß ÀåÂø °¡´É. Áö±ÝÀº ¿¡µðÅÍ ³»¿¡¼­ ¼³Á¤ÇØ ³õ¾ÒÀ½.
+	//mobilityê°€ Moveableì´ì—¬ì•¼ ìž¥ì°© ê°€ëŠ¥. ì§€ê¸ˆì€ ì—ë””í„° ë‚´ì—ì„œ ì„¤ì •í•´ ë†“ì•˜ìŒ.
 	//BackpackMesh->SetMobility(EComponentMobility::Movable);
 
 	bool Attached = AttachToComponent
@@ -71,3 +71,5 @@ bool AC_EquipableItem::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
 	return false;
 }
+
+

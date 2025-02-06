@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -28,7 +28,7 @@ public:
 private:
 	virtual void HandleDragWidgetStart();
 protected:
-	// C++¿¡¼­ Ã³¸®ÇÒ ¾ÆÀÌÅÛ
+	// C++ì—ì„œ ì²˜ë¦¬í•  ì•„ì´í…œ
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_Item* CachedItem;
 
@@ -37,3 +37,5 @@ protected:
 
 
 };
+
+

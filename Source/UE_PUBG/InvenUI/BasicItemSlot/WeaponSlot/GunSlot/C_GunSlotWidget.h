@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -18,7 +18,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	/// <summary>
-	/// ÁÂÅ¬¸¯À¸·Î µå·¡±× ÀÌº¥Æ® ÀÌº¥Æ®¸¦ ½ÃÀÛ.
+	/// ì¢Œí´ë¦­ìœ¼ë¡œ ë“œë˜ê·¸ ì´ë²¤íŠ¸ ì´ë²¤íŠ¸ë¥¼ ì‹œì‘.
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -37,7 +37,7 @@ public:
 
 	void SetOwnerPlayer(class AC_Player* InOwnerPlayer) override;
 protected:
-	virtual bool HandleDrop(class UC_DragDropOperation* InOperation); //TODO: ¼ø¼ö°¡»óÇÔ¼ö·Î
+	virtual bool HandleDrop(class UC_DragDropOperation* InOperation); //TODO: ìˆœìˆ˜ê°€ìƒí•¨ìˆ˜ë¡œ
 
 	virtual bool ChangedGunSlot(class AC_Gun* gun);
 	
@@ -63,3 +63,5 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UC_AttachableItemSlotWidget* WB_GripSlot = nullptr;
 };
+
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_AttachableItemMeshComponent.h"
@@ -52,7 +52,7 @@ UC_AttachableItemMeshComponent::UC_AttachableItemMeshComponent()
 void UC_AttachableItemMeshComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNames¿¡ MAX°¡ ÀÖ´Ù¸é
+	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNamesì— MAXê°€ ìˆë‹¤ë©´
 	{
 		EPartsName AttachmentName = (EPartsName)i;
 		AttachableItemsMesh.Add(AttachmentName);
@@ -126,10 +126,10 @@ void UC_AttachableItemMeshComponent::TickComponent(float DeltaTime, ELevelTick T
 	// ...
 }
 /// <summary>
-/// °°Àº ¸Ş½¬ÀÇ ºÎÂø¹° 2°³ Áß AttachParent°¡ ¾ø´Â ¸Ş½¬¸¦ Ã£´Â ÇÔ¼ö
+/// ê°™ì€ ë©”ì‰¬ì˜ ë¶€ì°©ë¬¼ 2ê°œ ì¤‘ AttachParentê°€ ì—†ëŠ” ë©”ì‰¬ë¥¼ ì°¾ëŠ” í•¨ìˆ˜
 /// </summary>
-/// <param name="InPartsName">ºÎÂø¹°ÀÇ ºÎÀ§</param>
-/// <param name="InAttachmentName">ºÎÂø¹°ÀÇ ÀÌ¸§</param>
+/// <param name="InPartsName">ë¶€ì°©ë¬¼ì˜ ë¶€ìœ„</param>
+/// <param name="InAttachmentName">ë¶€ì°©ë¬¼ì˜ ì´ë¦„</param>
 /// <returns></returns>
 AAttachmentActor* UC_AttachableItemMeshComponent::GetAttachablePartMesh(EPartsName InPartsName, EAttachmentNames InAttachmentName)
 {
@@ -167,12 +167,12 @@ AAttachmentActor* UC_AttachableItemMeshComponent::GetCurrentAttachment(USceneCom
 }
 
 /// <summary>
-/// ÇØ´ç ÃÑ±â¿¡ ºÎÂø¹°À» ºÎÂøÇÏ´Â ÇÔ¼ö
-/// ºÎÂøÇÏ´Â µ¿½Ã¿¡ IronSightMesh¸¦ HiddenInGame½ÃÄÑÁÜ
+/// í•´ë‹¹ ì´ê¸°ì— ë¶€ì°©ë¬¼ì„ ë¶€ì°©í•˜ëŠ” í•¨ìˆ˜
+/// ë¶€ì°©í•˜ëŠ” ë™ì‹œì— IronSightMeshë¥¼ HiddenInGameì‹œì¼œì¤Œ
 /// </summary>
-/// <param name="InParent">ÀåÂøÇÒ ÃÑ±â</param>
-/// <param name="InPartsName">ºÎÂø¹°ÀÇ ºÎÀ§</param>
-/// <param name="InAttachmentName">ºÎÂø¹°ÀÇ ÀÌ¸§</param>
+/// <param name="InParent">ì¥ì°©í•  ì´ê¸°</param>
+/// <param name="InPartsName">ë¶€ì°©ë¬¼ì˜ ë¶€ìœ„</param>
+/// <param name="InAttachmentName">ë¶€ì°©ë¬¼ì˜ ì´ë¦„</param>
 /// <returns></returns>
 bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName)
 {
@@ -201,12 +201,12 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 
 }
 /// <summary>
-/// ÇØ´ç ÃÑ±â¿¡ ºÎÂøµÈ Attachment¸¦ Ã£¾Æ¼­ Å»Âø
-/// Å»ÂøÇÏ´Â µ¿½Ã¿¡ IronSightMesh¸¦ º¸ÀÌ°Ô µ¹·ÁÁÜ
+/// í•´ë‹¹ ì´ê¸°ì— ë¶€ì°©ëœ Attachmentë¥¼ ì°¾ì•„ì„œ íƒˆì°©
+/// íƒˆì°©í•˜ëŠ” ë™ì‹œì— IronSightMeshë¥¼ ë³´ì´ê²Œ ëŒë ¤ì¤Œ
 /// </summary>
-/// <param name="InParent">ÇØ´ç ¾ÆÀÌÅÛÀÌ ºÎÂøµÈ ÃÑ±â</param>
-/// <param name="InPartsName">ºÎÂø¹°ÀÇ ºÎÀ§</param>
-/// <param name="InAttachmentName">ºÎÂø¹°ÀÇ ÀÌ¸§</param>
+/// <param name="InParent">í•´ë‹¹ ì•„ì´í…œì´ ë¶€ì°©ëœ ì´ê¸°</param>
+/// <param name="InPartsName">ë¶€ì°©ë¬¼ì˜ ë¶€ìœ„</param>
+/// <param name="InAttachmentName">ë¶€ì°©ë¬¼ì˜ ì´ë¦„</param>
 void UC_AttachableItemMeshComponent::DetachFromGun(USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName)
 {
 	TArray<class AAttachmentActor*> AttachmentItem = AttachableItemsMesh[InPartsName][InAttachmentName];
@@ -231,5 +231,7 @@ void UC_AttachableItemMeshComponent::DetachFromGun(USceneComponent* InParent, EP
 void UC_AttachableItemMeshComponent::UseAttachmentStrategy(USceneComponent* InParent)
 {
 }
+
+
 
 

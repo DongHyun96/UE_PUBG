@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "UE_PUBGGameMode.h"
 #include "UE_PUBGCharacter.h"
@@ -23,3 +23,5 @@ AUE_PUBGGameMode::AUE_PUBGGameMode()
 	}
 
 }
+
+

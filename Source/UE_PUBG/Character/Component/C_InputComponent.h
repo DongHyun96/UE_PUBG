@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -33,7 +33,7 @@ private:
 	void Move(const struct FInputActionValue& Value);
 
 	/// <summary>
-	/// Move°¡ ³¡³¯ ¶§ È£ÃâµÊ, AnimCharacter¿¡¼­ Speed LerpÇÒ °ª setting ¹× Turn in place µ¿ÀÛ ÃÊ±â setting 
+	/// Moveê°€ ëë‚  ë•Œ í˜¸ì¶œë¨, AnimCharacterì—ì„œ Speed Lerpí•  ê°’ setting ë° Turn in place ë™ì‘ ì´ˆê¸° setting 
 	/// </summary>
 	void MoveEnd(const struct FInputActionValue& Value);
 
@@ -49,7 +49,7 @@ private:
 	void OnSwimmingJumpCrouchEnd();
 
 	void CancelTurnInPlaceMotion();
-	//Alt Å° ´©¸¦¶§ ÀÌ¸§ ÃßÃµºÎÅ¹
+	//Alt í‚¤ ëˆ„ë¥¼ë•Œ ì´ë¦„ ì¶”ì²œë¶€íƒ
 	void HoldDirection();
 	void ReleaseDirection();
 	void SetToNonAimCamera();
@@ -64,7 +64,7 @@ private:
 	void OnBKey();
 	void OnRKey();
 
-	// TODO : ¹«±â¿¡ ´ëÇÑ ¸¶¿ì½º ¹öÆ° Å¬¸¯ Ã³¸®¸¸ ÇØµÒ, ´Ù¸¥ Ã³¸®µµ ÇÊ¿äÇÒ ¿¹Á¤
+	// TODO : ë¬´ê¸°ì— ëŒ€í•œ ë§ˆìš°ìŠ¤ ë²„íŠ¼ í´ë¦­ ì²˜ë¦¬ë§Œ í•´ë‘ , ë‹¤ë¥¸ ì²˜ë¦¬ë„ í•„ìš”í•  ì˜ˆì •
 	void OnMLBStarted();
 	void OnMLBOnGoing();
 	void OnMLBCompleted();
@@ -81,9 +81,9 @@ private:
 	void OnWalkStarted();
 	void OnWalkReleased();
 
-	//»óÈ£ÀÛ¿ë(F)
-	//¿ÀºêÁ§Æ®ÀÇ ¹­À½º°·Î ¸¸µé¾î¾ß ÇÒ ¼öµµ?
-	//¾Æ´Ï¸é ±×³É UObject·Î ¸¸µé±â
+	//ìƒí˜¸ì‘ìš©(F)
+	//ì˜¤ë¸Œì íŠ¸ì˜ ë¬¶ìŒë³„ë¡œ ë§Œë“¤ì–´ì•¼ í•  ìˆ˜ë„?
+	//ì•„ë‹ˆë©´ ê·¸ëƒ¥ UObjectë¡œ ë§Œë“¤ê¸°
 	void OnFKey();
 
 	void OnNKey();
@@ -124,7 +124,7 @@ public:
 	class UInputAction* CrouchAction{};
 
 	/// <summary>
-	/// ¿òÁ÷ÀÏ ¶§ ¾ËÆ®Å° ´©¸£´Â ¾×¼Ç -ÇöÈ£
+	/// ì›€ì§ì¼ ë•Œ ì•ŒíŠ¸í‚¤ ëˆ„ë¥´ëŠ” ì•¡ì…˜ -í˜„í˜¸
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* HoldDirectionAction{};
@@ -156,11 +156,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* MRBAction{};
 
-	// °¡¿îµ¥ ¸¶¿ì½º ¹öÆ° Ã³¸®
+	// ê°€ìš´ë° ë§ˆìš°ìŠ¤ ë²„íŠ¼ ì²˜ë¦¬
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* MMBAction{}; 
 	
-	//»óÈ£ÀÛ¿ëÅ°(F)
+	//ìƒí˜¸ì‘ìš©í‚¤(F)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* Interaction{};
 
@@ -177,3 +177,5 @@ public:
 	class UInputAction* TabKeyAction{};
 
 };
+
+

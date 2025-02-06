@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -61,11 +61,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UTimelineComponent* Timeline;
 
-	//TimeLine ÁøÇàÁßÀÏ ¶§ È£Ãâ µÇ´Â ÇÔ¼öÆ÷ÀÎÅÍ
+	//TimeLine ì§„í–‰ì¤‘ì¼ ë•Œ í˜¸ì¶œ ë˜ëŠ” í•¨ìˆ˜í¬ì¸í„°
 	FOnTimelineFloat InterpFunctionFloat{};
 	FOnTimelineVector InterpFunctionVector{};
 	FOnTimelineLinearColor InterpFunctionColor{};
-	//TimeLine ÀÌ ³¡³ª¸é È£Ãâ µÇ´Â ÇÔ¼öÆ÷ÀÎÅÍ
+	//TimeLine ì´ ëë‚˜ë©´ í˜¸ì¶œ ë˜ëŠ” í•¨ìˆ˜í¬ì¸í„°
 	FOnTimelineEvent TimelineFinished{};
 
 
@@ -85,3 +85,5 @@ protected:
 	
 	ECurveType CurType{};
 };
+
+

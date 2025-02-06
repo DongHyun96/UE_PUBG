@@ -42,32 +42,32 @@ bool AC_Item_Bullet::Interaction(AC_BasicCharacter* Character)
 
 bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
-	uint8 ItemStackCount = invenComp->LoopCheckVolume(this); //¾ÆÀÌÅÛStackÀ» ¸î°³±îÁö ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´Â°¡?
+	uint8 ItemStackCount = invenComp->LoopCheckVolume(this); //ì•„ì´í…œStackì„ ëª‡ê°œê¹Œì§€ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ”ê°€?
 
 	if (ItemStackCount == 0)
 	{
 		UC_Util::Print("Not Enough Volume");
-		return false; //ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´Â ¾ÆÀÌÅÛÀÇ °¹¼ö°¡ 0 ÀÌ¸é ³ÖÀ» ¼ö ¾øÀ¸¹Ç·Î return false;
+		return false; //ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ” ì•„ì´í…œì˜ ê°¯ìˆ˜ê°€ 0 ì´ë©´ ë„£ì„ ìˆ˜ ì—†ìœ¼ë¯€ë¡œ return false;
 	}
 
 	if (ItemStackCount == this->GetItemDatas().ItemCurStack)
 	{
-		//¾ÆÀÌÅÛÀ» ÀüºÎ ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´Â °æ¿ì.
+		//ì•„ì´í…œì„ ì „ë¶€ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ” ê²½ìš°
 
 		if (invenComp->FindMyItem(this->GetItemDatas().ItemName))
 		{
-			//ÀÎº¥¿¡ µ¿ÀÏÇÑ ÀÌ¸§ÀÇ ¾ÆÀÌÅÛÀÌ Á¸Àç ÇÑ´Ù¸é ½ÇÇà.
+			// ì¸ë²¤ì— ë™ì¼í•œ ì´ë¦„ì˜ ì•„ì´í…œì´ ì¡´ì¬ í•œë‹¤ë©´ ì‹¤í–‰.
 
 			invenComp->AddItemToMyList(this);
 			AddBulletStackToCharacter();
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player¸¸ ½ÇÇà.
+				UpdateLeftAmmoWidget(OwnerPlayer); //Playerë§Œ ì‹¤í–‰.
 
-			this->Destroy(); //Inven¿¡ Á¸ÀçÇÏ´ø µ¿ÀÏÇÑ ¾ÆÀÌÅÛ°ú ÇÕÃÄÁ³À¸¹Ç·Î »èÁ¦.
+			this->Destroy(); // Invenì— ì¡´ì¬í•˜ë˜ ë™ì¼í•œ ì•„ì´í…œê³¼ í•©ì³ì¡Œìœ¼ë¯€ë¡œ ì‚­ì œ.
 		}
 		else
 		{
@@ -75,39 +75,41 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 			AddBulletStackToCharacter();
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player¸¸ ½ÇÇà.
+				UpdateLeftAmmoWidget(OwnerPlayer); //Playerë§Œ ì‹¤í–‰.
 		}
 		
+
 
 		return true;
 	}
 	else
 	{
-		//¾ÆÀÌÅÛÀ» ÀÏºÎ¸¸ ³ÖÀ» ¼ö ÀÖ´Â °æ¿ì.
-		this->SetItemStack(GetItemDatas().ItemCurStack - ItemStackCount);//ÇöÀç °´Ã¼ÀÇ stackÀ» Á¶Àı
-		AC_Item_Bullet* SpawnedItem = Cast<AC_Item_Bullet>(SpawnItem(Character));  //µ¿ÀÏÇÑ ¾ÆÀÌÅÛ °´Ã¼¸¦ »ı¼º
-		SpawnedItem->SetItemStack(ItemStackCount);						 //»ı¼ºÇÑ ¾ÆÀÌÅÛ stackÀ» ¼³Á¤
-
+		// ì•„ì´í…œì„ ì¼ë¶€ë§Œ ë„£ì„ ìˆ˜ ìˆëŠ” ê²½ìš°.
+		this->SetItemStack(GetItemDatas().ItemCurStack - ItemStackCount);			//í˜„ì¬ ê°ì²´ì˜ stackì„ ì¡°ì ˆ
+		AC_Item_Bullet* SpawnedItem = Cast<AC_Item_Bullet>(SpawnItem(Character));  	//ë™ì¼í•œ ì•„ì´í…œ ê°ì²´ë¥¼ ìƒì„±
+		SpawnedItem->SetItemStack(ItemStackCount);						 			//ìƒì„±í•œ ì•„ì´í…œ stackì„ ì„¤ì •
+																					
 		if (invenComp->FindMyItem(this->GetItemDatas().ItemName))
 		{
-			invenComp->AddItemToMyList(SpawnedItem);						 //inven¿¡ Ãß°¡.
+			invenComp->AddItemToMyList(SpawnedItem);						 //invenì— ì¶”ê°€
 
 			AddBulletStackToCharacter();
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player¸¸ ½ÇÇà.
+				UpdateLeftAmmoWidget(OwnerPlayer); //Playerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 
 			this->Destroy();
 		}
 		else
 		{
-			invenComp->AddItemToMyList(SpawnedItem);						 //inven¿¡ Ãß°¡.
+			invenComp->AddItemToMyList(SpawnedItem);						 //invenì— ì¶”ê°€
 
 			AddBulletStackToCharacter();
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player¸¸ ½ÇÇà.
+				UpdateLeftAmmoWidget(OwnerPlayer); //Playerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		}
+
 
 		return true;
 	}
@@ -115,32 +117,33 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 
 bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
 	if (!invenComp->FindMyItem(this)) return false;
 
-	invenComp->RemoveItemToMyList(this);				 //³» ¾ÆÀÌÅÛ ¸®½ºÆ®¿¡¼­ ¾ÆÀÌÅÛ Á¦°Å.
+	invenComp->RemoveItemToMyList(this);				 //ë‚´ ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ì—ì„œ ì•„ì´í…œ ì œê±°.
 
 	DeBulletStackToCharacter();
 
-	//invenComp->AddInvenCurVolume(-this->GetAllVolume()); //¹ö¸®´Â ¾ÆÀÌÅÛ¸¸Å­ curVolume Á¶ÀıÇÏ±â. TODO : Inven¿¡¼­ ¾ÆÀÌÅÛ ¹ö¸± ¶§ ¹®Á¦ »ı±â¸é Ã¼Å©ÇÏ±â.
+	//invenComp->AddInvenCurVolume(-this->GetAllVolume()); // ë²„ë¦¬ëŠ” ì•„ì´í…œë§Œí¼ curVolume ì¡°ì ˆí•˜ê¸°. TODO : Invenì—ì„œ ì•„ì´í…œ ë²„ë¦´ ë•Œ ë¬¸ì œ ìƒê¸°ë©´ ì²´í¬í•˜ê¸°.
+
 
 	DropItem(Character);
-	//AddFivemmBulletStackÀ» ÅëÇØ¼­ ÃÑ¿¡ ¶Ç Á¤º¸¸¦ Àü´Ş ÇØ ÁÖ¾î¾ß ÇÔ.
+	//AddFivemmBulletStackì„ í†µí•´ì„œ ì´ì— ë˜ ì •ë³´ë¥¼ ì „ë‹¬í•´ ì£¼ì–´ì•¼ í•¨
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-		UpdateLeftAmmoWidget(OwnerPlayer); //Player¸¸ ½ÇÇà.
+		UpdateLeftAmmoWidget(OwnerPlayer); //Playerë§Œ ì‹¤í–‰
 
 	return true;
 }
 
 void AC_Item_Bullet::UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer)
 {
-	if (InOwnerPlayer->GetHandState() == EHandState::WEAPON_GUN) //ÃÑÀ» µé°í ÀÖ´Ù¸é ½ÇÇà
+	if (InOwnerPlayer->GetHandState() == EHandState::WEAPON_GUN) //ì´ì„ ë“¤ê³  ìˆë‹¤ë©´ ì‹¤í–‰
 	{
 		AC_Gun* curGun = Cast<AC_Gun>(InOwnerPlayer->GetEquippedComponent()->GetCurWeapon());
 
-		if (curGun->GetCurBulletType() == CurBulletType) //µé°í ÀÖ´Â ÃÑÀÌ »ç¿ëÇÏ´Â Åº°ú Áö±İ ½ÀµæÇÑ ÀÌ ÃÑ¾Ë°ú TypeÀÌ °°´Ù¸é ½ÇÇà.
+		if (curGun->GetCurBulletType() == CurBulletType) //ë“¤ê³  ìˆëŠ” ì´ì´ ì‚¬ìš©í•˜ëŠ” íƒ„ê³¼ ì§€ê¸ˆ ìŠµë“í•œ ì´ ì´ì•Œê³¼ Typeì´ ê°™ë‹¤ë©´ ì‹¤í–‰.
 		{
 			AC_Item* curItem = InOwnerPlayer->GetInvenComponent()->FindMyItem(this->GetItemDatas().ItemName);
 			int LeftAmmoStack = 0;
@@ -195,3 +198,4 @@ void AC_Item_Bullet::DeBulletStackToCharacter()
 		break;
 	}
 }
+

@@ -1,4 +1,4 @@
-
+ï»¿
 
 // Fill out your copyright notice in the Description page of Project Settings.
 
@@ -62,7 +62,7 @@ AC_Gun::AC_Gun()
 	PrimaryActorTick.bCanEverTick = true;
 
 	WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
-	//ItemType ¼³Á¤.
+	//ItemType ì„¤ì •.
 	//Magazine = LoadObject<AC_AttachableItem>(nullptr, TEXT("/Game/Project_PUBG/Common/Weapon/GunWeapon/Magazine/BPC_Magazine.BPC_Magazine"));
 
 	ItemDatas.ItemType = EItemTypes::MAINGUN;
@@ -85,7 +85,7 @@ void AC_Gun::BeginPlay()
 	AimSightSpringArm = FindComponentByClass<USpringArmComponent>();
 	if (AimSightCamera)
 		AimSightCamera->SetActive(false);
-	//ºí·çÇÁ¸°Æ®¿¡¼­ ÇÒ´çÇÑ Skeletal Mesh Ã£¾Æ¼­ º¯¼ö¿¡ ÀúÀå
+	//ë¸”ë£¨í”„ë¦°íŠ¸ì—ì„œ í• ë‹¹í•œ Skeletal Mesh ì°¾ì•„ì„œ ë³€ìˆ˜ì— ì €ì¥
 	GunMesh = FindComponentByClass<USkeletalMeshComponent>();
 	GunMesh->SetupAttachment(RootComponent);
 	
@@ -124,7 +124,7 @@ void AC_Gun::Tick(float DeltaTime)
 		FVector OutLocation{};
 		FRotator OutRotation{};
 		FTransform TempVec{};
-		FRotator AdditionalRotation = FRotator(0, 0, 0); // Yaw¸¦ 45µµ È¸Àü½ÃÅ°´Â ¿¹Á¦
+		FRotator AdditionalRotation = FRotator(0, 0, 0); // Yawë¥¼ 45ë„ íšŒì „ì‹œí‚¤ëŠ” ì˜ˆì œ
 
 		if (IsValid(AttachedItem[EPartsName::GRIP]))
 			TempVec = AttachedItem[EPartsName::GRIP]->GetAttachmentMesh()->GetSocketTransform("LeftHandSocket");
@@ -222,11 +222,11 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 	//UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 
 	//if (!IsValid(DrawMontage)) return false;
-	// ¸¸ÀÏ SUB_GUNÀÇ Draw°¡ ½ÇÇàµÈ´Ù¸é ¿Ş¼ÕÀ¸·Î ¸ÕÀú Attach
-	//ÇöÀç ¿Ş¼ÕÀ¸·Î ¿Å°ÜÁö°í ÀÖ´Ù¸é ´Ù½Ã ¾îÅÂÄ¡ ÇÏÁö ¾Ê°í If¹® ¹ØÀ¸·Î ÁøÇà
+	// ë§Œì¼ SUB_GUNì˜ Drawê°€ ì‹¤í–‰ëœë‹¤ë©´ ì™¼ì†ìœ¼ë¡œ ë¨¼ì € Attach
+	//í˜„ì¬ ì™¼ì†ìœ¼ë¡œ ì˜®ê²¨ì§€ê³  ìˆë‹¤ë©´ ë‹¤ì‹œ ì–´íƒœì¹˜ í•˜ì§€ ì•Šê³  Ifë¬¸ ë°‘ìœ¼ë¡œ ì§„í–‰
 	FName CurSocketName = GetAttachParentSocketName();
 
-	// ÃÑ±â HUD ÄÑÁÖ±â
+	// ì´ê¸° HUD ì¼œì£¼ê¸°
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 	{
 		UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
@@ -241,7 +241,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(DrawMontage) && CurSocketName != SUB_DRAW_SOCKET_NAME)
 	{
 
-		//CrawlÀÏ ¶§´Â ¸ğ¼ÇÀÌ ´Ş¶ó ¿Ş¼Õ¿¡ ¾îÅÂÄ¡ ¾ÈÇÔ
+		//Crawlì¼ ë•ŒëŠ” ëª¨ì…˜ì´ ë‹¬ë¼ ì™¼ì†ì— ì–´íƒœì¹˜ ì•ˆí•¨
 		if (CurState == EGunState::SUB_GUN && OwnerCharacter->GetPoseState() != EPoseState::CRAWL)
 		{
 			return AttachToComponent
@@ -270,7 +270,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 
 bool AC_Gun::SetAimingDown()
 {
-	//½ºÇÁ¸°Æ® ÁßÀÌ¶ó¸é Return
+	//ìŠ¤í”„ë¦°íŠ¸ ì¤‘ì´ë¼ë©´ Return
 	if (OwnerCharacter->GetNextSpeed() > 600) return false;
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 	if (!IsValid(OwnerPlayer))	              return false;
@@ -279,8 +279,8 @@ bool AC_Gun::SetAimingDown()
 
 	//OwnerCharacter->bUseControllerRotationYaw = true;
 
-	//AimDown ÀÏ ¶§ ¸Ó¸®¼û±â±â
-	//TODO : ³» Ä«¸Ş¶ó¿¡¸¸ ¾Èº¸ÀÌ°í »ó´ë¹æ Ä«¸Ş¶ó¿¡¼± º¸ÀÌ°Ô ¸¸µé±â
+	//AimDown ì¼ ë•Œ ë¨¸ë¦¬ìˆ¨ê¸°ê¸°
+	//TODO : ë‚´ ì¹´ë©”ë¼ì—ë§Œ ì•ˆë³´ì´ê³  ìƒëŒ€ë°© ì¹´ë©”ë¼ì—ì„  ë³´ì´ê²Œ ë§Œë“¤ê¸°
 	OwnerCharacter->GetMesh()->HideBoneByName(FName("Head"), EPhysBodyOp::PBO_None);
 	AimSightCamera->SetActive(true);
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(this, 0.2);
@@ -289,11 +289,11 @@ bool AC_Gun::SetAimingDown()
 		AttachedItem[EPartsName::SCOPE]->UseMrbStrategy();
 	return true;
 }
-//°ßÂø Á¶ÁØ¸¸ÇÒ ¶§ Player AimKePressÇÔ¼ö·Î ¸ŞÀÎÄ«¸Ş¶ó¿¡¼­ ¿¡ÀÓ Ä«¸Ş¶ó·Î ¹Ù²ãÁÖ±â
+//ê²¬ì°© ì¡°ì¤€ë§Œí•  ë•Œ Player AimKePressí•¨ìˆ˜ë¡œ ë©”ì¸ì¹´ë©”ë¼ì—ì„œ ì—ì„ ì¹´ë©”ë¼ë¡œ ë°”ê¿”ì£¼ê¸°
 bool AC_Gun::SetAimingPress()
 {
 	//if (OwnerCharacter->GetInvenSystem()->GetIsPanelOpend()) return false;
-	//½ºÇÁ¸°Æ® ÁßÀÌ¶ó¸é Return
+	//ìŠ¤í”„ë¦°íŠ¸ ì¤‘ì´ë¼ë©´ Return
 	if (OwnerCharacter->GetNextSpeed() > 600) return false;
 
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
@@ -381,7 +381,7 @@ bool AC_Gun::LegacyMoveToAround(AC_BasicCharacter* Character)
 
 bool AC_Gun::LegacyMoveToSlot(AC_BasicCharacter* Character)
 {
-	//TODO : PickUpItem ³»¿ëÀ¸·Î ¿ì¼± ¸¸µç°Å¶ó ´Ù½Ã ¸¸µé¾î¾ßÇÔ. ±×¸®°í MainGun°ú SubGun slotÀÇ ÀÌµ¿À» °í¹ÎÇØ¾ß ÇÔ.
+	//TODO : PickUpItem ë‚´ìš©ìœ¼ë¡œ ìš°ì„  ë§Œë“ ê±°ë¼ ë‹¤ì‹œ ë§Œë“¤ì–´ì•¼í•¨. ê·¸ë¦¬ê³  MainGunê³¼ SubGun slotì˜ ì´ë™ì„ ê³ ë¯¼í•´ì•¼ í•¨.
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 	EWeaponSlot Slot = EWeaponSlot::MAIN_GUN;
 
@@ -390,12 +390,12 @@ bool AC_Gun::LegacyMoveToSlot(AC_BasicCharacter* Character)
 	case EWeaponSlot::NONE:
 		break;
 	case EWeaponSlot::MAIN_GUN:
-		//Main Gun Slot¿¡ ÃÑÀÌ ¾ø´Ù¸é ½ÇÇà
+		//Main Gun Slotì— ì´ì´ ì—†ë‹¤ë©´ ì‹¤í–‰
 		if (!equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN])
 		{
 			equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
 
-			//Ä×´Ù ²ô´Â ÀÌÀ¯´Â OwnerCharacter¿¡¼­ ÀÎº¥ÄÄÆ÷³ÍÆ®¿¡¼­ RemoveItemAroundList¸¦ ½áµµ ¾ÈµÇ¼­ »ç¿ëÇÔ.
+			//ì¼°ë‹¤ ë„ëŠ” ì´ìœ ëŠ” OwnerCharacterì—ì„œ ì¸ë²¤ì»´í¬ë„ŒíŠ¸ì—ì„œ RemoveItemAroundListë¥¼ ì¨ë„ ì•ˆë˜ì„œ ì‚¬ìš©í•¨.
 			SetActorHiddenInGame(true);
 			SetActorEnableCollision(false);
 
@@ -405,12 +405,12 @@ bool AC_Gun::LegacyMoveToSlot(AC_BasicCharacter* Character)
 		}
 		//Slot = EWeaponSlot::SUB_GUN;
 	case EWeaponSlot::SUB_GUN:
-		//Sub Gun Slot¿¡ ÃÑÀÌ ¾ø´Ù¸é ½ÇÇà
+		//Sub Gun Slotì— ì´ì´ ì—†ë‹¤ë©´ ì‹¤í–‰
 		if (!equipComp->GetWeapons()[EWeaponSlot::SUB_GUN])
 		{
 			equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
 
-			//Ä×´Ù ²ô´Â ÀÌÀ¯´Â OwnerCharacter¿¡¼­ ÀÎº¥ÄÄÆ÷³ÍÆ®¿¡¼­ RemoveItemAroundList¸¦ ½áµµ ¾ÈµÇ¼­ »ç¿ëÇÔ.
+			//ì¼°ë‹¤ ë„ëŠ” ì´ìœ ëŠ” OwnerCharacterì—ì„œ ì¸ë²¤ì»´í¬ë„ŒíŠ¸ì—ì„œ RemoveItemAroundListë¥¼ ì¨ë„ ì•ˆë˜ì„œ ì‚¬ìš©í•¨.
 			SetActorHiddenInGame(true);
 			SetActorEnableCollision(false);
 
@@ -428,14 +428,14 @@ bool AC_Gun::LegacyMoveToSlot(AC_BasicCharacter* Character)
 		break;
 	}
 
-	//Main, Sub ¸ğµÎ ÃÑÀÌ ÀÖ´Â °æ¿ì.
+	//Main, Sub ëª¨ë‘ ì´ì´ ìˆëŠ” ê²½ìš°.
 	EHandState HandState = Character->GetHandState();
 	AC_Weapon* DropGun = nullptr;
 	if (HandState == EHandState::WEAPON_GUN)
 	{
 		EWeaponSlot curSlot = equipComp->GetCurWeaponType();
 
-		//Á¦´ë·Î ÃÑÀ» ¹Ù²Ù´ÂÁö È®ÀÎÇØ¾ßÇÔ, SetSlotWeapon°ú DetachmentItemÀÇ ¼ø¼­¸¦ ¹Ù²ã¾ß ÇÒ ¼ö µµ ÀÖÀ½.
+		//ì œëŒ€ë¡œ ì´ì„ ë°”ê¾¸ëŠ”ì§€ í™•ì¸í•´ì•¼í•¨, SetSlotWeaponê³¼ DetachmentItemì˜ ìˆœì„œë¥¼ ë°”ê¿”ì•¼ í•  ìˆ˜ ë„ ìˆìŒ.
 		DropGun = equipComp->SetSlotWeapon(curSlot, this);
 		DropGun->DetachItem();
 		return true;
@@ -458,12 +458,12 @@ void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
 	case EWeaponSlot::NONE:
 		break;
 	case EWeaponSlot::MAIN_GUN:
-		//Main Gun Slot¿¡ ÃÑÀÌ ¾ø´Ù¸é ½ÇÇà
+		//Main Gun Slotì— ì´ì´ ì—†ë‹¤ë©´ ì‹¤í–‰
 		if (!equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN])
 		{
 			equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
 			
-			//Ä×´Ù ²ô´Â ÀÌÀ¯´Â OwnerCharacter¿¡¼­ ÀÎº¥ÄÄÆ÷³ÍÆ®¿¡¼­ RemoveItemAroundList¸¦ ½áµµ ¾ÈµÇ¼­ »ç¿ëÇÔ.
+			//ì¼°ë‹¤ ë„ëŠ” ì´ìœ ëŠ” OwnerCharacterì—ì„œ ì¸ë²¤ì»´í¬ë„ŒíŠ¸ì—ì„œ RemoveItemAroundListë¥¼ ì¨ë„ ì•ˆë˜ì„œ ì‚¬ìš©í•¨.
 			SetActorHiddenInGame(true);
 			SetActorEnableCollision(false);
 
@@ -473,12 +473,12 @@ void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
 		}
 		//Slot = EWeaponSlot::SUB_GUN;
 	case EWeaponSlot::SUB_GUN:
-		//Sub Gun Slot¿¡ ÃÑÀÌ ¾ø´Ù¸é ½ÇÇà
+		//Sub Gun Slotì— ì´ì´ ì—†ë‹¤ë©´ ì‹¤í–‰
 		if (!equipComp->GetWeapons()[EWeaponSlot::SUB_GUN])
 		{
 			equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
 
-			//Ä×´Ù ²ô´Â ÀÌÀ¯´Â OwnerCharacter¿¡¼­ ÀÎº¥ÄÄÆ÷³ÍÆ®¿¡¼­ RemoveItemAroundList¸¦ ½áµµ ¾ÈµÇ¼­ »ç¿ëÇÔ.
+			//ì¼°ë‹¤ ë„ëŠ” ì´ìœ ëŠ” OwnerCharacterì—ì„œ ì¸ë²¤ì»´í¬ë„ŒíŠ¸ì—ì„œ RemoveItemAroundListë¥¼ ì¨ë„ ì•ˆë˜ì„œ ì‚¬ìš©í•¨.
 			SetActorHiddenInGame(true);
 			SetActorEnableCollision(false);
 
@@ -496,14 +496,14 @@ void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
 		break;
 	}
 
-	//Main, Sub ¸ğµÎ ÃÑÀÌ ÀÖ´Â °æ¿ì.
+	//Main, Sub ëª¨ë‘ ì´ì´ ìˆëŠ” ê²½ìš°.
 	EHandState HandState = Character->GetHandState();
 	AC_Weapon* DropGun = nullptr;
 	if (HandState == EHandState::WEAPON_GUN)
 	{
 		EWeaponSlot curSlot = equipComp->GetCurWeaponType();
 		
-		//Á¦´ë·Î ÃÑÀ» ¹Ù²Ù´ÂÁö È®ÀÎÇØ¾ßÇÔ, SetSlotWeapon°ú DetachmentItemÀÇ ¼ø¼­¸¦ ¹Ù²ã¾ß ÇÒ ¼ö µµ ÀÖÀ½.
+		//ì œëŒ€ë¡œ ì´ì„ ë°”ê¾¸ëŠ”ì§€ í™•ì¸í•´ì•¼í•¨, SetSlotWeaponê³¼ DetachmentItemì˜ ìˆœì„œë¥¼ ë°”ê¿”ì•¼ í•  ìˆ˜ ë„ ìˆìŒ.
 		DropGun = equipComp->SetSlotWeapon(curSlot, this);
 		DropGun->DetachItem();
 	}
@@ -521,7 +521,7 @@ void AC_Gun::OnOwnerCharacterPoseTransitionFin()
 
 void AC_Gun::CheckPlayerIsRunning()
 {
-	//Aim Press È¤Àº Aim Down »óÅÂÀÏ ¶§ ½ºÇÁ¸°Æ® ½ÇÇàÇÏ¸é ´Ù½Ã main Ä«¸Ş¶ó·Î µ¹¾Æ°¡±â
+	//Aim Press í˜¹ì€ Aim Down ìƒíƒœì¼ ë•Œ ìŠ¤í”„ë¦°íŠ¸ ì‹¤í–‰í•˜ë©´ ë‹¤ì‹œ main ì¹´ë©”ë¼ë¡œ ëŒì•„ê°€ê¸°
 	float NextSpeed = OwnerCharacter->GetNextSpeed();
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 	{
@@ -559,8 +559,8 @@ AC_AttachableItem* AC_Gun::SetAttachableItemSlot(EPartsName InPartsName, AC_Atta
 
 	if (PrevSlotAttachableItem)
 	{
-		//ÀåÂøµÈ ºÎÂø¹°À» ÇØÃ¼ÇÏ´Â ÀÛ¾÷
-		//±³Ã¼µÈ ºÎÂø¹°Àº Inven¿¡ °ø°£ÀÌ ÀÖÀ¸¸é InvenÀ¸·Î, ¾øÀ¸¸é Around·Î °£´Ù.
+		//ì¥ì°©ëœ ë¶€ì°©ë¬¼ì„ í•´ì²´í•˜ëŠ” ì‘ì—…
+		//êµì²´ëœ ë¶€ì°©ë¬¼ì€ Invenì— ê³µê°„ì´ ìˆìœ¼ë©´ Invenìœ¼ë¡œ, ì—†ìœ¼ë©´ Aroundë¡œ ê°„ë‹¤.
 		//if (PrevSlotAttachableItem->MoveToInven(OwnerCharacter)) {}
 		//else
 		//{
@@ -569,7 +569,7 @@ AC_AttachableItem* AC_Gun::SetAttachableItemSlot(EPartsName InPartsName, AC_Atta
 		
 		//PrevSlotAttachableItem->SetOwnerGun(nullptr);
 
-		//ºÎÂø¹°ÀÇ mesh¸¦ ÃÑ¿¡¼­ ÀåÂøÇØÁ¦
+		//ë¶€ì°©ë¬¼ì˜ meshë¥¼ ì´ì—ì„œ ì¥ì°©í•´ì œ
 		AttachableMeshComp->DetachFromGun(this->GetGunMesh(), InPartsName, PrevSlotAttachableItem->GetAttachmentName());
 	}
 
@@ -577,10 +577,10 @@ AC_AttachableItem* AC_Gun::SetAttachableItemSlot(EPartsName InPartsName, AC_Atta
 
 	if (AttachableItem[InPartsName] == nullptr) return PrevSlotAttachableItem; 
 	
-	//»õ·Î ÀåÂøÇÏ´Â ºÎÂø¹°ÀÇ mesh¸¦ ÃÑ¿¡ ÀåÂø
+	//ìƒˆë¡œ ì¥ì°©í•˜ëŠ” ë¶€ì°©ë¬¼ì˜ meshë¥¼ ì´ì— ì¥ì°©
 
-	//AttachableItem[InPartsName]->SetActorHiddenInGame(false);	//¸ğ½ÀÀÌ ¾Èº¸ÀÌµµ·Ï º¸ÀÌµµ·Ï 
-	//AttachableItem[InPartsName]->SetActorEnableCollision(true);	//Overlap ºÒ°¡´É ÇÏµµ·Ï Collision Off
+	//AttachableItem[InPartsName]->SetActorHiddenInGame(false);	//ëª¨ìŠµì´ ì•ˆë³´ì´ë„ë¡ ë³´ì´ë„ë¡ 
+	//AttachableItem[InPartsName]->SetActorEnableCollision(true);	//Overlap ë¶ˆê°€ëŠ¥ í•˜ë„ë¡ Collision Off
 
 	//AttachableItem[InPartsName]->SetCurWeaponSlot(this->GetWeaponSlot())
 	AttachableItem[InPartsName]->SetOwnerGun(this);
@@ -589,7 +589,7 @@ AC_AttachableItem* AC_Gun::SetAttachableItemSlot(EPartsName InPartsName, AC_Atta
 	AttachableItem[InPartsName]->SetItemPlace(EItemPlace::SLOT);
 
 	AttachableMeshComp->AttachToGun(this->GetGunMesh(), InPartsName, AttachableItem[InPartsName]->GetAttachmentName());
-	//¾ÆÀÌÅÛÀÇ Á¤È®ÇÑ À§Ä¡ ÀÌµ¿Àº ´Ù¸¥ °÷¿¡¼­ Ã³¸®ÇÏ±â.
+	//ì•„ì´í…œì˜ ì •í™•í•œ ìœ„ì¹˜ ì´ë™ì€ ë‹¤ë¥¸ ê³³ì—ì„œ ì²˜ë¦¬í•˜ê¸°.
 	//AttachableItem[InPartsName]->MoveToSlot(OwnerCharacter);
 
 	return PrevSlotAttachableItem;
@@ -622,23 +622,9 @@ void AC_Gun::ChangeCurShootingMode()
 	++CurMode %= 3;
 	CurrentShootingMode = EShootingMode(CurMode);
 
-	switch (CurrentShootingMode)
-	{
-	case EShootingMode::SEMI_AUTO: UC_Util::Print("SEMI_AUTO", FColor::MakeRandomColor(), 10.f);
-		break;
-	case EShootingMode::FULL_AUTO: UC_Util::Print("FULL AUTO", FColor::MakeRandomColor(), 10.f);
-		break;
-	case EShootingMode::BURST: UC_Util::Print("BURST", FColor::MakeRandomColor(), 10.f);
-		break;
-	case EShootingMode::MAX: UC_Util::Print("MAX", FColor::MakeRandomColor(), 10.f);
-		break;
-	default:
-		break;
-	}
-
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 	{
-		// AmmoWidget ¾÷µ¥ÀÌÆ®
+		// AmmoWidget ì—…ë°ì´íŠ¸
 		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetShootingMode(CurrentShootingMode);
 	}
 
@@ -665,8 +651,8 @@ bool AC_Gun::MoveAroundToInven(AC_BasicCharacter* Character)
 
 bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
 	AC_Gun* currentMainGun = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]);
 	AC_Gun* currentSubGun  = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]);
@@ -732,7 +718,7 @@ bool AC_Gun::FireBullet()
 
 	//UC_Util::Print(FireLocation);
 	//UC_Util::Print(FireDirection);
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter); // TODO : OwnerPlayer -> Enemyµµ ÃÑÀ» ½ò ¼ö ÀÖÀ¸´Ï ¿¹¿ÜÃ³¸® ½ÃÄÑ¾ß ÇÔ
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter); // TODO : OwnerPlayer -> Enemyë„ ì´ì„ ì  ìˆ˜ ìˆìœ¼ë‹ˆ ì˜ˆì™¸ì²˜ë¦¬ ì‹œì¼œì•¼ í•¨
 	bool ApplyGravity = OwnerPlayer->GetIsWatchingSight() || !HasHit;
 	int BulletCount = 0;
 	for (auto& Bullet : OwnerPlayer->GetBullets())
@@ -795,7 +781,7 @@ bool AC_Gun::ReloadBullet()
 		CarryingBullet->SetItemStack(ChangedStack);
 		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
 		
-		//ÀåÀüÇÑ ÃÑ¾Ë °¹¼ö¸¸Å­ curVolume Á¶Àı
+		//ì¥ì „í•œ ì´ì•Œ ê°¯ìˆ˜ë§Œí¼ curVolume ì¡°ì ˆ
 		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas().ItemVolume));
 
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
@@ -820,7 +806,7 @@ bool AC_Gun::ReloadBullet()
 		CarryingBullet->SetItemStack(ChangedStack);
 		OwnerCharacter->AddSevenmmBulletStack(-RemainAmmo);
 
-		//ÀåÀüÇÑ ÃÑ¾Ë °¹¼ö¸¸Å­ curVolume Á¶Àı
+		//ì¥ì „í•œ ì´ì•Œ ê°¯ìˆ˜ë§Œí¼ curVolume ì¡°ì ˆ
 		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas().ItemVolume));
 
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
@@ -869,7 +855,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	FHitResult HitResult;
 	//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
-	// µ¿Çö ÁÖ¼® : Enemy ÃÑ±â BulletDirection¿¡ ´ëÇÑ Ã³¸®°¡ ÇÊ¿äÇÔ)
+	// ë™í˜„ ì£¼ì„ : Enemy ì´ê¸° BulletDirectionì— ëŒ€í•œ ì²˜ë¦¬ê°€ í•„ìš”í•¨)
 	if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
 		return false;
 
@@ -902,7 +888,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 		ImageSlot = Cast<UCanvasPanelSlot>(MyImage->Slot);
 		if (ImageSlot)
 		{
-			// ÀÌ¶§, Cast<UPanelSlot>(ImageSlot)À¸·Î ´Ù¸¥ Å¸ÀÔÀ¸·Î Ä³½ºÆÃÇÒ ¼ö ÀÖÀ½
+			// ì´ë•Œ, Cast<UPanelSlot>(ImageSlot)ìœ¼ë¡œ ë‹¤ë¥¸ íƒ€ì…ìœ¼ë¡œ ìºìŠ¤íŒ…í•  ìˆ˜ ìˆìŒ
 			FVector2D ImageSize = ImageSlot->GetSize();
 			RandomPoint = FMath::RandPointInCircle(ImageSize.X * 0.5f * 0.373f);
 			UC_Util::Print("Find Slot");
@@ -920,7 +906,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	GEngine->GameViewport->GetViewportSize(ViewportSize);
 	FVector2D RandomPointOnScreen;
 
-	//TODO: Ä³¸¯ÅÍ »óÅÂ¿¡ µû¶ó ÅºÆÛÁü or Á÷¼±
+	//TODO: ìºë¦­í„° ìƒíƒœì— ë”°ë¼ íƒ„í¼ì§ or ì§ì„ 
 	if (OwnerCharacter->GetIsWatchingSight())
 	{
 		RandomPointOnScreen.X = (IronSightWindowLocation.X * ViewportSize.X );
@@ -980,13 +966,13 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 
 	float RadianValue = FMath::DegreesToRadians(0.06f);
 
-	// ±âÁ¸ º¤ÅÍÀÇ Å©±â¸¦ ÀúÀå
+	// ê¸°ì¡´ ë²¡í„°ì˜ í¬ê¸°ë¥¼ ì €ì¥
 	float OriginalLength = FireDirection.Size();
 
-	// Z °ªÀ» º¯È­½ÃÅ°±â À§ÇØ ÇöÀç XY Æò¸é¿¡¼­ÀÇ Å©±â¸¦ À¯Áö
+	// Z ê°’ì„ ë³€í™”ì‹œí‚¤ê¸° ìœ„í•´ í˜„ì¬ XY í‰ë©´ì—ì„œì˜ í¬ê¸°ë¥¼ ìœ ì§€
 	FireDirection.Z += FMath::Tan(RadianValue);
 
-	// º¤ÅÍ¸¦ ´Ù½Ã Á¤±ÔÈ­ÇÏ¿© Å©±â¸¦ À¯Áö
+	// ë²¡í„°ë¥¼ ë‹¤ì‹œ ì •ê·œí™”í•˜ì—¬ í¬ê¸°ë¥¼ ìœ ì§€
 	FireDirection = FireDirection.GetSafeNormal();
 	UC_Util::Print(FireDirection, FColor::Blue);
 
@@ -1045,11 +1031,11 @@ void AC_Gun::LoadMagazine()
 	FString ClassPath = TEXT("/Game/Project_PUBG/Common/Weapon/GunWeapon/Magazine/BPC_Magazine.BPC_Magazine_C");
 	//Magazine = LoadObject<AC_AttachableItem>(nullptr, ));
 
-	// UClass·Î ºÒ·¯¿À±â
+	// UClassë¡œ ë¶ˆëŸ¬ì˜¤ê¸°
 	UClass* MagazineClass = LoadObject<UClass>(nullptr, *ClassPath);
 	if (MagazineClass)
 	{
-		//	// ÀÎ½ºÅÏ½º »ı¼º
+		//	// ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
 		FActorSpawnParameters Param{};
 		Param.Owner = this;
 		//ConsumableItem = GetWorld()->SpawnActor<AC_FirstAidKit>(ConsumableItemClass, Param);
@@ -1057,7 +1043,7 @@ void AC_Gun::LoadMagazine()
 	}
 	if (IsValid(Magazine))
 	{
-		// ÀÎ½ºÅÏ½º¸¦ GunMesh¿¡ Attach
+		// ì¸ìŠ¤í„´ìŠ¤ë¥¼ GunMeshì— Attach
 		Magazine->SetOwnerCharacter(OwnerCharacter);
 		Magazine->SetIsAttached(true);
 		//UC_Util::Print("Success To Load Magazine", FColor::Blue, 10.0f);
@@ -1091,7 +1077,7 @@ bool AC_Gun::GetGunHasGrip()
 
 void AC_Gun::SetHolsterNames()
 {
-	for (int32 i = 0; i < (int32)EAttachmentNames::MAX; ++i) // EAttachmentNames¿¡ MAX°¡ ÀÖ´Ù¸é
+	for (int32 i = 0; i < (int32)EAttachmentNames::MAX; ++i) // EAttachmentNamesì— MAXê°€ ìˆë‹¤ë©´
 	{
 		EAttachmentNames AttachmentName = (EAttachmentNames)i;
 		AttachmentPartsHolsterNames.Add(AttachmentName);
@@ -1108,7 +1094,7 @@ void AC_Gun::SetHolsterNames()
 	ScopeCameraLocations.Add(EAttachmentNames::MAX);
 
 
-	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNames¿¡ MAX°¡ ÀÖ´Ù¸é
+	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNamesì— MAXê°€ ìˆë‹¤ë©´
 	{
 		EPartsName AttachmentName = (EPartsName)i;
 		AttachedItem.Add(AttachmentName, nullptr);
@@ -1186,7 +1172,7 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 
 	//UC_Util::Print(FireLocation);
 	//UC_Util::Print(FireDirection);
-	AC_Enemy* OwnerPlayer = Cast<AC_Enemy>(OwnerCharacter); // TODO : OwnerPlayer -> Enemyµµ ÃÑÀ» ½ò ¼ö ÀÖÀ¸´Ï ¿¹¿ÜÃ³¸® ½ÃÄÑ¾ß ÇÔ
+	AC_Enemy* OwnerPlayer = Cast<AC_Enemy>(OwnerCharacter); // TODO : OwnerPlayer -> Enemyë„ ì´ì„ ì  ìˆ˜ ìˆìœ¼ë‹ˆ ì˜ˆì™¸ì²˜ë¦¬ ì‹œì¼œì•¼ í•¨
 	if (!IsValid(OwnerPlayer)) return false;
 	bool ApplyGravity = true;
 	for (auto& Bullet : OwnerPlayer->GetBullets())
@@ -1209,4 +1195,6 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 	return false;
 
 }
+
+
 

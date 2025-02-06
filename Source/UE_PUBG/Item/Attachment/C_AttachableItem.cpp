@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 
@@ -111,7 +111,7 @@ bool AC_AttachableItem::MoveInvenToAround(AC_BasicCharacter* Character)
 {
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 
-	//ÀÎº¥¿¡ ÇØ´ç ¾ÆÀÌÅÛÀÌ ÀÖ´ÂÁö ¾ÈÀüÃ¼Å© ÇØ¾ß ÇÒ±î?
+	//ì¸ë²¤ì— í•´ë‹¹ ì•„ì´í…œì´ ìˆëŠ”ì§€ ì•ˆì „ì²´í¬ í•´ì•¼ í• ê¹Œ?
 
 	invenComp->RemoveItemToMyList(this);
 
@@ -162,7 +162,7 @@ bool AC_AttachableItem::MoveSlotToInven(AC_BasicCharacter* Character)
 
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 
-	if (!invenComp->CheckVolume(this)) return false; //ÀÎº¥¿¡ °ø°£ÀÌ ºÎÁ·ÇÏ¸é return false;
+	if (!invenComp->CheckVolume(this)) return false; //ì¸ë²¤ì— ê³µê°„ì´ ë¶€ì¡±í•˜ë©´ return false;
 
 	GetOwnerGun()->SetAttachableItemSlot(this->Name, nullptr);
 
@@ -211,15 +211,15 @@ void AC_AttachableItem::SetMeshVisibility(bool InIsVisible)
 
 bool AC_AttachableItem::AttachItemToWeaponAndMove(AC_Gun* Weapon, AC_BasicCharacter* Character)
 {
-	if (!Weapon->GetAttachableParts().Contains(this->Name)) return false; // ºÎÂø °¡´É ¿©ºÎ È®ÀÎ
+	if (!Weapon->GetAttachableParts().Contains(this->Name)) return false; // ë¶€ì°© ê°€ëŠ¥ ì—¬ë¶€ í™•ì¸
 
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 	AC_AttachableItem* ChangedItem = Weapon->GetAttachableItem()[Name];
 
-	if (ChangedItem) //return false; // ChangedItemÀÌ nullptr ¶ó¸é return false;
+	if (ChangedItem) //return false; // ChangedItemì´ nullptr ë¼ë©´ return false;
 	{
-		// ºÎÂøµÈ ¾ÆÀÌÅÛÀ» ÀÎº¥Åä¸® ¶Ç´Â ÁÖº¯ ¸®½ºÆ®·Î ÀÌµ¿
-		if (!ChangedItem->MoveToInven(Character)) //¿Ö Áß°£¿¡ return false¸¦ ³Ñ¾î°¡¼­ ¸¶Áö¸· return true±îÁö °¬´Âµ¥µµ °á°ú°¡ falseÁö?-> MoveTo~¿¡¼­ returnÀ» Á¦´ë·Î ¾ÈÇØÁáÀ½.
+		// ë¶€ì°©ëœ ì•„ì´í…œì„ ì¸ë²¤í† ë¦¬ ë˜ëŠ” ì£¼ë³€ ë¦¬ìŠ¤íŠ¸ë¡œ ì´ë™
+		if (!ChangedItem->MoveToInven(Character)) //ì™œ ì¤‘ê°„ì— return falseë¥¼ ë„˜ì–´ê°€ì„œ ë§ˆì§€ë§‰ return trueê¹Œì§€ ê°”ëŠ”ë°ë„ ê²°ê³¼ê°€ falseì§€?-> MoveTo~ì—ì„œ returnì„ ì œëŒ€ë¡œ ì•ˆí•´ì¤¬ìŒ.
 			ChangedItem->MoveToAround(Character);
 	}
 	Weapon->SetAttachableItemSlot(this->Name, this);
@@ -232,31 +232,31 @@ bool AC_AttachableItem::AttachItemToWeaponAndMove(AC_Gun* Weapon, AC_BasicCharac
 	
 	invenComp->RemoveItemToAroundList(this);
 
-	// TODO: AroundList¿¡¼­ »ç¶óÁö´ÂÁö È®ÀÎÇÏ±â
+	// TODO: AroundListì—ì„œ ì‚¬ë¼ì§€ëŠ”ì§€ í™•ì¸í•˜ê¸°
 	return true;
 }
 
 bool AC_AttachableItem::AttachItemToWeaponAndMoveInven(AC_Gun* Weapon, UC_InvenComponent* invenComp)
 {
-	if (!Weapon->GetAttachableParts().Contains(this->Name)) return false; // ºÎÂø °¡´É ¿©ºÎ È®ÀÎ
+	if (!Weapon->GetAttachableParts().Contains(this->Name)) return false; // ë¶€ì°© ê°€ëŠ¥ ì—¬ë¶€ í™•ì¸
 	
 	AC_AttachableItem* ChangedItem = Weapon->GetAttachableItem()[Name];
 	
-	invenComp->RemoveItemToMyList(this);  // ÀÎº¥Åä¸®¿¡¼­ ¾ÆÀÌÅÛ Á¦°Å
+	invenComp->RemoveItemToMyList(this);  // ì¸ë²¤í† ë¦¬ì—ì„œ ì•„ì´í…œ ì œê±°
 	
 	if (ChangedItem)
 	{
 		if (!ChangedItem->MoveToInven(OwnerCharacter))
 			ChangedItem->MoveToAround(OwnerCharacter);
 	}
-	Weapon->SetAttachableItemSlot(this->Name, this);  // ºÎÂø¹° ¼³Á¤
+	Weapon->SetAttachableItemSlot(this->Name, this);  // ë¶€ì°©ë¬¼ ì„¤ì •
 
 	SetOwnerGun(Weapon);
 
 	invenComp->RemoveItemToMyList(this);
 
 
-	// TODO: AroundList¿¡¼­ »ç¶óÁö´ÂÁö È®ÀÎÇÏ±â
+	// TODO: AroundListì—ì„œ ì‚¬ë¼ì§€ëŠ”ì§€ í™•ì¸í•˜ê¸°
 
 	return true;
 }
@@ -273,3 +273,4 @@ bool AC_AttachableItem::SwapAttachableItem(AC_Gun* CurrentGun, AC_Gun* OtherGun)
 
 	return true;
 }
+

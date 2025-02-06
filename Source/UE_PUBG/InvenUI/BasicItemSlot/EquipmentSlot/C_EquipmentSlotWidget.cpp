@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/BasicItemSlot/EquipmentSlot/C_EquipmentSlotWidget.h"
@@ -21,12 +21,12 @@ FReply UC_EquipmentSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
 		if (AC_EquipableItem* SlotItem = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EquipSlot])
-		{   // ¿ìÅ¬¸¯ ÀÌº¥Æ® ½ÇÇà
+		{   // ìš°í´ë¦­ ì´ë²¤íŠ¸ ì‹¤í–‰
 			//EquippedItem->Interaction(OwnerCharacter);
 			SlotItem->MoveToAround(OwnerPlayer);
 			//InitInvenUIWidget();
 
-			//NativeOnListItemObjectSet¿¡¼­ÀÇ È£Ãâ°ú Áßº¹À¸·Î ÀÏ´Ü ÁÖ¼®Ã³¸®, ´Ù¸¸ ÀÌº¥Æ®½Ã¿¡ ÃÊ±âÈ­°¡ ÇÊ¿äÇÏ¸é »ç¿ëÇØ¾ß ÇÒ ¼ö ÀÖÀ½.
+			//NativeOnListItemObjectSetì—ì„œì˜ í˜¸ì¶œê³¼ ì¤‘ë³µìœ¼ë¡œ ì¼ë‹¨ ì£¼ì„ì²˜ë¦¬, ë‹¤ë§Œ ì´ë²¤íŠ¸ì‹œì— ì´ˆê¸°í™”ê°€ í•„ìš”í•˜ë©´ ì‚¬ìš©í•´ì•¼ í•  ìˆ˜ ìˆìŒ.
 			//if (!CachedItem) return;
 
 			//InitBar(CachedItem);
@@ -44,8 +44,8 @@ FReply UC_EquipmentSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 
 		if (SlotItem)
 		{
-			//µå·¡±× ÀÌº¥Æ® ½ÇÇà.
-			//µå·¡±×¸¦ ½ÃÀÛÇÏ°í ¹İÀÀÇÔ
+			//ë“œë˜ê·¸ ì´ë²¤íŠ¸ ì‹¤í–‰.
+			//ë“œë˜ê·¸ë¥¼ ì‹œì‘í•˜ê³  ë°˜ì‘í•¨
 			FEventReply RePlyResult =
 				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 
@@ -55,7 +55,7 @@ FReply UC_EquipmentSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 			return RePlyResult.NativeReply;
 		}
 	}
-	// ´Ù¸¥ ¹öÆ° Å¬¸¯ Ã³¸®
+	// ë‹¤ë¥¸ ë²„íŠ¼ í´ë¦­ ì²˜ë¦¬
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
@@ -67,8 +67,8 @@ FReply UC_EquipmentSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 //
 //		if (SlotItem)
 //		{
-//			//µå·¡±× ÀÌº¥Æ® ½ÇÇà.
-//			//µå·¡±×¸¦ ½ÃÀÛÇÏ°í ¹İÀÀÇÔ
+//			//ë“œë˜ê·¸ ì´ë²¤íŠ¸ ì‹¤í–‰.
+//			//ë“œë˜ê·¸ë¥¼ ì‹œì‘í•˜ê³  ë°˜ì‘í•¨
 //			FEventReply RePlyResult =
 //				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 //
@@ -83,10 +83,10 @@ FReply UC_EquipmentSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 
 void UC_EquipmentSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
-	//dragdrop class¸¦ »õ·Î ¸¸µé¾î »ç¿ëÇØ¾ß ÇÒ ¼ö ÀÖÀ½.
+	//dragdrop classë¥¼ ìƒˆë¡œ ë§Œë“¤ì–´ ì‚¬ìš©í•´ì•¼ í•  ìˆ˜ ìˆìŒ.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 	//if (!CachedItem) return;
-	//UObject* ResourceObject = Cast<UImage>(CachedItem->GetItemDatas().ItemIcon)->Brush.GetResourceObject();//UTexture2DÀÎµ¥ ¾Æ·§ÁÙ¿¡¼­ ¹Ù·Î »ç¿ë °¡´ÉÇÒ °Í °°Àºµ¥?
+	//UObject* ResourceObject = Cast<UImage>(CachedItem->GetItemDatas().ItemIcon)->Brush.GetResourceObject();//UTexture2Dì¸ë° ì•„ë«ì¤„ì—ì„œ ë°”ë¡œ ì‚¬ìš© ê°€ëŠ¥í•  ê²ƒ ê°™ì€ë°?
 	UTexture2D* Texture = nullptr;
 
 	AC_EquipableItem* SlotItem = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EquipSlot];
@@ -107,18 +107,18 @@ void UC_EquipmentSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, c
 	Border->SetContent(DragVisual);
 
 	DragOperation->DefaultDragVisual = Border;
-	DragOperation->Payload = SlotItem; // µå·¡±× Áß Àü´ŞÇÒ µ¥ÀÌÅÍ (¾ÆÀÌÅÛ)
+	DragOperation->Payload = SlotItem; // ë“œë˜ê·¸ ì¤‘ ì „ë‹¬í•  ë°ì´í„° (ì•„ì´í…œ)
 	DragOperation->Pivot = EDragPivot::MouseDown;
 
 	FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
-	// ÇöÀç ¸¶¿ì½º Å¬¸¯ À§Ä¡ °¡Á®¿À±â (È­¸é ÁÂÇ¥)
+	// í˜„ì¬ ë§ˆìš°ìŠ¤ í´ë¦­ ìœ„ì¹˜ ê°€ì ¸ì˜¤ê¸° (í™”ë©´ ì¢Œí‘œ)
 	FVector2D Offset = DragVisual->Brush.ImageSize * 0.5f;
 	FVector2D CenteredPosition = MousePosition - Offset;
 
-	// ÇöÀç À§Á¬(ItemBar)ÀÇ È­¸é ÁÂÇ¥ °¡Á®¿À±â
-	FVector2D WidgetScreenPosition = InGeometry.AbsoluteToLocal(CenteredPosition); //¿Ö ÀÌ°É ½á¾ß¸¸ ÇÏ´Â°¡?
+	// í˜„ì¬ ìœ„ì ¯(ItemBar)ì˜ í™”ë©´ ì¢Œí‘œ ê°€ì ¸ì˜¤ê¸°
+	FVector2D WidgetScreenPosition = InGeometry.AbsoluteToLocal(CenteredPosition); //ì™œ ì´ê±¸ ì¨ì•¼ë§Œ í•˜ëŠ”ê°€?
 
-	// µå·¡±× ºñÁÖ¾ó À§Ä¡¸¦ °­Á¦·Î ¼³Á¤ (·»´õ¸µ ±âÁØÀ¸·Î ¼³Á¤)
+	// ë“œë˜ê·¸ ë¹„ì£¼ì–¼ ìœ„ì¹˜ë¥¼ ê°•ì œë¡œ ì„¤ì • (ë Œë”ë§ ê¸°ì¤€ìœ¼ë¡œ ì„¤ì •)
 	Border->SetRenderTranslation(WidgetScreenPosition);
 
 	DragOperation->DraggedItem = SlotItem;
@@ -136,7 +136,7 @@ void UC_EquipmentSlotWidget::UpdateWidget()
 	AC_EquipableItem* SlotItem = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EquipSlot];
 
 	UpdateSlotItemImage(SlotItem);
-	//TODO : Vest¿Í HelmetÀº ³»±¸µµ Ç¥½Ã°¡ ÇÊ¿äÇÔ. 2°¡ÁöÀÇ Ç¥½Ã°¡ ÀÖÀ½. ¼ıÀÚ¿Í ºÓÀºbar, ÀÌ°Ç ÇÏÀ§Å¬·¡½º¿¡¼­ ÇÏ±â.
+	//TODO : Vestì™€ Helmetì€ ë‚´êµ¬ë„ í‘œì‹œê°€ í•„ìš”í•¨. 2ê°€ì§€ì˜ í‘œì‹œê°€ ìˆìŒ. ìˆ«ìì™€ ë¶‰ì€bar, ì´ê±´ í•˜ìœ„í´ë˜ìŠ¤ì—ì„œ í•˜ê¸°.
 }
 
 void UC_EquipmentSlotWidget::UpdateSlotItemImage(AC_EquipableItem* SlotItem)
@@ -147,7 +147,7 @@ void UC_EquipmentSlotWidget::UpdateSlotItemImage(AC_EquipableItem* SlotItem)
 		FSlateBrush Brush = ItemImage->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		ItemImage->SetBrush(Brush);
-		//SetVisibility(ESlateVisibility::Visible); //TODO : ÇÊ¿äÇÑ ±â´ÉÀÎ°¡? ÀûÀıÇÑ ±â´ÉÀÎ°¡? Ã¼Å©ÇÏ°í °áÁ¤ÇÏ±â.
+		//SetVisibility(ESlateVisibility::Visible); //TODO : í•„ìš”í•œ ê¸°ëŠ¥ì¸ê°€? ì ì ˆí•œ ê¸°ëŠ¥ì¸ê°€? ì²´í¬í•˜ê³  ê²°ì •í•˜ê¸°.
 	}
 	else
 	{
@@ -156,5 +156,7 @@ void UC_EquipmentSlotWidget::UpdateSlotItemImage(AC_EquipableItem* SlotItem)
 		Brush.TintColor = FLinearColor(0.0f, 0.0f, 0.0f, 0.3f);
 		ItemImage->SetBrush(Brush);
 	}
-	//TODO : Vest¿Í HelmetÀº ³»±¸µµ Ç¥½Ã°¡ ÇÊ¿äÇÔ. 2°¡ÁöÀÇ Ç¥½Ã°¡ ÀÖÀ½. ¼ıÀÚ¿Í ºÓÀºbar, ÀÌ°Ç ÇÏÀ§Å¬·¡½º¿¡¼­ ÇÏ±â.
+	//TODO : Vestì™€ Helmetì€ ë‚´êµ¬ë„ í‘œì‹œê°€ í•„ìš”í•¨. 2ê°€ì§€ì˜ í‘œì‹œê°€ ìˆìŒ. ìˆ«ìì™€ ë¶‰ì€bar, ì´ê±´ í•˜ìœ„í´ë˜ìŠ¤ì—ì„œ í•˜ê¸°.
 }
+
+

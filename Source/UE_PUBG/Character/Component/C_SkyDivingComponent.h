@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -11,15 +11,15 @@
 UENUM(BlueprintType)
 enum class ESkyDivingState : uint8
 {
-	READY,			// ºñÇà±â¿¡ ¾ÆÁ÷ ÀÖ´Â »óÅÂ
+	READY,			// ë¹„í–‰ê¸°ì— ì•„ì§ ìˆëŠ” ìƒíƒœ
 	SKYDIVING,		
 	PARACHUTING,
-	LANDING,			// ÂøÁö µ¿ÀÛ Àç»ı
+	LANDING,			// ì°©ì§€ ë™ì‘ ì¬ìƒ
 	MAX
 };
 
 /// <summary>
-/// ÀÚ¼¼ speed °ü·Ã struct
+/// ìì„¸ speed ê´€ë ¨ struct
 /// </summary>
 struct FDivingSpeeds
 {
@@ -36,11 +36,11 @@ struct FDivingSpeeds
 	FVector2D GetZSpeedMinMax() const { return FVector2D(ZSpeedMin, ZSpeedMax); }
 	FVector2D GetMaxWalkSpeedMaxMin() const { return FVector2D(MaxWalkSpeed_Max, MaxWalkSpeed_Min); }
 
-	float MaxWalkSpeed_Min{};	// Ä³¸¯ÅÍ ÃÖ¼Ò ÀÌµ¿ ¼Ó·Â
-	float MaxWalkSpeed_Max{};	// Ä³¸¯ÅÍ ÃÖ´ë ÀÌµ¿ ¼Ó·Â
-	float BackKeyZSpeed{};		// µŞ¹æÇâ inputÀÏ ¶§ÀÇ Z Speed
-	float ZSpeedMin{};			// ÀÏ¹İ »óÈ²¿¡¼­ÀÇ Z Speed Min
-	float ZSpeedMax{};			// ÀÏ¹İ »óÈ²¿¡¼­ÀÇ Z Speed Max
+	float MaxWalkSpeed_Min{};	// ìºë¦­í„° ìµœì†Œ ì´ë™ ì†ë ¥
+	float MaxWalkSpeed_Max{};	// ìºë¦­í„° ìµœëŒ€ ì´ë™ ì†ë ¥
+	float BackKeyZSpeed{};		// ë’·ë°©í–¥ inputì¼ ë•Œì˜ Z Speed
+	float ZSpeedMin{};			// ì¼ë°˜ ìƒí™©ì—ì„œì˜ Z Speed Min
+	float ZSpeedMax{};			// ì¼ë°˜ ìƒí™©ì—ì„œì˜ Z Speed Max
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -58,7 +58,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	/// <summary>
-	/// SkyDiving½Ã¿¡ Player InputComponent Move ÇÔ¼ö ³»¿¡¼­ È£ÃâµÉ ÇÔ¼ö
+	/// SkyDivingì‹œì— Player InputComponent Move í•¨ìˆ˜ ë‚´ì—ì„œ í˜¸ì¶œë  í•¨ìˆ˜
 	/// </summary>
 	/// <param name="MovementVector"></param>
 	void HandlePlayerMovement(const FVector2D& MovementVector);
@@ -75,26 +75,26 @@ public:
 public:
 
 	/// <summary>
-	/// Parachuting »óÅÂÀÏ ¶§ ¹° À§·Î Âø·úÇßÀ» ¶§ È£ÃâµÉ ¿¹¿ÜÃ³¸® ÇÔ¼ö
+	/// Parachuting ìƒíƒœì¼ ë•Œ ë¬¼ ìœ„ë¡œ ì°©ë¥™í–ˆì„ ë•Œ í˜¸ì¶œë  ì˜ˆì™¸ì²˜ë¦¬ í•¨ìˆ˜
 	/// </summary>
 	void OnCharacterLandedOnWater();
 
 public:
 
 	/// <summary>
-	/// Deploy Parachute ¸ùÅ¸ÁÖ Àç»ı ³¡³¯ ¶§ AnimNotify callback ÇÔ¼ö
+	/// Deploy Parachute ëª½íƒ€ì£¼ ì¬ìƒ ëë‚  ë•Œ AnimNotify callback í•¨ìˆ˜
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnDeployParachuteMontageEnd();
 
 	/// <summary>
-	/// LandingMontage AnimNotify callback ÇÔ¼ö
+	/// LandingMontage AnimNotify callback í•¨ìˆ˜
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnLandingMontageEnd();
 
 	/// <summary>
-	/// Parachute Landing End Animotify callback ÇÔ¼ö
+	/// Parachute Landing End Animotify callback í•¨ìˆ˜
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnParachuteLandingMontageEnd();
@@ -102,24 +102,24 @@ public:
 private:
 
 	/// <summary>
-	/// Player Ä«¸Ş¶ó SpringArm ±æÀÌ Lerp ½ÃÅ°±â
+	/// Player ì¹´ë©”ë¼ SpringArm ê¸¸ì´ Lerp ì‹œí‚¤ê¸°
 	/// </summary>
 	/// <param name="DeltaTime"></param>
 	void LerpPlayerMainCameraArmLength(const float& DeltaTime);
 
 	/// <summary>
-	/// Áß·Â °¡¼Óµµ¸¦ »ç¿ëÇÏ´Â ´ë½Å OwnerCharacterÀÇ VelocityZ¸¦ Á÷Á¢ Á¶Á¤
+	/// ì¤‘ë ¥ ê°€ì†ë„ë¥¼ ì‚¬ìš©í•˜ëŠ” ëŒ€ì‹  OwnerCharacterì˜ VelocityZë¥¼ ì§ì ‘ ì¡°ì •
 	/// </summary>
 	/// <param name="DeltaTime"></param>
 	void LerpVelocityZ(const float& DeltaTime);
 
 	/// <summary>
-	/// ³ôÀÌ¿¡ µû¸¥ State ÀüÈ¯ ´ã´ç (ex -> ÀÏÁ¤ ³ôÀÌ ÀÌÇÏ¸é ³«ÇÏ»ê ÀÚµ¿À¸·Î ÆîÄ¡±â)
+	/// ë†’ì´ì— ë”°ë¥¸ State ì „í™˜ ë‹´ë‹¹ (ex -> ì¼ì • ë†’ì´ ì´í•˜ë©´ ë‚™í•˜ì‚° ìë™ìœ¼ë¡œ í¼ì¹˜ê¸°)
 	/// </summary>
 	void HandleStateTransitionByHeight();
 	
 	/// <summary>
-	/// ÇöÀç ³ôÀÌ(°íµµ) Update
+	/// í˜„ì¬ ë†’ì´(ê³ ë„) Update
 	/// </summary>
 	void UpdateCurrentHeight();
 
@@ -133,11 +133,11 @@ private:
 	//ESkyDivingState SkyDivingState = ESkyDivingState::LANDING;
 	ESkyDivingState SkyDivingState = ESkyDivingState::READY;
 
-private: // Áß·Â°¡¼Ó »ç¿ë x -> Á÷Á¢ Velocity.Z¸¦ Á¶Àı
+private: // ì¤‘ë ¥ê°€ì† ì‚¬ìš© x -> ì§ì ‘ Velocity.Zë¥¼ ì¡°ì ˆ
 
 	float VelocityZLerpDest{};
 
-private: // SkyDiving & Parachuting ÀÚ¼¼ speed °ü·Ã
+private: // SkyDiving & Parachuting ìì„¸ speed ê´€ë ¨
 
 	const TMap<ESkyDivingState, FDivingSpeeds> State_DivingSpeeds =
 	{
@@ -163,9 +163,9 @@ protected:
 	static const FName PARABACKPACK_SOCKET_NAME;
 	static const FName PARACHUTE_SOCKET_NAME;
 
-private: // Player Main camera spring arm °Å¸® Á¶Àı °ü·Ã
+private: // Player Main camera spring arm ê±°ë¦¬ ì¡°ì ˆ ê´€ë ¨
 
-	static const float PLAYER_READY_MAINCAM_ARMLENGTH;// ºñÇà±â ¾È¿¡ Å¾½ÂÇßÀ» ¶§ÀÇ ArmLength
+	static const float PLAYER_READY_MAINCAM_ARMLENGTH;// ë¹„í–‰ê¸° ì•ˆì— íƒ‘ìŠ¹í–ˆì„ ë•Œì˜ ArmLength
 	static const float PLAYER_PARACHUTE_MAINCAM_ARMLENGTH;
 	static const float PLAYER_SKYDIVE_MAINCAM_ARMLENGTH;
 	static const float PLAYER_ORIGIN_MAINCAM_ARMLENGTH;
@@ -188,19 +188,21 @@ protected: // Parachute Skeletal Mesh AnimMontages
 
 private:
 
-	// ¿øÀÛ ¼öÄ¡
+	// ì›ì‘ ìˆ˜ì¹˜
 	//const float PARACHUTE_DEPLOY_LIMIT_HEIGHT = 43000.f;
-	//const float MAX_SKYDIVE_JUMP_ALTITUDE = 155000.f; // ¿øÀÛ ±âÁØ 8 x 8 ¸Ê 1.5km »ó°ø ¸Æ½Ã¸Ø¿¡¼­ ¶Ù¾î³»¸²
+	//const float MAX_SKYDIVE_JUMP_ALTITUDE = 155000.f; // ì›ì‘ ê¸°ì¤€ 8 x 8 ë§µ 1.5km ìƒê³µ ë§¥ì‹œë©ˆì—ì„œ ë›°ì–´ë‚´ë¦¼
 
 	static const float PARACHUTE_DEPLOY_LIMIT_HEIGHT;
-	//const float MAX_SKYDIVE_JUMP_ALTITUDE		= 155000.f; // ¿øÀÛ ±âÁØ 8 x 8 ¸Ê 1.5km »ó°ø ¸Æ½Ã¸Ø¿¡¼­ ¶Ù¾î³»¸²
+	//const float MAX_SKYDIVE_JUMP_ALTITUDE		= 155000.f; // ì›ì‘ ê¸°ì¤€ 8 x 8 ë§µ 1.5km ìƒê³µ ë§¥ì‹œë©ˆì—ì„œ ë›°ì–´ë‚´ë¦¼
 	static const float MAX_SKYDIVE_JUMP_ALTITUDE;
 
 
 private:
 	
-	// ÇöÀç ³«ÇÏ ³ôÀÌ(°íµµ)
+	// í˜„ì¬ ë‚™í•˜ ë†’ì´(ê³ ë„)
 	float CurrentHeight{};
 
 
 };
+
+

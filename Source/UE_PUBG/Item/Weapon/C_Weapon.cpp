@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 
@@ -140,20 +140,20 @@ bool AC_Weapon::Interaction(AC_BasicCharacter* Character)
 
 bool AC_Weapon::MoveSlotToAround(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
-	//Slot¿¡ ÀÖ´Ù´Â°Ç ÀåÂøµÈ »óÅÂ¶ó´Â °Í. Around·Î °£´Ù´Â°Ç ÀåÂøÀ» ÇØÁ¦ÇÏ°í ¾ÆÀÌÅÛÀ» ¶¥¿¡ ¶³±º´Ù´Â ¶æ.
+	//Slotì— ìˆë‹¤ëŠ”ê±´ ì¥ì°©ëœ ìƒíƒœë¼ëŠ” ê²ƒ. Aroundë¡œ ê°„ë‹¤ëŠ”ê±´ ì¥ì°©ì„ í•´ì œí•˜ê³  ì•„ì´í…œì„ ë•…ì— ë–¨êµ°ë‹¤ëŠ” ëœ».
 	EWeaponSlot curWeaponSlot = GetWeaponSlot();
 
 	AC_Weapon* curWeapon = equipComp->GetWeapons()[curWeaponSlot];
 
-	//if (curWeapon != this) return false; //ÀåÂøµÈ ¾ÆÀÌÅÛÀÌ ÀÚ½ÅÀÌ ¾Æ´Ï¶ó¸é return.
+	//if (curWeapon != this) return false; //ì¥ì°©ëœ ì•„ì´í…œì´ ìì‹ ì´ ì•„ë‹ˆë¼ë©´ return.
 	
 	//if (curWeaponSlot == EWeaponSlot::MAIN_GUN)
 	//	curWeapon->DetachmentItem();
 	//else
-	equipComp->SetSlotWeapon(curWeaponSlot, nullptr); //ÀåÂøµÈ ¾ÆÀÌÅÛÀÌ ÀÚ½ÅÀÌ¸é, ÀåÂøÇØÁ¦¸¦ ÁøÇà.
+	equipComp->SetSlotWeapon(curWeaponSlot, nullptr); //ì¥ì°©ëœ ì•„ì´í…œì´ ìì‹ ì´ë©´, ì¥ì°©í•´ì œë¥¼ ì§„í–‰.
 
 	DropItem(Character);
 
@@ -162,58 +162,58 @@ bool AC_Weapon::MoveSlotToAround(AC_BasicCharacter* Character)
 
 bool AC_Weapon::MoveSlotToInven(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 	//if (invenComp->GetMaxVolume() > invenComp->GetCurVolume() + GetOnceVolume())
-	if (!invenComp->CheckVolume(this)) return false; //ÀÎº¥¿¡ this°¡ µé¾î°¡¼­ curVolume > MaxVolumeÀÌ µÈ´Ù¸é return.
+	if (!invenComp->CheckVolume(this)) return false; //ì¸ë²¤ì— thisê°€ ë“¤ì–´ê°€ì„œ curVolume > MaxVolumeì´ ëœë‹¤ë©´ return.
 
 	EWeaponSlot curWeaponSlot = GetWeaponSlot();
 
 	AC_Weapon* curWeapon = equipComp->GetWeapons()[curWeaponSlot];
 
-	if (curWeapon != this) return false; //ÀåÂøµÈ ¾ÆÀÌÅÛÀÌ ÀÚ½ÅÀÌ ¾Æ´Ï¶ó¸é return.
+	if (curWeapon != this) return false; //ì¥ì°©ëœ ì•„ì´í…œì´ ìì‹ ì´ ì•„ë‹ˆë¼ë©´ return.
 
-	equipComp->SetSlotWeapon(curWeaponSlot, nullptr); //ÀåÂøµÈ ¾ÆÀÌÅÛÀÌ ÀÚ½ÅÀÌ¸é, ÀåÂøÇØÁ¦¸¦ ÁøÇà.
+	equipComp->SetSlotWeapon(curWeaponSlot, nullptr); //ì¥ì°©ëœ ì•„ì´í…œì´ ìì‹ ì´ë©´, ì¥ì°©í•´ì œë¥¼ ì§„í–‰.
 
-	invenComp->AddItemToMyList(this);//ÀåÂø ÇØÁ¦µÈ ¾ÆÀÌÅÛÀ» ³» ¾ÆÀÌÅÛ ¸®½ºÆ®¿¡ Ãß°¡.
+	invenComp->AddItemToMyList(this);//ì¥ì°© í•´ì œëœ ì•„ì´í…œì„ ë‚´ ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€.
 
 	return true;
 }
 
-//Gun¸¸ »ç¿ë O
+//Gunë§Œ ì‚¬ìš© O
 bool AC_Weapon::MoveSlotToSlot(AC_BasicCharacter* Character)
 {
 	return false;
 }
 
-//Gun¸¸ »ç¿ë X
+//Gunë§Œ ì‚¬ìš© X
 bool AC_Weapon::MoveInvenToAround(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
 	if (!invenComp->FindMyItem(this)) return false;
 
-	invenComp->RemoveItemToMyList(this);				 //³» ¾ÆÀÌÅÛ ¸®½ºÆ®¿¡¼­ ¾ÆÀÌÅÛ Á¦°Å.
+	invenComp->RemoveItemToMyList(this);				 //ë‚´ ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ì—ì„œ ì•„ì´í…œ ì œê±°.
 
-	//invenComp->AddInvenCurVolume(-this->GetAllVolume()); //¹ö¸®´Â ¾ÆÀÌÅÛ¸¸Å­ curVolume Á¶ÀıÇÏ±â. TODO : Inven¿¡¼­ ¾ÆÀÌÅÛ ¹ö¸± ¶§ ¹®Á¦ »ı±â¸é Ã¼Å©ÇÏ±â.
+	//invenComp->AddInvenCurVolume(-this->GetAllVolume()); //ë²„ë¦¬ëŠ” ì•„ì´í…œë§Œí¼ curVolume ì¡°ì ˆí•˜ê¸°. TODO : Invenì—ì„œ ì•„ì´í…œ ë²„ë¦´ ë•Œ ë¬¸ì œ ìƒê¸°ë©´ ì²´í¬í•˜ê¸°.
 
 	DropItem(Character);
 
 	return true; 
 }
 
-//»ç¿ëÇÏÁö ¾ÊÀ½.
+//ì‚¬ìš©í•˜ì§€ ì•ŠìŒ.
 bool AC_Weapon::MoveInvenToInven(AC_BasicCharacter* Character)
 {
 	return false;
 }
 
-//Gun¸¸ »ç¿ë X
+//Gunë§Œ ì‚¬ìš© X
 bool AC_Weapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
 	EWeaponSlot curWeaponSlot = GetWeaponSlot();
 
@@ -222,10 +222,10 @@ bool AC_Weapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 	if (curWeapon)
 	{
 		float prevVolume = invenComp->GetCurVolume() + curWeapon->GetOnceVolume() - this->GetOnceVolume();
-		if (prevVolume > invenComp->GetMaxVolume()) return false; //±³Ã¼ÇÏ´Â ¾ÆÀÌÅÛÀÌ ÀÎº¥¿¡ µé¾î¿À¸é¼­ MaxVolumeÀ» ³ÑÀ¸¸é return.
+		if (prevVolume > invenComp->GetMaxVolume()) return false; //êµì²´í•˜ëŠ” ì•„ì´í…œì´ ì¸ë²¤ì— ë“¤ì–´ì˜¤ë©´ì„œ MaxVolumeì„ ë„˜ìœ¼ë©´ return.
 	}
 
-	if (this->GetItemDatas().ItemCurStack == 1)//MeleeWeaponÀÇ °¹¼ö´Â 0À¸·Î ÇØ³ùÀ½;; TODO : »õ·Î¿î ¹æ¹ı Ã£±â, Ã£Áö ¸øÇÑ´Ù¸é ¿ì¼± MeleeWeaponÀÇ stackÀ» 1·Î »ç¿ëÇÏ±â.
+	if (this->GetItemDatas().ItemCurStack == 1)//MeleeWeaponì˜ ê°¯ìˆ˜ëŠ” 0ìœ¼ë¡œ í•´ë†¨ìŒ;; TODO : ìƒˆë¡œìš´ ë°©ë²• ì°¾ê¸°, ì°¾ì§€ ëª»í•œë‹¤ë©´ ìš°ì„  MeleeWeaponì˜ stackì„ 1ë¡œ ì‚¬ìš©í•˜ê¸°.
 	{
 		curWeapon = equipComp->SetSlotWeapon(curWeaponSlot, this);
 		invenComp->RemoveItemToMyList(this);
@@ -237,52 +237,52 @@ bool AC_Weapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 		SwapItem->SetItemStack(1);
 		curWeapon = equipComp->SetSlotWeapon(curWeaponSlot, SwapItem);
 	}
-	invenComp->AddItemToMyList(curWeapon);//³»ºÎ¿¡¼­ ¸Å°³º¯¼ö nullptr°¡ µé¾î¿À¸é return½ÃÄÑ¹ö¸². TODO : curWeaponÀ» Á¤ÀÇÇÑ µÚ¿¡ equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]ÀÇ °ªÀÌ ¹Ù²î¾úÀ¸¹Ç·Î ¿ªÂüÁ¶¸¦ ÇÏ¸é ¹®Á¦°¡ »ı±è. È®ÀÎ ÇÒ °Í.
+	invenComp->AddItemToMyList(curWeapon);//ë‚´ë¶€ì—ì„œ ë§¤ê°œë³€ìˆ˜ nullptrê°€ ë“¤ì–´ì˜¤ë©´ returnì‹œì¼œë²„ë¦¼. TODO : curWeaponì„ ì •ì˜í•œ ë’¤ì— equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]ì˜ ê°’ì´ ë°”ë€Œì—ˆìœ¼ë¯€ë¡œ ì—­ì°¸ì¡°ë¥¼ í•˜ë©´ ë¬¸ì œê°€ ìƒê¹€. í™•ì¸ í•  ê²ƒ.
 	
 	return true;
 }
 
-//»ç¿ëÇÏÁö ¾ÊÀ½.
+//ì‚¬ìš©í•˜ì§€ ì•ŠìŒ.
 bool AC_Weapon::MoveAroundToAround(AC_BasicCharacter* Character)
 {
 	return false;
 }
 
-//Gun¸¸ »ç¿ë X
+//Gunë§Œ ì‚¬ìš© X
 bool AC_Weapon::MoveAroundToInven(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
-	uint8 ItemStackCount = invenComp->LoopCheckVolume(this); //¾ÆÀÌÅÛStackÀ» ¸î°³±îÁö ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´Â°¡?
+	uint8 ItemStackCount = invenComp->LoopCheckVolume(this); //ì•„ì´í…œStackì„ ëª‡ê°œê¹Œì§€ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ”ê°€?
 
 	if (ItemStackCount == 0)
 	{
 		UC_Util::Print("Not Enough Volume");
-		return false; //ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´Â ¾ÆÀÌÅÛÀÇ °¹¼ö°¡ 0 ÀÌ¸é ³ÖÀ» ¼ö ¾øÀ¸¹Ç·Î return false;
+		return false; //ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ” ì•„ì´í…œì˜ ê°¯ìˆ˜ê°€ 0 ì´ë©´ ë„£ì„ ìˆ˜ ì—†ìœ¼ë¯€ë¡œ return false;
 	}
 
 	if (ItemStackCount == this->GetItemDatas().ItemCurStack)
 	{
-		//¾ÆÀÌÅÛÀ» ÀüºÎ ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´Â °æ¿ì.
+		//ì•„ì´í…œì„ ì „ë¶€ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ” ê²½ìš°.
 		invenComp->AddItemToMyList(this);
 		return true;
 	}
 	else
 	{
-		//¾ÆÀÌÅÛÀ» ÀÏºÎ¸¸ ³ÖÀ» ¼ö ÀÖ´Â °æ¿ì.
-		this->SetItemStack(GetItemDatas().ItemCurStack - ItemStackCount);//ÇöÀç °´Ã¼ÀÇ stackÀ» Á¶Àı
-		AC_Weapon* SpawnedItem = Cast<AC_Weapon>(SpawnItem(Character));  //µ¿ÀÏÇÑ ¾ÆÀÌÅÛ °´Ã¼¸¦ »ı¼º
-		SpawnedItem->SetItemStack(ItemStackCount);						 //»ı¼ºÇÑ ¾ÆÀÌÅÛ stackÀ» ¼³Á¤
-		invenComp->AddItemToMyList(SpawnedItem);						 //inven¿¡ Ãß°¡.
+		//ì•„ì´í…œì„ ì¼ë¶€ë§Œ ë„£ì„ ìˆ˜ ìˆëŠ” ê²½ìš°.
+		this->SetItemStack(GetItemDatas().ItemCurStack - ItemStackCount);//í˜„ì¬ ê°ì²´ì˜ stackì„ ì¡°ì ˆ
+		AC_Weapon* SpawnedItem = Cast<AC_Weapon>(SpawnItem(Character));  //ë™ì¼í•œ ì•„ì´í…œ ê°ì²´ë¥¼ ìƒì„±
+		SpawnedItem->SetItemStack(ItemStackCount);						 //ìƒì„±í•œ ì•„ì´í…œ stackì„ ì„¤ì •
+		invenComp->AddItemToMyList(SpawnedItem);						 //invenì— ì¶”ê°€.
 		return true;
 	}
 }
 
 bool AC_Weapon::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
 	EWeaponSlot curWeaponSlot = GetWeaponSlot();
 
@@ -290,11 +290,11 @@ bool AC_Weapon::MoveAroundToSlot(AC_BasicCharacter* Character)
 
 	if (curWeapon)
 	{
-		if (!curWeapon->MoveSlotToInven(Character)) //ÀÌ°÷¿¡¼­ curWeaponÀÇ ÀåÂøÀ» ÇØÁ¦ÇÔ.
+		if (!curWeapon->MoveSlotToInven(Character)) //ì´ê³³ì—ì„œ curWeaponì˜ ì¥ì°©ì„ í•´ì œí•¨.
 			curWeapon->MoveSlotToAround(Character);
 	}
 
-	if (this->GetItemDatas().ItemCurStack == 1) //Gun°ú MeleeWeaponÀº stack = 0 ÀÓ. TODO : »õ·Î¿î ¹æ¹ı Ã£±â, ¿ì¼±Àº curStack = 1·Î »ç¿ë. 
+	if (this->GetItemDatas().ItemCurStack == 1) //Gunê³¼ MeleeWeaponì€ stack = 0 ì„. TODO : ìƒˆë¡œìš´ ë°©ë²• ì°¾ê¸°, ìš°ì„ ì€ curStack = 1ë¡œ ì‚¬ìš©. 
 	{
 		equipComp->SetSlotWeapon(curWeaponSlot, this);
 		invenComp->RemoveItemToAroundList(this);
@@ -330,3 +330,5 @@ EWeaponSlot AC_Weapon::GetWeaponSlot()
 		return EWeaponSlot::NONE;
 	}
 }
+
+

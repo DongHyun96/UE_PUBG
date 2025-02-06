@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/C_BasicCharacter.h"
@@ -65,7 +65,7 @@ AC_BasicCharacter::AC_BasicCharacter()
 	PoseColliderHandlerComponent->SetOwnerCharacter(this);
 
 	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
-	DetectionSphere->InitSphereRadius(120.0f); // Å½Áö ¹İ°æ ¼³Á¤
+	DetectionSphere->InitSphereRadius(120.0f); // íƒì§€ ë°˜ê²½ ì„¤ì •
 	DetectionSphere->SetupAttachment(RootComponent);
 
 	//DetectionSphere->SetGenerateOverlapEvents(true);
@@ -127,7 +127,7 @@ float AC_BasicCharacter::PlayAnimMontage(UAnimMontage* AnimMontage, float InPlay
 	return 0.0f;
 }
 /// <summary>
-/// ¾ÆÀÌÅÛÀÌ Ä³¸¯ÅÍÀÇ ±ÙÃ³¿¡ ÀÖÀ» ¶§.
+/// ì•„ì´í…œì´ ìºë¦­í„°ì˜ ê·¼ì²˜ì— ìˆì„ ë•Œ.
 /// </summary>
 /// <param name="OverlappedComp"></param>
 /// <param name="OtherActor"></param>
@@ -146,7 +146,7 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 }
 
 /// <summary>
-/// ¾ÆÀÌÅÛÀÌ Ä³¸¯ÅÍÀÇ °¨Áö¹üÀ§¸¦ ¹ş¾î³µÀ» ¶§.
+/// ì•„ì´í…œì´ ìºë¦­í„°ì˜ ê°ì§€ë²”ìœ„ë¥¼ ë²—ì–´ë‚¬ì„ ë•Œ.
 /// </summary>
 /// <param name="OverlappedComp"></param>
 /// <param name="OtherActor"></param>
@@ -162,7 +162,7 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 	FName TargetGroup = PAnimMontage.AnimMontage->GetGroupName();
 
-	// ÀÚ½ÅÀÇ group³»ÀÇ anim montage°¡ ÇÑ¹øµµ Àç»ıµÈ Àû ¾øÀ» ¶© ¹Ù·Î Àç»ı
+	// ìì‹ ì˜ groupë‚´ì˜ anim montageê°€ í•œë²ˆë„ ì¬ìƒëœ ì  ì—†ì„ ë• ë°”ë¡œ ì¬ìƒ
 	if (!CurPriorityAnimMontageMap.Contains(TargetGroup))
 	{
 		CurPriorityAnimMontageMap.Add(TargetGroup, PAnimMontage);
@@ -171,23 +171,23 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 	FPriorityAnimMontage TargetGroupCurMontage = CurPriorityAnimMontageMap[TargetGroup];
 
-	// Á÷ÀüÀÇ AnimMontageÀÇ Àç»ıÀÌ ÀÌ¹Ì ³¡³µÀ» ¶§
+	// ì§ì „ì˜ AnimMontageì˜ ì¬ìƒì´ ì´ë¯¸ ëë‚¬ì„ ë•Œ
 	if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(TargetGroupCurMontage.AnimMontage))
 	{
 		CurPriorityAnimMontageMap[TargetGroup] = PAnimMontage;
 		return Super::PlayAnimMontage(PAnimMontage.AnimMontage, InPlayRate, StartSectionName);
 	}
 
-	// ÇöÀç Àç»ıÁßÀÎ PriorityAnimMontage°¡ ÀÖÀ» ¶§
+	// í˜„ì¬ ì¬ìƒì¤‘ì¸ PriorityAnimMontageê°€ ìˆì„ ë•Œ
 	
-	// Priority ºñ±³ÇØ¼­ ÇöÀç Priorityº¸´Ù Å©°Å³ª °°Àº Priority¶ó¸é »õ·Î µé¾î¿Â AnimMontage Àç»ı
+	// Priority ë¹„êµí•´ì„œ í˜„ì¬ Priorityë³´ë‹¤ í¬ê±°ë‚˜ ê°™ì€ Priorityë¼ë©´ ìƒˆë¡œ ë“¤ì–´ì˜¨ AnimMontage ì¬ìƒ
 	if (PAnimMontage.Priority >= TargetGroupCurMontage.Priority)
 	{
 		CurPriorityAnimMontageMap[TargetGroup] = PAnimMontage;
 		return Super::PlayAnimMontage(PAnimMontage.AnimMontage, InPlayRate, StartSectionName);
 	}
 
-	// Priority°¡ ÇöÀç Àç»ıÁßÀÎ Montage°¡ ´õ Å©´Ù¸é »õ·ÎÀÌ Àç»ıÇÏÁö ¾Ê°í ±×³É return
+	// Priorityê°€ í˜„ì¬ ì¬ìƒì¤‘ì¸ Montageê°€ ë” í¬ë‹¤ë©´ ìƒˆë¡œì´ ì¬ìƒí•˜ì§€ ì•Šê³  ê·¸ëƒ¥ return
 	return 0.0f;
 }
 
@@ -245,7 +245,7 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 			break;
 		}
 
-		if (MovementVector.X == 1.f) // ¾Õ , ¾Õ ´ë°¢¼±
+		if (MovementVector.X == 1.f) // ì• , ì• ëŒ€ê°ì„ 
 		{
 			GetCharacterMovement()->MaxWalkSpeed = bIsSprinting ? 630.f : 470.f; 
 			break;
@@ -256,7 +256,7 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 			break;
 		}
 
-		GetCharacterMovement()->MaxWalkSpeed = 350.f; // µŞ ¹æÇâ
+		GetCharacterMovement()->MaxWalkSpeed = 350.f; // ë’· ë°©í–¥
 		break;
 	case EPoseState::CROUCH:
 		if (bIsWalking || bIsActivatingConsumableItem)
@@ -264,7 +264,7 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 			GetCharacterMovement()->MaxWalkSpeed = 130.f;
 			break;
 		}
-		if (MovementVector.X == 1.f) // ¾Õ , ¾Õ ´ë°¢¼±
+		if (MovementVector.X == 1.f) // ì• , ì• ëŒ€ê°ì„ 
 		{
 			GetCharacterMovement()->MaxWalkSpeed = bIsSprinting ? 480.f : 340.f;
 			break;
@@ -275,7 +275,7 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 			break;
 		}
 
-		GetCharacterMovement()->MaxWalkSpeed = 250.f; // µŞ ¹æÇâ
+		GetCharacterMovement()->MaxWalkSpeed = 250.f; // ë’· ë°©í–¥
 		break;
 	case EPoseState::CRAWL:
 		GetCharacterMovement()->MaxWalkSpeed =	bIsActivatingConsumableItem ? 0.f :
@@ -298,7 +298,7 @@ void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
 
 bool AC_BasicCharacter::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 {
-	// TODO : Enemy Ä³¸¯ÅÍ¿¡ ´ëÇÑ ÀÚ¼¼ º¯È¯ Àû¿ë - Player´Â ÀÛ¼º ¿Ï·á BasicCharacter ÀÛ¼º ÇÊ¿ä
+	// TODO : Enemy ìºë¦­í„°ì— ëŒ€í•œ ìì„¸ ë³€í™˜ ì ìš© - PlayerëŠ” ì‘ì„± ì™„ë£Œ BasicCharacter ì‘ì„± í•„ìš”
 
 	return false;
 }
@@ -324,19 +324,19 @@ void AC_BasicCharacter::OnPoseTransitionFinish()
 {
 	//UC_Util::Print("Transition pose finished!", FColor::Cyan, 5.f);
 	//PoseState = NextPoseState;
-	//bCanMove = true; // PoseBySizeLerp°¡ ³¡³­ µÚ¿¡ ¿òÁ÷ÀÏ ¼ö ÀÖµµ·Ï Ã³¸®
+	//bCanMove = true; // PoseBySizeLerpê°€ ëë‚œ ë’¤ì— ì›€ì§ì¼ ìˆ˜ ìˆë„ë¡ ì²˜ë¦¬
 	bIsPoseTransitioning = false;
 
-	// Pose TransitionÀÌ ³¡³­ µÚ, Delegate call back Ã³¸®
+	// Pose Transitionì´ ëë‚œ ë’¤, Delegate call back ì²˜ë¦¬
 	if (Delegate_OnPoseTransitionFin.IsBound()) Delegate_OnPoseTransitionFin.Broadcast();
 }
 
 bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState)
 {
-	// ´Ù¸¥ PriorityAnimMontage¿¡ ÀÇÇØ ÀÚ¼¼ÀüÈ¯ÀÌ ¾ÈµÈ »óÈ²ÀÌ¸é return false
+	// ë‹¤ë¥¸ PriorityAnimMontageì— ì˜í•´ ìì„¸ì „í™˜ì´ ì•ˆëœ ìƒí™©ì´ë©´ return false
 	if (PlayAnimMontage(TransitionMontage) == 0.f) return false;
 
-	// ÀÌ¹Ì ÀÚ¼¼¸¦ ¹Ù²Ù´Â ÁßÀÌ¶ó¸é return false
+	// ì´ë¯¸ ìì„¸ë¥¼ ë°”ê¾¸ëŠ” ì¤‘ì´ë¼ë©´ return false
 	//if (bIsPoseTransitioning) return false;
 
 	NextPoseState			= InNextPoseState;
@@ -379,3 +379,5 @@ void AC_BasicCharacter::AddFivemmBulletStack(int inBulletCount)
 {
 	FivemmBulletCount += inBulletCount;
 }
+
+

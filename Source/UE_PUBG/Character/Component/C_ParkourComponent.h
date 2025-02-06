@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -18,20 +18,20 @@ enum class EParkourActionType : uint8
 	MAX
 };
 
-// Çö Parkour °ü·Ã ÇÊ¿äÇÑ Á¤º¸ struct
+// í˜„ Parkour ê´€ë ¨ í•„ìš”í•œ ì •ë³´ struct
 struct FParkourDescriptor
 {
 	FCollisionQueryParams CollisionParams{};
 
-	bool			bIsLowAction{};				// Ã¹ Obstacle °Ë»ç ½Ã ³ÑÀ» Àå¾Ö¹°ÀÇ ³ôÀÌ °è»ê
+	bool			bIsLowAction{};				// ì²« Obstacle ê²€ì‚¬ ì‹œ ë„˜ì„ ì¥ì• ë¬¼ì˜ ë†’ì´ ê³„ì‚°
 	FVector			FirstObstacleHitLocation{};
 
-	TArray<FVector> VerticalHitPositions{};		// ObstacleÀ§ÀÇ °Å¸® Àç±â
-	FVector			LandPos{};					// ObstacleÀ» Áö³ª ³»·Á°¡´Â À§Ä¡ (Vaulting Low)
+	TArray<FVector> VerticalHitPositions{};		// Obstacleìœ„ì˜ ê±°ë¦¬ ì¬ê¸°
+	FVector			LandPos{};					// Obstacleì„ ì§€ë‚˜ ë‚´ë ¤ê°€ëŠ” ìœ„ì¹˜ (Vaulting Low)
 	bool			bLandPosInited{};
 
-	bool bMustVault{}; // ¹«Á¶°Ç VaultingÀ¸·Î Ã³¸®¸¦ ÇØ¾ßÇÏ´ÂÁö
-	bool bMustMantle{}; // ¹«Á¶°Ç MantlingÀ¸·Î Ã³¸®¸¦ ÇØ¾ßÇÏ´ÂÁö
+	bool bMustVault{}; // ë¬´ì¡°ê±´ Vaultingìœ¼ë¡œ ì²˜ë¦¬ë¥¼ í•´ì•¼í•˜ëŠ”ì§€
+	bool bMustMantle{}; // ë¬´ì¡°ê±´ Mantlingìœ¼ë¡œ ì²˜ë¦¬ë¥¼ í•´ì•¼í•˜ëŠ”ì§€
 
 };
 
@@ -63,9 +63,9 @@ public:
 public:
 
 	/// <summary>
-	/// »óÈ²¿¡ ¸Â´Â ÆÄÄí¸£ ¾×¼Ç ½Ãµµ
+	/// ìƒí™©ì— ë§ëŠ” íŒŒì¿ ë¥´ ì•¡ì…˜ ì‹œë„
 	/// </summary>
-	/// <returns> : ÆÄÄí¸£ ÇÒ ¼ö ¾ø´Ù¸é return false </returns>
+	/// <returns> : íŒŒì¿ ë¥´ í•  ìˆ˜ ì—†ë‹¤ë©´ return false </returns>
 	bool TryExecuteParkourAction();
 
 	void SetHasTryVaulting(const FVector2D& MovementVector) { bHasTryVaulting = MovementVector.X == 1; }
@@ -79,7 +79,7 @@ public:
 private:
 
 	/// <summary>
-	/// ÆÄÄí¸£ °Ë»ç ÇÁ·¹ÀÓ¿öÅ© Åë°ú ÈÄ Motion warpingÀ» ½ÇÇàÇÏ´Â ´Ü°è
+	/// íŒŒì¿ ë¥´ ê²€ì‚¬ í”„ë ˆì„ì›Œí¬ í†µê³¼ í›„ Motion warpingì„ ì‹¤í–‰í•˜ëŠ” ë‹¨ê³„
 	/// </summary>
 	void ExecuteMotionWarpingAction(const FParkourDescriptor& CurParkourDesc);
 
@@ -91,84 +91,84 @@ private:
 	/// <param name="ToRootedMesh"> : If false, Swap back to Main Skeletal Mesh </param>
 	void SwapMesh(bool ToRootedMesh);
 
-	// TODO : ¹«±â¸¦ µé°í ÀÖ¾ú´Ù¸é holster¿¡ ºÙÀÎ µÚ, parkour°¡ ³¡³ª¸é ´Ù½Ã ¹«±â¸¦ µå´Â µ¿ÀÛÀ¸·Î °¡Á®°¡¾ß ÇÔ
+	// TODO : ë¬´ê¸°ë¥¼ ë“¤ê³  ìˆì—ˆë‹¤ë©´ holsterì— ë¶™ì¸ ë’¤, parkourê°€ ëë‚˜ë©´ ë‹¤ì‹œ ë¬´ê¸°ë¥¼ ë“œëŠ” ë™ì‘ìœ¼ë¡œ ê°€ì ¸ê°€ì•¼ í•¨
 
 	/// <summary>
-	/// Çö skeletalMesh¿¡ ºÎÂøµÈ Actor Á¶»çÇÏ±â
+	/// í˜„ skeletalMeshì— ë¶€ì°©ëœ Actor ì¡°ì‚¬í•˜ê¸°
 	/// </summary>
-	/// <param name="AttachedActors"> : Init ½ÃÅ³ AttachedActors </param>
+	/// <param name="AttachedActors"> : Init ì‹œí‚¬ AttachedActors </param>
 	void GetSocketAttachedActors(TMap<FName, AActor*>& AttachedActors);
 
 	/// <summary>
-	/// Àü SkeletalMesh¿¡ ºÎÂøµÈ Actor ´Ù½Ã ºÎÂøÇÏ±â
+	/// ì „ SkeletalMeshì— ë¶€ì°©ëœ Actor ë‹¤ì‹œ ë¶€ì°©í•˜ê¸°
 	/// </summary>
-	/// <param name="PrevAttachedActors"> : Àü¿¡ ºÎÂøµÇ¾ú¾ú´ø Actorµé </param>
+	/// <param name="PrevAttachedActors"> : ì „ì— ë¶€ì°©ë˜ì—ˆì—ˆë˜ Actorë“¤ </param>
 	void ReAttachActorsToSocket(const TMap<FName, AActor*>& PrevAttachedActors);
 
 	/// <summary>
-	/// SwapMesh -> MainMesh·Î µ¹¾Æ¿ÔÀ» ¶§ È£Ãâ
+	/// SwapMesh -> MainMeshë¡œ ëŒì•„ì™”ì„ ë•Œ í˜¸ì¶œ
 	/// </summary>
 	void SetOwnerCharacterCanMoveToTrue() { OwnerCharacter->SetCanMove(true); }
 
 private:
 
 	/// <summary>
-	/// <para> VerticleHitPoints, LandPos, bPossibleToVault init ½ÃÅ°±â </para>
+	/// <para> VerticleHitPoints, LandPos, bPossibleToVault init ì‹œí‚¤ê¸° </para>
 	/// </summary>
-	/// <param name="CurParkourDesc"> : Çö parkour Desc </param>
-	/// <returns> : Warp¸¦ ½ÇÇàÇÒ ¾ø´Â Á¶°ÇÀÏ ¶§ return false </returns>
+	/// <param name="CurParkourDesc"> : í˜„ parkour Desc </param>
+	/// <returns> : Warpë¥¼ ì‹¤í–‰í•  ì—†ëŠ” ì¡°ê±´ì¼ ë•Œ return false </returns>
 	bool InitVerticalHitPositionsAndLandPos(FParkourDescriptor& CurParkourDesc);
 
 	/// <summary>
-	/// CurParkourAction Type ÁöÁ¤ ¹× ActionStrategy ÁöÁ¤
+	/// CurParkourAction Type ì§€ì • ë° ActionStrategy ì§€ì •
 	/// </summary>
-	/// <param name="CurParkourDesc"> : Çö Parkour Desc </param>
+	/// <param name="CurParkourDesc"> : í˜„ Parkour Desc </param>
 	void InitCurParkourActionStrategy(const FParkourDescriptor& CurParkourDesc);
 
 private:
 
 	/// <summary>
-	/// CheckFirstHitLocation -> InitVerticalHitPositionsAndLandPos -> CheckSpaceForParkourAction ÀÏ·ÃÀÇ °úÁ¤
+	/// CheckFirstHitLocation -> InitVerticalHitPositionsAndLandPos -> CheckSpaceForParkourAction ì¼ë ¨ì˜ ê³¼ì •
 	/// </summary>
-	/// <param name="CurParkourDesc"> : Çö ParkourDesc </param>
-	/// <param name="bCheckLowAction"> : trueÀÌ¸é LowAction¿¡ ´ëÇÑ Parkour ÇÁ·¹ÀÓ¿öÅ© Á¶»ç </param>
+	/// <param name="CurParkourDesc"> : í˜„ ParkourDesc </param>
+	/// <param name="bCheckLowAction"> : trueì´ë©´ LowActionì— ëŒ€í•œ Parkour í”„ë ˆì„ì›Œí¬ ì¡°ì‚¬ </param>
 	/// <returns></returns>
 	bool CheckParkourFramework(FParkourDescriptor& CurParkourDesc, bool bCheckLowAction);
 
 private:
 
 	/// <summary>
-	/// Ä³¸¯ÅÍ Àü¹æ¿¡ LowActionÃ³¸®ÇÒ Àå¾Ö¹°ÀÌ ÀÖ´ÂÁö °Ë»ç
+	/// ìºë¦­í„° ì „ë°©ì— LowActionì²˜ë¦¬í•  ì¥ì• ë¬¼ì´ ìˆëŠ”ì§€ ê²€ì‚¬
 	/// </summary>
-	/// <param name="CurParkourDesc"> : Çö Parkour Desc </param>
-	/// <returns> : Àü¹æ Obstacle targetÀÌ validÇÏÁö ¾Ê´Ù¸é return false </returns>
+	/// <param name="CurParkourDesc"> : í˜„ Parkour Desc </param>
+	/// <returns> : ì „ë°© Obstacle targetì´ validí•˜ì§€ ì•Šë‹¤ë©´ return false </returns>
 	bool CheckLowParkourTarget(FParkourDescriptor& CurParkourDesc);
 
 	/// <summary>
-	/// Ä³¸¯ÅÍ Àü¹æ¿¡ HighActionÃ³¸®ÇÒ Àå¾Ö¹°ÀÌ ÀÖ´ÂÁö °Ë»ç
+	/// ìºë¦­í„° ì „ë°©ì— HighActionì²˜ë¦¬í•  ì¥ì• ë¬¼ì´ ìˆëŠ”ì§€ ê²€ì‚¬
 	/// </summary>
-	/// <param name="CurParkourDesc"> : Çö Parkour Desc </param>
-	/// <returns> : Àü¹æ Obstacle targetÀÌ validÇÏÁö ¾Ê´Ù¸é return false </returns>
+	/// <param name="CurParkourDesc"> : í˜„ Parkour Desc </param>
+	/// <returns> : ì „ë°© Obstacle targetì´ validí•˜ì§€ ì•Šë‹¤ë©´ return false </returns>
 	bool CheckHighParkourTarget(FParkourDescriptor& CurParkourDesc);
 
-private: // Check Parkour space °ü·Ã
+private: // Check Parkour space ê´€ë ¨
 
 	/// <summary>
-	/// VerticalHitPosition ¹æ¸é ÆÄÄí¸£ °¡´ÉÇÑ °ø°£ÀÌ ÃæºĞÈ÷ ÀÖ´ÂÁö Á¶»ç | bMustMantle, bMustVault Á¶Á¤
+	/// VerticalHitPosition ë°©ë©´ íŒŒì¿ ë¥´ ê°€ëŠ¥í•œ ê³µê°„ì´ ì¶©ë¶„íˆ ìˆëŠ”ì§€ ì¡°ì‚¬ | bMustMantle, bMustVault ì¡°ì •
 	/// </summary>
-	/// <param name="CurParkourDesc"> : Çö Parkour Desc </param>
-	/// <returns> : ÆÄÄí¸£¸¦ ÇÏ±â¿¡ ÃæºĞÇÑ °ø°£ÀÌ ÀÖÀ¸¸é return true </returns>
+	/// <param name="CurParkourDesc"> : í˜„ Parkour Desc </param>
+	/// <returns> : íŒŒì¿ ë¥´ë¥¼ í•˜ê¸°ì— ì¶©ë¶„í•œ ê³µê°„ì´ ìˆìœ¼ë©´ return true </returns>
 	bool CheckSpaceForParkourAction(FParkourDescriptor& CurParkourDesc);
 
 	/// <summary>
-	/// Vaulting °¡´ÉÇÑ Space°¡ ´Ï¿À´ÂÁö °Ë»ç
+	/// Vaulting ê°€ëŠ¥í•œ Spaceê°€ ë‹ˆì˜¤ëŠ”ì§€ ê²€ì‚¬
 	/// </summary>
 	/// <param name="CurParkourDesc"></param>
 	/// <returns></returns>
 	bool CheckSpaceForVaulting(const FParkourDescriptor& CurParkourDesc);
 
 	/// <summary>
-	/// Mantling °¡´ÉÇÑ Space°¡ ³ª¿À´ÂÁö °Ë»ç
+	/// Mantling ê°€ëŠ¥í•œ Spaceê°€ ë‚˜ì˜¤ëŠ”ì§€ ê²€ì‚¬
 	/// </summary>
 	/// <param name="CurParkourDesc"></param>
 	/// <returns></returns>
@@ -177,10 +177,10 @@ private: // Check Parkour space °ü·Ã
 private:
 
 	/// <summary>
-	/// bMustVault, bMustMantle ÃÊ±âÈ­
+	/// bMustVault, bMustMantle ì´ˆê¸°í™”
 	/// </summary>
-	/// <param name="CurParkourDesc"> Çö Parkour Desc </param>
-	/// <returns> : ÃÊ±âÈ­ ºÒ°¡´É (ÆÄÄí¸£ ÀÚÃ¼¸¦ ÇÒ ¼ö ¾ø´Â) »óÈ²ÀÌ¸é return false </returns>
+	/// <param name="CurParkourDesc"> í˜„ Parkour Desc </param>
+	/// <returns> : ì´ˆê¸°í™” ë¶ˆê°€ëŠ¥ (íŒŒì¿ ë¥´ ìì²´ë¥¼ í•  ìˆ˜ ì—†ëŠ”) ìƒí™©ì´ë©´ return false </returns>
 	bool InitMustVaultOrMustMantle(FParkourDescriptor& CurParkourDesc);
 
 
@@ -191,18 +191,18 @@ private:
 
 private:
 
-	// »ı¼ºµÈ ÃÑ ParkourComponent °³¼ö ParkourActionStrategies ÇØÁ¦ ½Ã »ç¿ë ¿¹Á¤
+	// ìƒì„±ëœ ì´ ParkourComponent ê°œìˆ˜ ParkourActionStrategies í•´ì œ ì‹œ ì‚¬ìš© ì˜ˆì •
 	static int ParkourComponentCount;
 	static TMap<EParkourActionType, class II_ParkourActionStrategy*> ParkourActionStrategies;
 	class II_ParkourActionStrategy* CurParkourActionStrategy{};
 
 protected:
 
-	// Root Bone Ã³¸®µÈ Skeletal Mesh
+	// Root Bone ì²˜ë¦¬ëœ Skeletal Mesh
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class USkeletalMesh* RootedSkeletalMesh{};
 
-	// Root Bone Ã³¸®µÈ Skeletal MeshÀÇ Anim class
+	// Root Bone ì²˜ë¦¬ëœ Skeletal Meshì˜ Anim class
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TSubclassOf<class UAnimInstance> RootedAnimInstanceClass{};
 
@@ -233,21 +233,23 @@ protected:
 
 private:
 
-	// Tick ÇÔ¼ö¿¡¼­ SkeletalMesh¿Í AnimInstanceClass¸¦ ¹Ù²Ù´ÂÁö -> Deferred Update¸¦ »ç¿ëÇÒ ¿¹Á¤
+	// Tick í•¨ìˆ˜ì—ì„œ SkeletalMeshì™€ AnimInstanceClassë¥¼ ë°”ê¾¸ëŠ”ì§€ -> Deferred Updateë¥¼ ì‚¬ìš©í•  ì˜ˆì •
 	bool bPendingMeshUpdateToMainMesh{};
 
 private:
 
-	// Warp ActionÀÌ ³¡³ª°í MainSkeletalMesh·Î µ¹¾Æ¿Â ÀÌ ÈÄ, CanMove¸¦ true·Î ÁÖ±â±îÁöÀÇ Timer ½Ã°£
+	// Warp Actionì´ ëë‚˜ê³  MainSkeletalMeshë¡œ ëŒì•„ì˜¨ ì´ í›„, CanMoveë¥¼ trueë¡œ ì£¼ê¸°ê¹Œì§€ì˜ Timer ì‹œê°„
 	float CanMoveTimerAfterWarpActionFin{};
 	struct FTimerHandle TimerHandle{};
 
 private:
 
-	// Input forward¿Í ÆÄÄí¸£¸¦ µ¿½Ã¿¡ ÇßÀ» ½Ã true
+	// Input forwardì™€ íŒŒì¿ ë¥´ë¥¼ ë™ì‹œì— í–ˆì„ ì‹œ true
 	bool bHasTryVaulting{};
 
 private:
 
 	FColor DebugMsgColor{};
 };
+
+

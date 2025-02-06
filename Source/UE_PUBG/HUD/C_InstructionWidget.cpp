@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "HUD/C_InstructionWidget.h"
@@ -33,7 +33,7 @@ void UC_InstructionWidget::HandleConsumableInstructionFlicker(const float& Delta
 
 bool UC_InstructionWidget::ActivateConsumableInstruction(FString UsingTextContent)
 {
-    // ÀÌ¹Ì ´Ù¸¥ ¾ÆÀÌÅÛ TextContent°¡ È°¼ºÈ­ µÇ¾îÀÖÀ» ¶§
+    // ì´ë¯¸ ë‹¤ë¥¸ ì•„ì´í…œ TextContentê°€ í™œì„±í™” ë˜ì–´ìžˆì„ ë•Œ
     if (ConsumableInstruction->GetVisibility() == ESlateVisibility::SelfHitTestInvisible) return false;
 
     ConsumableInstruction->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -46,3 +46,5 @@ bool UC_InstructionWidget::ActivateConsumableInstruction(FString UsingTextConten
     ConsumableCurrentUsingTextBlock->SetColorAndOpacity(FSlateColor(Color));
     return true;
 }
+
+

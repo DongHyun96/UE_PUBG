@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Weapon/Gun/C_Bullet.h"
@@ -183,34 +183,34 @@ void AC_Bullet::SubSteppingMovementPhysics(float SebStepDeltaTime)
 
 	float Drag_Force = 0.5 * Drag_Coefficient * Air_Density * Cross_Sectional_Area * FMath::Square(Speed);
 
-	FVector Gravity = FVector(0.0f, 0.0f, -9.81f); // Áß·Â °¡¼Óµµ (ZÃà ¹æÇâ)
-	// 1. k1 °è»ê
+	FVector Gravity = FVector(0.0f, 0.0f, -9.81f); // ì¤‘ë ¥ ê°€ì†ë„ (Zì¶• ë°©í–¥)
+	// 1. k1 ê³„ì‚°
 	//UC_Util::Print(Drag_Force);
 	FVector k1_Velocity = BulletProjectileMovement->Velocity * 0.01f;
 	FVector k1_Acceleration = -k1_Velocity * Drag_Force / Bullet_Mass;// + Gravity;
 
-	// 2. k2 °è»ê (Àý¹Ý ½Ã°£ ½ºÅÜ)
+	// 2. k2 ê³„ì‚° (ì ˆë°˜ ì‹œê°„ ìŠ¤í…)
 	FVector k2_Velocity = BulletProjectileMovement->Velocity * 0.01f + k1_Acceleration * (SebStepDeltaTime * 0.5f);
 	float k2_Speed = k2_Velocity.Size() / 100.0f;
 	float k2_Drag_Force = 0.5 * Drag_Coefficient * Air_Density * Cross_Sectional_Area * FMath::Square(k2_Speed);
 	FVector k2_Acceleration = -k2_Velocity * k2_Drag_Force / Bullet_Mass;// + Gravity;
 
-	// 3. k3 °è»ê (´Ù½Ã Àý¹Ý ½Ã°£ ½ºÅÜ)
+	// 3. k3 ê³„ì‚° (ë‹¤ì‹œ ì ˆë°˜ ì‹œê°„ ìŠ¤í…)
 	FVector k3_Velocity = BulletProjectileMovement->Velocity * 0.01f + k2_Acceleration * (SebStepDeltaTime * 0.5f);
 	float k3_Speed = k3_Velocity.Size() / 100.0f;
 	float k3_Drag_Force = 0.5 * Drag_Coefficient * Air_Density * Cross_Sectional_Area * FMath::Square(k3_Speed);
 	FVector k3_Acceleration = -k3_Velocity * k3_Drag_Force / Bullet_Mass;// + Gravity;
 
-	// 4. k4 °è»ê (ÀüÃ¼ ½Ã°£ ½ºÅÜ)
+	// 4. k4 ê³„ì‚° (ì „ì²´ ì‹œê°„ ìŠ¤í…)
 	FVector k4_Velocity = BulletProjectileMovement->Velocity * 0.01f + k3_Acceleration * SebStepDeltaTime;
 	float k4_Speed = k4_Velocity.Size() / 100.0f;
 	float k4_Drag_Force = 0.5 * Drag_Coefficient * Air_Density * Cross_Sectional_Area * FMath::Square(k4_Speed);
 	FVector k4_Acceleration = -k4_Velocity * k4_Drag_Force / Bullet_Mass;//+Gravity;
 
-	// ÃÖÁ¾ ¼Óµµ ¾÷µ¥ÀÌÆ® (·î°Ô-ÄíÅ¸ °ø½Ä¿¡ µû¸¥ Æò±Õ °è»ê)
+	// ìµœì¢… ì†ë„ ì—…ë°ì´íŠ¸ (ë£½ê²Œ-ì¿ íƒ€ ê³µì‹ì— ë”°ë¥¸ í‰ê·  ê³„ì‚°)
 	FVector NewVelocity = BulletProjectileMovement->Velocity + (SebStepDeltaTime / 6.0f) * (k1_Acceleration + 2.0f * k2_Acceleration + 2.0f * k3_Acceleration + k4_Acceleration) * 100.0f;
 
-	// ÃÖÁ¾ ¼Óµµ Àû¿ë
+	// ìµœì¢… ì†ë„ ì ìš©
 	
 	BulletProjectileMovement->Velocity = NewVelocity;	
 
@@ -228,10 +228,10 @@ void AC_Bullet::CustomPhysics(float DeltaTime)
 	int32 NumSteps = FMath::CeilToInt(DeltaTime / FixedDeltaTime);
 	for (int32 i = 0; i < NumSteps; ++i)
 	{
-		// ³²Àº DeltaTime¿¡¼­ ¼­ºê½ºÅÜ ½Ã°£ ±¸ÇÏ±â
+		// ë‚¨ì€ DeltaTimeì—ì„œ ì„œë¸ŒìŠ¤í… ì‹œê°„ êµ¬í•˜ê¸°
 		float SubstepTime = FMath::Min(FixedDeltaTime, DeltaTime - i * FixedDeltaTime);
 
-		// °ø±â ÀúÇ× µî ¹°¸® °è»ê Àû¿ë
+		// ê³µê¸° ì €í•­ ë“± ë¬¼ë¦¬ ê³„ì‚° ì ìš©
 		SubSteppingMovementPhysics(SubstepTime);
 	}
 }
@@ -259,4 +259,6 @@ void AC_Bullet::CalculateTravelDistanceAndDeactivate(float DeltaTime)
 		}
 	}
 }
+
+
 

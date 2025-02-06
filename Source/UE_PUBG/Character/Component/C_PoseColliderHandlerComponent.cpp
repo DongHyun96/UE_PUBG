@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
@@ -27,7 +27,7 @@ const float UC_PoseColliderHandlerComponent::CROUCH_TO_STAND_SWEEP_DIST		= (88.f
 const float UC_PoseColliderHandlerComponent::CRAWL_TO_STAND_SWEEP_DIST		= 105.f;
 const float UC_PoseColliderHandlerComponent::CRAWL_TO_CROUCH_SWEEP_DIST		= 60.f;
 const float UC_PoseColliderHandlerComponent::CRAWL_LINETRACE_TEST_DIST		= 500.f;
-const float UC_PoseColliderHandlerComponent::CRAWL_DEGREE_LIMIT				= 35.f; // ±â¾î°¥ ¼ö ¾ø´Â °æ»çµµ Limit
+const float UC_PoseColliderHandlerComponent::CRAWL_DEGREE_LIMIT				= 35.f; // ê¸°ì–´ê°ˆ ìˆ˜ ì—†ëŠ” ê²½ì‚¬ë„ Limit
 const float UC_PoseColliderHandlerComponent::CRAWL_GROUND_DIST_LIMIT		= 50.f;
 
 UC_PoseColliderHandlerComponent::UC_PoseColliderHandlerComponent()
@@ -126,9 +126,9 @@ bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(
 
 		return !HasHit;
 	}
-	case EPoseState::CROUCH: // Crawl to Crouch¸¸ È®ÀÎ ÇÏ¸é µÊ
+	case EPoseState::CROUCH: // Crawl to Crouchë§Œ í™•ì¸ í•˜ë©´ ë¨
 	{
-		if (OwnerCharacter->GetPoseState() == EPoseState::STAND) return true; // Stand to crouch -> ¾ğÁ¦µç ÀÚ¼¼¸¦ ¹Ù²Ü ¼ö ÀÖÀ½
+		if (OwnerCharacter->GetPoseState() == EPoseState::STAND) return true; // Stand to crouch -> ì–¸ì œë“  ìì„¸ë¥¼ ë°”ê¿€ ìˆ˜ ìˆìŒ
 
 		// Crawl to Crouch test
 
@@ -165,7 +165,7 @@ bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(
 	}
 	case EPoseState::CRAWL:
 	{
-		// ³ô³·ÀÌ°¡ ³ô´ÙÇÏ¸é ÀÌ¹Ì ¶³¾îÁö´Â »óÅÂÀÌ¹Ç·Î Crawl ÀÚÃ¼ÀÇ Ã³¸®¸¦ ÇÏÁö ¾ÊÀ½ -> ³ôÀÌ ¸»°í °æ»çµµ¸¸ Ã¼Å©¸¦ ÇØÁÖ¸é µÊ
+		// ë†’ë‚®ì´ê°€ ë†’ë‹¤í•˜ë©´ ì´ë¯¸ ë–¨ì–´ì§€ëŠ” ìƒíƒœì´ë¯€ë¡œ Crawl ìì²´ì˜ ì²˜ë¦¬ë¥¼ í•˜ì§€ ì•ŠìŒ -> ë†’ì´ ë§ê³  ê²½ì‚¬ë„ë§Œ ì²´í¬ë¥¼ í•´ì£¼ë©´ ë¨
 		TPair<float, float> ImpactDistances{};
 		float SlopeDegree = GetCrawlSlopeDegree(ImpactDistances, true);
 		return FMath::Abs(SlopeDegree) < CRAWL_DEGREE_LIMIT;
@@ -239,7 +239,7 @@ void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& D
 	//UC_Util::Print(SlopeDegree);
 	if (!CanCrawlOnSlope(SlopeDegree, ImpactDistances))
 	{
-		// ÀÚ¼¼ ÀüÈ¯ ½ÃµµÇÏ±â
+		// ìì„¸ ì „í™˜ ì‹œë„í•˜ê¸°
 		if (OwnerCharacter->SetPoseState(EPoseState::CRAWL, EPoseState::STAND))		return;
 		if (OwnerCharacter->SetPoseState(EPoseState::CRAWL, EPoseState::CROUCH))	return;
 	}
@@ -290,16 +290,16 @@ float UC_PoseColliderHandlerComponent::GetCrawlSlopeAngle
 	}
 
 	if (!HasHeadHit || !HasPelvisHit) return false;
-	// TODO : Length Ã¼Å©
+	// TODO : Length ì²´í¬
 	//if (HeadHitResult.ImpactPoint.Length() )
 
-	// °æ»çµµ Ã¼Å©
+	// ê²½ì‚¬ë„ ì²´í¬
 	//HeadHitResult.ImpactPoint
 	float A				= (HeadHitResult.ImpactPoint - PelvisHitResult.ImpactPoint).Length();
 	float B				= FMath::Abs(HeadHitResult.ImpactPoint.Z - PelvisHitResult.ImpactPoint.Z);
 	float SlopeAngle	= FMath::Asin(B / A);
 
-	// ºÎÈ£ ÁöÁ¤
+	// ë¶€í˜¸ ì§€ì •
 	SlopeAngle = (HeadHitResult.Distance <= PelvisHitResult.Distance) ? SlopeAngle : -SlopeAngle;
 
 	ImpactDistances = { HeadHitResult.Distance, PelvisHitResult.Distance };
@@ -354,16 +354,16 @@ float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree
 	//}
 
 	//if (!HasHeadHit || !HasPelvisHit) return false;
-	//// TODO : Length Ã¼Å©
+	//// TODO : Length ì²´í¬
 	////if (HeadHitResult.ImpactPoint.Length() )
 
-	//// °æ»çµµ Ã¼Å©
+	//// ê²½ì‚¬ë„ ì²´í¬
 	////HeadHitResult.ImpactPoint
 	//float A				= (HeadHitResult.ImpactPoint - PelvisHitResult.ImpactPoint).Length();
 	//float B				= FMath::Abs(HeadHitResult.ImpactPoint.Z - PelvisHitResult.ImpactPoint.Z);
 	//float SlopeDegree	= FMath::RadiansToDegrees(FMath::Asin(B / A));
 
-	//// ºÎÈ£ ÁöÁ¤
+	//// ë¶€í˜¸ ì§€ì •
 	//SlopeDegree = (HeadHitResult.Distance <= PelvisHitResult.Distance) ? SlopeDegree : -SlopeDegree;
 
 	//ImpactDistances = { HeadHitResult.Distance, PelvisHitResult.Distance };
@@ -388,4 +388,6 @@ bool UC_PoseColliderHandlerComponent::CanCrawlOnSlope(const float& SlopeDegree, 
 		ImpactDistances.Key			< CRAWL_GROUND_DIST_LIMIT &&
 		ImpactDistances.Value		< CRAWL_GROUND_DIST_LIMIT;
 }
+
+
 

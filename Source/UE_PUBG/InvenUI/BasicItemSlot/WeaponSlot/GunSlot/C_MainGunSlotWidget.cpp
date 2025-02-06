@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_MainGunSlotWidget.h"
@@ -7,12 +7,12 @@
 
 //FReply UC_MainGunSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 //{
-//	// ¿ìÅ¬¸¯ÀÎÁö Ã¼Å©
+//	// ìš°í´ë¦­ì¸ì§€ ì²´í¬
 //	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 //	{
 //		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN];
 //		if (SlotItem)
-//		{   // ¿ìÅ¬¸¯ ÀÌº¥Æ® ½ÇÇà
+//		{   // ìš°í´ë¦­ ì´ë²¤íŠ¸ ì‹¤í–‰
 //			if (SlotItem->MoveToAround(OwnerPlayer))
 //			{
 //				OwnerPlayer->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
@@ -23,13 +23,13 @@
 //			return FReply::Handled();
 //		}
 //	}
-//	// ´Ù¸¥ ¹öÆ° Å¬¸¯ Ã³¸®
+//	// ë‹¤ë¥¸ ë²„íŠ¼ í´ë¦­ ì²˜ë¦¬
 //	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 //}
 //
 //void UC_MainGunSlotWidget::UpdateWidget()
 //{
-//	//TODO : GunÀÇ °æ¿ì »ç¿ëÇÏ´Â ÃÑ¾ËÀÇ Á¾·ù¿Í °¹¼ö¸¦ Ç¥½ÃÇØÁÜ. ÇÏÀ§ Å¬·¡½º¿¡¼­ ÁøÇàÇÒ ¿¹Á¤.
+//	//TODO : Gunì˜ ê²½ìš° ì‚¬ìš©í•˜ëŠ” ì´ì•Œì˜ ì¢…ë¥˜ì™€ ê°¯ìˆ˜ë¥¼ í‘œì‹œí•´ì¤Œ. í•˜ìœ„ í´ë˜ìŠ¤ì—ì„œ ì§„í–‰í•  ì˜ˆì •.
 //	AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN];
 //
 //	UpdateSlotItemImage(SlotItem);
@@ -43,12 +43,14 @@ bool UC_MainGunSlotWidget::ChangedGunSlot(AC_Gun* gun)
 	if (OwnerPlayer->GetHandState() == EHandState::WEAPON_GUN)
 		if (EquipComp->SwapSlotsWhileGunHandState()) return true;
 
-	EquipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, nullptr);//¿ì¼± µå·¡±×µÈ ¾ÆÀÌÅÛ ½½·ÔÀÇ ÀåÂøÀ» ÇØÁ¦.
+	EquipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, nullptr);//ìš°ì„  ë“œë˜ê·¸ëœ ì•„ì´í…œ ìŠ¬ë¡¯ì˜ ì¥ì°©ì„ í•´ì œ.
 
-	AC_Weapon* curSlotGun = EquipComp->SetSlotWeapon(WeaponType, gun);//µå¶øµÈ ½½·Ô¿¡ µå·¡±×µÈ ¾ÆÀÌÅÛÀ» ÀåÂø
+	AC_Weapon* curSlotGun = EquipComp->SetSlotWeapon(WeaponType, gun);//ë“œëëœ ìŠ¬ë¡¯ì— ë“œë˜ê·¸ëœ ì•„ì´í…œì„ ì¥ì°©
 
-	if (IsValid(EquipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, curSlotGun)))//µå¶øµÈ ½½·Ô¿¡ ÀåÂøµÇ¾î ÀÖ¾ú´ø ¾ÆÀÌÅÛÀ» µå·¡±×µÈ ¾ÆÀÌÅÛ ½½·Ô¿¡ ÀåÂø.
+	if (IsValid(EquipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, curSlotGun)))//ë“œëëœ ìŠ¬ë¡¯ì— ì¥ì°©ë˜ì–´ ìˆì—ˆë˜ ì•„ì´í…œì„ ë“œë˜ê·¸ëœ ì•„ì´í…œ ìŠ¬ë¡¯ì— ì¥ì°©.
 		return true;
 	else
 		return false;
 }
+
+

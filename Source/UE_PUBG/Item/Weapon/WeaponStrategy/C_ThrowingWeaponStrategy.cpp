@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Weapon/WeaponStrategy/C_ThrowingWeaponStrategy.h"
@@ -33,7 +33,7 @@ bool AC_ThrowingWeaponStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* Weapon
 
 	UAnimInstance* UserAnimInstance = WeaponUser->GetMesh()->GetAnimInstance();
 
-	// ¾ÆÁ÷ ¹«±â¸¦ ²¨³»´Â µµÁß or ¹«±â¸¦ Áý¾î³Ö´Â Áß (Priority ¶§¹®¿¡ °ø°Ý¸ð¼ÇÀÌ Àç»ýÀº ¾ÈµÇÁö¸¸ bIsOnThrowProcess true¸¦ ¸·±â À§ÇÔ)
+	// ì•„ì§ ë¬´ê¸°ë¥¼ êº¼ë‚´ëŠ” ë„ì¤‘ or ë¬´ê¸°ë¥¼ ì§‘ì–´ë„£ëŠ” ì¤‘ (Priority ë•Œë¬¸ì— ê³µê²©ëª¨ì…˜ì´ ìž¬ìƒì€ ì•ˆë˜ì§€ë§Œ bIsOnThrowProcess trueë¥¼ ë§‰ê¸° ìœ„í•¨)
 	if (UserAnimInstance->Montage_IsPlaying(ThrowingWeapon->GetCurDrawMontage().AnimMontage) ||
 		UserAnimInstance->Montage_IsPlaying(ThrowingWeapon->GetCurSheathMontage().AnimMontage))
 		return false;
@@ -79,3 +79,5 @@ bool AC_ThrowingWeaponStrategy::UseMrb_CompletedStrategy(AC_BasicCharacter* Weap
 {
 	return false;
 }
+
+

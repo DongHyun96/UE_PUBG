@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -46,13 +46,13 @@ public:
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 protected:
-	//Å©·Î½ºÇì¾î À§Á¬
+	//í¬ë¡œìŠ¤í—¤ì–´ ìœ„ì ¯
 	AC_BasicCharacter* OwnerCharacter;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UUserWidget* AimSightWidget{};
 	void InitializeAimSightWidget();
 
-	//À§Á¬¿¡ ¶ç¿ï ÀÌ¹ÌÁö º¯¼ö
+	//ìœ„ì ¯ì— ë„ìš¸ ì´ë¯¸ì§€ ë³€ìˆ˜
 	FAimDownSightImages AimDownSightImages{};
 
 	class UImage* BaseCrosshairImage{};
@@ -79,3 +79,5 @@ public:
 	void UpdateImageSize();
 	void UpdateCrosshairBorderLocation(class UCanvasPanelSlot* InImageSlot);
 };
+
+

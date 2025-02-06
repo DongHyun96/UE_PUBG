@@ -36,14 +36,14 @@ void UC_InvenComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	// ...
 }
 /// <summary>
-/// ItemÀ» ÀÎº¥¿¡ ³ÖÀ» ¶§, ³ªÀÇ ÃÖ´ë ¿ë·®(MaxVolume)À» ³Ñ´ÂÁö¸¦ °Ë»ç.
-/// ¾ÆÀÌÅÛÀÇ stack¿¡ µû¸¥ ¿ë·®ÀÇ º¯È­ ÀÛ¾÷ÇØ¾ßÇÔ.
+/// Itemì„ ì¸ë²¤ì— ë„£ì„ ë•Œ, ë‚˜ì˜ ìµœëŒ€ ìš©ëŸ‰(MaxVolume)ì„ ë„˜ëŠ”ì§€ë¥¼ ê²€ì‚¬.
+/// ì•„ì´í…œì˜ stackì— ë”°ë¥¸ ìš©ëŸ‰ì˜ ë³€í™” ì‘ì—…í•´ì•¼í•¨.
 /// </summary>
 /// <param name="volume"></param>
 /// <returns></returns>
 bool UC_InvenComponent::CheckVolume(AC_Item* item)
 {
-	//itemÀÇ ¿ë·®Àº ItemVolume * ItemStack ÀÌ´Ù.
+	//itemì˜ ìš©ëŸ‰ì€ ItemVolume * ItemStack ì´ë‹¤.
 	float ItemVolume = item->GetOnceVolume() * item->GetItemDatas().ItemCurStack;
 
 	if (MaxVolume > CurVolume + ItemVolume)
@@ -63,20 +63,20 @@ float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 	return 0;
 }
 /// <summary>
-/// 1. Holster°¡ nullptrÀÌ¸é maxVolume+= volumeÀ» ÇØÁØ´Ù.
-/// Holster°¡ ture¸é °¡¹æÀÇ ·¹º§À» ºñ±³. 
-/// 2. ¹Ù²Ù·Á´Â °¡¹æÀÇ ·¹º§ÀÌ ³ôÀ¸¸é ±âÁ¸°¡¹æÀÇ vulumeÀ» »õ·Î¿î °¡¹æÀÇ volume¿¡¼­ »«¸¸Å­¸¸ characterÀÇ maxVulumeÀ» ´õÇØÁØ´Ù. maxVolume += (»õ°¡¹æÀÇ volume - ±âÁ¸°¡¹æÀÇ volume);À» ÇØÁØ´Ù.
-/// 3. ¹Ù²Ù·Á´Â °¡¹æÀÇ ·¹º§ÀÌ ³·À¸¸é testVolume = »õ°¡¹æÀÇ volume - ±âÁ¸°¡¹æÀÇ volume;
+/// 1. Holsterê°€ nullptrì´ë©´ maxVolume+= volumeì„ í•´ì¤€ë‹¤.
+/// Holsterê°€ tureë©´ ê°€ë°©ì˜ ë ˆë²¨ì„ ë¹„êµ. 
+/// 2. ë°”ê¾¸ë ¤ëŠ” ê°€ë°©ì˜ ë ˆë²¨ì´ ë†’ìœ¼ë©´ ê¸°ì¡´ê°€ë°©ì˜ vulumeì„ ìƒˆë¡œìš´ ê°€ë°©ì˜ volumeì—ì„œ ëº€ë§Œí¼ë§Œ characterì˜ maxVulumeì„ ë”í•´ì¤€ë‹¤. maxVolume += (ìƒˆê°€ë°©ì˜ volume - ê¸°ì¡´ê°€ë°©ì˜ volume);ì„ í•´ì¤€ë‹¤.
+/// 3. ë°”ê¾¸ë ¤ëŠ” ê°€ë°©ì˜ ë ˆë²¨ì´ ë‚®ìœ¼ë©´ testVolume = ìƒˆê°€ë°©ì˜ volume - ê¸°ì¡´ê°€ë°©ì˜ volume;
 /// if (maxVolume - testVolume > curVolume)
 /// {
-///		//°¡¹æÀ» ¹Ù²Ù¾îÁÜ.
+///		//ê°€ë°©ì„ ë°”ê¾¸ì–´ì¤Œ.
 /// }
 /// else
 /// {
-///		//°¡¹æÀÌ ¹Ù²îÁö ¾ÊÀ½.
+///		//ê°€ë°©ì´ ë°”ë€Œì§€ ì•ŠìŒ.
 /// }
-/// backpackÀÌ nullptrÀÏ ¶§(°¡¹æÀ» ¹ö¸®°íÀÚ ÇÒ ¶§) CurBackPacklevelÀ» 0À¸·Î ¸¸µç´Ù.
-/// bool ¹İÈ¯ÇÔ¼ö·Î ¸¸µé¾î¼­ °¡¹æÀ» ¹Ù²Ü ¼ö ÀÖÀ»¶§ true¸¦ ¾Æ´Ï¶ó¸é false¸¦ ¹İÈ¯ÇÏµµ·Ï ÇÏµµ·Ï ÇÏ¿´À½.
+/// backpackì´ nullptrì¼ ë•Œ(ê°€ë°©ì„ ë²„ë¦¬ê³ ì í•  ë•Œ) CurBackPacklevelì„ 0ìœ¼ë¡œ ë§Œë“ ë‹¤.
+/// bool ë°˜í™˜í•¨ìˆ˜ë¡œ ë§Œë“¤ì–´ì„œ ê°€ë°©ì„ ë°”ê¿€ ìˆ˜ ìˆì„ë•Œ trueë¥¼ ì•„ë‹ˆë¼ë©´ falseë¥¼ ë°˜í™˜í•˜ë„ë¡ í•˜ë„ë¡ í•˜ì˜€ìŒ.
 /// </summary>
 //bool UC_InvenComponent::CheckMyBackPack(AC_BackPack* backpack)
 //{
@@ -93,7 +93,7 @@ float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 //
 //	if (CurBackPackLevel < PreBackPackLevel)
 //	{
-//		//ÇöÀç°¡¹æº¸´Ù ¹Ù²Ù·Á´Â °¡¹æÀÌ ·¹º§ÀÌ ³ôÀ»¶§.
+//		//í˜„ì¬ê°€ë°©ë³´ë‹¤ ë°”ê¾¸ë ¤ëŠ” ê°€ë°©ì´ ë ˆë²¨ì´ ë†’ì„ë•Œ.
 //		FString TheStr0 = TEXT("Upgrade Backpack");
 //		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Black, TheStr0);
 //
@@ -110,7 +110,7 @@ float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 //
 //		MyBackPack = backpack;
 //
-//		//°¡¹æµµ ³» ¾ÆÀÌÅÛ ¸®½ºÆ®¿¡ Æ÷ÇÔÇÏ´Â ÇÔ¼ö. ÇöÀç´Â °í·ÁÁß.
+//		//ê°€ë°©ë„ ë‚´ ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ì— í¬í•¨í•˜ëŠ” í•¨ìˆ˜. í˜„ì¬ëŠ” ê³ ë ¤ì¤‘.
 //		//MyItem.Add(backpack);
 //		//backpack->Destroy();
 //		//backpack->AttachToSocket(OwnerCharacter);
@@ -119,7 +119,7 @@ float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 //	}
 //	else if (CurBackPackLevel > PreBackPackLevel)
 //	{
-//		//´ÙÀ½ ¿ë·® = ÇöÀç°¡¹æ»óÅÂÀÇ ÃÖ´ë ¿ë·® - (ÇöÀç °¡¹æÀÇ ¿ë·® - ´ÙÀ½ °¡¹æÀÇ ¿ë·®)
+//		//ë‹¤ìŒ ìš©ëŸ‰ = í˜„ì¬ê°€ë°©ìƒíƒœì˜ ìµœëŒ€ ìš©ëŸ‰ - (í˜„ì¬ ê°€ë°©ì˜ ìš©ëŸ‰ - ë‹¤ìŒ ê°€ë°©ì˜ ìš©ëŸ‰)
 //		float NextVolume = MaxVolume - (CheckBackPackVolume(CurBackPackLevel) - CheckBackPackVolume(backpack->GetLevel()));
 //		
 //		//
@@ -128,7 +128,7 @@ float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 //			FString TheStr1 = TEXT("success to downgrade");
 //			GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Black, TheStr1);
 //
-//			//ÇöÀç ¿ë·®º¸´Ù ´ÙÀ½ ¿ë·®ÀÌ Å©´Ù¸é ¹è³¶À» º¯°æ.
+//			//í˜„ì¬ ìš©ëŸ‰ë³´ë‹¤ ë‹¤ìŒ ìš©ëŸ‰ì´ í¬ë‹¤ë©´ ë°°ë‚­ì„ ë³€ê²½.
 //			MaxVolume = NextVolume;
 //			CurBackPackLevel = PreBackPackLevel;
 //			MyBackPack->DetachToSocket(this->OwnerCharacter);
@@ -139,8 +139,8 @@ float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 //		{
 //			FString TheStr2 = TEXT("failed to downgrade");
 //			GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Black, TheStr2);
-//			//ÇöÀç ¿ë·®ÀÌ ´ÙÀ½ ¿ë·®º¸´Ù Å©´Ù¸é ¹è³¶ º¯°æÀÌ ºÒ°¡´É.
-//			//ÇØ´ç »óÈ²¿¡ ´ëÇÑ ¹®±¸ Ãâ·Â.
+//			//í˜„ì¬ ìš©ëŸ‰ì´ ë‹¤ìŒ ìš©ëŸ‰ë³´ë‹¤ í¬ë‹¤ë©´ ë°°ë‚­ ë³€ê²½ì´ ë¶ˆê°€ëŠ¥.
+//			//í•´ë‹¹ ìƒí™©ì— ëŒ€í•œ ë¬¸êµ¬ ì¶œë ¥.
 //
 //			return false;
 //		}
@@ -149,7 +149,7 @@ float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 //			FString TheStr3 = TEXT("success to change backpack");
 //			GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Black, TheStr3);
 //
-//			//ÇöÀç ¿ë·®°ú ´ÙÀ½ ¿ë·®ÀÌ °°À¸¹Ç·Î °¡¹æÀÇ º¯°æÀÌ °¡´É.
+//			//í˜„ì¬ ìš©ëŸ‰ê³¼ ë‹¤ìŒ ìš©ëŸ‰ì´ ê°™ìœ¼ë¯€ë¡œ ê°€ë°©ì˜ ë³€ê²½ì´ ê°€ëŠ¥.
 //			MyBackPack->DetachToSocket(this->OwnerCharacter);
 //			EquippedBackPack(backpack);
 //			return true;
@@ -160,7 +160,7 @@ float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 //		FString TheStr4 = TEXT("same backpack level");
 //		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Black, TheStr4);
 //		
-//		//ÇöÀç °¡¹æ°ú ´ÙÀ½ °¡¹æÀÇ ·¹º§ÀÌ °°À¸¸é °¡¹æ º¯°æ °¡´É
+//		//í˜„ì¬ ê°€ë°©ê³¼ ë‹¤ìŒ ê°€ë°©ì˜ ë ˆë²¨ì´ ê°™ìœ¼ë©´ ê°€ë°© ë³€ê²½ ê°€ëŠ¥
 //		UC_Util::Print((float)MaxVolume);
 //		MyBackPack->DetachToSocket(this->OwnerCharacter);
 //		EquippedBackPack(backpack);
@@ -168,19 +168,19 @@ float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 //	}
 //}
 /// <summary>
-/// Bag ¾ÆÀÌÅÛ¿¡¼­ »óÈ£ÀÛ¿ë(interaction)¿¡¼­ ¸ğµÎ Ã³¸®ÇÒ±î?
-/// Bag¿¡¼­ CharacterÀÇ BagLevelÀ» º¯È­ ½ÃÅ°°íÀÚÇÑ´Ù.
-/// ÀÌ¶§ BagÀÇ Interactertion¿¡¼­ 
+/// Bag ì•„ì´í…œì—ì„œ ìƒí˜¸ì‘ìš©(interaction)ì—ì„œ ëª¨ë‘ ì²˜ë¦¬í• ê¹Œ?
+/// Bagì—ì„œ Characterì˜ BagLevelì„ ë³€í™” ì‹œí‚¤ê³ ìí•œë‹¤.
+/// ì´ë•Œ Bagì˜ Interactertionì—ì„œ 
 /// </summary>
 
 
 /// <summary>
-/// »óÈ£ÀÛ¿ë(F)ÇÔ¼ö ´À³¦À¸·Î ¸¸µé¾îº½.
-/// wilditemÀº map¿¡ ¶³¾îÁ®ÀÖ´Â itemÀ» ÀÇ¹Ì.
-/// CheckVolumeÀ¸·Î ³» ÀÎº¥Åä¸®ÀÇ °ø°£À» Ã¼Å©ÇÏ°í ¾ÆÀÌÅÛÀ» ³ÖÀ» ¼ö ÀÖ´ÂÁö È®ÀÎ.
-/// true¸é ¸Ê¿¡¼­ ÇØ´ç object¸¦ Á¦°ÅÇÏ°í Player°¡ ¼ÒÀ¯ÇÏµµ·Ï ÇÏ°íÀÚ ÇÑ´Ù.
-/// AddActorComponentReplicatedSubObject ÇöÀç ÀÌ ÇÔ¼ö°¡ ¾î¶²½ÄÀ¸·Î ÀÛ¿ëÇÏ°í °á°ú¸¦ ÁÖ´ÂÁö Àß ¸ğ¸£°ÚÀ½.
-/// ±×·¸´Ù¸é »óÈ£ÀÛ¿ëÀº object¿¡¼­ ³»¿ëÀ» ¸¸µé°í ÇÃ·¹ÀÌ¾î´Â ±× ÇÔ¼ö¸¦ ÀÛµ¿½ÃÅ°´Â ¹æ½ÄÀ¸·Î °¡¾ß ÇÒ °Í °°À½.
+/// ìƒí˜¸ì‘ìš©(F)í•¨ìˆ˜ ëŠë‚Œìœ¼ë¡œ ë§Œë“¤ì–´ë´„.
+/// wilditemì€ mapì— ë–¨ì–´ì ¸ìˆëŠ” itemì„ ì˜ë¯¸.
+/// CheckVolumeìœ¼ë¡œ ë‚´ ì¸ë²¤í† ë¦¬ì˜ ê³µê°„ì„ ì²´í¬í•˜ê³  ì•„ì´í…œì„ ë„£ì„ ìˆ˜ ìˆëŠ”ì§€ í™•ì¸.
+/// trueë©´ ë§µì—ì„œ í•´ë‹¹ objectë¥¼ ì œê±°í•˜ê³  Playerê°€ ì†Œìœ í•˜ë„ë¡ í•˜ê³ ì í•œë‹¤.
+/// AddActorComponentReplicatedSubObject í˜„ì¬ ì´ í•¨ìˆ˜ê°€ ì–´ë–¤ì‹ìœ¼ë¡œ ì‘ìš©í•˜ê³  ê²°ê³¼ë¥¼ ì£¼ëŠ”ì§€ ì˜ ëª¨ë¥´ê² ìŒ.
+/// ê·¸ë ‡ë‹¤ë©´ ìƒí˜¸ì‘ìš©ì€ objectì—ì„œ ë‚´ìš©ì„ ë§Œë“¤ê³  í”Œë ˆì´ì–´ëŠ” ê·¸ í•¨ìˆ˜ë¥¼ ì‘ë™ì‹œí‚¤ëŠ” ë°©ì‹ìœ¼ë¡œ ê°€ì•¼ í•  ê²ƒ ê°™ìŒ.
 /// </summary>
 /// <param name="wilditem"></param>
 void UC_InvenComponent::Interaction(AC_Item* wilditem)
@@ -194,21 +194,21 @@ void UC_InvenComponent::Interaction(AC_Item* wilditem)
 
 	if (CheckVolume(wilditem))
 	{
-		//»óÈ£ÀÛ¿ëµÈ ¾ÆÀÌÅÛÀÇ ¹«°Ô¸¦ ´õÇØµµ ¹«°ÔÇÑµµ¸¦ ³ÑÁö ¾Ê´Â °æ¿ì.
+		//ìƒí˜¸ì‘ìš©ëœ ì•„ì´í…œì˜ ë¬´ê²Œë¥¼ ë”í•´ë„ ë¬´ê²Œí•œë„ë¥¼ ë„˜ì§€ ì•ŠëŠ” ê²½ìš°.
 		CurVolume += wilditem->GetOnceVolume();
-		//¼­¹ö¿Í µ¿±âÈ­ÇÏ´Âµ¥ ÁÖ·Î »ç¿ëÇÑ´Ù°íÇÔ. ¼­¹ö¿Í Å¬¶óÀÌ¾ğÆ®°£¿¡ ÄÄÆ÷³ÍÆ® »óÅÂ¸¦ µ¿±âÈ­ÇÏ°í, ¼ÒÀ¯ÇÑ´Ù.
+		//ì„œë²„ì™€ ë™ê¸°í™”í•˜ëŠ”ë° ì£¼ë¡œ ì‚¬ìš©í•œë‹¤ê³ í•¨. ì„œë²„ì™€ í´ë¼ì´ì–¸íŠ¸ê°„ì— ì»´í¬ë„ŒíŠ¸ ìƒíƒœë¥¼ ë™ê¸°í™”í•˜ê³ , ì†Œìœ í•œë‹¤.
 		wilditem->AddActorComponentReplicatedSubObject(this, wilditem);
 	}
 	else
 	{
-		//»óÈ£ÀÛ¿ëµÈ ¾ÆÀÌÅÛÀÇ ¹«°Ô¸¦ ´õÇßÀ» ¶§, ¹«°ÔÇÑµµ¸¦ ³Ñ´Â °æ¿ì.
+		//ìƒí˜¸ì‘ìš©ëœ ì•„ì´í…œì˜ ë¬´ê²Œë¥¼ ë”í–ˆì„ ë•Œ, ë¬´ê²Œí•œë„ë¥¼ ë„˜ëŠ” ê²½ìš°.
 
-		//print("°ø°£ÀÌ ºÎÁ·ÇÕ´Ï´Ù"); ¿Í °°Àº ¸àÆ®°¡ ³ª¿Àµµ·Ï
+		//print("ê³µê°„ì´ ë¶€ì¡±í•©ë‹ˆë‹¤"); ì™€ ê°™ì€ ë©˜íŠ¸ê°€ ë‚˜ì˜¤ë„ë¡
 		return;
 	}
 }
 /// <summary>
-/// °¡¹æÀÇ Level¿¡ µû¶ó ¾Ë¸Â´Â Volume(¿ë·®)À» ¹İÈ¯ÇØÁØ´Ù.
+/// ê°€ë°©ì˜ Levelì— ë”°ë¼ ì•Œë§ëŠ” Volume(ìš©ëŸ‰)ì„ ë°˜í™˜í•´ì¤€ë‹¤.
 /// </summary>
 /// <param name="backpacklevel"></param>
 /// <returns></returns>
@@ -286,7 +286,7 @@ void UC_InvenComponent::RemoveBackPack()
 //
 //	CurBackPackLevel = PreBackPackLevel;
 //
-//	//¿ø·¡ ÀåÂøÇÏ¸é OverlapEnd·Î ÀÎÇØ ÀÚµ¿À¸·Î ¾ø¾îÁ®¾ß ÇÑ´Ù°í »ı°¢ÇÏ´Âµ¥ ¾È»ç¶óÁ®¼­ °­Á¦·Î Áö¿üÀ½.
+//	//ì›ë˜ ì¥ì°©í•˜ë©´ OverlapEndë¡œ ì¸í•´ ìë™ìœ¼ë¡œ ì—†ì–´ì ¸ì•¼ í•œë‹¤ê³  ìƒê°í•˜ëŠ”ë° ì•ˆì‚¬ë¼ì ¸ì„œ ê°•ì œë¡œ ì§€ì› ìŒ.
 //	NearItems.Remove(backpack);
 //
 //	CheckBackPackOnCharacter();
@@ -299,7 +299,7 @@ void UC_InvenComponent::RemoveBackPack()
 //	{
 //		CurVolume += item->GetOnceVolume();
 //
-//		//ÀÌºÎºĞµµ ¾ÆÀÌÅÛ¿¡¼­ Ã³¸®
+//		//ì´ë¶€ë¶„ë„ ì•„ì´í…œì—ì„œ ì²˜ë¦¬
 //		//item->SetOwnerCharacter(OwnerCharacter);
 //		//item->SetActorHiddenInGame(true);
 //		//item->SetActorEnableCollision(false);
@@ -323,8 +323,8 @@ void UC_InvenComponent::RemoveBackPack()
 //			AddedItemName = item->GetItemDatas().ItemName;
 //			if (testMyItems.Contains(AddedItemName))
 //			{
-//				//ÇöÀç ÆÄ¹ÖÇÏ·Á´Â ¾ÆÀÌÅÛÀÌ ÀÌ¹Ì ÀÎº¥(MyItemList)¿¡ Á¸Àç ÇÏ´Â °æ¿ì.
-//				// InPutStack = ÇöÀç ¾ÆÀÌÅÛÀÇ ½ºÅÃ + ÆÄ¹ÖÇÑ ¾ÆÀÌÅÛÀÇ ½ºÅÃ
+//				//í˜„ì¬ íŒŒë°í•˜ë ¤ëŠ” ì•„ì´í…œì´ ì´ë¯¸ ì¸ë²¤(MyItemList)ì— ì¡´ì¬ í•˜ëŠ” ê²½ìš°.
+//				// InPutStack = í˜„ì¬ ì•„ì´í…œì˜ ìŠ¤íƒ + íŒŒë°í•œ ì•„ì´í…œì˜ ìŠ¤íƒ
 //				//uint8 InPutStack = testMyItems[AddedItemName]->GetItemDatas().ItemStack + item->GetItemDatas().ItemStack;
 //				uint8 InPutStack = testMyItems[AddedItemName].Last()->GetItemDatas().ItemCurStack + item->GetItemDatas().ItemCurStack;
 //
@@ -333,12 +333,12 @@ void UC_InvenComponent::RemoveBackPack()
 //				//testMyItems.Remove(AddedItemName);
 //				item->SetActorHiddenInGame(true);
 //				item->SetActorEnableCollision(false);
-//				//°¡Áö°í ÀÖ´ø ¾ÆÀÌÅÛÀ» ¾÷µ¥ÀÌÆ® ÇßÀ¸¹Ç·Î °¡Á®¿À´ø ¾ÆÀÌÅÛÀº »èÁ¦.
+//				//ê°€ì§€ê³  ìˆë˜ ì•„ì´í…œì„ ì—…ë°ì´íŠ¸ í–ˆìœ¼ë¯€ë¡œ ê°€ì ¸ì˜¤ë˜ ì•„ì´í…œì€ ì‚­ì œ.
 //				item->Destroy();
 //			}
 //			else
 //			{
-//				//ÇöÀç ÆÄ¹ÖÇÏ·Á´Â ¾ÆÀÌÅÛÀÌ ÀÎº¥(MyItemList)¿¡ ¾ø´Â ¾ÆÀÌÅÛ ÀÎ °æ¿ì.
+//				//í˜„ì¬ íŒŒë°í•˜ë ¤ëŠ” ì•„ì´í…œì´ ì¸ë²¤(MyItemList)ì— ì—†ëŠ” ì•„ì´í…œ ì¸ ê²½ìš°.
 //				item->PickUpItem(OwnerCharacter);
 //				if (TArray<AC_Item*>* FoundArray = testMyItems.Find(AddedItemName)) 
 //				{
@@ -346,7 +346,7 @@ void UC_InvenComponent::RemoveBackPack()
 //				}
 //				else 
 //				{
-//					// Å°°¡ ¾øÀ¸¸é »õ·Î¿î ¹è¿­À» »ı¼ºÇÏ°í Ãß°¡
+//					// í‚¤ê°€ ì—†ìœ¼ë©´ ìƒˆë¡œìš´ ë°°ì—´ì„ ìƒì„±í•˜ê³  ì¶”ê°€
 //					TArray<AC_Item*> NewArray;
 //					NewArray.Add(item);
 //					testMyItems.Add(AddedItemName, NewArray);
@@ -358,7 +358,7 @@ void UC_InvenComponent::RemoveBackPack()
 //			//AddedItemName = TEXT("NONE");
 //			break;
 //		}
-//		//¾ÆÀÌÅÛÀ» ½ÀµæÇÒ ¶§ ¾ÆÀÌÅÛÀÇ Á¾·ù¿¡ µû¶ó ¾Ë¾Æ¼­ ½Àµæ, ÀåÂøµîÀÌ µÇµµ·Ï.
+//		//ì•„ì´í…œì„ ìŠµë“í•  ë•Œ ì•„ì´í…œì˜ ì¢…ë¥˜ì— ë”°ë¼ ì•Œì•„ì„œ ìŠµë“, ì¥ì°©ë“±ì´ ë˜ë„ë¡.
 //
 //
 //		///////////////////
@@ -373,24 +373,24 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 {
 	AC_EquipableItem* PrevSlotEquipItem = EquipmentItems[InSlot];
 
-	//±âÁ¸ÀÇ Àåºñ°¡ ÀÖ´Ù¸é.
+	//ê¸°ì¡´ì˜ ì¥ë¹„ê°€ ìˆë‹¤ë©´.
 	if (PrevSlotEquipItem)
 	{
-		PrevSlotEquipItem->DetachItem(); //ÀåÂø ÇØÁ¦.
+		PrevSlotEquipItem->DetachItem(); //ì¥ì°© í•´ì œ.
 
 		if (PrevSlotEquipItem->GetItemDatas().ItemType == EItemTypes::BACKPACK)
-			MaxVolume -= CheckBackPackVolume(Cast<AC_BackPack>(PrevSlotEquipItem)->GetLevel()); //TODO : MyBackPackÀ» GetEquipmentItems()[EEquipSlot::BACKPACK]·Î ´ëÃ¼ÇÏ±â.
+			MaxVolume -= CheckBackPackVolume(Cast<AC_BackPack>(PrevSlotEquipItem)->GetLevel()); //TODO : MyBackPackì„ GetEquipmentItems()[EEquipSlot::BACKPACK]ë¡œ ëŒ€ì²´í•˜ê¸°.
 		else if (PrevSlotEquipItem->GetItemDatas().ItemType == EItemTypes::VEST)
 			MaxVolume -= 50.f;
-		//AddItemToAroundList(PrevSlotEquipItem);// TODO : CollisionÀ» Å°°í ²ô´Â ¹æ½ÄÀ¸·Î ÇÒ Áö ¾Æ´Ï¸é °­Á¦·Î ³Ö°í »©ÁÙÁö »ı°¢
+		//AddItemToAroundList(PrevSlotEquipItem);// TODO : Collisionì„ í‚¤ê³  ë„ëŠ” ë°©ì‹ìœ¼ë¡œ í•  ì§€ ì•„ë‹ˆë©´ ê°•ì œë¡œ ë„£ê³  ë¹¼ì¤„ì§€ ìƒê°
 	}
 	EquipmentItems[InSlot] = Cast<AC_EquipableItem>(EquipItem);
 	
-	if (EquipmentItems[InSlot] == nullptr)	return PrevSlotEquipItem; //nullptrÀÌ¸é Á¾·á.
+	if (EquipmentItems[InSlot] == nullptr)	return PrevSlotEquipItem; //nullptrì´ë©´ ì¢…ë£Œ.
 
 	if (EquipmentItems[InSlot]->GetItemDatas().ItemType == EItemTypes::BACKPACK)
 	{
-		MyBackPack = Cast<AC_BackPack>(GetEquipmentItems()[EEquipSlot::BACKPACK]); //TODO : MyBackPackÀ» GetEquipmentItems()[EEquipSlot::BACKPACK]·Î ´ëÃ¼ÇÏ±â. ¹× BackPackÀÇ ¾µµ¥¾øÀÌ LevelÀÌ 2°³ÀÓ ÇÏ³ª·Î ÅëÀÏÇÏ±â.
+		MyBackPack = Cast<AC_BackPack>(GetEquipmentItems()[EEquipSlot::BACKPACK]); //TODO : MyBackPackì„ GetEquipmentItems()[EEquipSlot::BACKPACK]ë¡œ ëŒ€ì²´í•˜ê¸°. ë° BackPackì˜ ì“¸ë°ì—†ì´ Levelì´ 2ê°œì„ í•˜ë‚˜ë¡œ í†µì¼í•˜ê¸°.
 		MaxVolume += CheckBackPackVolume(MyBackPack->GetLevel());
 	}
 	else if (EquipmentItems[InSlot]->GetItemDatas().ItemType == EItemTypes::VEST)
@@ -401,7 +401,7 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 	EquipmentItems[InSlot]->AttachToSocket(OwnerCharacter);
 
 	EquipmentItems[InSlot]->SetActorEnableCollision(false);
-	//RemoveItemToAroundList(EquipItem); // TODO : CollisionÀ» Å°°í ²ô´Â ¹æ½ÄÀ¸·Î ÇÒ Áö ¾Æ´Ï¸é °­Á¦·Î ³Ö°í »©ÁÙÁö »ı°¢
+	//RemoveItemToAroundList(EquipItem); // TODO : Collisionì„ í‚¤ê³  ë„ëŠ” ë°©ì‹ìœ¼ë¡œ í•  ì§€ ì•„ë‹ˆë©´ ê°•ì œë¡œ ë„£ê³  ë¹¼ì¤„ì§€ ìƒê°
 
 	return PrevSlotEquipItem;
 }
@@ -414,7 +414,7 @@ AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 		return FoundItem;
 	}
 
-	//TODO : CheckPoint - ÀåÂø, »ç¿ë ¾ÆÀÌÅÛÀÇ À§Ä¡°¡ ¾îµğ¿¡ ÀÖ´ÂÁö È®ÀÎÇÒ °Í.
+	//TODO : CheckPoint - ì¥ì°©, ì‚¬ìš© ì•„ì´í…œì˜ ìœ„ì¹˜ê°€ ì–´ë””ì— ìˆëŠ”ì§€ í™•ì¸í•  ê²ƒ.
 	return nullptr;
 }
 
@@ -432,8 +432,8 @@ AC_Item* UC_InvenComponent::FindMyItem(FString itemName)
 void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 {
 
-	//AC_Item* FoundItem = FindMyItem(item); //ÀÎº¥¿¡ °°Àº ¾ÆÀÌÅÛÀ» Ã£¾Æ¿È, ¾ø´Ù¸é nullptr;
-	if (!IsValid(item)) return; //nullptr°¡ µé¾î ¿À¸é return.
+	//AC_Item* FoundItem = FindMyItem(item); //ì¸ë²¤ì— ê°™ì€ ì•„ì´í…œì„ ì°¾ì•„ì˜´, ì—†ë‹¤ë©´ nullptr;
+	if (!IsValid(item)) return; //nullptrê°€ ë“¤ì–´ ì˜¤ë©´ return.
 	//if (testMyItems.Contains(item->GetItemDatas().ItemName))
 	if (AC_Item** FoundItemPtr = testMyItems.Find(item->GetItemDatas().ItemName))
 	{
@@ -445,11 +445,13 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 
 		CurVolume += item->GetAllVolume();
 
-		//item->Destroy();//°¡Áö°í ÀÖ´ø ¾ÆÀÌÅÛ¿¡ »õ·Î ³Ö´Â ¾ÆÀÌÅÛÀ» ´Ù ³Ö¾úÀ¸¹Ç·Î »èÁ¦.
+
+		item->Destroy();//ê°€ì§€ê³  ìˆë˜ ì•„ì´í…œì— ìƒˆë¡œ ë„£ëŠ” ì•„ì´í…œì„ ë‹¤ ë„£ì—ˆìœ¼ë¯€ë¡œ ì‚­ì œ.
+
 	}
 	else 
 	{
-		// ÇØ´çÅ°ÀÇ °ªÀÌ Ãß°¡.
+		// í•´ë‹¹í‚¤ì˜ ê°’ì´ ì¶”ê°€.
 		testMyItems.Add(item->GetItemDatas().ItemName, item);
 
 		if (IsValid(OwnerCharacter))
@@ -467,7 +469,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 {
 	testMyItems.Remove(item->GetItemDatas().ItemName);
-	//Add¿Í ´Ş¸® ½½·ÔÀ¸·Î °¡´Â °æ¿ì¸¦ ´ëºñÇÏ¿© OwnerCharacterÀÇ ¼³Á¤À» °Çµå¸®Áö ¾Ê¾ÒÀ½.
+	//Addì™€ ë‹¬ë¦¬ ìŠ¬ë¡¯ìœ¼ë¡œ ê°€ëŠ” ê²½ìš°ë¥¼ ëŒ€ë¹„í•˜ì—¬ OwnerCharacterì˜ ì„¤ì •ì„ ê±´ë“œë¦¬ì§€ ì•Šì•˜ìŒ.
 	//item->SetItemPlace(EItemPlace::AROUND);
 	CurVolume -= item->GetAllVolume();
 }
@@ -478,7 +480,7 @@ void UC_InvenComponent::DestroyMyItem(AC_Item* DestroyedItem)
 	{
 		AC_Item* MyItem = testMyItems[DestroyedItem->GetItemDatas().ItemName];
 
-		if (MyItem) //TMap¿¡ ÇØ´ç ¿ä¼Ò°¡ ÀÖ´ÂÁö È®ÀÎ.
+		if (MyItem) //TMapì— í•´ë‹¹ ìš”ì†Œê°€ ìˆëŠ”ì§€ í™•ì¸.
 		{
 			RemoveItemToMyList(MyItem);
 			MyItem->Destroy();
@@ -531,3 +533,4 @@ void UC_InvenComponent::InitMyitems()
 
 
  
+

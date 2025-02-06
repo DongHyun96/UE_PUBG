@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUserInterface/C_ItemBarWidget.h"
@@ -25,7 +25,7 @@
 void UC_ItemBarWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	// À§Á¬À» WidgetTree¿¡¼­ °¡Á®¿À±â
+	// ìœ„ì ¯ì„ WidgetTreeì—ì„œ ê°€ì ¸ì˜¤ê¸°
 	//ItemImage = Cast<UImage>(GetWidgetFromName(FName("ItemImage1")));
 	//ItemName = Cast<UTextBlock>(GetWidgetFromName(FName("ItemName1")));
 	//ItemStackBlock = Cast<UTextBlock>(GetWidgetFromName(FName("ItemStackBlock1")));
@@ -46,7 +46,7 @@ void UC_ItemBarWidget::NativeConstruct()
 
 	InitBar(CachedItem);
 
-	// ¹ÙÀÎµùµÈ À§Á¬µéÀÌ nullÀÎÁö È®ÀÎ
+	// ë°”ì¸ë”©ëœ ìœ„ì ¯ë“¤ì´ nullì¸ì§€ í™•ì¸
 	if (!ItemImage1)
 	{
 		UC_Util::Print("ItemImage is not bound correctly!", FColor::Red, 10.f);
@@ -64,7 +64,7 @@ void UC_ItemBarWidget::NativeConstruct()
 void UC_ItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
-	// ListItemObject¸¦ UC_Item Å¬·¡½º·Î Ä³½ºÆÃÇÏ¿© ¾ÆÀÌÅÛ µ¥ÀÌÅÍ »ç¿ë
+	// ListItemObjectë¥¼ UC_Item í´ë˜ìŠ¤ë¡œ ìºìŠ¤íŒ…í•˜ì—¬ ì•„ì´í…œ ë°ì´í„° ì‚¬ìš©
 	CachedItem = Cast<AC_Item>(ListItemObject);
 
 	if (!CachedItem) return;
@@ -74,17 +74,17 @@ void UC_ItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	// ¿ìÅ¬¸¯ÀÎÁö Ã¼Å©
+	// ìš°í´ë¦­ì¸ì§€ ì²´í¬
 
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
 		if (CachedItem)
-		{   // ¿ìÅ¬¸¯ ÀÌº¥Æ® ½ÇÇà
+		{   // ìš°í´ë¦­ ì´ë²¤íŠ¸ ì‹¤í–‰
 			CachedItem->Interaction(OwnerCharacter);
 			
 			InitInvenUIWidget();
 			
-			//NativeOnListItemObjectSet¿¡¼­ÀÇ È£Ãâ°ú Áßº¹À¸·Î ÀÏ´Ü ÁÖ¼®Ã³¸®, ´Ù¸¸ ÀÌº¥Æ®½Ã¿¡ ÃÊ±âÈ­°¡ ÇÊ¿äÇÏ¸é »ç¿ëÇØ¾ß ÇÒ ¼ö ÀÖÀ½.
+			//NativeOnListItemObjectSetì—ì„œì˜ í˜¸ì¶œê³¼ ì¤‘ë³µìœ¼ë¡œ ì¼ë‹¨ ì£¼ì„ì²˜ë¦¬, ë‹¤ë§Œ ì´ë²¤íŠ¸ì‹œì— ì´ˆê¸°í™”ê°€ í•„ìš”í•˜ë©´ ì‚¬ìš©í•´ì•¼ í•  ìˆ˜ ìˆìŒ.
 			//if (!CachedItem) return;
 			
 			InitBar(CachedItem);
@@ -92,7 +92,7 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 			//if (CachedItem->)
 			//SetVisibility(ESlateVisibility::Visible);
 			//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
-			//PlayerController->SetIgnoreMoveInput(false); // ÀÌµ¿ Çã¿ë
+			//PlayerController->SetIgnoreMoveInput(false); // ì´ë™ í—ˆìš©
 			//return FReply::Unhandled();
 
 			return FReply::Handled();
@@ -104,40 +104,40 @@ FReply UC_ItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 	{
 		UC_Util::Print("No cached item to interact with!", FColor::Red, 5.0f);
 	}
-	// ´Ù¸¥ ¹öÆ° Å¬¸¯ Ã³¸®
+	// ë‹¤ë¥¸ ë²„íŠ¼ í´ë¦­ ì²˜ë¦¬
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	//return FReply::Unhandled();
 }
 
 //FReply UC_ItemBarWidget::NativeOnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
 //{
-//	// Tab Å°°¡ ´­·È´ÂÁö È®ÀÎ
+//	// Tab í‚¤ê°€ ëˆŒë ¸ëŠ”ì§€ í™•ì¸
 //	if (InKeyEvent.GetKey() == EKeys::Tab)
 //	{
-//		// Tab Å° ÀÔ·ÂÀ» Ã³¸®ÇÏ°í ´õ ÀÌ»ó ÀüÆÄµÇÁö ¾Êµµ·Ï ÇÔ
+//		// Tab í‚¤ ì…ë ¥ì„ ì²˜ë¦¬í•˜ê³  ë” ì´ìƒ ì „íŒŒë˜ì§€ ì•Šë„ë¡ í•¨
 //		//OwnerCharacter->GetInvenSystem()->OpenInvenUI();
 //		return FReply::Handled();
 //
 //	}
 //
-//	// ´Ù¸¥ Å° ÀÔ·ÂÀº ±âº» Ã³¸®·Î ³Ñ¾î°¨
+//	// ë‹¤ë¥¸ í‚¤ ì…ë ¥ì€ ê¸°ë³¸ ì²˜ë¦¬ë¡œ ë„˜ì–´ê°
 //	return FReply::Unhandled(); //Super::NativeOnKeyDown(MyGeometry, InKeyEvent);
 //}
 
 void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
 	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
-	PlayerController->SetIgnoreMoveInput(false); // ÀÌµ¿ Çã¿ë
-	//dragdrop class¸¦ »õ·Î ¸¸µé¾î »ç¿ëÇØ¾ß ÇÒ ¼ö ÀÖÀ½.
+	PlayerController->SetIgnoreMoveInput(false); // ì´ë™ í—ˆìš©
+	//dragdrop classë¥¼ ìƒˆë¡œ ë§Œë“¤ì–´ ì‚¬ìš©í•´ì•¼ í•  ìˆ˜ ìˆìŒ.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 	
-	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemBarIcon);//Å©±â¹× ÇüÅÂ Á¶ÀıÇÏ±â.
+	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemBarIcon);//í¬ê¸°ë° í˜•íƒœ ì¡°ì ˆí•˜ê¸°.
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
 	Border->SetBrushColor(BorderColor);
 
-	//Border->SetPadding(FMargin(2.0f)); ÆĞµùÀÌ ÇÊ¿äÇÏ¸é »ç¿ëÇÏ±â.
+	//Border->SetPadding(FMargin(2.0f)); íŒ¨ë”©ì´ í•„ìš”í•˜ë©´ ì‚¬ìš©í•˜ê¸°.
 
 	UImage* DragVisual = NewObject<UImage>(Texture);
 
@@ -157,17 +157,17 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	//
 	//DragOperation->DefaultDragVisual = DragVisual;
 
-	//DragOperation->DefaultDragVisual = ItemImage1; // µå·¡±× ½Ã ¾ÆÀÌÅÛÀÇ ¹Ì¸®º¸±â ÀÌ¹ÌÁö
-	//DragOperation->DefaultDragVisual = this; // µå·¡±× ½Ã ¾ÆÀÌÅÛÀÇ ¹Ì¸®º¸±â ÀÌ¹ÌÁö
+	//DragOperation->DefaultDragVisual = ItemImage1; // ë“œë˜ê·¸ ì‹œ ì•„ì´í…œì˜ ë¯¸ë¦¬ë³´ê¸° ì´ë¯¸ì§€
+	//DragOperation->DefaultDragVisual = this; // ë“œë˜ê·¸ ì‹œ ì•„ì´í…œì˜ ë¯¸ë¦¬ë³´ê¸° ì´ë¯¸ì§€
 
-	DragOperation->Payload = CachedItem; // µå·¡±× Áß Àü´ŞÇÒ µ¥ÀÌÅÍ (¾ÆÀÌÅÛ)
+	DragOperation->Payload = CachedItem; // ë“œë˜ê·¸ ì¤‘ ì „ë‹¬í•  ë°ì´í„° (ì•„ì´í…œ)
 	//DragOperation->Pivot = EDragPivot::MouseDown;
 	DragOperation->Pivot = EDragPivot::CenterCenter;
 
 	DragOperation->DraggedItem = CachedItem;
 
 
-	//¿À³ÊÄ³¸¯ÅÍ Ã¼Å©
+	//ì˜¤ë„ˆìºë¦­í„° ì²´í¬
 	if (!OwnerCharacter)
 	{
 		UC_Util::Print("ItemBarWidget have not OwnerCharacter!!");
@@ -197,23 +197,23 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 FReply UC_ItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
-	//PlayerController->SetIgnoreMoveInput(false); // ÀÌµ¿ Çã¿ë
+	//PlayerController->SetIgnoreMoveInput(false); // ì´ë™ í—ˆìš©
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
 		//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
-		//PlayerController->SetIgnoreMoveInput(false); // ÀÌµ¿ Çã¿ë
+		//PlayerController->SetIgnoreMoveInput(false); // ì´ë™ í—ˆìš©
 		if (CachedItem)
 		{
-			//µå·¡±× ÀÌº¥Æ® ½ÇÇà.
+			//ë“œë˜ê·¸ ì´ë²¤íŠ¸ ì‹¤í–‰.
 			//OwnerCharacter->GetController()->SetIgnoreMoveInput(false);
-			// µå·¡±×¸¦ ½ÃÀÛÇÏ°í ¹İÀÀÇÔ
+			// ë“œë˜ê·¸ë¥¼ ì‹œì‘í•˜ê³  ë°˜ì‘í•¨
 			FEventReply RePlyResult =
 				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 			UC_Util::Print("LeftMouseButton");
 			OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 
 			//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
-			//PlayerController->SetIgnoreMoveInput(false); // ÀÌµ¿ Çã¿ë
+			//PlayerController->SetIgnoreMoveInput(false); // ì´ë™ í—ˆìš©
 			//PlayerController->GetCurrentInputModeDebugString();
 			PlayerController->SetInputMode
 			(
@@ -313,4 +313,6 @@ void UC_ItemBarWidget::InitInvenUIWidget()
 		InvenUiWidget->InitWidget();
 	}
 }
+
+
 

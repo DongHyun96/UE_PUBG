@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "HUD/C_MapWidget.h"
@@ -60,11 +60,11 @@ bool UC_MapWidget::SpawnPingImage(FVector2D MousePos)
 
 void UC_MapWidget::SetAirplaneRoute(TPair<FVector, FVector> StartDest)
 {
-	// Map¿¡ ¹èÄ¡µÉ À§Ä¡ ÁöÁ¡ Ã£±â
+	// Mapì— ë°°ì¹˜ë  ìœ„ì¹˜ ì§€ì  ì°¾ê¸°
 	AirplaneRouteStartPos = GetWorldToMapSizePos(StartDest.Key);
 	AirplaneRouteDestPos = GetWorldToMapSizePos(StartDest.Value);
 
-	// Dest triangle È¸Àü Àâ±â
+	// Dest triangle íšŒì „ ì¡ê¸°
 	if (AirplaneRouteStartPos.X - AirplaneRouteDestPos.X == 0.f)
 	{
 		if (AirplaneRouteStartPos.Y - AirplaneRouteDestPos.Y > 0.f)
@@ -92,14 +92,14 @@ void UC_MapWidget::SetAirplaneRoute(TPair<FVector, FVector> StartDest)
 
 	AirplaneDestTriangleImage->SetRenderTransformAngle(Angle);
 
-	// Airplane ÀÌ¹ÌÁö È¸Àü Àâ±â
+	// Airplane ì´ë¯¸ì§€ íšŒì „ ì¡ê¸°
 	AirplaneImg->SetRenderTransformAngle(Angle - 90.f);
 
-	// AirplaneRoute ÀÌ¹ÌÁö È¸Àü Àâ±â
+	// AirplaneRoute ì´ë¯¸ì§€ íšŒì „ ì¡ê¸°
 	AirplaneRouteImage->SetRenderTransformAngle(Angle - 90.f);
 
-	// AirplaneRoute ÀÌ¹ÌÁö Å©±â Àâ±â
-	// ºÎ¸ğ MapWidget¿¡¼­´Â Å©±â¸¦ ÇÑ ¹ø¸¸ Àâ¾ÆÁÖµÇ ÀÚ½Ä¿¡¼­´Â(MainMapWidget) Tick¿¡¼­ Áö¼ÓÀûÀ¸·Î Àâ¾ÆÁÖ±â
+	// AirplaneRoute ì´ë¯¸ì§€ í¬ê¸° ì¡ê¸°
+	// ë¶€ëª¨ MapWidgetì—ì„œëŠ” í¬ê¸°ë¥¼ í•œ ë²ˆë§Œ ì¡ì•„ì£¼ë˜ ìì‹ì—ì„œëŠ”(MainMapWidget) Tickì—ì„œ ì§€ì†ì ìœ¼ë¡œ ì¡ì•„ì£¼ê¸°
 	if (!AirplaneRouteImageCanvasSlot) AirplaneRouteImageCanvasSlot = Cast<UCanvasPanelSlot>(AirplaneRouteImage->Slot);
 	
 	FVector2D NewSize	= AirplaneRouteImageCanvasSlot->GetSize();
@@ -134,7 +134,7 @@ void UC_MapWidget::HandleUpdatePlaneRouteTransform()
 
 FVector2D UC_MapWidget::GetWorldToMapSizePos(FVector GameWorldLocation)
 {
-	// Map¿¡ ¹èÄ¡µÉ À§Ä¡ ÁöÁ¡ Ã£±â
+	// Mapì— ë°°ì¹˜ë  ìœ„ì¹˜ ì§€ì  ì°¾ê¸°
 	FVector2D Pos = { GameWorldLocation.Y, -GameWorldLocation.X };
 	return Pos * WORLD_TO_BG_SIZE_FACTOR;
 }
@@ -157,7 +157,7 @@ void UC_MapWidget::UpdatePlayerMarkerRotation()
 		return;
 	}
 	
-	// È¸Àü Àâ±â
+	// íšŒì „ ì¡ê¸°
 	bool OnAirplane = OwnerPlayer->GetMainState() == EMainState::SKYDIVING &&
 		OwnerPlayer->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY;
 
@@ -165,3 +165,5 @@ void UC_MapWidget::UpdatePlayerMarkerRotation()
 
 	PlayerMarkerImg->SetRenderTransformAngle(PlayerMarkerAngle);
 }
+
+

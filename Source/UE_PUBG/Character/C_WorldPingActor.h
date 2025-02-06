@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -39,7 +39,9 @@ protected:
 
 private:
 
-	// 500m ÂïÈ÷´Â °Å¸® ¹× º¸ÀÌ´Â °Å¸® Á¦ÇÑ
+	// 500m ì°íˆëŠ” ê±°ë¦¬ ë° ë³´ì´ëŠ” ê±°ë¦¬ ì œí•œ
 	static const float WORLD_PING_DISTANCE_LIMIT;
 
 };
+
+

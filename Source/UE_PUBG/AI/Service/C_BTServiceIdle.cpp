@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AI/Service/C_BTServiceIdle.h"
@@ -43,3 +43,5 @@ void UC_BTServiceIdle::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 	//BehaviorComponent->SetServiceType(EServiceType::IDLE);
 
 }
+
+

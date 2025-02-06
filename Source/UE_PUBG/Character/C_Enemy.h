@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -31,7 +31,7 @@ public:
 private:
 
 	/// <summary>
-	/// ±âº» ¹«±â ¹× ±âº» ¾ÆÀÌÅÛ ºñÇà±â Å¾½Â ½Ã °¡Áö°í ½ÃÀÛ
+	/// ê¸°ë³¸ ë¬´ê¸° ë° ê¸°ë³¸ ì•„ì´í…œ ë¹„í–‰ê¸° íƒ‘ìŠ¹ ì‹œ ê°€ì§€ê³  ì‹œì‘
 	/// </summary>
 	void SpawnDefaultWeaponsAndItemsForSelf();
 
@@ -41,3 +41,5 @@ protected:
 	class UBehaviorTree* BehaviorTree{};
 
 };
+
+

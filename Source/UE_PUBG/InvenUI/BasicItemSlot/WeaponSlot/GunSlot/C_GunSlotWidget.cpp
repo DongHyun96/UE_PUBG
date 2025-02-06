@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_GunSlotWidget.h"
@@ -30,12 +30,12 @@ void UC_GunSlotWidget::NativeConstruct()
 //		//{
 //		//	if (UC_AttachableItemSlotWidget* PartSlot = AttachSlot.Value)
 //		//	{
-//		//		// ÀÚ½Ä À§Á¬ÀÇ ÀÌº¥Æ® Ã³¸® °á°ú È®ÀÎ
+//		//		// ìì‹ ìœ„ì ¯ì˜ ì´ë²¤íŠ¸ ì²˜ë¦¬ ê²°ê³¼ í™•ì¸
 //		//		FReply ChildReply = PartSlot->NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
 //		//
-//		//		if (ChildReply.IsEventHandled()) // ÀÚ½Ä À§Á¬ÀÌ ÀÌº¥Æ®¸¦ Ã³¸®ÇÑ °æ¿ì
+//		//		if (ChildReply.IsEventHandled()) // ìì‹ ìœ„ì ¯ì´ ì´ë²¤íŠ¸ë¥¼ ì²˜ë¦¬í•œ ê²½ìš°
 //		//		{
-//		//			return ChildReply; // Ã³¸®µÈ °á°ú ¹İÈ¯
+//		//			return ChildReply; // ì²˜ë¦¬ëœ ê²°ê³¼ ë°˜í™˜
 //		//		}
 //		//	}
 //		//}sd
@@ -45,8 +45,8 @@ void UC_GunSlotWidget::NativeConstruct()
 //
 //		if (SlotItem)
 //		{
-//			//µå·¡±× ÀÌº¥Æ® ½ÇÇà.
-//			//µå·¡±×¸¦ ½ÃÀÛÇÏ°í ¹İÀÀÇÔ
+//			//ë“œë˜ê·¸ ì´ë²¤íŠ¸ ì‹¤í–‰.
+//			//ë“œë˜ê·¸ë¥¼ ì‹œì‘í•˜ê³  ë°˜ì‘í•¨
 //			FEventReply RePlyResult =
 //				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 //
@@ -104,7 +104,7 @@ void UC_GunSlotWidget::UpdateWidget()
 	//AC_Gun* curWeapon = Cast<AC_Gun>(EquipComp->GetWeapons()[WeaponType]);
 	//
 	//AC_Weapon* CachedWeapon = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
-	////TODO : GunÀÇ °æ¿ì »ç¿ëÇÏ´Â ÃÑ¾ËÀÇ Á¾·ù¿Í °¹¼ö¸¦ Ç¥½ÃÇØÁÜ. ÇÏÀ§ Å¬·¡½º¿¡¼­ ÁøÇàÇÒ ¿¹Á¤.
+	////TODO : Gunì˜ ê²½ìš° ì‚¬ìš©í•˜ëŠ” ì´ì•Œì˜ ì¢…ë¥˜ì™€ ê°¯ìˆ˜ë¥¼ í‘œì‹œí•´ì¤Œ. í•˜ìœ„ í´ë˜ìŠ¤ì—ì„œ ì§„í–‰í•  ì˜ˆì •.
 	//
 	//UpdateSlotItemImage(curWeapon);
 
@@ -191,18 +191,18 @@ void UC_GunSlotWidget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
 bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 {
 	UC_EquippedComponent* EquipComp = OwnerPlayer->GetEquippedComponent();
-	AC_Weapon* curWeapon = EquipComp->GetWeapons()[WeaponType];//µå¶øµÈ ½½·ÔÀÇ Weapon
+	AC_Weapon* curWeapon = EquipComp->GetWeapons()[WeaponType];//ë“œëëœ ìŠ¬ë¡¯ì˜ Weapon
 	//AC_Item* DroppedItem = Cast<AC_Item>(InOperation->DraggedItem);
 	AC_Item* DroppedItem =InOperation->DraggedItem;
 
-	if (!curWeapon) //return DroppedItem->MoveToSlot(OwnerPlayer); //µå¶øµÈ ½½·Ô¿¡ ¹«±â°¡ ¾ø´Ù¸é ¹Ù·Î ÀåÂø
+	if (!curWeapon) //return DroppedItem->MoveToSlot(OwnerPlayer); //ë“œëëœ ìŠ¬ë¡¯ì— ë¬´ê¸°ê°€ ì—†ë‹¤ë©´ ë°”ë¡œ ì¥ì°©
 	{
-		//µå·ÓµÈ ½½·Ô¿¡ ¾ÆÀÌÅÛÀÌ ¾ø´Ù¸é ½ÇÇà
+		//ë“œë¡­ëœ ìŠ¬ë¡¯ì— ì•„ì´í…œì´ ì—†ë‹¤ë©´ ì‹¤í–‰
 		if (InOperation->curWeaponSlot == EWeaponSlot::MAIN_GUN || InOperation->curWeaponSlot == EWeaponSlot::SUB_GUN)
 		{
 			if (InOperation->curWeaponSlot != WeaponType)
 			{
-				// ºó ½½·Ô°ú Gun ½½·Ô SwapÇÏ´Â »óÈ²
+				// ë¹ˆ ìŠ¬ë¡¯ê³¼ Gun ìŠ¬ë¡¯ Swapí•˜ëŠ” ìƒí™©
 				if (OwnerPlayer->GetHandState() == EHandState::WEAPON_GUN)
 					if (EquipComp->SwapSlotsWhileGunHandState()) return true;
 				EquipComp->SetSlotWeapon(InOperation->curWeaponSlot, nullptr);
@@ -212,19 +212,19 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 			return true;
 		}
 	}
-	if (curWeapon == DroppedItem) return false; //µå·¡±×µÈ ¾ÆÀÌÅÛ°ú µå¶øµÈ ½½·ÔÀÇ ¾ÆÀÌÅÛÀÌ °°Àº ¾ÆÀÌÅÛÀÌ¶ó¸é return false;
-	//µå·ÓµÈ ½½·Ô¿¡ ¾ÆÀÌÅÛÀÌ ÀÖ´Ù¸é ½ÇÇà
+	if (curWeapon == DroppedItem) return false; //ë“œë˜ê·¸ëœ ì•„ì´í…œê³¼ ë“œëëœ ìŠ¬ë¡¯ì˜ ì•„ì´í…œì´ ê°™ì€ ì•„ì´í…œì´ë¼ë©´ return false;
+	//ë“œë¡­ëœ ìŠ¬ë¡¯ì— ì•„ì´í…œì´ ìˆë‹¤ë©´ ì‹¤í–‰
 	// 
-	//AroundÀÇ ¾ÆÀÌÅÛ°ú SlotÀÇ ¾ÆÀÌÅÛÀ» ±³Ã¼ÇÏ´Â °Í°ú ´Ù¸¥ ½½·ÔÀ¸·Î ¾ÆÀÌÅÛÀ» ÀÌµ¿ÇÏ´Â °Í ±¸ÇöÇÏ±â.
+	//Aroundì˜ ì•„ì´í…œê³¼ Slotì˜ ì•„ì´í…œì„ êµì²´í•˜ëŠ” ê²ƒê³¼ ë‹¤ë¥¸ ìŠ¬ë¡¯ìœ¼ë¡œ ì•„ì´í…œì„ ì´ë™í•˜ëŠ” ê²ƒ êµ¬í˜„í•˜ê¸°.
 
-	//AroundÀÇ ¾ÆÀÌÅÛ°ú SlotÀÇ ¾ÆÀÌÅÛÀ» ±³Ã¼ÇÏ´Â ÀÛ¾÷Àº °£´ÜÇÏ°Ô MoveToSlotÀ¸·Î Ã³¸®
+	//Aroundì˜ ì•„ì´í…œê³¼ Slotì˜ ì•„ì´í…œì„ êµì²´í•˜ëŠ” ì‘ì—…ì€ ê°„ë‹¨í•˜ê²Œ MoveToSlotìœ¼ë¡œ ì²˜ë¦¬
 	if (DroppedItem->GetItemDatas().ItemPlace == EItemPlace::AROUND || DroppedItem->GetItemDatas().ItemPlace == EItemPlace::INVEN)
 	{
 		if (DroppedItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT)
 		{
 			
 
-			//µå·ÓµÈ ¾ÆÀÌÅÛÀÌ ºÎÂø¹°ÀÌ¶ó¸é µå·ÓµÈ ½½·Ô¿¡ ¿ì¼± ÀåÂø.
+			//ë“œë¡­ëœ ì•„ì´í…œì´ ë¶€ì°©ë¬¼ì´ë¼ë©´ ë“œë¡­ëœ ìŠ¬ë¡¯ì— ìš°ì„  ì¥ì°©.
 			if (SetAttachmentSlotOnDrop(curWeapon, Cast<AC_AttachableItem>(DroppedItem))) return true;
 		}
 		return DroppedItem->MoveToSlot(OwnerPlayer);
@@ -258,7 +258,7 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 
 bool UC_GunSlotWidget::ChangedGunSlot(AC_Gun* gun)
 {
-	//ÀÚ½Ä´Ü°è¿¡¼­ overrideÇØ¼­ »ç¿ë.
+	//ìì‹ë‹¨ê³„ì—ì„œ overrideí•´ì„œ ì‚¬ìš©.
 	return false;
 }
 
@@ -266,7 +266,7 @@ void UC_GunSlotWidget::InitializeAttachSlotMap()
 {
 	AttachSlotWidgets.Empty();
 
-	// ¿¡µğÅÍ¿¡¼­ °¡Á®¿Â À§Á¬À» TMap¿¡ Ãß°¡
+	// ì—ë””í„°ì—ì„œ ê°€ì ¸ì˜¨ ìœ„ì ¯ì„ TMapì— ì¶”ê°€
 	if (WB_MuzzleSlot)
 	{
 		AttachSlotWidgets.Add(EPartsName::MUZZLE, WB_MuzzleSlot);
@@ -292,4 +292,6 @@ void UC_GunSlotWidget::InitializeAttachSlotMap()
 		AttachSlotWidgets.Add(EPartsName::GRIP, WB_GripSlot);
 	}
 }
+
+
 

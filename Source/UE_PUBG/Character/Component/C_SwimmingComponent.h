@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -38,12 +38,12 @@ public:
 	void HandlePlayerMovement(const FVector2D& MovementVector);
 
 	/// <summary>
-	/// SwimmingÁß C Å° Input Ã³¸®
+	/// Swimmingì¤‘ C í‚¤ Input ì²˜ë¦¬
 	/// </summary>
 	void OnSwimmingCKey();
 
 	/// <summary>
-	/// Swimming Áß Spacebar Å° Input Ã³¸®
+	/// Swimming ì¤‘ Spacebar í‚¤ Input ì²˜ë¦¬
 	/// </summary>
 	void OnSwimmingSpaceBarKey();
 
@@ -62,7 +62,7 @@ private:
 	void HandleSwimmingState();
 
 	/// <summary>
-	/// OxygenAmount Handling ÇÏ±â
+	/// OxygenAmount Handling í•˜ê¸°
 	/// </summary>
 	/// <param name="DeltaTime"></param>
 	void UpdateOxygenAmount(const float& DeltaTime);
@@ -95,16 +95,16 @@ private:
 	void StopSwimming();
 
 	/// <summary>
-	/// ÇØ´ç À§Ä¡ÀÇ ¼ö½É ±¸ÇÏ±â
+	/// í•´ë‹¹ ìœ„ì¹˜ì˜ ìˆ˜ì‹¬ êµ¬í•˜ê¸°
 	/// </summary>
-	/// <param name="Position"> : ¼ö½ÉÀ» ±¸ÇÒ À§Ä¡ </param>
-	/// <returns> : ¼ö½É </returns>
+	/// <param name="Position"> : ìˆ˜ì‹¬ì„ êµ¬í•  ìœ„ì¹˜ </param>
+	/// <returns> : ìˆ˜ì‹¬ </returns>
 	float GetWaterDepth(const FVector& Position);
 
 	/// <summary>
-	/// WaterDetectionCollider·ÎºÎÅÍ ¹° ¹Ù´Ú¸é±îÁöÀÇ ±íÀÌ ±¸ÇÏ±â
+	/// WaterDetectionColliderë¡œë¶€í„° ë¬¼ ë°”ë‹¥ë©´ê¹Œì§€ì˜ ê¹Šì´ êµ¬í•˜ê¸°
 	/// </summary>
-	/// <returns> : ±íÀÌ </returns>
+	/// <returns> : ê¹Šì´ </returns>
 	float GetCharacterDepth();
 
 private:
@@ -121,7 +121,7 @@ private:
 
 	ESwimmingState SwimmingState{};
 
-	// ÇöÀç Çì¾öÄ¡°í ÀÖ´Â ¼ö¸éÀÇ z°ª
+	// í˜„ì¬ í—¤ì—„ì¹˜ê³  ìˆëŠ” ìˆ˜ë©´ì˜ zê°’
 	float EnteredWaterZ{};
 
 private:
@@ -133,3 +133,5 @@ private:
 	bool bIsHandlingPlayerMovementOnCurrentTick{};
 	
 };
+
+

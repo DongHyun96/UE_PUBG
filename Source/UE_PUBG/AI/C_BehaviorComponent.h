@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,7 +17,7 @@ enum class EServiceType : uint8
 	MAX
 };
 
-// TODO : Behavior type Ä«Å×°í¸® ¼öÁ¤
+// TODO : Behavior type ì¹´í…Œê³ ë¦¬ ìˆ˜ì •
 UENUM(BlueprintType)
 enum class EBehaviorType : uint8
 {
@@ -78,3 +78,5 @@ protected:
 private:
 	class UBlackboardComponent* Blackboard{};
 };
+
+

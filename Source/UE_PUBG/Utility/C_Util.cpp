@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Utility/C_Util.h"
@@ -58,3 +58,5 @@ void UC_Util::PrintLogMessage(const FString& str)
 {
 	UE_LOG(LogTemp, Log, TEXT("&s"), *str);
 }
+
+

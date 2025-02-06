@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -30,14 +30,14 @@ public:
 	//void SpawnWorldPing()
 
 	/// <summary>
-	/// World Ping Actor spawn ½ÃÅ°±â
+	/// World Ping Actor spawn ì‹œí‚¤ê¸°
 	/// </summary>
-	/// <param name="SpawnPos"> : Spawn world À§Ä¡</param>
-	/// <returns> : SpawnÀÌ ¼º°øÀûÀ¸·Î ÀÏ¾î³µ´Ù¸é return true </returns>
+	/// <param name="SpawnPos"> : Spawn world ìœ„ì¹˜</param>
+	/// <returns> : Spawnì´ ì„±ê³µì ìœ¼ë¡œ ì¼ì–´ë‚¬ë‹¤ë©´ return true </returns>
 	bool SpawnWorldPingActor(FVector SpawnPos);
 
 	/// <summary>
-	/// World ping HiddenÀ¸·Î °¨Ãß±â
+	/// World ping Hiddenìœ¼ë¡œ ê°ì¶”ê¸°
 	/// </summary>
 	void OnCancelWorldPing();
 
@@ -60,3 +60,5 @@ protected:
 	class TSubclassOf<AC_WorldPingActor> WorldPingActorClass{};
 		
 };
+
+

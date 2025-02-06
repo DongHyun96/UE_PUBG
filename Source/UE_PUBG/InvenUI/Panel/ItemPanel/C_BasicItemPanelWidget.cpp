@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/Panel/ItemPanel/C_BasicItemPanelWidget.h"
@@ -10,13 +10,13 @@ void UC_BasicItemPanelWidget::AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItem
 {
     if (!IsValid(ItemListView1)) return;
     
-    ItemListView1->ClearListItems(); // ±‚¡∏ æ∆¿Ã≈€ ªË¡¶
+    ItemListView1->ClearListItems(); // Í∏∞Ï°¥ ÏïÑÏù¥ÌÖú ÏÇ≠Ï†ú
 
     if (MyItemMap.Num() == 0) return;
 
     for (const auto& ItemPairTArray : MyItemMap)
     {
-        TArray<AC_Item*> ItemTArray = ItemPairTArray.Value; // TMapø°º≠ æ∆¿Ã≈€ ∞°¡Æø¿±‚
+        TArray<AC_Item*> ItemTArray = ItemPairTArray.Value; // TMapÏóêÏÑú ÏïÑÏù¥ÌÖú Í∞ÄÏ†∏Ïò§Í∏∞
 
         for (const auto& Item : ItemTArray)
         {
@@ -29,7 +29,7 @@ void UC_BasicItemPanelWidget::AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItem
                 continue;
             }
 
-            //ItemBar∞ªΩ≈.
+            //ItemBarÍ∞±Ïã†.
             UC_BasicItemBarWidget* EntryWidget = Cast<UC_BasicItemBarWidget>(ItemListView1->GetEntryWidgetFromItem(Item));
             //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
 
@@ -56,7 +56,7 @@ void UC_BasicItemPanelWidget::UpdateMyItemList(TMap<FString, AC_Item*> MyItemMap
 {
     if (!IsValid(ItemListView1)) return;
 
-    ItemListView1->ClearListItems(); // ±‚¡∏ æ∆¿Ã≈€ ªË¡¶
+    ItemListView1->ClearListItems(); // Í∏∞Ï°¥ ÏïÑÏù¥ÌÖú ÏÇ≠Ï†ú
 
     if (!(MyItemMap.Num() > 0)) return;
 
@@ -73,7 +73,7 @@ void UC_BasicItemPanelWidget::UpdateMyItemList(TMap<FString, AC_Item*> MyItemMap
             continue;
         }
 
-        //ItemBar∞ªΩ≈.
+        //ItemBarÍ∞±Ïã†.
         UC_BasicItemBarWidget* EntryWidget = Cast<UC_BasicItemBarWidget>(ItemListView1->GetEntryWidgetFromItem(Item));
         //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
 
@@ -99,7 +99,7 @@ void UC_BasicItemPanelWidget::InitializeItemList(const TArray<AC_Item*>& AroundI
 {
     if (!IsValid(ItemListView1)) return;
 
-    ItemListView1->ClearListItems(); // ±‚¡∏ æ∆¿Ã≈€ ªË¡¶
+    ItemListView1->ClearListItems(); // Í∏∞Ï°¥ ÏïÑÏù¥ÌÖú ÏÇ≠Ï†ú
 
     if (!(AroundItemList.Num() > 0)) return;
 
@@ -121,3 +121,5 @@ void UC_BasicItemPanelWidget::InitializeItemList(const TArray<AC_Item*>& AroundI
             EntryWidget->UpdateWidget(Item);
     }
 }
+
+
