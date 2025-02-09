@@ -24,8 +24,7 @@ public:
 
 private:
 
-	class UC_EquippedComponent* EnemyEquippedComponent{};
-		
+	class AC_Enemy* OwnerEnemy{};
+	class UC_BehaviorComponent* OwnerBehaviorComponent{};
+	
 };
-
-

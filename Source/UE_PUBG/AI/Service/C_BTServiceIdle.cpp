@@ -36,12 +36,7 @@ void UC_BTServiceIdle::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 		return;
 	}
 
-	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
-
-	if (IsValid(Player)) BehaviorComponent->SetPlayer(Player);
-
-	//BehaviorComponent->SetServiceType(EServiceType::IDLE);
-
+	// TODO : Idle Service 관련 처리
 }
 
 

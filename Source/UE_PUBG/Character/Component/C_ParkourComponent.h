@@ -95,9 +95,6 @@ private:
 	/// </summary>
 	void ExecuteMotionWarpingAction(const FParkourDescriptor& CurParkourDesc);
 
-private:
-
-
 	// TODO : 무기를 들고 있었다면 holster에 붙인 뒤, parkour가 끝나면 다시 무기를 드는 동작으로 가져가야 함
 
 	/// <summary>

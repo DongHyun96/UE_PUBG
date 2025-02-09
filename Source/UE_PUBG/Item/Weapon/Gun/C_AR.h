@@ -28,6 +28,13 @@ public:
 
 public:
 	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+
+	float GetDamageRateByBodyPart(const FName& BodyPart) override;
+
+private:
+
+	// 각 피격 부위별 Damage Rate
+	static const TMap<FName, float> BODYPARTS_DAMAGERATE;
 };
 
 

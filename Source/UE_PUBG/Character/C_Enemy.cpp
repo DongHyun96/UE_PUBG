@@ -13,6 +13,7 @@
 #include "Item/Weapon/Gun/C_AR.h"
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Utility/C_Util.h"
 
 
 AC_Enemy::AC_Enemy()
@@ -24,11 +25,10 @@ void AC_Enemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 
     // TODO : 비행기 타기 이전에 spawn하는 것으로 수정하기
     SpawnDefaultWeaponsAndItemsForSelf();
-	
 }
 
 void AC_Enemy::Tick(float DeltaSeoncds)

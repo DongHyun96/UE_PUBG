@@ -67,6 +67,7 @@
 #include "Item/Weapon/Gun/C_SR.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
+#include "Misc/TextFilterExpressionEvaluator.h"
 
 AC_Player::AC_Player()
 {
@@ -183,8 +184,6 @@ void AC_Player::BeginPlay()
 
 	ParkourComponent->SetOwnerPlayer(this);
 
-	PoolingBullets();
-
 	SetControllerPitchLimits(PoseState);
 }
 
@@ -194,7 +193,7 @@ void AC_Player::Tick(float DeltaTime)
 	//UC_Util::Print(CurveFloatForSwitchCamera->GetFloatValue(GetWorld()->GetDeltaSeconds()));
 	//UC_Util::Print(AimCamera->IsActive());
 	//UC_Util::Print(MainCamera->IsActive());
-
+	
 	HandleTurnInPlace();
 	HandleTurnInPlaceWhileAiming();
 	HandlePlayerRotationWhileAiming();

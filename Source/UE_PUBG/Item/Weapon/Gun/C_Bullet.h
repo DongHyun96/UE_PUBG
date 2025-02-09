@@ -45,7 +45,7 @@ public:
 	FVector InitialVelocityNormalized{};
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FVector LineTraceHitLocation{};
-	bool Fire(class AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity = true, FVector InHitLocation = FVector(0));
+	bool Fire(class AC_Gun* InOwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity = true, FVector InHitLocation = FVector(0));
 
 	void SubSteppingMovementPhysics(float SebStepDeltaTime);
 
@@ -82,6 +82,21 @@ public:
 	UFUNCTION(BlueprintCallable)
 
 	AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
+
+private:
+	
+	/// <summary>
+	/// <para> ProjectileStop시에 호출될 event (블루프린트에서 구현한 event도 이 함수와 무관하게 event 호출 시 호출됨 </para>
+	/// <para> 캐릭터에 총알 피격 데미지 적용 검사 및 적용 구현 </para>
+	/// </summary>
+	/// <param name="ImpactResult"></param>
+	UFUNCTION()
+	void OnProjectileStop(const FHitResult& ImpactResult);
+
+private:
+
+	// 해당 Bullet을 발사한 총기 
+	class AC_Gun* FiredGun{};
 
 };
 

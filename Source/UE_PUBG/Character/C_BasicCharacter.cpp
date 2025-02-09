@@ -96,6 +96,8 @@ void AC_BasicCharacter::BeginPlay()
 	GetPhysicsVolume()->FluidFriction = 2.5f;
 	StatComponent->SetOwnerCharacter(this);
 
+	PoolingBullets();
+
 	//InvenSystem->GetInvenUI()->AddToViewport();
 	//InvenSystem->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
 }
@@ -252,7 +254,7 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 
 	UC_Util::Print(Str, FColor::Cyan, 3.f);
 
-	StatComponent->TakeDamage(DamageAmount);
+	StatComponent->TakeDamage(DamageAmount, Cast<AC_BasicCharacter>(DamageCauser));
 
 	return DamageAmount;
 }

@@ -48,10 +48,14 @@ public:
 
 	void SetBlackboard(class UBlackboardComponent* InBlackboard) { Blackboard = InBlackboard; }
 
-	void SetPlayer(class AActor* InPlayer);
-	FName GetPlayerKey() const { return PlayerKey; }
-	class AC_BasicCharacter* GetPlayer();
-
+	/// <summary>
+	/// TargetCharacter 세팅하기 
+	/// </summary>
+	/// <param name="InTargetCharacter"> : 공격 대상, 회피 대상 등이 될 TargetCharacter </param>
+	/// <returns> 제대로 setting되었다면 return true </returns>
+	bool SetTargetCharacter(AActor* InTargetCharacter);
+	
+	class AC_BasicCharacter* GetTargetCharacter();
 
 	bool SetBehaviorType(EBehaviorType Type);
 
@@ -66,10 +70,10 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName BehaviorKey = "Behavior";
-
+	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName PlayerKey = "Player";
-
+	FName TargetCharacterKey = "TargetCharacter";
+	
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)

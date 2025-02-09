@@ -217,7 +217,7 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 		float DamageAmount = DAMAGE_BASE * (ExplosionRad - HitResult.Distance) / ExplosionRad; // 거리 비례 Damage base
 		DamageAmount *= BodyPartsDamageRate[HitResult.BoneName]; // 신체부위별 데미지 감소 적용
 
-		TotalDamage += Character->GetStatComponent()->TakeDamage(DamageAmount, HitResult.BoneName, ThrowingWeapon);
+		TotalDamage += Character->GetStatComponent()->TakeDamage(DamageAmount, HitResult.BoneName, ThrowingWeapon->GetOwnerCharacter());
 
 		//UC_Util::Print("Hitted Bone : " + HitResult.BoneName.ToString(), FColor::Red, 5.f);
 		//UC_Util::Print("Bone Damaged : " + FString::SanitizeFloat(DamageAmount), FColor::Red, 5.f);

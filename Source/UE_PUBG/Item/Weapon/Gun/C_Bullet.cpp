@@ -47,7 +47,7 @@ AC_Bullet::AC_Bullet()
 	BulletProjectileMovement->MaxSpeed = 620 * 100.0f;
 	BulletProjectileMovement->ProjectileGravityScale = 1.0;
 
-	
+	BulletProjectileMovement->OnProjectileStop.AddDynamic(this, &AC_Bullet::OnProjectileStop);
 }
 
 
@@ -129,8 +129,10 @@ void AC_Bullet::ActivateInstance()
 	IsActive = true;
 }
 
-bool AC_Bullet::Fire(AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity, FVector InHitLocation)
+bool AC_Bullet::Fire(AC_Gun* InOwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity, FVector InHitLocation)
 {
+	FiredGun = InOwnerGun;
+	
 	if (EnableGravity)
 		BulletProjectileMovement->ProjectileGravityScale = 1.0f;
 	else
@@ -155,7 +157,7 @@ bool AC_Bullet::Fire(AC_Gun* OwnerGun, FVector InLocation, FVector InDirection, 
 
 		ActivateInstance();
 		//UC_Util::Print(BulletProjectileMovement->InitialSpeed);
-		USkeletalMeshComponent* GunMesh = OwnerGun->GetGunMesh();
+		USkeletalMeshComponent* GunMesh = InOwnerGun->GetGunMesh();
 
 		SetActorLocation(InLocation);
 		BulletProjectileMovement->Velocity = InDirection;
@@ -260,5 +262,22 @@ void AC_Bullet::CalculateTravelDistanceAndDeactivate(float DeltaTime)
 	}
 }
 
+void AC_Bullet::OnProjectileStop(const FHitResult& ImpactResult)
+{
+	AC_BasicCharacter* HittedCharacter = Cast<AC_BasicCharacter>(ImpactResult.GetActor());
 
+	// 피격판정된 Actor가 캐릭터가 아닐 때
+	if (!HittedCharacter) return;
+
+	FName HittedBoneName = ImpactResult.BoneName;
+
+	float DamageRate 	= FiredGun->GetDamageRateByBodyPart(HittedBoneName);
+	float DamageBase 	= FiredGun->GetDamageBase();
+	float TotalDamage	= DamageRate * DamageBase;
+
+	FString str = "From AC_Bullet : " + HittedBoneName.ToString();
+	UC_Util::Print(str, FColor::MakeRandomColor(), 10.f);
+	
+	HittedCharacter->GetStatComponent()->TakeDamage(TotalDamage, HittedBoneName, FiredGun->GetOwnerCharacter());
+}
 
