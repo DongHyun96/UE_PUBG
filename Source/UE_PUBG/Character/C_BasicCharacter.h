@@ -149,6 +149,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CharacterDead();
 
+	void EnableRagdoll();
+
 protected:
 
 	/// <summary>

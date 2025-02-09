@@ -242,6 +242,7 @@ public:
 
 private:
 	float PlayerRecoilFactorByPose = 1.0f;
+	//아임 코리아 노블레스 탑클래스
 
 protected:
 
