@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/C_AnimBasicCharacter.h"
@@ -44,15 +44,16 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	//FString TheFloatStr = FString::SanitizeFloat(Direction);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 
-	MainState		  = OwnerCharacter->GetMainState();
-	HandState         = OwnerCharacter->GetHandState();
-	PoseState         = OwnerCharacter->GetPoseState();
-	bIsFalling        = OwnerCharacter->GetCharacterMovement()->IsFalling();
-	bIsJumping        = OwnerCharacter->GetIsJumping();
-	bIsAimingRifle    = OwnerCharacter->GetIsAimDown();
-	bCanCharacterMove = OwnerCharacter->GetCanMove();
-	bIsHoldDirection  = OwnerCharacter->GetIsHoldDirection();
-	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
+	MainState		    = OwnerCharacter->GetMainState();
+	HandState           = OwnerCharacter->GetHandState();
+	PoseState           = OwnerCharacter->GetPoseState();
+	bIsFalling          = OwnerCharacter->GetCharacterMovement()->IsFalling();
+	bIsJumping          = OwnerCharacter->GetIsJumping();
+	bIsAimingRifle      = OwnerCharacter->GetIsAimDown();
+	bCanCharacterMove   = OwnerCharacter->GetCanMove();
+	bIsHoldDirection    = OwnerCharacter->GetIsHoldDirection();
+	bIsAimDownSight     = OwnerCharacter->GetIsAimDown();
+	bIsTooCloseToAimGun = OwnerCharacter->GetIsTooCloseToAimGun();
 	if (OwnerCharacter->GetMovementComponent()->IsFalling())
 		bIsHighEnoughToFall = OwnerCharacter->GetIsHighEnoughToFall();
 	else

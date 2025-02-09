@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -218,6 +218,7 @@ public:
 	bool GetIsFiringBullet() { return bIsFiringBullet; }
 	bool GetCanFireBullet() { return bCanFireBullet; }
 	virtual bool GetIsHighEnoughToFall();
+	virtual bool GetIsTooCloseToAimGun();
 	void SetIsAimDown(bool InIsAimDownSight) { bIsAimDownSight = InIsAimDownSight; }
 	void SetIsWatchingSight(bool InIsWatchingSight) { bIsWatchingSight = InIsWatchingSight; }
 	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }

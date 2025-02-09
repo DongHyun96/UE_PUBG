@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -91,6 +91,9 @@ protected:
 	bool bIsAimingRifle = false;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsHighEnoughToFall = false;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsTooCloseToAimGun = false;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ESwimmingState SwimmingState{};

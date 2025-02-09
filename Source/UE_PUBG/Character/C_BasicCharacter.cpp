@@ -308,6 +308,23 @@ bool AC_BasicCharacter::GetIsHighEnoughToFall()
 	return false;
 }
 
+bool AC_BasicCharacter::GetIsTooCloseToAimGun()
+{
+	if (EquippedComponent->GetCurWeaponType() != EWeaponSlot::MAIN_GUN && EquippedComponent->GetCurWeaponType() != EWeaponSlot::SUB_GUN) return false;
+	FCollisionQueryParams CollisionParams{};
+	CollisionParams.AddIgnoredActor(this);
+	CollisionParams.AddIgnoredActor(EquippedComponent->GetCurWeapon());
+	//CollisionParams.AddIgnoredActor(GAMESCENE_MANAGER->GetAirplaneManager()->GetAirplane());
+
+	FHitResult HitResult{};
+	FVector ForwardDirection = GetActorForwardVector().GetSafeNormal();
+	FVector StartLocation = GetActorLocation();
+	FVector DestLocation = StartLocation + ForwardDirection * 50.0f;
+
+	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECollisionChannel::ECC_Visibility, CollisionParams);
+	return HasHit;
+}
+
 void AC_BasicCharacter::SetIsActivatingConsumableItem(bool InIsActivatingConsumableItem, AC_ConsumableItem* ActivatingConsumableItem)
 {
 	bIsActivatingConsumableItem = InIsActivatingConsumableItem;

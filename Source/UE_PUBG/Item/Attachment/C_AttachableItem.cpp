@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 
@@ -90,15 +90,15 @@ bool AC_AttachableItem::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 	
-	AC_Gun* curWeapon = nullptr;
+	//AC_Gun* curWeapon = nullptr;
 	
-	if (curWeapon = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]))
+	if (AC_Gun* curWeapon = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]))
 	{
 		if (this->AttachItemToWeaponAndMove(curWeapon, Character))
 			return true;
 	}
 
-	if (curWeapon = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]))
+	if (AC_Gun* curWeapon = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]))
 	{
 		if (this->AttachItemToWeaponAndMove(curWeapon, Character))
 			return true;
@@ -129,14 +129,14 @@ bool AC_AttachableItem::MoveInvenToSlot(AC_BasicCharacter* Character)
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 
-	AC_Gun* curWeapon = nullptr;
+	//AC_Gun* curWeapon = nullptr;
 
-	if (curWeapon = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]))
+	if (AC_Gun* curWeapon = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]))
 	{
 		return this->AttachItemToWeaponAndMoveInven(curWeapon, invenComp);
 	}
 
-	if (curWeapon = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]))
+	if (AC_Gun* curWeapon = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]))
 	{
 		return this->AttachItemToWeaponAndMoveInven(curWeapon, invenComp);
 	}

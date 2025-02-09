@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/C_Player.h"
@@ -335,6 +335,8 @@ bool AC_Player::GetIsHighEnoughToFall()
 	//UC_Util::Print(HitResult.Distance);	
 	return !HasHit;
 }
+
+
 
 bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 {
@@ -887,6 +889,19 @@ void AC_Player::HandleStatesWhileMovingCrawl()
 		Cast<AC_Gun>(EquippedComponent->GetCurWeapon())->BackToMainCamera();
 	}
 	PrevMoveSpeed = GetNextSpeed();
+}
+
+bool AC_Player::GetIsTooCloseToAimGun()
+{
+	bool HasHit = Super::GetIsTooCloseToAimGun();
+	if (HasHit)
+	{
+		if(!CurrentCanAimGun)
+			Cast<AC_Gun>(EquippedComponent->GetCurWeapon())->BackToMainCamera();
+	}
+	CurrentCanAimGun = HasHit;
+	return HasHit;
+
 }
 
 void AC_Player::SetToAimKeyPress()

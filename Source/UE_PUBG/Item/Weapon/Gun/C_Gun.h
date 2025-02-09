@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -339,7 +339,7 @@ protected:
 public:
 	//AI 총알 발사 관련 함수
 	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
-
+	//테스트 주석
 
 
 };

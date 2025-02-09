@@ -199,7 +199,8 @@ public:
 
 	void BackToMainCamera();
 	void HandleStatesWhileMovingCrawl();
-
+	bool GetIsTooCloseToAimGun();
+	bool CurrentCanAimGun = false;
 private:
 
 	class UC_TimelineUtility* CameraTransitionTimelineComponent;

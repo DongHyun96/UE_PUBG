@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
@@ -142,6 +142,7 @@ bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (!IsValid(CurPlayer)) return false;
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 	if (WeaponUser->GetIsHoldDirection()) return false;
+	if (WeaponUser->GetIsTooCloseToAimGun()) return false;
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 
 	MrbPressTimeCount = 0;
@@ -167,6 +168,8 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (!IsValid(CurPlayer)) return false;
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 	if (WeaponUser->GetIsHoldDirection()) return false;
+	if (WeaponUser->GetIsTooCloseToAimGun()) return false;
+
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
@@ -195,6 +198,8 @@ bool AC_GunStrategy::UseMrb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 	if (!IsValid(CurPlayer)) return false;
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 	if (WeaponUser->GetIsHoldDirection()) return false;
+	if (WeaponUser->GetIsTooCloseToAimGun()) return false;
+
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 
 	//MrbPressTimeCount = 0;
