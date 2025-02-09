@@ -193,14 +193,55 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 void AC_BasicCharacter::CharacterDead()
 {
-	GetMesh()->SetSimulatePhysics(true);  // 물리 활성화
-	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));  // 충돌 설정
-	GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("Spine"), true, true);  // 물리 적용
+	if (GetMesh()->GetSkeletalMeshAsset() == GetParkourComponent()->GetRootedSkeletalMesh())
+		GetParkourComponent()->SwapMeshToMainSkeletalMesh();
+	
+	// 본 변형 업데이트
+	//GetMesh()->RefreshBoneTransforms();
+	//GetMesh()->UpdateComponentToWorld();
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_BasicCharacter::EnableRagdoll, 0.1f, false);
+}
 
-	DetachFromControllerPendingDestroy();  // 컨트롤러 분리
+void AC_BasicCharacter::EnableRagdoll()
+{
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	
+	// 💡 캡슐 충돌 제거 (바닥을 통과하는 주요 원인)
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 
+	// 💡 루트 컴포넌트를 스켈레탈 메쉬로 변경
+	GetMesh()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	RootComponent = GetMesh();
+
+	// 💡 충돌 프로필과 물리 활성화
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetSimulatePhysics(true);
+
+	// 💡 특정 본 이하로 래그돌 활성화
+	GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("pelvis"), true, true);
+
+	// 💡 물리 속도 초기화
 	GetMesh()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
 	GetMesh()->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+
+	// 💡 컨트롤러 제거
+	DetachFromControllerPendingDestroy();
+
+	//GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//
+	//GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));  // 충돌 설정
+	//GetMesh()->SetSimulatePhysics(true);  // 물리 활성화
+	//GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("Spine"), true, true);  // 물리 적용
+	//
+	//DetachFromControllerPendingDestroy();  // 컨트롤러 분리
+	//
+	//GetMesh()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+	//GetMesh()->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+	//
+	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

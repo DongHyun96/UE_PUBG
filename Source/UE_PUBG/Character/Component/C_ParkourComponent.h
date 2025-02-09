@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -76,7 +76,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnParkourAnimMontageEnd();
 
+	/// <summary>
+	/// Main Skeletal Mesh로 Swap 하기 (엄밀히 따지면 다음 Tick에서 Main SkeletalMesh로 Swap)
+	/// </summary>
+	void SwapMeshToMainSkeletalMesh();
+
+	class USkeletalMesh* GetRootedSkeletalMesh() { return RootedSkeletalMesh; }
+
 private:
+	/// <summary>
+	/// OwnerCharacter Skeletal Mesh Sawp
+	/// </summary>
+	/// <param name="ToRootedMesh"> : If false, Swap back to Main Skeletal Mesh </param>
+	void SwapMesh(bool ToRootedMesh);
 
 	/// <summary>
 	/// 파쿠르 검사 프레임워크 통과 후 Motion warping을 실행하는 단계
@@ -85,11 +97,6 @@ private:
 
 private:
 
-	/// <summary>
-	/// OwnerCharacter Skeletal Mesh Sawp
-	/// </summary>
-	/// <param name="ToRootedMesh"> : If false, Swap back to Main Skeletal Mesh </param>
-	void SwapMesh(bool ToRootedMesh);
 
 	// TODO : 무기를 들고 있었다면 holster에 붙인 뒤, parkour가 끝나면 다시 무기를 드는 동작으로 가져가야 함
 
@@ -200,7 +207,7 @@ protected:
 
 	// Root Bone 처리된 Skeletal Mesh
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class USkeletalMesh* RootedSkeletalMesh{};
+	USkeletalMesh* RootedSkeletalMesh{};
 
 	// Root Bone 처리된 Skeletal Mesh의 Anim class
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)

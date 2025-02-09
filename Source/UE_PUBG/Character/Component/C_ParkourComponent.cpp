@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_ParkourComponent.h"
@@ -733,6 +733,16 @@ void UC_ParkourComponent::OnParkourAnimMontageEnd()
 	OwnerCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0);
 
 	bPendingMeshUpdateToMainMesh = true; // 다음 Update Tick에서 Main skeletal mesh로 돌아감
+}
+
+void UC_ParkourComponent::SwapMeshToMainSkeletalMesh()
+{
+	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	OwnerCharacter->SetActorEnableCollision(true);
+
+	OwnerCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0);
+
+	bPendingMeshUpdateToMainMesh = true;
 }
 
 
