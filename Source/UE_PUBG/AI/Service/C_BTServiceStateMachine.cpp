@@ -35,7 +35,7 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	if (OwnerEnemy->GetMainState() == EMainState::SKYDIVING)
 		OwnerBehaviorComponent->SetServiceType(EServiceType::SKYDIVE);
 
-	// Testing Pose Transition
+	/*// Testing Pose Transition
 	Timer += DeltaSeconds;
 
 	if (Timer > 3.f) // Set IdleTaskType to PoseChange
@@ -44,6 +44,7 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		OwnerBehaviorComponent->SetIdleTaskType(EIdleTaskType::CHANGE_POSE);
 	}
 	else OwnerBehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
+	*/
 		
 }
 

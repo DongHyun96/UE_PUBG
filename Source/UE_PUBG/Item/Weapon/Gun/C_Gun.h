@@ -45,7 +45,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EGunState, FPriorityAnimMontage> Montages;
 };
-UCLASS()
+UCLASS(Abstract)
 class UE_PUBG_API AC_Gun : public AC_Weapon
 {
 	GENERATED_BODY()
@@ -341,7 +341,21 @@ public:
 	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
 
 
+protected: // Damage 관련
+	
+	// 무기 별 DamageBase
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	float DamageBase{};
 
+public: 
+	/// <summary>
+	/// 각 Bone 피격 부위 별 DamageRate Getter (AR과 SR의 DamageRate가 서로 다름)
+	/// </summary>
+	/// <param name="BodyPart"> : BoneName 주기 </param>
+	/// <returns></returns>
+	virtual float GetDamageRateByBodyPart(const FName& BodyPart) PURE_VIRTUAL(AC_Gun::GetDamageRateByBodyPart, return 0.f;);
+
+	float GetDamageBase() const { return DamageBase; }
 };
 
 

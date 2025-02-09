@@ -35,6 +35,19 @@ void UC_BTTaskSwapWeapon::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	//	//OwnerBehaviorComponent->SetServiceType(EServiceType::IDLE);
 	//	//FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	//}
+
+	// TODO : 현재는 Main_Gun Type으로만 Swapping 처리 -> 추후 상황에 따른 Swapping Type 지정해서 처리하기
+	UC_EquippedComponent* EquippedComponent = OwnerEnemy->GetEquippedComponent();
+	if (EquippedComponent->GetCurWeaponType() != EWeaponSlot::MAIN_GUN) return;
+
+	// 여기서부터 초 세기
+	TotalTime += DeltaSeconds;
+
+	if (TotalTime > 1.5f) // Task 끝났다고 간주
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		TotalTime = 0.f;
+	}
 }
 
 EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -69,15 +82,16 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	}
 	
 	// Testing
-	bool Succeeded = OwnerEnemy->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::SUB_GUN);
+	// TODO : SwapWeapon Type 지정해서 해당 타입으로 지정하기
+	bool Succeeded = OwnerEnemy->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::MAIN_GUN);
 
 	/*Succeeded,
 	Failed,
 	Aborted,
 	InProgress,*/
 	
-	// TickTask 없이 바로 종료
-	return Succeeded ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
+	// 무기를 바꿀 수 있는 상황이라면 무기를 바꾸기 까지 animation 동작 기다리기
+	return Succeeded ? EBTNodeResult::InProgress : EBTNodeResult::Failed;
 }
 
 

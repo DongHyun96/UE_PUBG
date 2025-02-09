@@ -53,7 +53,6 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_AmmoWidget.h"
 
-
 //UCameraComponent* AC_Gun::AimSightCamera;
 // Sets default values
 AC_Gun::AC_Gun()
@@ -1156,11 +1155,23 @@ void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
 
 bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
-	if (!IsValid(OwnerCharacter)) return false;
-	if (!IsValid(InTargetCharacter)) return false;
+	if (!IsValid(OwnerCharacter))
+	{
+		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid OwnerCharacter", FColor::MakeRandomColor(), 10.f);
+		return false;
+	}
+	if (!IsValid(InTargetCharacter))
+	{
+		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid InTargetCharacter", FColor::MakeRandomColor(), 10.f);
+		return false;
+	}
 
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
-	if (!OnScreen) return false;
+	if (!OnScreen)
+	{
+		UC_Util::Print("From AC_Gun::ExecuteAIAttack : OnScreen Failed", FColor::MakeRandomColor(), 10.f);
+		return false;
+	}
 	//ExecuteReloadMontage();
 
 	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
@@ -1173,7 +1184,11 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 	//UC_Util::Print(FireLocation);
 	//UC_Util::Print(FireDirection);
 	AC_Enemy* OwnerPlayer = Cast<AC_Enemy>(OwnerCharacter); // TODO : OwnerPlayer -> Enemy도 총을 쏠 수 있으니 예외처리 시켜야 함
-	if (!IsValid(OwnerPlayer)) return false;
+	if (!IsValid(OwnerPlayer))
+	{
+		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid OwnerEnemy", FColor::MakeRandomColor(), 10.f);
+		return false;
+	}
 	bool ApplyGravity = true;
 	for (auto& Bullet : OwnerPlayer->GetBullets())
 	{
@@ -1185,13 +1200,14 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 		//UC_Util::Print("FIRE!!!!!!!");
 		CurBulletCount--;
 		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+		if (!Succeeded) UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
 		return Succeeded;
 
 		//Bullet->Fire(this, FireLocation, FireDirection);
 		//if (BulletCount > 100)
 		//	return true;
 	}
-	UC_Util::Print("No More Bullets in Pool");
+	UC_Util::Print("No More Bullets in Pool", FColor::MakeRandomColor(), 10.f);
 	return false;
 
 }

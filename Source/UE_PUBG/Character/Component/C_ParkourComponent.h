@@ -86,7 +86,7 @@ private:
 private:
 
 	/// <summary>
-	/// OwnerCharacter Skeletal Mesh Sawp
+	/// OwnerCharacter Skeletal Mesh Swap
 	/// </summary>
 	/// <param name="ToRootedMesh"> : If false, Swap back to Main Skeletal Mesh </param>
 	void SwapMesh(bool ToRootedMesh);

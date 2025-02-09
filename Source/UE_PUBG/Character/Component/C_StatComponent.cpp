@@ -9,21 +9,21 @@
 
 const float UC_StatComponent::MAX_HP		= 100.f;
 const float UC_StatComponent::MAX_BOOSTING	= 100.f;
-const float UC_StatComponent::HEAL_UP_LIMIT = 75.f; // 占쏙옙占쌨삼옙占쏙옙, 占쌔댐옙占?채占쏙옙 占쏙옙 占쌍댐옙 占쏙옙 占쏙옙占쏙옙 limit
-const float UC_StatComponent::MAX_OXYGEN_HP = 100.f; // 占쏙옙 HP Max
+const float UC_StatComponent::HEAL_UP_LIMIT = 75.f; // 구급상자, 붕대로 채울 수 있는 총 힐량 limit
+const float UC_StatComponent::MAX_OXYGEN_HP = 100.f; // 숨 HP Max
 
-const float UC_StatComponent::BOOST_ONE_BLOCK_EFFECT_TIME = 8.f;
-const float UC_StatComponent::BOOST_ONE_BLOCK_AMOUNT		= 2.631f; // 占쏙옙 占쏙옙占쏙옙 占쏙옙 占쌕억옙占쏙옙 Boost 占쏙옙
+const float UC_StatComponent::BOOST_ONE_BLOCK_EFFECT_TIME	= 8.f;
+const float UC_StatComponent::BOOST_ONE_BLOCK_AMOUNT		= 2.631f; // 한 블록 당 줄어드는 Boost 량
 
 // 20 40 30 10
 const TArray<float> UC_StatComponent::EACH_BOOST_PHASE_BORDER = { 20.f, 60.f, 90.f, 100.f };
 
 const TArray<FBoostingEffectFactor> UC_StatComponent::BOOSTING_EFFECT_FACTORS =
 {
-	{1.f, 1.f},		// 1占쏙옙占쏙옙占쏙옙 8占십댐옙 체占쏙옙 회占쏙옙占쏙옙 & 占싱듸옙 占쌈듸옙 占쏙옙占쏙옙(factor)
-	{2.f, 1.01f},	// 2占쏙옙占쏙옙占쏙옙
-	{3.f, 1.025f},	// 3占쏙옙占쏙옙占쏙옙
-	{4.f, 1.0625f}	// 4占쏙옙占쏙옙占쏙옙
+	{1.f, 1.f},		// 1페이즈 8초당 체력 회복량 & 이동 속도 증가(factor)
+	{2.f, 1.01f},		// 2페이즈
+	{3.f, 1.025f},	// 3페이즈
+	{4.f, 1.0625f}	// 4페이즈
 };
 
 const float UC_StatComponent::OXYGEN_EXHAUSTED_DAMAGE_PER_SEC = 20.f;
@@ -43,7 +43,7 @@ const TMap<FName, EDamagingPartType> UC_StatComponent::DAMAGINGPARTS_MAP =
 	{"Spine1",		EDamagingPartType::UPPER_STOMACH},
 	{"Spine2",		EDamagingPartType::SHOULDER},
 
-	{"LeftArm",		EDamagingPartType::LEFT_ARM},
+	{"LeftArm",	EDamagingPartType::LEFT_ARM},
 	{"LeftHand",	EDamagingPartType::LEFT_HAND},
 
 	{"RightArm",	EDamagingPartType::RIGHT_ARM},
@@ -84,7 +84,7 @@ void UC_StatComponent::SetCurBoosting(const float& InCurBoosting)
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
 }
 
-bool UC_StatComponent::TakeDamage(const float& Damage)
+bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* DamageCauser)
 {
 	if (CurHP <= 0.f) return false;
 	if (Damage < 0.f) return false;
@@ -95,45 +95,43 @@ bool UC_StatComponent::TakeDamage(const float& Damage)
 
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
 
-	// 占쏙옙占?
+	// 사망
 	if (CurHP <= 0.f)
 	{
-		// 占쏙옙占?처占쏙옙
-		// TODO : OwnwerCharacter占쏙옙占쏙옙 call back占쏙옙 占싱울옙占쏙옙 占쏙옙占?占싯몌옙占쏙옙
+		// 사망 처리
+		// TODO : OwnwerCharacter에게 call back을 이용한 사망 알리기
 	}
-
+	
 	return true;
 }
 
-float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor* DamageCauser)
+float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AC_BasicCharacter* DamageCauser)
 {
 	//FString Str = "Character Damaged on certain damaging part! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
 	//UC_Util::Print(Str, FColor::Cyan, 3.f);
 
-	// TODO : Armor 확占쏙옙占쌔쇽옙 Armor 占싸븝옙占싱띰옙占?Damage 占쏙옙占쏙옙 占쏙옙占쏙옙
-	// TODO : Armor 占쏙옙占쏙옙 占쏙옙 占쏙옙占?
+	// TODO : Armor 확인해서 Armor 부분이라면 Damage 감소 적용
+	// TODO : Armor 또한 피 깎기
+	
 
-	TakeDamage(DamageAmount);
+	TakeDamage(DamageAmount, DamageCauser);
 	return DamageAmount;
 }
 
-float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhyiscsAssetBoneName, AActor* DamageCauser)
+float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhysicsAssetBoneName, AC_BasicCharacter* DamageCauser)
 {
-	if (!DAMAGINGPARTS_MAP.Contains(DamagingPhyiscsAssetBoneName))
+	if (!DAMAGINGPARTS_MAP.Contains(DamagingPhysicsAssetBoneName))
 	{
 		UC_Util::Print("From UC_StatComponent::TakeDamage : No Such PhysicsAsset Bone Name exists!");
 		return 0.f;
 	}
 
-	//UC_Util::Print(DamagingPhyiscsAssetBoneName.ToString() + " Parts damaged! Amount : " + FString::SanitizeFloat(DamageAmount));
-
-	TakeDamage(DamageAmount);
-	return DamageAmount;
+	return TakeDamage(DamageAmount, DAMAGINGPARTS_MAP[DamagingPhysicsAssetBoneName], DamageCauser);
 }
 
 bool UC_StatComponent::ApplyHeal(const float& HealAmount)
 {
-	if (CurHP >= MAX_HP)  return false; // 占싱뱄옙 체占쏙옙占쏙옙 占쏙옙占?찼占쏙옙 占쏙옙
+	if (CurHP >= MAX_HP)  return false; // 이미 체력이 모두 찼을 때
 	if (HealAmount < 0.f) return false;
 
 	CurHP += HealAmount;
@@ -169,7 +167,7 @@ void UC_StatComponent::AddOxygen(const float& OxygenAmount)
 
 void UC_StatComponent::UpdateBoostEffect(const float& DeltaTime)
 {
-	// Boost 占쏙옙占쏙옙占쏙옙占쏙옙 占쏙옙占신놂옙 占싱뱄옙 占쏙옙占?처占쏙옙占실억옙占쏙옙 占쏙옙
+	// Boost 게이지가 없거나 이미 사망 처리되었을 때
 	if (CurBoosting <= 0.f || CurHP <= 0.f)
 	{
 		BoostTimer = 0.f;
@@ -203,7 +201,7 @@ void UC_StatComponent::HandleOxygenExhausted(const float& DeltaTime)
 	if (OxygenExhaustedTimer >= 1.f)
 	{
 		OxygenExhaustedTimer -= 1.f;
-		TakeDamage(OXYGEN_EXHAUSTED_DAMAGE_PER_SEC);
+		TakeDamage(OXYGEN_EXHAUSTED_DAMAGE_PER_SEC, OwnerCharacter);
 		return;
 	}
 	OxygenExhaustedTimer += DeltaTime;
