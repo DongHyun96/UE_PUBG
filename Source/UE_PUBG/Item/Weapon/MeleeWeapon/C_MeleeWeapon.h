@@ -131,7 +131,7 @@ protected:
 
 	class UShapeComponent* AttackCollider{};
 public:
-	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+	bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
 };
 
 

@@ -6,6 +6,7 @@
 #include "Character/C_BasicCharacter.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
+#include "Utility/C_Util.h"
 
 bool AC_MeleeWeaponStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {

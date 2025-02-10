@@ -29,8 +29,12 @@ private:
 	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
 
 	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
-protected:
-	float Durability = 0;
+
+public:
+
+	bool TakeDamage(float DamageAmount) override;
+
+	float GetDamageReduceFactor() const override;
 
 };
 

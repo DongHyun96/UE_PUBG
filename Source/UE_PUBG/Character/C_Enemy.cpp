@@ -34,6 +34,16 @@ void AC_Enemy::BeginPlay()
 void AC_Enemy::Tick(float DeltaSeoncds)
 {
 	Super::Tick(DeltaSeoncds);
+
+	/*switch (HandState)
+	{
+	case EHandState::UNARMED: UC_Util::Print("UNARMED"); break;
+	case EHandState::WEAPON_GUN: UC_Util::Print("WEAPON_GUN"); break;
+	case EHandState::WEAPON_MELEE: UC_Util::Print("WEAPON_MELEE"); break;
+	case EHandState::WEAPON_THROWABLE: UC_Util::Print("WEAPON_THROWABLE"); break;
+	case EHandState::HANDSTATE_MAX: 
+		break;
+	}*/
 }
 
 bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)

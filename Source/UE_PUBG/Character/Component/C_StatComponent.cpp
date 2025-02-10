@@ -2,9 +2,12 @@
 
 
 #include "Character/Component/C_StatComponent.h"
+
+#include "C_InvenComponent.h"
 #include "Character/C_BasicCharacter.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_OxygenWidget.h"
+#include "Item/Equipment/C_EquipableItem.h"
 #include "Utility/C_Util.h"	
 
 const float UC_StatComponent::MAX_HP		= 100.f;
@@ -99,7 +102,10 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 	if (CurHP <= 0.f)
 	{
 		// 사망 처리
-		// TODO : OwnwerCharacter에게 call back을 이용한 사망 알리기
+		// TODO : OwnwerCharacter에게 call back을 이용한 사망 알리기 & 킬로그(헤드샷만 비교해서 올릴 것)
+		// TODO : Player가 킬을 올렸을 시, Player HUD Widget에 킬 정보 올리기 -> 헤드샷인지 아닌지 유무
+		// TODO : Player가 죽었을 시, Player HUD Widget에 사망 정보 올리기
+		
 	}
 	
 	return true;
@@ -110,9 +116,32 @@ float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType Damagin
 	//FString Str = "Character Damaged on certain damaging part! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
 	//UC_Util::Print(Str, FColor::Cyan, 3.f);
 
-	// TODO : Armor 확인해서 Armor 부분이라면 Damage 감소 적용
-	// TODO : Armor 또한 피 깎기
+	// Armor 확인해서 Armor 부분이라면 Damage 감소 적용
+
+	FString str = "Damage caused by" + DamageCauser->GetName();
 	
+	UC_Util::Print(str, FColor::MakeRandomColor(), 10.f);
+
+	switch (DamagingPartType)
+	{
+	case EDamagingPartType::HEAD:
+		if (AC_EquipableItem* Helmet = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::HELMET])
+		{
+			DamageAmount *= Helmet->GetDamageReduceFactor();
+			Helmet->TakeDamage(DamageAmount); // Armor또한 피 깎아주기
+		}
+		else UC_Util::Print("Head part took damage but no Helmet available!", FColor::MakeRandomColor(), 10.f);
+		break;
+	case EDamagingPartType::SHOULDER:		case EDamagingPartType::UPPER_STOMACH:
+	case EDamagingPartType::LOWER_STOMACH:	case EDamagingPartType::HIPS:
+		if (AC_EquipableItem* Vest = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::VEST])
+		{
+			DamageAmount *= Vest->GetDamageReduceFactor();
+			Vest->TakeDamage(DamageAmount);
+		}
+		else UC_Util::Print("Vest part took damage but no Vest available!", FColor::MakeRandomColor(), 10.f);
+		break;
+	}
 
 	TakeDamage(DamageAmount, DamageCauser);
 	return DamageAmount;

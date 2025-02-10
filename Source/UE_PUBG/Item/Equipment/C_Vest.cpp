@@ -85,4 +85,27 @@ bool AC_Vest::MoveAroundToSlot(AC_BasicCharacter* Character)
 	return true;
 }
 
+bool AC_Vest::TakeDamage(float DamageAmount)
+{
+	// Level에 따른 Vest에 적용되는 Damage량 조절
+	float DamageReduceRate =	(ItemLevel == EEquipableItemLevel::LV1) ? 0.5f  :
+								(ItemLevel == EEquipableItemLevel::LV2) ? 0.45f : 0.4f;
+	DamageAmount *= DamageReduceRate;
+	
+	CurDurability -= DamageAmount;
+	if (CurDurability < 0.f) CurDurability = 0.f;
+
+	return true;
+}
+
+float AC_Vest::GetDamageReduceFactor() const
+{
+	// 파괴된 조끼를 장착중일 때
+	if (CurDurability <= 0.f) return 0.8f;
+	
+	
+	return	(ItemLevel == EEquipableItemLevel::LV1) ? 0.7f :
+			(ItemLevel == EEquipableItemLevel::LV2) ? 0.6f : 0.45f;
+}
+
 

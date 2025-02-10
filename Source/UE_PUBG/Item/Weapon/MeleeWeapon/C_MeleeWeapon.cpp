@@ -2,22 +2,19 @@
 
 
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
-#include "Item/Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
+
 #include "Item/Weapon/WeaponStrategy/C_MeleeWeaponStrategy.h"
 
 #include "Character/C_BasicCharacter.h"
-#include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 
 #include "Components/ShapeComponent.h"
 
-#include "Kismet/GamePlayStatics.h"
-
 #include "UObject/ConstructorHelpers.h"
 
-#include "HUD/C_HUDWidget.h"
-#include "HUD/C_AmmoWidget.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Utility/C_Util.h"
 
 const FName AC_MeleeWeapon::HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
 const FName AC_MeleeWeapon::EQUIPPED_SOCKET_NAME = "Pan_Equip"; // 무기가 손에 부착될 socket 이름
@@ -53,7 +50,10 @@ void AC_MeleeWeapon::Tick(float DeltaTime)
 	{
 		CurDrawMontage   = DrawMontages[OwnerCharacter->GetPoseState()];
 		CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()];
+		
+		if (AttackCollider->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics) UC_Util::Print("CollisionEnabled");
 	}
+
 
 }
 
@@ -189,53 +189,23 @@ bool AC_MeleeWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 	//return false;
 }
 
-//bool AC_MeleeWeapon::MoveAroundToSlot(AC_BasicCharacter* Character)
-//{
-//	return false;
-//}
-//
-//bool AC_MeleeWeapon::MoveAroundToInven(AC_BasicCharacter* Character)
-//{
-//	return false;
-//}
-//
-//bool AC_MeleeWeapon::MoveInvenToAround(AC_BasicCharacter* Character)
-//{
-//	return false;
-//}
-//
-//bool AC_MeleeWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
-//{
-//	return false;
-//}
-//
-//bool AC_MeleeWeapon::MoveSlotToAround(AC_BasicCharacter* Character)
-//{
-//	return false;
-//}
-//
-//bool AC_MeleeWeapon::MoveSlotToInven(AC_BasicCharacter* Character)
-//{
-//	return false;
-//}
-
 void AC_MeleeWeapon::SetAttackColliderEnabled(const bool& Enabled)
 {
-	if (Enabled) AttackCollider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	else		 AttackCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AttackCollider->SetCollisionEnabled(Enabled ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
 }
 
 void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 (
-	UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor, 
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult
+	UPrimitiveComponent*	OverlappedComponent,
+	AActor*					OtherActor, 
+	UPrimitiveComponent*	OtherComp,
+	int32					OtherBodyIndex,
+	bool					bFromSweep,
+	const FHitResult&		SweepResult
 )
 {
 	// TODO : 피격체에 데미지 주기
+	UC_Util::Print("Pan AttackBodyColliderBeginOverlap", FColor::MakeRandomColor(), 10.f);
 
 }
 
@@ -245,36 +215,34 @@ void AC_MeleeWeapon::OnOwnerCharacterPoseTransitionFin()
 
 bool AC_MeleeWeapon::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
-	return false;
+	if (!IsValid(InTargetCharacter))
+	{
+		UC_Util::Print("From AC_MeleeWeapon::ExecuteAIAttack : Invalid TargetCharacter!", FColor::Red, 10.f);
+		return false;
+	}
+	
+	if (OwnerCharacter->GetHandState() != EHandState::WEAPON_MELEE)
+	{
+		UC_Util::Print("From AC_MeleeWeapon::ExecuteAIAttack : Mismatched HandState", FColor::Red, 10.f);
+		return false;
+	}
+	if (!ExecuteMlb_Started())
+	{
+		UC_Util::Print("From AC_MeleeWeapon::ExecuteAIAttack : AttackStrategy Failed!", FColor::Red, 10.f);
+		return false; // 공격 시도 & 공격 성공 했는지 체크
+	}
+
+	// 공격 성공했다면 TargetCharacter 방면으로 회전 처리시키기
+	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation
+	(
+	this->OwnerCharacter->GetActorLocation(),
+	InTargetCharacter->GetActorLocation()
+	);
+
+	LookAtRotation.Pitch = 0.f;
+	LookAtRotation.Roll = 0.f;
+	OwnerCharacter->SetActorRotation(LookAtRotation);
+	
+	return true;
 }
-
-//void AC_MeleeWeapon::InitPriorityAnimMontages()
-//{
-//	AttackMontage.Priority = EMontagePriority::ATTACK;
-//
-//	/*FString leftMontagePath = FString::Printf
-//	(
-//		TEXT("/Game/Project_PUBG/DongHyun/Character/Animation/Turn_In_Place/Montages/%u%u_TurnLeft_Montage"),
-//		handState,
-//		poseState
-//	);
-//
-//	ConstructorHelpers::FObjectFinder<UAnimMontage> TurnLeftMontage(*leftMontagePath);*/
-//
-//	//static ConstructorHelpers::FObjectFinder<UAnimMontage> attackAnimMontage
-//	//(
-//	//	TEXT("/Game/Project_PUBG/DongHyun/Character/Animation/WeaponMotions/MeleeMontages/MeleeAttack_Montage")
-//	//);
-//	//
-//	//AttackMontage.AnimMontage = (attackAnimMontage.Succeeded()) ? attackAnimMontage.Object : nullptr;
-//	//AttackMontage.Priority = EMontagePriority::ATTACK;
-//
-//	// Init Draw Montages
-//
-//	// Init Sheath Montages
-//
-//	//CurDrawMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
-//	//CurSheathMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
-//}
-
 
