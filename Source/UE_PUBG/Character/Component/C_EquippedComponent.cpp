@@ -90,7 +90,7 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
         Weapons[InSlot]->SetActorHiddenInGame(false);
 
     //꺼주면 제자리 파쿠르 방지.
-    Weapons[InSlot]->SetActorEnableCollision(false); 
+    // Weapons[InSlot]->SetActorEnableCollision(false); 
  
     Weapons[InSlot]->SetRelativeTranformToInitial();
     Weapons[InSlot]->AttachToHolster(OwnerCharacter->GetMesh());

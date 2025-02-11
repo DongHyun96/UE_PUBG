@@ -5,8 +5,10 @@
 
 #include "C_InvenComponent.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Enemy.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_OxygenWidget.h"
+#include "InvenUserInterface/C_ItemBarWidget.h"
 #include "Item/Equipment/C_EquipableItem.h"
 #include "Utility/C_Util.h"	
 
@@ -97,6 +99,10 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 	if (CurHP < 0.f) CurHP = 0.f;
 
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
+
+	// TODO : 이 라인 지우기
+	if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
+		OwnerEnemy->GetHPBar()->SetPercent(CurHP / MAX_HP);
 
 	// 사망
 	if (CurHP <= 0.f)

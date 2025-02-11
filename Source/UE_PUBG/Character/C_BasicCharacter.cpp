@@ -4,10 +4,6 @@
 #include "Character/C_BasicCharacter.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
-
-#include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PhysicsVolume.h"
 
 #include "Character/Component/C_EquippedComponent.h"
@@ -18,22 +14,13 @@
 #include "Component/C_PoseColliderHandlerComponent.h"
 #include "Component/C_SwimmingComponent.h"
 #include "Component/C_SkyDivingComponent.h"
-#include "Component/C_InvenSystem.h"
+
 #include "Component/C_ParkourComponent.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
-#include "Components/SceneCaptureComponent2D.h"
-#include "Components/Image.h"
-
-#include "Item/C_Item.h"
-#include "Item/Equipment/C_EquipableItem.h"
-#include "Item/Equipment/C_BackPack.h"
 #include "Item/Weapon/C_Weapon.h"
-#include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/Gun/C_Bullet.h"
-#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
-#include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
 
 #include "MotionWarpingComponent.h"

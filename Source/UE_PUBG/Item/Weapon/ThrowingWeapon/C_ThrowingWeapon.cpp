@@ -36,6 +36,7 @@
 #include "C_GrenadeExplode.h"
 #include "C_FlashBangExplode.h"
 #include "C_SmokeGrndExplode.h"
+#include "Character/C_Enemy.h"
 
 #include "Utility/C_Util.h"
 
@@ -848,30 +849,7 @@ void AC_ThrowingWeapon::OnThrowThrowable()
 {
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
-	//OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
-	// Direction 구하는 방법 1
-	/*FVector ActorForward = FRotationMatrix(OwnerCharacter->GetActorRotation()).GetUnitAxis(EAxis::X);
-
-	UC_AnimBasicCharacter* OwnerAnim = Cast<UC_AnimBasicCharacter>(OwnerCharacter->GetMesh()->GetAnimInstance());
-	
-	if (!IsValid(OwnerAnim))
-	{
-		FString DebugMessage = "AC_ThrowingWeapon::OnThrowThrowable : OwnerAnim not valid!";
-		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *DebugMessage);
-
-		Direction = ActorForward;
-	}
-	else
-	{
-		FRotator SpineRotation	  = OwnerAnim->GetCSpineRotation();
-		FVector SpineForward	  = FRotationMatrix(SpineRotation).GetUnitAxis(EAxis::X);
-		FVector CombinedDirection = FRotationMatrix(OwnerCharacter->GetActorRotation()).TransformVector(SpineForward);
-		Direction = CombinedDirection;
-	}*/
-
 	UpdateProjectileLaunchValues();
-
-	//UC_Util::Print(ProjStartLocation);
 
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
@@ -1037,6 +1015,9 @@ void AC_ThrowingWeapon::Explode()
 			}, 10.f, false);
 	}
 	else UC_Util::Print("Not Exploded!", FColor::Red, 10.f);
+
+	//FString DistanceStr = "Distance to Player: " + FString::SanitizeFloat(FVector::Distance(OwnerCharacter->GetActorLocation(), GetActorLocation()) * 0.01f);
+	//UC_Util::Print(DistanceStr, FColor::MakeRandomColor(), 10.f);
 }
 
 FVector AC_ThrowingWeapon::GetPredictedThrowStartLocation()
@@ -1156,6 +1137,8 @@ void AC_ThrowingWeapon::DrawPredictedPath()
 
 	bool IsHit = UGameplayStatics::PredictProjectilePath(GetWorld(), ProjectilePathParams, Result);
 
+	// UGameplayStatics::SuggestProjectileVelocity()
+	
 	ClearSpline();
 
 	TArray<FPredictProjectilePathPointData> PathData = Result.PathData;
@@ -1212,15 +1195,23 @@ void AC_ThrowingWeapon::HandlePredictedPath()
 
 void AC_ThrowingWeapon::UpdateProjectileLaunchValues()
 {
-	// TODO : Init ProjStartLocation & ProjLaunchVelocity
-	// TODO : Enemy AI의 경우 수류탄 던지는 방향을 다른 방법으로 정해줘야 함
+	// Init ProjStartLocation & ProjLaunchVelocity
+	if (Cast<AC_Player>(OwnerCharacter))
+	{
+		FRotator CameraRotation = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraRotation();
 
-	FRotator CameraRotation = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraRotation();
+		FVector Direction     = FRotationMatrix(CameraRotation).GetUnitAxis(EAxis::X).GetSafeNormal();	
+		ProjStartLocation     = OwnerCharacter->GetMesh()->GetSocketLocation(THROW_START_SOCKET_NAME);
+		ProjLaunchVelocity    = Direction * Speed;
+		ProjLaunchVelocity.Z += UP_DIR_BOOST_OFFSET;
+	}
+	else if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
+	{
+		// TODO : Enemy AI의 경우 수류탄 던지는 방향을 다른 방법으로 정해줘야 함
 
-	FVector Direction     = FRotationMatrix(CameraRotation).GetUnitAxis(EAxis::X).GetSafeNormal();	
-	ProjStartLocation     = OwnerCharacter->GetMesh()->GetSocketLocation(THROW_START_SOCKET_NAME);
-	ProjLaunchVelocity    = Direction * Speed;
-	ProjLaunchVelocity.Z += UP_DIR_BOOST_OFFSET;
+		// OwnerEnemy->GetBehaviorComponent();
+		
+	}
 }
 
 void AC_ThrowingWeapon::OnOwnerCharacterPoseTransitionFin()
@@ -1244,6 +1235,14 @@ void AC_ThrowingWeapon::ClearSpline()
 }
 
 bool AC_ThrowingWeapon::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
+{
+	// Continue
+	
+	
+	return false;
+}
+
+bool AC_ThrowingWeapon::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter)
 {
 	return false;
 }

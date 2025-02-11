@@ -8,8 +8,10 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Components/CapsuleComponent.h"
 
 #include "Components/ShapeComponent.h"
+#include "Item/Equipment/C_EquipableItem.h"
 
 #include "UObject/ConstructorHelpers.h"
 
@@ -50,11 +52,7 @@ void AC_MeleeWeapon::Tick(float DeltaTime)
 	{
 		CurDrawMontage   = DrawMontages[OwnerCharacter->GetPoseState()];
 		CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()];
-		
-		if (AttackCollider->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics) UC_Util::Print("CollisionEnabled");
 	}
-
-
 }
 
 bool AC_MeleeWeapon::AttachToHolster(USceneComponent* InParent)
@@ -189,9 +187,19 @@ bool AC_MeleeWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 	//return false;
 }
 
-void AC_MeleeWeapon::SetAttackColliderEnabled(const bool& Enabled)
+void AC_MeleeWeapon::OnAttackBegin()
 {
-	AttackCollider->SetCollisionEnabled(Enabled ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
+	static int AttackCount{};
+	AttackCollider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	AttackedCharacters.Empty();
+	UC_Util::Print("OnAttackBegin " + FString::FromInt(++AttackCount), FColor::MakeRandomColor(), 10.f);
+}
+
+void AC_MeleeWeapon::OnAttackEnd()
+{
+	AttackCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AttackedCharacters.Empty();
+	UC_Util::Print("OnAttackEnd", FColor::MakeRandomColor(), 10.f);
 }
 
 void AC_MeleeWeapon::OnBodyColliderBeginOverlap
@@ -204,9 +212,27 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 	const FHitResult&		SweepResult
 )
 {
-	// TODO : 피격체에 데미지 주기
-	UC_Util::Print("Pan AttackBodyColliderBeginOverlap", FColor::MakeRandomColor(), 10.f);
+	static const float DAMAGE = 80.f;
+	
+	// 피격체에 데미지 주기
+	AC_BasicCharacter* OverlappedCharacter = Cast<AC_BasicCharacter>(OtherActor);
+	if (!OverlappedCharacter) return;
+	if (OverlappedCharacter == OwnerCharacter) return;
+	if (AttackedCharacters.Contains(OverlappedCharacter)) return; // 이미 현재 Attack wave에서 Damage를 준 Character일 때
 
+	if (AttackCollider->GetCollisionEnabled() == ECollisionEnabled::NoCollision) UC_Util::Print("Can't be...", FColor::MakeRandomColor(), 10.f);
+
+	UC_Util::Print("Attacking Character", FColor::MakeRandomColor(), 10.f);
+	// UC_Util::Print("AttckedCharacters cnt : " + FString::FromInt(AttackedCharacters.Num()), FColor::MakeRandomColor(), 10.f);
+	
+	// MeleeWeapon의 경우, 조끼 착용 여부에 따른 Damage량 조정을 여기서 처리
+	// 조끼피를 안닳게 일부러 처리할 예정
+
+	AC_EquipableItem* EquippedVest = OverlappedCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::VEST];
+	float DamageReduceFactor = (!IsValid(EquippedVest)) ? 1.f : EquippedVest->GetDamageReduceFactor();
+	
+	OverlappedCharacter->GetStatComponent()->TakeDamage(DAMAGE * DamageReduceFactor, this->OwnerCharacter);
+	AttackedCharacters.Add(OverlappedCharacter);
 }
 
 void AC_MeleeWeapon::OnOwnerCharacterPoseTransitionFin()
