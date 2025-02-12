@@ -25,7 +25,9 @@ void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	// TODO : 지속적으로 몇 초간 현재 무기로 공격한다고 하면 TickTask 사용
+	// 지속적으로 몇 초간 현재 무기로 공격한다고 하면 TickTask 사용
+	if (!CurrentAttackingWeapon->ExecuteAIAttackTickTask(OwnerBehaviorComponent->GetTargetCharacter(), DeltaSeconds))
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 }
 
 EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -69,15 +71,18 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 		return EBTNodeResult::Failed;
 	}
 
-	bool AttackSucceeded = EnemyEquippedComponent->GetCurWeapon()->ExecuteAIAttack(TargetCharacter);
+	// CurrentAttackingWeapon 초기화
+	CurrentAttackingWeapon = EnemyEquippedComponent->GetCurWeapon();
+
+	bool AttackSucceeded = CurrentAttackingWeapon->ExecuteAIAttack(TargetCharacter);
 
 	if (AttackSucceeded)	UC_Util::Print("Attack Succeeded", FColor::Red, 10.f);	
-	else					UC_Util::Print("Attack Failed", FColor::Red, 10.f);
+	else					UC_Util::Print("Attack Failed",    FColor::Red, 10.f);
 
 	OwnerBehaviorComponent->SetServiceType(EServiceType::IDLE);
 
-	// TODO : TickTask에서 공격을 계속해서 이어나갈지 고민 중 -> 일단 단일 공격 한 번으로 Task 끝내는 것으로 처리함
-	return AttackSucceeded ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
+	// TickTask가 필요한 무기의 경우, TickTask에서 Continue / 필요 없는 무기의 경우 TickTask에서 바로 Succeeded로 처리
+	return AttackSucceeded ? EBTNodeResult::InProgress : EBTNodeResult::Failed;
 }
 
 

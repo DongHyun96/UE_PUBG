@@ -36,6 +36,10 @@
 #include "C_GrenadeExplode.h"
 #include "C_FlashBangExplode.h"
 #include "C_SmokeGrndExplode.h"
+#include "AIThrowableAttackStrategy/C_AIFlashBangAttackStrategy.h"
+#include "AIThrowableAttackStrategy/C_AIGrenadeAttackStrategy.h"
+#include "AIThrowableAttackStrategy/C_AISmokeGrenadeAttackStrategy.h"
+#include "AIThrowableAttackStrategy/I_AIThrowableAttackStrategy.h"
 #include "Character/C_Enemy.h"
 
 #include "Utility/C_Util.h"
@@ -66,6 +70,8 @@ const TMap<EThrowableType, FName> AC_ThrowingWeapon::EQUIPPED_SOCKET_NAMES =
 
 const FName AC_ThrowingWeapon::HOLSTER_SOCKET_NAME		= "Throwable_Holster";
 const FName AC_ThrowingWeapon::THROW_START_SOCKET_NAME	= "Throwable_ThrowStart";
+
+TMap<EThrowableType, class II_AIThrowableAttackStrategy*> AC_ThrowingWeapon::AIAttackStrategies{};
 
 AC_ThrowingWeapon::AC_ThrowingWeapon()
 {
@@ -114,13 +120,38 @@ void AC_ThrowingWeapon::BeginPlay()
 		GAMESCENE_MANAGER->AddNonGCObject(FlashBangExplode->_getUObject());
 		GAMESCENE_MANAGER->AddNonGCObject(SmokeExplode->_getUObject());
 
-		ExplodeStrategies.Add(EThrowableType::GRENADE,		GrenadeExplode);
+		ExplodeStrategies.Add(EThrowableType::GRENADE,	GrenadeExplode);
 		ExplodeStrategies.Add(EThrowableType::FLASH_BANG,	FlashBangExplode);
 		ExplodeStrategies.Add(EThrowableType::SMOKE,		SmokeExplode);
 	}
 
 	// Init Explode Strategy
 	ExplodeStrategy = ExplodeStrategies[ThrowableType];
+
+	// Init AI Attack Strategies
+	if (AIAttackStrategies.IsEmpty())
+	{
+		II_AIThrowableAttackStrategy* GrenadeAttackStrategy = NewObject<UC_AIGrenadeAttackStrategy>();
+		GrenadeAttackStrategy->_getUObject()->AddToRoot();
+
+		II_AIThrowableAttackStrategy* FlashBangAttackStrategy = NewObject<UC_AIFlashBangAttackStrategy>();
+		FlashBangAttackStrategy->_getUObject()->AddToRoot();
+		
+		II_AIThrowableAttackStrategy* SmokeGrenadeAttackStrategy = NewObject<UC_AISmokeGrenadeAttackStrategy>();
+		SmokeGrenadeAttackStrategy->_getUObject()->AddToRoot();
+
+
+		GAMESCENE_MANAGER->AddNonGCObject(GrenadeAttackStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddNonGCObject(FlashBangAttackStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddNonGCObject(SmokeGrenadeAttackStrategy->_getUObject());
+
+		AIAttackStrategies.Add(EThrowableType::GRENADE,		GrenadeAttackStrategy);
+		AIAttackStrategies.Add(EThrowableType::FLASH_BANG,	FlashBangAttackStrategy);
+		AIAttackStrategies.Add(EThrowableType::SMOKE,			SmokeGrenadeAttackStrategy);
+	}
+
+	// 자기 자신의 AIAttack 전략 init
+	AIAttackStrategy = AIAttackStrategies[ThrowableType];
 }
 
 void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -137,6 +168,7 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 			}
 
 			if (!ExplodeStrategies.IsEmpty()) ExplodeStrategies.Empty(); // GC는 GameSceneManager에서 처리
+			if (!AIAttackStrategies.IsEmpty()) AIAttackStrategies.Empty(); // GC는 GSMgr에서 처리
 		}
 		return;
 	}
@@ -147,7 +179,9 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		OwnerMeshTemp = nullptr;
 	}
 
-	if (!ExplodeStrategies.IsEmpty()) ExplodeStrategies.Empty(); // GC는 GameSceneManager에서 처리
+	// GC는 GameSceneManager에서 처리
+	if (!ExplodeStrategies.IsEmpty())  ExplodeStrategies.Empty(); 
+	if (!AIAttackStrategies.IsEmpty()) AIAttackStrategies.Empty();
 }
 
 void AC_ThrowingWeapon::Tick(float DeltaTime)
@@ -210,7 +244,6 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 		int MagazineCount = !InvenThrowable ? 1 : InvenThrowable->GetItemDatas().ItemCurStack + 1;
 		AmmoWidget->SetMagazineText(MagazineCount);
 	}
-	else UC_Util::Print("From AttachToHand OwnerPlayer NULLPTR", FColor::Red, 10.f);
 
 	return AttachToComponent
 	(
@@ -1016,6 +1049,9 @@ void AC_ThrowingWeapon::Explode()
 	}
 	else UC_Util::Print("Not Exploded!", FColor::Red, 10.f);
 
+	FString str = (IsValid(OwnerCharacter)) ? "Exploded : OwnerCharacter -> " + OwnerCharacter->GetName() : "Exploded : No Owner Character"; 
+	UC_Util::Print(str, FColor::Red, 10.f);
+
 	//FString DistanceStr = "Distance to Player: " + FString::SanitizeFloat(FVector::Distance(OwnerCharacter->GetActorLocation(), GetActorLocation()) * 0.01f);
 	//UC_Util::Print(DistanceStr, FColor::MakeRandomColor(), 10.f);
 }
@@ -1236,15 +1272,12 @@ void AC_ThrowingWeapon::ClearSpline()
 
 bool AC_ThrowingWeapon::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
-	// Continue
-	
-	
-	return false;
+	return AIAttackStrategy->ExecuteAIAttack(this, InTargetCharacter);
 }
 
-bool AC_ThrowingWeapon::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter)
+bool AC_ThrowingWeapon::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
 {
-	return false;
+	return AIAttackStrategy->ExecuteAIAttackTickTask(this, InTargetCharacter, DeltaTime);
 }
 
 

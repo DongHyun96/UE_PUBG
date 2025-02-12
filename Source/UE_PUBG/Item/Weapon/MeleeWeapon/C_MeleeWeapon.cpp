@@ -189,17 +189,15 @@ bool AC_MeleeWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 
 void AC_MeleeWeapon::OnAttackBegin()
 {
-	static int AttackCount{};
+	// AttackCollider QueryAndPhysics로 바꾸기 이전에 BeginOverlap 이벤트 콜이 발생함
+	// 이유는 잘 모르겠지만(진짜 외않되?)...AttackedCharacters Clear를 AttackEnd에 두면 해결되긴 함
 	AttackCollider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	AttackedCharacters.Empty();
-	UC_Util::Print("OnAttackBegin " + FString::FromInt(++AttackCount), FColor::MakeRandomColor(), 10.f);
 }
 
 void AC_MeleeWeapon::OnAttackEnd()
 {
 	AttackCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AttackedCharacters.Empty();
-	UC_Util::Print("OnAttackEnd", FColor::MakeRandomColor(), 10.f);
 }
 
 void AC_MeleeWeapon::OnBodyColliderBeginOverlap
@@ -220,11 +218,6 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 	if (OverlappedCharacter == OwnerCharacter) return;
 	if (AttackedCharacters.Contains(OverlappedCharacter)) return; // 이미 현재 Attack wave에서 Damage를 준 Character일 때
 
-	if (AttackCollider->GetCollisionEnabled() == ECollisionEnabled::NoCollision) UC_Util::Print("Can't be...", FColor::MakeRandomColor(), 10.f);
-
-	UC_Util::Print("Attacking Character", FColor::MakeRandomColor(), 10.f);
-	// UC_Util::Print("AttckedCharacters cnt : " + FString::FromInt(AttackedCharacters.Num()), FColor::MakeRandomColor(), 10.f);
-	
 	// MeleeWeapon의 경우, 조끼 착용 여부에 따른 Damage량 조정을 여기서 처리
 	// 조끼피를 안닳게 일부러 처리할 예정
 

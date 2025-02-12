@@ -309,7 +309,7 @@ bool AC_Weapon::MoveAroundToSlot(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_Weapon::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter)
+bool AC_Weapon::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
 {
 	return false;
 }

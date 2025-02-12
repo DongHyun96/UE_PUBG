@@ -217,7 +217,7 @@ public:
 public:
 	bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
 	
-	bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter) override;
+	bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
 	
 protected:
 
@@ -336,6 +336,13 @@ private:
 
 	static const TMap<EThrowableType, FString> THROWABLETYPE_ITEMNAME_MAP;
 
+private:
+
+	// 각 Throwable 종류 별 AI Attack 전략
+	static TMap<EThrowableType, class II_AIThrowableAttackStrategy*> AIAttackStrategies;
+
+	// 현 Throwable 종류에 따른 AI Attack 전략
+	class II_AIThrowableAttackStrategy* AIAttackStrategy{};
 
 };
 
