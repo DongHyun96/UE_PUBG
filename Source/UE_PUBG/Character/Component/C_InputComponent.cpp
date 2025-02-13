@@ -511,7 +511,7 @@ void UC_InputComponent::OnXKey()
 	// For testing
 	//Player->GetParkourComponent()->Vault();
 	
-	Player->GetStatComponent()->TakeDamage(10.f, EDamagingPartType::HEAD, Player);
+	Player->GetStatComponent()->TakeDamage(10.f, Player);
 	Player->GetEquippedComponent()->ToggleArmed();
 }
 

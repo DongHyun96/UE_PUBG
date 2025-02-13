@@ -5,6 +5,8 @@
 #include "Character/C_BasicCharacter.h"
 #include "Utility/C_Util.h"
 
+const float AC_EquipableItem::DURABILITY_MAX = 100.f;
+
 AC_EquipableItem::AC_EquipableItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -60,6 +62,16 @@ void AC_EquipableItem::AttachToSocket(AC_BasicCharacter* InParent)
 	SetOwnerCharacter(InParent);
 
 	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);
+}
+
+bool AC_EquipableItem::TakeDamage(float DamageAmount)
+{
+	return false;
+}
+
+float AC_EquipableItem::GetDamageReduceFactor() const
+{
+	return 0.f;
 }
 
 bool AC_EquipableItem::MoveSlotToAround(AC_BasicCharacter* Character)

@@ -160,6 +160,10 @@ public: // Getters & Setters
 	class UParticleSystem* GetParticleExplodeEffect() const { return ParticleExplodeEffect; }
 	class UNiagaraSystem* GetNiagaraExplodeEffect() const { return NiagaraExplodeEffect; }
 
+	void SetProjectileStartLocation(const FVector& InLocation) { ProjStartLocation = InLocation; }
+	void SetProjectileLaunchVelocity(const FVector& LaunchVelocity) { ProjLaunchVelocity = LaunchVelocity; }
+	float GetSpeed() const { return Speed; }
+	static float GetProjectileRadius() { return PROJECTILE_RADIUS; }
 	//EThrowableType GetThrowableType() const { return ThrowableType; }
 
 public:
@@ -183,10 +187,9 @@ private:
 	/// </summary>
 	void Explode();
 
-protected:
+public:
 
 	// Get Predicted Projectile path start location
-	UFUNCTION(BlueprintCallable)
 	FVector GetPredictedThrowStartLocation();
 
 private:
@@ -201,8 +204,17 @@ private:
 	/// </summary>
 	void DrawPredictedPath();
 
-	void HandlePredictedPath();
-	void UpdateProjectileLaunchValues();
+	/// <summary>
+	/// Player의 투척 예상 경로 실시간으로 그리기(Tick)
+	/// </summary>
+	void HandlePlayerPredictedPath();
+
+
+	/// <summary>
+	/// <para> Player의 Projectile발사 관련 값들 초기화 </para>
+	/// <para> (ProjStartLocation & ProjLaunchVelocity) 초기화 </para>
+	/// </summary>
+	void UpdatePlayerProjectileLaunchValues();
 
 protected:
 	/// <summary>
@@ -215,6 +227,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ClearSpline();
 
+public:
+	bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+	
+	bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
+	
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -270,6 +287,7 @@ private:
 
 	float Speed = 1500.f;
 	static const float UP_DIR_BOOST_OFFSET;
+	static const float PROJECTILE_RADIUS;
 
 protected: // Predicted Path 관련
 
@@ -332,8 +350,15 @@ private:
 
 	static const TMap<EThrowableType, FString> THROWABLETYPE_ITEMNAME_MAP;
 
-public:
-	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+private:
+
+	// 각 Throwable 종류 별 AI Attack 전략
+	static TMap<EThrowableType, class II_AIThrowableAttackStrategy*> AIAttackStrategies;
+
+	// 현 Throwable 종류에 따른 AI Attack 전략
+	class II_AIThrowableAttackStrategy* AIAttackStrategy{};
+
 };
+
 
 

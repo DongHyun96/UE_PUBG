@@ -3,37 +3,17 @@
 
 #include "Item/Weapon/Gun/C_Bullet.h"
 #include "Item/Weapon/Gun/C_Gun.h"
-#include "Components/Image.h"
-#include "Components/Widget.h"
-#include "Blueprint/UserWidget.h"
 
-#include "Blueprint/WidgetBlueprintLibrary.h"
-#include "Components/CanvasPanelSlot.h"
-#include "Components/Image.h"
 #include "UMG.h"
 
 
-#include "Components/PanelWidget.h"
-#include "Components/NamedSlotInterface.h"
-#include "Utility/C_Util.h"
-#include "Item/Weapon/C_Weapon.h"
-#include "Item/Weapon/Gun/C_Gun.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Character/C_BasicCharacter.h"
-#include "Character/Component/C_EquippedComponent.h"
 #include "GameFramework/Actor.h"
-#include "Components/ShapeComponent.h"
 #include "Components/SceneComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Camera/CameraComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Character/C_Player.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
-
 
 AC_Bullet::AC_Bullet()
 {
@@ -275,9 +255,6 @@ void AC_Bullet::OnProjectileStop(const FHitResult& ImpactResult)
 	float DamageBase 	= FiredGun->GetDamageBase();
 	float TotalDamage	= DamageRate * DamageBase;
 
-	FString str = "From AC_Bullet : " + HittedBoneName.ToString();
-	UC_Util::Print(str, FColor::MakeRandomColor(), 10.f);
-	
-	HittedCharacter->GetStatComponent()->TakeDamage(TotalDamage, HittedBoneName, FiredGun->GetOwnerCharacter());
+	HittedCharacter->GetStatComponent()->TakeDamage(TotalDamage, HittedBoneName, OwnerCharacter);
 }
 

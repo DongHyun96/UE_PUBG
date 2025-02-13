@@ -155,7 +155,7 @@ protected:
 protected:
 
 	/// <summary>
-	/// 슬롯 별 Weapon들
+	/// 슬롯 별 Weapon들, 주의 : SetSlotWeapon시에 SetActorEnableCollision(false)처리가 들어감
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EWeaponSlot, class AC_Weapon*> Weapons{};

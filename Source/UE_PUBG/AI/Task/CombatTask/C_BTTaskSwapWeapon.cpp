@@ -36,9 +36,9 @@ void UC_BTTaskSwapWeapon::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	//	//FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	//}
 
-	// TODO : 현재는 Main_Gun Type으로만 Swapping 처리 -> 추후 상황에 따른 Swapping Type 지정해서 처리하기
+	// TODO : 현재는 Testing용 처리 중
 	UC_EquippedComponent* EquippedComponent = OwnerEnemy->GetEquippedComponent();
-	if (EquippedComponent->GetCurWeaponType() != EWeaponSlot::MAIN_GUN) return;
+	if (EquippedComponent->GetCurWeaponType() != EWeaponSlot::THROWABLE_WEAPON) return;
 
 	// 여기서부터 초 세기
 	TotalTime += DeltaSeconds;
@@ -83,7 +83,7 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	
 	// Testing
 	// TODO : SwapWeapon Type 지정해서 해당 타입으로 지정하기
-	bool Succeeded = OwnerEnemy->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::MAIN_GUN);
+	bool Succeeded = OwnerEnemy->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::THROWABLE_WEAPON);
 
 	/*Succeeded,
 	Failed,

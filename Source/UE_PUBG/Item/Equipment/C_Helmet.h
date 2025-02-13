@@ -13,10 +13,12 @@ UCLASS()
 class UE_PUBG_API AC_Helmet : public AC_EquipableItem
 {
 	GENERATED_BODY()
-	
 
-protected:
-	float Durability = 0;
+public:
+
+	bool TakeDamage(float DamageAmount) override;
+
+	float GetDamageReduceFactor() const override;
 };
 
 

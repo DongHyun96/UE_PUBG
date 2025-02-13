@@ -160,10 +160,19 @@ private:
 
 public:
 	/// <summary>
-	/// AI 공격 순수 가상함수
+	/// AI 공격 순수 가상함수 (AttackTask의 ExecuteTask 부분에서 사용 예정)
 	/// </summary>
+	/// <param name="InTargetCharacter"> : 공격 대상 BasicCharacter </param>
 	/// <returns> 공격을 할 수 없는 상황이라면 return false </returns>
 	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) PURE_VIRTUAL(AC_Weapon::ExecuteAIAttack, return false;);
+
+	/// <summary>
+	/// 현재 무기로 AI 공격을 하는 중이고 TickTask처리로 필요하다면 해당 함수 사용
+	/// </summary>
+	/// <param name="InTargetCharacter"> : 공격 대상 BasicCharacter </param>
+	/// <param name="DeltaTime"> : DeltaTime </param>
+	/// <returns> : TickTask처리가 끝났다면 return false (or TickTask처리가 필요하지 않다면 return false) </returns>
+	virtual bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime);
 };
 
 

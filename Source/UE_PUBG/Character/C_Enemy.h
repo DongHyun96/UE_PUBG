@@ -28,6 +28,8 @@ public:
 
 	bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) override;
 
+	class UProgressBar* GetHPBar() const { return HPBar; }
+
 private:
 
 	/// <summary>
@@ -39,6 +41,12 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UBehaviorTree* BehaviorTree{};
+
+protected:
+
+	// 디버깅용 HPBar
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UProgressBar* HPBar{};
 
 };
 

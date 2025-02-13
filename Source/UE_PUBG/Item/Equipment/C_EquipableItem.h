@@ -47,6 +47,20 @@ public:
 	virtual void AttachToSocket(class AC_BasicCharacter* InParent);
 
 	void SetItemLevel(EEquipableItemLevel inItemLevel) { ItemLevel = inItemLevel; }
+
+public:
+	/// <summary>
+	/// Equipable Item에 Damage 적용
+	/// </summary>
+	/// <param name="DamageAmount"> : Damage 총량 (각 Lv1에 따른 Damage재계산 처리는 해당 함수안에서 처리될 예정) </param>
+	/// <returns> : Damage를 줄 수 없는 EquipableItem의 경우 return false </returns>
+	virtual bool TakeDamage(float DamageAmount);
+
+	/// <summary>
+	/// 각 Level에 따른 Damage 감소 factor 구하기
+	/// </summary>
+	/// <returns> : Damage 감소 Factor </returns>
+	virtual float GetDamageReduceFactor() const;
 	
 private:
 	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
@@ -63,6 +77,16 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FName SocketName{};
+
+protected: // Equipable 내구도 관련
+
+	static const float DURABILITY_MAX;
+
+	// TODO : 내구도 UI 내용 업데이트에 대한 함수가 필요함(Vest, Helmet)
+	float CurDurability = DURABILITY_MAX; // 현재 내구도
+	
+
+	
 };
 
 
