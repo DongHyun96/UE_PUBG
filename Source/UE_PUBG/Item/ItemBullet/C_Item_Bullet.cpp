@@ -162,7 +162,7 @@ void AC_Item_Bullet::UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer)
 void AC_Item_Bullet::AddBulletStackToCharacter()
 {
 	if (!OwnerCharacter) return;
-	
+
 	switch (CurBulletType)
 	{
 	case EBulletType::FIVEMM:

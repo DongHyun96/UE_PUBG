@@ -868,7 +868,17 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	CollisionParams.AddIgnoredActor(this);
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
 	CollisionParams.AddIgnoredActor(PlayerCamera);
+	for (auto AttachableMeshs : OwnerCharacter->GetAttachmentMeshComponent()->GetAttachableItemMeshs())
+	{
+		for (auto MeshsTuple : AttachableMeshs.Value)
+		{
+			for (auto Attachment : MeshsTuple.Value)
+			{
+				CollisionParams.AddIgnoredActor(Attachment);
+			}
 
+		}
+	}
 	HitResult = {};
 	FVector WorldLocation, WorldDirection;
 	APlayerController* WolrdContorller = GetWorld()->GetFirstPlayerController();
