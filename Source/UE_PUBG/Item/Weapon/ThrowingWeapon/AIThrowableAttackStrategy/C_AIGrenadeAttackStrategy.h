@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "C_AIThrowingStrategy.h"
 #include "I_AIThrowableAttackStrategy.h"
 #include "UObject/NoExportTypes.h"
 #include "C_AIGrenadeAttackStrategy.generated.h"
@@ -11,12 +12,9 @@
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_AIGrenadeAttackStrategy : public UObject, public II_AIThrowableAttackStrategy
+class UE_PUBG_API UC_AIGrenadeAttackStrategy : public UC_AIThrowingStrategy
 {
 	GENERATED_BODY()
 	
-public:
-	bool ExecuteAIAttack(AC_ThrowingWeapon* ThrowingWeapon, AC_BasicCharacter* InTargetCharacter) override;
-	bool ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingWeapon, AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
 
 };

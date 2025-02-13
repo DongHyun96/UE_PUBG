@@ -2,6 +2,8 @@
 
 
 #include "Character/C_Enemy.h"
+
+#include "C_Player.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "Character/Component/C_EquippedComponent.h"
@@ -13,6 +15,7 @@
 #include "Item/Weapon/Gun/C_AR.h"
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
 
@@ -44,6 +47,9 @@ void AC_Enemy::Tick(float DeltaSeoncds)
 	case EHandState::HANDSTATE_MAX: 
 		break;
 	}*/
+
+	//float DistanceToPlayer = FVector::Distance(GAMESCENE_MANAGER->GetPlayer()->GetActorLocation(), this->GetActorLocation());
+	//UC_Util::Print(DistanceToPlayer * 0.01f);
 }
 
 bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
@@ -154,6 +160,18 @@ void AC_Enemy::SpawnDefaultWeaponsAndItemsForSelf()
         AC_ThrowingWeapon* ThrowWeapon = GetWorld()->SpawnActor<AC_ThrowingWeapon>(pair.Value, Param);
         ThrowWeapon->MoveToSlot(this);
     }
+
+	// "FlashBang"
+	// "Grenade"
+	AC_ThrowingWeapon* Grenade = Cast<AC_ThrowingWeapon>(this->GetInvenComponent()->FindMyItem("Grenade"));
+	if (!IsValid(Grenade))
+	{
+		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade nullptr", FColor::Red, 10.f);
+		return;
+	}
+	
+	if (!Grenade->MoveToSlot(this))
+		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade MoveToSlot Failed!", FColor::Red, 10.f);
 
     // TODO : 다른 Item들 (탄, Consumable item 등등 inven에 넣어두기)
 }

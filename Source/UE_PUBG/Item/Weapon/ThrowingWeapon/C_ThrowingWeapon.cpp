@@ -1004,7 +1004,7 @@ void AC_ThrowingWeapon::StartCooking()
 	bIsCooked = true;
 
 	// TODO : Ready 상태에서 Cooking 시작하면 남은 시간 HUD 띄우기
-	//UC_Util::Print("Throwable Starts cooking");
+	UC_Util::Print("Throwable Starts cooking", FColor::Red, 10.f);
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);
 }
