@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_StatComponent.h"
@@ -108,10 +108,7 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 	if (CurHP <= 0.f)
 	{
 		// 사망 처리
-		// TODO : OwnwerCharacter에게 call back을 이용한 사망 알리기 & 킬로그(헤드샷만 비교해서 올릴 것)
-		// TODO : Player가 킬을 올렸을 시, Player HUD Widget에 킬 정보 올리기 -> 헤드샷인지 아닌지 유무
-		// TODO : Player가 죽었을 시, Player HUD Widget에 사망 정보 올리기
-		
+		OwnerCharacter->CharacterDead();
 	}
 	
 	return true;
