@@ -71,6 +71,8 @@ const TMap<EThrowableType, FName> AC_ThrowingWeapon::EQUIPPED_SOCKET_NAMES =
 const FName AC_ThrowingWeapon::HOLSTER_SOCKET_NAME		= "Throwable_Holster";
 const FName AC_ThrowingWeapon::THROW_START_SOCKET_NAME	= "Throwable_ThrowStart";
 
+const float AC_ThrowingWeapon::PROJECTILE_RADIUS		= 5.f;
+
 TMap<EThrowableType, class II_AIThrowableAttackStrategy*> AC_ThrowingWeapon::AIAttackStrategies{};
 
 AC_ThrowingWeapon::AC_ThrowingWeapon()
@@ -868,8 +870,8 @@ void AC_ThrowingWeapon::OnThrowReadyLoop()
 
 	if (bIsCharging)
 	{
-		// Charging 중 처리
-		HandlePredictedPath();
+		// Charging 중 처리 -> Player일 경우, 예상 경로 그려주기
+		if (Cast<AC_Player>(OwnerCharacter)) HandlePlayerPredictedPath();
 		return;
 	}
 
@@ -882,7 +884,7 @@ void AC_ThrowingWeapon::OnThrowThrowable()
 {
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
-	UpdateProjectileLaunchValues();
+	if (Cast<AC_Player>(OwnerCharacter)) UpdatePlayerProjectileLaunchValues();
 
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
@@ -1156,7 +1158,7 @@ void AC_ThrowingWeapon::DrawPredictedPath()
 	ProjectilePathParams.StartLocation			= GetPredictedThrowStartLocation();
 	ProjectilePathParams.LaunchVelocity			= ProjLaunchVelocity;
 	ProjectilePathParams.bTraceWithCollision	= true;
-	ProjectilePathParams.ProjectileRadius		= 5.f;
+	ProjectilePathParams.ProjectileRadius		= PROJECTILE_RADIUS;
 	ProjectilePathParams.MaxSimTime				= 1.f;
 	ProjectilePathParams.bTraceWithChannel		= true;
 	ProjectilePathParams.TraceChannel			= ECollisionChannel::ECC_Visibility;
@@ -1212,42 +1214,29 @@ void AC_ThrowingWeapon::DrawPredictedPath()
 	}
 }
 
-void AC_ThrowingWeapon::HandlePredictedPath()
+void AC_ThrowingWeapon::HandlePlayerPredictedPath()
 {
-	// 플레이어일 경우에만 그리기 (추후, GameManager 멤버변수의 Player와 객체 대조해볼 것)
-	AC_Player* Player = Cast<AC_Player>(OwnerCharacter);
-	if (!IsValid(Player)) return;
-
 	// 현재 OwnerCharacter의 손에 장착된 상황인지 확인
 	if (!IsValid(this->GetAttachParentActor()) || this->GetAttachParentSocketName() != EQUIPPED_SOCKET_NAMES[ThrowableType]) return;
 
 	if (!OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(CurThrowProcessMontages.ThrowReadyMontage.AnimMontage))
 		return;
 
-	UpdateProjectileLaunchValues();
+	UpdatePlayerProjectileLaunchValues();
 	DrawPredictedPath();
 	//DrawDebugPredictedPath();
 }
 
-void AC_ThrowingWeapon::UpdateProjectileLaunchValues()
+void AC_ThrowingWeapon::UpdatePlayerProjectileLaunchValues()
 {
-	// Init ProjStartLocation & ProjLaunchVelocity
-	if (Cast<AC_Player>(OwnerCharacter))
-	{
-		FRotator CameraRotation = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraRotation();
+	if (!Cast<AC_Player>(OwnerCharacter)) return;
+	
+	FRotator CameraRotation = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraRotation();
 
-		FVector Direction     = FRotationMatrix(CameraRotation).GetUnitAxis(EAxis::X).GetSafeNormal();	
-		ProjStartLocation     = OwnerCharacter->GetMesh()->GetSocketLocation(THROW_START_SOCKET_NAME);
-		ProjLaunchVelocity    = Direction * Speed;
-		ProjLaunchVelocity.Z += UP_DIR_BOOST_OFFSET;
-	}
-	else if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
-	{
-		// TODO : Enemy AI의 경우 수류탄 던지는 방향을 다른 방법으로 정해줘야 함
-
-		// OwnerEnemy->GetBehaviorComponent();
-		
-	}
+	FVector Direction     = FRotationMatrix(CameraRotation).GetUnitAxis(EAxis::X).GetSafeNormal();	
+	ProjStartLocation     = OwnerCharacter->GetMesh()->GetSocketLocation(THROW_START_SOCKET_NAME);
+	ProjLaunchVelocity    = Direction * Speed;
+	ProjLaunchVelocity.Z += UP_DIR_BOOST_OFFSET;
 }
 
 void AC_ThrowingWeapon::OnOwnerCharacterPoseTransitionFin()

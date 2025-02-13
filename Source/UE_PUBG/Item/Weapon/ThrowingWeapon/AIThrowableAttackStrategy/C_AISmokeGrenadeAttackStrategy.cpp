@@ -6,7 +6,7 @@
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Utility/C_Util.h"
 
-const float UC_AISmokeGrenadeAttackStrategy::TIME_TO_COOK_AND_RELEASE = 5.f;
+const float UC_AISmokeGrenadeAttackStrategy::TIME_TO_COOK_AND_RELEASE = 2.5f;
 
 bool UC_AISmokeGrenadeAttackStrategy::ExecuteAIAttack(AC_ThrowingWeapon* ThrowingWeapon, AC_BasicCharacter* InTargetCharacter)
 {

@@ -15,12 +15,40 @@ class UE_PUBG_API UC_AIFlashBangAttackStrategy : public UObject, public II_AIThr
 {
 	GENERATED_BODY()
 
-// TODO : 얘는 cooking 없이 바로 던져야 할듯? Cooking 시간이 짧음
-	
 public:
 
 	bool ExecuteAIAttack(AC_ThrowingWeapon* ThrowingWeapon, AC_BasicCharacter* InTargetCharacter) override;
 	bool ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingWeapon, AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
+
+private:
+	/// <summary>
+	/// 투척류의 ProjectileLaunchValues 세팅하기
+	/// </summary>
+	/// <param name="ThrowingWeapon"></param>
+	/// <param name="TargetCharacter"></param>
+	/// <returns> : Setting 될 수 없는 환경이라면 return false </returns>
+	bool UpdateProjectileLaunchValues(class AC_ThrowingWeapon* ThrowingWeapon, class AC_BasicCharacter* TargetCharacter);
+
+	/// <summary>
+	/// 던질 수 있는 제한 거리 이내에 있는지 check
+	/// </summary>
+	/// <param name="ThrowingWeaponLocation"></param>
+	/// <param name="TargetCharacterLocation"></param>
+	/// <returns></returns>
+	bool IsPossibleDistanceToThrow(const FVector& ThrowingWeaponLocation, const FVector& TargetCharacterLocation);
+
+	/// <summary>
+	/// TargetCharacter위치로부터 적정 Random Position Get
+	/// </summary>
+	/// <param name="TargetCharacterLocation"></param>
+	/// <returns></returns>
+	FVector GetRandomNearByPositionFromTargetCharacter(const FVector& TargetCharacterLocation);
+	
+private:
+
+	static const float TIME_TO_THROW;
+
+	float ThrowTimer{};
 
 	
 };
