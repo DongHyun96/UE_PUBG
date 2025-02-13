@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -112,6 +112,13 @@ public:
 	/// </summary>
 	/// <param name="OxygenAmount"> : 더할 Oxygen 량 </param>
 	void AddOxygen(const float& OxygenAmount);
+
+protected:
+	/// <summary>
+	/// 피격시 화면에 연출되는 피 Widget
+	/// </summary>
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UC_BloodScreenWidget* HittingBlood = nullptr;
 
 private:
 

@@ -14,6 +14,7 @@
 #include "Component/C_PoseColliderHandlerComponent.h"
 #include "Component/C_SwimmingComponent.h"
 #include "Component/C_SkyDivingComponent.h"
+#include "C_Player.h"   
 
 #include "Component/C_ParkourComponent.h"
 #include "Component/C_PlayerController.h"

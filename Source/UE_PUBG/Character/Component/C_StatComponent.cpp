@@ -10,6 +10,8 @@
 #include "HUD/C_OxygenWidget.h"
 #include "InvenUserInterface/C_ItemBarWidget.h"
 #include "Item/Equipment/C_EquipableItem.h"
+#include "HUD/C_BloodScreenWidget.h"
+
 #include "Utility/C_Util.h"	
 
 const float UC_StatComponent::MAX_HP		= 100.f;
@@ -64,6 +66,11 @@ UC_StatComponent::UC_StatComponent()
 void UC_StatComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	if (HittingBlood)
+	{
+		HittingBlood->AddToViewport();
+		HittingBlood->SetVisibility(ESlateVisibility::Collapsed);
+	}//TODO : 처음에 시작할 때 무슨 이유인지 알파값이 존재하는 상태로 시작하는 것 같음.
 }
 
 
@@ -95,10 +102,23 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 	if (Damage < 0.f) return false;
 
 	CurHP -= Damage;
-	
+
+
 	if (CurHP < 0.f) CurHP = 0.f;
 
-	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
+	if (OwnerHUDWidget) 
+	{ 
+		OwnerHUDWidget->OnUpdateHP(CurHP); 
+		if (HittingBlood)
+		{ 
+			HittingBlood->ShowHitEffect(); 
+			UC_Util::Print("HittingBlood!");
+		}
+		else
+		{
+			UC_Util::Print("HitingBlood is Nullptr!");
+		}
+	}
 
 	// TODO : 이 라인 지우기
 	if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
