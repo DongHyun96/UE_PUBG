@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_StatComponent.h"
@@ -100,6 +100,7 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 	{
 		// 사망 처리
 		// TODO : OwnwerCharacter에게 call back을 이용한 사망 알리기
+		OwnerCharacter->CharacterDead();
 	}
 	
 	return true;

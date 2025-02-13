@@ -20,6 +20,9 @@
 #include "Component/C_SkyDivingComponent.h"
 #include "Component/C_InvenSystem.h"
 #include "Component/C_ParkourComponent.h"
+#include "Component/C_PlayerController.h"
+#include "HUD/C_HUDWidget.h"
+
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -230,20 +233,14 @@ void AC_BasicCharacter::EnableRagdoll()
 	GetMesh()->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 
 	// 💡 컨트롤러 제거
-	DetachFromControllerPendingDestroy();
-
-	//GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	//
-	//GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));  // 충돌 설정
-	//GetMesh()->SetSimulatePhysics(true);  // 물리 활성화
-	//GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("Spine"), true, true);  // 물리 적용
-	//
-	//DetachFromControllerPendingDestroy();  // 컨트롤러 분리
-	//
-	//GetMesh()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
-	//GetMesh()->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-	//
-	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//DetachFromControllerPendingDestroy();//이걸로 해도 계속 인풋이 발생하는 것 같음.
+	if (AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetController()))
+	{
+		if (AC_Player* Player = Cast<AC_Player>(this))
+			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Collapsed);
+		SetActorTickEnabled(false);
+		DisableInput(PlayerController);
+	}
 }
 
 float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
