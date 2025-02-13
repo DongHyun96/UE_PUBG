@@ -458,8 +458,15 @@ protected: // AI 피아 식별 관련
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TEnumAsByte<ETeamAttitude::Type> TeamID = ETeamAttitude::Neutral;
-
-
+///
+///캐릭터 피 파티클시스템
+///
+public:
+	TArray<class UParticleSystemComponent*> GetBloodParticles() { return BloodParticleComponents; }
+	void ActivateBloodParticle(FVector InLocation);
+protected:
+	TArray<class UParticleSystemComponent*> BloodParticleComponents;
+	void InitializeBloodParticleComponents();
 };
 
 

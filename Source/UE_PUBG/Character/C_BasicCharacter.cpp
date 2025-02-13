@@ -3,6 +3,7 @@
 
 #include "Character/C_BasicCharacter.h"
 
+#include "C_Player.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PhysicsVolume.h"
 
@@ -27,6 +28,8 @@
 #include "Character/Component/C_AttachableItemMeshComponent.h"
 
 #include "MotionWarpingComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 #include "Utility/C_Util.h"
 
@@ -87,7 +90,7 @@ void AC_BasicCharacter::BeginPlay()
 	StatComponent->SetOwnerCharacter(this);
 
 	PoolingBullets();
-
+	InitializeBloodParticleComponents();
 	//InvenSystem->GetInvenUI()->AddToViewport();
 	//InvenSystem->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
 }
@@ -423,5 +426,45 @@ void AC_BasicCharacter::AddFivemmBulletStack(int inBulletCount)
 {
 	FivemmBulletCount += inBulletCount;
 }
+
+void AC_BasicCharacter::ActivateBloodParticle(FVector InLocation)
+{
+	for (auto BloodEffect : BloodParticleComponents)
+	{
+		if (BloodEffect->IsActive()) continue;
+		BloodEffect->SetWorldLocation(InLocation);
+		BloodEffect->SetActive(true);
+		return;
+	}
+}
+
+void AC_BasicCharacter::InitializeBloodParticleComponents()
+{
+	UParticleSystem* DestructionParticle = LoadObject<UParticleSystem>(
+	nullptr, 
+	TEXT("/Game/Project_PUBG/Common/VFX/Realistic_Starter_VFX_Pack_Vol2/Particles/Destruction/P_Destruction_Building_A"));
+	// 유효성 검사
+	if (!IsValid(DestructionParticle)) return;
+	for (int32 i = 0; i < 10; i++)
+	{
+		UParticleSystemComponent* ParticleComp = NewObject<UParticleSystemComponent>(this);
+        
+		if (ParticleComp)
+		{
+			ParticleComp->RegisterComponent();
+			ParticleComp->SetTemplate(DestructionParticle);
+			//ParticleComp->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
+			ParticleComp->Deactivate();
+			// 배열에 추가
+			BloodParticleComponents.Add(ParticleComp);
+
+			// 파티클 실행
+			//ParticleComp->Activate(true);
+			
+			//UC_Util::Print("Spawned Blood");
+		}
+	}
+}
+
 
 

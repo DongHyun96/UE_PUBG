@@ -225,6 +225,7 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 	float DamageReduceFactor = (!IsValid(EquippedVest)) ? 1.f : EquippedVest->GetDamageReduceFactor();
 	
 	OverlappedCharacter->GetStatComponent()->TakeDamage(DAMAGE * DamageReduceFactor, this->OwnerCharacter);
+	OverlappedCharacter->ActivateBloodParticle(OverlappedCharacter->GetMesh()->GetBoneLocation("Spine1"));
 	AttackedCharacters.Add(OverlappedCharacter);
 }
 

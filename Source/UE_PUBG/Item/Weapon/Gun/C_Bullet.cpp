@@ -245,7 +245,6 @@ void AC_Bullet::CalculateTravelDistanceAndDeactivate(float DeltaTime)
 void AC_Bullet::OnProjectileStop(const FHitResult& ImpactResult)
 {
 	AC_BasicCharacter* HittedCharacter = Cast<AC_BasicCharacter>(ImpactResult.GetActor());
-
 	// 피격판정된 Actor가 캐릭터가 아닐 때
 	if (!HittedCharacter) return;
 
@@ -256,5 +255,6 @@ void AC_Bullet::OnProjectileStop(const FHitResult& ImpactResult)
 	float TotalDamage	= DamageRate * DamageBase;
 
 	HittedCharacter->GetStatComponent()->TakeDamage(TotalDamage, HittedBoneName, OwnerCharacter);
+	HittedCharacter->ActivateBloodParticle(ImpactResult.Location);
 }
 
