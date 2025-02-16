@@ -486,6 +486,45 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 	}
 }
 
+AC_Item* AC_Player::FindBestInteractable()
+{
+	if (Inventory->GetTestAroundItems().IsEmpty()) return nullptr;
+
+	AC_Item* TargetInteractableItem = nullptr;
+
+	float ItemDotProduct = 0.0f;
+
+	APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+	for (auto& AroundItem : Inventory->GetTestAroundItems())
+	{
+		AC_Item* CachedInteractableItem = AroundItem;
+
+		FVector PlayerToItemVector = (PlayerCamera->GetCameraLocation() - CachedInteractableItem->GetActorLocation()).GetSafeNormal();
+		
+		FVector CameraForwardVector = PlayerCamera->GetCameraRotation().Vector();
+
+		double CachedDot = FVector::DotProduct(PlayerToItemVector, CameraForwardVector);
+
+		if (CachedDot > .5f && CachedDot > ItemDotProduct)
+		{
+			if (CachedInteractableItem->WasRecentlyRendered())
+			{
+				ItemDotProduct = CachedDot;
+				TargetInteractableItem = CachedInteractableItem;
+			}
+		}
+	}
+
+	return TargetInteractableItem;
+}
+
+void AC_Player::UpdateInteractable(AC_Item* InteractableItem)
+{
+	if (!InteractableItem) return;
+
+
+}
+
 /// <summary>
 /// 아이템이 캐릭터의 근처에 있을 때.
 /// </summary>
