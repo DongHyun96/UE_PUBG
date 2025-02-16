@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+	#include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "UE_PUBGGameMode.generated.h"
 

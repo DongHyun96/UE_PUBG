@@ -76,7 +76,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
 	MlbPressTimeCount = 0;
-	if (CurWeapon->GetCurBulletCount() < CurWeapon->GetMaxBulletCount() && CurWeapon->GetCurBulletCount() > 0)
+	if (CurWeapon->GetCurBulletCount() > 0)
 	{
 		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SINGLE_SHOT && !CurPlayer->GetIsAimDown())
 			CurWeapon->ExecuteReloadMontage();
