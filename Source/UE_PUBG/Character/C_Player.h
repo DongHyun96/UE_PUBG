@@ -110,12 +110,16 @@ protected:
 	//
 	//UFUNCTION()
 	//void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	// 
+
 	//자식 단계에서 OverlapBegin에서 사용할 함수 Template method
 	virtual void HandleOverlapBegin(AActor* OtherActor) override;
 
 	//자식 단계에서 OverlapBegin에서 사용할 함수 Template method
 	virtual void HandleOverlapEnd(AActor* OtherActor) override;
+
+	AC_Item* FindBestInteractable();
+
+	void UpdateInteractable(AC_Item* InteractableItem);
 protected:
 	//Aim Press Camera
 	UPROPERTY(EditDefaultsOnly)
