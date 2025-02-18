@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -248,6 +248,12 @@ public:
 
 	//캐릭터의 밑바닥을 라인 트레이스로 location을 반환해줌.
 	FVector GetGroundLocation(AC_BasicCharacter* Character);
+
+	/// <summary>
+	/// 아웃라인을 그리고 꺼주는 함수.
+	/// </summary>
+	/// <param name="bEnable"></param>
+	void SetOutlineEffect(bool bEnable);
 
 protected:
 	//MoveTo~에 사용되는 Template Methode Patern 9개.

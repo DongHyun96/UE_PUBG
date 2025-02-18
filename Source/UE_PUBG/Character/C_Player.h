@@ -117,9 +117,26 @@ protected:
 	//자식 단계에서 OverlapBegin에서 사용할 함수 Template method
 	virtual void HandleOverlapEnd(AActor* OtherActor) override;
 
+	/// <summary>
+	/// 아웃라인을 그릴 적합한 아이템 찾는 함수.
+	/// </summary>
+	/// <returns></returns>
 	AC_Item* FindBestInteractable();
 
+	/// <summary>
+	/// 현재 그리고 있는 아웃라인의 주인(아이템)을 교체 및 유지 확인을 하는 함수.
+	/// </summary>
+	/// <param name="InteractableItem"></param>
 	void UpdateInteractable(AC_Item* InteractableItem);
+
+	/// <summary>
+	/// 카메라에서 라인트레이스를 통해서 아이템을 감지하면 아이템의 outline을 그리고 감지에서 벗어나면 꺼주기
+	/// </summary>
+	void DrawingItemOutLine();
+
+protected:
+	AC_Item* CurOutLinedItem = nullptr;
+
 protected:
 	//Aim Press Camera
 	UPROPERTY(EditDefaultsOnly)
