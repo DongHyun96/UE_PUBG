@@ -22,8 +22,8 @@ void AC_Helmet::BeginPlay()
 
 	HelmetMesh = FindComponentByClass<UStaticMeshComponent>();
 
-	if (!IsValid(HelmetMesh))
-		UC_Util::Print("From AC_Helmet::Beginplay : HelmetMesh var not inited!", FColor::Red, 10.f);
+	//if (!IsValid(HelmetMesh))
+	//	UC_Util::Print("From AC_Helmet::Beginplay : HelmetMesh var not inited!", FColor::Red, 10.f);
 }
 
 bool AC_Helmet::Interaction(AC_BasicCharacter* Character)

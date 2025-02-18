@@ -167,18 +167,18 @@ void AC_Item_Bullet::AddBulletStackToCharacter(EBulletType InBulletType)
 	{
 	case EBulletType::FIVEMM:
 		OwnerCharacter->AddFivemmBulletStack(ItemDatas.ItemCurStack);
-		UC_Util::Print("Fivemm",FColor::Blue);
+		// UC_Util::Print("Fivemm",FColor::Blue);
 		break;
 	case EBulletType::SEVENMM:
 		OwnerCharacter->AddSevenmmBulletStack(ItemDatas.ItemCurStack);
-		UC_Util::Print("Sevenmm",FColor::Blue);
+		// UC_Util::Print("Sevenmm",FColor::Blue);
 
 		break;
 	case EBulletType::NONE:
-		UC_Util::Print("None",FColor::Blue);
+		// UC_Util::Print("None",FColor::Blue);
 		break;
 	default:
-		UC_Util::Print("None",FColor::Blue);
+		// UC_Util::Print("None",FColor::Blue);
 
 		break;
 	}

@@ -517,7 +517,7 @@ AC_Item* AC_Player::FindBestInteractable()
 
 void AC_Player::UpdateInteractable(AC_Item* InteractableItem)
 {
-	UC_Util::Print("UpdateInteractable");
+	// UC_Util::Print("UpdateInteractable");
 	if (!InteractableItem) return;
 
 	if (InteractableItem != CurOutLinedItem)
@@ -528,7 +528,7 @@ void AC_Player::UpdateInteractable(AC_Item* InteractableItem)
 			CurOutLinedItem->SetOutlineEffect(false);
 		}
 		InteractableItem->SetOutlineEffect(true);
-		UC_Util::Print(InteractableItem->GetItemDatas().ItemName);
+		// UC_Util::Print(InteractableItem->GetItemDatas().ItemName);
 		CurOutLinedItem = InteractableItem;
 	}
 	else if (CurOutLinedItem)
