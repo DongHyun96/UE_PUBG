@@ -60,15 +60,6 @@
 #include "HUD/C_SkyDiveWidget.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 
-//#include "SlateNavigationConfig.h"
-
-#include "Item/ConsumableItem/Healing/C_FirstAidKit.h"
-#include "Item/Weapon/Gun/C_Bullet.h"
-#include "Item/Weapon/Gun/C_SR.h"
-#include "Singleton/C_GameSceneManager.h"
-#include "Character/Component/C_AttachableItemMeshComponent.h"
-#include "Misc/TextFilterExpressionEvaluator.h"
-
 AC_Player::AC_Player()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -204,6 +195,9 @@ void AC_Player::Tick(float DeltaTime)
 	HandleLerpMainSpringArmToDestRelativeLocation(DeltaTime);
 	HandleStatesWhileMovingCrawl();
 	SetCanFireWhileCrawl();
+
+	//DrawingItemOutLine();
+	UpdateInteractable(FindBestInteractable());
 	//DistanceToGround = GetCharacterMovement()->CurrentFloor.FloorDist;
 	
 	//int TestCount = 0;
@@ -494,17 +488,20 @@ AC_Item* AC_Player::FindBestInteractable()
 
 	float ItemDotProduct = 0.0f;
 
+	//UGameplayStatics::controller
+
 	APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
 	for (auto& AroundItem : Inventory->GetTestAroundItems())
 	{
 		AC_Item* CachedInteractableItem = AroundItem;
-
-		FVector PlayerToItemVector = (PlayerCamera->GetCameraLocation() - CachedInteractableItem->GetActorLocation()).GetSafeNormal();
+		
+		//밖으로 빼야 될 수도.
+		FVector PlayerToItemVector = (CachedInteractableItem->GetActorLocation() - PlayerCamera->GetCameraLocation()).GetSafeNormal();
 		
 		FVector CameraForwardVector = PlayerCamera->GetCameraRotation().Vector();
 
 		double CachedDot = FVector::DotProduct(PlayerToItemVector, CameraForwardVector);
-
+		//
 		if (CachedDot > .5f && CachedDot > ItemDotProduct)
 		{
 			if (CachedInteractableItem->WasRecentlyRendered())
@@ -520,8 +517,81 @@ AC_Item* AC_Player::FindBestInteractable()
 
 void AC_Player::UpdateInteractable(AC_Item* InteractableItem)
 {
+	UC_Util::Print("UpdateInteractable");
 	if (!InteractableItem) return;
 
+	if (InteractableItem != CurOutLinedItem)
+	{
+
+		if (CurOutLinedItem)
+		{
+			CurOutLinedItem->SetOutlineEffect(false);
+		}
+		InteractableItem->SetOutlineEffect(true);
+		UC_Util::Print(InteractableItem->GetItemDatas().ItemName);
+		CurOutLinedItem = InteractableItem;
+	}
+	else if (CurOutLinedItem)
+	{
+		CurOutLinedItem->SetOutlineEffect(false);
+		CurOutLinedItem = nullptr;
+	}
+}
+
+void AC_Player::DrawingItemOutLine()
+{
+	// 카메라의 위치 및 방향 가져오기
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
+	APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+	CameraLocation = PlayerCamera->GetCameraLocation();
+	// 트레이스 시작 및 끝 지점 설정
+	FVector TraceStart = CameraLocation;
+	FVector TraceEnd = TraceStart + (CameraRotation.Vector() * 1000.0f); // 1000cm(10m) 거리까지 탐색
+
+	// 충돌 정보
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this); // 플레이어는 무시
+	UC_Util::Print("Start LineTrace!");
+
+	// 라인 트레이스 실행
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	{
+		// 감지된 액터가 아이템인지 확인
+		AC_Item* DetectedItem = Cast<AC_Item>(HitResult.GetActor());
+		if (DetectedItem && DetectedItem != CurOutLinedItem)
+		{
+			// 기존 아이템의 아웃라인 비활성화
+			if (CurOutLinedItem)
+			{
+				CurOutLinedItem->SetOutlineEffect(false);
+			}
+
+			// 새 아이템의 아웃라인 활성화
+			DetectedItem->SetOutlineEffect(true);
+			CurOutLinedItem = DetectedItem;
+			UC_Util::Print(DetectedItem->GetItemDatas().ItemName);
+		}
+	}
+	else if (CurOutLinedItem)
+	{
+		// 아이템이 감지되지 않으면 기존 아이템의 아웃라인 제거
+		CurOutLinedItem->SetOutlineEffect(false);
+		CurOutLinedItem = nullptr;
+	}
+
+	DrawDebugLine(
+		GetWorld(),
+		TraceStart,
+		TraceEnd,
+		GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, QueryParams) ? FColor::Green : FColor::Red, // 감지 여부에 따라 색상 변경
+		false,
+		0.1f,  // 지속 시간
+		0,
+		2.0f   // 선 두께
+	);
 
 }
 

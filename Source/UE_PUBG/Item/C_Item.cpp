@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/C_Item.h"
@@ -6,6 +6,9 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Engine/World.h"
+
+//#include "GameFramework/Actor.h"
+//#include "Components/StaticMeshComponent.h"
 
 #include "Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
 #include "Weapon/WeaponStrategy/C_GunStrategy.h"
@@ -18,6 +21,7 @@ AC_Item::AC_Item()
     //WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
 
 	//OwnerCharacter = nullptr;
+	
 }
 
 // Called when the game starts or when spawned
@@ -227,4 +231,25 @@ void AC_Item::SetItemStack(uint8 inItemStack)
 	}
 }
 
+void AC_Item::SetOutlineEffect(bool bEnable)
+{
+	//UStaticMeshComponent* CachedComponent = GetComponentByClass<UStaticMeshComponent>();
+	//this->GetComponentByClass()
+	//for (UStaticMeshComponent* MeshComp : CachedComponent)
+	//{
+	//	MeshComp->SetRenderCustomDepth(bEnable);
+	//}
 
+	TArray<UPrimitiveComponent*> PrimitiveComponents;
+	GetComponents<UPrimitiveComponent>(PrimitiveComponents);
+
+	for (UPrimitiveComponent* Comp : PrimitiveComponents)
+	{
+		if (Comp)
+		{
+			Comp->SetRenderCustomDepth(bEnable);
+			Comp->SetCustomDepthStencilValue(bEnable ? 1 : 0);
+		}
+	}
+
+}
