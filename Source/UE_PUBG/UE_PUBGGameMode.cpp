@@ -15,23 +15,26 @@ AUE_PUBGGameMode::AUE_PUBGGameMode()
 	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Project_PUBG/Sangyun/240807BackUp/Character/BPC_Player"));
 	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Project_PUBG/Hyunho/Character/BPC_Player_HH"));
 	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Project_PUBG/DongHyun/Copy/DH_BPC_Player"));
-
-	if (GetWorld() && GetWorld()->GetMapName().Contains(TEXT("IntroMap")))
+	if (GetWorld())
 	{
-		if (LobbyPawnClass.Class != NULL)
-			DefaultPawnClass = LobbyPawnClass.Class;
-		PlayerControllerClass = AC_PlayerController::StaticClass();
-
-	}
-	else
-	{			
-		
-	// set default pawn class to our Blueprinted character
-		if (PlayerPawnBPClass.Class != NULL)
+		if ( GetWorld()->GetMapName().Contains(TEXT("LobbyMap")))
 		{
-			DefaultPawnClass = PlayerPawnBPClass.Class;
+			if (LobbyPawnClass.Class != NULL)
+				DefaultPawnClass = LobbyPawnClass.Class;
 			PlayerControllerClass = AC_PlayerController::StaticClass();
+
 		}
+		else
+		{			
+		
+			// set default pawn class to our Blueprinted character
+			if (PlayerPawnBPClass.Class != NULL)
+			{
+				DefaultPawnClass = PlayerPawnBPClass.Class;
+				PlayerControllerClass = AC_PlayerController::StaticClass();
+			}
+		}
+
 	}
 
 }

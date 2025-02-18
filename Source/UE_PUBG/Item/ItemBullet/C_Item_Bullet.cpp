@@ -62,7 +62,7 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 			// 인벤에 동일한 이름의 아이템이 존재 한다면 실행.
 
 			invenComp->AddItemToMyList(this);
-			AddBulletStackToCharacter();
+			AddBulletStackToCharacter(CurBulletType);
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
@@ -72,7 +72,7 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 		else
 		{
 			invenComp->AddItemToMyList(this);
-			AddBulletStackToCharacter();
+			AddBulletStackToCharacter(CurBulletType);
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
@@ -93,7 +93,7 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 		{
 			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
 
-			AddBulletStackToCharacter();
+			SpawnedItem->AddBulletStackToCharacter(CurBulletType);
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
@@ -103,8 +103,8 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 		else
 		{
 			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
-
-			AddBulletStackToCharacter();
+			UC_Util::Print(ItemStackCount);
+			SpawnedItem->AddBulletStackToCharacter(CurBulletType);
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
@@ -159,22 +159,27 @@ void AC_Item_Bullet::UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer)
 
 
 
-void AC_Item_Bullet::AddBulletStackToCharacter()
+void AC_Item_Bullet::AddBulletStackToCharacter(EBulletType InBulletType)
 {
 	if (!OwnerCharacter) return;
 
-	switch (CurBulletType)
+	switch (InBulletType)
 	{
 	case EBulletType::FIVEMM:
 		OwnerCharacter->AddFivemmBulletStack(ItemDatas.ItemCurStack);
+		UC_Util::Print("Fivemm",FColor::Blue);
 		break;
 	case EBulletType::SEVENMM:
 		OwnerCharacter->AddSevenmmBulletStack(ItemDatas.ItemCurStack);
+		UC_Util::Print("Sevenmm",FColor::Blue);
 
 		break;
 	case EBulletType::NONE:
+		UC_Util::Print("None",FColor::Blue);
 		break;
 	default:
+		UC_Util::Print("None",FColor::Blue);
+
 		break;
 	}
 }
