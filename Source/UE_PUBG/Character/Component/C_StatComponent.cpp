@@ -128,22 +128,21 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 	if (CurHP <= 0.f)
 	{
 		// 사망 처리
-		OwnerCharacter->CharacterDead();
+		// OwnerCharacter->CharacterDead();
 	}
 	
 	return true;
 }
 
-float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AC_BasicCharacter* DamageCauser)
+float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AC_BasicCharacter* DamageCauser, const bool& bVestTakeDamage)
 {
 	//FString Str = "Character Damaged on certain damaging part! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
 	//UC_Util::Print(Str, FColor::Cyan, 3.f);
 
 	// Armor 확인해서 Armor 부분이라면 Damage 감소 적용
 
-	FString str = "Damage caused by" + DamageCauser->GetName();
-	
-	UC_Util::Print(str, FColor::MakeRandomColor(), 10.f);
+	// FString str = "Damage caused by" + DamageCauser->GetName();
+	// UC_Util::Print(str, FColor::MakeRandomColor(), 10.f);
 
 	switch (DamagingPartType)
 	{
@@ -151,18 +150,19 @@ float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType Damagin
 		if (AC_EquipableItem* Helmet = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::HELMET])
 		{
 			DamageAmount *= Helmet->GetDamageReduceFactor();
-			Helmet->TakeDamage(DamageAmount); // Armor또한 피 깎아주기
+			Helmet->TakeDamage(DamageAmount);
 		}
-		else UC_Util::Print("Head part took damage but no Helmet available!", FColor::MakeRandomColor(), 10.f);
 		break;
 	case EDamagingPartType::SHOULDER:		case EDamagingPartType::UPPER_STOMACH:
 	case EDamagingPartType::LOWER_STOMACH:	case EDamagingPartType::HIPS:
+	
+		if (!bVestTakeDamage) break;
+	
 		if (AC_EquipableItem* Vest = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::VEST])
 		{
 			DamageAmount *= Vest->GetDamageReduceFactor();
 			Vest->TakeDamage(DamageAmount);
 		}
-		else UC_Util::Print("Vest part took damage but no Vest available!", FColor::MakeRandomColor(), 10.f);
 		break;
 	}
 
@@ -170,7 +170,7 @@ float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType Damagin
 	return DamageAmount;
 }
 
-float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhysicsAssetBoneName, AC_BasicCharacter* DamageCauser)
+float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhysicsAssetBoneName, AC_BasicCharacter* DamageCauser, const bool& bVestTakeDamage)
 {
 	if (!DAMAGINGPARTS_MAP.Contains(DamagingPhysicsAssetBoneName))
 	{
@@ -178,7 +178,7 @@ float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhysicsAsse
 		return 0.f;
 	}
 
-	return TakeDamage(DamageAmount, DAMAGINGPARTS_MAP[DamagingPhysicsAssetBoneName], DamageCauser);
+	return TakeDamage(DamageAmount, DAMAGINGPARTS_MAP[DamagingPhysicsAssetBoneName], DamageCauser, bVestTakeDamage);
 }
 
 bool UC_StatComponent::ApplyHeal(const float& HealAmount)

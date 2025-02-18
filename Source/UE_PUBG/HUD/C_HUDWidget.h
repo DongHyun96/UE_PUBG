@@ -95,13 +95,14 @@ public:
 
 public:
 
-	class UC_MapWidget* GetMiniMapWidget() const { return MiniMapWidget; }
-	class UBorder* GetMiniMapBorder() const { return MiniMapBorder; }
-	class UC_MainMapWidget* GetMainMapWidget() const { return MainMapWidget; }
-	class UC_OxygenWidget* GetOxygenWidget() const { return OxygenWidget; }
-	class UC_SkyDiveWidget* GetSkyDiveWidget() const { return SkyDiveWidget; }
-	class UC_InstructionWidget* GetInstructionWidget() const { return InstructionWidget; }
-	class UC_AmmoWidget* GetAmmoWidget() const { return AmmoWidget; }
+	class UC_MapWidget*			GetMiniMapWidget()		const { return MiniMapWidget; }
+	class UBorder*				GetMiniMapBorder() 		const { return MiniMapBorder; }
+	class UC_MainMapWidget*		GetMainMapWidget() 		const { return MainMapWidget; }
+	class UC_OxygenWidget*		GetOxygenWidget()		const { return OxygenWidget; }
+	class UC_SkyDiveWidget*		GetSkyDiveWidget()		const { return SkyDiveWidget; }
+	class UC_InstructionWidget* GetInstructionWidget()	const { return InstructionWidget; }
+	class UC_AmmoWidget*		GetAmmoWidget()			const { return AmmoWidget; }
+	class  UC_ArmorInfoWidget*	GetArmorInfoWidget()	const { return ArmorInfoWidget; }
 
 protected:
 
@@ -128,21 +129,23 @@ protected: // Map 관련
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_MainMapWidget* MainMapWidget{};
 
-protected: // Oxygen Widget
+protected:
 
+	// Oxygen Widget
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_OxygenWidget* OxygenWidget{};
 
-protected: // SkyDive Widget
-
+	// SkyDive Widget
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_SkyDiveWidget* SkyDiveWidget{};
 
-protected: // Key Instruction Widget
-
+	// Key Instruction Widget
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_InstructionWidget* InstructionWidget{};
 
+	// Armor Info Widget
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_ArmorInfoWidget* ArmorInfoWidget{};
 
 private:
 

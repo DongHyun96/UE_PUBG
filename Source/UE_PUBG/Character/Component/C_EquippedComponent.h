@@ -59,20 +59,13 @@ public:
 	/// <returns> Slot끼리 Swap이 제대로 이루어졌다면 return true </returns>
 	bool SwapSlotsWhileGunHandState();
 
-	/// <summary>
-	/// 슬롯에 장착된 무기를 떨구기.
-	/// </summary>
-	/// <param name="InSlot"> : 떨구고 싶은 아이템이 있는 슬롯 </param>
-	UFUNCTION(BlueprintCallable)
-	void DetachmentWeapon(EWeaponSlot InSlot);
-
 	void SetNextWeaponType(EWeaponSlot InNextWeaponType) { NextWeaponType = InNextWeaponType; }
 	//EWeaponSlot GetNextWeaponType() const { return NextWeaponType; }
 	
 	EWeaponSlot GetCurWeaponType() const { return CurWeaponType; }
 
-	UFUNCTION(BlueprintCallable)
 	TMap<EWeaponSlot, AC_Weapon*> GetWeapons() { return Weapons; }
+	
 public:
 	/// <summary>
 	/// 현재 손에 든 무기 바꾸기

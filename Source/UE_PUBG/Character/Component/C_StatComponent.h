@@ -89,8 +89,9 @@ public:
 	/// <param name="DamageAmount">		: Damage 양 </param>
 	/// <param name="DamagingPartType"> : Damage를 줄 부위 </param>
 	/// <param name="DamageCauser">		: Damage를 주는 BasicCharacter </param>
+	/// <param name="bVestTakeDamage"> : Vest또한 해당 Damage를 줄 것인지(수류탄 예외 처리 때문에 넣어둠) </param>
 	/// <returns> : The amount of damage actually applied. </returns>
-	float TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AC_BasicCharacter* DamageCauser);
+	float TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AC_BasicCharacter* DamageCauser, const bool& bVestTakeDamage = true);
 
 	/// <summary>
 	/// Bone Name(부위)쪽으로 Damage 주기 시도, 해당 Bone에 Armor가 적용되어 있으면 적절히 Damage량 및 Armor 체력 조절
@@ -98,8 +99,9 @@ public:
 	/// <param name="DamageAmount"> : Damage 량 </param>
 	/// <param name="DamagingPhysicsAssetBoneName"> : Damage를 줄 Bone 쪽 Name </param>
 	/// <param name="DamageCauser"> : Damage를 주는 BasicCharacter </param>
+	/// <param name="bVestTakeDamage"> Vest또한 해당 Damage를 줄 것인지(수류탄 예외 처리 때문에 넣어둠) </param>
 	/// <returns> : The amount of damage actually applied. </returns>
-	float TakeDamage(float DamageAmount, FName DamagingPhysicsAssetBoneName, AC_BasicCharacter* DamageCauser);
+	float TakeDamage(float DamageAmount, FName DamagingPhysicsAssetBoneName, AC_BasicCharacter* DamageCauser, const bool& bVestTakeDamage = true);
 
 public:
 

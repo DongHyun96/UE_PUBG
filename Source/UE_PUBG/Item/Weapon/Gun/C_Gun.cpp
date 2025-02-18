@@ -546,6 +546,9 @@ void AC_Gun::CheckBackPackLevelChange()
 
 void AC_Gun::DropItem(AC_BasicCharacter* Character)
 {
+	if (AC_Player* Player = Cast<AC_Player>(Character))
+		Player->GetHUDWidget()->GetAmmoWidget()->SetVisibility(ESlateVisibility::Hidden);
+	
 	DetachItem();
 	ItemDatas.ItemPlace = EItemPlace::AROUND;
 }

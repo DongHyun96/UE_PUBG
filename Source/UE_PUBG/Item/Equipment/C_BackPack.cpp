@@ -8,6 +8,8 @@
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Utility/C_Util.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "HUD/C_ArmorInfoWidget.h"
+#include "HUD/C_HUDWidget.h"
 
 
 AC_BackPack::AC_BackPack()
@@ -77,6 +79,14 @@ void AC_BackPack::AttachToSocket(AC_BasicCharacter* InParent)
 
 	SetOwnerCharacter(InParent);
 
+	// Player일 경우, HUD Armor info widget 업데이트
+	if (AC_Player* Player = Cast<AC_Player>(InParent))
+	{
+		float CurMaxVolume	= Player->GetInvenComponent()->GetMaxVolume();
+		float CurVolume		= Player->GetInvenComponent()->GetCurVolume();
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetBackPackInfo(static_cast<uint8>(ItemLevel) + 1, CurVolume / CurMaxVolume);
+	}
+	
 	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);
 }
 
@@ -155,6 +165,9 @@ bool AC_BackPack::Interaction(AC_BasicCharacter* Character)
 
 bool AC_BackPack::LegacyMoveToAround(AC_BasicCharacter* Character)
 {
+	UC_Util::Print("AC_BackPack::LegacyMoveToAround", FColor::MakeRandomColor(), 10.f);
+	
+	
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	AC_BackPack* curBackPack = nullptr;
 	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
@@ -176,11 +189,17 @@ bool AC_BackPack::LegacyMoveToAround(AC_BasicCharacter* Character)
 
 	this->SetItemPlace(EItemPlace::AROUND);
 
+	// Player일 경우, Armor info widget 업데이트
+	if (AC_Player* Player = Cast<AC_Player>(Character))
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetBackPackInfo(0);
+
 	return true;
 }
 
 bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
 {
+	UC_Util::Print("AC_BackPack::LegacyMoveToSlot", FColor::MakeRandomColor(), 10.f);
+	
 	//TODO : PickUpItem 내용으로 우선 구현한 것. 다시 구현하기.
 	//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
@@ -210,6 +229,8 @@ bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
 
 bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
 {
+	UC_Util::Print("AC_BackPack::MoveSlotToAround", FColor::MakeRandomColor(), 10.f);
+	
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	AC_BackPack* curBackPack = nullptr;
 	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
@@ -231,11 +252,18 @@ bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
 
 	this->SetItemPlace(EItemPlace::AROUND);
 
+	// Player일 경우, Armor info widget 업데이트
+	if (AC_Player* Player = Cast<AC_Player>(Character))
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetBackPackInfo(0);
+
 	return true;
 }
 
 bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
+	UC_Util::Print("AC_BackPack::MoveAroundToSlot", FColor::MakeRandomColor(), 10.f);
+
+	
 	//TODO : PickUpItem 내용으로 우선 구현한 것. 다시 구현하기.
 	//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
