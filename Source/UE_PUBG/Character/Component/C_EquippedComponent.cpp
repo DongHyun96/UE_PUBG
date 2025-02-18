@@ -140,23 +140,6 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
     return true;
 }
 
-void UC_EquippedComponent::DetachmentWeapon(EWeaponSlot InSlot)
-{
-    AC_Weapon* curWeapon = Weapons[InSlot];
-
-    UC_Util::Print("Try DetachmentWeapon", FColor::MakeRandomColor(), 10.f);    
-    
-    //아이템이 없다면 종료
-    if (!curWeapon) return;
-    
-    curWeapon->SetOwnerCharacter(nullptr);
-
-    curWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-
-    curWeapon->SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
-    curWeapon->SetActorRotation(FRotator(0.f, 0.f, -90.f));
-}
-
 bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 {
     if (OwnerCharacter->GetSwimmingComponent()->IsSwimming()) return false;

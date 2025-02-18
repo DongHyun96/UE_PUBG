@@ -9,11 +9,13 @@
 #include "Character/C_Player.h"
 #include "Character/Component/C_StatComponent.h"
 #include "Character/Component/C_CameraEffectComponent.h"
+#include "Character/Component/C_InvenComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
+#include "Item/Equipment/C_EquipableItem.h"
 
 #include "Utility/C_Util.h"
 
@@ -116,19 +118,12 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		}*/
 	}
 
-	int DamagedCharacterCnt{};
-
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
 	{
 		// 캐릭터에게 Damage 입히기 시도 -> 성공했다면 폭발 effect 캐릭터에 적용시키기(ex 카메라 aim punching)
 		if (TryDamagingCharacter(Character, ThrowingWeapon, ExplosionSphere))
-		{
 			ExecuteExplosionEffectToCharacter(Character, ExplosionLocation, ExplosionRad);
-			DamagedCharacterCnt++;
-		}
 	}
-
-	//UC_Util::Print("DamagedCharacter Cnt : " + FString::FromInt(DamagedCharacterCnt), FColor::Cyan, 10.f);
 
 	// 모든 캐릭터의 Physics Asset Colliders 다시 켜두기
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
@@ -217,7 +212,8 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 		float DamageAmount = DAMAGE_BASE * (ExplosionRad - HitResult.Distance) / ExplosionRad; // 거리 비례 Damage base
 		DamageAmount *= BodyPartsDamageRate[HitResult.BoneName]; // 신체부위별 데미지 감소 적용
 
-		TotalDamage += Character->GetStatComponent()->TakeDamage(DamageAmount, HitResult.BoneName, ThrowingWeapon->GetOwnerCharacter());
+		// Vest의 Damage는 예외적으로 Damage 총량을 모두 더하여 주기
+		TotalDamage += Character->GetStatComponent()->TakeDamage(DamageAmount, HitResult.BoneName, ThrowingWeapon->GetOwnerCharacter(), false);
 
 		//UC_Util::Print("Hitted Bone : " + HitResult.BoneName.ToString(), FColor::Red, 5.f);
 		//UC_Util::Print("Bone Damaged : " + FString::SanitizeFloat(DamageAmount), FColor::Red, 5.f);
@@ -229,9 +225,12 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 		SetPhysicsAssetColliderEnabled(Character, ColliderBoneName, false);
 	}
 
-	UC_Util::Print("Total Damage : " + FString::SanitizeFloat(TotalDamage), FColor::Red, 5.f);
-	//UC_Util::Print("Total Damage part count : " + FString::FromInt(HitCount), FColor::Red, 5.f);
+	UC_Util::Print("Grenade Total Damage : " + FString::SanitizeFloat(TotalDamage), FColor::Red, 5.f);
 
+	// Vest의 Damage는 따로 주기
+	if (AC_EquipableItem* Vest = Character->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::VEST])
+		Vest->TakeDamage(TotalDamage);
+	
 	return Hitted;
 }
 

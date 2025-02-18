@@ -61,6 +61,8 @@ public:
 	/// </summary>
 	/// <returns> : Damage 감소 Factor </returns>
 	virtual float GetDamageReduceFactor() const;
+
+	float GetCurDurabilityRate() const {return CurDurability / DURABILITY_MAX; }
 	
 private:
 	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
@@ -81,11 +83,8 @@ protected:
 protected: // Equipable 내구도 관련
 
 	static const float DURABILITY_MAX;
-
-	// TODO : 내구도 UI 내용 업데이트에 대한 함수가 필요함(Vest, Helmet)
-	float CurDurability = DURABILITY_MAX; // 현재 내구도
 	
-
+	float CurDurability = DURABILITY_MAX; // 현재 내구도
 	
 };
 

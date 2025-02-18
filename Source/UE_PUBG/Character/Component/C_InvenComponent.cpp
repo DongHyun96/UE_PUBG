@@ -2,11 +2,14 @@
 
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 #include "Item/C_Item.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Equipment/C_EquipableItem.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "HUD/C_ArmorInfoWidget.h"
+#include "HUD/C_HUDWidget.h"
 
 #include "Utility/C_Util.h"
 
@@ -196,6 +199,10 @@ void UC_InvenComponent::Interaction(AC_Item* wilditem)
 	{
 		//상호작용된 아이템의 무게를 더해도 무게한도를 넘지 않는 경우.
 		CurVolume += wilditem->GetOnceVolume();
+
+		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+			Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
+		
 		//서버와 동기화하는데 주로 사용한다고함. 서버와 클라이언트간에 컴포넌트 상태를 동기화하고, 소유한다.
 		wilditem->AddActorComponentReplicatedSubObject(this, wilditem);
 	}
@@ -384,7 +391,7 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 			MaxVolume -= 50.f;
 		//AddItemToAroundList(PrevSlotEquipItem);// TODO : Collision을 키고 끄는 방식으로 할 지 아니면 강제로 넣고 빼줄지 생각
 	}
-	EquipmentItems[InSlot] = Cast<AC_EquipableItem>(EquipItem);
+	EquipmentItems[InSlot] = EquipItem;
 	
 	if (EquipmentItems[InSlot] == nullptr)	return PrevSlotEquipItem; //nullptr이면 종료.
 
@@ -445,6 +452,8 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 
 		CurVolume += item->GetAllVolume();
 
+		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+			Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
 
 		item->Destroy();//가지고 있던 아이템에 새로 넣는 아이템을 다 넣었으므로 삭제.
 
@@ -463,6 +472,9 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 		item->SetActorEnableCollision(false);
 
 		CurVolume += item->GetAllVolume();
+
+		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+			Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
 	}
 }
 
@@ -472,6 +484,9 @@ void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 	//Add와 달리 슬롯으로 가는 경우를 대비하여 OwnerCharacter의 설정을 건드리지 않았음.
 	//item->SetItemPlace(EItemPlace::AROUND);
 	CurVolume -= item->GetAllVolume();
+
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
 }
 
 void UC_InvenComponent::DestroyMyItem(AC_Item* DestroyedItem)
@@ -515,6 +530,9 @@ void UC_InvenComponent::CheckBackPackOnCharacter()
 void UC_InvenComponent::AddInvenCurVolume(float ItemVolume)
 {
 	CurVolume += ItemVolume;
+
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
 }
 
 float UC_InvenComponent::GetVestVolume()

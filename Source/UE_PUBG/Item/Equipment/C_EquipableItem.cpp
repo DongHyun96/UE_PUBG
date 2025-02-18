@@ -58,7 +58,7 @@ void AC_EquipableItem::AttachToSocket(AC_BasicCharacter* InParent)
 	//BackpackMesh->SetVisibility(true);
 
 	//DrawDebugSphere(GetWorld(), InParent->GetSocketLocation(SocketName), 10.f, 12, FColor::Red, false, 10.f);
-
+	
 	SetOwnerCharacter(InParent);
 
 	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);

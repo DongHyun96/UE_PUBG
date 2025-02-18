@@ -3,7 +3,10 @@
 
 #include "Item/Equipment/C_Vest.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "HUD/C_ArmorInfoWidget.h"
+#include "HUD/C_HUDWidget.h"
 #include "Utility/C_Util.h"
 
 AC_Vest::AC_Vest()
@@ -67,6 +70,10 @@ void AC_Vest::AttachToSocket(AC_BasicCharacter* InParent)
 
 	SetOwnerCharacter(InParent);
 
+	// Player의 경우 HUD Armor Info 업데이트 해주기
+	if (AC_Player* Player = Cast<AC_Player>(InParent))
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetVestInfo(static_cast<uint8>(ItemLevel) + 1, CurDurability / DURABILITY_MAX);
+
 	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);
 }
 
@@ -75,6 +82,11 @@ bool AC_Vest::MoveSlotToAround(AC_BasicCharacter* Character)
 	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, nullptr);
 	//OwnerCharacter = nullptr;
 	this->SetItemPlace(EItemPlace::AROUND);
+
+	// Player의 경우 HUD Armor info 업데이트
+	if (AC_Player* Player = Cast<AC_Player>(Character))
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetVestInfo(0);
+	
 	return true;
 }
 
@@ -87,6 +99,8 @@ bool AC_Vest::MoveAroundToSlot(AC_BasicCharacter* Character)
 
 bool AC_Vest::TakeDamage(float DamageAmount)
 {
+	UC_Util::Print("AC_Vest::TakeDamage : " + FString::SanitizeFloat(DamageAmount), FColor::MakeRandomColor(), 10.f);
+	
 	// Level에 따른 Vest에 적용되는 Damage량 조절
 	float DamageReduceRate =	(ItemLevel == EEquipableItemLevel::LV1) ? 0.5f  :
 								(ItemLevel == EEquipableItemLevel::LV2) ? 0.45f : 0.4f;
@@ -94,6 +108,13 @@ bool AC_Vest::TakeDamage(float DamageAmount)
 	
 	CurDurability -= DamageAmount;
 	if (CurDurability < 0.f) CurDurability = 0.f;
+
+	// OwnerCharacter가 Player인 경우, UI 업데이트
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+	{
+		// TODO : Inven UI의 조끼 피도 업데이트 시키기
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentVestDurabilityRate(CurDurability / DURABILITY_MAX);
+	}
 
 	return true;
 }
