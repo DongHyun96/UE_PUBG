@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/AttachmentActors/C_Attachment_Compensator.h"
@@ -54,3 +54,5 @@ bool AC_Attachment_Compensator::UseMrbStrategy()
 {
 	return false;
 }
+
+

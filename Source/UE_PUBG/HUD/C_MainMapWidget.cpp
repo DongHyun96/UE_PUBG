@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "HUD/C_MainMapWidget.h"
@@ -59,7 +59,7 @@ void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
 	{
 		UUserWidget::SetVisibility(ESlateVisibility::Visible);
 
-		// ¸¶¿ì½º ÀÔ·ÂÀº UI·Î, ´Ù¸¥ ÀÔ·ÂÀº °ÔÀÓ¿¡¼­ Ã³¸®
+		// ë§ˆìš°ìŠ¤ ì…ë ¥ì€ UIë¡œ, ë‹¤ë¥¸ ì…ë ¥ì€ ê²Œì„ì—ì„œ ì²˜ë¦¬
 		PC->SetInputMode
 		(
 			FInputModeGameAndUI()
@@ -69,8 +69,8 @@ void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
 		);
 
 		PC->bShowMouseCursor = true;
-		PC->SetIgnoreLookInput(true);  // ¸¶¿ì½º ÀÌµ¿¿¡ ÀÇÇÑ Ä«¸Ş¶ó È¸ÀüÀ» ¸·À½
-		//PC->SetIgnoreMoveInput(true);  // ¸¶¿ì½º Å¬¸¯¿¡ ÀÇÇÑ ¿òÁ÷ÀÓÀ» ¸·À½
+		PC->SetIgnoreLookInput(true);  // ë§ˆìš°ìŠ¤ ì´ë™ì— ì˜í•œ ì¹´ë©”ë¼ íšŒì „ì„ ë§‰ìŒ
+		//PC->SetIgnoreMoveInput(true);  // ë§ˆìš°ìŠ¤ í´ë¦­ì— ì˜í•œ ì›€ì§ì„ì„ ë§‰ìŒ
 		//PC->SetMouseCursorWidget()
 
 		//this->SetUserFocus(PC);
@@ -86,7 +86,7 @@ void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
 			}
 		}
 
-		// TODO : ÀÌ ºÎºĞ ¿ÜºÎ·Î ¿Å±â±â
+		// TODO : ì´ ë¶€ë¶„ ì™¸ë¶€ë¡œ ì˜®ê¸°ê¸°
 		OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
@@ -97,10 +97,10 @@ void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
 		PC->SetInputMode(FInputModeGameOnly());
 		//PC->GetPawn()->bUseControllerRotationYaw = true;
 
-		PC->SetIgnoreLookInput(false);  // ¸¶¿ì½º ÀÌµ¿¿¡ ÀÇÇÑ Ä«¸Ş¶ó È¸ÀüÀ» ¸·À½
-		//PC->SetIgnoreMoveInput(false);  // ¸¶¿ì½º Å¬¸¯¿¡ ÀÇÇÑ ¿òÁ÷ÀÓÀ» ¸·À½
+		PC->SetIgnoreLookInput(false);  // ë§ˆìš°ìŠ¤ ì´ë™ì— ì˜í•œ ì¹´ë©”ë¼ íšŒì „ì„ ë§‰ìŒ
+		//PC->SetIgnoreMoveInput(false);  // ë§ˆìš°ìŠ¤ í´ë¦­ì— ì˜í•œ ì›€ì§ì„ì„ ë§‰ìŒ
 
-		// TODO : ÀÌ ºÎºĞ ¿ÜºÎ·Î ¿Å±â±â
+		// TODO : ì´ ë¶€ë¶„ ì™¸ë¶€ë¡œ ì˜®ê¸°ê¸°
 		ESkyDivingState PlayerSkyDivingState = OwnerPlayer->GetSkyDivingComponent()->GetSkyDivingState();
 		if (PlayerSkyDivingState == ESkyDivingState::SKYDIVING || PlayerSkyDivingState == ESkyDivingState::PARACHUTING)
 			OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -148,7 +148,7 @@ void UC_MainMapWidget::HandleUpdateMarkers()
 		return;
 	}
 
-	// À§Ä¡ Àâ±â
+	// ìœ„ì¹˜ ì¡ê¸°
 	FVector2D PlayerPos = { OwnerPlayer->GetActorLocation().Y, -OwnerPlayer->GetActorLocation().X };
 	FVector2D PlayerMarkerPos = PlayerPos * (CANVAS_SIZE / WORLD_MAP_SIZE) * MainMapScale;
 
@@ -174,24 +174,24 @@ void UC_MainMapWidget::HandleUpdatePlaneRouteTransform()
 {
 	FVector2D ImgScale = FVector2D(1.f, 1.f) * MainMapScale;
 
-	// Start Circle ÀÌ¹ÌÁö À§Ä¡ ¹× Å©±â Àâ±â
+	// Start Circle ì´ë¯¸ì§€ ìœ„ì¹˜ ë° í¬ê¸° ì¡ê¸°
 	FVector2D StartPos = AirplaneRouteStartPos * MainMapScale;
 	StartPos += MainMapImg->GetRenderTransform().Translation;
 	AirplaneStartCircleImage->SetRenderTranslation(StartPos);
 	AirplaneStartCircleImage->SetRenderScale(ImgScale);
 
-	// Dest Triangle ÀÌ¹ÌÁö À§Ä¡ Å©±â Àâ±â
+	// Dest Triangle ì´ë¯¸ì§€ ìœ„ì¹˜ í¬ê¸° ì¡ê¸°
 	FVector2D DestPos = AirplaneRouteDestPos * MainMapScale;
 	DestPos += MainMapImg->GetRenderTransform().Translation;
 	AirplaneDestTriangleImage->SetRenderTranslation(DestPos);
 	AirplaneDestTriangleImage->SetRenderScale(ImgScale);
 
-	// PlaneRoute ÀÌ¹ÌÁö À§Ä¡ Å©±â Àâ±â
+	// PlaneRoute ì´ë¯¸ì§€ ìœ„ì¹˜ í¬ê¸° ì¡ê¸°
 	FVector2D PlaneRoutePos = (StartPos + DestPos) * 0.5f;
 	AirplaneRouteImage->SetRenderTranslation(PlaneRoutePos);
 	AirplaneRouteImage->SetRenderScale(FVector2D(1.f, MainMapScale));
 
-	// PlaneRoute ÀÌ¹ÌÁö Å©±â Á¶Á¤
+	// PlaneRoute ì´ë¯¸ì§€ í¬ê¸° ì¡°ì •
 	if (!AirplaneRouteImageCanvasSlot) AirplaneRouteImageCanvasSlot = Cast<UCanvasPanelSlot>(AirplaneRouteImage->Slot);
 	FVector2D NewSize = AirplaneRouteImageCanvasSlot->GetSize();
 	NewSize.X = FVector2D::Distance(StartPos, DestPos);
@@ -251,7 +251,7 @@ FReply UC_MainMapWidget::NativeOnMouseWheel(const FGeometry& InGeometry, const F
 
 	float ScrollDelta = InMouseEvent.GetWheelDelta();
 
-	// +°¡ À§·Î ¿Ã¸²
+	// +ê°€ ìœ„ë¡œ ì˜¬ë¦¼
 	//MainMapScale += ScrollDelta * SCROLL_DELTA_STEP;
 	//MainMapScale = FMath::Clamp(MainMapScale, 1.f, MAP_SCALE_MAX);
 	//MainMapImg->SetRenderScale(FVector2D(MainMapScale, MainMapScale));
@@ -262,7 +262,7 @@ FReply UC_MainMapWidget::NativeOnMouseWheel(const FGeometry& InGeometry, const F
 	MainMapScaleLerpDest += ScrollDelta * SCROLL_DELTA_STEP;
 	MainMapScaleLerpDest = FMath::Clamp(MainMapScaleLerpDest, 1.f, MAP_SCALE_MAX);
 
-	// ¸¶¿ì½º Æ÷ÀÎÅÍ À§Ä¡¿¡ µû¸¥ È®´ë ºÎºĞ ÀÌµ¿ (È®´ë½Ã¿¡¸¸ ÀÌµ¿ÇÒ ¿¹Á¤)
+	// ë§ˆìš°ìŠ¤ í¬ì¸í„° ìœ„ì¹˜ì— ë”°ë¥¸ í™•ëŒ€ ë¶€ë¶„ ì´ë™ (í™•ëŒ€ì‹œì—ë§Œ ì´ë™í•  ì˜ˆì •)
 	if (ScrollDelta > 0.f)
 	{
 		FVector2D TargetPos = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
@@ -309,7 +309,7 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 
 	FVector2D WorldPingPos2D = PingMarkerPos * (WORLD_MAP_SIZE / CANVAS_SIZE);
 
-	// LandscapeÂÊÀ¸·Î LineTrace Ã³¸®
+	// Landscapeìª½ìœ¼ë¡œ LineTrace ì²˜ë¦¬
 	FCollisionQueryParams CollisionParams{};
 	FHitResult HitResult{};
 
@@ -344,7 +344,7 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 
 bool UC_MainMapWidget::CancelPingMarker()
 {
-	// World ping, MiniMap Ping ¸ğµÎ Hidden Ã³¸®ÇÏ±â
+	// World ping, MiniMap Ping ëª¨ë‘ Hidden ì²˜ë¦¬í•˜ê¸°
 	PingMarkerBorder->SetVisibility(ESlateVisibility::Hidden);
 
 	if (!OwnerPlayer)
@@ -380,7 +380,7 @@ void UC_MainMapWidget::UpdateAirplaneImagePosition(const FVector& AirplaneLocati
 
 bool UC_MainMapWidget::HandleLMBDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	// ¿ŞÂÊ ¸¶¿ì½º ¹öÆ° Å¬¸¯ Ã³¸®
+	// ì™¼ìª½ ë§ˆìš°ìŠ¤ ë²„íŠ¼ í´ë¦­ ì²˜ë¦¬
 	if (InMouseEvent.GetEffectingButton() != EKeys::LeftMouseButton)
 		return false;
 
@@ -399,25 +399,25 @@ bool UC_MainMapWidget::HandleLMBDown(const FGeometry& InGeometry, const FPointer
 	bIsMouseDragging = true;
 	PrevDragMousePos = MousePos;
 
-	// Ã³¸® ¿Ï·á ÈÄ ÀÔ·ÂÀ» ¼ÒºñÇÏ°í ÀüÆÄµÇÁö ¾Ê°Ô ÇÔ
+	// ì²˜ë¦¬ ì™„ë£Œ í›„ ì…ë ¥ì„ ì†Œë¹„í•˜ê³  ì „íŒŒë˜ì§€ ì•Šê²Œ í•¨
 	return true;
 }
 
 bool UC_MainMapWidget::HandleRMBDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	// ¿À¸¥ÂÊ ¸¶¿ì½º ¹öÆ° Å¬¸¯ Ã³¸®
+	// ì˜¤ë¥¸ìª½ ë§ˆìš°ìŠ¤ ë²„íŠ¼ í´ë¦­ ì²˜ë¦¬
 	if (InMouseEvent.GetEffectingButton() != EKeys::RightMouseButton) return false;
 
 	FVector2D ScreenSpacePosition = InMouseEvent.GetScreenSpacePosition();
 	FVector2D MousePos = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
 
-	// Border Ã³¸®
+	// Border ì²˜ë¦¬
 	float BorderXBottom = MID_POINT.X - CANVAS_SIZE * 0.5f;
 	float BorderXTop = MID_POINT.X + CANVAS_SIZE * 0.5f;
 
 	if (MousePos.X < BorderXBottom || MousePos.X > BorderXTop) return false;
 
-	// PingMarker°¡ HiddenÀÌ ¾Æ´Ò ¶§ PingMarkerÀ§¿¡ Input Ã³¸®ÇÏ¸é Marker ¾ø¾Ö±â
+	// PingMarkerê°€ Hiddenì´ ì•„ë‹ ë•Œ PingMarkerìœ„ì— Input ì²˜ë¦¬í•˜ë©´ Marker ì—†ì• ê¸°
 	if (PingMarkerBorder->GetVisibility() != ESlateVisibility::Hidden)
 	{
 
@@ -425,7 +425,7 @@ bool UC_MainMapWidget::HandleRMBDown(const FGeometry& InGeometry, const FPointer
 		MarkedPos -= MainMapImg->GetRenderTransform().Translation;
 		MarkedPos /= MainMapScale;
 
-		// ¹üÀ§ ¾È¿¡¼­ Click Ã³¸® µÇ¾úÀ½
+		// ë²”ìœ„ ì•ˆì—ì„œ Click ì²˜ë¦¬ ë˜ì—ˆìŒ
 		if (FMath::Abs(PingMarkerPos.X - MarkedPos.X) <= PING_BORDER_SIZE * 0.5f / MainMapScale &&
 			FMath::Abs(PingMarkerPos.Y - MarkedPos.Y) <= PING_BORDER_SIZE * 0.5f / MainMapScale)
 		{
@@ -434,7 +434,7 @@ bool UC_MainMapWidget::HandleRMBDown(const FGeometry& InGeometry, const FPointer
 		}
 	}
 
-	// »õ·Î¿î ÇÎ Âï±â
+	// ìƒˆë¡œìš´ í•‘ ì°ê¸°
 	SpawnPingImage(MousePos);
 
 	//UC_Util::Print(MousePos);
@@ -447,4 +447,6 @@ FVector2D UC_MainMapWidget::GetWorldToMapSizePos(FVector GameWorldLocation)
 	FVector2D Pos = { GameWorldLocation.Y, -GameWorldLocation.X };
 	return Pos * (CANVAS_SIZE / WORLD_MAP_SIZE);
 }
+
+
 

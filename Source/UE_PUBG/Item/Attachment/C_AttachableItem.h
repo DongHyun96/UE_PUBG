@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -63,7 +63,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EPartsName Name{};
 
-	//curWeaponSlotÀ» ¸¸µé¾î¼­ ÀÌ³ğÀÌ ¾îµğÃÑ¿¡ ºÙ¾î ÀÖ´ÂÁö ¾Ë¾Æ¾ß ÇÒµí.
+	//curWeaponSlotì„ ë§Œë“¤ì–´ì„œ ì´ë†ˆì´ ì–´ë””ì´ì— ë¶™ì–´ ìˆëŠ”ì§€ ì•Œì•„ì•¼ í• ë“¯.
 
 	EWeaponSlot curWeaponSlot{};
 
@@ -75,3 +75,5 @@ private:
 
 
 };
+
+

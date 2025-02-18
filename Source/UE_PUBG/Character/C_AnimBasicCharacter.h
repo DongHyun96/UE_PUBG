@@ -30,7 +30,7 @@ public:
 protected:
 
 	/// <summary>
-	/// AnimGraph¿¡¼­ÀÇ transition¿ë dataµé ¾÷µ¥ÀÌÆ®
+	/// AnimGraphì—ì„œì˜ transitionìš© dataë“¤ ì—…ë°ì´íŠ¸
 	/// </summary>
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
@@ -91,6 +91,9 @@ protected:
 	bool bIsAimingRifle = false;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsHighEnoughToFall = false;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsTooCloseToAimGun = false;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ESwimmingState SwimmingState{};
@@ -159,3 +162,5 @@ protected:
 	ESkyDivingState SkyDivingState{};
 
 };
+
+

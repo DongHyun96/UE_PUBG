@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -38,7 +38,9 @@ protected:
 
 	float HealUpLimit{};
 
-	// √— ¿ÃøÎ Block
+	// Ï¥ù Ïù¥Ïö© Block
 	UINT BlockUsed{};
 
 };
+
+

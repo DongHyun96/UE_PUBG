@@ -8,7 +8,7 @@
 
 /// <summary>
 /// AttachableItem PartsName Enum class
-/// C_Gun¿¡¼­ ºÎÂø °¡´É ºÎÀ§
+/// C_Gunì—ì„œ ë¶€ì°© ê°€ëŠ¥ ë¶€ìœ„
 /// </summary>
 UENUM(BlueprintType)
 enum class EPartsName : uint8
@@ -23,7 +23,7 @@ enum class EPartsName : uint8
 };
 
 /// <summary>
-/// Attachment ¾ÆÀÌÅÛ ÀÌ¸§µé
+/// Attachment ì•„ì´í…œ ì´ë¦„ë“¤
 /// </summary>
 UENUM(BlueprintType)
 enum class EAttachmentNames : uint8
@@ -39,13 +39,13 @@ enum class EAttachmentNames : uint8
 	MAX
 };
 /// <summary>
-/// ÇöÀç Á¦´ë·Î »ç¿ëÇÏÁö´Â ¾Ê°í ÀÖÀ½.
+/// í˜„ì¬ ì œëŒ€ë¡œ ì‚¬ìš©í•˜ì§€ëŠ” ì•Šê³  ìˆìŒ.
 /// </summary>
 
 /// <summary>
-/// ¾ÆÀÌÅÛÀÇ Å¸ÀÔÀ» Á¤ÇØÁà¼­ ÀÎº¥Åä¸®¿¡¼­ ÀåÂøÇÒ¶§ ¾Ë¸Â´Â UI¿¡ Ã£¾Æ°¡µµ·Ï ÇÏ°íÀÚÇÔ.
-/// NONEÀº µ¹¹ß»óÈ²À» ´ëºñÇØ¼­ ¸¸µé¾îµÒ.
-/// ÇÏÀ§Å¬·¡½º¿¡¼­´Â »ı¼ºÀÚ¿¡¼­ Á¤ÀÇÇÏ°í ÀÖÀ½.
+/// ì•„ì´í…œì˜ íƒ€ì…ì„ ì •í•´ì¤˜ì„œ ì¸ë²¤í† ë¦¬ì—ì„œ ì¥ì°©í• ë•Œ ì•Œë§ëŠ” UIì— ì°¾ì•„ê°€ë„ë¡ í•˜ê³ ìí•¨.
+/// NONEì€ ëŒë°œìƒí™©ì„ ëŒ€ë¹„í•´ì„œ ë§Œë“¤ì–´ë‘ .
+/// í•˜ìœ„í´ë˜ìŠ¤ì—ì„œëŠ” ìƒì„±ìì—ì„œ ì •ì˜í•˜ê³  ìˆìŒ.
 /// </summary>
 UENUM(BlueprintType)
 enum class EItemTypes : uint8
@@ -137,10 +137,10 @@ struct FItemData : public FTableRowBase
 
 
 /// <summary>
-/// ¼Ò¸ğ¾ÆÀÌÅÛºĞ·ù¸¦ À§ÇÑ »óÀ§ Å¬·¡½º.
-/// °¡¹æ¿¡ µé¾î°¡´Â ¾ÆÀÌÅÛÀ» À§ÇÑ Å¬·¡½º.
-/// ¿¹)Åº, ÁøÅëÁ¦, ±¸»ó, ¼ö·ùÅºµî.
-/// °¡¹æ¿¡ µé¾î°¡´Â ¼ÒÁöÇ° ¸ñ·Ï ÀÛ¼ºÇØ¾ßÇÔ.
+/// ì†Œëª¨ì•„ì´í…œë¶„ë¥˜ë¥¼ ìœ„í•œ ìƒìœ„ í´ë˜ìŠ¤.
+/// ê°€ë°©ì— ë“¤ì–´ê°€ëŠ” ì•„ì´í…œì„ ìœ„í•œ í´ë˜ìŠ¤.
+/// ì˜ˆ)íƒ„, ì§„í†µì œ, êµ¬ìƒ, ìˆ˜ë¥˜íƒ„ë“±.
+/// ê°€ë°©ì— ë“¤ì–´ê°€ëŠ” ì†Œì§€í’ˆ ëª©ë¡ ì‘ì„±í•´ì•¼í•¨.
 /// </summary>
 UCLASS(abstract, BlueprintType)
 class UE_PUBG_API AC_Item : public AActor
@@ -159,17 +159,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//¾ÆÀÌÅÛÀÇ ÀåÂøÀ» ÇØÁ¦ÇÏ°í ¶¥¿¡ ¶³±¸°Ô ÇØÁÜ.
+	//ì•„ì´í…œì˜ ì¥ì°©ì„ í•´ì œí•˜ê³  ë•…ì— ë–¨êµ¬ê²Œ í•´ì¤Œ.
 	UFUNCTION(BlueprintCallable)
 	virtual void DetachItem();
 
 	virtual void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 	/// <summary>
-	/// ItemBar¿¡¼­ ¿ìÅ¬¸¯À¸·Î »ç¿ëÇÏ´Â ±âº» »óÈ£ÀÛ¿ë.
-	/// ÀÚ½Ä´Ü°è¿¡¼­ ¿À¹ö¶óÀÌµåÇØ¼­ »ç¿ë.
-	/// ¾ÆÀÌÅÛÀÇ OwnerCharacter°¡ ÀÖ´ÂÁö ¾ø´ÂÁö¸¦ ±âº»À¸·Î ÆÇ´ÜÇÏ°í °æ¿ì¿¡ µû¶ó ´Ù¸¥ ±â´ÉÀ» ½ÇÇàÇÒ ¿¹Á¤.)
-	/// »óÈ£ÀÛ¿ëÀ¸·Î ¹Ù²Û´Ù¸é. OwnerCharcterÀÇ ¿©ºÎ¿¡ µû¶ó, ¾ÆÀÌÅÛ¿¡ µû¶ó UseItemÀÇ ÀÌ¸§À» ´Ù¸¥ ¹ü¿ëÀûÀÎ ÇÔ¼ö¿¡ »ç¿ë°¡´É.
+	/// ItemBarì—ì„œ ìš°í´ë¦­ìœ¼ë¡œ ì‚¬ìš©í•˜ëŠ” ê¸°ë³¸ ìƒí˜¸ì‘ìš©.
+	/// ìì‹ë‹¨ê³„ì—ì„œ ì˜¤ë²„ë¼ì´ë“œí•´ì„œ ì‚¬ìš©.
+	/// ì•„ì´í…œì˜ OwnerCharacterê°€ ìˆëŠ”ì§€ ì—†ëŠ”ì§€ë¥¼ ê¸°ë³¸ìœ¼ë¡œ íŒë‹¨í•˜ê³  ê²½ìš°ì— ë”°ë¼ ë‹¤ë¥¸ ê¸°ëŠ¥ì„ ì‹¤í–‰í•  ì˜ˆì •.)
+	/// ìƒí˜¸ì‘ìš©ìœ¼ë¡œ ë°”ê¾¼ë‹¤ë©´. OwnerCharcterì˜ ì—¬ë¶€ì— ë”°ë¼, ì•„ì´í…œì— ë”°ë¼ UseItemì˜ ì´ë¦„ì„ ë‹¤ë¥¸ ë²”ìš©ì ì¸ í•¨ìˆ˜ì— ì‚¬ìš©ê°€ëŠ¥.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	virtual bool Interaction(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item::Interaction, return false;);
@@ -177,34 +177,34 @@ public:
 	virtual bool UseItem() PURE_VIRTUAL(AC_Item::UseItem, return false;);
 
 	/// <summary>
-	/// ÇÃ·¹ÀÌ¾î°¡ ¾ÆÀÌÅÛÀ» ½ÀµæÇÒ¶§ »ç¿ëµÇ´Â ÇÔ¼ö.
-	/// °¢ Å¬·¡½º¿¡¼­ overrideÇØ¼­ Å¬·¡½º¿¡ ¸Â°Ô »ç¿ë.
-	/// ÃßÈÄ¿¡ ÀÌ¸§ º¯°æ °¡´É
+	/// í”Œë ˆì´ì–´ê°€ ì•„ì´í…œì„ ìŠµë“í• ë•Œ ì‚¬ìš©ë˜ëŠ” í•¨ìˆ˜.
+	/// ê° í´ë˜ìŠ¤ì—ì„œ overrideí•´ì„œ í´ë˜ìŠ¤ì— ë§ê²Œ ì‚¬ìš©.
+	/// ì¶”í›„ì— ì´ë¦„ ë³€ê²½ ê°€ëŠ¥
 	/// AddItemToInventory, PickupItem
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	virtual void PickUpItem(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:PickUpItem, );
 
 	/// <summary>
-	/// Around -> MyItems·Î ¾ÆÀÌÅÛÀÌ ÀÌµ¿ÇÒ ¶§, ÀÌ¹Ì ÇØ´ç ¾ÆÀÌÅÛÀÌ Á¸ÀçÇÒ¶§ ItemStackÀ» C_Item³»¿¡¼­ SetÇÏ´Â ÇÔ¼ö.
+	/// Around -> MyItemsë¡œ ì•„ì´í…œì´ ì´ë™í•  ë•Œ, ì´ë¯¸ í•´ë‹¹ ì•„ì´í…œì´ ì¡´ì¬í• ë•Œ ItemStackì„ C_Itemë‚´ì—ì„œ Setí•˜ëŠ” í•¨ìˆ˜.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void SetItemStack(uint8 inItemStack);// { ItemDatas.ItemCurStack = inItemStack; }
 	
 	/// <summary>
-	/// ÇÃ·¹ÀÌ¾î°¡ ¾ÆÀÌÅÛÀ» ¹ö¸± ¶§ »ç¿ëµÇ´Â ÇÔ¼ö.
-	/// °¢ Å¬·¡½º¿¡¼­ overrideÇØ¼­ ¾Ë¸Â°Ô »ç¿ë
-	/// ÃßÈÄ¿¡ ÀÌ¸§ º¯°æ°¡´É
+	/// í”Œë ˆì´ì–´ê°€ ì•„ì´í…œì„ ë²„ë¦´ ë•Œ ì‚¬ìš©ë˜ëŠ” í•¨ìˆ˜.
+	/// ê° í´ë˜ìŠ¤ì—ì„œ overrideí•´ì„œ ì•Œë§ê²Œ ì‚¬ìš©
+	/// ì¶”í›„ì— ì´ë¦„ ë³€ê²½ê°€ëŠ¥
 	/// RemoveItemFromInventory
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	virtual void DropItem(AC_BasicCharacter* Character); //PURE_VIRTUAL(AC_Item:DropItem, );
 
-	//¾ÆÀÌÅÛÀÇ ½ºÅÃÀ» 1 ¿Ã·ÁÁÜ.
+	//ì•„ì´í…œì˜ ìŠ¤íƒì„ 1 ì˜¬ë ¤ì¤Œ.
 	UFUNCTION(BlueprintCallable)
 	void AddItemStack() { ItemDatas.ItemCurStack += 1; }
 	
-	//¾ÆÀÌÅÛÀÇ ½ºÅÃÀ» 1 ³»·ÁÁÜ.
+	//ì•„ì´í…œì˜ ìŠ¤íƒì„ 1 ë‚´ë ¤ì¤Œ.
 	UFUNCTION(BlueprintCallable)
 	void DeductItemStack() { ItemDatas.ItemCurStack -= 1; }
 
@@ -218,7 +218,7 @@ public:
 	virtual bool LegacyMoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToSlot, return false;);
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛÀÌ InvenÀ¸·Î º¸³¾ ¶§ »ç¿ëÇÏ¸é ÇöÀç Place¿¡ ¸Â°Ô  ÀÛµ¿
+	/// ì•„ì´í…œì´ Invenìœ¼ë¡œ ë³´ë‚¼ ë•Œ ì‚¬ìš©í•˜ë©´ í˜„ì¬ Placeì— ë§ê²Œ  ì‘ë™
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns></returns>
@@ -226,7 +226,7 @@ public:
 	virtual bool MoveToInven(AC_BasicCharacter* Character);
 	
 	/// <summary>
-	/// ¾ÆÀÌÅÛÀ» Around·Î º¸³¾ ¶§ »ç¿ëÇÏ¸é ÇöÀç Place¿¡ ¸Â°Ô ÀÛµ¿.
+	/// ì•„ì´í…œì„ Aroundë¡œ ë³´ë‚¼ ë•Œ ì‚¬ìš©í•˜ë©´ í˜„ì¬ Placeì— ë§ê²Œ ì‘ë™.
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns></returns>
@@ -234,7 +234,7 @@ public:
 	virtual bool MoveToAround(AC_BasicCharacter* Character);
 	
 	/// <summary>
-	/// ¾ÆÀÌÅÛÀ» SlotÀ¸·Î º¸³¾ ¶§ Place¿¡ µû¶ó ÀÛµ¿.
+	/// ì•„ì´í…œì„ Slotìœ¼ë¡œ ë³´ë‚¼ ë•Œ Placeì— ë”°ë¼ ì‘ë™.
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns></returns>
@@ -246,11 +246,17 @@ public:
 
 	void SetItemPlace(EItemPlace InPlace) { ItemDatas.ItemPlace = InPlace; }
 
-	//Ä³¸¯ÅÍÀÇ ¹Ø¹Ù´ÚÀ» ¶óÀÎ Æ®·¹ÀÌ½º·Î locationÀ» ¹İÈ¯ÇØÁÜ.
+	//ìºë¦­í„°ì˜ ë°‘ë°”ë‹¥ì„ ë¼ì¸ íŠ¸ë ˆì´ìŠ¤ë¡œ locationì„ ë°˜í™˜í•´ì¤Œ.
 	FVector GetGroundLocation(AC_BasicCharacter* Character);
 
+	/// <summary>
+	/// ì•„ì›ƒë¼ì¸ì„ ê·¸ë¦¬ê³  êº¼ì£¼ëŠ” í•¨ìˆ˜.
+	/// </summary>
+	/// <param name="bEnable"></param>
+	void SetOutlineEffect(bool bEnable);
+
 protected:
-	//MoveTo~¿¡ »ç¿ëµÇ´Â Template Methode Patern 9°³.
+	//MoveTo~ì— ì‚¬ìš©ë˜ëŠ” Template Methode Patern 9ê°œ.
 	virtual bool MoveSlotToAround(AC_BasicCharacter* Character);
 	virtual bool MoveSlotToInven(AC_BasicCharacter* Character);
 	virtual bool MoveSlotToSlot(AC_BasicCharacter* Character);
@@ -267,7 +273,7 @@ public:
 	FItemData GetItemDatas() { return ItemDatas; }
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛ ÇÏ³ªÀÇ Volume
+	/// ì•„ì´í…œ í•˜ë‚˜ì˜ Volume
 	/// </summary>
 	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
@@ -288,3 +294,5 @@ protected:
 	AC_BasicCharacter* OwnerCharacter{};
 };
 // Fill out your copyright notice in the Description page of Project Settings.
+
+

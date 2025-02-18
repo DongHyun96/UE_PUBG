@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,7 +9,7 @@
 #define GAMESCENE_MANAGER GetWorld()->GetSubsystem<UC_GameSceneManager>()
 
 /// <summary>
-/// GameScene Çö HUD Mode
+/// GameScene í˜„ HUD Mode
 /// </summary>
 enum class EHUDMode : uint8
 {
@@ -21,7 +21,7 @@ enum class EHUDMode : uint8
 
 
 /// <summary>
-/// GameScene¿¡¼­ »ç¿ëÇÒ Singleton class
+/// GameSceneì—ì„œ ì‚¬ìš©í•  Singleton class
 /// </summary>
 UCLASS()
 class UE_PUBG_API UC_GameSceneManager : public UWorldSubsystem
@@ -54,7 +54,7 @@ public: // Getters and setters
 	TArray<class AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
 
 	/// <summary>
-	/// GameScene¿¡¼­ GC·ÎºÎÅÍ º¸È£µÈ Objectµé Ãß°¡ -> GameScene ³¡³¯ ¶§ ÀÏ°ı »èÁ¦Ã³¸® ¿¹Á¤
+	/// GameSceneì—ì„œ GCë¡œë¶€í„° ë³´í˜¸ëœ Objectë“¤ ì¶”ê°€ -> GameScene ëë‚  ë•Œ ì¼ê´„ ì‚­ì œì²˜ë¦¬ ì˜ˆì •
 	/// </summary>
 	void AddNonGCObject(UObject* Object) { NonGCObjects.Add(Object); }
 
@@ -69,24 +69,26 @@ private:
 
 private:
 
-	// ÀÎ°ÔÀÓ ¸ğµç Ä³¸¯ÅÍµé(Player + Enemies)
+	// ì¸ê²Œì„ ëª¨ë“  ìºë¦­í„°ë“¤(Player + Enemies)
 	TArray<class AC_BasicCharacter*> AllCharacters{};
 
-private: // Test¿ë Enemy
+private: // Testìš© Enemy
 
 	class AC_Enemy* Enemy{};
 
 private:
 
-	// InGameScene³»¿¡¼­ Unreal GC·ÎºÎÅÍ º¸È£µÈ °´Ã¼µé -> GameSceneÀÌ ³¡³¯ ¶§ ÇØÁ¦ÇÒ ¿¹Á¤
+	// InGameSceneë‚´ì—ì„œ Unreal GCë¡œë¶€í„° ë³´í˜¸ëœ ê°ì²´ë“¤ -> GameSceneì´ ëë‚  ë•Œ í•´ì œí•  ì˜ˆì •
 	TSet<UObject*> NonGCObjects{};
 
 private:
 
-	// Main PlayerÀÇ Widgetµé, ÇöÀç ¾î¶² WidgetModeÀÎÁö¿¡ µû¸¥ Visibility setting Ã³¸®
+	// Main Playerì˜ Widgetë“¤, í˜„ì¬ ì–´ë–¤ WidgetModeì¸ì§€ì— ë”°ë¥¸ Visibility setting ì²˜ë¦¬
 	EHUDMode CurrentHUDMode{};
 
 	TMap<EHUDMode, class UUserWidget*> HUDWidgets{};
 	UUserWidget*					   MiniMapWidget{};
 
 };
+
+

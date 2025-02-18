@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -55,7 +55,7 @@ public:
 public:
 
 	/// <summary>
-	/// ThrowableÀÇ Holster¿¡ ºÎÂø ½Ã, visibleÀ» ²û
+	/// Throwableì˜ Holsterì— ë¶€ì°© ì‹œ, visibleì„ ë”
 	/// </summary>
 	bool AttachToHolster(class USceneComponent* InParent) override;
 
@@ -73,26 +73,26 @@ private:
 	void EquipToCharacter(AC_BasicCharacter* Character);
 	//protected:
 		/// <summary>
-		/// ÇØ´ç ¾ÆÀÌÅÛ(°´Ã¼)¸¦ ¾ó¸¶³ª ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´ÂÁö °è»êÇØ¼­ ³Ö´Â´Ù. -> ÀÏºÎ¸¸ ³Ö´Â °æ¿ì¿¡´Â ÀÎº¥¿¡ ³ÖÀ» ¶§ SpawnÀ» ÅëÇØ »õ·Î¿î °´Ã¼¸¦ ¸¸µé¾î 
-		/// °¹¼ö¸¦ ¼³Á¤ÇØÁÖ°í ¿øº»ÀÇ °¹¼öµµ ¼öÁ¤. (¿øº»stack = ¼öÁ¤µÈ ¿øº»ÀÇ stack + »ı¼º°´Ã¼ÀÇ stack)
+		/// í•´ë‹¹ ì•„ì´í…œ(ê°ì²´)ë¥¼ ì–¼ë§ˆë‚˜ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ”ì§€ ê³„ì‚°í•´ì„œ ë„£ëŠ”ë‹¤. -> ì¼ë¶€ë§Œ ë„£ëŠ” ê²½ìš°ì—ëŠ” ì¸ë²¤ì— ë„£ì„ ë•Œ Spawnì„ í†µí•´ ìƒˆë¡œìš´ ê°ì²´ë¥¼ ë§Œë“¤ì–´ 
+		/// ê°¯ìˆ˜ë¥¼ ì„¤ì •í•´ì£¼ê³  ì›ë³¸ì˜ ê°¯ìˆ˜ë„ ìˆ˜ì •. (ì›ë³¸stack = ìˆ˜ì •ëœ ì›ë³¸ì˜ stack + ìƒì„±ê°ì²´ì˜ stack)
 		/// </summary>
 		/// <param name="Character"></param>
 		/// <returns></returns>
 	bool LegacyMoveToInven(AC_BasicCharacter* Character) override;
 
 	/// <summary>
-	/// ÇØ´ç ¾ÆÀÌÅÛ(°´Ã¼)¸¦ ¾ó¸¶³ª ¹ö¸± °ÍÀÎÁö °è»êÇØ¼­ ¹ö¸°´Ù.(ÀÌ°ÍÀº ÈÄ¿¡ ³ª´²¹ö¸®±â ±â´ÉÀ» À§ÇØ uint8Á¤µµ¸¦ ¹Ş¾Æ »ç¿ëÇÏ¸é ÁÁÀ»µí.)
-	/// ->ÀÏºÎ¸¸ ¹ö¸®´Â °æ¿ì ¾ÆÀÌÅÛ(°´Ã¼)¸¦ »õ·Î »ı¼ºÇØ¼­ ¿øº»°ú ¼ö·®À» Á¶Á¤ÇØ¾ß ÇÑ´Ù. (¿øº»stack = ¼öÁ¤µÈ ¿øº»ÀÇ stack + »ı¼º°´Ã¼ÀÇ stack)
+	/// í•´ë‹¹ ì•„ì´í…œ(ê°ì²´)ë¥¼ ì–¼ë§ˆë‚˜ ë²„ë¦´ ê²ƒì¸ì§€ ê³„ì‚°í•´ì„œ ë²„ë¦°ë‹¤.(ì´ê²ƒì€ í›„ì— ë‚˜ëˆ ë²„ë¦¬ê¸° ê¸°ëŠ¥ì„ ìœ„í•´ uint8ì •ë„ë¥¼ ë°›ì•„ ì‚¬ìš©í•˜ë©´ ì¢‹ì„ë“¯.)
+	/// ->ì¼ë¶€ë§Œ ë²„ë¦¬ëŠ” ê²½ìš° ì•„ì´í…œ(ê°ì²´)ë¥¼ ìƒˆë¡œ ìƒì„±í•´ì„œ ì›ë³¸ê³¼ ìˆ˜ëŸ‰ì„ ì¡°ì •í•´ì•¼ í•œë‹¤. (ì›ë³¸stack = ìˆ˜ì •ëœ ì›ë³¸ì˜ stack + ìƒì„±ê°ì²´ì˜ stack)
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns></returns>
 	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛÀ» ½½·ÔÀ¸·Î ÀÌµ¿.
+	/// ì•„ì´í…œì„ ìŠ¬ë¡¯ìœ¼ë¡œ ì´ë™.
 	/// </summary>
 	/// <param name="Character"></param>
-	/// <returns>true¸é ÀÌµ¿ ¼º°ø, false¸é ½ÇÆĞ</returns>
+	/// <returns>trueë©´ ì´ë™ ì„±ê³µ, falseë©´ ì‹¤íŒ¨</returns>
 	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 
 
@@ -128,7 +128,7 @@ public:
 	void OnThrowReadyLoop();
 
 	/// <summary>
-	/// ½ÇÁúÀûÀ¸·Î ´øÁö±â Ã³¸®
+	/// ì‹¤ì§ˆì ìœ¼ë¡œ ë˜ì§€ê¸° ì²˜ë¦¬
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnThrowThrowable();
@@ -160,51 +160,65 @@ public: // Getters & Setters
 	class UParticleSystem* GetParticleExplodeEffect() const { return ParticleExplodeEffect; }
 	class UNiagaraSystem* GetNiagaraExplodeEffect() const { return NiagaraExplodeEffect; }
 
+	void SetProjectileStartLocation(const FVector& InLocation) { ProjStartLocation = InLocation; }
+	void SetProjectileLaunchVelocity(const FVector& LaunchVelocity) { ProjLaunchVelocity = LaunchVelocity; }
+	float GetSpeed() const { return Speed; }
+	static float GetProjectileRadius() { return PROJECTILE_RADIUS; }
+	//EThrowableType GetThrowableType() const { return ThrowableType; }
+
 public:
 
 	/// <summary>
-	/// ¾ÈÀü¼ÕÀâÀÌ±îÁö ³¯¸®±â
+	/// ì•ˆì „ì†ì¡ì´ê¹Œì§€ ë‚ ë¦¬ê¸°
 	/// </summary>
 	void StartCooking();
 
 	/// <summary>
-	/// <para> CookingµÈ Ã¤·Î ¶¥¿¡ ³»·Á³õ±â / ÀÌ¹Ì cookingÀÌ ½ÃÀÛµÇ¾úÀ» ¶§ ¹«±â¸¦ ¹Ù²Ù°Å³ª, ¼Õ¿¡ Áã°í ÀÖÀ» ¶§ ÅÍÁ³À» ¶§µµ »ç¿ë </para>
-	/// <para> ¶¥¿¡ ³»·Á³õ°í OnThrowProcessEnd È£ÃâÇÔÀ¸·Î½á ´ÙÀ½ µ¿ÀÛµµ ¸ğµÎ Ã³¸® </para>
+	/// <para> Cookingëœ ì±„ë¡œ ë•…ì— ë‚´ë ¤ë†“ê¸° / ì´ë¯¸ cookingì´ ì‹œì‘ë˜ì—ˆì„ ë•Œ ë¬´ê¸°ë¥¼ ë°”ê¾¸ê±°ë‚˜, ì†ì— ì¥ê³  ìˆì„ ë•Œ í„°ì¡Œì„ ë•Œë„ ì‚¬ìš© </para>
+	/// <para> ë•…ì— ë‚´ë ¤ë†“ê³  OnThrowProcessEnd í˜¸ì¶œí•¨ìœ¼ë¡œì¨ ë‹¤ìŒ ë™ì‘ë„ ëª¨ë‘ ì²˜ë¦¬ </para>
 	/// </summary>
-	/// <returns> ¶¥¿¡ ±×³É ³õÀ» ¼ö ¾ø´Â °æ¿ì return false </returns>
+	/// <returns> ë•…ì— ê·¸ëƒ¥ ë†“ì„ ìˆ˜ ì—†ëŠ” ê²½ìš° return false </returns>
 	bool ReleaseOnGround();
 
 private:
 
 	/// <summary>
-	/// ÅõÃ´·ù ÅÍÄ¡±â
+	/// íˆ¬ì²™ë¥˜ í„°ì¹˜ê¸°
 	/// </summary>
 	void Explode();
 
-protected:
+public:
 
 	// Get Predicted Projectile path start location
-	UFUNCTION(BlueprintCallable)
 	FVector GetPredictedThrowStartLocation();
 
 private:
 
 	/// <summary>
-	/// ÅõÃ´ ¿¹»ó °æ·Î ±×¸®±â (µğ¹ö±ë line)
+	/// íˆ¬ì²™ ì˜ˆìƒ ê²½ë¡œ ê·¸ë¦¬ê¸° (ë””ë²„ê¹… line)
 	/// </summary>
 	void DrawDebugPredictedPath();
 
 	/// <summary>
-	/// ÅõÃ´ ¿¹»ó °æ·Î ±×¸®±â (½ÇÁ¦ line)
+	/// íˆ¬ì²™ ì˜ˆìƒ ê²½ë¡œ ê·¸ë¦¬ê¸° (ì‹¤ì œ line)
 	/// </summary>
 	void DrawPredictedPath();
 
-	void HandlePredictedPath();
-	void UpdateProjectileLaunchValues();
+	/// <summary>
+	/// Playerì˜ íˆ¬ì²™ ì˜ˆìƒ ê²½ë¡œ ì‹¤ì‹œê°„ìœ¼ë¡œ ê·¸ë¦¬ê¸°(Tick)
+	/// </summary>
+	void HandlePlayerPredictedPath();
+
+
+	/// <summary>
+	/// <para> Playerì˜ Projectileë°œì‚¬ ê´€ë ¨ ê°’ë“¤ ì´ˆê¸°í™” </para>
+	/// <para> (ProjStartLocation & ProjLaunchVelocity) ì´ˆê¸°í™” </para>
+	/// </summary>
+	void UpdatePlayerProjectileLaunchValues();
 
 protected:
 	/// <summary>
-	/// OwnerCharacterÀÇ Pose Transition ¸ğ¼ÇÀÌ ³¡³µÀ» ¶§ Delegate¸¦ ÅëÇØ call backÀ» ¹Ş´Â ÇÔ¼ö (ÇöÀç Ä³¸¯ÅÍÀÇ slot¿¡ ÀåÂøµÈ ¹«±â¸¸ call back µÉ ¿¹Á¤) 
+	/// OwnerCharacterì˜ Pose Transition ëª¨ì…˜ì´ ëë‚¬ì„ ë•Œ Delegateë¥¼ í†µí•´ call backì„ ë°›ëŠ” í•¨ìˆ˜ (í˜„ì¬ ìºë¦­í„°ì˜ slotì— ì¥ì°©ëœ ë¬´ê¸°ë§Œ call back ë  ì˜ˆì •) 
 	/// </summary>
 	void OnOwnerCharacterPoseTransitionFin() override;
 
@@ -213,6 +227,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ClearSpline();
 
+public:
+	bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+	
+	bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
+	
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -235,7 +254,7 @@ protected:
 
 protected:
 
-	// ÇöÀç ÀÚ¼¼¿¡ ¸Â´Â Throw process ¸ùÅ¸ÁÖµé
+	// í˜„ì¬ ìì„¸ì— ë§ëŠ” Throw process ëª½íƒ€ì£¼ë“¤
 	UPROPERTY(BlueprintReadOnly)
 	FThrowProcessMontages CurThrowProcessMontages{};
 
@@ -244,7 +263,7 @@ protected:
 
 protected:
 
-	// ¸¶¿ì½º¸¦ ´©¸£°í ÀÖ´Â »óÅÂ(OnGoing)
+	// ë§ˆìš°ìŠ¤ë¥¼ ëˆ„ë¥´ê³  ìˆëŠ” ìƒíƒœ(OnGoing)
 	bool bIsCharging{};
 
 	UPROPERTY(BluePrintReadOnly)
@@ -255,7 +274,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UShapeComponent* Collider{};
 
-protected: // Projectile °ü·Ã
+protected: // Projectile ê´€ë ¨
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UProjectileMovementComponent* ProjectileMovement{};
@@ -268,8 +287,9 @@ private:
 
 	float Speed = 1500.f;
 	static const float UP_DIR_BOOST_OFFSET;
+	static const float PROJECTILE_RADIUS;
 
-protected: // Predicted Path °ü·Ã
+protected: // Predicted Path ê´€ë ¨
 
 	class USplineComponent* PathSpline{};
 
@@ -283,10 +303,10 @@ protected: // Predicted Path °ü·Ã
 
 private:
 
-	// Predicted Path¸¦ ±×¸± ¶§, ´øÁö±â ÀÚ¼¼¿¡¼­ÀÇ socketÀ§Ä¡¸¦ ÆÄ¾ÇÇÏ±â À§ÇÔ, ÇÃ·¹ÀÌ¾î¸¸ »ç¿ë
+	// Predicted Pathë¥¼ ê·¸ë¦´ ë•Œ, ë˜ì§€ê¸° ìì„¸ì—ì„œì˜ socketìœ„ì¹˜ë¥¼ íŒŒì•…í•˜ê¸° ìœ„í•¨, í”Œë ˆì´ì–´ë§Œ ì‚¬ìš©
 	static class USkeletalMeshComponent* OwnerMeshTemp;
 
-	//  GameScene¿¡ ¹èÄ¡µÈ ÃÑ ThrowingWeapon °³¼ö -> OwnerMeshTemp Destroy Ã³¸® ½Ã »ç¿ë ¿¹Á¤
+	//  GameSceneì— ë°°ì¹˜ëœ ì´ ThrowingWeapon ê°œìˆ˜ -> OwnerMeshTemp Destroy ì²˜ë¦¬ ì‹œ ì‚¬ìš© ì˜ˆì •
 	static int ThrowingWeaponCount;
 
 private:
@@ -322,7 +342,7 @@ protected:
 
 protected:
 
-	// Æø¹ß ¹İ°æ ¹üÀ§ collider
+	// í­ë°œ ë°˜ê²½ ë²”ìœ„ collider
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UShapeComponent* ExplosionSphere{};
 
@@ -330,6 +350,15 @@ private:
 
 	static const TMap<EThrowableType, FString> THROWABLETYPE_ITEMNAME_MAP;
 
-public:
-	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+private:
+
+	// ê° Throwable ì¢…ë¥˜ ë³„ AI Attack ì „ëµ
+	static TMap<EThrowableType, class II_AIThrowableAttackStrategy*> AIAttackStrategies;
+
+	// í˜„ Throwable ì¢…ë¥˜ì— ë”°ë¥¸ AI Attack ì „ëµ
+	class II_AIThrowableAttackStrategy* AIAttackStrategy{};
+
 };
+
+
+

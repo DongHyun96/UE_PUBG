@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -13,9 +13,9 @@
 
 /*
 TODO :
-SkyDiveÇÒ ¸ñÇ¥ÁöÁ¡ ¼³Á¤(¶¥)
-ÃÖ´Ü °Å¸®°¡ µÇ¾úÀ» ¶§ ºñÇà±â¿¡¼­ ³»¸®±â
-ºñÇà±â¿¡¼­ ³»¸° ÀÌÈÄ ¸ñÇ¥ ÁöÁ¡À¸·Î SkyDive ÁøÇà
+SkyDiveí•  ëª©í‘œì§€ì  ì„¤ì •(ë•…)
+ìµœë‹¨ ê±°ë¦¬ê°€ ë˜ì—ˆì„ ë•Œ ë¹„í–‰ê¸°ì—ì„œ ë‚´ë¦¬ê¸°
+ë¹„í–‰ê¸°ì—ì„œ ë‚´ë¦° ì´í›„ ëª©í‘œ ì§€ì ìœ¼ë¡œ SkyDive ì§„í–‰
 */
 
 UCLASS()
@@ -35,3 +35,5 @@ private:
 	
 	class AC_Enemy* OwnerEnemy{};
 };
+
+

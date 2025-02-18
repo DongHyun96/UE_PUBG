@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Weapon/ThrowingWeapon/C_FlashBangExplode.h"
@@ -21,8 +21,8 @@ const float AC_FlashBangExplode::EFFECT_DURATION_MAX = 6.f;
 
 bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 {
-	// TODO : ¹İ°æ¿¡ ÀÖ´Â Ä³¸¯ÅÍ ½Ã¾ß¿¡ µû¸¥ ½Ã°¢ Àå¾Ö ÁÖ±â
-	// Ã»°¢Àå¾Ö´Â ¸ğµÎ µ¿ÀÏ 
+	// TODO : ë°˜ê²½ì— ìˆëŠ” ìºë¦­í„° ì‹œì•¼ì— ë”°ë¥¸ ì‹œê° ì¥ì•  ì£¼ê¸°
+	// ì²­ê°ì¥ì• ëŠ” ëª¨ë‘ ë™ì¼ 
 
 	if (ThrowingWeapon->GetParticleExplodeEffect())
 		UGameplayStatics::SpawnEmitterAtLocation(ThrowingWeapon->GetWorld(), ThrowingWeapon->GetParticleExplodeEffect(), ThrowingWeapon->GetActorLocation());
@@ -44,7 +44,7 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 
 	ExplosionSphere->GetOverlappingActors(OverlappingActors, TSubclassOf<AC_BasicCharacter>());
 
-	// Á¤È®ÇÑ ÇÇ°İ ÆÇÁ¤À» À§ÇØ ¸ğµç Ä³¸¯ÅÍÀÇ Physics Asset Collider ²¨µÎ°í Á¶»çÇÒ ÇÇ°İ ºÎÀ§¸¸ Á¶»çÇÒ ¶§ ÄÑµÎ±â
+	// ì •í™•í•œ í”¼ê²© íŒì •ì„ ìœ„í•´ ëª¨ë“  ìºë¦­í„°ì˜ Physics Asset Collider êº¼ë‘ê³  ì¡°ì‚¬í•  í”¼ê²© ë¶€ìœ„ë§Œ ì¡°ì‚¬í•  ë•Œ ì¼œë‘ê¸°
 	for (AActor* Actor : OverlappingActors)
 	{
 		AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(Actor);
@@ -68,20 +68,20 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
 	{
-		// ¸Ó¸® ÂÊ¿¡¸¸ LineTrace ½ÃµµÇØ¼­ ¸Â´Â´Ù¸é, ¼¶±¤Åº È¿°ú ¹ßµ¿ ½Ãµµ
+		// ë¨¸ë¦¬ ìª½ì—ë§Œ LineTrace ì‹œë„í•´ì„œ ë§ëŠ”ë‹¤ë©´, ì„¬ê´‘íƒ„ íš¨ê³¼ ë°œë™ ì‹œë„
 		FHitResult				HitResult{};
 		FVector					DestLocation = Character->GetMesh()->GetBoneLocation("Head");
 		FCollisionQueryParams	CollisionParams{};
 		CollisionParams.AddIgnoredActor(ThrowingWeapon);
 
-		// ¸Ó¸® ºÎÀ§ Collider¸¸ ÄÑ±â
+		// ë¨¸ë¦¬ ë¶€ìœ„ Colliderë§Œ ì¼œê¸°
 		SetPhysicsAssetColliderEnabled(Character, "Neck", true);
 
 		bool HasHit = ThrowingWeapon->GetWorld()->LineTraceSingleByChannel(HitResult, ExplosionLocation, DestLocation, ECC_Visibility, CollisionParams);
 
 		if (!HasHit || HitResult.GetActor() != Character || HitResult.BoneName != "Neck")
 		{
-			SetPhysicsAssetColliderEnabled(Character, "Neck", false); // ¸Ó¸® ºÎÀ§ Collider ´Ù½Ã ²ô±â
+			SetPhysicsAssetColliderEnabled(Character, "Neck", false); // ë¨¸ë¦¬ ë¶€ìœ„ Collider ë‹¤ì‹œ ë„ê¸°
 			continue;
 		}
 
@@ -90,11 +90,11 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		// Apply FlashBang effect to character
 		ExecuteExplosionEffectToCharacter(Character, ExplosionLocation, ExplosionRad);
 
-		// ¸Ó¸® ºÎÀ§ Collider ´Ù½Ã ²ô±â (µÚ¿¡ ÀÖ´Â Ä³¸¯ÅÍÀÇ ÁßÃ¸À» ÇÇÇÏ±â À§ÇÔ)
+		// ë¨¸ë¦¬ ë¶€ìœ„ Collider ë‹¤ì‹œ ë„ê¸° (ë’¤ì— ìˆëŠ” ìºë¦­í„°ì˜ ì¤‘ì²©ì„ í”¼í•˜ê¸° ìœ„í•¨)
 		SetPhysicsAssetColliderEnabled(Character, "Neck", false);
 	}
 
-	// ¸ğµç Ä³¸¯ÅÍÀÇ Physics Asset ´Ù½Ã ÄÑµÎ±â
+	// ëª¨ë“  ìºë¦­í„°ì˜ Physics Asset ë‹¤ì‹œ ì¼œë‘ê¸°
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
 		SetPhysicsAssetCollidersEnabled(Character, true);
 
@@ -142,9 +142,9 @@ void AC_FlashBangExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* C
 	CharacterToExplosion.Normalize();
 	float Dot						= FVector::DotProduct(Character->GetActorForwardVector(), CharacterToExplosion);
 	float Rad						= FMath::Acos(Dot);
-	float Degree					= FMath::RadiansToDegrees(Rad); // Ä³¸¯ÅÍ forward, Æø¹ß À§Ä¡ »çÀÌÀÇ °¢µµ (90µµ ÀÌ»óÀÌ¸é µŞÆí)
+	float Degree					= FMath::RadiansToDegrees(Rad); // ìºë¦­í„° forward, í­ë°œ ìœ„ì¹˜ ì‚¬ì´ì˜ ê°ë„ (90ë„ ì´ìƒì´ë©´ ë’·í¸)
 
-	// Ä³¸¯ÅÍ°¡ ÇöÀç ¹Ù¶óº¸°í ÀÖ´Â ¹æÇâ°ú °Å¸® µîÀ» µûÁ®¼­ ¼¶±¤Åº effect ³²±â±â
+	// ìºë¦­í„°ê°€ í˜„ì¬ ë°”ë¼ë³´ê³  ìˆëŠ” ë°©í–¥ê³¼ ê±°ë¦¬ ë“±ì„ ë”°ì ¸ì„œ ì„¬ê´‘íƒ„ effect ë‚¨ê¸°ê¸°
 	AC_Player* Player = Cast<AC_Player>(Character);
 
 	if (IsValid(Player))
@@ -153,7 +153,7 @@ void AC_FlashBangExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* C
 
 		float EffectDuration = EFFECT_DURATION_MAX;
 
-		// ÀÏÁ¤°Å¸®¿¡¼­ ¸Ö¾îÁ®¾ß Duration°¨¼Ò¸¦ ½ÃÅ°°í, ¼¶±¤ÅºÀ» ¹Ù¶óº¸´Â ¹æÇâ¿¡ µû¸¥ °¨¼Ò±îÁö Àû¿ë½ÃÅ´
+		// ì¼ì •ê±°ë¦¬ì—ì„œ ë©€ì–´ì ¸ì•¼ Durationê°ì†Œë¥¼ ì‹œí‚¤ê³ , ì„¬ê´‘íƒ„ì„ ë°”ë¼ë³´ëŠ” ë°©í–¥ì— ë”°ë¥¸ ê°ì†Œê¹Œì§€ ì ìš©ì‹œí‚´
 		if (DistanceRateFactor < 0.7f) EffectDuration *= (Degree <= 110.f) ? DistanceRateFactor : DistanceRateFactor * 0.5f;
 		
 		UC_Util::Print("EffectDuration : " + FString::SanitizeFloat(EffectDuration), FColor::Green, 5.f);
@@ -163,6 +163,8 @@ void AC_FlashBangExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* C
 		Player->GetCameraEffectComponent()->ExecuteFlashBangEffect(EffectDuration);
 	}
 
-	// TODO : EnemyÀÇ °æ¿ì ÀûÀıÇÑ ¹æÇØ ÁÖ±â
+	// TODO : Enemyì˜ ê²½ìš° ì ì ˆí•œ ë°©í•´ ì£¼ê¸°
 
 }
+
+

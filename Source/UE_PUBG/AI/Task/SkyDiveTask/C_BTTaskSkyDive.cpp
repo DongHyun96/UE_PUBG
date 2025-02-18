@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AI/Task/SkyDiveTask/C_BTTaskSkyDive.h"
@@ -14,8 +14,10 @@ void UC_BTTaskSkyDive::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 
 EBTNodeResult::Type UC_BTTaskSkyDive::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// TODO : ¸ñÀûÁö ÁöÁ¤ÇÏ±â
+	// TODO : ëª©ì ì§€ ì§€ì •í•˜ê¸°
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	return EBTNodeResult::Type();
 }
+
+

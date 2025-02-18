@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "MagneticField/C_MagneticFieldManager.h"
@@ -43,9 +43,9 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 	{
 	case EMagneticFieldState::IDLE:
 
-		if (Timer < PhaseInfos[CurrentPhase].ShrinkDelayTime) return; // º¸·ù½Ã°£ÀÌ ¾ÆÁ÷ ³²¾ÒÀ½
+		if (Timer < PhaseInfos[CurrentPhase].ShrinkDelayTime) return; // ë³´ë¥˜ì‹œê°„ì´ ì•„ì§ ë‚¨ì•˜ìŒ
 
-		/* º¸·ù½Ã°£ÀÌ ´Ù Áö³µÀ» ¶§ */
+		/* ë³´ë¥˜ì‹œê°„ì´ ë‹¤ ì§€ë‚¬ì„ ë•Œ */
 		Timer = 0.f;
 
 		MagneticFieldState = EMagneticFieldState::SHRINK;
@@ -54,7 +54,7 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 	case EMagneticFieldState::SHRINK:
 
 
-		// ÁÙ¾îµå´Â ½Ã°£ÀÌ ¿ÏÀüÈ÷ ³¡³µÀ» ¶§
+		// ì¤„ì–´ë“œëŠ” ì‹œê°„ì´ ì™„ì „ížˆ ëë‚¬ì„ ë•Œ
 		if (Timer > PhaseInfos[CurrentPhase].ShrinkTotalTime)
 		{
 			UpdateWalls(MainCircle.MidLocation, MainCircle.Radius);
@@ -64,7 +64,7 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 			return;
 		}
 
-		// ÀÏÁ¤ÇÑ ¼Ó·Â ¹× ¹æÇâÀ¸·Î MainCircleÀ» ÁÙÀÌ°í Áß¾ÓÁ¡µµ ÀÏÁ¤ÇÑ ¼Ó·Â°ú ¹æÇâÀ¸·Î ¿Å±â±â
+		// ì¼ì •í•œ ì†ë ¥ ë° ë°©í–¥ìœ¼ë¡œ MainCircleì„ ì¤„ì´ê³  ì¤‘ì•™ì ë„ ì¼ì •í•œ ì†ë ¥ê³¼ ë°©í–¥ìœ¼ë¡œ ì˜®ê¸°ê¸°
 		MainCircle.Radius -= PhaseInfos[CurrentPhase].RadiusShrinkSpeed * DeltaTime;
 
 		MainCircle.MidLocation +=	PhaseInfos[CurrentPhase].MidPointMoveDirection * 
@@ -77,26 +77,26 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 		return;
 	case EMagneticFieldState::SHRINK_COMPLETED:
 	{
-		// °ª Á¤È®È÷ ¸ÂÃçÁÖ±â
+		// ê°’ ì •í™•ížˆ ë§žì¶°ì£¼ê¸°
 		MainCircle = NextCircle;
 
-		// ¸¶Áö¸· phaseÀÇ Shrink completed
+		// ë§ˆì§€ë§‰ phaseì˜ Shrink completed
 		if (CurrentPhase >= LAST_PHASE) return;
 
 		CurrentPhase++;
 
-		// ¸¶Áö¸· ÀÚ±âÀåÀÇ ÁÙ¾îµå´Â °÷Àº Á¤ °¡¿îµ¥
+		// ë§ˆì§€ë§‰ ìžê¸°ìž¥ì˜ ì¤„ì–´ë“œëŠ” ê³³ì€ ì • ê°€ìš´ë°
 		if (CurrentPhase == LAST_PHASE)
 		{
 			NextCircle.MidLocation = MainCircle.MidLocation;
 			NextCircle.Radius = PhaseInfos[CurrentPhase + 1].PhaseRadius;
 
-			// ¼Ó·Â ¼¼ÆÃ
+			// ì†ë ¥ ì„¸íŒ…
 			float RadiusDifference = MainCircle.Radius - NextCircle.Radius;
 			PhaseInfos[CurrentPhase].RadiusShrinkSpeed = RadiusDifference / PhaseInfos[CurrentPhase].ShrinkTotalTime;
 			PhaseInfos[CurrentPhase].MidPointMoveSpeed = 0.f;
 		}
-		else SetRandomNextCircleAndSpeedDirection(); // RandomÇÑ Next Circle »Ì±â
+		else SetRandomNextCircleAndSpeedDirection(); // Randomí•œ Next Circle ë½‘ê¸°
 		
 		UpdateNextCircleInfoOnMapUI();
 			
@@ -113,20 +113,20 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 
 void AC_MagneticFieldManager::InitManager()
 {
-	// Ã¹ Main ÀÚ±âÀåÀº ¾Æ¿¹ ¸Ê ¹Û¿¡ Á¸Àç -> 1ÆäÀÌÁî ÁÙ¾îµé ¶§ÀÇ NextCircle·Î ÁÙ¾îµé¾úÀ» ¶§ ºñ·Î¼Ò ¸Ê¿¡ ÀâÈû
+	// ì²« Main ìžê¸°ìž¥ì€ ì•„ì˜ˆ ë§µ ë°–ì— ì¡´ìž¬ -> 1íŽ˜ì´ì¦ˆ ì¤„ì–´ë“¤ ë•Œì˜ NextCircleë¡œ ì¤„ì–´ë“¤ì—ˆì„ ë•Œ ë¹„ë¡œì†Œ ë§µì— ìž¡íž˜
 
-	// ¸â¹öº¯¼öµé ÃÊ±âÈ­
+	// ë©¤ë²„ë³€ìˆ˜ë“¤ ì´ˆê¸°í™”
 	CurrentPhase		= 1;
 	MagneticFieldState	= EMagneticFieldState::IDLE;
 	Timer				= 0.f;
 	
-	MainCircle.MidLocation	= { 0.f, 0.f, WALL_Z_LOCATION }; // ¸ÊÀÇ ÁßÁ¡À¸·Î setting
+	MainCircle.MidLocation	= { 0.f, 0.f, WALL_Z_LOCATION }; // ë§µì˜ ì¤‘ì ìœ¼ë¡œ setting
 	MainCircle.Radius		= PhaseInfos[1].PhaseRadius;
 
-	// Next Circle ¼³Á¤ÇØÁÖ±â
+	// Next Circle ì„¤ì •í•´ì£¼ê¸°
 	SetRandomNextCircleAndSpeedDirection();
 
-	// TODO : ºñÇà±â °æ·Î µµ´Þ ¸ðµÎ ³¡³½ µÚ ÆäÀÌÁî ½ÃÀÛ
+	// TODO : ë¹„í–‰ê¸° ê²½ë¡œ ë„ë‹¬ ëª¨ë‘ ëë‚¸ ë’¤ íŽ˜ì´ì¦ˆ ì‹œìž‘
 
 	UpdateWalls(MainCircle.MidLocation, MainCircle.Radius);
 
@@ -144,7 +144,7 @@ void AC_MagneticFieldManager::UpdateWalls(const FVector& MidLocation, const floa
 	MagneticWalls[0]->SetActorLocation(FirstPos);
 
 	float WallWidth = 2 * PI * Radius / float(SLICE_COUNT);
-	WallWidth *= 0.01f; // ±âº» ´ÜÀ§°¡ 1m·Î ¸ÂÃçÁ® ÀÖÀ½
+	WallWidth *= 0.01f; // ê¸°ë³¸ ë‹¨ìœ„ê°€ 1më¡œ ë§žì¶°ì ¸ ìžˆìŒ
 
 	MagneticWalls[0]->SetActorScale3D(FVector(100.f, WallWidth, 1.f));
 	MagneticWalls[0]->UpdateMaterialVTiling();
@@ -183,7 +183,7 @@ void AC_MagneticFieldManager::SetRandomNextCircleAndSpeedDirection()
 	NextCircle.Radius		= PhaseInfos[CurrentPhase + 1].PhaseRadius;
 	NextCircle.MidLocation	= RandomNextCirclePos;
 
-	// ¼Ó·Â setting
+	// ì†ë ¥ setting
 	float RadiusDifference = MainCircle.Radius - NextCircle.Radius;
 	PhaseInfos[CurrentPhase].RadiusShrinkSpeed = RadiusDifference / PhaseInfos[CurrentPhase].ShrinkTotalTime;
 
@@ -200,7 +200,7 @@ void AC_MagneticFieldManager::UpdateMainCircleInfoOnMapUI()
 	UC_MapWidget* MiniMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget();
 	UC_MapWidget* MainMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMainMapWidget();
 
-	// ÁßÁ¡°ú ¹ÝÁö¸§ UV ÁÂÇ¥°è·Î º¯È¯
+	// ì¤‘ì ê³¼ ë°˜ì§€ë¦„ UV ì¢Œí‘œê³„ë¡œ ë³€í™˜
 	float U		=  MainCircle.MidLocation.Y * MAP_LENGTH_TO_UV_FACTOR + 0.5f;
 	float V		= -MainCircle.MidLocation.X * MAP_LENGTH_TO_UV_FACTOR + 0.5f;
 	float Rad	=  MainCircle.Radius * MAP_LENGTH_TO_UV_FACTOR;
@@ -214,7 +214,7 @@ void AC_MagneticFieldManager::UpdateNextCircleInfoOnMapUI()
 	UC_MapWidget* MiniMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget();
 	UC_MapWidget* MainMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMainMapWidget();
 
-	// ÁßÁ¡°ú ¹ÝÁö¸§ UV ÁÂÇ¥°è·Î º¯È¯
+	// ì¤‘ì ê³¼ ë°˜ì§€ë¦„ UV ì¢Œí‘œê³„ë¡œ ë³€í™˜
 	float U		=  NextCircle.MidLocation.Y * MAP_LENGTH_TO_UV_FACTOR + 0.5f;
 	float V		= -NextCircle.MidLocation.X * MAP_LENGTH_TO_UV_FACTOR + 0.5f;
 	float Rad	=  NextCircle.Radius * MAP_LENGTH_TO_UV_FACTOR;
@@ -222,5 +222,7 @@ void AC_MagneticFieldManager::UpdateNextCircleInfoOnMapUI()
 	MiniMapWidget->SetNextCircleInfo(U, V, Rad);
 	MainMapWidget->SetNextCircleInfo(U, V, Rad);
 }
+
+
 
 

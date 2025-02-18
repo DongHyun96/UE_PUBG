@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -29,9 +29,9 @@ public:
 	AAttachmentActor* GetCurrentAttachment(class USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName);
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
-	//ÃÑ¿¡ ½ÇÁ¦ mesh¸¦ ºÙÀÌ´Â ÇÔ¼ö.
+	//ì´ì— ì‹¤ì œ meshë¥¼ ë¶™ì´ëŠ” í•¨ìˆ˜.
 	bool AttachToGun(class USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName);
-	//ÃÑ¿¡ ½ÇÁ¦ ºÙÀº mesh¸¦ ¶§´Â ÇÔ¼ö.
+	//ì´ì— ì‹¤ì œ ë¶™ì€ meshë¥¼ ë•ŒëŠ” í•¨ìˆ˜.
 	void DetachFromGun(class USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName);
 
 	void UseAttachmentStrategy(USceneComponent* InParent);
@@ -40,3 +40,5 @@ protected:
 	TMap<EPartsName, TMap<EAttachmentNames,TArray<class AAttachmentActor*>>> AttachableItemsMesh;
 		
 };
+
+

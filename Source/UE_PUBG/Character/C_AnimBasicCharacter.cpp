@@ -44,15 +44,16 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	//FString TheFloatStr = FString::SanitizeFloat(Direction);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 
-	MainState		  = OwnerCharacter->GetMainState();
-	HandState         = OwnerCharacter->GetHandState();
-	PoseState         = OwnerCharacter->GetPoseState();
-	bIsFalling        = OwnerCharacter->GetCharacterMovement()->IsFalling();
-	bIsJumping        = OwnerCharacter->GetIsJumping();
-	bIsAimingRifle    = OwnerCharacter->GetIsAimDown();
-	bCanCharacterMove = OwnerCharacter->GetCanMove();
-	bIsHoldDirection  = OwnerCharacter->GetIsHoldDirection();
-	bIsAimDownSight   = OwnerCharacter->GetIsAimDown();
+	MainState		    = OwnerCharacter->GetMainState();
+	HandState           = OwnerCharacter->GetHandState();
+	PoseState           = OwnerCharacter->GetPoseState();
+	bIsFalling          = OwnerCharacter->GetCharacterMovement()->IsFalling();
+	bIsJumping          = OwnerCharacter->GetIsJumping();
+	bIsAimingRifle      = OwnerCharacter->GetIsAimDown();
+	bCanCharacterMove   = OwnerCharacter->GetCanMove();
+	bIsHoldDirection    = OwnerCharacter->GetIsHoldDirection();
+	bIsAimDownSight     = OwnerCharacter->GetIsAimDown();
+	bIsTooCloseToAimGun = OwnerCharacter->GetIsTooCloseToAimGun();
 	if (OwnerCharacter->GetMovementComponent()->IsFalling())
 		bIsHighEnoughToFall = OwnerCharacter->GetIsHighEnoughToFall();
 	else
@@ -104,7 +105,7 @@ void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_Stand_To_Falling()
 
 void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_RunningJump_To_Falling()
 {
-	// Start Transition ½Ã ¼öÇàÇÒ ·ÎÁ÷ Ãß°¡
+	// Start Transition ì‹œ ìˆ˜í–‰í•  ë¡œì§ ì¶”ê°€
 	FString TheFloatStr = "Start RunningJump To Falling Transition";
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	UE_LOG(LogTemp, Warning, TEXT("Transition Started"));
@@ -123,7 +124,7 @@ void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_RunningJump_To_Falling(
 
 void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_HardLand_To_Stand()
 {
-	// End Transition ½Ã ¼öÇàÇÒ ·ÎÁ÷ Ãß°¡
+	// End Transition ì‹œ ìˆ˜í–‰í•  ë¡œì§ ì¶”ê°€
 	FString TheFloatStr = "End Transition";
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	UE_LOG(LogTemp, Warning, TEXT("Transition Ended"));
@@ -303,4 +304,6 @@ void UC_AnimBasicCharacter::SetIsLeftHandIKOn()
 
 	bIsLeftHandIKOn = Condition3;
 }
+
+
 

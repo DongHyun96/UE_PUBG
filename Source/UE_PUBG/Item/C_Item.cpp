@@ -7,6 +7,9 @@
 #include "Character/Component/C_InvenComponent.h"
 #include "Engine/World.h"
 
+//#include "GameFramework/Actor.h"
+//#include "Components/StaticMeshComponent.h"
+
 #include "Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
 #include "Weapon/WeaponStrategy/C_GunStrategy.h"
 
@@ -18,6 +21,7 @@ AC_Item::AC_Item()
     //WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
 
 	//OwnerCharacter = nullptr;
+	
 }
 
 // Called when the game starts or when spawned
@@ -39,12 +43,12 @@ void AC_Item::DetachItem()
 	
 	DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 
-	//ÈÄ¿¡ ¶óÀÎ Æ®·¹ÀÌ½º¸¦ »ç¿ëÇØ¼­ ¹Ù²ãÁÖ±â.
+	//í›„ì— ë¼ì¸ íŠ¸ë ˆì´ìŠ¤ë¥¼ ì‚¬ìš©í•´ì„œ ë°”ê¿”ì£¼ê¸°.
 	SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
 	SetActorRotation(FRotator(0.f, 0.f, -90.f));
 	SetOwnerCharacter(nullptr);
 
-	//ÇÑ¹ø ²¯´Ù ²¨Áà¾ß OverlapBeginÀÌ ÀÛµ¿ -> ÀåÂøÇÒ¶§ ²¨ÁÖ°í ¹ö¸± ¶§ ÄÑÁÖ¸é µÉµí?
+	//í•œë²ˆ ê»ë‹¤ êº¼ì¤˜ì•¼ OverlapBeginì´ ìž‘ë™ -> ìž¥ì°©í• ë•Œ êº¼ì£¼ê³  ë²„ë¦´ ë•Œ ì¼œì£¼ë©´ ë ë“¯?
 	SetActorEnableCollision(false);
 	SetActorEnableCollision(true);
 	
@@ -60,23 +64,23 @@ void AttachToSocket(USceneComponent* InParent)
 
 FVector AC_Item::GetGroundLocation(AC_BasicCharacter* Character)
 {
-	// Ä³¸¯ÅÍÀÇ À§Ä¡
+	// ìºë¦­í„°ì˜ ìœ„ì¹˜
 	FVector CharacterLocation = Character->GetActorLocation();
 
-	// ¶óÀÎ Æ®·¹ÀÌ½º ½ÃÀÛ ¹× ³¡ À§Ä¡ ¼³Á¤
+	// ë¼ì¸ íŠ¸ë ˆì´ìŠ¤ ì‹œìž‘ ë° ë ìœ„ì¹˜ ì„¤ì •
 	FVector TraceStart = CharacterLocation;
-	FVector TraceEnd = TraceStart - FVector(0.0f, 0.0f, 10000.0f); // ¾Æ·¡ ¹æÇâÀ¸·Î 10,000 À¯´Ö
+	FVector TraceEnd = TraceStart - FVector(0.0f, 0.0f, 10000.0f); // ì•„ëž˜ ë°©í–¥ìœ¼ë¡œ 10,000 ìœ ë‹›
 
-	// ¶óÀÎ Æ®·¹ÀÌ½º ¼³Á¤
+	// ë¼ì¸ íŠ¸ë ˆì´ìŠ¤ ì„¤ì •
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(Character); // Ä³¸¯ÅÍ´Â ¹«½Ã
+	Params.AddIgnoredActor(Character); // ìºë¦­í„°ëŠ” ë¬´ì‹œ
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
 		TraceStart,
 		TraceEnd,
-		ECC_Visibility, // Ãæµ¹ Ã¤³Î
+		ECC_Visibility, // ì¶©ëŒ ì±„ë„
 		Params
 	);
 
@@ -98,11 +102,11 @@ AC_Item* AC_Item::SpawnItem(AC_BasicCharacter* Character)
 	{
 	FActorSpawnParameters SpawnParams;
 	//SpawnParams.Owner = Character;
-	//location, rotationÀ» thisÀÇ °ÍÀ» ¾²´Â °Íµµ »ý°¢, ¿Ö³ÄÇÏ¸é Áö±Ý ÀÌ»óÇÏ°Ô ³¯¶ó°¡´Â ÀÌÀ¯°¡ ÀÌ°ÍÀÏ ¼ö µµ ÀÖÀ½. -> ¼¶±¤ÅºÀÌ ÅÍÁö°í Ãæµ¹Ã¼°¡ ³²¾ÆÀÖÀ½.
+	//location, rotationì„ thisì˜ ê²ƒì„ ì“°ëŠ” ê²ƒë„ ìƒê°, ì™œëƒí•˜ë©´ ì§€ê¸ˆ ì´ìƒí•˜ê²Œ ë‚ ë¼ê°€ëŠ” ì´ìœ ê°€ ì´ê²ƒì¼ ìˆ˜ ë„ ìžˆìŒ. -> ì„¬ê´‘íƒ„ì´ í„°ì§€ê³  ì¶©ëŒì²´ê°€ ë‚¨ì•„ìžˆìŒ.
 	AC_Item* SpawnItem = GetWorld()->SpawnActor<AC_Item>(this->GetClass(), GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z, Character->GetActorRotation(), SpawnParams);
 	//SpawnItem->SetItemStack(1);
 	//SpawnItem->SetActorHiddenInGame(true);
-	SpawnItem->SetActorEnableCollision(false);//»ý¼ºµÉ ¶§ ¹«Á¶°Ç OverlapBegine¿¡ ¹ÝÀÀÇØ¼­ ¿ì¼± ²¨µ×À½.
+	SpawnItem->SetActorEnableCollision(false);//ìƒì„±ë  ë•Œ ë¬´ì¡°ê±´ OverlapBegineì— ë°˜ì‘í•´ì„œ ìš°ì„  êº¼ë’€ìŒ.
 	return SpawnItem;
 }
 
@@ -200,18 +204,18 @@ bool AC_Item::MoveAroundToSlot(AC_BasicCharacter* Character)
 
 void AC_Item::DropItem(AC_BasicCharacter* Character)
 {
-	//TODO : ¾ÆÀÌÅÛÀÌ ÀåÂø(Attach)µÇ¾ú´ø »óÅÂ¸¦ ÇØÁ¦ÇÏ´Â ÀÛ¾÷¿¡ °üÇÑ Ã³¸® »ý°¢
-	//TODO : ºÐÇÒÇØ¼­ ¹ö¸®´Â °æ¿ì »õ·Î ½ºÆùÇØÁÖ¾î¾ßÇÔ.
+	//TODO : ì•„ì´í…œì´ ìž¥ì°©(Attach)ë˜ì—ˆë˜ ìƒíƒœë¥¼ í•´ì œí•˜ëŠ” ìž‘ì—…ì— ê´€í•œ ì²˜ë¦¬ ìƒê°
+	//TODO : ë¶„í• í•´ì„œ ë²„ë¦¬ëŠ” ê²½ìš° ìƒˆë¡œ ìŠ¤í°í•´ì£¼ì–´ì•¼í•¨.
 	ItemDatas.ItemPlace = EItemPlace::AROUND;
 
-	SetOwnerCharacter(nullptr);               //OwnerCharacter ÇØÁ¦
-	SetActorHiddenInGame(false);			  //¸ð½ÀÀÌ º¸ÀÌµµ·Ï Hidden ÇØÁ¦.
+	SetOwnerCharacter(nullptr);               //OwnerCharacter í•´ì œ
+	SetActorHiddenInGame(false);			  //ëª¨ìŠµì´ ë³´ì´ë„ë¡ Hidden í•´ì œ.
 
-	SetActorEnableCollision(false);			  //Attachable Item ÀÌ Around·Î °¥ ¶§ ¹Ù·Î List¿¡ Ãß°¡°¡ ¾ÈµÇ¼­ ²¯´Ù ÄÑÁÜ.
-	SetActorEnableCollision(true);			  //Overlap°¡´É ÇÏµµ·Ï Collision On
-	//Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);//ÀÌ°Ç ÅõÃ´·ù¸¸ »ç¿ëÇÏ´Â ±â´É.
+	SetActorEnableCollision(false);			  //Attachable Item ì´ Aroundë¡œ ê°ˆ ë•Œ ë°”ë¡œ Listì— ì¶”ê°€ê°€ ì•ˆë˜ì„œ ê»ë‹¤ ì¼œì¤Œ.
+	SetActorEnableCollision(true);			  //Overlapê°€ëŠ¥ í•˜ë„ë¡ Collision On
+	//Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);//ì´ê±´ íˆ¬ì²™ë¥˜ë§Œ ì‚¬ìš©í•˜ëŠ” ê¸°ëŠ¥.
 
-	//¹Ù´Ú ·¹ÀÌ Ä³½ºÆÃ ¹Þ¾Æ¿Í¼­ ¹Ù´Ú¿¡ ¾ÆÀÌÅÛ »ý¼ºÇÏ±â.
+	//ë°”ë‹¥ ë ˆì´ ìºìŠ¤íŒ… ë°›ì•„ì™€ì„œ ë°”ë‹¥ì— ì•„ì´í…œ ìƒì„±í•˜ê¸°.
 	this->SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
 }
 
@@ -225,4 +229,27 @@ void AC_Item::SetItemStack(uint8 inItemStack)
 	{
 		OwnerCharacter->GetInvenComponent()->DestroyMyItem(this);
 	}
+}
+
+void AC_Item::SetOutlineEffect(bool bEnable)
+{
+	//UStaticMeshComponent* CachedComponent = GetComponentByClass<UStaticMeshComponent>();
+	//this->GetComponentByClass()
+	//for (UStaticMeshComponent* MeshComp : CachedComponent)
+	//{
+	//	MeshComp->SetRenderCustomDepth(bEnable);
+	//}
+
+	TArray<UPrimitiveComponent*> PrimitiveComponents;
+	GetComponents<UPrimitiveComponent>(PrimitiveComponents);
+
+	for (UPrimitiveComponent* Comp : PrimitiveComponents)
+	{
+		if (Comp)
+		{
+			Comp->SetRenderCustomDepth(bEnable);
+			Comp->SetCustomDepthStencilValue(bEnable ? 1 : 0);
+		}
+	}
+
 }

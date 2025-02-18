@@ -45,7 +45,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EGunState, FPriorityAnimMontage> Montages;
 };
-UCLASS()
+UCLASS(Abstract)
 class UE_PUBG_API AC_Gun : public AC_Weapon
 {
 	GENERATED_BODY()
@@ -95,12 +95,12 @@ public:
 	void DropItem(AC_BasicCharacter* Character) override;
 
 	/// <summary>
-	/// ÃÑ±â ºÎÂø¹°À» ºÎÂøÇÏ´Â ÇÔ¼ö.
-	/// Mesh¿¡ ´ëÇÑ Ã³¸®µµ Æ÷ÇÔÇÏ°í ÀÖ´Ù.
+	/// ì´ê¸° ë¶€ì°©ë¬¼ì„ ë¶€ì°©í•˜ëŠ” í•¨ìˆ˜.
+	/// Meshì— ëŒ€í•œ ì²˜ë¦¬ë„ í¬í•¨í•˜ê³  ìˆë‹¤.
 	/// </summary>
-	/// <param name="InPartsName">ºÎÂøÇÏ·Á´Â ºÎÀ§</param>
-	/// <param name="InAttachableItem">ºÎÂøÇÏ·Á´Â ºÎÂø¹°</param>
-	/// <returns>±³Ã¼µÇ¾î ³ª¿Â ºÎÂø¹°</returns>
+	/// <param name="InPartsName">ë¶€ì°©í•˜ë ¤ëŠ” ë¶€ìœ„</param>
+	/// <param name="InAttachableItem">ë¶€ì°©í•˜ë ¤ëŠ” ë¶€ì°©ë¬¼</param>
+	/// <returns>êµì²´ë˜ì–´ ë‚˜ì˜¨ ë¶€ì°©ë¬¼</returns>
 	class AC_AttachableItem* SetAttachableItemSlot(EPartsName InPartsName, AC_AttachableItem* InAttachableItem);
 protected:
 	//bool MoveSlotToAround(AC_BasicCharacter* Character) override;
@@ -111,7 +111,7 @@ protected:
 
 protected:
 	/// <summary>
-	/// OwnerCharacterÀÇ Pose Transition ¸ğ¼ÇÀÌ ³¡³µÀ» ¶§ Delegate¸¦ ÅëÇØ call backÀ» ¹Ş´Â ÇÔ¼ö (ÇöÀç Ä³¸¯ÅÍÀÇ slot¿¡ ÀåÂøµÈ ¹«±â¸¸ call back µÉ ¿¹Á¤) 
+	/// OwnerCharacterì˜ Pose Transition ëª¨ì…˜ì´ ëë‚¬ì„ ë•Œ Delegateë¥¼ í†µí•´ call backì„ ë°›ëŠ” í•¨ìˆ˜ (í˜„ì¬ ìºë¦­í„°ì˜ slotì— ì¥ì°©ëœ ë¬´ê¸°ë§Œ call back ë  ì˜ˆì •) 
 	/// </summary>
 	void OnOwnerCharacterPoseTransitionFin() override;
 
@@ -139,21 +139,21 @@ public:
 	float MilitaryOperationArea;
 	FVector2D PanelSize;
 protected:
-	const FName SUB_HOLSTER_SOCKET_NAME = "SubGunSocket_NoBag"; // ¹«±âÁı socket ÀÌ¸§
-	const FName MAIN_HOLSTER_SOCKET_NAME = "MainGunSocket_NoBag"; // ¹«±âÁı socket ÀÌ¸§
+	const FName SUB_HOLSTER_SOCKET_NAME = "SubGunSocket_NoBag"; // ë¬´ê¸°ì§‘ socket ì´ë¦„
+	const FName MAIN_HOLSTER_SOCKET_NAME = "MainGunSocket_NoBag"; // ë¬´ê¸°ì§‘ socket ì´ë¦„
 
-	const FName SUB_HOLSTER_BAG_SOCKET_NAME = "SubGunSocket_Bag"; // ¹«±âÁı socket ÀÌ¸§
-	const FName MAIN_HOLSTER_BAG_SOCKET_NAME = "MainGunSocket_Bag"; // ¹«±âÁı socket ÀÌ¸§
+	const FName SUB_HOLSTER_BAG_SOCKET_NAME = "SubGunSocket_Bag"; // ë¬´ê¸°ì§‘ socket ì´ë¦„
+	const FName MAIN_HOLSTER_BAG_SOCKET_NAME = "MainGunSocket_Bag"; // ë¬´ê¸°ì§‘ socket ì´ë¦„
 	const FName MAGAZINE_SOCKET_NAME = "Magazine_Socket";
 
 
 	FName EQUIPPED_SOCKET_NAME; 
-	//const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // ¹«±â°¡ ¼Õ¿¡ ºÎÂøµÉ socket ÀÌ¸§
-	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // ¹«±â°¡ ¼Õ¿¡ ºÎÂøµÉ socket ÀÌ¸§
+	//const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // ë¬´ê¸°ê°€ ì†ì— ë¶€ì°©ë  socket ì´ë¦„
+	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // ë¬´ê¸°ê°€ ì†ì— ë¶€ì°©ë  socket ì´ë¦„
 	EGunState CurState = EGunState::MAIN_GUN;
 	bool bIsAimDown = false;
 protected:
-	//ºí·çÇÁ¸°Æ®¿¡¼­ ÇÒ´çÇÑ ½ºÄÌ·¹Å» ¸Ş½¬¸¦ ÀúÀåÇÏ´Â º¯¼ö
+	//ë¸”ë£¨í”„ë¦°íŠ¸ì—ì„œ í• ë‹¹í•œ ìŠ¤ì¼ˆë ˆíƒˆ ë©”ì‰¬ë¥¼ ì €ì¥í•˜ëŠ” ë³€ìˆ˜
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* GunMesh;
 public:
@@ -169,9 +169,12 @@ public:
 	class USpringArmComponent* AimSightSpringArm{};
 	int GetCurBulletCount() { return CurBulletCount; }
 	int GetMaxBulletCount() { return MaxBulletCount; }
+
+	EBulletType GetCurBulletType() { return CurGunBulletType; }
+
 protected:
 	/// <summary>
-	/// ÃÑ¾Ë ¹ß»ç °ü·Ã º¯¼öµé
+	/// ì´ì•Œ ë°œì‚¬ ê´€ë ¨ ë³€ìˆ˜ë“¤
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int CurBulletCount;
@@ -229,13 +232,13 @@ public:
 
 	float GetBaseBulletSpreadDegree() { return BaseBulletSpreadDegree; }
 protected:
-	//Aim À§Á¬
+	//Aim ìœ„ì ¯
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UUserWidget* AimWidget;
 	FName WidgetFilePath;
 	void ShowAndHideWhileAiming();
 protected:
-	//ÅºÃ¢
+	//íƒ„ì°½
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 	class AC_AttachableItem* Magazine{};
@@ -249,51 +252,51 @@ public:
 	TArray<EPartsName> GetAttachableParts() { return AttachableParts; }
 	bool GetGunHasGrip();
 protected:
-	//¾î¶² ÆÄÃ÷¸¦ ÀåÂø ÇÒ ¼öÀÖ´Â°¡
+	//ì–´ë–¤ íŒŒì¸ ë¥¼ ì¥ì°© í•  ìˆ˜ìˆëŠ”ê°€
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<EPartsName> AttachableParts{};
 
-	//¾È¾²´Âµí?
+	//ì•ˆì“°ëŠ”ë“¯?
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EPartsName, class UMeshComponent*> AttachedParts{};
 
-	//È¦½ºÅÍ ÀÌ¸§
+	//í™€ìŠ¤í„° ì´ë¦„
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 	TMap<EAttachmentNames, FName> AttachmentPartsHolsterNames{};
 
-	//ÇØ´ç ºÎÀ§ ÆÄÃ÷°¡ ÀåÂøÁßÀÎÁö -> ¾Æ·¡ AttachedItemÀ¸·Î ÅëÇÕ ¿¹Á¤
+	//í•´ë‹¹ ë¶€ìœ„ íŒŒì¸ ê°€ ì¥ì°©ì¤‘ì¸ì§€ -> ì•„ë˜ AttachedItemìœ¼ë¡œ í†µí•© ì˜ˆì •
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 	TMap<EPartsName, bool> IsPartAttached{};
 
-	//ÇØ´ç ºÎÀ§¿¡ ¾î¶² ÆÄÃ÷°¡ ºÙ¾îÀÖ´Â°¡ -> ¾Æ·¡ AttachedItemÀ¸·Î ÅëÇÕ ¿¹Á¤
+	//í•´ë‹¹ ë¶€ìœ„ì— ì–´ë–¤ íŒŒì¸ ê°€ ë¶™ì–´ìˆëŠ”ê°€ -> ì•„ë˜ AttachedItemìœ¼ë¡œ í†µí•© ì˜ˆì •
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 	TMap<EPartsName, EAttachmentNames> AttachedItemName{};
 
-	//½ºÄÚÇÁ Ä«¸Ş¶ó À§Ä¡ Á¤º¸
+	//ìŠ¤ì½”í”„ ì¹´ë©”ë¼ ìœ„ì¹˜ ì •ë³´
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
 	TMap<EAttachmentNames, FVector4> ScopeCameraLocations{};
 
-	//ÇØ´ç ºÎÀ§ ÀåÂøµÈ ÆÄÃ÷(AAttachmentActor) mesh °´Ã¼ 
+	//í•´ë‹¹ ë¶€ìœ„ ì¥ì°©ëœ íŒŒì¸ (AAttachmentActor) mesh ê°ì²´ 
 	TMap<EPartsName, class AAttachmentActor*> AttachedItem{};
 
-	//ÇØ´ç ºÎÀ§¿¡ ÀåÂøµÈ ÆÄÃ÷(C_AttachableItem)
+	//í•´ë‹¹ ë¶€ìœ„ì— ì¥ì°©ëœ íŒŒì¸ (C_AttachableItem)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EPartsName, AC_AttachableItem*> AttachableItem{};
 
 public:
 
 	/// <summary>
-	/// ÃÑ¿¡ Á÷Á¢ ºÎÂøµÇ´Â ºÎÂø¹°ÀÇ Mesh TMapÀ» ¹İÈ¯ÇÑ´Ù.
+	/// ì´ì— ì§ì ‘ ë¶€ì°©ë˜ëŠ” ë¶€ì°©ë¬¼ì˜ Mesh TMapì„ ë°˜í™˜í•œë‹¤.
 	/// </summary>
 	/// <returns></returns>
 	TMap<EPartsName, AAttachmentActor*> GetAttachedItem() { return AttachedItem; }
 
 	/// <summary>
-	/// ÀÎº¥¿¡¼­ »ç¿ëÇÏ´Â ºÎÂø¹° TMapÀ» ¹İÈ¯ÇÑ´Ù.(Mesh°¡ ¾Æ´Ô)
+	/// ì¸ë²¤ì—ì„œ ì‚¬ìš©í•˜ëŠ” ë¶€ì°©ë¬¼ TMapì„ ë°˜í™˜í•œë‹¤.(Meshê°€ ì•„ë‹˜)
 	/// </summary>
 	/// <returns></returns>
 	TMap<EPartsName, class AC_AttachableItem*> GetAttachableItem() { return AttachableItem; }
@@ -328,15 +331,31 @@ protected:
 	
 protected:
 	/// <summary>
-	/// MainGunÀº Slot¿¡ ÀåÂøµÇ´Â Icon°ú Drag È¤Àº ¹Ù´Ú¿¡ ³õ¿©ÀÖÀ» ¶§ÀÇ IconÀÌ ´Ù¸§.
+	/// MainGunì€ Slotì— ì¥ì°©ë˜ëŠ” Iconê³¼ Drag í˜¹ì€ ë°”ë‹¥ì— ë†“ì—¬ìˆì„ ë•Œì˜ Iconì´ ë‹¤ë¦„.
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "DragIcon")
 	UTexture2D* DragIcon = nullptr; 
 
 public:
-	//AI ÃÑ¾Ë ¹ß»ç °ü·Ã ÇÔ¼ö
+	//AI ì´ì•Œ ë°œì‚¬ ê´€ë ¨ í•¨ìˆ˜
 	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+	//í…ŒìŠ¤íŠ¸ ì£¼ì„
 
+protected: // Damage ê´€ë ¨
+	
+	// ë¬´ê¸° ë³„ DamageBase
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	float DamageBase{};
 
+public: 
+	/// <summary>
+	/// ê° Bone í”¼ê²© ë¶€ìœ„ ë³„ DamageRate Getter (ARê³¼ SRì˜ DamageRateê°€ ì„œë¡œ ë‹¤ë¦„)
+	/// </summary>
+	/// <param name="BodyPart"> : BoneName ì£¼ê¸° </param>
+	/// <returns></returns>
+	virtual float GetDamageRateByBodyPart(const FName& BodyPart) PURE_VIRTUAL(AC_Gun::GetDamageRateByBodyPart, return 0.f;);
 
+	float GetDamageBase() const { return DamageBase; }
 };
+
+

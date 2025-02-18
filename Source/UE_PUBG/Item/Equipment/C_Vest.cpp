@@ -1,9 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Equipment/C_Vest.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "HUD/C_ArmorInfoWidget.h"
+#include "HUD/C_HUDWidget.h"
 #include "Utility/C_Util.h"
 
 AC_Vest::AC_Vest()
@@ -29,7 +32,7 @@ bool AC_Vest::LegacyMoveToAround(AC_BasicCharacter* Character)
 
 bool AC_Vest::LegacyMoveToSlot(AC_BasicCharacter* Character)
 {
-	//TODO : ÀåÂøµÇ¾î ÀÖ´ø Vest Ã³¸®ÇØÁÖ±â ¹× Á¦´ë·Î ±¸ÇöÇÏ±â, SetSlotEquipmentÇÔ¼ö Âü°íÇÏ±â.
+	//TODO : ì¥ì°©ë˜ì–´ ìˆë˜ Vest ì²˜ë¦¬í•´ì£¼ê¸° ë° ì œëŒ€ë¡œ êµ¬í˜„í•˜ê¸°, SetSlotEquipmentí•¨ìˆ˜ ì°¸ê³ í•˜ê¸°.
 	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, this);
 	return true;
 }
@@ -52,7 +55,7 @@ void AC_Vest::AttachToSocket(AC_BasicCharacter* InParent)
 		break;
 	}
 
-	//mobility°¡ MoveableÀÌ¿©¾ß ÀåÂø °¡´É. Áö±İÀº ¿¡µğÅÍ ³»¿¡¼­ ¼³Á¤ÇØ ³õ¾ÒÀ½.
+	//mobilityê°€ Moveableì´ì—¬ì•¼ ì¥ì°© ê°€ëŠ¥. ì§€ê¸ˆì€ ì—ë””í„° ë‚´ì—ì„œ ì„¤ì •í•´ ë†“ì•˜ìŒ.
 	//BackpackMesh->SetMobility(EComponentMobility::Movable);
 
 	bool Attached = AttachToComponent
@@ -67,6 +70,10 @@ void AC_Vest::AttachToSocket(AC_BasicCharacter* InParent)
 
 	SetOwnerCharacter(InParent);
 
+	// Playerì˜ ê²½ìš° HUD Armor Info ì—…ë°ì´íŠ¸ í•´ì£¼ê¸°
+	if (AC_Player* Player = Cast<AC_Player>(InParent))
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetVestInfo(static_cast<uint8>(ItemLevel) + 1, CurDurability / DURABILITY_MAX);
+
 	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);
 }
 
@@ -75,12 +82,51 @@ bool AC_Vest::MoveSlotToAround(AC_BasicCharacter* Character)
 	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, nullptr);
 	//OwnerCharacter = nullptr;
 	this->SetItemPlace(EItemPlace::AROUND);
+
+	// Playerì˜ ê²½ìš° HUD Armor info ì—…ë°ì´íŠ¸
+	if (AC_Player* Player = Cast<AC_Player>(Character))
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetVestInfo(0);
+	
 	return true;
 }
 
 bool AC_Vest::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
-	//TODO : ÀåÂøµÇ¾î ÀÖ´ø Vest Ã³¸®ÇØÁÖ±â ¹× Á¦´ë·Î ±¸ÇöÇÏ±â, SetSlotEquipmentÇÔ¼ö Âü°íÇÏ±â.
+	//TODO : ì¥ì°©ë˜ì–´ ìˆë˜ Vest ì²˜ë¦¬í•´ì£¼ê¸° ë° ì œëŒ€ë¡œ êµ¬í˜„í•˜ê¸°, SetSlotEquipmentí•¨ìˆ˜ ì°¸ê³ í•˜ê¸°.
 	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, this);
 	return true;
 }
+
+bool AC_Vest::TakeDamage(float DamageAmount)
+{
+	UC_Util::Print("AC_Vest::TakeDamage : " + FString::SanitizeFloat(DamageAmount), FColor::MakeRandomColor(), 10.f);
+	
+	// Levelì— ë”°ë¥¸ Vestì— ì ìš©ë˜ëŠ” DamageëŸ‰ ì¡°ì ˆ
+	float DamageReduceRate =	(ItemLevel == EEquipableItemLevel::LV1) ? 0.5f  :
+								(ItemLevel == EEquipableItemLevel::LV2) ? 0.45f : 0.4f;
+	DamageAmount *= DamageReduceRate;
+	
+	CurDurability -= DamageAmount;
+	if (CurDurability < 0.f) CurDurability = 0.f;
+
+	// OwnerCharacterê°€ Playerì¸ ê²½ìš°, UI ì—…ë°ì´íŠ¸
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+	{
+		// TODO : Inven UIì˜ ì¡°ë¼ í”¼ë„ ì—…ë°ì´íŠ¸ ì‹œí‚¤ê¸°
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentVestDurabilityRate(CurDurability / DURABILITY_MAX);
+	}
+
+	return true;
+}
+
+float AC_Vest::GetDamageReduceFactor() const
+{
+	// íŒŒê´´ëœ ì¡°ë¼ë¥¼ ì¥ì°©ì¤‘ì¼ ë•Œ
+	if (CurDurability <= 0.f) return 0.8f;
+	
+	
+	return	(ItemLevel == EEquipableItemLevel::LV1) ? 0.7f :
+			(ItemLevel == EEquipableItemLevel::LV2) ? 0.6f : 0.45f;
+}
+
+

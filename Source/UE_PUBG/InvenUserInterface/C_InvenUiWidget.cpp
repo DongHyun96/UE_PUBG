@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InvenUserInterface/C_InvenUiWidget.h"
 
@@ -92,9 +92,9 @@ void UC_InvenUiWidget::SetVisibility(ESlateVisibility InVisibility)
 	    PlayerController->bShowMouseCursor = true;
         PlayerController->SetIgnoreLookInput(true);
         //PlayerController->GetPawn()->bUseControllerRotationYaw = false;
-        //PlayerController->bEnableClickEvents = true;  // UI Å¬¸¯ ÀÌº¥Æ® È°¼ºÈ­
-        //PlayerController->bEnableTouchEvents = true; // ÅÍÄ¡ ÀÌº¥Æ® È°¼ºÈ­
-        //PlayerController->bEnableMouseOverEvents = true; // ¸¶¿ì½º ¿À¹ö ÀÌº¥Æ® È°¼ºÈ­
+        //PlayerController->bEnableClickEvents = true;  // UI í´ë¦­ ì´ë²¤íŠ¸ í™œì„±í™”
+        //PlayerController->bEnableTouchEvents = true; // í„°ì¹˜ ì´ë²¤íŠ¸ í™œì„±í™”
+        //PlayerController->bEnableMouseOverEvents = true; // ë§ˆìš°ìŠ¤ ì˜¤ë²„ ì´ë²¤íŠ¸ í™œì„±í™”
         //SetIsFocusable(true);
 
     }
@@ -195,11 +195,11 @@ void UC_InvenUiWidget::InitListView()
 
     if (MyItemListWidget)
     {
-        TMap<FString, AC_Item*> MyItems; // ½ÇÁ¦ ¾ÆÀÌÅÛ ¸®½ºÆ®¸¦ °¡Á®¿À´Â ·ÎÁ÷ ÇÊ¿ä
+        TMap<FString, AC_Item*> MyItems; // ì‹¤ì œ ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ë¥¼ ê°€ì ¸ì˜¤ëŠ” ë¡œì§ í•„ìš”
         MyItems = OwnerCharacter->GetInvenComponent()->GetTestMyItems();
         MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
 
-        //MyItemListWidget->AddTMapItem(MyItems); // ¾ÆÀÌÅÛ ¸®½ºÆ® Ãß°¡
+        //MyItemListWidget->AddTMapItem(MyItems); // ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ ì¶”ê°€
         //PopulateItemList(MyItemListWidget->ItemListView, MyItems);
         //MyItemListWidget->AddToViewport();
         
@@ -207,7 +207,7 @@ void UC_InvenUiWidget::InitListView()
 
     if (IsValid(AroundItemListWidget))
     {
-        //TMap<FString, AC_Item*> AroundItems; // ½ÇÁ¦ ¾ÆÀÌÅÛ ¸®½ºÆ®¸¦ °¡Á®¿À´Â ·ÎÁ÷ ÇÊ¿ä
+        //TMap<FString, AC_Item*> AroundItems; // ì‹¤ì œ ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ë¥¼ ê°€ì ¸ì˜¤ëŠ” ë¡œì§ í•„ìš”
         //AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
 
         TArray<AC_Item*> TestAroundItemList;
@@ -228,14 +228,14 @@ void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_
         return;
     }
     
-    list->ClearListItems(); // ±âÁ¸ ¾ÆÀÌÅÛ »èÁ¦
+    list->ClearListItems(); // ê¸°ì¡´ ì•„ì´í…œ ì‚­ì œ
     
     //if (itemList)
 
     if (!(itemList.Num() > 0)) return;
     for (const auto& ItemPair : itemList)
     {
-         AC_Item* Item = ItemPair.Value; // TMap¿¡¼­ ¾ÆÀÌÅÛ °¡Á®¿À±â
+         AC_Item* Item = ItemPair.Value; // TMapì—ì„œ ì•„ì´í…œ ê°€ì ¸ì˜¤ê¸°
          if (IsValid(Item))
          {
              list->AddItem(Item);
@@ -244,7 +244,7 @@ void UC_InvenUiWidget::PopulateItemList(UListView* list, const TMap<FString, AC_
          {
              return;
          }
-         //ItemBar°»½Å.
+         //ItemBarê°±ì‹ .
          UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListView->GetEntryWidgetFromItem(Item));
          //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
 
@@ -263,7 +263,7 @@ void UC_InvenUiWidget::testAroundItemList(UListView* list, const TArray<AC_Item*
         return;
     }
 
-    list->ClearListItems(); // ±âÁ¸ ¾ÆÀÌÅÛ »èÁ¦
+    list->ClearListItems(); // ê¸°ì¡´ ì•„ì´í…œ ì‚­ì œ
 
     if (!(AroundItemList.Num() > 0)) return;
 
@@ -291,11 +291,13 @@ void UC_InvenUiWidget::UpdateVolumeBar(AC_BasicCharacter* Character)
     float curVolume = Character->GetInvenComponent()->GetCurVolume();
     float maxVolume = Character->GetInvenComponent()->GetMaxVolume();
 
-    float MaxVolumePercent = maxVolume / 370.f; //370 = 70(±âº») + 250(3LVBackPack) + 50(°©ºü)
+    float MaxVolumePercent = maxVolume / 370.f; //370 = 70(ê¸°ë³¸) + 250(3LVBackPack) + 50(ê°‘ë¹ )
     float curVolumePercent = curVolume / 370.f;
 
     curVolumeBar->SetPercent(curVolumePercent);
     maxVolumeBar->SetPercent(MaxVolumePercent);
 }
+
+
 
 

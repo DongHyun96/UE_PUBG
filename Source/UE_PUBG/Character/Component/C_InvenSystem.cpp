@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_InvenSystem.h"
@@ -120,7 +120,7 @@ void UC_InvenSystem::OpenInvenUI()
 
 	if (!IsValid(OwnerCharacter)) return;
 
-	// TODO : Ȯ��
+	// TODO : 확인
 	UCharacterMovementComponent* CharacterMovement = OwnerCharacter->GetCharacterMovement();
 	if (CharacterMovement)
 		CharacterMovement->SetMovementMode(EMovementMode::MOVE_Walking);
@@ -157,4 +157,6 @@ void UC_InvenSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	// ...
 }
+
+
 

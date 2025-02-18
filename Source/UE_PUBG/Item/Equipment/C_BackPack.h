@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,9 +8,9 @@
 #include "C_BackPack.generated.h"
 
 /**
- * ¹è³¶ (Level 1): ¼ÒÁö ¿ë·® +150
- * ¹è³¶ (Level 2): ¼ÒÁö ¿ë·® +200
- * ¹è³¶ (Level 3)(º¸±Ş Àü¿ë 3·¹º§ ¹è³¶µµ Æ÷ÇÔ): ¼ÒÁö ¿ë·® +250
+ * ë°°ë‚­ (Level 1): ì†Œì§€ ìš©ëŸ‰ +150
+ * ë°°ë‚­ (Level 2): ì†Œì§€ ìš©ëŸ‰ +200
+ * ë°°ë‚­ (Level 3)(ë³´ê¸‰ ì „ìš© 3ë ˆë²¨ ë°°ë‚­ë„ í¬í•¨): ì†Œì§€ ìš©ëŸ‰ +250
  */
 
 
@@ -39,8 +39,8 @@ public:
 	void AttachToSocket(class AC_BasicCharacter* InParent) override;
 
 	/// <summary>
-	/// ÀåÂøÁßÀÎ °¡¹æÀ» ³»·Á³õÀ½.
-	/// ³»·Á ³õ´Â À§Ä¡´Â ¹ßÁ¤µµ.
+	/// ì¥ì°©ì¤‘ì¸ ê°€ë°©ì„ ë‚´ë ¤ë†“ìŒ.
+	/// ë‚´ë ¤ ë†“ëŠ” ìœ„ì¹˜ëŠ” ë°œì •ë„.
 	/// </summary>
 	/// <param name="character"></param>
 	UFUNCTION(BlueprintCallable)
@@ -70,3 +70,5 @@ protected:
 	//uint8 Level;
 
 };
+
+

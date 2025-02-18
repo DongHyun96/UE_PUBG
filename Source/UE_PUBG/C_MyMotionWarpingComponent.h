@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,7 +8,7 @@
 
 
 /// <summary>
-/// «√∑Ø±◊¿Œ «Ï¥ı include øÎ Dummy class
+/// ÌîåÎü¨Í∑∏Ïù∏ Ìó§Îçî include Ïö© Dummy class
 /// </summary>
 UCLASS()
 class UE_PUBG_API UC_MyMotionWarpingComponent : public UMotionWarpingComponent
@@ -16,3 +16,5 @@ class UE_PUBG_API UC_MyMotionWarpingComponent : public UMotionWarpingComponent
 	GENERATED_BODY()
 	
 };
+
+

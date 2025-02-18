@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/ParkourActionStrategy/C_MantleLowActionStrategy.h"
@@ -33,14 +33,16 @@ void UC_MantleLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* 
 
 	MotionWarping->AddOrUpdateWarpTarget(Target);
 
-	// TODO : ParkourMontageMap ÃÊ±âÈ­
+	// TODO : ParkourMontageMap ì´ˆê¸°í™”
 
 	UC_ParkourComponent* TargetParkourComponent = TargetCharacter->GetParkourComponent();
 
-	// ÇöÀç Parkour Action¿¡ ÇØ´çÇÏ´Â RandomÇÑ parkourAction Àç»ı
+	// í˜„ì¬ Parkour Actionì— í•´ë‹¹í•˜ëŠ” Randomí•œ parkourAction ì¬ìƒ
 	TArray<FPriorityAnimMontage> LowMantleMontages = TargetParkourComponent->GetParkourMontages(EParkourActionType::MANTLING_LOW);
 	int RandIdx = FMath::RandRange(0, LowMantleMontages.Num() - 1);
 
 	TargetCharacter->PlayAnimMontage(LowMantleMontages[RandIdx]);
 	
 }
+
+

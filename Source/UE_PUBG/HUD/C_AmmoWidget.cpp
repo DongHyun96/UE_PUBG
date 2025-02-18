@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "HUD/C_AmmoWidget.h"
@@ -59,7 +59,7 @@ void UC_AmmoWidget::NativeConstruct()
 	ShootingModePanelSlots.Add(EShootingMode::BURST,		Cast<UCanvasPanelSlot>(BurstCanvasPanel->Slot));
 	ShootingModePanelSlots.Add(EShootingMode::FULL_AUTO,	Cast<UCanvasPanelSlot>(FullAutoCanvasPanel->Slot));
 
-	// ShootingModePanel Alpha ¸ğµÎ 0À¸·Î ÃÊ±âÈ­
+	// ShootingModePanel Alpha ëª¨ë‘ 0ìœ¼ë¡œ ì´ˆê¸°í™”
 	for (int i = 0; i < (int)EShootingMode::MAX; i++)
 	{
 		EShootingMode Mode = static_cast<EShootingMode>(i);
@@ -72,7 +72,7 @@ void UC_AmmoWidget::NativeConstruct()
 	AmmoTexts.Add(EAmmoTextType::MAGAZINE, MagazineTexts);
 	AmmoTexts.Add(EAmmoTextType::LEFTAMMO, LeftAmmoTexts);
 
-	// ¸ğµç text »ö»óÀÇ alpha°ª 0.f·Î ÃÊ±âÈ­
+	// ëª¨ë“  text ìƒ‰ìƒì˜ alphaê°’ 0.fë¡œ ì´ˆê¸°í™”
 	for (auto& T : MagazineTexts) SetFontAlpha(T, 0.f);
 	for (auto& T : LeftAmmoTexts) SetFontAlpha(T, 0.f);
 }
@@ -94,19 +94,19 @@ void UC_AmmoWidget::SetShootingMode(EShootingMode Mode)
 		return;
 	}
 
-	// ÇöÀç CurrentShootingMode¿Í setting°ªÀÌ °°´Ù¸é ³Ñ¾î°¨
+	// í˜„ì¬ CurrentShootingModeì™€ settingê°’ì´ ê°™ë‹¤ë©´ ë„˜ì–´ê°
 	if (CurrentShootingMode == Mode) return;
 
-	// ¸ğµç ÀÌ¹ÌÁö alpha ¸ğµÎ 0À¸·Î ÃÊ±âÈ­ Ã³¸®
+	// ëª¨ë“  ì´ë¯¸ì§€ alpha ëª¨ë‘ 0ìœ¼ë¡œ ì´ˆê¸°í™” ì²˜ë¦¬
 	for (int i = 0; i < (int)EShootingMode::MAX; i++)
 		SetShootingModePanelAlpha(static_cast<EShootingMode>(i), 0.f);
 
-	// Ã³À½ SettingµÇ´Â °æ¿ì
+	// ì²˜ìŒ Settingë˜ëŠ” ê²½ìš°
 	if (CurrentShootingMode == EShootingMode::MAX)
 	{
 		CurrentShootingMode = Mode;
 		
-		// µé¾î¿Â Mode¿Í ´Ù¸£°Ô PrevShootingMode ¼¼ÆÃ½ÃÅ°±â
+		// ë“¤ì–´ì˜¨ Modeì™€ ë‹¤ë¥´ê²Œ PrevShootingMode ì„¸íŒ…ì‹œí‚¤ê¸°
 		for (int i = 0; i < (int)EShootingMode::MAX; i++)
 		{
 			EShootingMode _mode = static_cast<EShootingMode>(i);
@@ -117,7 +117,7 @@ void UC_AmmoWidget::SetShootingMode(EShootingMode Mode)
 			}
 		}
 
-		// µµÂø ÁöÁ¡À¸·Î ¹Ù·Î º¸³»¹ö¸®±â
+		// ë„ì°© ì§€ì ìœ¼ë¡œ ë°”ë¡œ ë³´ë‚´ë²„ë¦¬ê¸°
 		ShootingModePanelSlots[PrevShootingMode]->SetPosition(SHOOTINGMODE_INITIAL_POS - FVector2D::UnitX() * SHOOTING_MODE_XPOS_OFFSET);
 		ShootingModePanelSlots[CurrentShootingMode]->SetPosition(SHOOTINGMODE_INITIAL_POS);
 		return;
@@ -163,14 +163,14 @@ void UC_AmmoWidget::SetVisibility(ESlateVisibility InVisibility, bool IsGun)
 
 	if (!IsGun)
 	{
-		// ShootingModePanel Alpha ¸ğµÎ 0À¸·Î ÃÊ±âÈ­
+		// ShootingModePanel Alpha ëª¨ë‘ 0ìœ¼ë¡œ ì´ˆê¸°í™”
 		for (int i = 0; i < (int)EShootingMode::MAX; i++)
 		{
 			EShootingMode Mode = static_cast<EShootingMode>(i);
 			SetShootingModePanelAlpha(Mode, 0.f);
 		}
 
-		// LeftAmmoText Alpha 0À¸·Î ¼¼ÆÃ
+		// LeftAmmoText Alpha 0ìœ¼ë¡œ ì„¸íŒ…
 		for (auto& T : LeftAmmoTexts) SetFontAlpha(T, 0.f);
 	}
 	
@@ -185,7 +185,7 @@ void UC_AmmoWidget::SetAmmoText(EAmmoTextType TextType, int Ammo, bool bHasEffec
 
 	bool bLeftAmmoAndIsZero = TextType == EAmmoTextType::LEFTAMMO && bLeftAmmoZero;
 
-	// ÀüÈ¯ È¿°ú ¾øÀÌ ¹Ù·Î UI¿¡ ¶ç¿ì±â
+	// ì „í™˜ íš¨ê³¼ ì—†ì´ ë°”ë¡œ UIì— ë„ìš°ê¸°
 	if (!bHasEffect || bLeftAmmoAndIsZero) 
 	{
 		// Prev Text setting
@@ -201,11 +201,11 @@ void UC_AmmoWidget::SetAmmoText(EAmmoTextType TextType, int Ammo, bool bHasEffec
 		return;
 	}
 
-	// Prev¸¦ ÇöÀçÀÇ Current ³»¿ëÀ¸·Î ¼öÁ¤, Current´Â »õ·Î µé¾î¿Â ³»¿ëÀ¸·Î ¼öÁ¤
+	// Prevë¥¼ í˜„ì¬ì˜ Current ë‚´ìš©ìœ¼ë¡œ ìˆ˜ì •, CurrentëŠ” ìƒˆë¡œ ë“¤ì–´ì˜¨ ë‚´ìš©ìœ¼ë¡œ ìˆ˜ì •
 	PrevTextBlock->SetText(CurrentTextBlock->GetText());
 	CurrentTextBlock->SetText(FText::AsNumber(Ammo));
 
-	// Lerp Ãâ¹ß ÁöÁ¡À¸·Î ¼öÁ¤ / Alpha´Â Font Å©±â¿¡ µû¶ó TickÀÇ Lerp·Î Ã³¸® ¿¹Á¤
+	// Lerp ì¶œë°œ ì§€ì ìœ¼ë¡œ ìˆ˜ì • / AlphaëŠ” Font í¬ê¸°ì— ë”°ë¼ Tickì˜ Lerpë¡œ ì²˜ë¦¬ ì˜ˆì •
 	SetFontSize(PrevTextBlock, FONT_SIZE_BASE);
 	SetFontSize(CurrentTextBlock, FONT_SIZE_BASE + FONT_SIZE_OFFSET);
 }
@@ -233,13 +233,13 @@ void UC_AmmoWidget::HandleShootingModeUIUpdate(const float& DeltaTime)
 
 	static const float LERP_SPEED = 10.f;
 
-	// »©±â°¡ ¿ŞÂÊ
-	// PrevShootingMode¿Í CurrentShootingMode À§Ä¡ ¹× Alpha°ª Ã³¸®ÇÏ±â
+	// ë¹¼ê¸°ê°€ ì™¼ìª½
+	// PrevShootingModeì™€ CurrentShootingMode ìœ„ì¹˜ ë° Alphaê°’ ì²˜ë¦¬í•˜ê¸°
 	float PrevModeCurX	= ShootingModePanelSlots[PrevShootingMode]->GetPosition().X;
 	float PrevModeDestX = SHOOTINGMODE_INITIAL_POS.X - SHOOTING_MODE_XPOS_OFFSET;
 	float Y				= SHOOTINGMODE_INITIAL_POS.Y;
 
-	// Prev - ¸¸ÀÏ ÀÌ¹Ì µµÂø ÁöÁ¡¿¡ µµ´ŞÇßÀ» ¶§
+	// Prev - ë§Œì¼ ì´ë¯¸ ë„ì°© ì§€ì ì— ë„ë‹¬í–ˆì„ ë•Œ
 	if (FMath::Abs(PrevModeCurX - PrevModeDestX) < 1.f)
 	{
 		ShootingModePanelSlots[PrevShootingMode]->SetPosition(FVector2D(PrevModeDestX, Y));
@@ -300,7 +300,7 @@ void UC_AmmoWidget::HandleAmmoUIUpdate(const EAmmoTextType& TextType, const floa
 		SetFontSize(PrevTextBlock, PREV_FONTSIZE_DEST);
 		SetFontAlpha(PrevTextBlock, 0.f);
 	}
-	else // Prev Lerp Ã³¸®
+	else // Prev Lerp ì²˜ë¦¬
 	{
 		PrevFontSize = FMath::Lerp(PrevFontSize, PREV_FONTSIZE_DEST, DeltaTime * LERP_SPEED);
 		SetFontSize(PrevTextBlock, PrevFontSize);
@@ -322,7 +322,7 @@ void UC_AmmoWidget::HandleAmmoUIUpdate(const EAmmoTextType& TextType, const floa
 		float Alpha = (TextType == EAmmoTextType::LEFTAMMO && bLeftAmmoZero) ? 0.f : 1.f;
 		SetFontAlpha(CurrentTextBlock, Alpha);
 	}
-	else // Current Lerp Ã³¸®
+	else // Current Lerp ì²˜ë¦¬
 	{
 		CurrentFontSize = FMath::Lerp(CurrentFontSize, FONT_SIZE_BASE, DeltaTime * LERP_SPEED);
 		SetFontSize(CurrentTextBlock, CurrentFontSize);
@@ -351,7 +351,7 @@ void UC_AmmoWidget::SetFontAlpha(UTextBlock* TextBlock, const float& InAlpha)
 	
 	Color = TextBlock->GetShadowColorAndOpacity();
 	Color.A = InAlpha;
-	TextBlock->SetShadowColorAndOpacity(Color); // Shadow Alpha°ªµµ ÁöÁ¤
+	TextBlock->SetShadowColorAndOpacity(Color); // Shadow Alphaê°’ë„ ì§€ì •
 }
 
 void UC_AmmoWidget::SetCurrentMagazineFontColor(bool bIsRed)
@@ -375,4 +375,6 @@ void UC_AmmoWidget::SetCurrentMagazineFontColor(bool bIsRed)
 
 	MagazineTexts[CURRENT_INDEX]->SetColorAndOpacity(FSlateColor(Color));
 }
+
+
 

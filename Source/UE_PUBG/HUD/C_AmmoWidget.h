@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -31,17 +31,17 @@ public:
 	void SetShootingMode(EShootingMode Mode);
 
 	/// <summary>
-	/// MagazineText ¼¼ÆÃÇÏ±â
+	/// MagazineText ì„¸íŒ…í•˜ê¸°
 	/// </summary>
-	/// <param name="Ammo"> : Åº¾Ë °¹¼ö </param>
-	/// <param name="bHasEffect"> : Åº¾Ë text ¾÷µ¥ÀÌÆ® È¿°ú¸¦ Àû¿ëÇÒÁö (Ã³À½ ÃÑÀ» µé ¶§¿¡´Â false·Î ÇÏ±â -> »ç°İ½Ã¿¡ true·Î »ç¿ë ¿¹Á¤) </param>
+	/// <param name="Ammo"> : íƒ„ì•Œ ê°¯ìˆ˜ </param>
+	/// <param name="bHasEffect"> : íƒ„ì•Œ text ì—…ë°ì´íŠ¸ íš¨ê³¼ë¥¼ ì ìš©í• ì§€ (ì²˜ìŒ ì´ì„ ë“¤ ë•Œì—ëŠ” falseë¡œ í•˜ê¸° -> ì‚¬ê²©ì‹œì— trueë¡œ ì‚¬ìš© ì˜ˆì •) </param>
 	void SetMagazineText(int Ammo, bool bHasEffect = false);
 
 	/// <summary>
-	/// LeftAmmo ¼¼ÆÃÇÏ±â
+	/// LeftAmmo ì„¸íŒ…í•˜ê¸°
 	/// </summary>
-	/// <param name="Ammo"> : Åº¾Ë °¹¼ö </param>
-	/// <param name="bHasEffect"> : Åº¾Ë text ¾÷µ¥ÀÌÆ® È¿°ú¸¦ Àû¿ëÇÒÁö (Ã³À½ ÃÑÀ» µé ¶§¿¡´Â false·Î ÇÏ±â -> ÀçÀåÀü ½Ã true·Î »ç¿ë ¿¹Á¤) </param>
+	/// <param name="Ammo"> : íƒ„ì•Œ ê°¯ìˆ˜ </param>
+	/// <param name="bHasEffect"> : íƒ„ì•Œ text ì—…ë°ì´íŠ¸ íš¨ê³¼ë¥¼ ì ìš©í• ì§€ (ì²˜ìŒ ì´ì„ ë“¤ ë•Œì—ëŠ” falseë¡œ í•˜ê¸° -> ì¬ì¥ì „ ì‹œ trueë¡œ ì‚¬ìš© ì˜ˆì •) </param>
 	void SetLeftAmmoText(int Ammo, bool bHasEffect = false);
 
 	void SetVisibility(ESlateVisibility InVisibility) override;
@@ -50,15 +50,15 @@ public:
 private:
 
 	/// <summary>
-	/// AmmoTextType ÅëÇÕÇÑ boilerplateÄÚµå Á¤¸® Ammo Text ¼¼ÆÃÇÏ±â
+	/// AmmoTextType í†µí•©í•œ boilerplateì½”ë“œ ì •ë¦¬ Ammo Text ì„¸íŒ…í•˜ê¸°
 	/// </summary>
-	/// <param name="TextType"> : ¼¼ÆÃÇÒ Ammo TextType </param>
-	/// <param name="Ammo"> : Åº¾Ë °¹¼ö </param>
-	/// <param name="bHasEffect"> : Åº¾Ë text ¾÷µ¥ÀÌÆ® È¿°ú Àû¿ëÇÒÁö </param>
+	/// <param name="TextType"> : ì„¸íŒ…í•  Ammo TextType </param>
+	/// <param name="Ammo"> : íƒ„ì•Œ ê°¯ìˆ˜ </param>
+	/// <param name="bHasEffect"> : íƒ„ì•Œ text ì—…ë°ì´íŠ¸ íš¨ê³¼ ì ìš©í• ì§€ </param>
 	void SetAmmoText(EAmmoTextType TextType, int Ammo, bool bHasEffect);
 
 	/// <summary>
-	/// Alpha°ª¿¡ µû¸¥ °¢ ShootingModePanelÀÇ Alpha°ª ÁöÁ¤
+	/// Alphaê°’ì— ë”°ë¥¸ ê° ShootingModePanelì˜ Alphaê°’ ì§€ì •
 	/// </summary>
 	/// <param name="Mode"> : Shooting Mode </param>
 	/// <param name="Alpha">: 0 ~ 1 </param>
@@ -76,14 +76,14 @@ private:
 	void SetFontAlpha(class UTextBlock* TextBlock, const float& InAlpha);
 
 	/// <summary>
-	/// MagazineText -> »¡°£»ö »ö»ó or ±âÁ¸ »ö»óÀ¸·Î »ö»ó ¹Ù²Ù±â (Alpha´Â ¼öÁ¤ x)
+	/// MagazineText -> ë¹¨ê°„ìƒ‰ ìƒ‰ìƒ or ê¸°ì¡´ ìƒ‰ìƒìœ¼ë¡œ ìƒ‰ìƒ ë°”ê¾¸ê¸° (AlphaëŠ” ìˆ˜ì • x)
 	/// </summary>
-	/// <param name="bIsRed"> : »¡°£»öÀ¸·Î Ä¥ÇÒÁö </param>
+	/// <param name="bIsRed"> : ë¹¨ê°„ìƒ‰ìœ¼ë¡œ ì¹ í• ì§€ </param>
 	void SetCurrentMagazineFontColor(bool bIsRed);
 
 private:
 
-	// ÇöÀç ÃÑ±âÀÇ UIÀÎÁö Ã¼Å©
+	// í˜„ì¬ ì´ê¸°ì˜ UIì¸ì§€ ì²´í¬
 	bool bIsGun{};
 
 protected:
@@ -99,7 +99,7 @@ protected:
 
 private:
 
-	// MAXÀÏ ¶§¿¡´Â ¹Ù·Î ¶ç¿öÁÖ±â
+	// MAXì¼ ë•Œì—ëŠ” ë°”ë¡œ ë„ì›Œì£¼ê¸°
 	EShootingMode CurrentShootingMode{};
 	EShootingMode PrevShootingMode{};
 
@@ -108,10 +108,10 @@ private:
 	TMap<EShootingMode, TArray<class UImage*>> ShootingModeImages{};
 	TMap<EShootingMode, class UCanvasPanelSlot*> ShootingModePanelSlots{};
 
-private: // Initial ¹× ±âÅ¸ const ÇÑ °ª °ü·Ã
+private: // Initial ë° ê¸°íƒ€ const í•œ ê°’ ê´€ë ¨
 	TMap<EShootingMode, TArray<float>> ShootingModeInitialAlphas{};
 	const FVector2D SHOOTINGMODE_INITIAL_POS = { -58.342354f, -0.027027 };
-	const float SHOOTING_MODE_XPOS_OFFSET = 40.f; // Initial Pos XºÎÅÍ Start±îÁö ¶³¾îÁø °£°İ
+	const float SHOOTING_MODE_XPOS_OFFSET = 40.f; // Initial Pos Xë¶€í„° Startê¹Œì§€ ë–¨ì–´ì§„ ê°„ê²©
 
 /*=======================================================================================*/
 
@@ -133,7 +133,7 @@ private:
 
 	const int PREV_INDEX = 0, CURRENT_INDEX = 1;
 
-	// Megazinetexts¿Í LeftAmmoTexts·Î ÃÊ±âÈ­
+	// Megazinetextsì™€ LeftAmmoTextsë¡œ ì´ˆê¸°í™”
 	TMap<EAmmoTextType, TArray<class UTextBlock*>> AmmoTexts{};
 	const TMap<EAmmoTextType, TPair<float, float>> AMMO_INITIAL_OFFSET_SIZE_PAIRS =
 	{
@@ -143,3 +143,5 @@ private:
 
 
 };
+
+

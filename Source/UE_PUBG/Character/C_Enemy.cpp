@@ -1,7 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/C_Enemy.h"
+
+#include "C_Player.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "Character/Component/C_EquippedComponent.h"
@@ -13,6 +15,8 @@
 #include "Item/Weapon/Gun/C_AR.h"
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Singleton/C_GameSceneManager.h"
+#include "Utility/C_Util.h"
 
 
 AC_Enemy::AC_Enemy()
@@ -24,16 +28,28 @@ void AC_Enemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 
-    // TODO : ºñÇà±â Å¸±â ÀÌÀü¿¡ spawnÇÏ´Â °ÍÀ¸·Î ¼öÁ¤ÇÏ±â
+    // TODO : ë¹„í–‰ê¸° íƒ€ê¸° ì´ì „ì— spawní•˜ëŠ” ê²ƒìœ¼ë¡œ ìˆ˜ì •í•˜ê¸°
     SpawnDefaultWeaponsAndItemsForSelf();
-	
 }
 
 void AC_Enemy::Tick(float DeltaSeoncds)
 {
 	Super::Tick(DeltaSeoncds);
+
+	/*switch (HandState)
+	{
+	case EHandState::UNARMED: UC_Util::Print("UNARMED"); break;
+	case EHandState::WEAPON_GUN: UC_Util::Print("WEAPON_GUN"); break;
+	case EHandState::WEAPON_MELEE: UC_Util::Print("WEAPON_MELEE"); break;
+	case EHandState::WEAPON_THROWABLE: UC_Util::Print("WEAPON_THROWABLE"); break;
+	case EHandState::HANDSTATE_MAX: 
+		break;
+	}*/
+
+	//float DistanceToPlayer = FVector::Distance(GAMESCENE_MANAGER->GetPlayer()->GetActorLocation(), this->GetActorLocation());
+	//UC_Util::Print(DistanceToPlayer * 0.01f);
 }
 
 bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
@@ -48,7 +64,7 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 	case EPoseState::STAND:
 		switch (InChangeFrom)
 		{
-		case EPoseState::CROUCH: // Crouch To Stand (Pose transition ¾øÀÌ ¹Ù·Î Ã³¸®)
+		case EPoseState::CROUCH: // Crouch To Stand (Pose transition ì—†ì´ ë°”ë¡œ ì²˜ë¦¬)
 
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
 
@@ -82,7 +98,7 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CRAWL: // Crawl To Crouch
 
-			if (bIsActivatingConsumableItem) return false; // TODO : ÀÏ¾î¼³ ¼ö ¾ø½À´Ï´Ù UI ¶ç¿ì±â
+			if (bIsActivatingConsumableItem) return false; // TODO : ì¼ì–´ì„¤ ìˆ˜ ì—†ìŠµë‹ˆë‹¤ UI ë„ìš°ê¸°
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
 			
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToCrouch, EPoseState::CROUCH);
@@ -96,7 +112,7 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		{
 		case EPoseState::STAND: // Stand to Crawl
 
-			if (bIsActivatingConsumableItem) return false; // TODO : ¾øµå¸± ¼ö ¾ø½À´Ï´Ù UI ¶ç¿ì±â
+			if (bIsActivatingConsumableItem) return false; // TODO : ì—†ë“œë¦´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤ UI ë„ìš°ê¸°
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
 
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).StandToCrawl, EPoseState::CRAWL);
@@ -105,7 +121,7 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CROUCH: // Crouch to Crawl
 
-			if (bIsActivatingConsumableItem) return false; // TODO : ¾øµå¸± ¼ö ¾ø½À´Ï´Ù UI ¶ç¿ì±â
+			if (bIsActivatingConsumableItem) return false; // TODO : ì—†ë“œë¦´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤ UI ë„ìš°ê¸°
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
 
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrouchToCrawl, EPoseState::CRAWL);
@@ -138,13 +154,27 @@ void AC_Enemy::SpawnDefaultWeaponsAndItemsForSelf()
     SubGun->MoveToSlot(this);
     //EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, SubGun);
 
-    // Throwable Weapon setting ÇÏ±â
+    // Throwable Weapon setting í•˜ê¸°
     for (auto& pair : EquippedComponent->GetSubclassOfThrowingWeapon())
     {
         AC_ThrowingWeapon* ThrowWeapon = GetWorld()->SpawnActor<AC_ThrowingWeapon>(pair.Value, Param);
         ThrowWeapon->MoveToSlot(this);
     }
 
-    // TODO : ´Ù¸¥ Itemµé (Åº, Consumable item µîµî inven¿¡ ³Ö¾îµÎ±â)
+	// "FlashBang"
+	// "Grenade"
+	AC_ThrowingWeapon* Grenade = Cast<AC_ThrowingWeapon>(this->GetInvenComponent()->FindMyItem("Grenade"));
+	if (!IsValid(Grenade))
+	{
+		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade nullptr", FColor::Red, 10.f);
+		return;
+	}
+	
+	if (!Grenade->MoveToSlot(this))
+		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade MoveToSlot Failed!", FColor::Red, 10.f);
+
+    // TODO : ë‹¤ë¥¸ Itemë“¤ (íƒ„, Consumable item ë“±ë“± invenì— ë„£ì–´ë‘ê¸°)
 }
+
+
 

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,5 +17,7 @@ public:
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 protected:
-	virtual bool HandleDrop(class AC_Item* DroppedItem); //TODO: ¼ø¼ö°¡»óÇÔ¼ö·Î
+	virtual bool HandleDrop(class AC_Item* DroppedItem); //TODO: ìˆœìˆ˜ê°€ìƒí•¨ìˆ˜ë¡œ
 };
+
+

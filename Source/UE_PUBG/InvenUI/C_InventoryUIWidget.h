@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -41,10 +41,10 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	class UC_AroundItemPanelWidget* AroundItemPanel = nullptr; // æ∆¿Ã≈€ ∏ÆΩ∫∆Æ ¿ß¡¨
+	class UC_AroundItemPanelWidget* AroundItemPanel = nullptr; // ÏïÑÏù¥ÌÖú Î¶¨Ïä§Ìä∏ ÏúÑÏ†Ø
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	class UC_InventoryItemPanelWidget* InventoryPanel = nullptr; // æ∆¿Ã≈€ ∏ÆΩ∫∆Æ ¿ß¡¨
+	class UC_InventoryItemPanelWidget* InventoryPanel = nullptr; // ÏïÑÏù¥ÌÖú Î¶¨Ïä§Ìä∏ ÏúÑÏ†Ø
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UC_EquipmentPanelWdiget* EquipmentPanel = nullptr;
@@ -75,3 +75,5 @@ protected:
 
 	AC_Item* UsingItem = nullptr;
 };
+
+

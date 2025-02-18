@@ -34,10 +34,23 @@ public:
 	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
 	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
 
+	/// <summary>
+	/// 이 아이템의 주인이 player인 경우 실행하여
+	/// 현재 총을 들고 있는지 체크
+	/// 현재 들고 있는 총과 습득한 총알의 Tpye이 일치하면
+	/// AmmoWidget의 Update를 진행.
+	/// </summary>
+	/// <param name="InOwnerPlayer">이 아이템의 주인</param>
+	void UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer);
 
-	void AddBulletStackToCharacter();
+
+	void AddBulletStackToCharacter(EBulletType InBulletType);
+
+	void DeBulletStackToCharacter();
 protected:
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 
 	EBulletType CurBulletType;
 };
+
+

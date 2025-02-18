@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AI/C_EnemyAIController.h"
@@ -18,15 +18,15 @@ AC_EnemyAIController::AC_EnemyAIController()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Blackboard			= CreateDefaultSubobject<UBlackboardComponent>("Blackboard");
-	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>("Perception"); // Sight¿¡ µé¾î¿ÔÀ» ¶§ÀÇ Çàµ¿ Á¤ÀÇ
-	Sight				= CreateDefaultSubobject<UAISenseConfig_Sight>("Sight");		// ½Ã¾ß | Perception, sight µÑÀÌ ¼¼Æ®·Î ¾¸
+	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>("Perception"); // Sightì— ë“¤ì–´ì™”ì„ ë•Œì˜ í–‰ë™ ì •ì˜
+	Sight				= CreateDefaultSubobject<UAISenseConfig_Sight>("Sight");		// ì‹œì•¼ | Perception, sight ë‘˜ì´ ì„¸íŠ¸ë¡œ ì”€
 
 	Sight->SightRadius								= 600.f;
 	Sight->LoseSightRadius							= 800.f;
 	Sight->PeripheralVisionAngleDegrees				= 360.f;
-	Sight->SetMaxAge(2);											// LoseSight¸¦ ³Ñ¾î°¬À» ¶§ 2ÃÊ ÀÖ´Ù°¡ ³õÄ§
+	Sight->SetMaxAge(2);											// LoseSightë¥¼ ë„˜ì–´ê°”ì„ ë•Œ 2ì´ˆ ìˆë‹¤ê°€ ë†“ì¹¨
 	
-	// Affiliation - ¼Ò¼Ó, ±×·ì | ±×·ìÀ» ¼³Á¤ÇØ¼­ »ç¿ë°¡´É
+	// Affiliation - ì†Œì†, ê·¸ë£¹ | ê·¸ë£¹ì„ ì„¤ì •í•´ì„œ ì‚¬ìš©ê°€ëŠ¥
 	Sight->DetectionByAffiliation.bDetectFriendlies = false;		
 	Sight->DetectionByAffiliation.bDetectEnemies	= true;
 	Sight->DetectionByAffiliation.bDetectNeutrals	= false;
@@ -106,6 +106,8 @@ void AC_EnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedAct
 	FString str = "OnPerceptionUpdated " + FString::FromInt(UpdatedActors.Num());
 	UC_Util::Print(str, FColor::Red, 10.f);
 
+	// TODO : ì‹œì•¼ì— ë“¤ì–´ì˜¨ ìƒˆë¡œìš´ TargetCharacter ì—…ë°ì´íŠ¸ ë¡œì§ í•„ìš”í•¨ (or ì´ë¯¸ TargetCharacterì¸ Characterì— ëŒ€í•œ Targetí•´ì œ ì²˜ë¦¬)
+
 	for (AActor* actor : UpdatedActors)
 	{
 		if (AC_Player* Player = Cast<AC_Player>(actor))
@@ -115,3 +117,5 @@ void AC_EnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedAct
 		}
 	}
 }
+
+

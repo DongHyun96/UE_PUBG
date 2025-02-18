@@ -49,7 +49,7 @@ void UC_ParkourComponent::BeginPlay()
 	if (ParkourActionStrategies.IsEmpty())
 	{
 		II_ParkourActionStrategy* VaultingLowStrategy = NewObject<UC_VaultLowActionStrategy>();
-		VaultingLowStrategy->_getUObject()->AddToRoot(); // GC ¹æÁö -> ÁÖÀÇ : ¹İµå½Ã RemoveFromRoot È£ÃâÇÒ °Í
+		VaultingLowStrategy->_getUObject()->AddToRoot(); // GC ë°©ì§€ -> ì£¼ì˜ : ë°˜ë“œì‹œ RemoveFromRoot í˜¸ì¶œí•  ê²ƒ
 
 		II_ParkourActionStrategy* VaultingHighStrategy = NewObject<UC_VaultHighActionStrategy>();
 		VaultingHighStrategy->_getUObject()->AddToRoot();
@@ -81,11 +81,11 @@ void UC_ParkourComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		if (--ParkourComponentCount <= 0)
 		{
-			if (!ParkourActionStrategies.IsEmpty()) ParkourActionStrategies.Empty(); // GC´Â GameSceneManager¿¡¼­ Ã³¸® ¿¹Á¤
+			if (!ParkourActionStrategies.IsEmpty()) ParkourActionStrategies.Empty(); // GCëŠ” GameSceneManagerì—ì„œ ì²˜ë¦¬ ì˜ˆì •
 		}
 		return;
 	}
-	if (!ParkourActionStrategies.IsEmpty()) ParkourActionStrategies.Empty(); // GC´Â GameSceneManager¿¡¼­ Ã³¸® ¿¹Á¤
+	if (!ParkourActionStrategies.IsEmpty()) ParkourActionStrategies.Empty(); // GCëŠ” GameSceneManagerì—ì„œ ì²˜ë¦¬ ì˜ˆì •
 }
 
 void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -107,7 +107,7 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		bPendingMeshUpdateToMainMesh = false;
 		SwapMesh(false);
 
-		// Set CanMove ½Ã°£Â÷ °ü·Ã ¼³Á¤
+		// Set CanMove ì‹œê°„ì°¨ ê´€ë ¨ ì„¤ì •
 		if (CanMoveTimerAfterWarpActionFin <= 0.f)
 		{
 			//UC_Util::Print("SetCanMove True On ParkourComponent", FColor::Red, 10.f);
@@ -123,7 +123,7 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 				false
 			);
 
-		// Âø¿ë ÁßÀÎ ¹«±â°¡ ÀÖ¾úÀ» ¶§ ÇØ´ç ¹«±â ´Ù½Ã ÀåÂø ½Ãµµ
+		// ì°©ìš© ì¤‘ì¸ ë¬´ê¸°ê°€ ìˆì—ˆì„ ë•Œ í•´ë‹¹ ë¬´ê¸° ë‹¤ì‹œ ì¥ì°© ì‹œë„
 		OwnerCharacter->GetEquippedComponent()->TryReAttachCurWeaponToHand();
 
 		//bIsCurrentlyWarping = false;
@@ -160,7 +160,7 @@ bool UC_ParkourComponent::TryExecuteParkourAction()
 	// Init CanMoveTimer
 	CanMoveTimerAfterWarpActionFin = 0.f;
 
-	// Check Parkour framework - Low Action ¸ÕÀú Á¶»çÇØ¼­ Åë°úÇÏ¸é Low ActionÀ¸·Î ¿ì¼± Ã³¸®
+	// Check Parkour framework - Low Action ë¨¼ì € ì¡°ì‚¬í•´ì„œ í†µê³¼í•˜ë©´ Low Actionìœ¼ë¡œ ìš°ì„  ì²˜ë¦¬
 	if (CheckParkourFramework(CurParkourDesc, true))
 	{
 		ExecuteMotionWarpingAction(CurParkourDesc);
@@ -169,7 +169,7 @@ bool UC_ParkourComponent::TryExecuteParkourAction()
 
 	//UC_Util::Print("Failed Low Action framework", DebugMsgColor, 10.f);
 
-	// Check Parkour framework - Low Action °Ë»ç ½ÇÆĞ / High Action °Ë»ç
+	// Check Parkour framework - Low Action ê²€ì‚¬ ì‹¤íŒ¨ / High Action ê²€ì‚¬
 	if (!CheckParkourFramework(CurParkourDesc, false)) return false;
 
 	ExecuteMotionWarpingAction(CurParkourDesc);
@@ -185,7 +185,7 @@ void UC_ParkourComponent::ExecuteMotionWarpingAction(const FParkourDescriptor& C
 	OwnerCharacter->SetNextSpeed(0.f);
 	if (OwnerPlayer) OwnerPlayer->SetStrafeRotationToIdleStop();
 
-	// ÇöÀç µé°íÀÖ´Â ¹«±â°¡ Á¸ÀçÇÑ´Ù¸é ¹«±â Àá±ñ ¸ö ÂÊ¿¡ ºÙÀÌ±â ½Ãµµ
+	// í˜„ì¬ ë“¤ê³ ìˆëŠ” ë¬´ê¸°ê°€ ì¡´ì¬í•œë‹¤ë©´ ë¬´ê¸° ì ê¹ ëª¸ ìª½ì— ë¶™ì´ê¸° ì‹œë„
 	OwnerCharacter->GetEquippedComponent()->TryAttachCurWeaponToHolsterWithoutSheathMotion();
 
 	SwapMesh(true);
@@ -193,7 +193,7 @@ void UC_ParkourComponent::ExecuteMotionWarpingAction(const FParkourDescriptor& C
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 	OwnerCharacter->SetActorEnableCollision(false);
 
-	// ParkourActionStrategy ½ÇÇà
+	// ParkourActionStrategy ì‹¤í–‰
 	CurParkourActionStrategy->UseMotionWarpActionStrategy(OwnerCharacter, CurParkourDesc);
 }
 
@@ -219,13 +219,13 @@ void UC_ParkourComponent::SwapMesh(bool ToRootedMesh)
 
 	if (ToRootedMesh)
 	{
-		// ÀÌ¹Ì ÇØ´ç meshÀÏ ¶§
+		// ì´ë¯¸ í•´ë‹¹ meshì¼ ë•Œ
 		if (OwnerCharacter->GetMesh()->GetSkeletalMeshAsset() == RootedSkeletalMesh) return;
 
 		MainSkeletalMesh	  = OwnerCharacter->GetMesh()->GetSkeletalMeshAsset();
 		MainRelativeTransform = OwnerCharacter->GetMesh()->GetRelativeTransform();
 
-		// AttachedActors Á¶»ç
+		// AttachedActors ì¡°ì‚¬
 		GetSocketAttachedActors(AttachedActors);
 
 		OwnerCharacter->GetMesh()->SetSkeletalMesh(RootedSkeletalMesh);
@@ -234,10 +234,10 @@ void UC_ParkourComponent::SwapMesh(bool ToRootedMesh)
 	}
 	else
 	{
-		// ÀÌ¹Ì ÇØ´ç meshÀÏ ¶§
+		// ì´ë¯¸ í•´ë‹¹ meshì¼ ë•Œ
 		if (OwnerCharacter->GetMesh()->GetSkeletalMeshAsset() == MainSkeletalMesh) return;
 
-		// AttachedActors Á¶»ç
+		// AttachedActors ì¡°ì‚¬
 		GetSocketAttachedActors(AttachedActors);
 
 		OwnerCharacter->GetMesh()->SetSkeletalMesh(MainSkeletalMesh);
@@ -272,10 +272,10 @@ void UC_ParkourComponent::ReAttachActorsToSocket(const TMap<FName, AActor*>& Pre
 {
 	for (const TPair<FName, AActor*>& Pair : PrevAttachedActors)
 	{
-		// RootComponent°¡ Attach ´ë»óÀÌ¸é ¹«½Ã
+		// RootComponentê°€ Attach ëŒ€ìƒì´ë©´ ë¬´ì‹œ
 		if (Pair.Value->GetRootComponent() == OwnerCharacter->GetRootComponent()) continue;
 
-		// ÇØ´ç socketÀÌ »õ Mesh¿¡¼­µµ À¯È¿ÇÑÁö È®ÀÎ
+		// í•´ë‹¹ socketì´ ìƒˆ Meshì—ì„œë„ ìœ íš¨í•œì§€ í™•ì¸
 		if (OwnerCharacter->GetMesh()->DoesSocketExist(Pair.Key))
 		{
 			UC_Util::Print(Pair.Key.ToString(), FColor::Red, 10.f);
@@ -292,7 +292,7 @@ void UC_ParkourComponent::ReAttachActorsToSocket(const TMap<FName, AActor*>& Pre
 
 bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor& CurParkourDesc)
 {
-	// ÃÊ±âÈ­
+	// ì´ˆê¸°í™”
 	CurParkourDesc.LandPos = {};
 	CurParkourDesc.bLandPosInited = false;
 	CurParkourDesc.VerticalHitPositions.Empty();
@@ -300,7 +300,7 @@ bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor&
 	// Check Distance
 	bool HasHit{};
 
-	// VerticalHitPositions First start Á¶»ç
+	// VerticalHitPositions First start ì¡°ì‚¬
 	FVector StartLocation	= CurParkourDesc.FirstObstacleHitLocation + FVector::UnitZ() * 50.f;
 	FVector DestLocation	= StartLocation - FVector::UnitZ() * 100.f;
 	const float SphereRad   = 10.f;
@@ -323,7 +323,7 @@ bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor&
 	{
 		//UC_Util::Print("From InitVerticalHitPositions : First Hit pos not inited!", DebugMsgColor, 10.f);
 		return false;
-	}// ÃÊ±â VerticalHitPositions Á¦´ë·Î Ãæµ¹ÇÏÁö ¾Ê¾Ò´Ù¸é return false
+	}// ì´ˆê¸° VerticalHitPositions ì œëŒ€ë¡œ ì¶©ëŒí•˜ì§€ ì•Šì•˜ë‹¤ë©´ return false
 
 	CurParkourDesc.VerticalHitPositions.Add(HitResult.Location);
 
@@ -353,19 +353,19 @@ bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor&
 		{
 			CurParkourDesc.VerticalHitPositions.Add(HitResult.Location);
 			DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRad, 10, FColor::Red, true);
-			continue; // ´ÙÀ½ DistanceLevel Á¶»ç
+			continue; // ë‹¤ìŒ DistanceLevel ì¡°ì‚¬
 		}
 
 		// Set Landing Position
 		FVector Start = StartLocation + OwnerCharacter->GetActorForwardVector() * 80.f;
-		FVector End   = Start - FVector::UnitZ() * 50000.f; // ³Ê¹« ³·Àº ³ôÀÌ·Î LandPos ÀâÈú¼öµµ ÀÖÀ½ -> Test / ÀÌ·² ¶§¿¡´Â Vaulting¿¡¼­ Ã³¸®
+		FVector End   = Start - FVector::UnitZ() * 50000.f; // ë„ˆë¬´ ë‚®ì€ ë†’ì´ë¡œ LandPos ì¡íìˆ˜ë„ ìˆìŒ -> Test / ì´ëŸ´ ë•Œì—ëŠ” Vaultingì—ì„œ ì²˜ë¦¬
 		HitResult = {};
 
 		HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CurParkourDesc.CollisionParams);
 
 		if (!HasHit) return true;
 
-		// FirstVerticalHitPositionZº¸´Ù ³·À¸¸é LandPos init ½ÃÅ°±â
+		// FirstVerticalHitPositionZë³´ë‹¤ ë‚®ìœ¼ë©´ LandPos init ì‹œí‚¤ê¸°
 		if (HitResult.Location.Z < CurParkourDesc.VerticalHitPositions[0].Z)
 		{
 			CurParkourDesc.LandPos = HitResult.Location;
@@ -380,9 +380,9 @@ void UC_ParkourComponent::InitCurParkourActionStrategy(const FParkourDescriptor&
 {
 	CurParkourActionStrategy = nullptr;
 	
-	if (CurParkourDesc.bMustVault) // ¹«Á¶°Ç Vaulting Ã³¸® ÇØ¾ßÇÒ ¶§
+	if (CurParkourDesc.bMustVault) // ë¬´ì¡°ê±´ Vaulting ì²˜ë¦¬ í•´ì•¼í•  ë•Œ
 	{
-		// Vault Action strategy¿¡¼­ handlingÇÒ °Í
+		// Vault Action strategyì—ì„œ handlingí•  ê²ƒ
 		//if (!CurParkourDesc.bLandPosInited) return false;
 
 		CurParkourActionStrategy = ParkourActionStrategies[CurParkourDesc.bIsLowAction ?
@@ -390,14 +390,14 @@ void UC_ParkourComponent::InitCurParkourActionStrategy(const FParkourDescriptor&
 		return;
 	}
 
-	if (CurParkourDesc.bMustMantle) // ¹«Á¶°Ç MantlingÀ¸·Î Ã³¸®ÇØ¾ß ÇÒ ¶§
+	if (CurParkourDesc.bMustMantle) // ë¬´ì¡°ê±´ Mantlingìœ¼ë¡œ ì²˜ë¦¬í•´ì•¼ í•  ë•Œ
 	{
 		CurParkourActionStrategy = ParkourActionStrategies[CurParkourDesc.bIsLowAction ?
 			EParkourActionType::MANTLING_LOW : EParkourActionType::MANTLING_HIGH];
 		return;
 	}
 
-	// Mantling, Vaulting µÑ ´Ù °¡´ÉÇÑ °æ¿ì, Input¿¡ µû¸¥ Ã³¸®
+	// Mantling, Vaulting ë‘˜ ë‹¤ ê°€ëŠ¥í•œ ê²½ìš°, Inputì— ë”°ë¥¸ ì²˜ë¦¬
 
 	if (bHasTryVaulting)
 	{
@@ -447,7 +447,7 @@ bool UC_ParkourComponent::CheckLowParkourTarget(FParkourDescriptor& CurParkourDe
 
 	FHitResult HitResult{};
 
-	// Low Parkour TargetÀÌ ¸Â´ÂÁö ³ôÀÌ Ã¼Å©
+	// Low Parkour Targetì´ ë§ëŠ”ì§€ ë†’ì´ ì²´í¬
 
 	// 85
 	FVector Start = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * 85.f;
@@ -473,7 +473,7 @@ bool UC_ParkourComponent::CheckLowParkourTarget(FParkourDescriptor& CurParkourDe
 
 	for (int i = 0; i < 3; i++)
 	{
-		FVector StartLocation	 = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * (60.f - i * 30.f); // À§¿¡¼­ ¾Æ·¡·Î °Ë»ç ÁøÇà
+		FVector StartLocation	 = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * (60.f - i * 30.f); // ìœ„ì—ì„œ ì•„ë˜ë¡œ ê²€ì‚¬ ì§„í–‰
 		FVector DestLocation	 = StartLocation + OwnerCharacter->GetActorForwardVector() * FORWARD_CHECK_LENGTH;
 		const float SphereRadius = 10.f;
 
@@ -507,7 +507,7 @@ bool UC_ParkourComponent::CheckHighParkourTarget(FParkourDescriptor& CurParkourD
 
 	FHitResult HitResult{};
 
-	// ÆÄÄí¸£ÇÒ ¼ö ÀÖ´Â ³ôÀÌÀÎÁö Ã¼Å©
+	// íŒŒì¿ ë¥´í•  ìˆ˜ ìˆëŠ” ë†’ì´ì¸ì§€ ì²´í¬
 	FVector Start = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * 205.f;
 	FVector Dest = Start + OwnerCharacter->GetActorForwardVector() * FORWARD_CHECK_LENGTH;
 
@@ -522,7 +522,7 @@ bool UC_ParkourComponent::CheckHighParkourTarget(FParkourDescriptor& CurParkourD
 		CurParkourDesc.CollisionParams
 	);
 
-	// ÆÄÄí¸£ ÇÒ ¼ö ÀÖ´Â ³ôÀÌ°¡ ¾Æ´Ô
+	// íŒŒì¿ ë¥´ í•  ìˆ˜ ìˆëŠ” ë†’ì´ê°€ ì•„ë‹˜
 	if (NotPossibleHeight) return false;
 
 	HitResult = {};
@@ -531,7 +531,7 @@ bool UC_ParkourComponent::CheckHighParkourTarget(FParkourDescriptor& CurParkourD
 
 	for (int i = 0; i < 4; i++)
 	{
-		FVector StartLocation	 = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * (180.f - i * 30.f); // À§¿¡¼­ ¾Æ·¡·Î °Ë»ç ÁøÇà
+		FVector StartLocation	 = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * (180.f - i * 30.f); // ìœ„ì—ì„œ ì•„ë˜ë¡œ ê²€ì‚¬ ì§„í–‰
 		FVector DestLocation	 = StartLocation + OwnerCharacter->GetActorForwardVector() * FORWARD_CHECK_LENGTH;
 		const float SphereRadius = 10.f;
 
@@ -563,25 +563,25 @@ bool UC_ParkourComponent::CheckSpaceForParkourAction(FParkourDescriptor& CurPark
 {
 	FHitResult HitResult{};
 
-	// ¹«Á¶°Ç Mantling Ã³¸®ÇØ¾ßÇÏ´Â °æ¿ì - InitMustVaultOrMustMantle Ã³¸® ¸ÕÀúÇÏ±â
+	// ë¬´ì¡°ê±´ Mantling ì²˜ë¦¬í•´ì•¼í•˜ëŠ” ê²½ìš° - InitMustVaultOrMustMantle ì²˜ë¦¬ ë¨¼ì €í•˜ê¸°
 	if (CurParkourDesc.bMustMantle) return CheckSpaceForMantling(CurParkourDesc);
 
-	// ¹«Á¶°Ç Vaulting Ã³¸®ÇØ¾ß ÇÏ´Â °æ¿ì 
+	// ë¬´ì¡°ê±´ Vaulting ì²˜ë¦¬í•´ì•¼ í•˜ëŠ” ê²½ìš° 
 	if (CurParkourDesc.bMustVault) return CheckSpaceForVaulting(CurParkourDesc);
 
-	// TODO : Vaulting & Mantling ¸ğµÎ °¡´ÉÇÑ »óÈ² -> MustVaulting MustMantle ¿©±â¼­µµ Ã¼Å©ÇÒ °Í
+	// TODO : Vaulting & Mantling ëª¨ë‘ ê°€ëŠ¥í•œ ìƒí™© -> MustVaulting MustMantle ì—¬ê¸°ì„œë„ ì²´í¬í•  ê²ƒ
 	
 	bool CanMantle = CheckSpaceForMantling(CurParkourDesc);
 	bool CanVault = CheckSpaceForVaulting(CurParkourDesc);
 	
 	if (CanMantle && CanVault)			return true;
 	else if (!CanMantle && !CanVault)	return false;
-	else if (CanMantle) // Mantle Ã³¸®¹Û¿¡ ¸øÇÒ ¶§
+	else if (CanMantle) // Mantle ì²˜ë¦¬ë°–ì— ëª»í•  ë•Œ
 	{
 		CurParkourDesc.bMustMantle = true;
 		CurParkourDesc.bMustVault  = false;
 	}
-	else // Vault Ã³¸® ¹Û¿¡ ¸øÇÒ ¶§
+	else // Vault ì²˜ë¦¬ ë°–ì— ëª»í•  ë•Œ
 	{
 		CurParkourDesc.bMustMantle = false;
 		CurParkourDesc.bMustVault  = true;
@@ -595,7 +595,7 @@ bool UC_ParkourComponent::CheckSpaceForVaulting(const FParkourDescriptor& CurPar
 
 	FHitResult HitResult{};
 
-	// Áß°£ºÎÅÍ LandPos±îÁö Vault °æ·Î »ó Àå¾Ö¹°ÀÌ ÀÖ´ÂÁö °Ë»ç
+	// ì¤‘ê°„ë¶€í„° LandPosê¹Œì§€ Vault ê²½ë¡œ ìƒ ì¥ì• ë¬¼ì´ ìˆëŠ”ì§€ ê²€ì‚¬
 	FVector StartLocation = CurParkourDesc.VerticalHitPositions[0] + FVector::UnitZ() * 15.f;
 	FVector DestLocation  = CurParkourDesc.LandPos;
 	DestLocation.Z		  = StartLocation.Z;
@@ -623,7 +623,7 @@ bool UC_ParkourComponent::CheckSpaceForMantling(const FParkourDescriptor& CurPar
 {
 	FHitResult HitResult{};
 
-	// StartºÎÅÍ Mantle °æ·Î »ó Àå¾Ö¹°ÀÌ ÀÖ´ÂÁö °Ë»ç
+	// Startë¶€í„° Mantle ê²½ë¡œ ìƒ ì¥ì• ë¬¼ì´ ìˆëŠ”ì§€ ê²€ì‚¬
 	FVector StartLocation = CurParkourDesc.VerticalHitPositions[0] + FVector::UnitZ() * 15.f;
 	FVector DestLocation  = CurParkourDesc.VerticalHitPositions[1];
 	DestLocation.Z		  = StartLocation.Z;
@@ -646,7 +646,7 @@ bool UC_ParkourComponent::CheckSpaceForMantling(const FParkourDescriptor& CurPar
 
 	if (HasHit) return false;
 
-	// µµÂø ÁöÁ¡ À§·Î ÃæºĞÇÑ °ø°£ÀÌ ³ª¿À´ÂÁö °Ë»ç
+	// ë„ì°© ì§€ì  ìœ„ë¡œ ì¶©ë¶„í•œ ê³µê°„ì´ ë‚˜ì˜¤ëŠ”ì§€ ê²€ì‚¬
 	FVector BoxLocation	= CurParkourDesc.VerticalHitPositions[1] + FVector::UnitZ() * 100.f;
 	BoxExtent			= { 25.f, 25.f, 90.f };
 
@@ -692,28 +692,28 @@ bool UC_ParkourComponent::InitMustVaultOrMustMantle(FParkourDescriptor& CurParko
 
 	if (DIST_LEVEL <= 0) return false;
 
-	// ¹«Á¶°Ç Vaulting Ã³¸® ÇØ¾ßÇÒ ¶§ - MantlingÇÒ °ø°£ÀÌ ÃæºĞÇÏÁö ¾ÊÀ» ¶§
+	// ë¬´ì¡°ê±´ Vaulting ì²˜ë¦¬ í•´ì•¼í•  ë•Œ - Mantlingí•  ê³µê°„ì´ ì¶©ë¶„í•˜ì§€ ì•Šì„ ë•Œ
 	if (DIST_LEVEL == 1)
 	{
 		CurParkourDesc.bMustVault = true;
 		return true;
 	}
 
-	bool ObstaclePossibleToVault{};	// Vault °¡´ÉÇÑ ÁöÇüÁö¹°ÀÎÁö Ã¼Å©
-	bool DistancePossibleToVault = DIST_LEVEL <= 3; // VaultÇÒ ¼ö ÀÖ´Â °Å¸®ÀÎÁö
+	bool ObstaclePossibleToVault{};	// Vault ê°€ëŠ¥í•œ ì§€í˜•ì§€ë¬¼ì¸ì§€ ì²´í¬
+	bool DistancePossibleToVault = DIST_LEVEL <= 3; // Vaultí•  ìˆ˜ ìˆëŠ” ê±°ë¦¬ì¸ì§€
 
 	float FirstPosZ = CurParkourDesc.VerticalHitPositions[0].Z;
 	for (int distLevel = 1; distLevel < DIST_LEVEL; distLevel++)
 		ObstaclePossibleToVault = CurParkourDesc.VerticalHitPositions[distLevel].Z - FirstPosZ < 50.f;
 
-	// ¹«Á¶°Ç MantlingÀ¸·Î Ã³¸®ÇØ¾ß ÇÒ ¶§
+	// ë¬´ì¡°ê±´ Mantlingìœ¼ë¡œ ì²˜ë¦¬í•´ì•¼ í•  ë•Œ
 	if (!DistancePossibleToVault || !ObstaclePossibleToVault)
 	{
 		CurParkourDesc.bMustMantle = true;
 		return true;
 	}
 
-	// ³ôÀÌ°¡ ³ôÀ» ¶§¿¡ DistanceLevel 1 ÃÊ°úÀÌ¸é ¹«Á¶°Ç Mantling
+	// ë†’ì´ê°€ ë†’ì„ ë•Œì— DistanceLevel 1 ì´ˆê³¼ì´ë©´ ë¬´ì¡°ê±´ Mantling
 	if (!CurParkourDesc.bIsLowAction && DIST_LEVEL > 1)
 	{
 		CurParkourDesc.bMustMantle = true;
@@ -732,8 +732,20 @@ void UC_ParkourComponent::OnParkourAnimMontageEnd()
 
 	OwnerCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0);
 
-	bPendingMeshUpdateToMainMesh = true; // ´ÙÀ½ Update Tick¿¡¼­ Main skeletal mesh·Î µ¹¾Æ°¨
+	bPendingMeshUpdateToMainMesh = true; // ë‹¤ìŒ Update Tickì—ì„œ Main skeletal meshë¡œ ëŒì•„ê°
 }
+
+void UC_ParkourComponent::SwapMeshToMainSkeletalMesh()
+{
+	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	OwnerCharacter->SetActorEnableCollision(true);
+
+	OwnerCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0);
+
+	bPendingMeshUpdateToMainMesh = true;
+}
+
+
 
 
 

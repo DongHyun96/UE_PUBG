@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -19,7 +19,7 @@ class UE_PUBG_API UC_AttachableItemSlotWidget : public UC_BasicEquippedItemSlotW
 	
 public:
 	/// <summary>
-	/// ¿ìÅ¬¸¯ ÀÌº¥Æ®
+	/// ìš°í´ë¦­ ì´ë²¤íŠ¸
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -27,7 +27,7 @@ public:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	/// <summary>
-	/// ÁÂÅ¬¸¯À¸·Î µå·¡±× ÀÌº¥Æ® ÀÌº¥Æ®¸¦ ½ÃÀÛ.
+	/// ì¢Œí´ë¦­ìœ¼ë¡œ ë“œë˜ê·¸ ì´ë²¤íŠ¸ ì´ë²¤íŠ¸ë¥¼ ì‹œì‘.
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -35,7 +35,7 @@ public:
 	//virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 
 	/// <summary>
-	/// µå·¡±× ÁßÀÎ SlotÀÇ ¾ÆÀÌÅÛÀ» °¨Áö.
+	/// ë“œë˜ê·¸ ì¤‘ì¸ Slotì˜ ì•„ì´í…œì„ ê°ì§€.
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -45,9 +45,9 @@ public:
 	void UpdateSlotItemImage(class AC_Gun* SlotItem);
 
 	/// <summary>
-	/// C_GunSlotWidget¿¡¼­ ½½·Ô¿¡ ÀåÂøµÈ ÃÑ±âÀÇ ºÎÂø°¡´É ¸ñ·ÏÀ» ¸Å°³º¯¼ö·Î ³Ñ°ÜÁÖ¸é
-	/// ÇØ´ç ÇÔ¼ö¸¦ ÅëÇØ ¸ñ·Ï ¾È¿¡ ÀÚ½ÅÀÇ SlotNameÀÌ ÀÖ´ÂÁö È®ÀÎÇÏ°í ÀÖ´Ù¸é È°¼ºÈ­ µÈ´Ù.
-	/// ¾ø´Ù¸é ºñÈ°¼ºÈ­(Collapsed)µÈ´Ù.
+	/// C_GunSlotWidgetì—ì„œ ìŠ¬ë¡¯ì— ì¥ì°©ëœ ì´ê¸°ì˜ ë¶€ì°©ê°€ëŠ¥ ëª©ë¡ì„ ë§¤ê°œë³€ìˆ˜ë¡œ ë„˜ê²¨ì£¼ë©´
+	/// í•´ë‹¹ í•¨ìˆ˜ë¥¼ í†µí•´ ëª©ë¡ ì•ˆì— ìì‹ ì˜ SlotNameì´ ìˆëŠ”ì§€ í™•ì¸í•˜ê³  ìˆë‹¤ë©´ í™œì„±í™” ëœë‹¤.
+	/// ì—†ë‹¤ë©´ ë¹„í™œì„±í™”(Collapsed)ëœë‹¤.
 	/// </summary>
 	/// <param name="AttachableSlots"></param>
 	void DiscriminateSlot(TArray<EPartsName> AttachableSlots, AC_Gun* SlotItem);
@@ -59,7 +59,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UImage* ItemImage = nullptr;
 
-	//Main,SubGunSlotÀ» º¯¼ö·Î? 
+	//Main,SubGunSlotì„ ë³€ìˆ˜ë¡œ? 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EWeaponSlot GunSlot{};
 };
+
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -38,26 +38,26 @@ public:
 	bool Interaction(AC_BasicCharacter* Character) override;
 
 	/// <summary>
-	/// ÇØ´ç ¾ÆÀÌÅÛ(°´Ã¼)¸¦ ¾ó¸¶³ª ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´ÂÁö °è»êÇØ¼­ ³Ö´Â´Ù. -> ÀÏºÎ¸¸ ³Ö´Â °æ¿ì¿¡´Â ÀÎº¥¿¡ ³ÖÀ» ¶§ SpawnÀ» ÅëÇØ »õ·Î¿î °´Ã¼¸¦ ¸¸µé¾î 
-	/// °¹¼ö¸¦ ¼³Á¤ÇØÁÖ°í ¿øº»ÀÇ °¹¼öµµ ¼öÁ¤. (¿øº»stack = ¼öÁ¤µÈ ¿øº»ÀÇ stack + »ı¼º°´Ã¼ÀÇ stack)
+	/// í•´ë‹¹ ì•„ì´í…œ(ê°ì²´)ë¥¼ ì–¼ë§ˆë‚˜ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ”ì§€ ê³„ì‚°í•´ì„œ ë„£ëŠ”ë‹¤. -> ì¼ë¶€ë§Œ ë„£ëŠ” ê²½ìš°ì—ëŠ” ì¸ë²¤ì— ë„£ì„ ë•Œ Spawnì„ í†µí•´ ìƒˆë¡œìš´ ê°ì²´ë¥¼ ë§Œë“¤ì–´ 
+	/// ê°¯ìˆ˜ë¥¼ ì„¤ì •í•´ì£¼ê³  ì›ë³¸ì˜ ê°¯ìˆ˜ë„ ìˆ˜ì •. (ì›ë³¸stack = ìˆ˜ì •ëœ ì›ë³¸ì˜ stack + ìƒì„±ê°ì²´ì˜ stack)
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns></returns>
 	bool LegacyMoveToInven(AC_BasicCharacter* Character) override;
 
 	/// <summary>
-	/// ÇØ´ç ¾ÆÀÌÅÛ(°´Ã¼)¸¦ ¾ó¸¶³ª ¹ö¸± °ÍÀÎÁö °è»êÇØ¼­ ¹ö¸°´Ù.(ÀÌ°ÍÀº ÈÄ¿¡ ³ª´²¹ö¸®±â ±â´ÉÀ» À§ÇØ uint8Á¤µµ¸¦ ¹Ş¾Æ »ç¿ëÇÏ¸é ÁÁÀ»µí.)
-	/// ->ÀÏºÎ¸¸ ¹ö¸®´Â °æ¿ì ¾ÆÀÌÅÛ(°´Ã¼)¸¦ »õ·Î »ı¼ºÇØ¼­ ¿øº»°ú ¼ö·®À» Á¶Á¤ÇØ¾ß ÇÑ´Ù. (¿øº»stack = ¼öÁ¤µÈ ¿øº»ÀÇ stack + »ı¼º°´Ã¼ÀÇ stack)
+	/// í•´ë‹¹ ì•„ì´í…œ(ê°ì²´)ë¥¼ ì–¼ë§ˆë‚˜ ë²„ë¦´ ê²ƒì¸ì§€ ê³„ì‚°í•´ì„œ ë²„ë¦°ë‹¤.(ì´ê²ƒì€ í›„ì— ë‚˜ëˆ ë²„ë¦¬ê¸° ê¸°ëŠ¥ì„ ìœ„í•´ uint8ì •ë„ë¥¼ ë°›ì•„ ì‚¬ìš©í•˜ë©´ ì¢‹ì„ë“¯.)
+	/// ->ì¼ë¶€ë§Œ ë²„ë¦¬ëŠ” ê²½ìš° ì•„ì´í…œ(ê°ì²´)ë¥¼ ìƒˆë¡œ ìƒì„±í•´ì„œ ì›ë³¸ê³¼ ìˆ˜ëŸ‰ì„ ì¡°ì •í•´ì•¼ í•œë‹¤. (ì›ë³¸stack = ìˆ˜ì •ëœ ì›ë³¸ì˜ stack + ìƒì„±ê°ì²´ì˜ stack)
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns></returns>
 	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛÀ» ½½·ÔÀ¸·Î ÀÌµ¿.
+	/// ì•„ì´í…œì„ ìŠ¬ë¡¯ìœ¼ë¡œ ì´ë™.
 	/// </summary>
 	/// <param name="Character"></param>
-	/// <returns>true¸é ÀÌµ¿ ¼º°ø, false¸é ½ÇÆĞ</returns>
+	/// <returns>trueë©´ ì´ë™ ì„±ê³µ, falseë©´ ì‹¤íŒ¨</returns>
 	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 
 protected:
@@ -74,10 +74,18 @@ public:
 
 	struct FPriorityAnimMontage GetAttackMontage() const { return AttackMontage; }
 
-public:
-
+	/// <summary>
+	/// Enable Attack Collider collision
+	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	void SetAttackColliderEnabled(const bool& Enabled);
+	void OnAttackBegin();
+
+	/// <summary>
+	/// Disable Attack collider collision
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void OnAttackEnd();
+	
 
 protected:
 
@@ -95,28 +103,17 @@ protected:
 protected:
 
 	/// <summary>
-	/// OwnerCharacterÀÇ Pose Transition ¸ğ¼ÇÀÌ ³¡³µÀ» ¶§ Delegate¸¦ ÅëÇØ call backÀ» ¹Ş´Â ÇÔ¼ö (ÇöÀç Ä³¸¯ÅÍÀÇ slot¿¡ ÀåÂøµÈ ¹«±â¸¸ call back µÉ ¿¹Á¤) 
+	/// OwnerCharacterì˜ Pose Transition ëª¨ì…˜ì´ ëë‚¬ì„ ë•Œ Delegateë¥¼ í†µí•´ call backì„ ë°›ëŠ” í•¨ìˆ˜ (í˜„ì¬ ìºë¦­í„°ì˜ slotì— ì¥ì°©ëœ ë¬´ê¸°ë§Œ call back ë  ì˜ˆì •) 
 	/// </summary>
 	void OnOwnerCharacterPoseTransitionFin() override;
-
-private:
-
-	/// <summary>
-	/// <para> ÀÚ¼¼ º° AnimMontage¸¦ PlayÇÏ°í ÀÖ´Â µµÁß, OwnerCharacterÀÇ ÀÚ¼¼°¡ ¹Ù²ğ ¶§ </para>
-	/// <para> ÇöÀç Àç»ı ÁßÀÎ AnimMontageÀÇ Àç»ıÀ§Ä¡ ºñÀ²¿¡ µû¶ó ´ÙÀ½ ÀÚ¼¼ÀÇ MontageÀÇ ½ÃÀÛÀ§Ä¡¸¦ Á¶Á¤ÇÏ¿© Àç»ı </para>
-	/// </summary>
-	/// <param name="PrevMontage"> ÇöÀç Àç»ıÁßÀÎ ¸ùÅ¸ÁÖ </param>
-	/// <param name="NextMontage"> ¹Ù²Ü ¸ùÅ¸ÁÖ </param>
-	//void SwitchCurrentPlayingMontage(FPriorityAnimMontage CurrentMontage, FPriorityAnimMontage NextMontage);
-
-private:
-
-	//void InitPriorityAnimMontages();
+	
+public:
+	bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
 
 protected:
 	
-	static const FName HOLSTER_SOCKET_NAME; // ¹«±âÁı socket ÀÌ¸§
-	static const FName EQUIPPED_SOCKET_NAME; // ¹«±â°¡ ¼Õ¿¡ ºÎÂøµÉ socket ÀÌ¸§
+	static const FName HOLSTER_SOCKET_NAME; // ë¬´ê¸°ì§‘ socket ì´ë¦„
+	static const FName EQUIPPED_SOCKET_NAME; // ë¬´ê¸°ê°€ ì†ì— ë¶€ì°©ë  socket ì´ë¦„
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	struct FPriorityAnimMontage AttackMontage{};
@@ -127,9 +124,15 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> SheathMontages{};
 
-protected:
 
+protected:
+	
 	class UShapeComponent* AttackCollider{};
-public:
-	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+
+private:
+
+	// í•œ ë²ˆ íœ˜ë‘˜ë €ì„ ë•Œ ì´ë¯¸ Damageë¥¼ ì£¼ì—ˆë˜ Characterë“¤
+	TSet<class AC_BasicCharacter*> AttackedCharacters{};
 };
+
+

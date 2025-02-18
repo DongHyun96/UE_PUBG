@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -35,24 +35,24 @@ struct FPhaseInfo
 	FPhaseInfo(float _PhaseRadius, float _ShrinkDelayTime, float _ShrinkTotalTime)
 		:PhaseRadius(_PhaseRadius), ShrinkDelayTime(_ShrinkDelayTime), ShrinkTotalTime(_ShrinkTotalTime) {}
 	
-	// ÇöÀç ÆäÀÌÁîÀÇ Radius Å©±â
+	// í˜„ì¬ í˜ì´ì¦ˆì˜ Radius í¬ê¸°
 	float PhaseRadius{};
 	
-	// ÀÚ±âÀå ´ÙÀ½ ¸ñÇ¥ ÁöÁ¡À¸·Î ÁÙ¾îµé±â ½ÃÀÛÇÏ±â Àü±îÁöÀÇ Holding time
+	// ìê¸°ì¥ ë‹¤ìŒ ëª©í‘œ ì§€ì ìœ¼ë¡œ ì¤„ì–´ë“¤ê¸° ì‹œì‘í•˜ê¸° ì „ê¹Œì§€ì˜ Holding time
 	float ShrinkDelayTime{};
 
-	// ÁÙ¾îµå´Â ÃÑ ½Ã°£
+	// ì¤„ì–´ë“œëŠ” ì´ ì‹œê°„
 	float ShrinkTotalTime{};
 
 public:
 
-	// ÇöÀç PhaseÀÇ ¹İÁö¸§ ÁÙÀÌ´Â ¼Óµµ°ª
+	// í˜„ì¬ Phaseì˜ ë°˜ì§€ë¦„ ì¤„ì´ëŠ” ì†ë„ê°’
 	float RadiusShrinkSpeed{};
 
-	// ÇöÀç PhaseÀÇ Áß¾ÓÁ¡ ¿Å±â´Â ¼Óµµ°ª
+	// í˜„ì¬ Phaseì˜ ì¤‘ì•™ì  ì˜®ê¸°ëŠ” ì†ë„ê°’
 	float MidPointMoveSpeed{};
 
-	// ÇöÀç PhaseÀÇ Áß¾ÓÁ¡ ¿Å±â´Â ¹æÇâ
+	// í˜„ì¬ Phaseì˜ ì¤‘ì•™ì  ì˜®ê¸°ëŠ” ë°©í–¥
 	FVector MidPointMoveDirection{};
 
 };
@@ -74,20 +74,20 @@ public:
 private:
 
 	/// <summary>
-	/// ÀÚ±âÀå FSM ÇÚµé¸µ
+	/// ìê¸°ì¥ FSM í•¸ë“¤ë§
 	/// </summary>
 	void HandleUpdateState(const float& DeltaTime);
 
 protected:
 
 	/// <summary>
-	/// Ã¹ ÀÚ±âÀå Init, BluePrint Beginplay¿¡¼­ È£ÃâµÉ ¿¹Á¤
+	/// ì²« ìê¸°ì¥ Init, BluePrint Beginplayì—ì„œ í˜¸ì¶œë  ì˜ˆì •
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void InitManager();
 
 	/// <summary>
-	/// ºí·çÇÁ¸°Æ® ³»¿¡¼­ È£ÃâÇÒ ÇÔ¼ö
+	/// ë¸”ë£¨í”„ë¦°íŠ¸ ë‚´ì—ì„œ í˜¸ì¶œí•  í•¨ìˆ˜
 	/// </summary>
 	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
@@ -96,32 +96,32 @@ protected:
 private:
 
 	/// <summary>
-	/// º®¸é ¿ÀºêÁ§Æ®µé »õ·Î Update
+	/// ë²½ë©´ ì˜¤ë¸Œì íŠ¸ë“¤ ìƒˆë¡œ Update
 	/// </summary>
-	/// <param name="MidLocation"> : Update½ÃÅ³ ¿øÀÇ Áß¾Ó À§Ä¡ </param>
-	/// <param name="Radius"> : Update½ÃÅ³ ¿øÀÇ ¹İÁö¸§ </param>
+	/// <param name="MidLocation"> : Updateì‹œí‚¬ ì›ì˜ ì¤‘ì•™ ìœ„ì¹˜ </param>
+	/// <param name="Radius"> : Updateì‹œí‚¬ ì›ì˜ ë°˜ì§€ë¦„ </param>
 	void UpdateWalls(const FVector& MidLocation, const float& Radius);
 
 	/// <summary>
-	/// RandomÇÑ ´ÙÀ½ Next Circle »Ì±â & ÁÙ¾îµå´Â ¼Ó·Â ±¸ÇØ³õ±â & Áß¾ÓÁ¡ ¿Å±â´Â ¹æÇâ ±¸ÇØ³õ±â
+	/// Randomí•œ ë‹¤ìŒ Next Circle ë½‘ê¸° & ì¤„ì–´ë“œëŠ” ì†ë ¥ êµ¬í•´ë†“ê¸° & ì¤‘ì•™ì  ì˜®ê¸°ëŠ” ë°©í–¥ êµ¬í•´ë†“ê¸°
 	/// </summary>
 	void SetRandomNextCircleAndSpeedDirection();
 
 private:
 
 	/// <summary>
-	/// UI MapÀÇ Main Circle Á¤º¸ ¾÷µ¥ÀÌÆ®
+	/// UI Mapì˜ Main Circle ì •ë³´ ì—…ë°ì´íŠ¸
 	/// </summary>
 	void UpdateMainCircleInfoOnMapUI();
 
 	/// <summary>
-	/// UI MapÀÇ Next Circle Á¤º¸ ¾÷µ¥ÀÌÆ®
+	/// UI Mapì˜ Next Circle ì •ë³´ ì—…ë°ì´íŠ¸
 	/// </summary>
 	void UpdateNextCircleInfoOnMapUI();
 
 protected:
 
-	// MainCircleÀ» In game ³»¿¡¼­ º¸¿©ÁÙ ¿ÀºêÁ§Æ®µé
+	// MainCircleì„ In game ë‚´ì—ì„œ ë³´ì—¬ì¤„ ì˜¤ë¸Œì íŠ¸ë“¤
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TArray<class AC_MagneticWall*> MagneticWalls{};
 
@@ -131,19 +131,19 @@ private:
 
 private:
 	
-	// ½ÇÁúÀûÀÎ ÀÚ±âÀå ¿µ¿ª circle
+	// ì‹¤ì§ˆì ì¸ ìê¸°ì¥ ì˜ì—­ circle
 	FMagneticCircle MainCircle{};
 
-	// ´ÙÀ½ Phase·Î ÁÙ¾îµé ÀÚ±âÀå ¿µ¿ª circle 
+	// ë‹¤ìŒ Phaseë¡œ ì¤„ì–´ë“¤ ìê¸°ì¥ ì˜ì—­ circle 
 	FMagneticCircle NextCircle{};
 
 private:
 
-	// ÇöÀç ÀÚ±âÀå phase
+	// í˜„ì¬ ìê¸°ì¥ phase
 	int CurrentPhase = 1;
 
-	// TODO : Á¤È®ÇÑ °ªÀ¸·Î ³ªÁß¿¡ ¼öÁ¤, ÇöÀç Test °ª
-	// FPhaseInfo(ÇØ´ç Phase¶§ ÁÙ¾îµé ÀÚ±âÀå rad | ÁÙ¾îµé±â±îÁö ´ë±â½Ã°£ | ÁÙ¾îµå´Â ÃÑ ½Ã°£)
+	// TODO : ì •í™•í•œ ê°’ìœ¼ë¡œ ë‚˜ì¤‘ì— ìˆ˜ì •, í˜„ì¬ Test ê°’
+	// FPhaseInfo(í•´ë‹¹ Phaseë•Œ ì¤„ì–´ë“¤ ìê¸°ì¥ rad | ì¤„ì–´ë“¤ê¸°ê¹Œì§€ ëŒ€ê¸°ì‹œê°„ | ì¤„ì–´ë“œëŠ” ì´ ì‹œê°„)
 	//TMap<int, FPhaseInfo> PhaseInfos = 
 	//{
 	//	{1, FPhaseInfo(71300.f, 5.f, 20.f)},	// 713m
@@ -151,7 +151,7 @@ private:
 	//	{3, FPhaseInfo(20000.f, 5.f, 20.f)},	// 200m
 	//	{4, FPhaseInfo(10000.f, 5.f, 20.f)},	// 100m
 	//	{5, FPhaseInfo(5000.f, 5.f, 20.f)},		// 50m
-	//	{6, FPhaseInfo(0.f, 0.f, 0.f)}			// Á¦ÀÏ ¸¶Áö¸· µµÂø ÁöÁ¡ (ÀüÃ¼ Phaseº¸´Ù ÇÏ³ª ´õ ¸¹°Ô²û ¸¸µé¾î³ö¾ß Á¤»ó ÀÛµ¿ÇÔ)
+	//	{6, FPhaseInfo(0.f, 0.f, 0.f)}			// ì œì¼ ë§ˆì§€ë§‰ ë„ì°© ì§€ì  (ì „ì²´ Phaseë³´ë‹¤ í•˜ë‚˜ ë” ë§ê²Œë” ë§Œë“¤ì–´ë†”ì•¼ ì •ìƒ ì‘ë™í•¨)
 	//};
 
 	TMap<int, FPhaseInfo> PhaseInfos =
@@ -161,19 +161,21 @@ private:
 		{3, FPhaseInfo(20000.f, 5.f, 20.f)},	// 200m
 		{4, FPhaseInfo(10000.f, 5.f, 20.f)},	// 100m
 		{5, FPhaseInfo(5000.f, 5.f, 20.f)},		// 50m
-		{6, FPhaseInfo(0.f, 0.f, 0.f)}			// Á¦ÀÏ ¸¶Áö¸· µµÂø ÁöÁ¡ (ÀüÃ¼ Phaseº¸´Ù ÇÏ³ª ´õ ¸¹°Ô²û ¸¸µé¾î³ö¾ß Á¤»ó ÀÛµ¿ÇÔ)
+		{6, FPhaseInfo(0.f, 0.f, 0.f)}			// ì œì¼ ë§ˆì§€ë§‰ ë„ì°© ì§€ì  (ì „ì²´ Phaseë³´ë‹¤ í•˜ë‚˜ ë” ë§ê²Œë” ë§Œë“¤ì–´ë†”ì•¼ ì •ìƒ ì‘ë™í•¨)
 	};
 
 
-	// ½Ã°£ Àç±â¿ë
+	// ì‹œê°„ ì¬ê¸°ìš©
 	float Timer{};
 
 private:
 
 	const int	SLICE_COUNT		= 100;
-	//const int	LAST_PHASE		= 3; // TODO : Last Phase °³¼ö ¼öÁ¤
-	const int	LAST_PHASE		= PhaseInfos.Num() - 1; // TODO : Last Phase °³¼ö ¼öÁ¤
+	//const int	LAST_PHASE		= 3; // TODO : Last Phase ê°œìˆ˜ ìˆ˜ì •
+	const int	LAST_PHASE		= PhaseInfos.Num() - 1; // TODO : Last Phase ê°œìˆ˜ ìˆ˜ì •
 	const float WALL_Z_LOCATION = 3500.f;
 	const float MAP_LENGTH		= 100000.f;
 	const float MAP_LENGTH_TO_UV_FACTOR = 0.00001f;
 };
+
+

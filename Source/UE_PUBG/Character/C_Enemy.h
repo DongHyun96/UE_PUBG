@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -28,10 +28,12 @@ public:
 
 	bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) override;
 
+	class UProgressBar* GetHPBar() const { return HPBar; }
+
 private:
 
 	/// <summary>
-	/// ±âº» ¹«±â ¹× ±âº» ¾ÆÀÌÅÛ ºñÇà±â Å¾½Â ½Ã °¡Áö°í ½ÃÀÛ
+	/// ê¸°ë³¸ ë¬´ê¸° ë° ê¸°ë³¸ ì•„ì´í…œ ë¹„í–‰ê¸° íƒ‘ìŠ¹ ì‹œ ê°€ì§€ê³  ì‹œì‘
 	/// </summary>
 	void SpawnDefaultWeaponsAndItemsForSelf();
 
@@ -40,4 +42,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UBehaviorTree* BehaviorTree{};
 
+protected:
+
+	// ë””ë²„ê¹…ìš© HPBar
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UProgressBar* HPBar{};
+
 };
+
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Utility/C_TimelineUtility.h"
@@ -37,7 +37,7 @@ void UC_TimelineUtility::InitializeTimelines
 {
 	OwnerCharter = InOwnerCharacter;
 
-	Timeline->SetNetAddressable();  // ¸®ÇÃ¸®ÄÉÀÌ¼Ç °¡´É
+	Timeline->SetNetAddressable();  // ë¦¬í”Œë¦¬ì¼€ì´ì…˜ ê°€ëŠ¥
 	CurType = InType;
 
 	switch (InType)
@@ -86,9 +86,9 @@ void UC_TimelineUtility::SetTimeLinesCurve
 			TimelineFinished.BindUFunction(OwnerPlayer, InFinishedFunction);
 			Timeline->AddInterpFloat(CurveFloat, InterpFunctionFloat);
 			Timeline->SetTimelineFinishedFunc(TimelineFinished);
-			Timeline->SetPlayRate(InPlayRate);  // Àç»ý ¼Óµµ ¼³Á¤
+			Timeline->SetPlayRate(InPlayRate);  // ìž¬ìƒ ì†ë„ ì„¤ì •
 			Timeline->SetTimelineLength(InTimelineLength);
-			Timeline->SetLooping(InbLoop);  // ¹Ýº¹ÇÏÁö ¾Êµµ·Ï ¼³Á¤
+			Timeline->SetLooping(InbLoop);  // ë°˜ë³µí•˜ì§€ ì•Šë„ë¡ ì„¤ì •
 			//UC_Util::Print("Timeline Length: " + FString::SanitizeFloat(CameraTransitionTimeline->GetTimelineLength()));
 		}
 		break;
@@ -101,9 +101,9 @@ void UC_TimelineUtility::SetTimeLinesCurve
 			TimelineFinished.BindUFunction(OwnerPlayer, InFinishedFunction);
 			Timeline->AddInterpVector(CurveVector, InterpFunctionVector);
 			Timeline->SetTimelineFinishedFunc(TimelineFinished);
-			Timeline->SetPlayRate(InPlayRate);  // Àç»ý ¼Óµµ ¼³Á¤
+			Timeline->SetPlayRate(InPlayRate);  // ìž¬ìƒ ì†ë„ ì„¤ì •
 			Timeline->SetTimelineLength(InTimelineLength);
-			Timeline->SetLooping(InbLoop);  // ¹Ýº¹ÇÏÁö ¾Êµµ·Ï ¼³Á¤
+			Timeline->SetLooping(InbLoop);  // ë°˜ë³µí•˜ì§€ ì•Šë„ë¡ ì„¤ì •
 			//UC_Util::Print("Timeline Length: " + FString::SanitizeFloat(CameraTransitionTimeline->GetTimelineLength()));
 		}
 		break;
@@ -116,9 +116,9 @@ void UC_TimelineUtility::SetTimeLinesCurve
 			TimelineFinished.BindUFunction(OwnerPlayer, InFinishedFunction);
 			Timeline->AddInterpLinearColor(CurveColor, InterpFunctionColor);
 			Timeline->SetTimelineFinishedFunc(TimelineFinished);
-			Timeline->SetPlayRate(InPlayRate);  // Àç»ý ¼Óµµ ¼³Á¤
+			Timeline->SetPlayRate(InPlayRate);  // ìž¬ìƒ ì†ë„ ì„¤ì •
 			Timeline->SetTimelineLength(InTimelineLength);
-			Timeline->SetLooping(InbLoop);  // ¹Ýº¹ÇÏÁö ¾Êµµ·Ï ¼³Á¤
+			Timeline->SetLooping(InbLoop);  // ë°˜ë³µí•˜ì§€ ì•Šë„ë¡ ì„¤ì •
 			//UC_Util::Print("Timeline Length: " + FString::SanitizeFloat(CameraTransitionTimeline->GetTimelineLength()));
 		}
 		break;
@@ -131,7 +131,7 @@ void UC_TimelineUtility::SetTimeLinesCurve
 
 void UC_TimelineUtility::SetTimelinePlayRate(float InPlayrate)
 {
-	Timeline->SetPlayRate(InPlayrate);  // Àç»ý ¼Óµµ ¼³Á¤
+	Timeline->SetPlayRate(InPlayrate);  // ìž¬ìƒ ì†ë„ ì„¤ì •
 }
 
 void UC_TimelineUtility::PlayFromStart()
@@ -145,5 +145,7 @@ void UC_TimelineUtility::PlayFromStart()
 	Timeline->PlayFromStart();
 
 }
+
+
 
 

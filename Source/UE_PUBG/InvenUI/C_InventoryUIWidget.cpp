@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/C_InventoryUIWidget.h"
@@ -62,9 +62,9 @@ void UC_InventoryUIWidget::SetVisibility(ESlateVisibility InVisibility)
         PlayerController->bShowMouseCursor = true;
         PlayerController->SetIgnoreLookInput(true);
         //PlayerController->GetPawn()->bUseControllerRotationYaw = false;
-        //PlayerController->bEnableClickEvents = true;  // UI Å¬¸¯ ÀÌº¥Æ® È°¼ºÈ­
-        //PlayerController->bEnableTouchEvents = true; // ÅÍÄ¡ ÀÌº¥Æ® È°¼ºÈ­
-        //PlayerController->bEnableMouseOverEvents = true; // ¸¶¿ì½º ¿À¹ö ÀÌº¥Æ® È°¼ºÈ­
+        //PlayerController->bEnableClickEvents = true;  // UI í´ë¦­ ì´ë²¤íŠ¸ í™œì„±í™”
+        //PlayerController->bEnableTouchEvents = true; // í„°ì¹˜ ì´ë²¤íŠ¸ í™œì„±í™”
+        //PlayerController->bEnableMouseOverEvents = true; // ë§ˆìš°ìŠ¤ ì˜¤ë²„ ì´ë²¤íŠ¸ í™œì„±í™”
         //SetIsFocusable(true);
 
     }
@@ -111,7 +111,7 @@ void UC_InventoryUIWidget::UpdateVolumeBar(AC_BasicCharacter* Character)
     float curVolume = Character->GetInvenComponent()->GetCurVolume();
     float maxVolume = Character->GetInvenComponent()->GetMaxVolume();
 
-    float MaxVolumePercent = maxVolume / 370.f; //370 = 70(±âº») + 250(3LVBackPack) + 50(°©ºü)
+    float MaxVolumePercent = maxVolume / 370.f; //370 = 70(ê¸°ë³¸) + 250(3LVBackPack) + 50(ê°‘ë¹ )
     float curVolumePercent = curVolume / 370.f;
 
     CurVolumeBar->SetPercent(curVolumePercent);
@@ -122,17 +122,17 @@ void UC_InventoryUIWidget::InitializeListView()
 {
     if (InventoryPanel)
     {
-        TMap<FString,AC_Item*> MyItems; // ½ÇÁ¦ ¾ÆÀÌÅÛ ¸®½ºÆ®¸¦ °¡Á®¿À´Â ·ÎÁ÷ ÇÊ¿ä
+        TMap<FString,AC_Item*> MyItems; // ì‹¤ì œ ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ë¥¼ ê°€ì ¸ì˜¤ëŠ” ë¡œì§ í•„ìš”
         MyItems = OwnerPlayer->GetInvenComponent()->GetTestMyItems();
         InventoryPanel->SetVisibility(ESlateVisibility::Visible);
 
-        //InventoryPanel->AddTMapItem(MyItems); // ¾ÆÀÌÅÛ ¸®½ºÆ® Ãß°¡
+        //InventoryPanel->AddTMapItem(MyItems); // ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ ì¶”ê°€
         InventoryPanel->UpdateMyItemList(MyItems);
     }
 
     if (IsValid(AroundItemPanel))
     {
-        //TMap<FString, AC_Item*> AroundItems; // ½ÇÁ¦ ¾ÆÀÌÅÛ ¸®½ºÆ®¸¦ °¡Á®¿À´Â ·ÎÁ÷ ÇÊ¿ä
+        //TMap<FString, AC_Item*> AroundItems; // ì‹¤ì œ ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ë¥¼ ê°€ì ¸ì˜¤ëŠ” ë¡œì§ í•„ìš”
         TArray<AC_Item*> TestAroundItemList;
         TestAroundItemList = OwnerPlayer->GetInvenComponent()->GetTestAroundItems();
         AroundItemPanel->SetVisibility(ESlateVisibility::Visible);
@@ -158,3 +158,5 @@ bool UC_InventoryUIWidget::GetIsPanelOpened()
     default: return false;
     }
 }
+
+

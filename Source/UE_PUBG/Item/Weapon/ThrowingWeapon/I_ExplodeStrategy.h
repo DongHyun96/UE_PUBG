@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -23,9 +23,11 @@ class UE_PUBG_API II_ExplodeStrategy
 public:
 
 	/// <summary>
-	/// THrowing Weapon ÅÍÁö´Â Àü·« abstract method | ÅÍÄ¡°í Destroy object´Â ÁÖÀÎ ÂÊ¿¡¼­
+	/// Throwing Weapon í„°ì§€ëŠ” ì „ëµ abstract method | í„°ì¹˜ê³  Destroy objectëŠ” ì£¼ì¸ ìª½ì—ì„œ
 	/// </summary>
-	/// <param name="ThrowingWeapon"> : ÅÍÁú Throwing Weapon </param>
-	/// <returns> : ÅÍÄ¡±â ¼º°øÇß´Ù¸é return true </returns>
+	/// <param name="ThrowingWeapon"> : í„°ì§ˆ Throwing Weapon </param>
+	/// <returns> : í„°ì¹˜ê¸° ì„±ê³µí–ˆë‹¤ë©´ return true </returns>
 	virtual bool UseStrategy(class AC_ThrowingWeapon* ThrowingWeapon) = 0;
 };
+
+

@@ -1,8 +1,8 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
-#include "CoreMinimal.h"
+	#include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "UE_PUBGGameMode.generated.h"
 
@@ -14,6 +14,8 @@ class AUE_PUBGGameMode : public AGameModeBase
 public:
 	AUE_PUBGGameMode();
 };
+
+
 
 
 

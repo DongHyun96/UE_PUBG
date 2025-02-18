@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InvenUserInterface/C_ThrowableWidget.h"
 #include "InvenUserInterface/C_InvenUiWidget.h"
@@ -30,11 +30,11 @@ void UC_ThrowableWidget::NativeConstruct()
 
 FReply UC_ThrowableWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	// ¿ìÅ¬¸¯ÀÎÁö Ã¼Å©
+	// ìš°í´ë¦­ì¸ì§€ ì²´í¬
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
 		if (CachedItem)
-		{   // ¿ìÅ¬¸¯ ÀÌº¥Æ® ½ÇÇà
+		{   // ìš°í´ë¦­ ì´ë²¤íŠ¸ ì‹¤í–‰
 			if (CachedItem->LegacyMoveToInven(OwnerCharacter))
 			{
 				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(WeaponSlotType, nullptr);
@@ -58,7 +58,7 @@ FReply UC_ThrowableWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 	{
 		UC_Util::Print("No cached item to interact with!", FColor::Red, 5.0f);
 	}
-	// ´Ù¸¥ ¹öÆ° Å¬¸¯ Ã³¸®
+	// ë‹¤ë¥¸ ë²„íŠ¼ í´ë¦­ ì²˜ë¦¬
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
@@ -76,7 +76,7 @@ void UC_ThrowableWidget::Init()
 		SetVisibility(ESlateVisibility::Visible);
 		FSlateBrush Brush = ItemIcon->GetBrush();
 
-		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // ¿ÏÀü ºÒÅõ¸í
+		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // ì™„ì „ ë¶ˆíˆ¬ëª…
 		ItemIcon->SetBrush(Brush);
 	}
 	else
@@ -120,3 +120,5 @@ void UC_ThrowableWidget::SetWeaponBoxNum(uint8 Num)
 
 	Init();
 }
+
+

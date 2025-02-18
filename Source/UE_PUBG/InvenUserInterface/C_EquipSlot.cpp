@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUserInterface/C_EquipSlot.h"
@@ -21,13 +21,13 @@ FReply UC_EquipSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const 
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
 		if (CachedItem)
-		{   // ¿ìÅ¬¸¯ ÀÌº¥Æ® ½ÇÇà
+		{   // ìš°í´ë¦­ ì´ë²¤íŠ¸ ì‹¤í–‰
 			//EquippedItem->Interaction(OwnerCharacter);
 			CachedItem->LegacyMoveToAround(OwnerCharacter);
 			CachedItem = nullptr;
 			//InitInvenUIWidget();
 		
-			//NativeOnListItemObjectSet¿¡¼­ÀÇ È£Ãâ°ú Áßº¹À¸·Î ÀÏ´Ü ÁÖ¼®Ã³¸®, ´Ù¸¸ ÀÌº¥Æ®½Ã¿¡ ÃÊ±âÈ­°¡ ÇÊ¿äÇÏ¸é »ç¿ëÇØ¾ß ÇÒ ¼ö ÀÖÀ½.
+			//NativeOnListItemObjectSetì—ì„œì˜ í˜¸ì¶œê³¼ ì¤‘ë³µìœ¼ë¡œ ì¼ë‹¨ ì£¼ì„ì²˜ë¦¬, ë‹¤ë§Œ ì´ë²¤íŠ¸ì‹œì— ì´ˆê¸°í™”ê°€ í•„ìš”í•˜ë©´ ì‚¬ìš©í•´ì•¼ í•  ìˆ˜ ìžˆìŒ.
 			//if (!CachedItem) return;
 		
 			//InitBar(CachedItem);
@@ -43,7 +43,7 @@ FReply UC_EquipSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const 
 	{
 		//UC_Util::Print("No cached item to interact with!", FColor::Red, 5.0f);
 	}
-	// ´Ù¸¥ ¹öÆ° Å¬¸¯ Ã³¸®
+	// ë‹¤ë¥¸ ë²„íŠ¼ í´ë¦­ ì²˜ë¦¬
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
@@ -57,7 +57,7 @@ void UC_EquipSlot::Init()
 	{
 		ItemImage1->SetBrushFromTexture(nullptr);
 		FSlateBrush Brush = ItemImage1->GetBrush();
-		Brush.TintColor = FLinearColor(0.0f, 0.0f, 0.0f, 0.3f); // ¿ÏÀü ºÒÅõ¸í
+		Brush.TintColor = FLinearColor(0.0f, 0.0f, 0.0f, 0.3f); // ì™„ì „ ë¶ˆíˆ¬ëª…
 		ItemImage1->SetBrush(Brush);
 		//SetVisibility(ESlateVisibility::Visible);
 	}
@@ -67,7 +67,7 @@ void UC_EquipSlot::Init()
 
 		ItemImage1->SetBrushFromTexture(CachedItem->GetItemDatas().ItemSlotImage);
 		FSlateBrush Brush = ItemImage1->GetBrush();
-		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // ¿ÏÀü ºÒÅõ¸í
+		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // ì™„ì „ ë¶ˆíˆ¬ëª…
 		ItemImage1->SetBrush(Brush);
 		SetVisibility(ESlateVisibility::Visible);
 	}
@@ -90,3 +90,5 @@ void UC_EquipSlot::DivisionInit()
 		break;
 	}
 }
+
+

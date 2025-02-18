@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -25,7 +25,7 @@ public:
 	void SetWidgetsOwner(AC_BasicCharacter* Character);
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛ¸®½ºÆ®(ListView)ÃÊ±âÈ­
+	/// ì•„ì´í…œë¦¬ìŠ¤íŠ¸(ListView)ì´ˆê¸°í™”
 	/// </summary>
 	void InitListView();
 
@@ -53,7 +53,7 @@ protected:
 	virtual void NativeConstruct() override;
 
 	/// <summary>
-	/// À§Á¬ ÃÊ±âÈ­
+	/// ìœ„ì ¯ ì´ˆê¸°í™”
 	/// </summary>
 
 	UFUNCTION(BlueprintCallable)
@@ -71,10 +71,10 @@ public:
 
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UC_MyItemListWidget* MyItemListWidget = nullptr; // ¾ÆÀÌÅÛ ¸®½ºÆ® À§Á¬
+	class UC_MyItemListWidget* MyItemListWidget = nullptr; // ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ ìœ„ì ¯
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UC_MyItemListWidget* AroundItemListWidget = nullptr; // ¾ÆÀÌÅÛ ¸®½ºÆ® À§Á¬
+	UC_MyItemListWidget* AroundItemListWidget = nullptr; // ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ ìœ„ì ¯
 
 	//ListViewWidget
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -118,3 +118,5 @@ protected:
 	AC_Item* UsingItem = nullptr;
 
 };
+
+

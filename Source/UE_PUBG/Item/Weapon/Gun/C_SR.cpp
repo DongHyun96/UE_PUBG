@@ -1,16 +1,40 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Weapon/Gun/C_SR.h"
 #include "Character/C_Player.h"
 #include "Utility/C_Util.h"
+
+const TMap<FName, float> AC_SR::BODYPARTS_DAMAGERATE =
+{
+	{"Neck",		2.5f},
+
+	{"Hips",		1.3f},
+
+	{"LeftUpLeg",	0.9f},
+	{"LeftFoot",	0.9f},
+	{"RightUpLeg",	0.9f},
+	{"RightFoot",	0.9f},
+
+	{"Spine",		1.3f},	// Î™∏ÌÜµ
+	{"Spine1",		1.3f},
+	{"Spine2",		1.3f},
+
+	{"LeftArm",	0.9f},
+	{"LeftHand",	0.9f},
+
+	{"RightArm",	0.9f},
+	{"RightHand",	0.9f}
+};
+
+
 AC_SR::AC_SR()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	//ItemType º≥¡§.
+	//ItemType ÏÑ§Ï†ï.
 	ItemDatas.ItemType = EItemTypes::MAINGUN;
 	CurGunType = EGunType::SR;
-	EQUIPPED_SOCKET_NAME = FName("Sniper_Equip"); // π´±‚∞° º’ø° ∫Œ¬¯µ… socket ¿Ã∏ß
+	EQUIPPED_SOCKET_NAME = FName("Sniper_Equip"); // Î¨¥Í∏∞Í∞Ä ÏÜêÏóê Î∂ÄÏ∞©Îê† socket Ïù¥Î¶Ñ
 	IronSightWindowLocation = FVector2D(0.5f, 0.5f);
 	CurrentShootingMode = EShootingMode::SEMI_AUTO;
 }
@@ -106,7 +130,18 @@ void AC_SR::SetRelativeRotationOnCrawl()
 
 bool AC_SR::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
-	return false;
+	return Super::ExecuteAIAttack(InTargetCharacter);
+}
+
+float AC_SR::GetDamageRateByBodyPart(const FName& BodyPart)
+{
+	if (!BODYPARTS_DAMAGERATE.Contains(BodyPart))
+	{
+		UC_Util::Print("From AC_SR::GetDamageRateByBodyPart : No Body part found!", FColor::Red, 10.f);
+		return 0.f;
+	}
+	
+	return BODYPARTS_DAMAGERATE[BodyPart];
 }
 
 //bool AC_SR::ReloadBullet()
@@ -115,3 +150,5 @@ bool AC_SR::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 //	IsReloadingSR = false;
 //	return false;
 //}
+
+

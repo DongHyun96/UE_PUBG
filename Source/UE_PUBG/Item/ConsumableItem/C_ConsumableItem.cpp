@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/ConsumableItem/C_ConsumableItem.h"
@@ -50,7 +50,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		{
 			HandleActivatingState(); // Pure virtual Template method
 
-			//¹æÇØ ¹Ş¾Ò´ÂÁö Ã¼Å©ÇØ¼­ ¹æÇØ¸¦ ¹Ş¾Ò´Ù¸é Activating Cancel ½ÃÅ°±â
+			//ë°©í•´ ë°›ì•˜ëŠ”ì§€ ì²´í¬í•´ì„œ ë°©í•´ë¥¼ ë°›ì•˜ë‹¤ë©´ Activating Cancel ì‹œí‚¤ê¸°
 
 			if (ItemUser->GetCharacterMovement()->IsFalling() || ItemUser->GetSwimmingComponent()->IsSwimming())
 			{
@@ -62,7 +62,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 			for (auto& Pair : UsingMontageMap)
 			{
-				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) // ¹æÇØ ¹ŞÁö ¾Ê¾ÒÀ» ¶§
+				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) // ë°©í•´ ë°›ì§€ ì•Šì•˜ì„ ë•Œ
 				{
 					
 					//LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
@@ -72,7 +72,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 				}
 			}
 
-			// ¹æÇØ¸¦ ¹ŞÀ½
+			// ë°©í•´ë¥¼ ë°›ìŒ
 			CancelActivating();
 
 			return;
@@ -91,7 +91,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 		UsingTimer = 0.f;
 
-		// Âø¿ë ÁßÀÎ ¹«±â°¡ ÀÖ¾úÀ» ¶§ ÇØ´ç ¹«±â ´Ù½Ã ÀåÂø ½Ãµµ (¾ø´Ù¸é ±×³É ³Ñ¾î°¡´Â Ã³¸®·Î µÊ)
+		// ì°©ìš© ì¤‘ì¸ ë¬´ê¸°ê°€ ìˆì—ˆì„ ë•Œ í•´ë‹¹ ë¬´ê¸° ë‹¤ì‹œ ì¥ì°© ì‹œë„ (ì—†ë‹¤ë©´ ê·¸ëƒ¥ ë„˜ì–´ê°€ëŠ” ì²˜ë¦¬ë¡œ ë¨)
 		ItemUser->GetEquippedComponent()->TryReAttachCurWeaponToHand();
 
 		OnActivatingFinish(); // Template method
@@ -126,7 +126,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		{
 
 			ItemUser->GetInvenComponent()->RemoveItemToMyList(this);
-			HandleDestroy(); // °¢ ¾ÆÀÌÅÛ º° Destroy ÇÏ´Â ½ÃÁ¡ÀÌ ´Ù¸§
+			HandleDestroy(); // ê° ì•„ì´í…œ ë³„ Destroy í•˜ëŠ” ì‹œì ì´ ë‹¤ë¦„
 			return;
 		}
 	}
@@ -142,7 +142,7 @@ void AC_ConsumableItem::SetLinkedItemBarWidget(UC_ItemBarWidget* InItemBarWidget
 
 	//if (LinkedItemBarWidget)
 	//{
-	//	// ÇöÀç ÁøÇà »óÅÂ µ¿±âÈ­
+	//	// í˜„ì¬ ì§„í–‰ ìƒíƒœ ë™ê¸°í™”
 	//	LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
 	//}
 }
@@ -168,24 +168,24 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 
 	float PlayTime = ItemUser->PlayAnimMontage(UsingMontageMap[ItemUser->GetPoseState()]);
 
-	// ´Ù¸¥ Montage¿¡ ÀÇÇØ ¹æÇØ ¹Ş¾ÒÀ» ¶§
+	// ë‹¤ë¥¸ Montageì— ì˜í•´ ë°©í•´ ë°›ì•˜ì„ ë•Œ
 	if (PlayTime == 0.f) return false;
 
-	// »ç¿ë ½ÃÀÛÇÏ±â
+	// ì‚¬ìš© ì‹œì‘í•˜ê¸°
 	ConsumableItemState = EConsumableItemState::ACTIVATING;
 
 	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
 	{
-		//InvenUI¿¡ ÇöÀç »ç¿ëÁßÀÎ ¾ÆÀÌÅÛ ¼³Á¤. InvenUI UsingItemÀÌ ÀÖÀ» ¶§ Tick¿¡¼­ visibility Á¶Á¤ÇÏ´Â Áß
+		//InvenUIì— í˜„ì¬ ì‚¬ìš©ì¤‘ì¸ ì•„ì´í…œ ì„¤ì •. InvenUI UsingItemì´ ìˆì„ ë•Œ Tickì—ì„œ visibility ì¡°ì •í•˜ëŠ” ì¤‘
 		UserPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(this); 
 	}
 	
 	OnStartUsing(); // Template method
 
-	// ÇöÀç µé°í ÀÖ´Â ¹«±â°¡ Á¸ÀçÇÑ´Ù¸é ¹«±â Àá±ñ ¸ö ÂÊ¿¡ ºÙÀÌ±â ½Ãµµ
+	// í˜„ì¬ ë“¤ê³  ìˆëŠ” ë¬´ê¸°ê°€ ì¡´ì¬í•œë‹¤ë©´ ë¬´ê¸° ì ê¹ ëª¸ ìª½ì— ë¶™ì´ê¸° ì‹œë„
 	ItemUser->GetEquippedComponent()->TryAttachCurWeaponToHolsterWithoutSheathMotion();
 
-	// »ç¿ëÀÚÀÇ bIsActivatingConsumableItem ¼¼ÆÃ
+	// ì‚¬ìš©ìì˜ bIsActivatingConsumableItem ì„¸íŒ…
 	ItemUser->SetIsActivatingConsumableItem(true, this);
 
 	//ItemDatas.ItemStack--;
@@ -213,7 +213,7 @@ bool AC_ConsumableItem::CancelActivating()
 
 
 
-	// Âø¿ë ÁßÀÎ ¹«±â°¡ ÀÖ¾úÀ» ¶§ ÀçÂø¿ë ½Ãµµ
+	// ì°©ìš© ì¤‘ì¸ ë¬´ê¸°ê°€ ìˆì—ˆì„ ë•Œ ì¬ì°©ìš© ì‹œë„
 	ItemUser->GetEquippedComponent()->TryReAttachCurWeaponToHand();
 
 	ItemUser->SetIsActivatingConsumableItem(false, nullptr);
@@ -266,22 +266,22 @@ bool AC_ConsumableItem::LegacyMoveToInven(AC_BasicCharacter* Character)
 	if (ItemStackCount == 0)
 	{
 		UC_Util::Print("Not Enough Volume");
-		return false; //ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´Â ¾ÆÀÌÅÛÀÇ °¹¼ö°¡ 0 ÀÌ¸é ³ÖÀ» ¼ö ¾øÀ¸¹Ç·Î return false;
+		return false; //ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ” ì•„ì´í…œì˜ ê°¯ìˆ˜ê°€ 0 ì´ë©´ ë„£ì„ ìˆ˜ ì—†ìœ¼ë¯€ë¡œ return false;
 	}
 	
-	AC_Item* FoundItem = invenComp->FindMyItem(this); //ÀÎº¥¿¡ °°Àº ¾ÆÀÌÅÛÀ» Ã£¾Æ¿È, ¾ø´Ù¸é nullptr;
+	AC_Item* FoundItem = invenComp->FindMyItem(this); //ì¸ë²¤ì— ê°™ì€ ì•„ì´í…œì„ ì°¾ì•„ì˜´, ì—†ë‹¤ë©´ nullptr;
 
 	
 
 	if (ItemDatas.ItemCurStack == ItemStackCount)
 	{
-		//¾ÆÀÌÅÛ ÀüºÎ¸¦ ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖÀ» ¶§.
+		//ì•„ì´í…œ ì „ë¶€ë¥¼ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆì„ ë•Œ.
 		if (IsValid(FoundItem))
 		{
-			//ÀÎº¥¿¡ ÇØ´ç ¾ÆÀÌÅÛÀÌ Á¸Àç ÇÒ ¶§.
+			//ì¸ë²¤ì— í•´ë‹¹ ì•„ì´í…œì´ ì¡´ì¬ í•  ë•Œ.
 			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
 			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
-			//TODO : destroy¸¦ ÇØµµ ÀÜ»óÀÌ ³²´Â°ÍÀ» ´ëºñÇØ¼­ ÇØ³õÀ½ ¸¸¾à ¾øÀÌµµ ÀÜ»óÀÌ ¾È³²´Â´Ù¸é Áö¿ï °Í.
+			//TODO : destroyë¥¼ í•´ë„ ì”ìƒì´ ë‚¨ëŠ”ê²ƒì„ ëŒ€ë¹„í•´ì„œ í•´ë†“ìŒ ë§Œì•½ ì—†ì´ë„ ì”ìƒì´ ì•ˆë‚¨ëŠ”ë‹¤ë©´ ì§€ìš¸ ê²ƒ.
 			invenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
 
 			this->SetActorEnableCollision(false);
@@ -292,22 +292,22 @@ bool AC_ConsumableItem::LegacyMoveToInven(AC_BasicCharacter* Character)
 		}
 		else
 		{
-			//ÀÎº¥¿¡ ÇØ´ç ¾ÆÀÌÅÛÀÌ Á¸ÀçÇÏÁö ¾ÊÀ» ¶§.
+			//ì¸ë²¤ì— í•´ë‹¹ ì•„ì´í…œì´ ì¡´ì¬í•˜ì§€ ì•Šì„ ë•Œ.
 			invenComp->AddItemToMyList(this);
-			//ÀÎ°ÔÀÓ¿¡¼­ º¸ÀÌ´Â °Í°ú collision¹®Á¦ ¶§¹®¿¡ ÀÓ½Ã·Î ²¨µÒ.
+			//ì¸ê²Œì„ì—ì„œ ë³´ì´ëŠ” ê²ƒê³¼ collisionë¬¸ì œ ë•Œë¬¸ì— ì„ì‹œë¡œ êº¼ë‘ .
 			//this->SetActorEnableCollision(false);
 			this->SetActorHiddenInGame(true);
 			this->SetActorEnableCollision(false);
-			//´øÁú ¶§ ÄÑÁü. ÀÌ°É·Î ¸¸¾à ¾ÆÀÌÅÛÀÇ ¿À¹ö·¦ÀÌ ¾È³¡³­´Ù¸é ´Ù¸¥ ¹æ¹ı °í¹Î->ToInven¿¡¼­ SetActorEnableCollision¸¦ ²¨ÁÖ°í ´øÁú¶§ È¤Àº ToAround¿¡¼­ ÄÑÁÖ±â.
+			//ë˜ì§ˆ ë•Œ ì¼œì§. ì´ê±¸ë¡œ ë§Œì•½ ì•„ì´í…œì˜ ì˜¤ë²„ë©ì´ ì•ˆëë‚œë‹¤ë©´ ë‹¤ë¥¸ ë°©ë²• ê³ ë¯¼->ToInvenì—ì„œ SetActorEnableCollisionë¥¼ êº¼ì£¼ê³  ë˜ì§ˆë•Œ í˜¹ì€ ToAroundì—ì„œ ì¼œì£¼ê¸°.
 			//Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			return true;
 		}
 	}
 	else
 	{
-		//¾ÆÀÌÅÛÀÇ ÀÏºÎ¸¸ ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖÀ» ¶§.
+		//ì•„ì´í…œì˜ ì¼ë¶€ë§Œ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆì„ ë•Œ.
 
-		if (IsValid(FoundItem)) // ÀÎº¥¿¡ ¾ÆÀÌÅÛÀÌ ÀÌ¹Ì ÀÖÀ» ¶§
+		if (IsValid(FoundItem)) // ì¸ë²¤ì— ì•„ì´í…œì´ ì´ë¯¸ ìˆì„ ë•Œ
 		{
 			this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
 			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
@@ -316,9 +316,9 @@ bool AC_ConsumableItem::LegacyMoveToInven(AC_BasicCharacter* Character)
 
 			return true;
 		}
-		else // ÀÎº¥¿¡ ¾ÆÀÌÅÛÀÌ ¾øÀ» ¶§
+		else // ì¸ë²¤ì— ì•„ì´í…œì´ ì—†ì„ ë•Œ
 		{
-			AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//¾ÆÀÌÅÛ º¹Á¦ »ı¼º
+			AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//ì•„ì´í…œ ë³µì œ ìƒì„±
 
 			NewItem->SetItemStack(ItemStackCount);
 			this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
@@ -326,8 +326,8 @@ bool AC_ConsumableItem::LegacyMoveToInven(AC_BasicCharacter* Character)
 			invenComp->AddItemToMyList(NewItem);
 
 			NewItem->SetActorHiddenInGame(true);
-			//collider °ü·Ã ¼³Á¤ Ãß°¡ÇØ¾ß ÇÒ ¼ö ÀÖÀ½.
-			//¸¸¾à Ãß°¡ÇØ¾ß µÈ´Ù¸é MoveToInven¿¡¼­ SetActorEnableCollisionÀ» ²¨ÁÖ°í ´øÁú ¶§ ÄÑÁÖ´Â ¹æ½ÄÀ¸·Î.
+			//collider ê´€ë ¨ ì„¤ì • ì¶”ê°€í•´ì•¼ í•  ìˆ˜ ìˆìŒ.
+			//ë§Œì•½ ì¶”ê°€í•´ì•¼ ëœë‹¤ë©´ MoveToInvenì—ì„œ SetActorEnableCollisionì„ êº¼ì£¼ê³  ë˜ì§ˆ ë•Œ ì¼œì£¼ëŠ” ë°©ì‹ìœ¼ë¡œ.
 			return true;
 		}
 	}
@@ -343,14 +343,14 @@ bool AC_ConsumableItem::LegacyMoveToAround(AC_BasicCharacter* Character)
 	if (!Character) return false;
 
 	Character->GetInvenComponent()->RemoveItemToMyList(this);
-	//TODO: ºĞÇÒÇØ¼­ ¹ö¸®´Â °æ¿ì »õ·Î ½ºÆùÇØÁÖ¾î¾ßÇÔ.
+	//TODO: ë¶„í• í•´ì„œ ë²„ë¦¬ëŠ” ê²½ìš° ìƒˆë¡œ ìŠ¤í°í•´ì£¼ì–´ì•¼í•¨.
 	ItemDatas.ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 	//Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
-	//¹Ù´Ú ·¹ÀÌ Ä³½ºÆÃ ¹Ş¾Æ¿Í¼­ ¹Ù´Ú¿¡ ¾ÆÀÌÅÛ »ı¼ºÇÏ±â.
+	//ë°”ë‹¥ ë ˆì´ ìºìŠ¤íŒ… ë°›ì•„ì™€ì„œ ë°”ë‹¥ì— ì•„ì´í…œ ìƒì„±í•˜ê¸°.
 	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
 
 	//SetActorRotation(FQuat(0,0,0));
@@ -365,14 +365,14 @@ bool AC_ConsumableItem::MoveInvenToAround(AC_BasicCharacter* Character)
 	if (!Character) return false;
 
 	Character->GetInvenComponent()->RemoveItemToMyList(this);
-	//TODO: ºĞÇÒÇØ¼­ ¹ö¸®´Â °æ¿ì »õ·Î ½ºÆùÇØÁÖ¾î¾ßÇÔ.
+	//TODO: ë¶„í• í•´ì„œ ë²„ë¦¬ëŠ” ê²½ìš° ìƒˆë¡œ ìŠ¤í°í•´ì£¼ì–´ì•¼í•¨.
 	ItemDatas.ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 	//Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
-	//¹Ù´Ú ·¹ÀÌ Ä³½ºÆÃ ¹Ş¾Æ¿Í¼­ ¹Ù´Ú¿¡ ¾ÆÀÌÅÛ »ı¼ºÇÏ±â.
+	//ë°”ë‹¥ ë ˆì´ ìºìŠ¤íŒ… ë°›ì•„ì™€ì„œ ë°”ë‹¥ì— ì•„ì´í…œ ìƒì„±í•˜ê¸°.
 	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
 
 	//SetActorRotation(FQuat(0,0,0));
@@ -404,22 +404,22 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character)
 	if (ItemStackCount == 0)
 	{
 		UC_Util::Print("Not Enough Volume");
-		return false; //ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´Â ¾ÆÀÌÅÛÀÇ °¹¼ö°¡ 0 ÀÌ¸é ³ÖÀ» ¼ö ¾øÀ¸¹Ç·Î return false;
+		return false; //ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ” ì•„ì´í…œì˜ ê°¯ìˆ˜ê°€ 0 ì´ë©´ ë„£ì„ ìˆ˜ ì—†ìœ¼ë¯€ë¡œ return false;
 	}
 
-	AC_Item* FoundItem = InvenComp->FindMyItem(this); //ÀÎº¥¿¡ °°Àº ¾ÆÀÌÅÛÀ» Ã£¾Æ¿È, ¾ø´Ù¸é nullptr;
+	AC_Item* FoundItem = InvenComp->FindMyItem(this); //ì¸ë²¤ì— ê°™ì€ ì•„ì´í…œì„ ì°¾ì•„ì˜´, ì—†ë‹¤ë©´ nullptr;
 
 
 
 	if (ItemDatas.ItemCurStack == ItemStackCount)
 	{
-		//¾ÆÀÌÅÛ ÀüºÎ¸¦ ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖÀ» ¶§.
+		//ì•„ì´í…œ ì „ë¶€ë¥¼ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆì„ ë•Œ.
 		if (IsValid(FoundItem))
 		{
-			//ÀÎº¥¿¡ ÇØ´ç ¾ÆÀÌÅÛÀÌ Á¸Àç ÇÒ ¶§.
+			//ì¸ë²¤ì— í•´ë‹¹ ì•„ì´í…œì´ ì¡´ì¬ í•  ë•Œ.
 			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
 			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
-			//TODO : destroy¸¦ ÇØµµ ÀÜ»óÀÌ ³²´Â°ÍÀ» ´ëºñÇØ¼­ ÇØ³õÀ½ ¸¸¾à ¾øÀÌµµ ÀÜ»óÀÌ ¾È³²´Â´Ù¸é Áö¿ï °Í.
+			//TODO : destroyë¥¼ í•´ë„ ì”ìƒì´ ë‚¨ëŠ”ê²ƒì„ ëŒ€ë¹„í•´ì„œ í•´ë†“ìŒ ë§Œì•½ ì—†ì´ë„ ì”ìƒì´ ì•ˆë‚¨ëŠ”ë‹¤ë©´ ì§€ìš¸ ê²ƒ.
 			InvenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
 
 			this->SetActorEnableCollision(false);
@@ -430,22 +430,22 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character)
 		}
 		else
 		{
-			//ÀÎº¥¿¡ ÇØ´ç ¾ÆÀÌÅÛÀÌ Á¸ÀçÇÏÁö ¾ÊÀ» ¶§.
+			//ì¸ë²¤ì— í•´ë‹¹ ì•„ì´í…œì´ ì¡´ì¬í•˜ì§€ ì•Šì„ ë•Œ.
 			InvenComp->AddItemToMyList(this);
-			//ÀÎ°ÔÀÓ¿¡¼­ º¸ÀÌ´Â °Í°ú collision¹®Á¦ ¶§¹®¿¡ ÀÓ½Ã·Î ²¨µÒ.
+			//ì¸ê²Œì„ì—ì„œ ë³´ì´ëŠ” ê²ƒê³¼ collisionë¬¸ì œ ë•Œë¬¸ì— ì„ì‹œë¡œ êº¼ë‘ .
 			//this->SetActorEnableCollision(false);
 			this->SetActorHiddenInGame(true);
 			this->SetActorEnableCollision(false);
-			//´øÁú ¶§ ÄÑÁü. ÀÌ°É·Î ¸¸¾à ¾ÆÀÌÅÛÀÇ ¿À¹ö·¦ÀÌ ¾È³¡³­´Ù¸é ´Ù¸¥ ¹æ¹ı °í¹Î->ToInven¿¡¼­ SetActorEnableCollision¸¦ ²¨ÁÖ°í ´øÁú¶§ È¤Àº ToAround¿¡¼­ ÄÑÁÖ±â.
+			//ë˜ì§ˆ ë•Œ ì¼œì§. ì´ê±¸ë¡œ ë§Œì•½ ì•„ì´í…œì˜ ì˜¤ë²„ë©ì´ ì•ˆëë‚œë‹¤ë©´ ë‹¤ë¥¸ ë°©ë²• ê³ ë¯¼->ToInvenì—ì„œ SetActorEnableCollisionë¥¼ êº¼ì£¼ê³  ë˜ì§ˆë•Œ í˜¹ì€ ToAroundì—ì„œ ì¼œì£¼ê¸°.
 			//Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			return true;
 		}
 	}
 	else
 	{
-		//¾ÆÀÌÅÛÀÇ ÀÏºÎ¸¸ ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖÀ» ¶§.
+		//ì•„ì´í…œì˜ ì¼ë¶€ë§Œ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆì„ ë•Œ.
 
-		if (IsValid(FoundItem)) // ÀÎº¥¿¡ ¾ÆÀÌÅÛÀÌ ÀÌ¹Ì ÀÖÀ» ¶§
+		if (IsValid(FoundItem)) // ì¸ë²¤ì— ì•„ì´í…œì´ ì´ë¯¸ ìˆì„ ë•Œ
 		{
 			this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
 			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
@@ -454,9 +454,9 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character)
 
 			return true;
 		}
-		else // ÀÎº¥¿¡ ¾ÆÀÌÅÛÀÌ ¾øÀ» ¶§
+		else // ì¸ë²¤ì— ì•„ì´í…œì´ ì—†ì„ ë•Œ
 		{
-			AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//¾ÆÀÌÅÛ º¹Á¦ »ı¼º
+			AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//ì•„ì´í…œ ë³µì œ ìƒì„±
 
 			NewItem->SetItemStack(ItemStackCount);
 			this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
@@ -464,8 +464,8 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character)
 			InvenComp->AddItemToMyList(NewItem);
 
 			NewItem->SetActorHiddenInGame(true);
-			//collider °ü·Ã ¼³Á¤ Ãß°¡ÇØ¾ß ÇÒ ¼ö ÀÖÀ½.
-			//¸¸¾à Ãß°¡ÇØ¾ß µÈ´Ù¸é MoveToInven¿¡¼­ SetActorEnableCollisionÀ» ²¨ÁÖ°í ´øÁú ¶§ ÄÑÁÖ´Â ¹æ½ÄÀ¸·Î.
+			//collider ê´€ë ¨ ì„¤ì • ì¶”ê°€í•´ì•¼ í•  ìˆ˜ ìˆìŒ.
+			//ë§Œì•½ ì¶”ê°€í•´ì•¼ ëœë‹¤ë©´ MoveToInvenì—ì„œ SetActorEnableCollisionì„ êº¼ì£¼ê³  ë˜ì§ˆ ë•Œ ì¼œì£¼ëŠ” ë°©ì‹ìœ¼ë¡œ.
 			return true;
 		}
 	}
@@ -475,3 +475,5 @@ bool AC_ConsumableItem::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
 	return MoveToInven(Character);
 }
+
+

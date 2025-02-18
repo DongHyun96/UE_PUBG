@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Item/Equipment/C_BackPack.h"
 #include "Character/C_BasicCharacter.h"
@@ -8,13 +8,15 @@
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Utility/C_Util.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "HUD/C_ArmorInfoWidget.h"
+#include "HUD/C_HUDWidget.h"
 
 
 AC_BackPack::AC_BackPack()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	//ItemType ¼³Á¤.
+	//ItemType ì„¤ì •.
 	ItemDatas.ItemType = EItemTypes::BACKPACK;
 
 	Level = 3;
@@ -62,7 +64,7 @@ void AC_BackPack::AttachToSocket(AC_BasicCharacter* InParent)
 		break;
 	}
 	
-	//mobility°¡ MoveableÀÌ¿©¾ß ÀåÂø °¡´É. Áö±İÀº ¿¡µğÅÍ ³»¿¡¼­ ¼³Á¤ÇØ ³õ¾ÒÀ½.
+	//mobilityê°€ Moveableì´ì—¬ì•¼ ì¥ì°© ê°€ëŠ¥. ì§€ê¸ˆì€ ì—ë””í„° ë‚´ì—ì„œ ì„¤ì •í•´ ë†“ì•˜ìŒ.
 	//BackpackMesh->SetMobility(EComponentMobility::Movable);
 
 	bool Attached = AttachToComponent
@@ -77,12 +79,20 @@ void AC_BackPack::AttachToSocket(AC_BasicCharacter* InParent)
 
 	SetOwnerCharacter(InParent);
 
+	// Playerì¼ ê²½ìš°, HUD Armor info widget ì—…ë°ì´íŠ¸
+	if (AC_Player* Player = Cast<AC_Player>(InParent))
+	{
+		float CurMaxVolume	= Player->GetInvenComponent()->GetMaxVolume();
+		float CurVolume		= Player->GetInvenComponent()->GetCurVolume();
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetBackPackInfo(static_cast<uint8>(ItemLevel) + 1, CurVolume / CurMaxVolume);
+	}
+	
 	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);
 }
 
 void AC_BackPack::DetachToSocket(AC_BasicCharacter* character)
 {
-	//°¡¹æ ÇØÁ¦.
+	//ê°€ë°© í•´ì œ.
 
 	if (!character->GetInvenComponent()->GetMyBackPack()) return;
 	DetachItem();
@@ -90,25 +100,25 @@ void AC_BackPack::DetachToSocket(AC_BasicCharacter* character)
 	//BackpackMesh = FindComponentByClass<UStaticMeshComponent>();
 	//if (BackpackMesh)
 	//{
-	//	// Ä³¸¯ÅÍ¿¡¼­ °¡¹æÀ» ºĞ¸®
+	//	// ìºë¦­í„°ì—ì„œ ê°€ë°©ì„ ë¶„ë¦¬
 	//	BackpackMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	//
-	//	// °¡¹æÀÌ º¸ÀÌÁö ¾Ê°Ô ¼³Á¤
+	//	// ê°€ë°©ì´ ë³´ì´ì§€ ì•Šê²Œ ì„¤ì •
 	//	BackpackMesh->SetVisibility(false);
-	//	//Ãæµ¹À» ¿©±â¼­ ²¨ÁÖ°í SetLocation ÀÌÈÄ¿¡ ´Ù½Ã ÄÑÁÖ¸é OverlappedBeginÀÌº¥Æ®°¡ ÀÛµ¿ÇÔ.
+	//	//ì¶©ëŒì„ ì—¬ê¸°ì„œ êº¼ì£¼ê³  SetLocation ì´í›„ì— ë‹¤ì‹œ ì¼œì£¼ë©´ OverlappedBeginì´ë²¤íŠ¸ê°€ ì‘ë™í•¨.
 	//	SetActorEnableCollision(false);
 	//}
 	//SetOwnerCharacter(nullptr);
 	//
-	//// °¡¹æÀ» Ä³¸¯ÅÍÀÇ ¹ß ¾Æ·¡·Î ÀÌµ¿½ÃÅ´
+	//// ê°€ë°©ì„ ìºë¦­í„°ì˜ ë°œ ì•„ë˜ë¡œ ì´ë™ì‹œí‚´
 	//FVector DropLocation = character->GetActorLocation() + FVector(0.f, 0.f, -75.f);
 	//FRotator DropRotation = character->GetActorRotation() + FRotator(0.f, 0.f, -90.f);
 	//SetActorLocation(DropLocation);
 	//SetActorRotation(DropRotation);
 	//
-	////SetActorLocationÀ¸·Î ²¨Á®¹ö¸° Ãæµ¹À» ´Ù½Ã ÄÑÁÜ.
+	////SetActorLocationìœ¼ë¡œ êº¼ì ¸ë²„ë¦° ì¶©ëŒì„ ë‹¤ì‹œ ì¼œì¤Œ.
 	//SetActorEnableCollision(true);
-	//// °¡¹æÀÌ ´Ù½Ã º¸ÀÌ°Ô ¼³Á¤
+	//// ê°€ë°©ì´ ë‹¤ì‹œ ë³´ì´ê²Œ ì„¤ì •
 	//BackpackMesh->SetSimulatePhysics(true);
 	//BackpackMesh->SetEnableGravity(true);
 	//BackpackMesh->SetVisibility(true);
@@ -134,13 +144,13 @@ bool AC_BackPack::Interaction(AC_BasicCharacter* Character)
 
 //void AC_BackPack::PickUpItem(AC_BasicCharacter* Character)
 //{
-//	//Ä³¸¯ÅÍÀÇ ÇöÀç ¿ë·®°ú ¹Ù²Û °¡¹æÀÇ ÃÖ´ë¿ë·®À» ºñ±³ÇØ¼­ ¹Ù²Ù±â.
+//	//ìºë¦­í„°ì˜ í˜„ì¬ ìš©ëŸ‰ê³¼ ë°”ê¾¼ ê°€ë°©ì˜ ìµœëŒ€ìš©ëŸ‰ì„ ë¹„êµí•´ì„œ ë°”ê¾¸ê¸°.
 //	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 //	AC_BackPack* curBackPack = nullptr;
 //	curBackPack = InvenComp->GetMyBackPack();
 //
 //	float curVolume = InvenComp->GetCurVolume();
-//	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//°©ºü°¡ ´õÇØÁÖ´Â Volume Ãß°¡ÇØ¾ßÇÔ.
+//	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//ê°‘ë¹ ê°€ ë”í•´ì£¼ëŠ” Volume ì¶”ê°€í•´ì•¼í•¨.
 //
 //	if (curVolume > preMaxVolume) return;
 //
@@ -155,12 +165,15 @@ bool AC_BackPack::Interaction(AC_BasicCharacter* Character)
 
 bool AC_BackPack::LegacyMoveToAround(AC_BasicCharacter* Character)
 {
+	UC_Util::Print("AC_BackPack::LegacyMoveToAround", FColor::MakeRandomColor(), 10.f);
+	
+	
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	AC_BackPack* curBackPack = nullptr;
 	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
 
 	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//TODO : °©ºü°¡ ´õÇØÁÖ´Â Volume Ãß°¡ÇØ¾ßÇÔ.
+	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//TODO : ê°‘ë¹ ê°€ ë”í•´ì£¼ëŠ” Volume ì¶”ê°€í•´ì•¼í•¨.
 
 	if (curVolume > preMaxVolume) return false;
 
@@ -176,13 +189,19 @@ bool AC_BackPack::LegacyMoveToAround(AC_BasicCharacter* Character)
 
 	this->SetItemPlace(EItemPlace::AROUND);
 
+	// Playerì¼ ê²½ìš°, Armor info widget ì—…ë°ì´íŠ¸
+	if (AC_Player* Player = Cast<AC_Player>(Character))
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetBackPackInfo(0);
+
 	return true;
 }
 
 bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
 {
-	//TODO : PickUpItem ³»¿ëÀ¸·Î ¿ì¼± ±¸ÇöÇÑ °Í. ´Ù½Ã ±¸ÇöÇÏ±â.
-	//Ä³¸¯ÅÍÀÇ ÇöÀç ¿ë·®°ú ¹Ù²Û °¡¹æÀÇ ÃÖ´ë¿ë·®À» ºñ±³ÇØ¼­ ¹Ù²Ù±â.
+	UC_Util::Print("AC_BackPack::LegacyMoveToSlot", FColor::MakeRandomColor(), 10.f);
+	
+	//TODO : PickUpItem ë‚´ìš©ìœ¼ë¡œ ìš°ì„  êµ¬í˜„í•œ ê²ƒ. ë‹¤ì‹œ êµ¬í˜„í•˜ê¸°.
+	//ìºë¦­í„°ì˜ í˜„ì¬ ìš©ëŸ‰ê³¼ ë°”ê¾¼ ê°€ë°©ì˜ ìµœëŒ€ìš©ëŸ‰ì„ ë¹„êµí•´ì„œ ë°”ê¾¸ê¸°.
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	UC_EquippedComponent* EquipComp = Character->GetEquippedComponent();
 
@@ -190,7 +209,7 @@ bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
 	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
 
 	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//°©ºü°¡ ´õÇØÁÖ´Â Volume Ãß°¡ÇØ¾ßÇÔ.
+	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//ê°‘ë¹ ê°€ ë”í•´ì£¼ëŠ” Volume ì¶”ê°€í•´ì•¼í•¨.
 
 	if (curVolume > preMaxVolume) return false;
 
@@ -210,12 +229,14 @@ bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
 
 bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
 {
+	UC_Util::Print("AC_BackPack::MoveSlotToAround", FColor::MakeRandomColor(), 10.f);
+	
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	AC_BackPack* curBackPack = nullptr;
 	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
 
 	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f;// +InvenComp->CheckBackPackVolume(this->GetLevel());//TODO : °©ºü°¡ ´õÇØÁÖ´Â Volume Ãß°¡ÇØ¾ßÇÔ.
+	float preMaxVolume = 70.f;// +InvenComp->CheckBackPackVolume(this->GetLevel());//TODO : ê°‘ë¹ ê°€ ë”í•´ì£¼ëŠ” Volume ì¶”ê°€í•´ì•¼í•¨.
 
 	if (curVolume > preMaxVolume) return false;
 
@@ -231,13 +252,20 @@ bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
 
 	this->SetItemPlace(EItemPlace::AROUND);
 
+	// Playerì¼ ê²½ìš°, Armor info widget ì—…ë°ì´íŠ¸
+	if (AC_Player* Player = Cast<AC_Player>(Character))
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetBackPackInfo(0);
+
 	return true;
 }
 
 bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
-	//TODO : PickUpItem ³»¿ëÀ¸·Î ¿ì¼± ±¸ÇöÇÑ °Í. ´Ù½Ã ±¸ÇöÇÏ±â.
-	//Ä³¸¯ÅÍÀÇ ÇöÀç ¿ë·®°ú ¹Ù²Û °¡¹æÀÇ ÃÖ´ë¿ë·®À» ºñ±³ÇØ¼­ ¹Ù²Ù±â.
+	UC_Util::Print("AC_BackPack::MoveAroundToSlot", FColor::MakeRandomColor(), 10.f);
+
+	
+	//TODO : PickUpItem ë‚´ìš©ìœ¼ë¡œ ìš°ì„  êµ¬í˜„í•œ ê²ƒ. ë‹¤ì‹œ êµ¬í˜„í•˜ê¸°.
+	//ìºë¦­í„°ì˜ í˜„ì¬ ìš©ëŸ‰ê³¼ ë°”ê¾¼ ê°€ë°©ì˜ ìµœëŒ€ìš©ëŸ‰ì„ ë¹„êµí•´ì„œ ë°”ê¾¸ê¸°.
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	UC_EquippedComponent* EquipComp = Character->GetEquippedComponent();
 
@@ -245,7 +273,7 @@ bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character)
 	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
 
 	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel()) + InvenComp->GetVestVolume();//°©ºü°¡ ´õÇØÁÖ´Â Volume Ãß°¡ÇØ¾ßÇÔ.
+	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel()) + InvenComp->GetVestVolume();//ê°‘ë¹ ê°€ ë”í•´ì£¼ëŠ” Volume ì¶”ê°€í•´ì•¼í•¨.
 
 	if (curVolume >= preMaxVolume) return false;
 
@@ -262,3 +290,5 @@ bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character)
 
 	return true;
 }
+
+

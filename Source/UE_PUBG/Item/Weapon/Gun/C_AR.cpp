@@ -1,18 +1,40 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Weapon/Gun/C_AR.h"
 #include "Item/Attachment/C_AttachableItem.h"
 #include "Character/C_Player.h"
+#include "Utility/C_Util.h"
 
+const TMap<FName, float> AC_AR::BODYPARTS_DAMAGERATE =
+{
+	{"Neck",		2.35f},
+
+	{"Hips",		0.9f},
+
+	{"LeftUpLeg",	0.9f},
+	{"LeftFoot",	0.9f},
+	{"RightUpLeg",	0.9f},
+	{"RightFoot",	0.9f},
+
+	{"Spine",		1.f},	// Î™∏ÌÜµ
+	{"Spine1",		1.f},
+	{"Spine2",		1.f},
+
+	{"LeftArm",	0.9f},
+	{"LeftHand",	0.9f},
+
+	{"RightArm",	0.9f},
+	{"RightHand",	0.9f}
+};
 
 AC_AR::AC_AR()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	//ItemType º≥¡§.
+	//ItemType ÏÑ§Ï†ï.
 	ItemDatas.ItemType = EItemTypes::MAINGUN;
 	CurGunType = EGunType::AR;
-	EQUIPPED_SOCKET_NAME = FName("Rifle_Equip"); // π´±‚∞° º’ø° ∫Œ¬¯µ… socket ¿Ã∏ß
+	EQUIPPED_SOCKET_NAME = FName("Rifle_Equip"); // Î¨¥Í∏∞Í∞Ä ÏÜêÏóê Î∂ÄÏ∞©Îê† socket Ïù¥Î¶Ñ
 	IronSightWindowLocation = FVector2D(0.5f, 0.4f);
 
 }
@@ -49,5 +71,18 @@ bool AC_AR::ExecuteReloadMontage()
 
 bool AC_AR::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
-	return false;
+	return Super::ExecuteAIAttack(InTargetCharacter);
 }
+
+float AC_AR::GetDamageRateByBodyPart(const FName& BodyPart)
+{
+	if (!BODYPARTS_DAMAGERATE.Contains(BodyPart))
+	{
+		UC_Util::Print("From AC_SR::GetDamageRateByBodyPart : No Body part found!", FColor::Red, 10.f);
+		return 0.f;
+	}
+	
+	return BODYPARTS_DAMAGERATE[BodyPart];
+}
+
+

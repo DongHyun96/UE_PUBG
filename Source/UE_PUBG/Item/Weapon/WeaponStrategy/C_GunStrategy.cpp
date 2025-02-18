@@ -30,7 +30,7 @@ bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 {
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI°¡ ¿­·Á ÀÖÀ»¶§ ÀÛµ¿ ±İÁö.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UIê°€ ì—´ë ¤ ìˆì„ë•Œ ì‘ë™ ê¸ˆì§€.
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	//UC_Util::Print("Change Weapon Mode");
@@ -43,7 +43,7 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	//if (WeaponUser->GetIsHoldDirection()) return false;
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI°¡ ¿­·Á ÀÖÀ»¶§ ÀÛµ¿ ±İÁö.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UIê°€ ì—´ë ¤ ìˆì„ë•Œ ì‘ë™ ê¸ˆì§€.
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	//if (CurWeapon->GetIsPartAttached(EPartsName::GRIP))
@@ -67,7 +67,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	//UC_Util::Print("Mlb Clicked");
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI°¡ ¿­·Á ÀÖÀ»¶§ ÀÛµ¿ ±İÁö.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UIê°€ ì—´ë ¤ ìˆì„ë•Œ ì‘ë™ ê¸ˆì§€.
 
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	if (!WeaponUser->GetCanFireBullet()) return false;
@@ -76,7 +76,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
 	MlbPressTimeCount = 0;
-	if (CurWeapon->GetCurBulletCount() < CurWeapon->GetMaxBulletCount() && CurWeapon->GetCurBulletCount() > 0)
+	if (CurWeapon->GetCurBulletCount() > 0)
 	{
 		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SINGLE_SHOT && !CurPlayer->GetIsAimDown())
 			CurWeapon->ExecuteReloadMontage();
@@ -96,14 +96,14 @@ bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	if (!WeaponUser->GetCanFireBullet()) return false;
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
-	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI°¡ ¿­·Á ÀÖÀ»¶§ ÀÛµ¿ ±İÁö.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UIê°€ ì—´ë ¤ ìˆì„ë•Œ ì‘ë™ ê¸ˆì§€.
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
 
 
-	//ÃÑ¾Ë ¿¬¹ß
-	//TODO: ÃÑ¾ËÀÇ ¿¬»çÀ² ¹Ş¾Æ¿Í¼­ Àû¿ë + ÃÑ¾Ë ¹ß»ç ¸ğµå¿¡ µû¶ó ÀÛµ¿¸øÇÏ°Ô ÇÏ±â
+	//ì´ì•Œ ì—°ë°œ
+	//TODO: ì´ì•Œì˜ ì—°ì‚¬ìœ¨ ë°›ì•„ì™€ì„œ ì ìš© + ì´ì•Œ ë°œì‚¬ ëª¨ë“œì— ë”°ë¼ ì‘ë™ëª»í•˜ê²Œ í•˜ê¸°
 	if(CurWeapon->GetCurrentShootingMode() != EShootingMode::FULL_AUTO) return false;
 	MlbPressTimeCount += WeaponUser->GetWorld()->GetDeltaSeconds();
 	if (MlbPressTimeCount > CurWeapon->GetBulletRPM())
@@ -123,7 +123,7 @@ bool AC_GunStrategy::UseMlb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 {
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI°¡ ¿­·Á ÀÖÀ»¶§ ÀÛµ¿ ±İÁö.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UIê°€ ì—´ë ¤ ìˆì„ë•Œ ì‘ë™ ê¸ˆì§€.
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	if (!WeaponUser->GetCanFireBullet()) return false;
 
@@ -140,8 +140,9 @@ bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 {
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI°¡ ¿­·Á ÀÖÀ»¶§ ÀÛµ¿ ±İÁö.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UIê°€ ì—´ë ¤ ìˆì„ë•Œ ì‘ë™ ê¸ˆì§€.
 	if (WeaponUser->GetIsHoldDirection()) return false;
+	if (WeaponUser->GetIsTooCloseToAimGun()) return false;
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 
 	MrbPressTimeCount = 0;
@@ -165,8 +166,10 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 {
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI°¡ ¿­·Á ÀÖÀ»¶§ ÀÛµ¿ ±İÁö.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UIê°€ ì—´ë ¤ ìˆì„ë•Œ ì‘ë™ ê¸ˆì§€.
 	if (WeaponUser->GetIsHoldDirection()) return false;
+	if (WeaponUser->GetIsTooCloseToAimGun()) return false;
+
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
@@ -193,8 +196,10 @@ bool AC_GunStrategy::UseMrb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 {
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI°¡ ¿­·Á ÀÖÀ»¶§ ÀÛµ¿ ±İÁö.
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UIê°€ ì—´ë ¤ ìˆì„ë•Œ ì‘ë™ ê¸ˆì§€.
 	if (WeaponUser->GetIsHoldDirection()) return false;
+	if (WeaponUser->GetIsTooCloseToAimGun()) return false;
+
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 
 	//MrbPressTimeCount = 0;
@@ -232,3 +237,5 @@ bool AC_GunStrategy::UseMrb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 	//CurUser->BackToMainCamera();
 	return true;
 }
+
+

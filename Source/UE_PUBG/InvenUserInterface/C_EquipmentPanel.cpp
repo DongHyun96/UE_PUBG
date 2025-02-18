@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUserInterface/C_EquipmentPanel.h"
@@ -48,3 +48,5 @@ void UC_EquipmentPanel::SetWidgetOwnerCharacter(AC_BasicCharacter* inOwnerCharac
 	ArmorWidget    ->SetOwnerCharacter(OwnerPlayer);
 	UnKnownSlot    ->SetOwnerCharacter(OwnerPlayer);
 }
+
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AI/Service/C_BTServiceStateMachine.h"
@@ -31,11 +31,11 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		OwnerBehaviorComponent	= OwnerController->GetBehaviorComponent();
 	}
 
-	// ÃÑ°ý FSM ¹× ±âÅ¸ Main Ã³¸® ´ã´çÇÏ±â
+	// ì´ê´„ FSM ë° ê¸°íƒ€ Main ì²˜ë¦¬ ë‹´ë‹¹í•˜ê¸°
 	if (OwnerEnemy->GetMainState() == EMainState::SKYDIVING)
 		OwnerBehaviorComponent->SetServiceType(EServiceType::SKYDIVE);
 
-	// Testing Pose Transition
+	/*// Testing Pose Transition
 	Timer += DeltaSeconds;
 
 	if (Timer > 3.f) // Set IdleTaskType to PoseChange
@@ -44,5 +44,8 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		OwnerBehaviorComponent->SetIdleTaskType(EIdleTaskType::CHANGE_POSE);
 	}
 	else OwnerBehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
+	*/
 		
 }
+
+

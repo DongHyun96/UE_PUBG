@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -32,25 +32,25 @@ public:
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 	/// <summary>
-	/// InvenUI->InitÇÔ¼ö È£Ãâ, InvenUI¸¦ ÃÊ±âÈ­
+	/// InvenUI->Inití•¨ìˆ˜ í˜¸ì¶œ, InvenUIë¥¼ ì´ˆê¸°í™”
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void InitializeList();
 
 	/// <summary>
-	/// InvenUI¸¦ ÄÑÁÖ°í ²¨ÁÖ´Â ÇÔ¼ö.
+	/// InvenUIë¥¼ ì¼œì£¼ê³  êº¼ì£¼ëŠ” í•¨ìˆ˜.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OpenInvenUI();
 
 	/// <summary>
-	/// InvenUI¸¦ ÄÑÁÖ´Â ÇÔ¼ö.
+	/// InvenUIë¥¼ ì¼œì£¼ëŠ” í•¨ìˆ˜.
 	/// </summary>
 	//UFUNCTION(BlueprintCallable)
 	void ShowInvenUI();
 
 	/// <summary>
-	/// InvenUi¸¦ ²¨ÁÖ´Â ÇÔ¼ö.
+	/// InvenUië¥¼ êº¼ì£¼ëŠ” í•¨ìˆ˜.
 	/// </summary>
 	//UFUNCTION(BlueprintCallable)
 	void CloseInvenUI();
@@ -73,8 +73,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> InvenUiClass;
 
-	//¿©±â¿¡ UPROERTY()¸¦ °É¸é ÀÎº¥ÀÌ ¾Èº¸ÀÓ. InvenUIWidget¾È¿¡¼­ OwnerCharacter->GetInvenComponent()->GetNearItems() -> EmptyÀÎ »óÅÂ°¡ µÇ¾î ¹ö¸².
+	//ì—¬ê¸°ì— UPROERTY()ë¥¼ ê±¸ë©´ ì¸ë²¤ì´ ì•ˆë³´ì„. InvenUIWidgetì•ˆì—ì„œ OwnerCharacter->GetInvenComponent()->GetNearItems() -> Emptyì¸ ìƒíƒœê°€ ë˜ì–´ ë²„ë¦¼.
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_BasicCharacter* OwnerCharacter = nullptr;
 		
 };
+
+

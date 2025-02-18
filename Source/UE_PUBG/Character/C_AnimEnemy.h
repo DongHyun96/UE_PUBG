@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,8 +17,10 @@ class UE_PUBG_API UC_AnimEnemy : public UC_AnimBasicCharacter
 private:
 
 	/// <summary>
-	/// AnimGraph¿¡¼­ÀÇ transition¿ë dataµé ¾÷µ¥ÀÌÆ®
+	/// AnimGraphì—ì„œì˜ transitionìš© dataë“¤ ì—…ë°ì´íŠ¸
 	/// </summary>
 	void NativeUpdateAnimation(float DeltaSeconds) override;
 	
 };
+
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Airplane/C_AirplaneManager.h"
@@ -53,7 +53,7 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 
 	TakeOffTimer -= DeltaTime;
 
-	if (TakeOffTimer <= 0.f) // ÀÌ·ú ½ÃÀÛ
+	if (TakeOffTimer <= 0.f) // ì´ë¥™ ì‹œì‘
 	{
 		InitAirplaneStartPosAndFlightDirection();
 		Airplane->StartFlight();
@@ -72,8 +72,8 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 void AC_AirplaneManager::InitRandomStartDestPosition()
 {
 	/*
-	1. ¸Ê Áß¾ÓÁ¡À» ±âÁ¡À¸·Î ÇÏ´Â ¿ø ¾ÈÀÇ ÀÓÀÇÀÇ ÁöÁ¡ Àâ±â
-	2. ÇØ´ç ÀÓÀÇÀÇ Á¡À» Áö³ª´Â ¼±ÀÇ RandomÇÑ ±â¿ï±â Àâ±â
+	1. ë§µ ì¤‘ì•™ì ì„ ê¸°ì ìœ¼ë¡œ í•˜ëŠ” ì› ì•ˆì˜ ì„ì˜ì˜ ì§€ì  ì¡ê¸°
+	2. í•´ë‹¹ ì„ì˜ì˜ ì ì„ ì§€ë‚˜ëŠ” ì„ ì˜ Randomí•œ ê¸°ìš¸ê¸° ì¡ê¸°
 	*/
 
 	float XDir				= FMath::FRandRange(-1.f, 1.f);
@@ -84,13 +84,13 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 
 	const float CIRCLE_RADIUS	= 20000.f; // 200m Radius
 	float RandomScalar			= FMath::RandRange(0.f, CIRCLE_RADIUS);
-	FVector RandomPos			= RandomDirection * RandomScalar; // ¿ø ¾ÈÀÇ ÀÓÀÇÀÇ ÁöÁ¡
+	FVector RandomPos			= RandomDirection * RandomScalar; // ì› ì•ˆì˜ ì„ì˜ì˜ ì§€ì 
 
-	// RandomÇÑ ±â¿ï±â Àâ±â -> ¸Ê °¡ÀåÀÚ¸® ÀÓÀÇÀÇ ´Ù¸¥ Á¡À» ½ÃÀÛÁ¡À¸·Î Àâ´Â °ÍÀ¸·Î ´ëÃ¼
+	// Randomí•œ ê¸°ìš¸ê¸° ì¡ê¸° -> ë§µ ê°€ì¥ìë¦¬ ì„ì˜ì˜ ë‹¤ë¥¸ ì ì„ ì‹œì‘ì ìœ¼ë¡œ ì¡ëŠ” ê²ƒìœ¼ë¡œ ëŒ€ì²´
 	float StartX{}, StartY{}, DestX{}, DestY{};
 	float Slope{};
 
-	if (FMath::RandRange(0, 1) == 0) // X°ªÀ» border¿¡ ¸ÂÃâ ¶§
+	if (FMath::RandRange(0, 1) == 0) // Xê°’ì„ borderì— ë§ì¶œ ë•Œ
 	{
 		StartX			= (FMath::RandRange(0, 1) == 0) ? PLANE_START_DEST_BORDER_VALUE : -PLANE_START_DEST_BORDER_VALUE;
 		StartY			= FMath::FRandRange(-PLANE_START_DEST_BORDER_VALUE, PLANE_START_DEST_BORDER_VALUE);
@@ -109,7 +109,7 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 		float DX{};
 		float DY{};
 
-		// X = +-PLANE_START_DEST_BORDER_VALUE Á÷¼±°ú °Ë»ç
+		// X = +-PLANE_START_DEST_BORDER_VALUE ì§ì„ ê³¼ ê²€ì‚¬
 		DX = -StartX;
 		DY = Slope * DX + YInterceptValue;
 
@@ -119,7 +119,7 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 			return;
 		}
 
-		// Y = +-PLANE_START_DEST_BORDER_VALUE Á÷¼±°ú °Ë»ç
+		// Y = +-PLANE_START_DEST_BORDER_VALUE ì§ì„ ê³¼ ê²€ì‚¬
 		for (int i = -1; i <= 1; i += 2)
 		{
 			DY = PLANE_START_DEST_BORDER_VALUE * i;
@@ -132,13 +132,13 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 			}
 		}
 	}
-	else // Y°ªÀ» Border¿¡ ¸ÂÃâ ¶§
+	else // Yê°’ì„ Borderì— ë§ì¶œ ë•Œ
 	{
 		StartY			= (FMath::RandRange(0, 1) == 0) ? PLANE_START_DEST_BORDER_VALUE : -PLANE_START_DEST_BORDER_VALUE;
 		StartX			= FMath::FRandRange(-PLANE_START_DEST_BORDER_VALUE, PLANE_START_DEST_BORDER_VALUE);
 		PlaneRouteStart = FVector(StartX, StartY, PLANE_ALTITUDE);
 
-		if (RandomPos.X - StartX == 0.f) // ±â¿ï±â°¡ ¹«ÇÑÀÏ ¶§
+		if (RandomPos.X - StartX == 0.f) // ê¸°ìš¸ê¸°ê°€ ë¬´í•œì¼ ë•Œ
 		{
 			PlaneRouteDest = FVector(StartX, -StartY, PLANE_ALTITUDE);
 			return;
@@ -151,7 +151,7 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 		float DX{};
 		float DY{};
 
-		// Y = +-PLANE_START_DEST_BORDER_VALUE Á÷¼±°ú °Ë»ç
+		// Y = +-PLANE_START_DEST_BORDER_VALUE ì§ì„ ê³¼ ê²€ì‚¬
 		DY = -StartY;
 		DX = (DY - YInterceptValue) / Slope;
 
@@ -161,7 +161,7 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 			return;
 		}
 
-		// X = +-PLANE_START_DEST_BORDER_VALUE Á÷¼±°ú °Ë»ç
+		// X = +-PLANE_START_DEST_BORDER_VALUE ì§ì„ ê³¼ ê²€ì‚¬
 		for (int i = -1; i <= 1; i += 2)
 		{
 			DX = PLANE_START_DEST_BORDER_VALUE * i;
@@ -178,7 +178,7 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 
 void AC_AirplaneManager::UpdateCanDive()
 {
-	// CanDive´Â ÇÑ ¹ø¸¸ ³Ñ¾úÀ» ¶§ true·Î Ã¼Å©ÇÏ¸é µÊ
+	// CanDiveëŠ” í•œ ë²ˆë§Œ ë„˜ì—ˆì„ ë•Œ trueë¡œ ì²´í¬í•˜ë©´ ë¨
 	if (!HasAirplaneTakeOff || !Airplane->GetIsFlying() || CanDive) return;
 	
 	FVector FlightDirection = PlaneRouteDest - PlaneRouteStart;
@@ -190,7 +190,7 @@ void AC_AirplaneManager::UpdateCanDive()
 
 	CanDive = FlightDirection.Equals(StartToAirplaneDirection, KINDA_SMALL_NUMBER);
 
-	// Player HUD ¾÷µ¥ÀÌÆ®
+	// Player HUD ì—…ë°ì´íŠ¸
 	if (CanDive) GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->ToggleEjectInstructionVisibility(true);
 }
 
@@ -201,7 +201,7 @@ bool AC_AirplaneManager::IsValueValidInBorder(float PositionValue)
 
 void AC_AirplaneManager::CheckAirplaneArrivedToRouteDestLimit()
 {
-	// ³«ÇÏÁöÁ¡ LimitÀ» ³Ñ¾î°¬´Ù¸é ¾ÆÁ÷ ³»¸®Áö ¾ÊÀº Ä³¸¯ÅÍµé ³»¸®°Ô Ã³¸®
+	// ë‚™í•˜ì§€ì  Limitì„ ë„˜ì–´ê°”ë‹¤ë©´ ì•„ì§ ë‚´ë¦¬ì§€ ì•Šì€ ìºë¦­í„°ë“¤ ë‚´ë¦¬ê²Œ ì²˜ë¦¬
 	if (!Airplane->GetIsFlying()) return;
 
 	FVector FlightDirection = PlaneRouteDest - PlaneRouteStart;
@@ -211,7 +211,7 @@ void AC_AirplaneManager::CheckAirplaneArrivedToRouteDestLimit()
 	FVector DestToAirplaneDirection = AirplaneLocation - PlaneRouteDest;
 	DestToAirplaneDirection.Normalize();
 
-	// ³«ÇÏ ÁöÁ¡ LimitÀ» ³Ñ¾î°£ ½ÃÁ¡
+	// ë‚™í•˜ ì§€ì  Limitì„ ë„˜ì–´ê°„ ì‹œì 
 	if (FlightDirection.Equals(DestToAirplaneDirection, KINDA_SMALL_NUMBER))
 	{
 		RouteDestLimitReached = true;
@@ -229,8 +229,8 @@ void AC_AirplaneManager::CheckFlightFinished()
 	if (!HasAirplaneTakeOff || !Airplane->GetIsFlying()) return;
 	if (!RouteDestLimitReached) return;
 
-	// ºñÇà ³¡³µ´ÂÁö Ã¼Å© (¸Ê ¹İ°æ¿¡ ¾Æ¿¹ ³ª°¬´ÂÁö Ã¼Å©)
-	// ³¡³µ´Ù¸é -> ºñÇà±â IsFlying false | MainMap UI Toggle airplane visibility
+	// ë¹„í–‰ ëë‚¬ëŠ”ì§€ ì²´í¬ (ë§µ ë°˜ê²½ì— ì•„ì˜ˆ ë‚˜ê°”ëŠ”ì§€ ì²´í¬)
+	// ëë‚¬ë‹¤ë©´ -> ë¹„í–‰ê¸° IsFlying false | MainMap UI Toggle airplane visibility
 	FVector AirplaneLocation = Airplane->GetActorLocation();
 
 	const float ACTUAL_START_DEST_BORDER_VALUE = 50000.f;
@@ -257,10 +257,10 @@ void AC_AirplaneManager::InitAirplaneStartPosAndFlightDirection()
 	FVector ToStartDirection = -FlightDirection;
 
 	const float ACTUAL_START_DEST_BORDER_VALUE = 50000.f;
-	// x = +-START_DEST_BORDER_VALUE | y = +-START_DEST_BORDER_VALUE ±³Â÷Á¡ Ã£¾Æ¼­ ValidÇÑ ±³Â÷ÁöÁ¡ Ã£±â
+	// x = +-START_DEST_BORDER_VALUE | y = +-START_DEST_BORDER_VALUE êµì°¨ì  ì°¾ì•„ì„œ Validí•œ êµì°¨ì§€ì  ì°¾ê¸°
 
-	// x = +-START_DEST_BORDER_VALUE ±³Â÷Á¡ Ã£±â
-	if (!FMath::IsNearlyZero(ToStartDirection.X)) // ¼¼·Î¼±°ú ÆòÇàÀÌÁö ¾ÊÀ» ¶§
+	// x = +-START_DEST_BORDER_VALUE êµì°¨ì  ì°¾ê¸°
+	if (!FMath::IsNearlyZero(ToStartDirection.X)) // ì„¸ë¡œì„ ê³¼ í‰í–‰ì´ì§€ ì•Šì„ ë•Œ
 	{
 		for (int i = -1; i <= 1; i += 2)
 		{
@@ -279,7 +279,7 @@ void AC_AirplaneManager::InitAirplaneStartPosAndFlightDirection()
 		}
 	}
 
-	if (!FMath::IsNearlyZero(ToStartDirection.Y)) // °¡·Î¼±°ú ÆòÇàÀÌÁö ¾ÊÀ» ¶§
+	if (!FMath::IsNearlyZero(ToStartDirection.Y)) // ê°€ë¡œì„ ê³¼ í‰í–‰ì´ì§€ ì•Šì„ ë•Œ
 	{
 		for (int i = -1; i <= 1; i += 2)
 		{
@@ -299,4 +299,6 @@ void AC_AirplaneManager::InitAirplaneStartPosAndFlightDirection()
 	}
 
 }
+
+
 

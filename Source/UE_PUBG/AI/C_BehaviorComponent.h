@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,7 +17,7 @@ enum class EServiceType : uint8
 	MAX
 };
 
-// TODO : Behavior type ī�װ��� ����
+// TODO : Behavior type 카테고리 수정
 UENUM(BlueprintType)
 enum class EBehaviorType : uint8
 {
@@ -48,10 +48,14 @@ public:
 
 	void SetBlackboard(class UBlackboardComponent* InBlackboard) { Blackboard = InBlackboard; }
 
-	void SetPlayer(class AActor* InPlayer);
-	FName GetPlayerKey() const { return PlayerKey; }
-	class AC_BasicCharacter* GetPlayer();
-
+	/// <summary>
+	/// TargetCharacter 세팅하기 
+	/// </summary>
+	/// <param name="InTargetCharacter"> : 공격 대상, 회피 대상 등이 될 TargetCharacter </param>
+	/// <returns> 제대로 setting되었다면 return true </returns>
+	bool SetTargetCharacter(AActor* InTargetCharacter);
+	
+	class AC_BasicCharacter* GetTargetCharacter();
 
 	bool SetBehaviorType(EBehaviorType Type);
 
@@ -66,10 +70,10 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName BehaviorKey = "Behavior";
-
+	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName PlayerKey = "Player";
-
+	FName TargetCharacterKey = "TargetCharacter";
+	
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
@@ -78,3 +82,5 @@ protected:
 private:
 	class UBlackboardComponent* Blackboard{};
 };
+
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -23,9 +23,9 @@ public:
 	void OnPossess(APawn* InPawn)	override;
 
 	/// <summary>
-	/// Sight Radius¾È¿¡ µé¾î¿À¸é ¹ßµ¿ÇÒ ÇÔ¼ö
+	/// Sight Radiusì•ˆì— ë“¤ì–´ì˜¤ë©´ ë°œë™í•  í•¨ìˆ˜
 	/// </summary>
-	/// <param name="UpdatedActors"> : ÀÎÁöÇÑ Actors ¹è¿­</param>
+	/// <param name="UpdatedActors"> : ì¸ì§€í•œ Actors ë°°ì—´</param>
 	UFUNCTION()
 	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
@@ -43,3 +43,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UC_BehaviorComponent* BehaviorComponent{};
 };
+
+

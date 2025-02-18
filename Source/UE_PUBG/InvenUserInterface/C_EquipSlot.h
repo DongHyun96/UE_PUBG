@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -20,7 +20,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	/// <summary>
-	/// øÏ≈¨∏Ø ¿Ã∫•∆Æ
+	/// Ïö∞ÌÅ¥Î¶≠ Ïù¥Î≤§Ìä∏
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -47,3 +47,5 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	EItemTypes SlotItemType{};
 };
+
+

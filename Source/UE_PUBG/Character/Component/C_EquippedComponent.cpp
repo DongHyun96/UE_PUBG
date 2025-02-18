@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_BasicCharacter.h"
@@ -48,16 +48,16 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 {
     AC_Weapon* PrevSlotWeapon = Weapons[InSlot];
 
-    // µé¾î¿Â ½½·ÔÀÇ ÀÌÀü ¹«±â°¡ Á¸ÀçÇÒ ¶§ ÀÌÀü ¹«±â ÇØÁ¦
+    // ë“¤ì–´ì˜¨ ìŠ¬ë¡¯ì˜ ì´ì „ ë¬´ê¸°ê°€ ì¡´ì¬í•  ë•Œ ì´ì „ ë¬´ê¸° í•´ì œ
     if (PrevSlotWeapon)
     {
         Weapons[InSlot]->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 
-        // ÀÌÀü ¹«±â ÇØÁ¦¿¡ ´ëÇÑ PoseTransitionEnd µ¨¸®°ÔÀÌÆ® ÇØÁ¦
+        // ì´ì „ ë¬´ê¸° í•´ì œì— ëŒ€í•œ PoseTransitionEnd ë¸ë¦¬ê²Œì´íŠ¸ í•´ì œ
         OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(PrevSlotWeapon);
     }
 
-    Weapons[InSlot] = Weapon; // »õ·Î µé¾î¿Â ¹«±â·Î ±³Ã¼
+    Weapons[InSlot] = Weapon; // ìƒˆë¡œ ë“¤ì–´ì˜¨ ë¬´ê¸°ë¡œ êµì²´
     
 
     if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
@@ -65,37 +65,37 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
         Player->GetInvenSystem()->InitializeList(); 
     }
 
-    if (!Weapons[InSlot]) // Slot¿¡ »õ·Î ÁöÁ¤ÇÑ ¹«±â°¡ nullptr -> early return
+    if (!Weapons[InSlot]) // Slotì— ìƒˆë¡œ ì§€ì •í•œ ë¬´ê¸°ê°€ nullptr -> early return
     {
-        //if (PrevSlotWeapon) // ÇöÀç ¼Õ¿¡ µé°í ÀÖ´Â ¹«±â°¡ ÀÖ¾úÀ» ¶§, Slot¿¡¼­ °­Á¦·Î »« »óÈ²
-        //{
-        //    NextWeaponType  = EWeaponSlot::NONE;
-        //    CurWeaponType   = EWeaponSlot::NONE;
-        //    OwnerCharacter->SetHandState(EHandState::UNARMED);
-        //}
+        if (CurWeaponType == InSlot) // í˜„ì¬ ì†ì— ë“¤ê³  ìˆëŠ” ë¬´ê¸°ë¥¼ Slotì—ì„œ ê°•ì œë¡œ ëº€ ìƒí™©
+        {
+            NextWeaponType  = EWeaponSlot::NONE;
+            CurWeaponType   = EWeaponSlot::NONE;
+            OwnerCharacter->SetHandState(EHandState::UNARMED);
+        }
 
         return PrevSlotWeapon;
     }
     
-    //¾ÆÀÌÅÛÀÇ À§Ä¡ º¯°æ,1108 »ó¿¬
+    //ì•„ì´í…œì˜ ìœ„ì¹˜ ë³€ê²½,1108 ìƒì—°
     Weapons[InSlot]->SetItemPlace(EItemPlace::SLOT);
 
     SetMainGunOrSubGun(InSlot);
 
 
-    Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // »õ·Î¿î OwnerCharacter ÁöÁ¤
+    Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // ìƒˆë¡œìš´ OwnerCharacter ì§€ì •
 
-    //Ãæµ¹Ã¼ ÄÑÁÖ±â, 1117 »ó¿¬, ±ÙÁ¢¹«±â´Â ÀåÂø¸¸ ÇØµµ º¸ÀÌ´Â »óÅÂ.
+    //ì¶©ëŒì²´ ì¼œì£¼ê¸°, 1117 ìƒì—°, ê·¼ì ‘ë¬´ê¸°ëŠ” ì¥ì°©ë§Œ í•´ë„ ë³´ì´ëŠ” ìƒíƒœ.
     if (InSlot == EWeaponSlot::MELEE_WEAPON)
         Weapons[InSlot]->SetActorHiddenInGame(false);
 
-    //²¨ÁÖ¸é Á¦ÀÚ¸® ÆÄÄí¸£ ¹æÁö.
-    Weapons[InSlot]->SetActorEnableCollision(false); 
+    //êº¼ì£¼ë©´ ì œìë¦¬ íŒŒì¿ ë¥´ ë°©ì§€.
+    // Weapons[InSlot]->SetActorEnableCollision(false); 
  
     Weapons[InSlot]->SetRelativeTranformToInitial();
     Weapons[InSlot]->AttachToHolster(OwnerCharacter->GetMesh());
 
-    // »õ·Î ÀåÂøµÈ ¹«±â¿¡ ´ëÇÑ PoseTransitionEnd µ¨¸®°ÔÀÌÆ® callback °É±â
+    // ìƒˆë¡œ ì¥ì°©ëœ ë¬´ê¸°ì— ëŒ€í•œ PoseTransitionEnd ë¸ë¦¬ê²Œì´íŠ¸ callback ê±¸ê¸°
     OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(Weapons[InSlot], &AC_Weapon::OnOwnerCharacterPoseTransitionFin);
     
     return PrevSlotWeapon;
@@ -107,7 +107,7 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
     AC_Gun* CurSubGun   = Cast<AC_Gun>(Weapons[EWeaponSlot::SUB_GUN]);
 
 
-    // ¿¹¿Ü »óÈ²ÀÌ ¾Æ´Ñ »óÈ²
+    // ì˜ˆì™¸ ìƒí™©ì´ ì•„ë‹Œ ìƒí™©
     if (!IsValid(CurMainGun) && !IsValid(CurSubGun))                                        return false;
     if (CurWeaponType != EWeaponSlot::MAIN_GUN && CurWeaponType != EWeaponSlot::SUB_GUN)    return false;
     
@@ -117,14 +117,14 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
     if (CurMainGun) CurMainGun->ChangeGunState(EGunState::SUB_GUN);
     if (CurSubGun)  CurSubGun->ChangeGunState(EGunState::MAIN_GUN);
 
-    // CurMainGun°ú CurSubGun ¼­·Î Slot Swap
-    // ÇöÀç CurWeaponType -> ´Ù¸¥ Á¾·ùÀÇ GunTypeÀ¸·Î Swap½ÃÅ°±â
-    // Gun ¹«±â Type ¹Ù²Ù±â
+    // CurMainGunê³¼ CurSubGun ì„œë¡œ Slot Swap
+    // í˜„ì¬ CurWeaponType -> ë‹¤ë¥¸ ì¢…ë¥˜ì˜ GunTypeìœ¼ë¡œ Swapì‹œí‚¤ê¸°
+    // Gun ë¬´ê¸° Type ë°”ê¾¸ê¸°
     if (CurWeaponType == EWeaponSlot::MAIN_GUN)
     {
         CurWeaponType = EWeaponSlot::SUB_GUN;
 
-        // MainGunÀÎ ÃÑ±â¸¦ Holster¿¡ Áı¾î³Ö±â
+        // MainGunì¸ ì´ê¸°ë¥¼ Holsterì— ì§‘ì–´ë„£ê¸°
         if (Weapons[EWeaponSlot::MAIN_GUN])
             Weapons[EWeaponSlot::MAIN_GUN]->AttachToHolster(OwnerCharacter->GetMesh());
     }
@@ -132,29 +132,12 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
     {
         CurWeaponType = EWeaponSlot::MAIN_GUN;
 
-        // SubGunÀÎ ÃÑ±â¸¦ Holster¿¡ Áı¾î³Ö±â
+        // SubGunì¸ ì´ê¸°ë¥¼ Holsterì— ì§‘ì–´ë„£ê¸°
         if (Weapons[EWeaponSlot::SUB_GUN])
             Weapons[EWeaponSlot::SUB_GUN]->AttachToHolster(OwnerCharacter->GetMesh());
     }
 
     return true;
-}
-
-void UC_EquippedComponent::DetachmentWeapon(EWeaponSlot InSlot)
-{
-    AC_Weapon* curWeapon = Weapons[InSlot];
-
-    UC_Util::Print("Try DetachmentWeapon", FColor::MakeRandomColor(), 10.f);    
-    
-    //¾ÆÀÌÅÛÀÌ ¾ø´Ù¸é Á¾·á
-    if (!curWeapon) return;
-    
-    curWeapon->SetOwnerCharacter(nullptr);
-
-    curWeapon->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-
-    curWeapon->SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
-    curWeapon->SetActorRotation(FRotator(0.f, 0.f, -90.f));
 }
 
 bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
@@ -163,7 +146,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
     if (IsValid(Weapons[CurWeaponType]))
     {
-        // ÇöÀç ¹«±âÀÇ Sheath³ª Draw animation montage°¡ ÀÌ¹Ì Àç»ı ÁßÀÌ¶ó¸é return
+        // í˜„ì¬ ë¬´ê¸°ì˜ Sheathë‚˜ Draw animation montageê°€ ì´ë¯¸ ì¬ìƒ ì¤‘ì´ë¼ë©´ return
         if (OwnerCharacter->GetMesh()->GetAnimInstance()
             ->Montage_IsPlaying(Weapons[CurWeaponType]->GetCurDrawMontage().AnimMontage))
             return false;
@@ -175,15 +158,15 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
     NextWeaponType = InChangeTo;
 
-    if (CurWeaponType == NextWeaponType) return false; // ÇöÀç ¹«±â¿Í ´ÙÀ½ ¹«±â°¡ °°À» ¶§ ¹«±â¸¦ ±»ÀÌ ´Ù½Ã ²¨³»Áö ¾ÊÀ½
+    if (CurWeaponType == NextWeaponType) return false; // í˜„ì¬ ë¬´ê¸°ì™€ ë‹¤ìŒ ë¬´ê¸°ê°€ ê°™ì„ ë•Œ ë¬´ê¸°ë¥¼ êµ³ì´ ë‹¤ì‹œ êº¼ë‚´ì§€ ì•ŠìŒ
 
-    // NextWeaponTypeÀÌ NoneÀÌ ¾Æ´Ï°í, ¹Ù²Ù·Á´Â ¹«±â ½½·Ô¿¡ ¹«±â°¡ ¾øÀ» ¶§
+    // NextWeaponTypeì´ Noneì´ ì•„ë‹ˆê³ , ë°”ê¾¸ë ¤ëŠ” ë¬´ê¸° ìŠ¬ë¡¯ì— ë¬´ê¸°ê°€ ì—†ì„ ë•Œ
     if (NextWeaponType != EWeaponSlot::NONE && !IsValid(Weapons[NextWeaponType])) return false;
 
-    // ÇöÀç ¹«±â¸¦ Âø¿ëÁßÀÌÁö ¾ÊÀ» ¶§ (UnArmed »óÅÂ), ¶Ç´Â ÇöÀç ½½·Ô¿¡ ÀåÂøµÈ ¹«±â°¡ ¾øÀ» ¶§ ´ÙÀ½ ¹«±â Draw¸¸ Àç»ı
+    // í˜„ì¬ ë¬´ê¸°ë¥¼ ì°©ìš©ì¤‘ì´ì§€ ì•Šì„ ë•Œ (UnArmed ìƒíƒœ), ë˜ëŠ” í˜„ì¬ ìŠ¬ë¡¯ì— ì¥ì°©ëœ ë¬´ê¸°ê°€ ì—†ì„ ë•Œ ë‹¤ìŒ ë¬´ê¸° Drawë§Œ ì¬ìƒ
     if (CurWeaponType == EWeaponSlot::NONE || !IsValid(GetCurWeapon()))
     {
-        // ¸¸¾à ´ÙÀ½¿¡ ¹Ù²Ü ¹«±â°¡ NoneÀÌ°Å³ª ´ÙÀ½¿¡ ¹Ù²Ü ¹«±â ½½·Ô¿¡ ¹«±â°¡ ¾øÀ» ¶§ 
+        // ë§Œì•½ ë‹¤ìŒì— ë°”ê¿€ ë¬´ê¸°ê°€ Noneì´ê±°ë‚˜ ë‹¤ìŒì— ë°”ê¿€ ë¬´ê¸° ìŠ¬ë¡¯ì— ë¬´ê¸°ê°€ ì—†ì„ ë•Œ 
         if (NextWeaponType == EWeaponSlot::NONE || !IsValid(Weapons[NextWeaponType]))
         {
             CurWeaponType = EWeaponSlot::NONE;
@@ -192,26 +175,26 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
             return false;
         }
 
-        // ´ÙÀ½ ¹«±â°¡ ÀÖÀ» ¶§
+        // ë‹¤ìŒ ë¬´ê¸°ê°€ ìˆì„ ë•Œ
         OwnerCharacter->PlayAnimMontage(Weapons[NextWeaponType]->GetCurDrawMontage());
         
         return true;
     }
 
-    // ÇöÀç ¹«±â¸¦ Âø¿ëÁßÀÎ »óÈ²
+    // í˜„ì¬ ë¬´ê¸°ë¥¼ ì°©ìš©ì¤‘ì¸ ìƒí™©
 
-    // ÅõÃ´·ù ¿¹¿ÜÃ³¸®
+    // íˆ¬ì²™ë¥˜ ì˜ˆì™¸ì²˜ë¦¬
     if (CurWeaponType == EWeaponSlot::THROWABLE_WEAPON)
     {
         AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(GetCurWeapon());
         if (IsValid(ThrowingWeapon))
         {
-            // ÀÌ¹Ì ÄíÅ·ÀÌ ½ÃÀÛµÇ¾ú°í, ¾ÆÁ÷ ¼Õ¿¡¼­ ¶°³ªÁö ¾ÊÀº ÅõÃ´·ù¶ó¸é ¶¥¿¡ ¶³±À
+            // ì´ë¯¸ ì¿ í‚¹ì´ ì‹œì‘ë˜ì—ˆê³ , ì•„ì§ ì†ì—ì„œ ë– ë‚˜ì§€ ì•Šì€ íˆ¬ì²™ë¥˜ë¼ë©´ ë•…ì— ë–¨êµ¼
             if (ThrowingWeapon->GetIsCooked() && ThrowingWeapon->GetAttachParentActor())
                 return ThrowingWeapon->ReleaseOnGround();
         }
     }
-    //ÃÑÀ» µé°í Aiming ÁßÀÏ ¶§ Ä«¸Ş¶ó ´Ù½Ã ¿ø·¡´ë·Î ÀüÈ¯
+    //ì´ì„ ë“¤ê³  Aiming ì¤‘ì¼ ë•Œ ì¹´ë©”ë¼ ë‹¤ì‹œ ì›ë˜ëŒ€ë¡œ ì „í™˜
     if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
     {
         if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
@@ -222,19 +205,19 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
         }
     }
 
-    OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // Çö ¹«±â Áı¾î³Ö´Â µ¿ÀÛ¿¡ NotifyÇÔ¼ö °É¾î¼­ ´ÙÀ½ ¹«±â·Î ÀüÈ¯
+    OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // í˜„ ë¬´ê¸° ì§‘ì–´ë„£ëŠ” ë™ì‘ì— Notifyí•¨ìˆ˜ ê±¸ì–´ì„œ ë‹¤ìŒ ë¬´ê¸°ë¡œ ì „í™˜
     return true;
 }
 
 bool UC_EquippedComponent::ToggleArmed()
 {
-    // Swimming ÁßÀÌ¶ó¸é return false
+    // Swimming ì¤‘ì´ë¼ë©´ return false
     if (OwnerCharacter->GetSwimmingComponent()->IsSwimming()) return false;
 
-    // ÇöÀç ¹«±âµµ ÀåÂøÇÏÁö ¾Ê¾Ò°í ÀÌÀü¿¡ µé°í ÀÖ¾ú´ø ¹«±âµµ ¾øÀ» ¶§ (ÃÊ±â »óÅÂ)
+    // í˜„ì¬ ë¬´ê¸°ë„ ì¥ì°©í•˜ì§€ ì•Šì•˜ê³  ì´ì „ì— ë“¤ê³  ìˆì—ˆë˜ ë¬´ê¸°ë„ ì—†ì„ ë•Œ (ì´ˆê¸° ìƒíƒœ)
     if (CurWeaponType == EWeaponSlot::NONE && PrevWeaponType == EWeaponSlot::NONE) return false;
 
-    // ÇöÀç µé°í ÀÖ´Â ¹«±â°¡ ÀÖÀ» ¶§
+    // í˜„ì¬ ë“¤ê³  ìˆëŠ” ë¬´ê¸°ê°€ ìˆì„ ë•Œ
     if (CurWeaponType != EWeaponSlot::NONE && IsValid(GetCurWeapon()))
     {
         PrevWeaponType = CurWeaponType;
@@ -243,7 +226,7 @@ bool UC_EquippedComponent::ToggleArmed()
         return ChangeCurWeapon(EWeaponSlot::NONE);
     }
 
-    // ÇöÀç µé°í ÀÖ´Â ¹«±â°¡ ¾øÀ» ¶§
+    // í˜„ì¬ ë“¤ê³  ìˆëŠ” ë¬´ê¸°ê°€ ì—†ì„ ë•Œ
     return ChangeCurWeapon(PrevWeaponType);
 }
 
@@ -251,23 +234,23 @@ bool UC_EquippedComponent::TryAttachCurWeaponToHolsterWithoutSheathMotion()
 {
     if (!GetCurWeapon()) return false;
 
-    // ÅõÃ´·ù ¿¹¿ÜÃ³¸®
+    // íˆ¬ì²™ë¥˜ ì˜ˆì™¸ì²˜ë¦¬
     if (CurWeaponType == EWeaponSlot::THROWABLE_WEAPON)
     {
         AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(GetCurWeapon());
         if (IsValid(ThrowingWeapon))
         {
-            // ÀÌ¹Ì ÄíÅ·ÀÌ ½ÃÀÛµÇ¾ú°í, ¾ÆÁ÷ ¼Õ¿¡¼­ ¶°³ªÁö ¾ÊÀº ÅõÃ´·ù¶ó¸é ¶¥¿¡ ¶³±À
+            // ì´ë¯¸ ì¿ í‚¹ì´ ì‹œì‘ë˜ì—ˆê³ , ì•„ì§ ì†ì—ì„œ ë– ë‚˜ì§€ ì•Šì€ íˆ¬ì²™ë¥˜ë¼ë©´ ë•…ì— ë–¨êµ¼
             if (ThrowingWeapon->GetIsCooked() && ThrowingWeapon->GetAttachParentActor())
                 return ThrowingWeapon->ReleaseOnGround();
         }
     }
 
-    // ÇöÀç µé°í ÀÖ´Â ¹«±â°¡ Á¸ÀçÇÑ´Ù¸é ¹«±â Àá±ñ ¸ö ÂÊ¿¡ ºÙÀÌ±â
+    // í˜„ì¬ ë“¤ê³  ìˆëŠ” ë¬´ê¸°ê°€ ì¡´ì¬í•œë‹¤ë©´ ë¬´ê¸° ì ê¹ ëª¸ ìª½ì— ë¶™ì´ê¸°
     GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
     OwnerCharacter->SetHandState(EHandState::UNARMED);
 
-    // ÃÑ±â·ù ¿¹¿ÜÃ³¸®
+    // ì´ê¸°ë¥˜ ì˜ˆì™¸ì²˜ë¦¬
     if (AC_Gun* Gun = Cast<AC_Gun>(GetCurWeapon())) Gun->BackToMainCamera();
 
     return true;
@@ -286,19 +269,19 @@ bool UC_EquippedComponent::TryReAttachCurWeaponToHand()
 
 void UC_EquippedComponent::OnSheathEnd()
 {
-    // Player HUD ¾÷µ¥ÀÌÆ®
+    // Player HUD ì—…ë°ì´íŠ¸
     if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
     {
         UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
         AmmoWidget->SetVisibility(ESlateVisibility::Hidden);
     }
 
-    // ¹«±â¸¦ ¹Ù²Ù´Â µµÁß¿¡ SlotWeapon ÀåÂø ÇØÁ¦ ¿¹¿Ü Ã³¸®
+    // ë¬´ê¸°ë¥¼ ë°”ê¾¸ëŠ” ë„ì¤‘ì— SlotWeapon ì¥ì°© í•´ì œ ì˜ˆì™¸ ì²˜ë¦¬
     if (!GetCurWeapon())
     {
         CurWeaponType = NextWeaponType;
 
-        if (!IsValid(GetCurWeapon())) // ´ÙÀ½À¸·Î ¹Ù²Ü ¹«±â°¡ NONEÀÏ ¶§(UNARMEDÀÏ ¶§)
+        if (!IsValid(GetCurWeapon())) // ë‹¤ìŒìœ¼ë¡œ ë°”ê¿€ ë¬´ê¸°ê°€ NONEì¼ ë•Œ(UNARMEDì¼ ë•Œ)
         {
             OwnerCharacter->SetHandState(EHandState::UNARMED);
             CurWeaponType   = EWeaponSlot::NONE;
@@ -310,10 +293,10 @@ void UC_EquippedComponent::OnSheathEnd()
         return;
     }
 
-    // ÇöÀç ¹«±â ¹«±âÁı¿¡ ºÙÀÌ±â
+    // í˜„ì¬ ë¬´ê¸° ë¬´ê¸°ì§‘ì— ë¶™ì´ê¸°
     GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
 
-    // ÃÑ±â·ù ¿¹¿ÜÃ³¸®
+    // ì´ê¸°ë¥˜ ì˜ˆì™¸ì²˜ë¦¬
     if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
     {
         AC_Gun* TempWeapon = Cast<AC_Gun>(GetCurWeapon());
@@ -334,7 +317,7 @@ void UC_EquippedComponent::OnSheathEnd()
 
 void UC_EquippedComponent::OnDrawStart()
 {
-    // ¹«±â¸¦ ¹Ù²Ù´Â µµÁß¿¡ SlotWeapon ÀåÂø ÇØÁ¦ ¿¹¿Ü Ã³¸® -> ¹Ù²ãµé ¹«±â°¡ »ç¶óÁ³À» ¶§
+    // ë¬´ê¸°ë¥¼ ë°”ê¾¸ëŠ” ë„ì¤‘ì— SlotWeapon ì¥ì°© í•´ì œ ì˜ˆì™¸ ì²˜ë¦¬ -> ë°”ê¿”ë“¤ ë¬´ê¸°ê°€ ì‚¬ë¼ì¡Œì„ ë•Œ
     if (!Weapons[NextWeaponType])
     {
         //OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, GetCurWeapon()->GetCurDrawMontage().AnimMontage);
@@ -352,7 +335,7 @@ void UC_EquippedComponent::OnDrawEnd()
 {
     if (NextWeaponType == EWeaponSlot::NONE) return;
 
-    // ¹«±â¸¦ ¹Ù²Ù´Â µµÁß¿¡ SlotWeapon ÀåÂø ÇØÁ¦ ¿¹¿Ü Ã³¸® -> ¹Ù²ãµé ¹«±â°¡ »ç¶óÁ³À» ¶§
+    // ë¬´ê¸°ë¥¼ ë°”ê¾¸ëŠ” ë„ì¤‘ì— SlotWeapon ì¥ì°© í•´ì œ ì˜ˆì™¸ ì²˜ë¦¬ -> ë°”ê¿”ë“¤ ë¬´ê¸°ê°€ ì‚¬ë¼ì¡Œì„ ë•Œ
     if (!Weapons[NextWeaponType])
     {
         //OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, GetCurWeapon()->GetCurDrawMontage().AnimMontage);
@@ -420,5 +403,7 @@ void UC_EquippedComponent::SetMainGunOrSubGun(EWeaponSlot InSlot)
         }
     }
 }
+
+
 
 

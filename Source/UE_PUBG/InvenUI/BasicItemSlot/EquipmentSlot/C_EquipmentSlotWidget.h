@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -21,7 +21,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	/// <summary>
-	/// ¿ìÅ¬¸¯ ÀÌº¥Æ®
+	/// ìš°í´ë¦­ ì´ë²¤íŠ¸
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -29,7 +29,7 @@ public:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	/// <summary>
-	/// ÁÂÅ¬¸¯À¸·Î µå·¡±× ÀÌº¥Æ® ÀÌº¥Æ®¸¦ ½ÃÀÛ.
+	/// ì¢Œí´ë¦­ìœ¼ë¡œ ë“œë˜ê·¸ ì´ë²¤íŠ¸ ì´ë²¤íŠ¸ë¥¼ ì‹œì‘.
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -37,7 +37,7 @@ public:
 	//virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 
 	/// <summary>
-	/// µå·¡±× ÁßÀÎ SlotÀÇ ¾ÆÀÌÅÛÀ» °¨Áö.
+	/// ë“œë˜ê·¸ ì¤‘ì¸ Slotì˜ ì•„ì´í…œì„ ê°ì§€.
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -57,3 +57,5 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	EEquipSlot EquipSlot{};
 };
+
+

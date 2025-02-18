@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -23,7 +23,7 @@ class UE_PUBG_API UC_WeaponSlotWidget : public UC_BasicEquippedItemSlotWidget
 
 public:
 	/// <summary>
-	/// ¿ìÅ¬¸¯ ÀÌº¥Æ®.
+	/// ìš°í´ë¦­ ì´ë²¤íŠ¸.
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -31,7 +31,7 @@ public:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	/// <summary>
-	/// ÁÂÅ¬¸¯À¸·Î µå·¡±× ÀÌº¥Æ® ÀÌº¥Æ®¸¦ ½ÃÀÛ.
+	/// ì¢Œí´ë¦­ìœ¼ë¡œ ë“œë˜ê·¸ ì´ë²¤íŠ¸ ì´ë²¤íŠ¸ë¥¼ ì‹œì‘.
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -39,7 +39,7 @@ public:
 	//virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 
 	/// <summary>
-	/// µå·¡±×Áß ½ÇÇàµÇ´Â ÇÔ¼ö.
+	/// ë“œë˜ê·¸ì¤‘ ì‹¤í–‰ë˜ëŠ” í•¨ìˆ˜.
 	/// </summary>
 	/// <param name="InGeometry"></param>
 	/// <param name="InMouseEvent"></param>
@@ -47,22 +47,22 @@ public:
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 
 	/// <summary>
-	/// ÀÌ À§Á¬ÀÇ Update È£Ãâ ÇÔ¼ö.
+	/// ì´ ìœ„ì ¯ì˜ Update í˜¸ì¶œ í•¨ìˆ˜.
 	/// </summary>
 	virtual void UpdateWidget() override;
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛÀÌ ÀÖ´Ù¸é ÀÌ¹ÌÁö¸¦ º¸¿©ÁÖ°í(visible) ¾Æ´Ï¶ó¸é ¼û±ä´Ù.(Hidden)
+	/// ì•„ì´í…œì´ ìˆë‹¤ë©´ ì´ë¯¸ì§€ë¥¼ ë³´ì—¬ì£¼ê³ (visible) ì•„ë‹ˆë¼ë©´ ìˆ¨ê¸´ë‹¤.(Hidden)
 	/// </summary>
 	/// <param name="SlotItem"></param>
 	void UpdateSlotItemImage(AC_Weapon* SlotItem); 
 
 	/// <summary>
-	/// SlotÀÇ ¿ìÅ¬¸¯ ÀÌº¥Æ®¿¡¼­ »ç¿ëµÉ ÇÔ¼ö, ÀÚ½Ä Å¬·¡½º¿¡¼­ ±¸ÇöµÈ´Ù.
+	/// Slotì˜ ìš°í´ë¦­ ì´ë²¤íŠ¸ì—ì„œ ì‚¬ìš©ë  í•¨ìˆ˜, ìì‹ í´ë˜ìŠ¤ì—ì„œ êµ¬í˜„ëœë‹¤.
 	/// </summary>
 	/// <param name="inSlotWeapon"></param>
 	/// <returns></returns>
-	virtual bool MouseRBDownInteraction(AC_Weapon* inSlotWeapon); //TODO : ±ÙÁ¢¹«±â¿Í ÅõÃ´·ù°¡ ÀÎº¥¿¡ °ø°£ÀÌ ºÎÁ·ÇÒ ¶§ÀÇ Ã³¸® È®ÀÎÇÏ±â.
+	virtual bool MouseRBDownInteraction(AC_Weapon* inSlotWeapon); //TODO : ê·¼ì ‘ë¬´ê¸°ì™€ íˆ¬ì²™ë¥˜ê°€ ì¸ë²¤ì— ê³µê°„ì´ ë¶€ì¡±í•  ë•Œì˜ ì²˜ë¦¬ í™•ì¸í•˜ê¸°.
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
@@ -71,7 +71,7 @@ protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	//UImage* Background_Boundery = nullptr;
 
-	//WeaponBoxNumÀº ºíÇÁ¿¡¼­ ÇØ°áÇÏ±â.
+	//WeaponBoxNumì€ ë¸”í”„ì—ì„œ í•´ê²°í•˜ê¸°.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UTextBlock* WeaponNum = nullptr;
 
@@ -89,3 +89,5 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EWeaponSlot WeaponType{};
 };
+
+

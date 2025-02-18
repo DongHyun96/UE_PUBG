@@ -1,4 +1,4 @@
-  // Fill out your copyright notice in the Description page of Project Settings.
+ï»¿  // Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
@@ -36,6 +36,11 @@
 #include "C_GrenadeExplode.h"
 #include "C_FlashBangExplode.h"
 #include "C_SmokeGrndExplode.h"
+#include "AIThrowableAttackStrategy/C_AIFlashBangAttackStrategy.h"
+#include "AIThrowableAttackStrategy/C_AIGrenadeAttackStrategy.h"
+#include "AIThrowableAttackStrategy/C_AISmokeGrenadeAttackStrategy.h"
+#include "AIThrowableAttackStrategy/I_AIThrowableAttackStrategy.h"
+#include "Character/C_Enemy.h"
 
 #include "Utility/C_Util.h"
 
@@ -66,6 +71,10 @@ const TMap<EThrowableType, FName> AC_ThrowingWeapon::EQUIPPED_SOCKET_NAMES =
 const FName AC_ThrowingWeapon::HOLSTER_SOCKET_NAME		= "Throwable_Holster";
 const FName AC_ThrowingWeapon::THROW_START_SOCKET_NAME	= "Throwable_ThrowStart";
 
+const float AC_ThrowingWeapon::PROJECTILE_RADIUS		= 5.f;
+
+TMap<EThrowableType, class II_AIThrowableAttackStrategy*> AC_ThrowingWeapon::AIAttackStrategies{};
+
 AC_ThrowingWeapon::AC_ThrowingWeapon()
 {
 	WeaponButtonStrategy = CreateDefaultSubobject<AC_ThrowingWeaponStrategy>("ThrowingWeaponStrategy");
@@ -83,7 +92,7 @@ AC_ThrowingWeapon::AC_ThrowingWeapon()
 	PredictedEndPoint->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	PredictedEndPoint->SetVisibility(false);
 
-	//ItemType ¼³Á¤.
+	//ItemType ì„¤ì •.
 	ItemDatas.ItemType = EItemTypes::THROWABLE;
 
 	ExplosionSphere = CreateDefaultSubobject<USphereComponent>("ExplosionSphere");
@@ -101,7 +110,7 @@ void AC_ThrowingWeapon::BeginPlay()
 	if (ExplodeStrategies.IsEmpty())
 	{
 		II_ExplodeStrategy* GrenadeExplode = NewObject<AC_GrenadeExplode>();
-		GrenadeExplode->_getUObject()->AddToRoot(); // GC ¹æÁö
+		GrenadeExplode->_getUObject()->AddToRoot(); // GC ë°©ì§€
 
 		II_ExplodeStrategy* FlashBangExplode = NewObject<AC_FlashBangExplode>();
 		FlashBangExplode->_getUObject()->AddToRoot();
@@ -113,13 +122,38 @@ void AC_ThrowingWeapon::BeginPlay()
 		GAMESCENE_MANAGER->AddNonGCObject(FlashBangExplode->_getUObject());
 		GAMESCENE_MANAGER->AddNonGCObject(SmokeExplode->_getUObject());
 
-		ExplodeStrategies.Add(EThrowableType::GRENADE,		GrenadeExplode);
+		ExplodeStrategies.Add(EThrowableType::GRENADE,	GrenadeExplode);
 		ExplodeStrategies.Add(EThrowableType::FLASH_BANG,	FlashBangExplode);
 		ExplodeStrategies.Add(EThrowableType::SMOKE,		SmokeExplode);
 	}
 
 	// Init Explode Strategy
 	ExplodeStrategy = ExplodeStrategies[ThrowableType];
+
+	// Init AI Attack Strategies
+	if (AIAttackStrategies.IsEmpty())
+	{
+		II_AIThrowableAttackStrategy* GrenadeAttackStrategy = NewObject<UC_AIGrenadeAttackStrategy>();
+		GrenadeAttackStrategy->_getUObject()->AddToRoot();
+
+		II_AIThrowableAttackStrategy* FlashBangAttackStrategy = NewObject<UC_AIFlashBangAttackStrategy>();
+		FlashBangAttackStrategy->_getUObject()->AddToRoot();
+		
+		II_AIThrowableAttackStrategy* SmokeGrenadeAttackStrategy = NewObject<UC_AISmokeGrenadeAttackStrategy>();
+		SmokeGrenadeAttackStrategy->_getUObject()->AddToRoot();
+
+
+		GAMESCENE_MANAGER->AddNonGCObject(GrenadeAttackStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddNonGCObject(FlashBangAttackStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddNonGCObject(SmokeGrenadeAttackStrategy->_getUObject());
+
+		AIAttackStrategies.Add(EThrowableType::GRENADE,		GrenadeAttackStrategy);
+		AIAttackStrategies.Add(EThrowableType::FLASH_BANG,	FlashBangAttackStrategy);
+		AIAttackStrategies.Add(EThrowableType::SMOKE,			SmokeGrenadeAttackStrategy);
+	}
+
+	// ìê¸° ìì‹ ì˜ AIAttack ì „ëµ init
+	AIAttackStrategy = AIAttackStrategies[ThrowableType];
 }
 
 void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -127,7 +161,7 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	if (EndPlayReason == EEndPlayReason::Destroyed)
 	{
-		if (--ThrowingWeaponCount <= 0) // World¿¡ ¹èÄ¡µÈ ¸¶Áö¸· ThrowingWeaponÀÌ DestroyµÇ¾úÀ» ¶§
+		if (--ThrowingWeaponCount <= 0) // Worldì— ë°°ì¹˜ëœ ë§ˆì§€ë§‰ ThrowingWeaponì´ Destroyë˜ì—ˆì„ ë•Œ
 		{
 			if (OwnerMeshTemp)
 			{
@@ -135,7 +169,8 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 				OwnerMeshTemp = nullptr;
 			}
 
-			if (!ExplodeStrategies.IsEmpty()) ExplodeStrategies.Empty(); // GC´Â GameSceneManager¿¡¼­ Ã³¸®
+			if (!ExplodeStrategies.IsEmpty()) ExplodeStrategies.Empty(); // GCëŠ” GameSceneManagerì—ì„œ ì²˜ë¦¬
+			if (!AIAttackStrategies.IsEmpty()) AIAttackStrategies.Empty(); // GCëŠ” GSMgrì—ì„œ ì²˜ë¦¬
 		}
 		return;
 	}
@@ -146,7 +181,9 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		OwnerMeshTemp = nullptr;
 	}
 
-	if (!ExplodeStrategies.IsEmpty()) ExplodeStrategies.Empty(); // GC´Â GameSceneManager¿¡¼­ Ã³¸®
+	// GCëŠ” GameSceneManagerì—ì„œ ì²˜ë¦¬
+	if (!ExplodeStrategies.IsEmpty())  ExplodeStrategies.Empty(); 
+	if (!AIAttackStrategies.IsEmpty()) AIAttackStrategies.Empty();
 }
 
 void AC_ThrowingWeapon::Tick(float DeltaTime)
@@ -163,8 +200,8 @@ void AC_ThrowingWeapon::Tick(float DeltaTime)
 
 bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
 {
-	// ÅõÃ´·ù¸¦ ÇÉ±îÁö¸¸ »Ì¾Ò°í ÄíÅ·À» ¾ÈÇßÀ» ½Ã ´Ù½Ã Áı¾î³ÖÀ½
-	// ÅõÃ´·ù¸¦ ¾ÈÀü¼ÕÀâÀÌ±îÁö »Ì¾Ò´Ù¸é ÇöÀç À§Ä¡¿¡ ÇöÀç ÅõÃ´·ù ±×³É ¹Ù´Ú¿¡ ¶³±À
+	// íˆ¬ì²™ë¥˜ë¥¼ í•€ê¹Œì§€ë§Œ ë½‘ì•˜ê³  ì¿ í‚¹ì„ ì•ˆí–ˆì„ ì‹œ ë‹¤ì‹œ ì§‘ì–´ë„£ìŒ
+	// íˆ¬ì²™ë¥˜ë¥¼ ì•ˆì „ì†ì¡ì´ê¹Œì§€ ë½‘ì•˜ë‹¤ë©´ í˜„ì¬ ìœ„ì¹˜ì— í˜„ì¬ íˆ¬ì²™ë¥˜ ê·¸ëƒ¥ ë°”ë‹¥ì— ë–¨êµ¼
 
 	UC_Util::Print("AttachToHolster");
 
@@ -204,13 +241,10 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 	{
 		UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
 		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, false);
-		//AmmoWidget->Set
+		
 		AC_Item* InvenThrowable = OwnerCharacter->GetInvenComponent()->FindMyItem(ItemDatas.ItemName);
 		int MagazineCount = !InvenThrowable ? 1 : InvenThrowable->GetItemDatas().ItemCurStack + 1;
 		AmmoWidget->SetMagazineText(MagazineCount);
-
-		//ItemDatas.ItemCurStack;
-		// TODO : AmmoWidget ³²Àº Throwable °³¼ö Ç¥ÇöÇÏ±â
 	}
 
 	return AttachToComponent
@@ -223,8 +257,8 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 
 void AC_ThrowingWeapon::PickUpItem(AC_BasicCharacter* Character)
 {
-	//¿©±â¼­ÇÏ´Â ¿ë·®Ã¼Å©´Â ÀÎº¥¿¡¼­ ÀÌ¹Ì ÇÑ¹ø Ã³¸® µÇ¾úÁö¸¸ È¤½Ã¸ô¶ó ³Ö¾î ³õÀº°ÍÀ¸·Î È®ÀÎÈÄ Á¦°ÅÇÒ °Í.
-	//ÀÎº¥¿¡¼­ Ã¼Å©ÇÏÁö ¾Ê°í ¾ÆÀÌÅÛ¿¡¼­ Ã¼Å©ÇÏ´Â ¹æ½ÄÀ¸·Î °¡¾ß ÇÒµí.
+	//ì—¬ê¸°ì„œí•˜ëŠ” ìš©ëŸ‰ì²´í¬ëŠ” ì¸ë²¤ì—ì„œ ì´ë¯¸ í•œë²ˆ ì²˜ë¦¬ ë˜ì—ˆì§€ë§Œ í˜¹ì‹œëª°ë¼ ë„£ì–´ ë†“ì€ê²ƒìœ¼ë¡œ í™•ì¸í›„ ì œê±°í•  ê²ƒ.
+	//ì¸ë²¤ì—ì„œ ì²´í¬í•˜ì§€ ì•Šê³  ì•„ì´í…œì—ì„œ ì²´í¬í•˜ëŠ” ë°©ì‹ìœ¼ë¡œ ê°€ì•¼ í• ë“¯.
 	
 	//EquipToCharacter(Character);
 	LegacyMoveToSlot(Character);
@@ -232,15 +266,15 @@ void AC_ThrowingWeapon::PickUpItem(AC_BasicCharacter* Character)
 
 void AC_ThrowingWeapon::DropItem(AC_BasicCharacter* Character)
 {
-	//TODO : ¾ÆÀÌÅÛÀÌ ÀåÂø(Attach)µÇ¾ú´ø »óÅÂ¸¦ ÇØÁ¦ÇÏ´Â ÀÛ¾÷¿¡ °üÇÑ Ã³¸® »ı°¢
-	//TODO : ºĞÇÒÇØ¼­ ¹ö¸®´Â °æ¿ì »õ·Î ½ºÆùÇØÁÖ¾î¾ßÇÔ.
+	//TODO : ì•„ì´í…œì´ ì¥ì°©(Attach)ë˜ì—ˆë˜ ìƒíƒœë¥¼ í•´ì œí•˜ëŠ” ì‘ì—…ì— ê´€í•œ ì²˜ë¦¬ ìƒê°
+	//TODO : ë¶„í• í•´ì„œ ë²„ë¦¬ëŠ” ê²½ìš° ìƒˆë¡œ ìŠ¤í°í•´ì£¼ì–´ì•¼í•¨.
 	ItemDatas.ItemPlace = EItemPlace::AROUND;
-	SetOwnerCharacter(nullptr);               //OwnerCharacter ÇØÁ¦
-	SetActorHiddenInGame(false);			  //¸ğ½ÀÀÌ º¸ÀÌµµ·Ï Hidden ÇØÁ¦.
-	SetActorEnableCollision(true);			  //Overlap°¡´É ÇÏµµ·Ï Collision On
+	SetOwnerCharacter(nullptr);               //OwnerCharacter í•´ì œ
+	SetActorHiddenInGame(false);			  //ëª¨ìŠµì´ ë³´ì´ë„ë¡ Hidden í•´ì œ.
+	SetActorEnableCollision(true);			  //Overlapê°€ëŠ¥ í•˜ë„ë¡ Collision On
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
-	//¹Ù´Ú ·¹ÀÌ Ä³½ºÆÃ ¹Ş¾Æ¿Í¼­ ¹Ù´Ú¿¡ ¾ÆÀÌÅÛ »ı¼ºÇÏ±â.
+	//ë°”ë‹¥ ë ˆì´ ìºìŠ¤íŒ… ë°›ì•„ì™€ì„œ ë°”ë‹¥ì— ì•„ì´í…œ ìƒì„±í•˜ê¸°.
 	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
 }
 
@@ -259,18 +293,18 @@ void AC_ThrowingWeapon::EquipToCharacter(AC_BasicCharacter* Character)
 
 	AC_Item* inItem = nullptr;
 
-	//ÅõÃ´Ä­ÀÌ ºñ¾îÀÖ´ÂÁö °Ë»ç
+	//íˆ¬ì²™ì¹¸ì´ ë¹„ì–´ìˆëŠ”ì§€ ê²€ì‚¬
 	if (equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON])
 	{
-		//ÀåÂøµÈ ÅõÃ´·ù°¡ Á¸ÀçÇÏ°í ÀÖ´Ù¸é ½ÇÇà.
+		//ì¥ì°©ëœ íˆ¬ì²™ë¥˜ê°€ ì¡´ì¬í•˜ê³  ìˆë‹¤ë©´ ì‹¤í–‰.
 		uint8 nextVolume = 
 			invenComp->GetCurVolume() 
 			+ equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]->GetItemDatas().ItemVolume
 			- ItemDatas.ItemVolume;
 
-		if (nextVolume > invenComp->GetMaxVolume()) //±³Ã¼ÈÄ ÀÎº¥ÀÇ ¿ë·®À» ÃÊ°úÇÑ´Ù¸é ±³Ã¼ ºÒ°¡´É, 
+		if (nextVolume > invenComp->GetMaxVolume()) //êµì²´í›„ ì¸ë²¤ì˜ ìš©ëŸ‰ì„ ì´ˆê³¼í•œë‹¤ë©´ êµì²´ ë¶ˆê°€ëŠ¥, 
 		{
-			//ÀÎº¥ÀÇ °ø°£À» Ã¼Å©ÇØ¼­ ÀÎº¥À¸·Î
+			//ì¸ë²¤ì˜ ê³µê°„ì„ ì²´í¬í•´ì„œ ì¸ë²¤ìœ¼ë¡œ
 			if (invenComp->CheckVolume(this))
 			{
 				inItem = invenComp->FindMyItem(this);
@@ -280,21 +314,21 @@ void AC_ThrowingWeapon::EquipToCharacter(AC_BasicCharacter* Character)
 					SetActorHiddenInGame(true);
 					SetActorEnableCollision(false);
 					this->Destroy();
-					return; //ÀÎº¥À¸·Î ¾ÆÀÌÅÛÀÌ µé¾î°¬À¸¹Ç·Î Á¾·á.
+					return; //ì¸ë²¤ìœ¼ë¡œ ì•„ì´í…œì´ ë“¤ì–´ê°”ìœ¼ë¯€ë¡œ ì¢…ë£Œ.
 				}
 			}
 		}
 	
 
-		//ÃÊ°úÇÏÁö ¾Ê´Â´Ù¸é ÅõÃ´·ù ±³Ã¼. unEquipItem = ±³Ã¼´çÇÑ ¾ÆÀÌÅÛ.
+		//ì´ˆê³¼í•˜ì§€ ì•ŠëŠ”ë‹¤ë©´ íˆ¬ì²™ë¥˜ êµì²´. unEquipItem = êµì²´ë‹¹í•œ ì•„ì´í…œ.
 		unEquipItem = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
 
-		//´õºíÆ÷ÀÎÅÍ¶ó È®ÀÎ ÇÑ¹ø ÇÒ °Í. 
+		//ë”ë¸”í¬ì¸í„°ë¼ í™•ì¸ í•œë²ˆ í•  ê²ƒ. 
 		inItem = invenComp->FindMyItem(unEquipItem);
 
 		if (inItem)
 		{
-			//±³Ã¼´çÇÑ ¾ÆÀÌÅÛÀÌ ÀÎº¥¿¡ Á¸ÀçÇÑ´Ù¸é. ÀÎº¥ÀÇ ¾ÆÀÌÅÛÀÇ ½ºÅÃÀ» + 1.
+			//êµì²´ë‹¹í•œ ì•„ì´í…œì´ ì¸ë²¤ì— ì¡´ì¬í•œë‹¤ë©´. ì¸ë²¤ì˜ ì•„ì´í…œì˜ ìŠ¤íƒì„ + 1.
 			inItem->AddItemStack();
 			unEquipItem->SetActorHiddenInGame(true);
 			unEquipItem->SetActorEnableCollision(false);
@@ -302,7 +336,7 @@ void AC_ThrowingWeapon::EquipToCharacter(AC_BasicCharacter* Character)
 		}
 		else
 		{
-			//±³Ã¼´çÇÑ ¾ÆÀÌÅÛÀÌ ÀÎº¥¿¡ Á¸ÀçÇÏÁö ¾Ê´Â´Ù¸é. ÀÎº¥À¸·Î ¾ÆÀÌÅÛÀ» ÀÌµ¿.
+			//êµì²´ë‹¹í•œ ì•„ì´í…œì´ ì¸ë²¤ì— ì¡´ì¬í•˜ì§€ ì•ŠëŠ”ë‹¤ë©´. ì¸ë²¤ìœ¼ë¡œ ì•„ì´í…œì„ ì´ë™.
 			invenComp->AddItemToMyList(unEquipItem);
 
 			SetActorHiddenInGame(true);
@@ -311,10 +345,10 @@ void AC_ThrowingWeapon::EquipToCharacter(AC_BasicCharacter* Character)
 	}
 	else
 	{
-		//ÀåÂøµÈ ÅõÃ´·ù°¡ Á¸ÀçÇÏÁö ¾Ê´Â´Ù¸é ½ÇÇà. ¹Ù·Î ÀåÂø.
+		//ì¥ì°©ëœ íˆ¬ì²™ë¥˜ê°€ ì¡´ì¬í•˜ì§€ ì•ŠëŠ”ë‹¤ë©´ ì‹¤í–‰. ë°”ë¡œ ì¥ì°©.
 		equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
 		
-		//AroundItemList¿¡¼­ ÇØ´ç ¾ÆÀÌÅÛÀÌ ¾È»ç¶óÁø´Ù¸é ±ä±ŞÁ¶Ä¡ ÇÒ °Í.
+		//AroundItemListì—ì„œ í•´ë‹¹ ì•„ì´í…œì´ ì•ˆì‚¬ë¼ì§„ë‹¤ë©´ ê¸´ê¸‰ì¡°ì¹˜ í•  ê²ƒ.
 		//invenComp->RemoveAroundItem(this);
 		
 		SetActorHiddenInGame(true);
@@ -333,25 +367,25 @@ bool AC_ThrowingWeapon::LegacyMoveToInven(AC_BasicCharacter* Character)
 	if (ItemStackCount == 0)
 	{
 		UC_Util::Print("Not Enough Volume");
-		return false; //ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´Â ¾ÆÀÌÅÛÀÇ °¹¼ö°¡ 0 ÀÌ¸é ³ÖÀ» ¼ö ¾øÀ¸¹Ç·Î return false;
+		return false; //ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ” ì•„ì´í…œì˜ ê°¯ìˆ˜ê°€ 0 ì´ë©´ ë„£ì„ ìˆ˜ ì—†ìœ¼ë¯€ë¡œ return false;
 	}
 
-	AC_Item* FoundItem = invenComp->FindMyItem(this); //ÀÎº¥¿¡ °°Àº ¾ÆÀÌÅÛÀ» Ã£¾Æ¿È, ¾ø´Ù¸é nullptr;
+	AC_Item* FoundItem = invenComp->FindMyItem(this); //ì¸ë²¤ì— ê°™ì€ ì•„ì´í…œì„ ì°¾ì•„ì˜´, ì—†ë‹¤ë©´ nullptr;
 
-	/* ÀÌ ¹ØÀ¸·Î ¸ğµÎ MoveToInven °¡´ÉÇÑ »óÈ² */
+	/* ì´ ë°‘ìœ¼ë¡œ ëª¨ë‘ MoveToInven ê°€ëŠ¥í•œ ìƒí™© */
 
-	// ÇöÀç ¼Õ¿¡ µé°íÀÖ´Â ÅõÃ´·ù°¡ this¶ó¸é HandState NONEÀ¸·Î ÀüÈ¯
+	// í˜„ì¬ ì†ì— ë“¤ê³ ìˆëŠ” íˆ¬ì²™ë¥˜ê°€ thisë¼ë©´ HandState NONEìœ¼ë¡œ ì „í™˜
 	if (equipComp->GetCurWeapon() == this) equipComp->ChangeCurWeapon(EWeaponSlot::NONE);
 
 	if (ItemDatas.ItemCurStack == ItemStackCount)
 	{
-		//¾ÆÀÌÅÛ ÀüºÎ¸¦ ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖÀ» ¶§.
+		//ì•„ì´í…œ ì „ë¶€ë¥¼ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆì„ ë•Œ.
 		if (IsValid(FoundItem))
 		{
-			//ÀÎº¥¿¡ ÇØ´ç ¾ÆÀÌÅÛÀÌ Á¸Àç ÇÒ ¶§.
+			//ì¸ë²¤ì— í•´ë‹¹ ì•„ì´í…œì´ ì¡´ì¬ í•  ë•Œ.
 			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
 			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
-			//TODO : destroy¸¦ ÇØµµ ÀÜ»óÀÌ ³²´Â°ÍÀ» ´ëºñÇØ¼­ ÇØ³õÀ½ ¸¸¾à ¾øÀÌµµ ÀÜ»óÀÌ ¾È³²´Â´Ù¸é Áö¿ï °Í.
+			//TODO : destroyë¥¼ í•´ë„ ì”ìƒì´ ë‚¨ëŠ”ê²ƒì„ ëŒ€ë¹„í•´ì„œ í•´ë†“ìŒ ë§Œì•½ ì—†ì´ë„ ì”ìƒì´ ì•ˆë‚¨ëŠ”ë‹¤ë©´ ì§€ìš¸ ê²ƒ.
 			invenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
 
 			this->SetActorEnableCollision(false);
@@ -362,19 +396,19 @@ bool AC_ThrowingWeapon::LegacyMoveToInven(AC_BasicCharacter* Character)
 		}
 		else
 		{
-			//ÀÎº¥¿¡ ÇØ´ç ¾ÆÀÌÅÛÀÌ Á¸ÀçÇÏÁö ¾ÊÀ» ¶§.
+			//ì¸ë²¤ì— í•´ë‹¹ ì•„ì´í…œì´ ì¡´ì¬í•˜ì§€ ì•Šì„ ë•Œ.
 			invenComp->AddItemToMyList(this);
-			//ÀÎ°ÔÀÓ¿¡¼­ º¸ÀÌ´Â °Í°ú collision¹®Á¦ ¶§¹®¿¡ ÀÓ½Ã·Î ²¨µÒ.
+			//ì¸ê²Œì„ì—ì„œ ë³´ì´ëŠ” ê²ƒê³¼ collisionë¬¸ì œ ë•Œë¬¸ì— ì„ì‹œë¡œ êº¼ë‘ .
 			//this->SetActorEnableCollision(false);
 			this->SetActorHiddenInGame(true);
-			//´øÁú ¶§ ÄÑÁü. ÀÌ°É·Î ¸¸¾à ¾ÆÀÌÅÛÀÇ ¿À¹ö·¦ÀÌ ¾È³¡³­´Ù¸é ´Ù¸¥ ¹æ¹ı °í¹Î->ToInven¿¡¼­ SetActorEnableCollision¸¦ ²¨ÁÖ°í ´øÁú¶§ È¤Àº ToAround¿¡¼­ ÄÑÁÖ±â.
+			//ë˜ì§ˆ ë•Œ ì¼œì§. ì´ê±¸ë¡œ ë§Œì•½ ì•„ì´í…œì˜ ì˜¤ë²„ë©ì´ ì•ˆëë‚œë‹¤ë©´ ë‹¤ë¥¸ ë°©ë²• ê³ ë¯¼->ToInvenì—ì„œ SetActorEnableCollisionë¥¼ êº¼ì£¼ê³  ë˜ì§ˆë•Œ í˜¹ì€ ToAroundì—ì„œ ì¼œì£¼ê¸°.
 			Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			return true;
 		}
 	}
 	else
 	{
-		//¾ÆÀÌÅÛÀÇ ÀÏºÎ¸¸ ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖÀ» ¶§.
+		//ì•„ì´í…œì˜ ì¼ë¶€ë§Œ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆì„ ë•Œ.
 		if (IsValid(FoundItem))
 		{
 			     this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
@@ -386,15 +420,15 @@ bool AC_ThrowingWeapon::LegacyMoveToInven(AC_BasicCharacter* Character)
 		}
 		else
 		{
-			AC_Weapon* NewItem = Cast<AC_Weapon>(SpawnItem(Character));//¾ÆÀÌÅÛ º¹Á¦ »ı¼º
+			AC_Weapon* NewItem = Cast<AC_Weapon>(SpawnItem(Character));//ì•„ì´í…œ ë³µì œ ìƒì„±
 			NewItem->SetItemStack(ItemStackCount);
 			   this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
 
 			invenComp->AddItemToMyList(NewItem);
 
 			NewItem->SetActorHiddenInGame(true);
-			//collider °ü·Ã ¼³Á¤ Ãß°¡ÇØ¾ß ÇÒ ¼ö ÀÖÀ½.
-			//¸¸¾à Ãß°¡ÇØ¾ß µÈ´Ù¸é MoveToInven¿¡¼­ SetActorEnableCollisionÀ» ²¨ÁÖ°í ´øÁú ¶§ ÄÑÁÖ´Â ¹æ½ÄÀ¸·Î.
+			//collider ê´€ë ¨ ì„¤ì • ì¶”ê°€í•´ì•¼ í•  ìˆ˜ ìˆìŒ.
+			//ë§Œì•½ ì¶”ê°€í•´ì•¼ ëœë‹¤ë©´ MoveToInvenì—ì„œ SetActorEnableCollisionì„ êº¼ì£¼ê³  ë˜ì§ˆ ë•Œ ì¼œì£¼ëŠ” ë°©ì‹ìœ¼ë¡œ.
 			return true;
 		}
 	}
@@ -406,10 +440,10 @@ bool AC_ThrowingWeapon::LegacyMoveToAround(AC_BasicCharacter* Character)
 
 	UC_EquippedComponent* EquippedComponent = Character->GetEquippedComponent();
 
-	// Slot¿¡ ÀåÂøµÈ ¹«±â¸¦ MoveToAroundÃ³¸®ÇÏ´Â »óÈ²
+	// Slotì— ì¥ì°©ëœ ë¬´ê¸°ë¥¼ MoveToAroundì²˜ë¦¬í•˜ëŠ” ìƒí™©
 	if (EquippedComponent->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON] == this)
 	{
-		// ¸¸¾à ÇöÀç ¼Õ¿¡ µé°í ÀÖ´ø ¹«±â¸¦ MoveToAroundÃ³¸® ÇßÀ» ¶§
+		// ë§Œì•½ í˜„ì¬ ì†ì— ë“¤ê³  ìˆë˜ ë¬´ê¸°ë¥¼ MoveToAroundì²˜ë¦¬ í–ˆì„ ë•Œ
 		if (EquippedComponent->GetCurWeapon() == this)
 			EquippedComponent->ChangeCurWeapon(EWeaponSlot::NONE);
 		
@@ -426,14 +460,14 @@ bool AC_ThrowingWeapon::LegacyMoveToAround(AC_BasicCharacter* Character)
 	
 	//DetachmentItem();
 
-	//TODO: ºĞÇÒÇØ¼­ ¹ö¸®´Â °æ¿ì »õ·Î ½ºÆùÇØÁÖ¾î¾ßÇÔ.
+	//TODO: ë¶„í• í•´ì„œ ë²„ë¦¬ëŠ” ê²½ìš° ìƒˆë¡œ ìŠ¤í°í•´ì£¼ì–´ì•¼í•¨.
 	ItemDatas.ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	
-	//¹Ù´Ú ·¹ÀÌ Ä³½ºÆÃ ¹Ş¾Æ¿Í¼­ ¹Ù´Ú¿¡ ¾ÆÀÌÅÛ »ı¼ºÇÏ±â.
+	//ë°”ë‹¥ ë ˆì´ ìºìŠ¤íŒ… ë°›ì•„ì™€ì„œ ë°”ë‹¥ì— ì•„ì´í…œ ìƒì„±í•˜ê¸°.
 	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
 	
 	//SetActorRotation(FQuat(0,0,0));
@@ -449,7 +483,7 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 
 	AC_Weapon* curWeapaon = equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
 
-	// ½½·Ô¿¡ ¹«±â°¡ ÀåÂøµÇ¾î ÀÖÀ» ¶§
+	// ìŠ¬ë¡¯ì— ë¬´ê¸°ê°€ ì¥ì°©ë˜ì–´ ìˆì„ ë•Œ
 	if (IsValid(curWeapon))
 	{
 		AC_ThrowingWeapon* CurSlotThrowWeapon = Cast<AC_ThrowingWeapon>(curWeapon);
@@ -460,12 +494,12 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 			return false;
 		}
 
-		// ±âÁ¸¿¡ slot¿¡ ÀåÂøµÈ ThrowableWeaponÀÌ ThrowProcess ÁßÀÌ¶ó¸é return false
+		// ê¸°ì¡´ì— slotì— ì¥ì°©ëœ ThrowableWeaponì´ ThrowProcess ì¤‘ì´ë¼ë©´ return false
 		if (CurSlotThrowWeapon->GetIsOnThrowProcess()) return false;
 
 		AC_Weapon* PrevSlotWeapon = nullptr;
 		AC_Item* FoundItem		  = nullptr;
-		//int nextVolume = invenComp->GetCurVolume() - ItemDatas.ItemVolume + curWeapaon->GetItemDatas().ItemVolume; //ÀÌ°Ç ÀÎº¥¿¡ Á¸ÀçÇÏ´Â ¾ÆÀÌÅÛÀ» ¿Å±æ¶§¸¸ À¯È¿ ÇÑ°Å °°Àºµ¥?
+		//int nextVolume = invenComp->GetCurVolume() - ItemDatas.ItemVolume + curWeapaon->GetItemDatas().ItemVolume; //ì´ê±´ ì¸ë²¤ì— ì¡´ì¬í•˜ëŠ” ì•„ì´í…œì„ ì˜®ê¸¸ë•Œë§Œ ìœ íš¨ í•œê±° ê°™ì€ë°?
 		int nextVolume = 0;
 
 		nextVolume = (this->ItemDatas.ItemPlace == EItemPlace::INVEN) ? invenComp->GetCurVolume() -
@@ -483,7 +517,7 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 		//SetActorEnableCollision(false);
 		if (ItemDatas.ItemCurStack == 1)
 		{
-			if (this->ItemDatas.ItemPlace == EItemPlace::INVEN)       invenComp->RemoveItemToMyList(this);//¾Æ¸¶ InvenUI¸¦ ÃÊ±âÈ­ ½ÃÄÑÁÖ´Â ÀÛ¾÷ÀÌ Ãß°¡ÀûÀ¸·Î ÇÊ¿äÇÒ°Í.
+			if (this->ItemDatas.ItemPlace == EItemPlace::INVEN)       invenComp->RemoveItemToMyList(this);//ì•„ë§ˆ InvenUIë¥¼ ì´ˆê¸°í™” ì‹œì¼œì£¼ëŠ” ì‘ì—…ì´ ì¶”ê°€ì ìœ¼ë¡œ í•„ìš”í• ê²ƒ.
 			else if (this->ItemDatas.ItemPlace == EItemPlace::AROUND) invenComp->RemoveItemToAroundList(this);
 
 			PrevSlotWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
@@ -494,7 +528,7 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 			InToSlotWeapon->SetItemStack(1);
 			this->SetItemStack(ItemDatas.ItemCurStack - 1);
 
-			//if (ItemDatas.ItemPlace == EItemPlace::AROUND) return this->LegacyMoveToInven(Character);//ÇÏ³ª¸¦ •û¼­ ÀåÂø½ÃÅ² ¾ÆÀÌÅÛÀ» MoveToInvenÀ¸·Î ÀÎº¥¿¡ ³Ö´Â ÀÛ¾÷ ½ÇÇà.
+			//if (ItemDatas.ItemPlace == EItemPlace::AROUND) return this->LegacyMoveToInven(Character);//í•˜ë‚˜ë¥¼ ëº´ì„œ ì¥ì°©ì‹œí‚¨ ì•„ì´í…œì„ MoveToInvenìœ¼ë¡œ ì¸ë²¤ì— ë„£ëŠ” ì‘ì—… ì‹¤í–‰.
 			//else if (ItemDatas.ItemPlace == EItemPlace::INVEN) return true;
 			//else return false;
 
@@ -502,10 +536,10 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 
 		}
 
-		// ¼Õ¿¡ Çö slot ¹«±â¸¦ ÀåÂø ÁßÀÏ ¶§ ¿¹¿Ü Ã³¸®
+		// ì†ì— í˜„ slot ë¬´ê¸°ë¥¼ ì¥ì°© ì¤‘ì¼ ë•Œ ì˜ˆì™¸ ì²˜ë¦¬
 		if (Character->GetHandState() == EHandState::WEAPON_THROWABLE)
 		{
-			// ±âÁ¸ ÅõÃ´·ù AttachToHolster Ã³¸®ÇÏ°í »õ·Î¿î ÅõÃ´·ù ²¨³»±â
+			// ê¸°ì¡´ íˆ¬ì²™ë¥˜ AttachToHolster ì²˜ë¦¬í•˜ê³  ìƒˆë¡œìš´ íˆ¬ì²™ë¥˜ êº¼ë‚´ê¸°
 			UC_Util::Print("HandState Throwable set slot Exception Handling", FColor::Red, 10.f);
 			PrevSlotWeapon->AttachToHolster(Character->GetMesh());
 			equipComp->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
@@ -514,13 +548,13 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 
 		//if (OutToSlotWeapon->MoveToInven(Character)) return true;
 
-		FoundItem = invenComp->FindMyItem(PrevSlotWeapon); //ÀÎº¥¿¡ ÇØ´ç ¾ÆÀÌÅÛÀÌ Á¸ÀçÇÏ´ÂÁö È®ÀÎ
+		FoundItem = invenComp->FindMyItem(PrevSlotWeapon); //ì¸ë²¤ì— í•´ë‹¹ ì•„ì´í…œì´ ì¡´ì¬í•˜ëŠ”ì§€ í™•ì¸
 
 		if (IsValid(FoundItem))
 		{
 			//FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemStack + 1);
 			FoundItem->AddItemStack();
-			//TODO:ÀÜ»óÀÌ »ı±ä´Ù¸é Ãß°¡ ÀÛ¾÷ ÇÊ¿ä.
+			//TODO:ì”ìƒì´ ìƒê¸´ë‹¤ë©´ ì¶”ê°€ ì‘ì—… í•„ìš”.
 			PrevSlotWeapon->Destroy();
 			return true;
 		}
@@ -529,12 +563,12 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 		return true;
 	}
 
-	//½½·Ô¿¡ ¾ÆÀÌÅÛÀÌ ¾øÀ» ¶§
+	//ìŠ¬ë¡¯ì— ì•„ì´í…œì´ ì—†ì„ ë•Œ
 
 	if (ItemDatas.ItemCurStack == 1)
 	{
-		//thisÀÇ stackÀÌ 1 ÀÌ¶ó¸é ½ÇÇà.
-		//this¸¦ ½½·Ô¿¡ ÀåÂø ÇÏ°í ¸ñ·Ï¿¡¼­ Á¦°Å
+		//thisì˜ stackì´ 1 ì´ë¼ë©´ ì‹¤í–‰.
+		//thisë¥¼ ìŠ¬ë¡¯ì— ì¥ì°© í•˜ê³  ëª©ë¡ì—ì„œ ì œê±°
 
 		if      (ItemDatas.ItemPlace == EItemPlace::AROUND) invenComp->RemoveItemToAroundList(this);
 		else if (ItemDatas.ItemPlace == EItemPlace::INVEN)  invenComp->RemoveItemToMyList(this);
@@ -543,16 +577,16 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 		return true;
 	}
 
-	//thisÀÇ ½ºÅÃÀÌ 1ÀÌ ¾Æ´Ò ¶§
+	//thisì˜ ìŠ¤íƒì´ 1ì´ ì•„ë‹ ë•Œ
 	
-	//this¸¦ º¹Á¦ »ı¼ºÇØ¼­ ÇÏ³ª´Â ÀåÂøÇÏ°í ³ª¸ÓÁö´Â °¹¼ö¸¦ ¼öÁ¤
+	//thisë¥¼ ë³µì œ ìƒì„±í•´ì„œ í•˜ë‚˜ëŠ” ì¥ì°©í•˜ê³  ë‚˜ë¨¸ì§€ëŠ” ê°¯ìˆ˜ë¥¼ ìˆ˜ì •
 	AC_Weapon* NewWeapon = Cast<AC_Weapon>(SpawnItem(Character));
 	NewWeapon->SetItemStack(1);
 	     this->SetItemStack(ItemDatas.ItemCurStack - 1);
 	
-	equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, NewWeapon); //½½·Ô¿¡ ÀåÂø. ¾Æ·¡ÀÇ NewWeapon°ú ´Ù¸§.
+	equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, NewWeapon); //ìŠ¬ë¡¯ì— ì¥ì°©. ì•„ë˜ì˜ NewWeaponê³¼ ë‹¤ë¦„.
 
-	return  (ItemDatas.ItemPlace == EItemPlace::AROUND) ? this->MoveToInven(Character) : //ÇÏ³ª¸¦ •û¼­ ÀåÂø½ÃÅ² ¾ÆÀÌÅÛÀ» MoveToInvenÀ¸·Î ÀÎº¥¿¡ ³Ö´Â ÀÛ¾÷ ½ÇÇà.
+	return  (ItemDatas.ItemPlace == EItemPlace::AROUND) ? this->MoveToInven(Character) : //í•˜ë‚˜ë¥¼ ëº´ì„œ ì¥ì°©ì‹œí‚¨ ì•„ì´í…œì„ MoveToInvenìœ¼ë¡œ ì¸ë²¤ì— ë„£ëŠ” ì‘ì—… ì‹¤í–‰.
 			(ItemDatas.ItemPlace == EItemPlace::INVEN)  ? true : false;
 }
 
@@ -608,25 +642,25 @@ AC_Item* AC_ThrowingWeapon::SpawnItem(AC_BasicCharacter* Character)
 {
 	FActorSpawnParameters SpawnParams;
 	//SpawnParams.Owner = Character;
-	//location, rotationÀ» thisÀÇ °ÍÀ» ¾²´Â °Íµµ »ı°¢, ¿Ö³ÄÇÏ¸é Áö±İ ÀÌ»óÇÏ°Ô ³¯¶ó°¡´Â ÀÌÀ¯°¡ ÀÌ°ÍÀÏ ¼ö µµ ÀÖÀ½. -> ¼¶±¤ÅºÀÌ ÅÍÁö°í Ãæµ¹Ã¼°¡ ³²¾ÆÀÖÀ½.
+	//location, rotationì„ thisì˜ ê²ƒì„ ì“°ëŠ” ê²ƒë„ ìƒê°, ì™œëƒí•˜ë©´ ì§€ê¸ˆ ì´ìƒí•˜ê²Œ ë‚ ë¼ê°€ëŠ” ì´ìœ ê°€ ì´ê²ƒì¼ ìˆ˜ ë„ ìˆìŒ. -> ì„¬ê´‘íƒ„ì´ í„°ì§€ê³  ì¶©ëŒì²´ê°€ ë‚¨ì•„ìˆìŒ.
 	AC_Weapon* SpawnItem = GetWorld()->SpawnActor<AC_Weapon>(this->GetClass(), Character->GetActorLocation() - FVector(0,0,50), Character->GetActorRotation(), SpawnParams);
 	//SpawnItem->SetItemStack(1);
 	//SpawnItem->SetActorHiddenInGame(true);
-	SpawnItem->SetActorEnableCollision(false);//»ı¼ºµÉ ¶§ ¹«Á¶°Ç OverlapBegine¿¡ ¹İÀÀÇØ¼­ ¿ì¼± ²¨µ×À½.
+	SpawnItem->SetActorEnableCollision(false);//ìƒì„±ë  ë•Œ ë¬´ì¡°ê±´ OverlapBegineì— ë°˜ì‘í•´ì„œ ìš°ì„  êº¼ë’€ìŒ.
 	return SpawnItem;
 }
 
 bool AC_ThrowingWeapon::MoveSlotToAround(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
-	//Slot¿¡ ÀÖ´Ù´Â°Ç ÀåÂøµÈ »óÅÂ¶ó´Â °Í. Around·Î °£´Ù´Â°Ç ÀåÂøÀ» ÇØÁ¦ÇÏ°í ¾ÆÀÌÅÛÀ» ¶¥¿¡ ¶³±º´Ù´Â ¶æ.
+	//Slotì— ìˆë‹¤ëŠ”ê±´ ì¥ì°©ëœ ìƒíƒœë¼ëŠ” ê²ƒ. Aroundë¡œ ê°„ë‹¤ëŠ”ê±´ ì¥ì°©ì„ í•´ì œí•˜ê³  ì•„ì´í…œì„ ë•…ì— ë–¨êµ°ë‹¤ëŠ” ëœ».
 	AC_Weapon* curWeapon = equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
 	
-	if (curWeapon != this) return false; //ÀåÂøµÈ ¾ÆÀÌÅÛÀÌ ÀÚ½ÅÀÌ ¾Æ´Ï¶ó¸é return.
+	if (curWeapon != this) return false; //ì¥ì°©ëœ ì•„ì´í…œì´ ìì‹ ì´ ì•„ë‹ˆë¼ë©´ return.
 
-	equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr); //ÀåÂøµÈ ¾ÆÀÌÅÛÀÌ ÀÚ½ÅÀÌ¸é, ÀåÂøÇØÁ¦¸¦ ÁøÇà.
+	equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr); //ì¥ì°©ëœ ì•„ì´í…œì´ ìì‹ ì´ë©´, ì¥ì°©í•´ì œë¥¼ ì§„í–‰.
 
 	DropItem(Character);
 	return true;
@@ -634,41 +668,41 @@ bool AC_ThrowingWeapon::MoveSlotToAround(AC_BasicCharacter* Character)
 
 bool AC_ThrowingWeapon::MoveSlotToInven(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 	//if (invenComp->GetMaxVolume() > invenComp->GetCurVolume() + GetOnceVolume())
-	if (!invenComp->CheckVolume(this)) return false; //ÀÎº¥¿¡ this°¡ µé¾î°¡¼­ curVolume > MaxVolumeÀÌ µÈ´Ù¸é return.
+	if (!invenComp->CheckVolume(this)) return false; //ì¸ë²¤ì— thisê°€ ë“¤ì–´ê°€ì„œ curVolume > MaxVolumeì´ ëœë‹¤ë©´ return.
 
 	AC_Weapon* curWeapon = equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
 
-	if (curWeapon != this) return false; //ÀåÂøµÈ ¾ÆÀÌÅÛÀÌ ÀÚ½ÅÀÌ ¾Æ´Ï¶ó¸é return.
+	if (curWeapon != this) return false; //ì¥ì°©ëœ ì•„ì´í…œì´ ìì‹ ì´ ì•„ë‹ˆë¼ë©´ return.
 
-	equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr); //ÀåÂøµÈ ¾ÆÀÌÅÛÀÌ ÀÚ½ÅÀÌ¸é, ÀåÂøÇØÁ¦¸¦ ÁøÇà.
+	equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr); //ì¥ì°©ëœ ì•„ì´í…œì´ ìì‹ ì´ë©´, ì¥ì°©í•´ì œë¥¼ ì§„í–‰.
 
-	invenComp->AddItemToMyList(this);//ÀåÂø ÇØÁ¦µÈ ¾ÆÀÌÅÛÀ» ³» ¾ÆÀÌÅÛ ¸®½ºÆ®¿¡ Ãß°¡.
+	invenComp->AddItemToMyList(this);//ì¥ì°© í•´ì œëœ ì•„ì´í…œì„ ë‚´ ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€.
 	
 	return true;
 }
 
 bool AC_ThrowingWeapon::MoveSlotToSlot(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
-	//¾È¾¸.
+	//ì•ˆì”€.
 	return false;
 }
 
 bool AC_ThrowingWeapon::MoveInvenToAround(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
 	if (!invenComp->FindMyItem(this)) return false;
 
-	invenComp->RemoveItemToMyList(this);				 //³» ¾ÆÀÌÅÛ ¸®½ºÆ®¿¡¼­ ¾ÆÀÌÅÛ Á¦°Å.
+	invenComp->RemoveItemToMyList(this);				 //ë‚´ ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ì—ì„œ ì•„ì´í…œ ì œê±°.
 														 
-	//invenComp->AddInvenCurVolume(-this->GetAllVolume()); //¹ö¸®´Â ¾ÆÀÌÅÛ¸¸Å­ curVolume Á¶ÀıÇÏ±â. TODO : Inven¿¡¼­ ¾ÆÀÌÅÛ ¹ö¸± ¶§ ¹®Á¦ »ı±â¸é Ã¼Å©ÇÏ±â.
+	//invenComp->AddInvenCurVolume(-this->GetAllVolume()); //ë²„ë¦¬ëŠ” ì•„ì´í…œë§Œí¼ curVolume ì¡°ì ˆí•˜ê¸°. TODO : Invenì—ì„œ ì•„ì´í…œ ë²„ë¦´ ë•Œ ë¬¸ì œ ìƒê¸°ë©´ ì²´í¬í•˜ê¸°.
 
 	DropItem(Character);
 
@@ -677,24 +711,24 @@ bool AC_ThrowingWeapon::MoveInvenToAround(AC_BasicCharacter* Character)
 
 bool AC_ThrowingWeapon::MoveInvenToInven(AC_BasicCharacter* Character)
 {
-	//UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	//UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	//UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	//UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
-	//¾È¾¸
+	//ì•ˆì”€
 	return false;
 }
 
 bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
 	AC_Weapon* curWeapon = equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
 
 	if (curWeapon)
 	{
 		float prevVolume = invenComp->GetCurVolume() + curWeapon->GetOnceVolume() - this->GetOnceVolume();
-		if (prevVolume > invenComp->GetMaxVolume()) return false; //±³Ã¼ÇÏ´Â ¾ÆÀÌÅÛÀÌ ÀÎº¥¿¡ µé¾î¿À¸é¼­ MaxVolumeÀ» ³ÑÀ¸¸é return.
+		if (prevVolume > invenComp->GetMaxVolume()) return false; //êµì²´í•˜ëŠ” ì•„ì´í…œì´ ì¸ë²¤ì— ë“¤ì–´ì˜¤ë©´ì„œ MaxVolumeì„ ë„˜ìœ¼ë©´ return.
 	}
 
 	if (this->GetItemDatas().ItemCurStack == 1)
@@ -711,65 +745,81 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 		curWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
 	}
 
+	// ì†ì— Throwableì´ ë“¤ë ¤ìˆëŠ” ìƒí™©ì—ì„œ ìƒˆë¡œìš´ íˆ¬ì²™ë¥˜ë¡œ slotì„ êµì²´í–ˆì„ ë•Œ
 	if (Character->GetHandState() == EHandState::WEAPON_THROWABLE)
-		AttachToHand(Character->GetMesh());
+	{
+		// curWeapon == prevSlotWeapon
+		AC_ThrowingWeapon* prevThrowWeapon = Cast<AC_ThrowingWeapon>(curWeapon);
+		if (!prevThrowWeapon) return false;
+
+		// ì´ì „ê³¼ ê°™ì€ ì¢…ë¥˜ì˜ Throwableì¼ ë•Œ, thisë¥¼ ì†ì— ë¶™ì„
+		if (prevThrowWeapon->ThrowableType == this->ThrowableType)
+			this->AttachToHand(Character->GetMesh());
+		else
+		{
+			// ì´ì „ê³¼ ê°™ì€ ì¢…ë¥˜ì˜ ë¬´ê¸°ê°€ ì•„ë‹ ë•Œì—ëŠ” ë¬´ê¸° ì „í™˜ animation ì²˜ë¦¬
+			curWeapon->AttachToHolster(Character->GetMesh());
+			equipComp->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
+			Character->PlayAnimMontage(this->GetCurDrawMontage());
+		}
+	}
 
 	//Character->PlayAnimMontage(this->GetCurDrawMontage());
-	invenComp->AddItemToMyList(curWeapon);//³»ºÎ¿¡¼­ ¸Å°³º¯¼ö nullptr°¡ µé¾î¿À¸é return½ÃÄÑ¹ö¸². TODO : curWeaponÀ» Á¤ÀÇÇÑ µÚ¿¡ equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]ÀÇ °ªÀÌ ¹Ù²î¾úÀ¸¹Ç·Î ¿ªÂüÁ¶¸¦ ÇÏ¸é ¹®Á¦°¡ »ı±è. È®ÀÎ ÇÒ °Í.
-	//if (curWeapon) //TODO : InvenComp->AddItemToMyList(nullptr)ÀÌ ¹®Á¦ »ı±â¸é È°¼ºÈ­ 
+	invenComp->AddItemToMyList(curWeapon);//ë‚´ë¶€ì—ì„œ ë§¤ê°œë³€ìˆ˜ nullptrê°€ ë“¤ì–´ì˜¤ë©´ returnì‹œì¼œë²„ë¦¼. TODO : curWeaponì„ ì •ì˜í•œ ë’¤ì— equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]ì˜ ê°’ì´ ë°”ë€Œì—ˆìœ¼ë¯€ë¡œ ì—­ì°¸ì¡°ë¥¼ í•˜ë©´ ë¬¸ì œê°€ ìƒê¹€. í™•ì¸ í•  ê²ƒ.
+	//if (curWeapon) //TODO : InvenComp->AddItemToMyList(nullptr)ì´ ë¬¸ì œ ìƒê¸°ë©´ í™œì„±í™” 
 	
 	return true;
 }
 
 bool AC_ThrowingWeapon::MoveAroundToAround(AC_BasicCharacter* Character)
 {
-	//UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	//UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	//UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	//UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
-	//¾È¾¸
+	//ì•ˆì”€
 	return false;
 }
 
 bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
-	uint8 ItemStackCount = invenComp->LoopCheckVolume(this); //¾ÆÀÌÅÛStackÀ» ¸î°³±îÁö ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´Â°¡?
+	uint8 ItemStackCount = invenComp->LoopCheckVolume(this); //ì•„ì´í…œStackì„ ëª‡ê°œê¹Œì§€ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ”ê°€?
 
 	if (ItemStackCount == 0)
 	{
 		UC_Util::Print("Not Enough Volume");
-		return false; //ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´Â ¾ÆÀÌÅÛÀÇ °¹¼ö°¡ 0 ÀÌ¸é ³ÖÀ» ¼ö ¾øÀ¸¹Ç·Î return false;
+		return false; //ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ” ì•„ì´í…œì˜ ê°¯ìˆ˜ê°€ 0 ì´ë©´ ë„£ì„ ìˆ˜ ì—†ìœ¼ë¯€ë¡œ return false;
 	}
 
 	if (ItemStackCount == this->GetItemDatas().ItemCurStack)
 	{
-		//¾ÆÀÌÅÛÀ» ÀüºÎ ÀÎº¥¿¡ ³ÖÀ» ¼ö ÀÖ´Â °æ¿ì.
+		//ì•„ì´í…œì„ ì „ë¶€ ì¸ë²¤ì— ë„£ì„ ìˆ˜ ìˆëŠ” ê²½ìš°.
 		invenComp->AddItemToMyList(this);
 		return true;
 	}
 	else 
 	{
-		//¾ÆÀÌÅÛÀ» ÀüºÎ ³ÖÀ» ¼ö ¾ø´Â °æ¿ì.
-		this->SetItemStack(GetItemDatas().ItemCurStack - ItemStackCount);//ÇöÀç °´Ã¼ÀÇ stackÀ» Á¶Àı
-		AC_Weapon* SpawnedItem = Cast<AC_Weapon>(SpawnItem(Character));  //µ¿ÀÏÇÑ ¾ÆÀÌÅÛ °´Ã¼¸¦ »ı¼º
-		SpawnedItem->SetItemStack(ItemStackCount);						 //»ı¼ºÇÑ ¾ÆÀÌÅÛ stackÀ» ¼³Á¤
-		invenComp->AddItemToMyList(SpawnedItem);						 //inven¿¡ Ãß°¡.
+		//ì•„ì´í…œì„ ì „ë¶€ ë„£ì„ ìˆ˜ ì—†ëŠ” ê²½ìš°.
+		this->SetItemStack(GetItemDatas().ItemCurStack - ItemStackCount);//í˜„ì¬ ê°ì²´ì˜ stackì„ ì¡°ì ˆ
+		AC_Weapon* SpawnedItem = Cast<AC_Weapon>(SpawnItem(Character));  //ë™ì¼í•œ ì•„ì´í…œ ê°ì²´ë¥¼ ìƒì„±
+		SpawnedItem->SetItemStack(ItemStackCount);						 //ìƒì„±í•œ ì•„ì´í…œ stackì„ ì„¤ì •
+		invenComp->AddItemToMyList(SpawnedItem);						 //invenì— ì¶”ê°€.
 		return true;
 	}
 }
 
 bool AC_ThrowingWeapon::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ¾È¾²´Â°Ç »èÁ¦ÇÏ±â.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : ì•ˆì“°ëŠ”ê±´ ì‚­ì œí•˜ê¸°.
 
 	AC_ThrowingWeapon* curWeapon = Cast<AC_ThrowingWeapon>(equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]);
 
 	if (curWeapon)
 	{
-		if (!curWeapon->MoveSlotToInven(Character)) //ÀÌ°÷¿¡¼­ curWeaponÀÇ ÀåÂøÀ» ÇØÁ¦ÇÔ.
+		if (!curWeapon->MoveSlotToInven(Character)) //ì´ê³³ì—ì„œ curWeaponì˜ ì¥ì°©ì„ í•´ì œí•¨.
 			curWeapon->MoveSlotToAround(Character);
 	}
 
@@ -795,22 +845,22 @@ void AC_ThrowingWeapon::OnRemovePinFin()
 
 void AC_ThrowingWeapon::OnThrowReadyLoop()
 {
-	// Player HUD Opened °ü·Ã ¿¹¿ÜÃ³¸®
+	// Player HUD Opened ê´€ë ¨ ì˜ˆì™¸ì²˜ë¦¬
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 	{
-		// UI Ã¢ÀÌ ÄÑÁ³À» ¶§
+		// UI ì°½ì´ ì¼œì¡Œì„ ë•Œ
 		if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() ||
 			OwnerPlayer->GetHUDWidget()->GetMainMapWidget()->GetIsPanelOpened())
 		{
 			ClearSpline();
 
-			if (bIsCooked) // cooking µÇ¾ú´Ù¸é ´øÁ®¹ö¸²
+			if (bIsCooked) // cooking ë˜ì—ˆë‹¤ë©´ ë˜ì ¸ë²„ë¦¼
 			{
 				OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowMontage);
 				return;
 			}
 
-			// Cooking µÇ¾îÀÖÁö ¾Ê´Ù¸é ´Ù½Ã Idle ÀÚ¼¼·Î µ¹¾Æ¿È
+			// Cooking ë˜ì–´ìˆì§€ ì•Šë‹¤ë©´ ë‹¤ì‹œ Idle ìì„¸ë¡œ ëŒì•„ì˜´
 			OwnerPlayer->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, CurThrowProcessMontages.ThrowReadyMontage.AnimMontage);
 			bIsOnThrowProcess	= false;
 			bIsCharging			= false;
@@ -820,12 +870,12 @@ void AC_ThrowingWeapon::OnThrowReadyLoop()
 
 	if (bIsCharging)
 	{
-		// Charging Áß Ã³¸®
-		HandlePredictedPath();
+		// Charging ì¤‘ ì²˜ë¦¬ -> Playerì¼ ê²½ìš°, ì˜ˆìƒ ê²½ë¡œ ê·¸ë ¤ì£¼ê¸°
+		if (Cast<AC_Player>(OwnerCharacter)) HandlePlayerPredictedPath();
 		return;
 	}
 
-	// ChargingÀÌ Ç®·ÈÀ» ¶§ ´ÙÀ½ ´øÁö±â µ¿ÀÛ ½ÇÇà
+	// Chargingì´ í’€ë ¸ì„ ë•Œ ë‹¤ìŒ ë˜ì§€ê¸° ë™ì‘ ì‹¤í–‰
 	ClearSpline();
 	OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowMontage);
 }
@@ -834,30 +884,7 @@ void AC_ThrowingWeapon::OnThrowThrowable()
 {
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
-	//OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
-	// Direction ±¸ÇÏ´Â ¹æ¹ı 1
-	/*FVector ActorForward = FRotationMatrix(OwnerCharacter->GetActorRotation()).GetUnitAxis(EAxis::X);
-
-	UC_AnimBasicCharacter* OwnerAnim = Cast<UC_AnimBasicCharacter>(OwnerCharacter->GetMesh()->GetAnimInstance());
-	
-	if (!IsValid(OwnerAnim))
-	{
-		FString DebugMessage = "AC_ThrowingWeapon::OnThrowThrowable : OwnerAnim not valid!";
-		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *DebugMessage);
-
-		Direction = ActorForward;
-	}
-	else
-	{
-		FRotator SpineRotation	  = OwnerAnim->GetCSpineRotation();
-		FVector SpineForward	  = FRotationMatrix(SpineRotation).GetUnitAxis(EAxis::X);
-		FVector CombinedDirection = FRotationMatrix(OwnerCharacter->GetActorRotation()).TransformVector(SpineForward);
-		Direction = CombinedDirection;
-	}*/
-
-	UpdateProjectileLaunchValues();
-
-	//UC_Util::Print(ProjStartLocation);
+	if (Cast<AC_Player>(OwnerCharacter)) UpdatePlayerProjectileLaunchValues();
 
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
@@ -871,25 +898,24 @@ void AC_ThrowingWeapon::OnThrowThrowable()
 
 void AC_ThrowingWeapon::OnThrowProcessEnd()
 {
-	//UC_Util::Print("OnThrowProcessEnd", FColor::Cyan, 5.f);
+	bIsOnThrowProcess	= false;
+	bIsCharging			= false;
+	
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
-	bIsOnThrowProcess = false;
+	SetActorEnableCollision(true);//ì¥ì°© í•  ë•Œ ê»ë˜ ì¶©ëŒ ì¼œì£¼ê¸°.
 
-	bIsCharging = false;
-
-	SetActorEnableCollision(true);//ÀåÂø ÇÒ ¶§ ²¯´ø Ãæµ¹ ÄÑÁÖ±â.
-
-	// Ready µµÁß ProcessEnd°¡ µÉ ¼ö ÀÖ±â ¶§¹®¿¡ Predicted Path spline ¸ğµÎ Áö¿öÁÖ±â
+	// Ready ë„ì¤‘ ProcessEndê°€ ë  ìˆ˜ ìˆê¸° ë•Œë¬¸ì— Predicted Path spline ëª¨ë‘ ì§€ì›Œì£¼ê¸°
 	ClearSpline();
 
-	// ÇöÀç Throw AnimMontage ¸ØÃß±â (¿ì¼±¼øÀ§ ¶§¹®¿¡ ¸ØÃç¾ß ÇÔ)
+	// í˜„ì¬ Throw AnimMontage ë©ˆì¶”ê¸° (ìš°ì„ ìˆœìœ„ ë•Œë¬¸ì— ë©ˆì¶°ì•¼ í•¨)
 	//OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, CurThrowProcessMontages.ThrowMontage.AnimMontage);
 
 	UAnimInstance* OwnerAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 
 	//OwnerAnimInstance->StopAllMontages(0.2f);
 
-	// Áß°£¿¡ ÀÚ¼¼¸¦ ¹Ù²Ü ¼ö ÀÖ±â ¶§¹®¿¡ ¸ğµç ÀÚ¼¼º° AnimMontage playing Ã¼Å©
+	// ì¤‘ê°„ì— ìì„¸ë¥¼ ë°”ê¿€ ìˆ˜ ìˆê¸° ë•Œë¬¸ì— ëª¨ë“  ìì„¸ë³„ AnimMontage playing ì²´í¬
 	for (uint8 p = 0; p < static_cast<uint8>(EPoseState::POSE_MAX); p++)
 	{
 		EPoseState	  PoseState	   = static_cast<EPoseState>(p);
@@ -908,12 +934,12 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 
 	UC_EquippedComponent* OwnerEquippedComponent = OwnerCharacter->GetEquippedComponent();
 
-	// ÇöÀç ÅõÃ´·ù ÀåÂø ÇØÁ¦ ¹Ù·Î ÇÏ±â -> ÀÌ¹Ì ´øÁø ¹«±â¿¡ ´ëÇÑ PoseTransitionEnd Delegate ÇØÁ¦ ÀÌ·ç¾îÁü
+	// í˜„ì¬ íˆ¬ì²™ë¥˜ ì¥ì°© í•´ì œ ë°”ë¡œ í•˜ê¸° -> ì´ë¯¸ ë˜ì§„ ë¬´ê¸°ì— ëŒ€í•œ PoseTransitionEnd Delegate í•´ì œ ì´ë£¨ì–´ì§
 	AC_BasicCharacter* PrevOwnerCharacter = OwnerCharacter;
 
 	OwnerEquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
 
-	// µ¿ÀÏÇÑ Á¾·ùÀÇ ÅõÃ´·ù ÀÖ´ÂÁö Á¶»ç
+	// ë™ì¼í•œ ì¢…ë¥˜ì˜ íˆ¬ì²™ë¥˜ ìˆëŠ”ì§€ ì¡°ì‚¬
 	AC_Item* ThrowWeapon = OwnerCharacter->GetInvenComponent()->FindMyItem(this);
 	if (ThrowWeapon)
 	{
@@ -926,16 +952,15 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 		}
 		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter);
 
-		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+		if (OwnerPlayer) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 
-		// ¹Ù·Î ´ÙÀ½ ÅõÃ´·ù ²¨³»±â
+		// ë°”ë¡œ ë‹¤ìŒ íˆ¬ì²™ë¥˜ êº¼ë‚´ê¸°
 		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
 		PrevOwnerCharacter->PlayAnimMontage(TargetThrowWeapon->GetCurDrawMontage());
 		return;
 	}
 
-	// ´Ù¸¥ ÅõÃ´·ù Á¶»ç
+	// ë‹¤ë¥¸ íˆ¬ì²™ë¥˜ ì¡°ì‚¬
 	for (auto& Pair : THROWABLETYPE_ITEMNAME_MAP)
 	{
 		if (Pair.Key == this->ThrowableType) continue;
@@ -957,28 +982,29 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 		}
 
 		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter);
-		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
-		// ¹Ù·Î ´ÙÀ½ ÅõÃ´·ù ²¨³»±â
+
+		if (OwnerPlayer) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+
+		// ë°”ë¡œ ë‹¤ìŒ íˆ¬ì²™ë¥˜ êº¼ë‚´ê¸°
 		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
 		PrevOwnerCharacter->PlayAnimMontage(TargetThrowWeapon->GetCurDrawMontage());
 		return;
 	}
 
-	//³²¾Æ ÀÖ´Â ÅõÃ´·ù°¡ ¾ø´Ù¸é ÁÖ¹«±â1, ÁÖ¹«±â2 ¼øÀ¸·Î ÀåÂø ½Ãµµ, ¾ø´Ù¸é UnArmedÀÎ »óÅÂ·Î µ¹¾Æ°¡±â
+	//ë‚¨ì•„ ìˆëŠ” íˆ¬ì²™ë¥˜ê°€ ì—†ë‹¤ë©´ ì£¼ë¬´ê¸°1, ì£¼ë¬´ê¸°2 ìˆœìœ¼ë¡œ ì¥ì°© ì‹œë„, ì—†ë‹¤ë©´ UnArmedì¸ ìƒíƒœë¡œ ëŒì•„ê°€ê¸°
 	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::MAIN_GUN))		return;
 	if (OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::SUB_GUN))		return;
 
 	OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::NONE);
-
+	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void AC_ThrowingWeapon::StartCooking()
 {
 	bIsCooked = true;
 
-	// TODO : Ready »óÅÂ¿¡¼­ Cooking ½ÃÀÛÇÏ¸é ³²Àº ½Ã°£ HUD ¶ç¿ì±â
-	//UC_Util::Print("Throwable Starts cooking");
+	// TODO : Ready ìƒíƒœì—ì„œ Cooking ì‹œì‘í•˜ë©´ ë‚¨ì€ ì‹œê°„ HUD ë„ìš°ê¸°
+	UC_Util::Print("Throwable Starts cooking", FColor::Red, 10.f);
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);
 }
@@ -986,14 +1012,14 @@ void AC_ThrowingWeapon::StartCooking()
 bool AC_ThrowingWeapon::ReleaseOnGround()
 {
 	
-	if (!bIsCooked) return false;						// CookingÀÌ ¾ÈµÇ¾ú´Ù¸é (¾ÈÀü¼ÕÀâÀÌ°¡ ³¯¾Æ°¡Áö ¾Ê¾Ò´Ù¸é)
-	if (ProjectileMovement->IsActive()) return false;	// ÀÌ¹Ì ´øÁ³¾ú´Ù¸é
+	if (!bIsCooked) return false;						// Cookingì´ ì•ˆë˜ì—ˆë‹¤ë©´ (ì•ˆì „ì†ì¡ì´ê°€ ë‚ ì•„ê°€ì§€ ì•Šì•˜ë‹¤ë©´)
+	if (ProjectileMovement->IsActive()) return false;	// ì´ë¯¸ ë˜ì¡Œì—ˆë‹¤ë©´
 
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
-	ProjectileMovement->Velocity = FVector(0.f, 0.f, 0.f); // 0.fÀÇ ¼Ó·ÂÀ¸·Î ³¯¸®±â
+	ProjectileMovement->Velocity = FVector(0.f, 0.f, 0.f); // 0.fì˜ ì†ë ¥ìœ¼ë¡œ ë‚ ë¦¬ê¸°
 	ProjectileMovement->Activate();
 
 	OnThrowProcessEnd();
@@ -1011,7 +1037,7 @@ void AC_ThrowingWeapon::Explode()
 
 	bool Exploded = ExplodeStrategy->UseStrategy(this);
 
-	if (GetAttachParentActor()) ReleaseOnGround(); // ¼Õ¿¡¼­ ¾ÆÁ÷ ¶°³ªÁö ¾Ê¾ÒÀ» ¶§
+	if (GetAttachParentActor()) ReleaseOnGround(); // ì†ì—ì„œ ì•„ì§ ë– ë‚˜ì§€ ì•Šì•˜ì„ ë•Œ
 		
 	//if (Exploded) this->Destroy();
 	if (Exploded)
@@ -1024,6 +1050,12 @@ void AC_ThrowingWeapon::Explode()
 			}, 10.f, false);
 	}
 	else UC_Util::Print("Not Exploded!", FColor::Red, 10.f);
+
+	FString str = (IsValid(OwnerCharacter)) ? "Exploded : OwnerCharacter -> " + OwnerCharacter->GetName() : "Exploded : No Owner Character"; 
+	UC_Util::Print(str, FColor::Red, 10.f);
+
+	//FString DistanceStr = "Distance to Player: " + FString::SanitizeFloat(FVector::Distance(OwnerCharacter->GetActorLocation(), GetActorLocation()) * 0.01f);
+	//UC_Util::Print(DistanceStr, FColor::MakeRandomColor(), 10.f);
 }
 
 FVector AC_ThrowingWeapon::GetPredictedThrowStartLocation()
@@ -1045,12 +1077,12 @@ FVector AC_ThrowingWeapon::GetPredictedThrowStartLocation()
 		OwnerMeshTemp->SetWorldTransform(OwnerCharacter->GetMesh()->GetComponentTransform());
 	}
 
-	// ÀÚ¼¼¿¡ ¸Â´Â Montage°¡ Àç»ıÁßÀÌÁö ¾Ê´Ù¸é, ÇØ´ç Montage·Î º¯°æ µÚ¿¡ ¸ØÃß±â
+	// ìì„¸ì— ë§ëŠ” Montageê°€ ì¬ìƒì¤‘ì´ì§€ ì•Šë‹¤ë©´, í•´ë‹¹ Montageë¡œ ë³€ê²½ ë’¤ì— ë©ˆì¶”ê¸°
 	static EPoseState PredictedPoseState = EPoseState::POSE_MAX;
 
 	UAnimInstance* MeshAnimInstance = OwnerMeshTemp->GetAnimInstance();
 
-	// ÇöÀç posingÀÌ ´Ù¸£´Ù¸é ¿¹Ãø °æ·Î ½ÃÀÛÁ¡µµ ´Ş¶óÁü
+	// í˜„ì¬ posingì´ ë‹¤ë¥´ë‹¤ë©´ ì˜ˆì¸¡ ê²½ë¡œ ì‹œì‘ì ë„ ë‹¬ë¼ì§
 	
 	float ThrowThrowableTime{};
 
@@ -1126,7 +1158,7 @@ void AC_ThrowingWeapon::DrawPredictedPath()
 	ProjectilePathParams.StartLocation			= GetPredictedThrowStartLocation();
 	ProjectilePathParams.LaunchVelocity			= ProjLaunchVelocity;
 	ProjectilePathParams.bTraceWithCollision	= true;
-	ProjectilePathParams.ProjectileRadius		= 5.f;
+	ProjectilePathParams.ProjectileRadius		= PROJECTILE_RADIUS;
 	ProjectilePathParams.MaxSimTime				= 1.f;
 	ProjectilePathParams.bTraceWithChannel		= true;
 	ProjectilePathParams.TraceChannel			= ECollisionChannel::ECC_Visibility;
@@ -1143,6 +1175,8 @@ void AC_ThrowingWeapon::DrawPredictedPath()
 
 	bool IsHit = UGameplayStatics::PredictProjectilePath(GetWorld(), ProjectilePathParams, Result);
 
+	// UGameplayStatics::SuggestProjectileVelocity()
+	
 	ClearSpline();
 
 	TArray<FPredictProjectilePathPointData> PathData = Result.PathData;
@@ -1180,28 +1214,23 @@ void AC_ThrowingWeapon::DrawPredictedPath()
 	}
 }
 
-void AC_ThrowingWeapon::HandlePredictedPath()
+void AC_ThrowingWeapon::HandlePlayerPredictedPath()
 {
-	// ÇÃ·¹ÀÌ¾îÀÏ °æ¿ì¿¡¸¸ ±×¸®±â (ÃßÈÄ, GameManager ¸â¹öº¯¼öÀÇ Player¿Í °´Ã¼ ´ëÁ¶ÇØº¼ °Í)
-	AC_Player* Player = Cast<AC_Player>(OwnerCharacter);
-	if (!IsValid(Player)) return;
-
-	// ÇöÀç OwnerCharacterÀÇ ¼Õ¿¡ ÀåÂøµÈ »óÈ²ÀÎÁö È®ÀÎ
+	// í˜„ì¬ OwnerCharacterì˜ ì†ì— ì¥ì°©ëœ ìƒí™©ì¸ì§€ í™•ì¸
 	if (!IsValid(this->GetAttachParentActor()) || this->GetAttachParentSocketName() != EQUIPPED_SOCKET_NAMES[ThrowableType]) return;
 
 	if (!OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(CurThrowProcessMontages.ThrowReadyMontage.AnimMontage))
 		return;
 
-	UpdateProjectileLaunchValues();
+	UpdatePlayerProjectileLaunchValues();
 	DrawPredictedPath();
 	//DrawDebugPredictedPath();
 }
 
-void AC_ThrowingWeapon::UpdateProjectileLaunchValues()
+void AC_ThrowingWeapon::UpdatePlayerProjectileLaunchValues()
 {
-	// TODO : Init ProjStartLocation & ProjLaunchVelocity
-	// TODO : Enemy AIÀÇ °æ¿ì ¼ö·ùÅº ´øÁö´Â ¹æÇâÀ» ´Ù¸¥ ¹æ¹ıÀ¸·Î Á¤ÇØÁà¾ß ÇÔ
-
+	if (!Cast<AC_Player>(OwnerCharacter)) return;
+	
 	FRotator CameraRotation = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraRotation();
 
 	FVector Direction     = FRotationMatrix(CameraRotation).GetUnitAxis(EAxis::X).GetSafeNormal();	
@@ -1214,7 +1243,7 @@ void AC_ThrowingWeapon::OnOwnerCharacterPoseTransitionFin()
 {
 	if (bIsCharging)
 	{
-		// »õ·Î¿î ÀÚ¼¼¿¡ ¸Â´Â Anim Montage·Î ´Ù½Ã Àç»ı
+		// ìƒˆë¡œìš´ ìì„¸ì— ë§ëŠ” Anim Montageë¡œ ë‹¤ì‹œ ì¬ìƒ
 		OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
 		return;
 	}
@@ -1232,5 +1261,12 @@ void AC_ThrowingWeapon::ClearSpline()
 
 bool AC_ThrowingWeapon::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
-	return false;
+	return AIAttackStrategy->ExecuteAIAttack(this, InTargetCharacter);
 }
+
+bool AC_ThrowingWeapon::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
+{
+	return AIAttackStrategy->ExecuteAIAttackTickTask(this, InTargetCharacter, DeltaTime);
+}
+
+

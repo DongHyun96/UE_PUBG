@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -47,7 +47,9 @@ private:
 
 private:
 
-	// ºØ´ë ³ª¸ÓÁö ÇÑ°³ ±îÁö ¸ğµÎ ¼Ò¸ğÇßÀ» ¶§ Destroy ÇÏ´Â Flag, True¸é Destroy
+	// ë¶•ëŒ€ ë‚˜ë¨¸ì§€ í•œê°œ ê¹Œì§€ ëª¨ë‘ ì†Œëª¨í–ˆì„ ë•Œ Destroy í•˜ëŠ” Flag, Trueë©´ Destroy
 	bool bDestroyFlag{};
 
 };
+
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -11,7 +11,7 @@ UENUM(BlueprintType)
 enum class EConsumableUsageMeshType : uint8
 {
 	BANDAGE,
-	SYRINGE, // ÁÖ»ç±â
+	SYRINGE, // ì£¼ì‚¬ê¸°
 	DRINK,
 	PAIN_KILLER,
 	MAX
@@ -36,16 +36,16 @@ public:
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛ »ç¿ë ¹× È°¼ºÈ­ ½Ã Usage Mesh visible ÄÑ°í ²ô±â
+	/// ì•„ì´í…œ ì‚¬ìš© ë° í™œì„±í™” ì‹œ Usage Mesh visible ì¼œê³  ë„ê¸°
 	/// </summary>
-	/// <param name="MeshTye"> : Toggle½ÃÅ³ Mesh Å¸ÀÔ </param>
+	/// <param name="MeshTye"> : Toggleì‹œí‚¬ Mesh íƒ€ì… </param>
 	/// <param name="Visible"> : Visible true or false </param>
 	void ToggleMeshUsageVisible(EConsumableUsageMeshType MeshType, bool Visible);
 
 private:
 
 	/// <summary>
-	/// Enum°ª¿¡ ´ëÀÀµÇ´Â FString °ª return
+	/// Enumê°’ì— ëŒ€ì‘ë˜ëŠ” FString ê°’ return
 	/// </summary>
 	FString GetMeshTypeName(EConsumableUsageMeshType Type);
 
@@ -60,7 +60,9 @@ protected:
 
 private:
 
-	//const FName HOLSTER_SOCKET_NAME = "Pan_Holster"; // ¹«±âÁı socket ÀÌ¸§
+	//const FName HOLSTER_SOCKET_NAME = "Pan_Holster"; // ë¬´ê¸°ì§‘ socket ì´ë¦„
 	static const TMap<EConsumableUsageMeshType, FName> SocketNames;
 	
 };
+
+

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -28,72 +28,72 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-public: /* °¢ Key¿¡ µû¸¥ ¹«±â ÀÛµ¿ */
+public: /* ê° Keyì— ë”°ë¥¸ ë¬´ê¸° ì‘ë™ */
 
 	/// <summary>
 	/// B Key weapon method
 	/// </summary>
-	/// <returns> ½ÇÇà Áß ½ÇÆĞÇÏ°Å³ª, ¸ÅÄªµÇ´Â ¾×¼ÇÀÌ ¾øÀ» ¶§ return false </returns>
+	/// <returns> ì‹¤í–‰ ì¤‘ ì‹¤íŒ¨í•˜ê±°ë‚˜, ë§¤ì¹­ë˜ëŠ” ì•¡ì…˜ì´ ì—†ì„ ë•Œ return false </returns>
 	bool ExecuteBKey();
 
 	/// <summary>
 	/// R Key weapon method
 	/// </summary>
-	/// <returns> ½ÇÇà Áß ½ÇÆĞÇÏ°Å³ª, ¸ÅÄªµÇ´Â ¾×¼ÇÀÌ ¾øÀ» ¶§ return false </returns>
+	/// <returns> ì‹¤í–‰ ì¤‘ ì‹¤íŒ¨í•˜ê±°ë‚˜, ë§¤ì¹­ë˜ëŠ” ì•¡ì…˜ì´ ì—†ì„ ë•Œ return false </returns>
 	bool ExecuteRKey();
 
 	/// <summary>
 	/// MLB Started weapon method
 	/// </summary>
-	/// <returns> ½ÇÇà Áß ½ÇÆĞÇÏ°Å³ª, ¸ÅÄªµÇ´Â ¾×¼ÇÀÌ ¾øÀ» ¶§ return false </returns>
+	/// <returns> ì‹¤í–‰ ì¤‘ ì‹¤íŒ¨í•˜ê±°ë‚˜, ë§¤ì¹­ë˜ëŠ” ì•¡ì…˜ì´ ì—†ì„ ë•Œ return false </returns>
 	bool ExecuteMlb_Started();
 
 	/// <summary>
 	/// MLB OnGoing weapon method
 	/// </summary>
-	/// <returns> ½ÇÇà Áß ½ÇÆĞÇÏ°Å³ª, ¸ÅÄªµÇ´Â ¾×¼ÇÀÌ ¾øÀ» ¶§ return false </returns>
+	/// <returns> ì‹¤í–‰ ì¤‘ ì‹¤íŒ¨í•˜ê±°ë‚˜, ë§¤ì¹­ë˜ëŠ” ì•¡ì…˜ì´ ì—†ì„ ë•Œ return false </returns>
 	bool ExecuteMlb_OnGoing();
 
 	/// <summary>
 	/// MLB Completed weapon method
 	/// </summary>
-	/// <returns> ½ÇÇà Áß ½ÇÆĞÇÏ°Å³ª, ¸ÅÄªµÇ´Â ¾×¼ÇÀÌ ¾øÀ» ¶§ return false </returns>
+	/// <returns> ì‹¤í–‰ ì¤‘ ì‹¤íŒ¨í•˜ê±°ë‚˜, ë§¤ì¹­ë˜ëŠ” ì•¡ì…˜ì´ ì—†ì„ ë•Œ return false </returns>
 	bool ExecuteMlb_Completed();
 
 	/// <summary>
 	/// MRB started weapon method
 	/// </summary>
-	/// <returns> ½ÇÇà Áß ½ÇÆĞÇÏ°Å³ª, ¸ÅÄªµÇ´Â ¾×¼ÇÀÌ ¾øÀ» ¶§ return false </returns>
+	/// <returns> ì‹¤í–‰ ì¤‘ ì‹¤íŒ¨í•˜ê±°ë‚˜, ë§¤ì¹­ë˜ëŠ” ì•¡ì…˜ì´ ì—†ì„ ë•Œ return false </returns>
 	bool ExecuteMrb_Started();
 
 	/// <summary>
 	/// MRB OnGoing weapon method
 	/// </summary>
-	/// <returns> ½ÇÇà Áß ½ÇÆĞÇÏ°Å³ª, ¸ÅÄªµÇ´Â ¾×¼ÇÀÌ ¾øÀ» ¶§ return false </returns>
+	/// <returns> ì‹¤í–‰ ì¤‘ ì‹¤íŒ¨í•˜ê±°ë‚˜, ë§¤ì¹­ë˜ëŠ” ì•¡ì…˜ì´ ì—†ì„ ë•Œ return false </returns>
 	bool ExecuteMrb_OnGoing();
 
 	/// <summary>
 	/// MRB Completed weapon method
 	/// </summary>
-	/// <returns> ½ÇÇà Áß ½ÇÆĞÇÏ°Å³ª, ¸ÅÄªµÇ´Â ¾×¼ÇÀÌ ¾øÀ» ¶§ return false </returns>
+	/// <returns> ì‹¤í–‰ ì¤‘ ì‹¤íŒ¨í•˜ê±°ë‚˜, ë§¤ì¹­ë˜ëŠ” ì•¡ì…˜ì´ ì—†ì„ ë•Œ return false </returns>
 	bool ExecuteMrb_Completed();
 
 public:
 
 	/// <summary>
-	/// ¹«±âÁı¿¡ ¹«±â ºÙÀÌ±â
+	/// ë¬´ê¸°ì§‘ì— ë¬´ê¸° ë¶™ì´ê¸°
 	/// </summary>
-	/// <returns> ºÙÀÌ±â¸¦ ½ÇÆĞÇÏ°Å³ª ºÙÀÏ ¹«±âÁıÀÌ ¾ø´Ù¸é return false </returns>
+	/// <returns> ë¶™ì´ê¸°ë¥¼ ì‹¤íŒ¨í•˜ê±°ë‚˜ ë¶™ì¼ ë¬´ê¸°ì§‘ì´ ì—†ë‹¤ë©´ return false </returns>
 	virtual bool AttachToHolster(class USceneComponent* InParent) PURE_VIRTUAL(AC_Weapon::AttachToHolster, return false;);
 
 	/// <summary>
-	/// ¼Õ¿¡ ÀåÂøÇÏ±â
+	/// ì†ì— ì¥ì°©í•˜ê¸°
 	/// </summary>
-	/// <returns> ¹«±â¸¦ ¼Õ¿¡ ºÙÀÌÁö ¸øÇÏ¿´´Ù¸é return false </returns>
+	/// <returns> ë¬´ê¸°ë¥¼ ì†ì— ë¶™ì´ì§€ ëª»í•˜ì˜€ë‹¤ë©´ return false </returns>
 	virtual bool AttachToHand(class USceneComponent* InParent) PURE_VIRTUAL(AC_Weapon::AttachToHand, return false;);
 
 	/// <summary>
-	/// ´ÙÇü¼º¿¡ ÀÇÇØ¼­ ¾îÂ÷ÇÇ ¾Ë¾Æ¼­ ÀÚ½ÄÅ¬·¡½ºÀÇ PickUpItemÀ» »ç¿ëÇÑ´Ù°íÇÔ.
+	/// ë‹¤í˜•ì„±ì— ì˜í•´ì„œ ì–´ì°¨í”¼ ì•Œì•„ì„œ ìì‹í´ë˜ìŠ¤ì˜ PickUpItemì„ ì‚¬ìš©í•œë‹¤ê³ í•¨.
 	/// </summary>
 	/// <param name="Character"></param>
 	virtual void PickUpItem(class AC_BasicCharacter* Character) override;
@@ -101,9 +101,9 @@ public:
 	virtual bool Interaction(AC_BasicCharacter* Character) override;
 
 	/// <summary>
-	/// ¾ÆÀÌÅÛÀÇ type¿¡ µû¶ó ¾Ë¸Â´Â WeaponSlotÀ» ¹İÈ¯
+	/// ì•„ì´í…œì˜ typeì— ë”°ë¼ ì•Œë§ëŠ” WeaponSlotì„ ë°˜í™˜
 	/// </summary>
-	/// <returns>WeaponSlotÀ» ¹İÈ¯</returns>
+	/// <returns>WeaponSlotì„ ë°˜í™˜</returns>
 	EWeaponSlot GetWeaponSlot();
 
 public:
@@ -117,7 +117,7 @@ public:
 public:
 
 	/// <summary>
-	/// OwnerCharacterÀÇ Pose Transition ¸ğ¼ÇÀÌ ³¡³µÀ» ¶§ Delegate¸¦ ÅëÇØ call backÀ» ¹Ş´Â ÇÔ¼ö (ÇöÀç Ä³¸¯ÅÍÀÇ slot¿¡ ÀåÂøµÈ ¹«±â¸¸ call back µÉ ¿¹Á¤) 
+	/// OwnerCharacterì˜ Pose Transition ëª¨ì…˜ì´ ëë‚¬ì„ ë•Œ Delegateë¥¼ í†µí•´ call backì„ ë°›ëŠ” í•¨ìˆ˜ (í˜„ì¬ ìºë¦­í„°ì˜ slotì— ì¥ì°©ëœ ë¬´ê¸°ë§Œ call back ë  ì˜ˆì •) 
 	/// </summary>
 	virtual void OnOwnerCharacterPoseTransitionFin() PURE_VIRTUAL(AC_Weapon::OnOwnerCharacterPoseTransitionFin, );
 
@@ -141,7 +141,7 @@ protected:
 
 protected:
 
-	// ¹«±â¿¡ µû¸¥ °¢ ¹öÆ°¿¡ ´ëÇÑ strategy ¾Ë°í¸®Áò °´Ã¼
+	// ë¬´ê¸°ì— ë”°ë¥¸ ê° ë²„íŠ¼ì— ëŒ€í•œ strategy ì•Œê³ ë¦¬ì¦˜ ê°ì²´
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TScriptInterface<class II_WeaponButtonStrategy> WeaponButtonStrategy{};
 
@@ -149,10 +149,10 @@ protected:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
-	FPriorityAnimMontage CurDrawMontage{}; // ÇöÀç ¹«±â À§Ä¡¿¡ ÇØ´çÇÏ´Â ¹«±â »Ì±â Anim montage
+	FPriorityAnimMontage CurDrawMontage{}; // í˜„ì¬ ë¬´ê¸° ìœ„ì¹˜ì— í•´ë‹¹í•˜ëŠ” ë¬´ê¸° ë½‘ê¸° Anim montage
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
-	FPriorityAnimMontage CurSheathMontage{}; // ÇöÀç ¹«±â À§Ä¡¿¡ ÇØ´çÇÏ´Â ¹«±â Áı¾î³Ö±â Anim montage
+	FPriorityAnimMontage CurSheathMontage{}; // í˜„ì¬ ë¬´ê¸° ìœ„ì¹˜ì— í•´ë‹¹í•˜ëŠ” ë¬´ê¸° ì§‘ì–´ë„£ê¸° Anim montage
 
 private:
 	
@@ -160,8 +160,19 @@ private:
 
 public:
 	/// <summary>
-	/// AI °ø°İ ¼ø¼ö °¡»óÇÔ¼ö
+	/// AI ê³µê²© ìˆœìˆ˜ ê°€ìƒí•¨ìˆ˜ (AttackTaskì˜ ExecuteTask ë¶€ë¶„ì—ì„œ ì‚¬ìš© ì˜ˆì •)
 	/// </summary>
-	/// <returns> °ø°İÀ» ÇÒ ¼ö ¾ø´Â »óÈ²ÀÌ¶ó¸é return false </returns>
+	/// <param name="InTargetCharacter"> : ê³µê²© ëŒ€ìƒ BasicCharacter </param>
+	/// <returns> ê³µê²©ì„ í•  ìˆ˜ ì—†ëŠ” ìƒí™©ì´ë¼ë©´ return false </returns>
 	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) PURE_VIRTUAL(AC_Weapon::ExecuteAIAttack, return false;);
+
+	/// <summary>
+	/// í˜„ì¬ ë¬´ê¸°ë¡œ AI ê³µê²©ì„ í•˜ëŠ” ì¤‘ì´ê³  TickTaskì²˜ë¦¬ë¡œ í•„ìš”í•˜ë‹¤ë©´ í•´ë‹¹ í•¨ìˆ˜ ì‚¬ìš©
+	/// </summary>
+	/// <param name="InTargetCharacter"> : ê³µê²© ëŒ€ìƒ BasicCharacter </param>
+	/// <param name="DeltaTime"> : DeltaTime </param>
+	/// <returns> : TickTaskì²˜ë¦¬ê°€ ëë‚¬ë‹¤ë©´ return false (or TickTaskì²˜ë¦¬ê°€ í•„ìš”í•˜ì§€ ì•Šë‹¤ë©´ return false) </returns>
+	virtual bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime);
 };
+
+

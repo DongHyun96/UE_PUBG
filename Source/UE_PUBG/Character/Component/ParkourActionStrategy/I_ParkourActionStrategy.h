@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -24,10 +24,12 @@ class UE_PUBG_API II_ParkourActionStrategy
 public:
 
 	/// <summary>
-	/// Parkour Motion Warp action ½ÇÇà
+	/// Parkour Motion Warp action ì‹¤í–‰
 	/// </summary>
 	/// <param name="TargetCharacter"></param>
 	/// <param name="CurParkourDesc"></param>
 	virtual void UseMotionWarpActionStrategy(class AC_BasicCharacter* TargetCharacter, const struct FParkourDescriptor& CurParkourDesc) = 0;
 
 };
+
+

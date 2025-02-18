@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AI/Service/C_BTServiceSkyDive.h"
@@ -13,3 +13,5 @@ void UC_BTServiceSkyDive::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 }
+
+

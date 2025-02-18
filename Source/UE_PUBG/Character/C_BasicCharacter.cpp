@@ -3,40 +3,36 @@
 
 #include "Character/C_BasicCharacter.h"
 
+#include "C_Player.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
-
-#include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PhysicsVolume.h"
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
+
+#include "Character/C_Player.h"
 
 #include "Component/C_StatComponent.h"
 #include "Component/C_ConsumableUsageMeshComponent.h"
 #include "Component/C_PoseColliderHandlerComponent.h"
 #include "Component/C_SwimmingComponent.h"
 #include "Component/C_SkyDivingComponent.h"
-#include "Component/C_InvenSystem.h"
+#include "C_Player.h"   
+
 #include "Component/C_ParkourComponent.h"
+#include "Component/C_PlayerController.h"
+#include "HUD/C_HUDWidget.h"
+
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
-#include "Components/SceneCaptureComponent2D.h"
-#include "Components/Image.h"
-
-#include "Item/C_Item.h"
-#include "Item/Equipment/C_EquipableItem.h"
-#include "Item/Equipment/C_BackPack.h"
 #include "Item/Weapon/C_Weapon.h"
-#include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/Gun/C_Bullet.h"
-#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
-#include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
 
 #include "MotionWarpingComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 #include "Utility/C_Util.h"
 
@@ -65,7 +61,7 @@ AC_BasicCharacter::AC_BasicCharacter()
 	PoseColliderHandlerComponent->SetOwnerCharacter(this);
 
 	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
-	DetectionSphere->InitSphereRadius(120.0f); // Å½Áö ¹İ°æ ¼³Á¤
+	DetectionSphere->InitSphereRadius(120.0f); // íƒì§€ ë°˜ê²½ ì„¤ì •
 	DetectionSphere->SetupAttachment(RootComponent);
 
 	//DetectionSphere->SetGenerateOverlapEvents(true);
@@ -96,6 +92,8 @@ void AC_BasicCharacter::BeginPlay()
 	GetPhysicsVolume()->FluidFriction = 2.5f;
 	StatComponent->SetOwnerCharacter(this);
 
+	PoolingBullets();
+	InitializeBloodParticleComponents();
 	//InvenSystem->GetInvenUI()->AddToViewport();
 	//InvenSystem->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
 }
@@ -127,7 +125,7 @@ float AC_BasicCharacter::PlayAnimMontage(UAnimMontage* AnimMontage, float InPlay
 	return 0.0f;
 }
 /// <summary>
-/// ¾ÆÀÌÅÛÀÌ Ä³¸¯ÅÍÀÇ ±ÙÃ³¿¡ ÀÖÀ» ¶§.
+/// ì•„ì´í…œì´ ìºë¦­í„°ì˜ ê·¼ì²˜ì— ìˆì„ ë•Œ.
 /// </summary>
 /// <param name="OverlappedComp"></param>
 /// <param name="OtherActor"></param>
@@ -146,10 +144,10 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 }
 
 /// <summary>
-/// ¾ÆÀÌÅÛÀÌ Ä³¸¯ÅÍÀÇ °¨Áö¹üÀ§¸¦ ¹ş¾î³µÀ» ¶§.
+/// ì•„ì´í…œì´ ìºë¦­í„°ì˜ ê°ì§€ë²”ìœ„ë¥¼ ë²—ì–´ë‚¬ì„ ë•Œ.
 /// </summary>
 /// <param name="OverlappedComp"></param>
-/// <param name="OtherActor"></param>
+/// <param name="OtherActor"></param
 /// <param name="OtherComp"></param>
 /// <param name="OtherBodyIndex"></param>
 void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -162,7 +160,7 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 	FName TargetGroup = PAnimMontage.AnimMontage->GetGroupName();
 
-	// ÀÚ½ÅÀÇ group³»ÀÇ anim montage°¡ ÇÑ¹øµµ Àç»ıµÈ Àû ¾øÀ» ¶© ¹Ù·Î Àç»ı
+	// ìì‹ ì˜ groupë‚´ì˜ anim montageê°€ í•œë²ˆë„ ì¬ìƒëœ ì  ì—†ì„ ë• ë°”ë¡œ ì¬ìƒ
 	if (!CurPriorityAnimMontageMap.Contains(TargetGroup))
 	{
 		CurPriorityAnimMontageMap.Add(TargetGroup, PAnimMontage);
@@ -171,24 +169,71 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 	FPriorityAnimMontage TargetGroupCurMontage = CurPriorityAnimMontageMap[TargetGroup];
 
-	// Á÷ÀüÀÇ AnimMontageÀÇ Àç»ıÀÌ ÀÌ¹Ì ³¡³µÀ» ¶§
+	// ì§ì „ì˜ AnimMontageì˜ ì¬ìƒì´ ì´ë¯¸ ëë‚¬ì„ ë•Œ
 	if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(TargetGroupCurMontage.AnimMontage))
 	{
 		CurPriorityAnimMontageMap[TargetGroup] = PAnimMontage;
 		return Super::PlayAnimMontage(PAnimMontage.AnimMontage, InPlayRate, StartSectionName);
 	}
 
-	// ÇöÀç Àç»ıÁßÀÎ PriorityAnimMontage°¡ ÀÖÀ» ¶§
+	// í˜„ì¬ ì¬ìƒì¤‘ì¸ PriorityAnimMontageê°€ ìˆì„ ë•Œ
 	
-	// Priority ºñ±³ÇØ¼­ ÇöÀç Priorityº¸´Ù Å©°Å³ª °°Àº Priority¶ó¸é »õ·Î µé¾î¿Â AnimMontage Àç»ı
+	// Priority ë¹„êµí•´ì„œ í˜„ì¬ Priorityë³´ë‹¤ í¬ê±°ë‚˜ ê°™ì€ Priorityë¼ë©´ ìƒˆë¡œ ë“¤ì–´ì˜¨ AnimMontage ì¬ìƒ
 	if (PAnimMontage.Priority >= TargetGroupCurMontage.Priority)
 	{
 		CurPriorityAnimMontageMap[TargetGroup] = PAnimMontage;
 		return Super::PlayAnimMontage(PAnimMontage.AnimMontage, InPlayRate, StartSectionName);
 	}
 
-	// Priority°¡ ÇöÀç Àç»ıÁßÀÎ Montage°¡ ´õ Å©´Ù¸é »õ·ÎÀÌ Àç»ıÇÏÁö ¾Ê°í ±×³É return
+	// Priorityê°€ í˜„ì¬ ì¬ìƒì¤‘ì¸ Montageê°€ ë” í¬ë‹¤ë©´ ìƒˆë¡œì´ ì¬ìƒí•˜ì§€ ì•Šê³  ê·¸ëƒ¥ return
 	return 0.0f;
+}
+
+void AC_BasicCharacter::CharacterDead()
+{
+	if (GetMesh()->GetSkeletalMeshAsset() == GetParkourComponent()->GetRootedSkeletalMesh())
+		GetParkourComponent()->SwapMeshToMainSkeletalMesh();
+	
+	// ë³¸ ë³€í˜• ì—…ë°ì´íŠ¸
+	//GetMesh()->RefreshBoneTransforms();
+	//GetMesh()->UpdateComponentToWorld();
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_BasicCharacter::EnableRagdoll, 0.1f, false);
+}
+
+void AC_BasicCharacter::EnableRagdoll()
+{
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	
+	// ğŸ’¡ ìº¡ìŠ ì¶©ëŒ ì œê±° (ë°”ë‹¥ì„ í†µê³¼í•˜ëŠ” ì£¼ìš” ì›ì¸)
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+	// ğŸ’¡ ë£¨íŠ¸ ì»´í¬ë„ŒíŠ¸ë¥¼ ìŠ¤ì¼ˆë ˆíƒˆ ë©”ì‰¬ë¡œ ë³€ê²½
+	GetMesh()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	RootComponent = GetMesh();
+
+	// ğŸ’¡ ì¶©ëŒ í”„ë¡œí•„ê³¼ ë¬¼ë¦¬ í™œì„±í™”
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetSimulatePhysics(true);
+
+	// ğŸ’¡ íŠ¹ì • ë³¸ ì´í•˜ë¡œ ë˜ê·¸ëŒ í™œì„±í™”
+	GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("pelvis"), true, true);
+
+	// ğŸ’¡ ë¬¼ë¦¬ ì†ë„ ì´ˆê¸°í™”
+	GetMesh()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+	GetMesh()->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+
+	// ğŸ’¡ ì»¨íŠ¸ë¡¤ëŸ¬ ì œê±°
+	//DetachFromControllerPendingDestroy();//ì´ê±¸ë¡œ í•´ë„ ê³„ì† ì¸í’‹ì´ ë°œìƒí•˜ëŠ” ê²ƒ ê°™ìŒ.
+	if (AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetController()))
+	{
+		if (AC_Player* Player = Cast<AC_Player>(this))
+			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Collapsed);
+		SetActorTickEnabled(false);
+		DisableInput(PlayerController);
+	}
 }
 
 float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -199,7 +244,7 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 
 	UC_Util::Print(Str, FColor::Cyan, 3.f);
 
-	StatComponent->TakeDamage(DamageAmount);
+	StatComponent->TakeDamage(DamageAmount, Cast<AC_BasicCharacter>(DamageCauser));
 
 	return DamageAmount;
 }
@@ -233,7 +278,7 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 			break;
 		}
 
-		if (MovementVector.X == 1.f) // ¾Õ , ¾Õ ´ë°¢¼±
+		if (MovementVector.X == 1.f) // ì• , ì• ëŒ€ê°ì„ 
 		{
 			GetCharacterMovement()->MaxWalkSpeed = bIsSprinting ? 630.f : 470.f; 
 			break;
@@ -244,7 +289,7 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 			break;
 		}
 
-		GetCharacterMovement()->MaxWalkSpeed = 350.f; // µŞ ¹æÇâ
+		GetCharacterMovement()->MaxWalkSpeed = 350.f; // ë’· ë°©í–¥
 		break;
 	case EPoseState::CROUCH:
 		if (bIsWalking || bIsActivatingConsumableItem)
@@ -252,7 +297,7 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 			GetCharacterMovement()->MaxWalkSpeed = 130.f;
 			break;
 		}
-		if (MovementVector.X == 1.f) // ¾Õ , ¾Õ ´ë°¢¼±
+		if (MovementVector.X == 1.f) // ì• , ì• ëŒ€ê°ì„ 
 		{
 			GetCharacterMovement()->MaxWalkSpeed = bIsSprinting ? 480.f : 340.f;
 			break;
@@ -263,7 +308,7 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 			break;
 		}
 
-		GetCharacterMovement()->MaxWalkSpeed = 250.f; // µŞ ¹æÇâ
+		GetCharacterMovement()->MaxWalkSpeed = 250.f; // ë’· ë°©í–¥
 		break;
 	case EPoseState::CRAWL:
 		GetCharacterMovement()->MaxWalkSpeed =	bIsActivatingConsumableItem ? 0.f :
@@ -286,7 +331,7 @@ void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
 
 bool AC_BasicCharacter::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 {
-	// TODO : Enemy Ä³¸¯ÅÍ¿¡ ´ëÇÑ ÀÚ¼¼ º¯È¯ Àû¿ë - Player´Â ÀÛ¼º ¿Ï·á BasicCharacter ÀÛ¼º ÇÊ¿ä
+	// TODO : Enemy ìºë¦­í„°ì— ëŒ€í•œ ìì„¸ ë³€í™˜ ì ìš© - PlayerëŠ” ì‘ì„± ì™„ë£Œ BasicCharacter ì‘ì„± í•„ìš”
 
 	return false;
 }
@@ -294,6 +339,23 @@ bool AC_BasicCharacter::SetPoseState(EPoseState InChangeFrom, EPoseState InChang
 bool AC_BasicCharacter::GetIsHighEnoughToFall()
 {
 	return false;
+}
+
+bool AC_BasicCharacter::GetIsTooCloseToAimGun()
+{
+	if (EquippedComponent->GetCurWeaponType() != EWeaponSlot::MAIN_GUN && EquippedComponent->GetCurWeaponType() != EWeaponSlot::SUB_GUN) return false;
+	FCollisionQueryParams CollisionParams{};
+	CollisionParams.AddIgnoredActor(this);
+	CollisionParams.AddIgnoredActor(EquippedComponent->GetCurWeapon());
+	//CollisionParams.AddIgnoredActor(GAMESCENE_MANAGER->GetAirplaneManager()->GetAirplane());
+
+	FHitResult HitResult{};
+	FVector ForwardDirection = GetActorForwardVector().GetSafeNormal();
+	FVector StartLocation = GetActorLocation();
+	FVector DestLocation = StartLocation + ForwardDirection * 50.0f;
+
+	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECollisionChannel::ECC_Visibility, CollisionParams);
+	return HasHit;
 }
 
 void AC_BasicCharacter::SetIsActivatingConsumableItem(bool InIsActivatingConsumableItem, AC_ConsumableItem* ActivatingConsumableItem)
@@ -312,19 +374,19 @@ void AC_BasicCharacter::OnPoseTransitionFinish()
 {
 	//UC_Util::Print("Transition pose finished!", FColor::Cyan, 5.f);
 	//PoseState = NextPoseState;
-	//bCanMove = true; // PoseBySizeLerp°¡ ³¡³­ µÚ¿¡ ¿òÁ÷ÀÏ ¼ö ÀÖµµ·Ï Ã³¸®
+	//bCanMove = true; // PoseBySizeLerpê°€ ëë‚œ ë’¤ì— ì›€ì§ì¼ ìˆ˜ ìˆë„ë¡ ì²˜ë¦¬
 	bIsPoseTransitioning = false;
 
-	// Pose TransitionÀÌ ³¡³­ µÚ, Delegate call back Ã³¸®
+	// Pose Transitionì´ ëë‚œ ë’¤, Delegate call back ì²˜ë¦¬
 	if (Delegate_OnPoseTransitionFin.IsBound()) Delegate_OnPoseTransitionFin.Broadcast();
 }
 
 bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState)
 {
-	// ´Ù¸¥ PriorityAnimMontage¿¡ ÀÇÇØ ÀÚ¼¼ÀüÈ¯ÀÌ ¾ÈµÈ »óÈ²ÀÌ¸é return false
+	// ë‹¤ë¥¸ PriorityAnimMontageì— ì˜í•´ ìì„¸ì „í™˜ì´ ì•ˆëœ ìƒí™©ì´ë©´ return false
 	if (PlayAnimMontage(TransitionMontage) == 0.f) return false;
 
-	// ÀÌ¹Ì ÀÚ¼¼¸¦ ¹Ù²Ù´Â ÁßÀÌ¶ó¸é return false
+	// ì´ë¯¸ ìì„¸ë¥¼ ë°”ê¾¸ëŠ” ì¤‘ì´ë¼ë©´ return false
 	//if (bIsPoseTransitioning) return false;
 
 	NextPoseState			= InNextPoseState;
@@ -367,3 +429,45 @@ void AC_BasicCharacter::AddFivemmBulletStack(int inBulletCount)
 {
 	FivemmBulletCount += inBulletCount;
 }
+
+void AC_BasicCharacter::ActivateBloodParticle(FVector InLocation)
+{
+	for (auto BloodEffect : BloodParticleComponents)
+	{
+		if (BloodEffect->IsActive()) continue;
+		BloodEffect->SetWorldLocation(InLocation);
+		BloodEffect->SetActive(true);
+		return;
+	}
+}
+
+void AC_BasicCharacter::InitializeBloodParticleComponents()
+{
+	UParticleSystem* DestructionParticle = LoadObject<UParticleSystem>(
+	nullptr, 
+	TEXT("/Game/Project_PUBG/Common/VFX/Realistic_Starter_VFX_Pack_Vol2/Particles/Destruction/P_Destruction_Building_A"));
+	// ìœ íš¨ì„± ê²€ì‚¬
+	if (!IsValid(DestructionParticle)) return;
+	for (int32 i = 0; i < 10; i++)
+	{
+		UParticleSystemComponent* ParticleComp = NewObject<UParticleSystemComponent>(this);
+        
+		if (ParticleComp)
+		{
+			ParticleComp->RegisterComponent();
+			ParticleComp->SetTemplate(DestructionParticle);
+			//ParticleComp->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
+			ParticleComp->Deactivate();
+			// ë°°ì—´ì— ì¶”ê°€
+			BloodParticleComponents.Add(ParticleComp);
+
+			// íŒŒí‹°í´ ì‹¤í–‰
+			//ParticleComp->Activate(true);
+			
+			//UC_Util::Print("Spawned Blood");
+		}
+	}
+}
+
+
+
