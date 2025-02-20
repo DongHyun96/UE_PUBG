@@ -16,7 +16,6 @@ enum class EWeaponSlot : uint8
 	THROWABLE_WEAPON
 };
 
-enum class EThrowableType : uint8;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_EquippedComponent : public UActorComponent
@@ -127,12 +126,6 @@ public:
 	/// <param name="CollisionParams"> : Param </param>
 	void AddAttachedPartsActorsToIgnoreActors(FCollisionQueryParams& CollisionParams);
 
-public:
-
-	TSubclassOf<class AC_Weapon> GetSubclassOfWeapon(EWeaponSlot WeaponSlot) const { return WeaponClasses[WeaponSlot]; }
-	
-	TMap<EThrowableType, TSubclassOf<class AC_ThrowingWeapon>>& GetSubclassOfThrowingWeapon() { return ThrowableClasses; }
-
 protected:
 
 	class AC_BasicCharacter* OwnerCharacter{};
@@ -152,19 +145,6 @@ protected:
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EWeaponSlot, class AC_Weapon*> Weapons{};
-
-protected:
-
-	// class UC_EquippedArmorComponent* ArmorComponent{};
-
-protected:
-
-	// Enemy Weapon setting 용
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<EWeaponSlot, TSubclassOf<class AC_Weapon>> WeaponClasses{};
-	
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TMap<EThrowableType, TSubclassOf<class AC_ThrowingWeapon>> ThrowableClasses{};
 
 protected:
 	void SetMainGunOrSubGun(EWeaponSlot InSlot);

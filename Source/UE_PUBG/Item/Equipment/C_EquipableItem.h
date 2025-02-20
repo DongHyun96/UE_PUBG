@@ -48,6 +48,8 @@ public:
 
 	void SetItemLevel(EEquipableItemLevel inItemLevel) { ItemLevel = inItemLevel; }
 
+	EEquipableItemLevel GetItemLevel() const { return ItemLevel; }
+	
 public:
 	/// <summary>
 	/// Equipable Item에 Damage 적용

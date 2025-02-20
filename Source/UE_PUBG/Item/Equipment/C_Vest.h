@@ -36,6 +36,13 @@ public:
 
 	float GetDamageReduceFactor() const override;
 
+public:
+	/// <summary>
+	/// EquipableItemLevel에 따른 ItemDatas 및 StaticMesh 초기화 하기
+	/// </summary>
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void InitVestDatasAndStaticMesh();
+
 };
 
 

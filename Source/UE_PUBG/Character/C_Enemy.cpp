@@ -9,6 +9,7 @@
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
+#include "Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 
 #include "Item/C_Item.h"
 #include "Item/Weapon/Gun/C_Gun.h"
@@ -22,6 +23,9 @@
 AC_Enemy::AC_Enemy()
 {
 	TeamID = ETeamAttitude::Hostile;
+
+	ItemSpawnerHelper = CreateDefaultSubobject<UC_DefaultItemSpawnerComponent>("ItemSpawnerHelper");
+	ItemSpawnerHelper->SetOwnerEnemy(this);
 }
 
 void AC_Enemy::BeginPlay()
@@ -31,7 +35,7 @@ void AC_Enemy::BeginPlay()
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 
     // TODO : 비행기 타기 이전에 spawn하는 것으로 수정하기
-    SpawnDefaultWeaponsAndItemsForSelf();
+    ItemSpawnerHelper->SpawnDefaultWeaponsAndItems();
 }
 
 void AC_Enemy::Tick(float DeltaSeoncds)
@@ -132,48 +136,6 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 	case EPoseState::POSE_MAX: default: return false;
 	}
 
-}
-
-void AC_Enemy::SpawnDefaultWeaponsAndItemsForSelf()
-{
-    FActorSpawnParameters Param{};
-    Param.Owner = this;
-
-    TSubclassOf<AC_Weapon> MeleeWeaponClass = EquippedComponent->GetSubclassOfWeapon(EWeaponSlot::MELEE_WEAPON);
-    AC_MeleeWeapon* MeleeWeapon = GetWorld()->SpawnActor<AC_MeleeWeapon>(MeleeWeaponClass, Param);
-    EquippedComponent->SetSlotWeapon(EWeaponSlot::MELEE_WEAPON, MeleeWeapon);
-    //MeleeWeapon->LegacyMoveToSlot(this);
-
-    TSubclassOf<AC_Weapon> MainGunWeaponClass = EquippedComponent->GetSubclassOfWeapon(EWeaponSlot::MAIN_GUN);
-    AC_Gun* MainGun = GetWorld()->SpawnActor<AC_Gun>(MainGunWeaponClass, Param);
-    MainGun->MoveToSlot(this);
-    //EquippedComponent->SetSlotWeapon(EWeaponSlot::MAIN_GUN, MainGun);
-
-    TSubclassOf<AC_Weapon> SubGunWeaponClass = EquippedComponent->GetSubclassOfWeapon(EWeaponSlot::SUB_GUN);
-    AC_Gun* SubGun = GetWorld()->SpawnActor<AC_Gun>(SubGunWeaponClass, Param);
-    SubGun->MoveToSlot(this);
-    //EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, SubGun);
-
-    // Throwable Weapon setting 하기
-    for (auto& pair : EquippedComponent->GetSubclassOfThrowingWeapon())
-    {
-        AC_ThrowingWeapon* ThrowWeapon = GetWorld()->SpawnActor<AC_ThrowingWeapon>(pair.Value, Param);
-        ThrowWeapon->MoveToSlot(this);
-    }
-
-	// "FlashBang"
-	// "Grenade"
-	AC_ThrowingWeapon* Grenade = Cast<AC_ThrowingWeapon>(this->GetInvenComponent()->FindMyItem("Grenade"));
-	if (!IsValid(Grenade))
-	{
-		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade nullptr", FColor::Red, 10.f);
-		return;
-	}
-	
-	if (!Grenade->MoveToSlot(this))
-		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade MoveToSlot Failed!", FColor::Red, 10.f);
-
-    // TODO : 다른 Item들 (탄, Consumable item 등등 inven에 넣어두기)
 }
 
 

@@ -15,6 +15,7 @@
 #include "Character/Component/ParkourActionStrategy/C_MantleHighActionStrategy.h"
 
 #include "Character/Component/C_EquippedComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 
@@ -92,14 +93,6 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//if (OwnerCharacter->GetMesh()->GetSkeletalMeshAsset() == MainSkeletalMesh)
-	//	UC_Util::Print("MainSkeletal");
-	//
-	//if (OwnerCharacter->GetMesh()->GetAnimClass() == MainAnimInstance)
-	//	UC_Util::Print("MainAnimClass");
-
-	//UC_Util::Print(OwnerCharacter->GetCharacterMovement()->GetMovementName());
-
 	if (bPendingMeshUpdateToMainMesh)
 	{
 		// Swap Mesh to original main skeletal mesh
@@ -129,17 +122,6 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		//bIsCurrentlyWarping = false;
 	}
 
-	// Testing
-	//OwnerCharacter->GetMesh()->GetBoneTransform()
-	// LeftHandMiddle2
-	// RightToeBase
-	/*const FName LeftHandName = "LeftHandMiddle2";
-	const FName RightToeName = "RightToeBase";
-	static float _Max{};
-	FVector HandLocation = OwnerCharacter->GetMesh()->GetBoneTransform(LeftHandName).GetTranslation();
-	FVector FootLocation = OwnerCharacter->GetMesh()->GetBoneTransform(RightToeName).GetTranslation();
-	_Max = FMath::Max(_Max, HandLocation.Z - FootLocation.Z);
-	UC_Util::Print(_Max);*/
 }
 
 bool UC_ParkourComponent::TryExecuteParkourAction()
@@ -191,8 +173,9 @@ void UC_ParkourComponent::ExecuteMotionWarpingAction(const FParkourDescriptor& C
 	SwapMesh(true);
 
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-	OwnerCharacter->SetActorEnableCollision(false);
-
+	// OwnerCharacter->SetActorEnableCollision(false);
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 	// ParkourActionStrategy 실행
 	CurParkourActionStrategy->UseMotionWarpActionStrategy(OwnerCharacter, CurParkourDesc);
 }
@@ -210,8 +193,6 @@ void UC_ParkourComponent::SwapMesh(bool ToRootedMesh)
 		UC_Util::Print("From UC_ParkourComponent::SwapMesh : Current Mesh not valid!", FColor::Red, 10.f);
 		return;
 	}
-
-	UC_Util::Print("Swapping Mesh", FColor::Red, 3.f);
 
 	static FTransform MainRelativeTransform{};
 
@@ -728,8 +709,9 @@ void UC_ParkourComponent::OnParkourAnimMontageEnd()
 	UC_Util::Print("OnParkourEnd", FColor::Cyan, 10.f);
 
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	OwnerCharacter->SetActorEnableCollision(true);
-
+	// OwnerCharacter->SetActorEnableCollision(true);
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	
 	OwnerCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0);
 
 	bPendingMeshUpdateToMainMesh = true; // 다음 Update Tick에서 Main skeletal mesh로 돌아감
@@ -738,8 +720,9 @@ void UC_ParkourComponent::OnParkourAnimMontageEnd()
 void UC_ParkourComponent::SwapMeshToMainSkeletalMesh()
 {
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	OwnerCharacter->SetActorEnableCollision(true);
-
+	// OwnerCharacter->SetActorEnableCollision(true);
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	
 	OwnerCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0);
 
 	bPendingMeshUpdateToMainMesh = true;

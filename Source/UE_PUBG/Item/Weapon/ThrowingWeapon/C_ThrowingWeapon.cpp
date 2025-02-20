@@ -222,7 +222,7 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 {
 	//this->SetHidden(false);
 
-	UC_Util::Print("AttachToHand");
+	UC_Util::Print("AttachToHand", FColor::Red, 10.f);
 
 	SetActorHiddenInGame(false);
 	//SetActorHiddenInGame(true);
@@ -250,7 +250,8 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 	return AttachToComponent
 	(
 		InParent,
-		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		// FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		EQUIPPED_SOCKET_NAMES[ThrowableType]
 	);
 }
@@ -276,84 +277,6 @@ void AC_ThrowingWeapon::DropItem(AC_BasicCharacter* Character)
 
 	//바닥 레이 캐스팅 받아와서 바닥에 아이템 생성하기.
 	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
-}
-
-//void AC_ThrowingWeapon::SetItemStack(uint8 ItemStack)
-//{
-//	ItemDatas.ItemCurStack = ItemStack;
-//}
-
-void AC_ThrowingWeapon::EquipToCharacter(AC_BasicCharacter* Character)
-{
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();
-
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
-
-	AC_Item* unEquipItem = nullptr;
-
-	AC_Item* inItem = nullptr;
-
-	//투척칸이 비어있는지 검사
-	if (equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON])
-	{
-		//장착된 투척류가 존재하고 있다면 실행.
-		uint8 nextVolume = 
-			invenComp->GetCurVolume() 
-			+ equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]->GetItemDatas().ItemVolume
-			- ItemDatas.ItemVolume;
-
-		if (nextVolume > invenComp->GetMaxVolume()) //교체후 인벤의 용량을 초과한다면 교체 불가능, 
-		{
-			//인벤의 공간을 체크해서 인벤으로
-			if (invenComp->CheckVolume(this))
-			{
-				inItem = invenComp->FindMyItem(this);
-				if (inItem)
-				{
-					inItem->AddItemStack();
-					SetActorHiddenInGame(true);
-					SetActorEnableCollision(false);
-					this->Destroy();
-					return; //인벤으로 아이템이 들어갔으므로 종료.
-				}
-			}
-		}
-	
-
-		//초과하지 않는다면 투척류 교체. unEquipItem = 교체당한 아이템.
-		unEquipItem = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
-
-		//더블포인터라 확인 한번 할 것. 
-		inItem = invenComp->FindMyItem(unEquipItem);
-
-		if (inItem)
-		{
-			//교체당한 아이템이 인벤에 존재한다면. 인벤의 아이템의 스택을 + 1.
-			inItem->AddItemStack();
-			unEquipItem->SetActorHiddenInGame(true);
-			unEquipItem->SetActorEnableCollision(false);
-			unEquipItem->Destroy();
-		}
-		else
-		{
-			//교체당한 아이템이 인벤에 존재하지 않는다면. 인벤으로 아이템을 이동.
-			invenComp->AddItemToMyList(unEquipItem);
-
-			SetActorHiddenInGame(true);
-			SetActorEnableCollision(false);
-		}
-	}
-	else
-	{
-		//장착된 투척류가 존재하지 않는다면 실행. 바로 장착.
-		equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
-		
-		//AroundItemList에서 해당 아이템이 안사라진다면 긴급조치 할 것.
-		//invenComp->RemoveAroundItem(this);
-		
-		SetActorHiddenInGame(true);
-		SetActorEnableCollision(false);
-	}
 }
 
 bool AC_ThrowingWeapon::LegacyMoveToInven(AC_BasicCharacter* Character)
@@ -684,15 +607,6 @@ bool AC_ThrowingWeapon::MoveSlotToInven(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_ThrowingWeapon::MoveSlotToSlot(AC_BasicCharacter* Character)
-{
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
-
-	//안씀.
-	return false;
-}
-
 bool AC_ThrowingWeapon::MoveInvenToAround(AC_BasicCharacter* Character)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
@@ -707,15 +621,6 @@ bool AC_ThrowingWeapon::MoveInvenToAround(AC_BasicCharacter* Character)
 	DropItem(Character);
 
 	return true;
-}
-
-bool AC_ThrowingWeapon::MoveInvenToInven(AC_BasicCharacter* Character)
-{
-	//UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	//UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
-
-	//안씀
-	return false;
 }
 
 bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
@@ -769,15 +674,6 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 	//if (curWeapon) //TODO : InvenComp->AddItemToMyList(nullptr)이 문제 생기면 활성화 
 	
 	return true;
-}
-
-bool AC_ThrowingWeapon::MoveAroundToAround(AC_BasicCharacter* Character)
-{
-	//UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	//UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
-
-	//안씀
-	return false;
 }
 
 bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character)
