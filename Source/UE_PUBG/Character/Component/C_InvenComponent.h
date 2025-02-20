@@ -207,9 +207,6 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_BackPack* MyBackPack {};
-
-private:
-
 	
 };
 

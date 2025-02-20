@@ -191,8 +191,8 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 void AC_BasicCharacter::CharacterDead()
 {
-	if (GetMesh()->GetSkeletalMeshAsset() == GetParkourComponent()->GetRootedSkeletalMesh())
-		GetParkourComponent()->SwapMeshToMainSkeletalMesh();
+	if (GetMesh()->GetSkeletalMeshAsset() == ParkourComponent->GetRootedSkeletalMesh())
+		ParkourComponent->SwapMeshToMainSkeletalMesh();
 	
 	// 본 변형 업데이트
 	//GetMesh()->RefreshBoneTransforms();

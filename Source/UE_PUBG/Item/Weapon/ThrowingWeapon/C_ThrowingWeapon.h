@@ -68,16 +68,12 @@ private:
 
 	void DropItem(AC_BasicCharacter* Character) override;
 
-	//void SetItemStack(uint8 ItemStack) override;
-
-	void EquipToCharacter(AC_BasicCharacter* Character);
-	//protected:
-		/// <summary>
-		/// 해당 아이템(객체)를 얼마나 인벤에 넣을 수 있는지 계산해서 넣는다. -> 일부만 넣는 경우에는 인벤에 넣을 때 Spawn을 통해 새로운 객체를 만들어 
-		/// 갯수를 설정해주고 원본의 갯수도 수정. (원본stack = 수정된 원본의 stack + 생성객체의 stack)
-		/// </summary>
-		/// <param name="Character"></param>
-		/// <returns></returns>
+	/// <summary>
+	/// 해당 아이템(객체)를 얼마나 인벤에 넣을 수 있는지 계산해서 넣는다. -> 일부만 넣는 경우에는 인벤에 넣을 때 Spawn을 통해 새로운 객체를 만들어 
+	/// 갯수를 설정해주고 원본의 갯수도 수정. (원본stack = 수정된 원본의 stack + 생성객체의 stack)
+	/// </summary>
+	/// <param name="Character"></param>
+	/// <returns></returns>
 	bool LegacyMoveToInven(AC_BasicCharacter* Character) override;
 
 	/// <summary>
@@ -103,13 +99,10 @@ private:
 protected:
 	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
 	bool MoveSlotToInven(AC_BasicCharacter* Character) override;
-	bool MoveSlotToSlot(AC_BasicCharacter* Character) override;
 
 	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
-	bool MoveInvenToInven(AC_BasicCharacter* Character) override;
 	bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
 
-	bool MoveAroundToAround(AC_BasicCharacter* Character) override;
 	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
 	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 
