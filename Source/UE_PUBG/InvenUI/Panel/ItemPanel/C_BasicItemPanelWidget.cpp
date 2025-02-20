@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/Panel/ItemPanel/C_BasicItemPanelWidget.h"
@@ -100,7 +100,7 @@ void UC_BasicItemPanelWidget::InitializeItemList(const TArray<AC_Item*>& AroundI
     if (!IsValid(ItemListView1)) return;
 
     ItemListView1->ClearListItems(); // 기존 아이템 삭제
-
+    //ItemListView1->SetListItems
     if (!(AroundItemList.Num() > 0)) return;
 
     for (auto& AroundItem : AroundItemList)
@@ -114,7 +114,7 @@ void UC_BasicItemPanelWidget::InitializeItemList(const TArray<AC_Item*>& AroundI
         {
             return;
         }
-
+        
         UC_BasicItemBarWidget* EntryWidget = Cast<UC_BasicItemBarWidget>(ItemListView1->GetEntryWidgetFromItem(Item));
 
         if (EntryWidget)
