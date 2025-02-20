@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -198,11 +198,11 @@ protected:
 	};
 
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UC_InvenUiWidget* InvenUI;
-
-	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<UUserWidget> InvenUiClass;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//class UC_InvenUiWidget* InvenUI;
+	//
+	//UPROPERTY(EditAnywhere, Category = "UI")
+	//TSubclassOf<UUserWidget> InvenUiClass;
 protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -64,7 +64,7 @@ public:
 
 	float GetCurDurabilityRate() const {return CurDurability / DURABILITY_MAX; }
 	
-private:
+protected:
 	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
 
 	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
@@ -85,7 +85,9 @@ protected: // Equipable 내구도 관련
 	static const float DURABILITY_MAX;
 	
 	float CurDurability = DURABILITY_MAX; // 현재 내구도
-	
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	//class UProgressBar* DurabilityBar = nullptr;
 };
 
 

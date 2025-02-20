@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/BasicItemSlot/EquipmentSlot/C_EquipmentSlotWidget.h"
@@ -6,8 +6,7 @@
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_InvenSystem.h"
 #include "InvenUserInterface/C_DragDropOperation.h"
-//#include "Components/Image.h"
-//#include "Components/TextBlock.h"
+#include "Components/ProgressBar.h"
 #include "Components/Border.h"
 
 
@@ -143,6 +142,8 @@ void UC_EquipmentSlotWidget::UpdateSlotItemImage(AC_EquipableItem* SlotItem)
 {
 	if (SlotItem)
 	{
+		UpdateDurabilityBar(SlotItem->GetCurDurabilityRate());
+		
 		ItemImage->SetBrushFromTexture(SlotItem->GetItemDatas().ItemSlotImage);
 		FSlateBrush Brush = ItemImage->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -151,12 +152,18 @@ void UC_EquipmentSlotWidget::UpdateSlotItemImage(AC_EquipableItem* SlotItem)
 	}
 	else
 	{
+		UpdateDurabilityBar(1.0f);
 		ItemImage->SetBrushFromTexture(nullptr);
 		FSlateBrush Brush = ItemImage->GetBrush();
 		Brush.TintColor = FLinearColor(0.0f, 0.0f, 0.0f, 0.3f);
 		ItemImage->SetBrush(Brush);
 	}
 	//TODO : Vest와 Helmet은 내구도 표시가 필요함. 2가지의 표시가 있음. 숫자와 붉은bar, 이건 하위클래스에서 하기.
+}
+
+void UC_EquipmentSlotWidget::UpdateDurabilityBar(float percent)
+{
+	//DurabilityBar->SetPercent(1.0f - percent);
 }
 
 

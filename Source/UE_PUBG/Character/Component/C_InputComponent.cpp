@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_InputComponent.h"
@@ -633,6 +633,9 @@ void UC_InputComponent::OnFKey()
 		Player->GetCurActivatingConsumableItem()->CancelActivating();
 		return;
 	}
+
+	if (Player->GetCurOutLinedItem())
+		Player->GetCurOutLinedItem()->Interaction(Player);
 		
 	// TODO : Consumable Item 사용 중이라면 취소 시키기
 	// Testing용 ConsumableItem 작동 취소 TODO : 이 라인 지우기

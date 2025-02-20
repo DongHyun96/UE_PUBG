@@ -233,8 +233,16 @@ void AC_Item::SetItemStack(uint8 inItemStack)
 
 void AC_Item::SetOutlineEffect(bool bEnable)
 {
-	//UStaticMeshComponent* CachedComponent = GetComponentByClass<UStaticMeshComponent>();
+	//UPrimitiveComponent* CachedComponent = GetComponentByClass<UPrimitiveComponent>();
+	//
+	//if (CachedComponent)
+	//{
+	//	CachedComponent->SetRenderCustomDepth(bEnable);
+	//	CachedComponent->SetCustomDepthStencilValue(bEnable ? 1 : 0);
+	//}
+
 	//this->GetComponentByClass()
+
 	//for (UStaticMeshComponent* MeshComp : CachedComponent)
 	//{
 	//	MeshComp->SetRenderCustomDepth(bEnable);
@@ -242,6 +250,8 @@ void AC_Item::SetOutlineEffect(bool bEnable)
 
 	TArray<UPrimitiveComponent*> PrimitiveComponents;
 	GetComponents<UPrimitiveComponent>(PrimitiveComponents);
+
+
 
 	for (UPrimitiveComponent* Comp : PrimitiveComponents)
 	{
