@@ -64,6 +64,7 @@ public:
 	/// <returns> : Damage 감소 Factor </returns>
 	virtual float GetDamageReduceFactor() const;
 
+	UFUNCTION(BlueprintCallable)
 	float GetCurDurabilityRate() const {return CurDurability / DURABILITY_MAX; }
 	
 protected:

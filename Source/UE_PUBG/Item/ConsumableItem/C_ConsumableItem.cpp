@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/ConsumableItem/C_ConsumableItem.h"
@@ -136,16 +136,16 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 	}
 }
 
-void AC_ConsumableItem::SetLinkedItemBarWidget(UC_ItemBarWidget* InItemBarWidget)
-{
-	LinkedItemBarWidget = InItemBarWidget;
-
-	//if (LinkedItemBarWidget)
-	//{
-	//	// 현재 진행 상태 동기화
-	//	LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
-	//}
-}
+//void AC_ConsumableItem::SetLinkedItemBarWidget(UC_ItemBarWidget* InItemBarWidget)
+//{
+//	LinkedItemBarWidget = InItemBarWidget;
+//
+//	//if (LinkedItemBarWidget)
+//	//{
+//	//	// 현재 진행 상태 동기화
+//	//	LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
+//	//}
+//}
 
 void AC_ConsumableItem::SetLinkedItemBarWidget(UC_BasicItemBarWidget* InItemBarWidget)
 {
@@ -371,6 +371,8 @@ bool AC_ConsumableItem::MoveInvenToAround(AC_BasicCharacter* Character)
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
 	//Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+	SetLinkedItemBarWidget(nullptr);
 
 	//바닥 레이 캐스팅 받아와서 바닥에 아이템 생성하기.
 	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
