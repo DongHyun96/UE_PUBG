@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -39,6 +39,8 @@ public:
 
 	void SetUsingItem(AC_Item* inItem) { UsingItem = inItem; }
 
+	class UC_BasicDivideItemPanelWidget* GetDivideItemDropWidget() { return DivideItemDropWidget; }
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UC_AroundItemPanelWidget* AroundItemPanel = nullptr; // 아이템 리스트 위젯
@@ -65,15 +67,27 @@ protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	//class UC_EquipmentSlotWidget* BackPackSlot = nullptr;
 
+	/// <summary>
+	/// 현재 사용중인 용량(아이템의 Volume의 합)
+	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UProgressBar* CurVolumeBar = nullptr;
 
+	/// <summary>
+	/// 현재 최대 용량
+	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UProgressBar* MaxVolumeBar = nullptr;
 
 	bool bIsDragging = false;
 
 	AC_Item* UsingItem = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UC_BasicDivideItemPanelWidget* DivideItemDropWidget = nullptr;
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	//class UC_BasicDivideItemPanelWidget* DivideItemPickUpWidget = nullptr;
 };
 
 

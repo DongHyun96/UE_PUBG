@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/Panel/C_BasicPanelWidget.h"
@@ -16,8 +16,19 @@ bool UC_BasicPanelWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 	UC_Util::Print("Dropped Item");
 	//Cast<UC_DragDropOperation>(InOperation)
 	UC_DragDropOperation* MyOperation = Cast<UC_DragDropOperation>(InOperation);
+
 	AC_Item* DroppedItem = Cast<AC_Item>(MyOperation->Payload);
+
 	if (!DroppedItem) return false;
+
+	//bool bIsCtrlDown = InDragDropEvent.IsControlDown();
+
+	if (InDragDropEvent.IsControlDown())
+	{
+		ShowDividePanelWidget(DroppedItem);
+		return true;
+	}
+
 	switch (DroppedItem->GetItemDatas().ItemType)
 	{
 	case EItemTypes::NONE:
@@ -44,6 +55,12 @@ bool UC_BasicPanelWidget::HandleDrop(AC_Item* DroppedItem)
 {
 	return false;
 }
+
+void UC_BasicPanelWidget::ShowDividePanelWidget(AC_Item* DividedItem)
+{
+}
+
+
 
 
 
