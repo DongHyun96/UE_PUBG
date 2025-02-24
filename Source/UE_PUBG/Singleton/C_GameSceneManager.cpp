@@ -18,6 +18,7 @@
 #include "HUD/C_MapWidget.h"
 
 #include "Blueprint/UserWidget.h"
+#include "NavMesh/NavMeshBoundsVolume.h"
 
 void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 {
@@ -44,8 +45,12 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;
 		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor)) AirplaneManager = AP_Manager;
-		
-			
+
+		if (ANavMeshBoundsVolume* Volume = Cast<ANavMeshBoundsVolume>(*Actor))
+		{
+			UC_Util::Print("Initing NavMesh Bounds Volume", FColor::MakeRandomColor(), 10.f);
+			NavMeshBoundsVolume = Volume;
+		}
 	}
 }
 
