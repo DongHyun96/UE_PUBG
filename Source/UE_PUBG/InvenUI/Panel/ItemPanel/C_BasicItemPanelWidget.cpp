@@ -6,6 +6,27 @@
 #include "Item/C_Item.h"
 #include "Item/ConsumableItem/C_ConsumableItem.h"
 
+//void UC_BasicItemPanelWidget::NativeConstruct()
+//{
+//    Super::NativeConstruct();
+//
+//    if (IsValid(ItemListView1))
+//    {
+//        ItemListView1->OnEntryInitialized().AddUObject(this, &UC_BasicItemPanelWidget::OnEntryInitialized);
+//    }
+//}
+//
+//void UC_BasicItemPanelWidget::OnEntryInitialized(UUserWidget& EntryWidget, AC_Item* ListItem)
+//{
+//    if (UC_BasicItemBarWidget* ItemBar = Cast<UC_BasicItemBarWidget>(&EntryWidget))
+//    {
+//        if (AC_Item* Item = Cast<AC_Item>(&ListItem))
+//        {
+//            ItemBar->UpdateWidget(Item);
+//        }
+//    }
+//}
+
 void UC_BasicItemPanelWidget::AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItemMap)
 {
     if (!IsValid(ItemListView1)) return;
@@ -32,20 +53,20 @@ void UC_BasicItemPanelWidget::AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItem
             //ItemBar갱신.
             UC_BasicItemBarWidget* EntryWidget = Cast<UC_BasicItemBarWidget>(ItemListView1->GetEntryWidgetFromItem(Item));
             //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
-
+            
             if (IsValid(EntryWidget))
             {
-                if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
-                {
-                    if (IsValid(ConsumableItem->GetTestLinkedItemBarWidget()))
-                    {
-                        EntryWidget = ConsumableItem->GetTestLinkedItemBarWidget();
-                    }
-                    else
-                    {
-                        ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
-                    }
-                }
+                //if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
+                //{
+                //    if (IsValid(ConsumableItem->GetTestLinkedItemBarWidget()))
+                //    {
+                //        EntryWidget = ConsumableItem->GetTestLinkedItemBarWidget();
+                //    }
+                //    else
+                //    {
+                //        ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
+                //    }
+                //}
                 EntryWidget->UpdateWidget(Item);
             }
         }
@@ -119,6 +140,8 @@ void UC_BasicItemPanelWidget::InitializeItemList(const TArray<AC_Item*>& AroundI
 
         if (EntryWidget)
             EntryWidget->UpdateWidget(Item);
+
+
     }
 }
 

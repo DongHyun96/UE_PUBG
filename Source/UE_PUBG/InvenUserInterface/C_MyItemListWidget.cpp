@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUserInterface/C_MyItemListWidget.h"
@@ -53,17 +53,17 @@ void UC_MyItemListWidget::AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItemlist
 
             if (IsValid(EntryWidget))
             {
-                if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
-                {
-                    if (IsValid(ConsumableItem->GetLinkedItemBarWidget()))
-                    {
-                        EntryWidget = ConsumableItem->GetLinkedItemBarWidget();
-                    }
-                    else
-                    {
-                        ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
-                    }
-                }
+                //if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
+                //{
+                //    if (IsValid(ConsumableItem->GetLinkedItemBarWidget()))
+                //    {
+                //        EntryWidget = ConsumableItem->GetLinkedItemBarWidget();
+                //    }
+                //    else
+                //    {
+                //        ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
+                //    }
+                //}
                 EntryWidget->InitBar(Item);
             }
         }
