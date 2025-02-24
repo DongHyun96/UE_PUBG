@@ -44,12 +44,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;
 		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor)) AirplaneManager = AP_Manager;
-
-		// 모든 문 확인해서 Enemy Nav 수정
-		//if (Actor->GetName().Contains(TEXT("Door")))
-		//{
-		//
-		//}
+		
 			
 	}
 }

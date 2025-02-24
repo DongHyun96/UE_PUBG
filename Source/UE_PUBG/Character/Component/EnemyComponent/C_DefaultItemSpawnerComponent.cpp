@@ -79,7 +79,7 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 	
 	Vest->MoveToSlot(OwnerEnemy);
 
-	UC_Util::Print("Setting Vest Lv : " + FString::FromInt(static_cast<uint8>(Vest->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
+	// UC_Util::Print("Setting Vest Lv : " + FString::FromInt(static_cast<uint8>(Vest->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
 
 	// 20% 확률로 3가방 장착 & 장착 못하면 1, 2랩 가방은 각각 50%
 	EEquipableItemLevel BackPackLevel = (FMath::RandRange(0.f, 1.f) > 0.8f) ? EEquipableItemLevel::LV3 :
@@ -88,7 +88,7 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 	AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[BackPackLevel]);
 	BackPack->MoveToSlot(OwnerEnemy);
 
-	UC_Util::Print("Setting BackPack Lv : " + FString::FromInt(static_cast<uint8>(BackPack->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
+	// UC_Util::Print("Setting BackPack Lv : " + FString::FromInt(static_cast<uint8>(BackPack->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
 
 	// 10% 확률로 3헬멧 장착
 	EEquipableItemLevel HelmetLevel = (FMath::RandRange(0.f, 1.f) > 0.9f) ? EEquipableItemLevel::LV3 :
@@ -97,7 +97,7 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 	AC_Helmet* Helmet = GetWorld()->SpawnActor<AC_Helmet>(HelmetClasses[HelmetLevel]);
 	Helmet->MoveToSlot(OwnerEnemy);
 
-	UC_Util::Print("Setting Helmet Lv : " + FString::FromInt(static_cast<uint8>(Helmet->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
+	// UC_Util::Print("Setting Helmet Lv : " + FString::FromInt(static_cast<uint8>(Helmet->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
 	
 	// TODO : 다른 Item들 (탄, Consumable item 등등 inven에 넣어두기)
 }
