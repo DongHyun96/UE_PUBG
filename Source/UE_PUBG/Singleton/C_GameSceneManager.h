@@ -61,6 +61,8 @@ public: // Getters and setters
 	EHUDMode GetCurrentHUDMode() const { return CurrentHUDMode; }
 	void SetCurrentHUDMode(EHUDMode InHUDMode);
 
+	class ANavMeshBoundsVolume* GetNavMeshBoundsVolume() const { return NavMeshBoundsVolume; }
+
 private:
 
 	class AC_Player*				Player{};
@@ -88,6 +90,11 @@ private:
 
 	TMap<EHUDMode, class UUserWidget*> HUDWidgets{};
 	UUserWidget*					   MiniMapWidget{};
+
+private:
+
+	class ANavMeshBoundsVolume* NavMeshBoundsVolume{};
+	
 
 };
 
