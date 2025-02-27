@@ -171,4 +171,12 @@ void UC_InventoryUIWidget::UpdateInventroyItemPanelWidget()
     }
 }
 
+void UC_InventoryUIWidget::CloseDivideItemWidget()
+{
+    if (DivideItemAroundDropWidget->Visibility == ESlateVisibility::Visible)
+        DivideItemAroundDropWidget->SetVisibility(ESlateVisibility::Collapsed);
+    if (DivideItemInventoryDropWidget->Visibility == ESlateVisibility::Visible)
+        DivideItemInventoryDropWidget->SetVisibility(ESlateVisibility::Collapsed);
+}
+
 

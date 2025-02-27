@@ -30,6 +30,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateInventroyItemPanelWidget();
+
+	void CloseDivideItemWidget();
 public:
 	bool GetIsDragging() { return bIsDragging; }
 

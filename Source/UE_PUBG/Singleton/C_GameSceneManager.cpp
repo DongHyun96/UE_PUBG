@@ -83,6 +83,7 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 		MiniMapWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Hidden);
 		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
+		Player->GetInvenSystem()->GetInvenUI()->CloseDivideItemWidget();
 		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		return;
 	case EHUDMode::INVEN:
@@ -93,6 +94,8 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 		return;
 	case EHUDMode::MAINMAP:
 		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
+		Player->GetInvenSystem()->GetInvenUI()->CloseDivideItemWidget();
+
 		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
 		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Visible);
