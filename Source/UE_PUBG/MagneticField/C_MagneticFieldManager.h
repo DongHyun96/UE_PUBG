@@ -171,8 +171,7 @@ private:
 private:
 
 	const int	SLICE_COUNT		= 100;
-	//const int	LAST_PHASE		= 3; // TODO : Last Phase 개수 수정
-	const int	LAST_PHASE		= PhaseInfos.Num() - 1; // TODO : Last Phase 개수 수정
+	const int	LAST_PHASE		= PhaseInfos.Num() - 1;
 	const float WALL_Z_LOCATION = 3500.f;
 	const float MAP_LENGTH		= 100000.f;
 	const float MAP_LENGTH_TO_UV_FACTOR = 0.00001f;
