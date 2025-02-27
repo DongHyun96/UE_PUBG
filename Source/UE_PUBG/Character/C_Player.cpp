@@ -196,8 +196,16 @@ void AC_Player::Tick(float DeltaTime)
 	HandleStatesWhileMovingCrawl();
 	SetCanFireWhileCrawl();
 
+	AC_Item* NewInteractableItem = FindBestInteractable();
+
+	// 아이템이 변경되었을 때만 업데이트 수행
+	if (NewInteractableItem != CurOutLinedItem)
+	{
+		UpdateInteractable(NewInteractableItem);
+	}
+
 	//DrawingItemOutLine();
-	UpdateInteractable(FindBestInteractable());
+	//UpdateInteractable(FindBestInteractable());
 	//DistanceToGround = GetCharacterMovement()->CurrentFloor.FloorDist;
 	
 	//int TestCount = 0;
@@ -498,13 +506,13 @@ AC_Item* AC_Player::FindBestInteractable()
 		//밖으로 빼야 될 수도.
 		FVector PlayerToItemVector = (CachedInteractableItem->GetActorLocation() - PlayerCamera->GetCameraLocation()).GetSafeNormal();
 		
-		FVector CameraForwardVector = PlayerCamera->GetCameraRotation().Vector();
+		FVector CameraForwardVector = PlayerCamera->GetCameraRotation().Vector().GetSafeNormal();
 
 		double CachedDot = FVector::DotProduct(PlayerToItemVector, CameraForwardVector);
 		//
-		if (CachedDot > .5f && CachedDot > ItemDotProduct)
+		if (CachedDot > .9f && CachedDot > ItemDotProduct)
 		{
-			if (CachedInteractableItem->WasRecentlyRendered())
+			if (CachedInteractableItem)
 			{
 				ItemDotProduct = CachedDot;
 				TargetInteractableItem = CachedInteractableItem;
@@ -518,23 +526,23 @@ AC_Item* AC_Player::FindBestInteractable()
 void AC_Player::UpdateInteractable(AC_Item* InteractableItem)
 {
 	// UC_Util::Print("UpdateInteractable");
-	if (!InteractableItem) return;
 
-	if (InteractableItem != CurOutLinedItem)
+	if (CurOutLinedItem == InteractableItem)
 	{
-
-		if (CurOutLinedItem)
-		{
-			CurOutLinedItem->SetOutlineEffect(false);
-		}
-		InteractableItem->SetOutlineEffect(true);
-		// UC_Util::Print(InteractableItem->GetItemDatas().ItemName);
-		CurOutLinedItem = InteractableItem;
+		return;
 	}
-	else if (CurOutLinedItem)
+
+	// 이전 아웃라인 제거
+	if (CurOutLinedItem)
 	{
 		CurOutLinedItem->SetOutlineEffect(false);
-		CurOutLinedItem = nullptr;
+	}
+
+	// 새 아이템이 존재하면 아웃라인 적용
+	CurOutLinedItem = InteractableItem;
+	if (CurOutLinedItem)
+	{
+		CurOutLinedItem->SetOutlineEffect(true);
 	}
 }
 

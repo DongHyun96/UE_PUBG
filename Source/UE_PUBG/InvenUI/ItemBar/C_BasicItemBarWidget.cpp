@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/ItemBar/C_BasicItemBarWidget.h"
@@ -9,6 +9,7 @@
 
 #include "Character/Component/C_PlayerController.h"
 #include "Character/Component/C_InvenSystem.h"
+#include "Character/Component/C_InvenComponent.h"
 
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -26,11 +27,24 @@ void UC_BasicItemBarWidget::NativeConstruct()
 
 FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton) && InMouseEvent.IsLeftAltDown())
+	{
+		//TODO : 절반 줍기, 절반 버리기 구현하기.
+		if (HalfStackItemInteraction())
+		{
+			UpdateInvenUIWidget();
+			return FReply::Handled(); //참이면 return, 거짓이면 남은 코드 실행.
+		}
+	}
+
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
 		//우클릭 이벤트 실행
 		//TODO : 구현
 		if (!CachedItem) return FReply::Handled();
+
+		if (InMouseEvent.IsAltDown())
+			if (HalfStackItemInteraction()) return FReply::Handled(); //참이면 return, 거짓이면 남은 코드 실행.
 
 		AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));//ItemBar가 변수로 OwnerPlayer를 가지면 메모리 낭비가 심할거 같아서 사용
 		
@@ -207,11 +221,54 @@ void UC_BasicItemBarWidget::UpdateInvenUIWidget()
 			|| CachedItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT
 			)
 		{
-			InvenUiWidget->InitializeListView();
+			InvenUiWidget->UpdateAroundItemPanelWidget();
+			InvenUiWidget->UpdateInventroyItemPanelWidget();
 		}
 
 		InvenUiWidget->UpdateWidget();
 	}
+}
+
+bool UC_BasicItemBarWidget::HalfStackItemInteraction()
+{
+	if (CachedItem->GetItemDatas().ItemCurStack < 2) return false; //만약 뒤의 우클릭으로 안넘어간다면 여기서 Interaction 해야함.
+
+	AC_Player* PlayerCharacter = Cast<AC_Player>(UGameplayStatics::GetPlayerCharacter(this, 0));
+
+	if (!PlayerCharacter) return false; //PlayerCharacter가 없다면 return;
+
+	int HalfStack = CachedItem->GetItemDatas().ItemCurStack * 0.5;
+
+	float RestVolume = PlayerCharacter->GetInventory()->GetMaxVolume() - PlayerCharacter->GetInventory()->GetCurVolume();
+
+	if (CachedItem->GetItemDatas().ItemPlace == EItemPlace::AROUND)
+	{
+		if (RestVolume >= HalfStack * CachedItem->GetItemDatas().ItemVolume)
+		{
+			AC_Item* SpawnItem = CachedItem->SpawnItem(PlayerCharacter);
+			CachedItem->SetItemStack(CachedItem->GetItemDatas().ItemCurStack - HalfStack);
+			SpawnItem->SetItemStack(HalfStack);
+			SpawnItem->MoveToInven(PlayerCharacter);
+			return true;
+		}
+		else
+		{
+			CachedItem->MoveToInven(PlayerCharacter);
+			return true;
+		}
+
+	}
+	else if (CachedItem->GetItemDatas().ItemPlace == EItemPlace::INVEN)
+	{
+		AC_Item* SpawnItem = CachedItem->SpawnItem(PlayerCharacter);
+		CachedItem->SetItemStack(CachedItem->GetItemDatas().ItemCurStack - HalfStack);
+		SpawnItem->SetItemStack(HalfStack);
+		SpawnItem->SetActorEnableCollision(true);
+		SpawnItem->MoveToAround(PlayerCharacter);
+		return true;
+	}
+
+	return false;
 }
 
 

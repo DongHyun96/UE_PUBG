@@ -26,7 +26,8 @@ public class UE_PUBG : ModuleRules
             "SlateCore",
             "MotionWarping",
             "AIModule",
-            "Water"
+            "Water",
+            "NavigationSystem"
         });
 
         /*

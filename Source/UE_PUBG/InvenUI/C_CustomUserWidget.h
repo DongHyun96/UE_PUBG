@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -18,12 +18,13 @@ class UE_PUBG_API UC_CustomUserWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	UFUNCTION(BlueprintCallable)
 	class AC_Player* GetOwnerPlayer() { return OwnerPlayer; }
 
 	virtual void SetOwnerPlayer(AC_Player* InOwnerPlayer) { OwnerPlayer = InOwnerPlayer; }
 
 protected:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_Player* OwnerPlayer = nullptr;
 };
 

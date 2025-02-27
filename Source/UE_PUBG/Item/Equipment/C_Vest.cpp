@@ -1,10 +1,11 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Equipment/C_Vest.h"
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_InvenSystem.h"
 #include "HUD/C_ArmorInfoWidget.h"
 #include "HUD/C_HUDWidget.h"
 #include "Utility/C_Util.h"
@@ -107,13 +108,18 @@ bool AC_Vest::TakeDamage(float DamageAmount)
 	DamageAmount *= DamageReduceRate;
 	
 	CurDurability -= DamageAmount;
+
+
 	if (CurDurability < 0.f) CurDurability = 0.f;
+
 
 	// OwnerCharacter가 Player인 경우, UI 업데이트
 	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
 	{
 		// TODO : Inven UI의 조끼 피도 업데이트 시키기
 		Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentVestDurabilityRate(CurDurability / DURABILITY_MAX);
+		//UpdateDurabilityBar();
+		Player->GetInvenSystem()->InitializeList();
 	}
 
 	return true;

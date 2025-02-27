@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Singleton/C_GameSceneManager.h"
@@ -18,6 +18,7 @@
 #include "HUD/C_MapWidget.h"
 
 #include "Blueprint/UserWidget.h"
+#include "NavMesh/NavMeshBoundsVolume.h"
 
 void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 {
@@ -44,13 +45,6 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;
 		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor)) AirplaneManager = AP_Manager;
-
-		// 모든 문 확인해서 Enemy Nav 수정
-		//if (Actor->GetName().Contains(TEXT("Door")))
-		//{
-		//
-		//}
-			
 	}
 }
 
@@ -65,10 +59,10 @@ void UC_GameSceneManager::Deinitialize()
 {
 	Super::Deinitialize();
 
-	for (UObject* NONGCObject : NonGCObjects)
+	for (UObject* NONGCObject : GCProtectedObjects)
 		NONGCObject->RemoveFromRoot();
 
-	NonGCObjects.Empty();
+	GCProtectedObjects.Empty();
 
 	HUDWidgets.Empty();
 	MiniMapWidget = nullptr;
@@ -113,5 +107,3 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 //
 //	
 //}
-
-

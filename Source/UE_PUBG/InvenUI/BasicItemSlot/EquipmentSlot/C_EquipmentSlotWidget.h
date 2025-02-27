@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -49,13 +49,19 @@ public:
 protected:
 	void UpdateSlotItemImage(AC_EquipableItem* SlotItem);
 
-
+	/// <summary>
+	/// DurabilityBar(내구도bar)를 업데이트함.
+	/// </summary>
+	virtual void UpdateDurabilityBar(float percent);
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UImage* ItemImage = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	EEquipSlot EquipSlot{};
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	//class UProgressBar* DurabilityBar = nullptr;
 };
 
 

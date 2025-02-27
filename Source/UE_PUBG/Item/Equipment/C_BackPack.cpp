@@ -165,8 +165,6 @@ bool AC_BackPack::Interaction(AC_BasicCharacter* Character)
 
 bool AC_BackPack::LegacyMoveToAround(AC_BasicCharacter* Character)
 {
-	UC_Util::Print("AC_BackPack::LegacyMoveToAround", FColor::MakeRandomColor(), 10.f);
-	
 	
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	AC_BackPack* curBackPack = nullptr;
@@ -198,7 +196,6 @@ bool AC_BackPack::LegacyMoveToAround(AC_BasicCharacter* Character)
 
 bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
 {
-	UC_Util::Print("AC_BackPack::LegacyMoveToSlot", FColor::MakeRandomColor(), 10.f);
 	
 	//TODO : PickUpItem 내용으로 우선 구현한 것. 다시 구현하기.
 	//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
@@ -229,7 +226,6 @@ bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
 
 bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
 {
-	UC_Util::Print("AC_BackPack::MoveSlotToAround", FColor::MakeRandomColor(), 10.f);
 	
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 	AC_BackPack* curBackPack = nullptr;
@@ -261,7 +257,6 @@ bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
 
 bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character)
 {
-	UC_Util::Print("AC_BackPack::MoveAroundToSlot", FColor::MakeRandomColor(), 10.f);
 
 	
 	//TODO : PickUpItem 내용으로 우선 구현한 것. 다시 구현하기.

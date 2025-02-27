@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -32,7 +32,7 @@ public:
 
 	void AttachToSocket(class AC_BasicCharacter* InParent);
 
-private:
+protected:
 	
 	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
 

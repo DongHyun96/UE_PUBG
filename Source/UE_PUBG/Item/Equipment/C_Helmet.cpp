@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Equipment/C_Helmet.h"
@@ -6,8 +6,10 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_InvenSystem.h"
 #include "HUD/C_ArmorInfoWidget.h"
 #include "HUD/C_HUDWidget.h"
+#include "InvenUserInterface/C_EquipmentPanel.h"
 #include "Utility/C_Util.h"
 
 
@@ -101,37 +103,37 @@ bool AC_Helmet::TakeDamage(float DamageAmount)
 	
 	CurDurability -= DamageAmount;
 
+	if (CurDurability < 0.f) CurDurability = 0.f;
+
+	if (CurDurability == 0.f)
+	{
+		// 이 헬멧 날리기
+		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		SetActorEnableCollision(true);
+		HelmetMesh->SetSimulatePhysics(true);
+		HelmetMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		HelmetMesh->AddImpulse(FMath::VRand() * 2000.f);
+		
+		// Item의 DropItem은 OwnerCharacter가 nullptr일 경우, 처리를 안함 -> DropItem 내에서 위치 조정하는 부분을 넘기면서 SlotEquipment 세팅
+		AC_BasicCharacter* PrevOwnerCharacter = OwnerCharacter;
+		SetOwnerCharacter(nullptr);
+
+		PrevOwnerCharacter->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, nullptr);
+		if (AC_Player* Player = Cast<AC_Player>(PrevOwnerCharacter))
+			Player->GetInvenSystem()->InitializeList();
+		
+		this->SetItemPlace(EItemPlace::NONE);
+		return true;
+	}
+	
 	// OwnerCharacter가 Player인 경우, UI 업데이트
 	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
 	{
-		// TODO : Inven UI의 헬멧 피도 업데이트 시키기
-		
-		if (CurDurability > 0.f)
-			Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentHelmetDurabilityRate(CurDurability / DURABILITY_MAX);
-		else
-			Player->GetHUDWidget()->GetArmorInfoWidget()->SetHelmetInfo(0);
-	}
-	
-	// TODO : 이 라인 if문에 넣어주기
-	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	SetActorEnableCollision(true);
-	HelmetMesh->SetSimulatePhysics(true);
-	HelmetMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	HelmetMesh->AddImpulse(FMath::VRand() * 2000.f);
-	
-	// Item의 DropItem은 OwnerCharacter가 nullptr일 경우, 처리를 안함 -> DropItem 내에서 위치 조정하는 부분을 넘기면서 SlotEquipment 세팅
-	AC_BasicCharacter* PrevOwnerCharacter = OwnerCharacter;
-	SetOwnerCharacter(nullptr);
-	PrevOwnerCharacter->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, nullptr);
-	Cast<AC_Player>(PrevOwnerCharacter)->GetHUDWidget()->GetArmorInfoWidget()->SetHelmetInfo(0); // TODO : 이 라인은 없애고 if문에 넣기
-	
-	if (CurDurability < 0.f)
-	{
-		CurDurability = 0.f;
-		
-		// TODO : Helmet 날리기
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentHelmetDurabilityRate(CurDurability / DURABILITY_MAX);
+		Player->GetInvenSystem()->InitializeList();
 	}
 
+	
 	return true;
 }
 

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -62,6 +62,12 @@ public:
 	/// Interaction후 InvenUI를 업데이트하는 함수.
 	/// </summary>
 	void UpdateInvenUIWidget();
+
+	/// <summary>
+	/// alt + 우클릭으로 아이템의 절반을 줍거나 버릴 때 사용.
+	/// </summary>
+	bool HalfStackItemInteraction();
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UImage* ItemImage = nullptr;

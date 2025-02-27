@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,7 +17,12 @@ class UE_PUBG_API UC_BasicItemPanelWidget : public UC_BasicPanelWidget
 	GENERATED_BODY()
 	
 public:
-	/// <summary>
+	
+   //void NativeConstruct();
+   //
+   //void OnEntryInitialized(UUserWidget& EntryWidget, AC_Item* ListItem);
+    
+    /// <summary>
     /// MyItemListWidget(UI에 보이는 Inventory의 itemlist)를 초기화 하는 함수.
     /// </summary>
     /// <param name="itemlist"></param>
@@ -38,6 +43,8 @@ public:
 protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
     UListView* ItemListView1 = nullptr;
+
+
 };
 
 

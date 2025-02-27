@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/C_InventoryUIWidget.h"
@@ -12,6 +12,7 @@
 #include "InvenUI/BasicItemSlot/WeaponSlot/C_ThrowableWeaponSlotWidget.h"
 
 #include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWdiget.h"
+#include "InvenUI/Panel/DivideItemPanel/C_BasicDivideItemPanelWidget.h"
 
 #include "Components/ProgressBar.h"
 
@@ -92,6 +93,12 @@ void UC_InventoryUIWidget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
 
     if (EquipmentPanel)
         EquipmentPanel->SetOwnerPlayer(InOwnerPlayer);
+
+    if (DivideItemAroundDropWidget)
+        DivideItemAroundDropWidget->SetOwnerPlayer(InOwnerPlayer);
+
+    if (DivideItemInventoryDropWidget)
+        DivideItemInventoryDropWidget->SetOwnerPlayer(InOwnerPlayer);
 }
 
 //void UC_InventoryUIWidget::SetWidgetsOwner(AC_BasicCharacter* Character)
@@ -118,18 +125,28 @@ void UC_InventoryUIWidget::UpdateVolumeBar(AC_BasicCharacter* Character)
     MaxVolumeBar->SetPercent(MaxVolumePercent);
 }
 
-void UC_InventoryUIWidget::InitializeListView()
+void UC_InventoryUIWidget::UpdateWidget()
 {
-    if (InventoryPanel)
+    EquipmentPanel->UpdateWidget();
+
+    UpdateVolumeBar(OwnerPlayer);
+
+    UpdateAroundItemPanelWidget();
+
+    UpdateInventroyItemPanelWidget();
+}
+
+bool UC_InventoryUIWidget::GetIsPanelOpened()
+{
+    switch (this->GetVisibility())
     {
-        TMap<FString,AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
-        MyItems = OwnerPlayer->GetInvenComponent()->GetTestMyItems();
-        InventoryPanel->SetVisibility(ESlateVisibility::Visible);
-
-        //InventoryPanel->AddTMapItem(MyItems); // 아이템 리스트 추가
-        InventoryPanel->UpdateMyItemList(MyItems);
+    case ESlateVisibility::Visible: case ESlateVisibility::SelfHitTestInvisible: case ESlateVisibility::HitTestInvisible: return true;
+    default: return false;
     }
+}
 
+void UC_InventoryUIWidget::UpdateAroundItemPanelWidget()
+{
     if (IsValid(AroundItemPanel))
     {
         //TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
@@ -141,21 +158,16 @@ void UC_InventoryUIWidget::InitializeListView()
     }
 }
 
-void UC_InventoryUIWidget::UpdateWidget()
+void UC_InventoryUIWidget::UpdateInventroyItemPanelWidget()
 {
-    EquipmentPanel->UpdateWidget();
-
-    UpdateVolumeBar(OwnerPlayer);
-
-    InitializeListView();
-}
-
-bool UC_InventoryUIWidget::GetIsPanelOpened()
-{
-    switch (this->GetVisibility())
+    if (InventoryPanel)
     {
-    case ESlateVisibility::Visible: case ESlateVisibility::SelfHitTestInvisible: case ESlateVisibility::HitTestInvisible: return true;
-    default: return false;
+        TMap<FString, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
+        MyItems = OwnerPlayer->GetInvenComponent()->GetTestMyItems();
+        InventoryPanel->SetVisibility(ESlateVisibility::Visible);
+
+        //InventoryPanel->AddTMapItem(MyItems); // 아이템 리스트 추가
+        InventoryPanel->UpdateMyItemList(MyItems);
     }
 }
 

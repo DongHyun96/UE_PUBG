@@ -30,13 +30,6 @@ public:
 
 	class UProgressBar* GetHPBar() const { return HPBar; }
 
-private:
-
-	/// <summary>
-	/// 기본 무기 및 기본 아이템 비행기 탑승 시 가지고 시작
-	/// </summary>
-	void SpawnDefaultWeaponsAndItemsForSelf();
-
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
@@ -47,6 +40,12 @@ protected:
 	// 디버깅용 HPBar
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UProgressBar* HPBar{};
+
+protected:
+
+	// Default 아이템 스폰 처리 Component
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	class UC_DefaultItemSpawnerComponent* ItemSpawnerHelper{};
 
 };
 

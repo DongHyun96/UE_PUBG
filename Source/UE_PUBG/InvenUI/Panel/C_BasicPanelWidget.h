@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -18,6 +18,8 @@ public:
 
 protected:
 	virtual bool HandleDrop(class AC_Item* DroppedItem); //TODO: 순수가상함수로
+
+	virtual void ShowDividePanelWidget(AC_Item* DividedItem);
 };
 
 

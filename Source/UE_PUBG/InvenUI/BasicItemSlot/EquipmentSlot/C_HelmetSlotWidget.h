@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -17,6 +17,15 @@ class UE_PUBG_API UC_HelmetSlotWidget : public UC_EquipmentSlotWidget
 public:
 
 	//void UpdateWidget() override;
+
+	/// <summary>
+	/// DurabilityBar(내구도bar)를 업데이트함.
+	/// </summary>
+	void UpdateDurabilityBar(float percent) override;
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	class UProgressBar* DurabilityBar = nullptr;
 };
 
 

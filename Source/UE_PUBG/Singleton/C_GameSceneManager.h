@@ -56,7 +56,7 @@ public: // Getters and setters
 	/// <summary>
 	/// GameScene에서 GC로부터 보호된 Object들 추가 -> GameScene 끝날 때 일괄 삭제처리 예정
 	/// </summary>
-	void AddNonGCObject(UObject* Object) { NonGCObjects.Add(Object); }
+	void AddGCProtectedObject(UObject* Object) { GCProtectedObjects.Add(Object); }
 
 	EHUDMode GetCurrentHUDMode() const { return CurrentHUDMode; }
 	void SetCurrentHUDMode(EHUDMode InHUDMode);
@@ -79,7 +79,7 @@ private: // Test용 Enemy
 private:
 
 	// InGameScene내에서 Unreal GC로부터 보호된 객체들 -> GameScene이 끝날 때 해제할 예정
-	TSet<UObject*> NonGCObjects{};
+	TSet<UObject*> GCProtectedObjects{};
 
 private:
 

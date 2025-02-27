@@ -1,8 +1,10 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Equipment/C_EquipableItem.h"
 #include "Character/C_BasicCharacter.h"
+#include "Components/ProgressBar.h"
+
 #include "Utility/C_Util.h"
 
 const float AC_EquipableItem::DURABILITY_MAX = 100.f;

@@ -27,7 +27,7 @@ void UC_BehaviorComponent::BeginPlay()
 
 	// TODO : TargetCharacter 다른 곳에서 잡아주는 로직 만들기
 	SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer());
-	SetServiceType(EServiceType::COMBAT);
+	// SetServiceType(EServiceType::COMBAT);
 }
 
 void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

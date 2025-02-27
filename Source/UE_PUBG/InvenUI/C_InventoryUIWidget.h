@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -24,10 +24,12 @@ public:
 
 	void UpdateVolumeBar(AC_BasicCharacter* Character);
 
-	void InitializeListView();
-
 	void UpdateWidget();
 
+	void UpdateAroundItemPanelWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateInventroyItemPanelWidget();
 public:
 	bool GetIsDragging() { return bIsDragging; }
 
@@ -38,6 +40,14 @@ public:
 	bool SetIsDragging(bool Dragging) { return bIsDragging = Dragging; }
 
 	void SetUsingItem(AC_Item* inItem) { UsingItem = inItem; }
+
+	class UC_BasicDivideItemPanelWidget* GetDivideItemAroundDropWidget() { return DivideItemAroundDropWidget; }
+
+	class UC_BasicDivideItemPanelWidget* GetDivideItemInventoryDropWidget() { return DivideItemInventoryDropWidget; }
+
+protected:
+
+
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
@@ -65,15 +75,30 @@ protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	//class UC_EquipmentSlotWidget* BackPackSlot = nullptr;
 
+	/// <summary>
+	/// 현재 사용중인 용량(아이템의 Volume의 합)
+	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UProgressBar* CurVolumeBar = nullptr;
 
+	/// <summary>
+	/// 현재 최대 용량
+	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UProgressBar* MaxVolumeBar = nullptr;
 
 	bool bIsDragging = false;
 
 	AC_Item* UsingItem = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UC_BasicDivideItemPanelWidget* DivideItemAroundDropWidget = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UC_BasicDivideItemPanelWidget* DivideItemInventoryDropWidget = nullptr;
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	//class UC_BasicDivideItemPanelWidget* DivideItemPickUpWidget = nullptr;
 };
 
 

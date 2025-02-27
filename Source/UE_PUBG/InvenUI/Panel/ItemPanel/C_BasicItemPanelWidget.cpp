@@ -1,10 +1,31 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/Panel/ItemPanel/C_BasicItemPanelWidget.h"
 #include "InvenUI/ItemBar/C_BasicItemBarWidget.h"
 #include "Item/C_Item.h"
 #include "Item/ConsumableItem/C_ConsumableItem.h"
+
+//void UC_BasicItemPanelWidget::NativeConstruct()
+//{
+//    Super::NativeConstruct();
+//
+//    if (IsValid(ItemListView1))
+//    {
+//        ItemListView1->OnEntryInitialized().AddUObject(this, &UC_BasicItemPanelWidget::OnEntryInitialized);
+//    }
+//}
+//
+//void UC_BasicItemPanelWidget::OnEntryInitialized(UUserWidget& EntryWidget, AC_Item* ListItem)
+//{
+//    if (UC_BasicItemBarWidget* ItemBar = Cast<UC_BasicItemBarWidget>(&EntryWidget))
+//    {
+//        if (AC_Item* Item = Cast<AC_Item>(&ListItem))
+//        {
+//            ItemBar->UpdateWidget(Item);
+//        }
+//    }
+//}
 
 void UC_BasicItemPanelWidget::AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItemMap)
 {
@@ -32,20 +53,20 @@ void UC_BasicItemPanelWidget::AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItem
             //ItemBar갱신.
             UC_BasicItemBarWidget* EntryWidget = Cast<UC_BasicItemBarWidget>(ItemListView1->GetEntryWidgetFromItem(Item));
             //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
-
+            
             if (IsValid(EntryWidget))
             {
-                if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
-                {
-                    if (IsValid(ConsumableItem->GetTestLinkedItemBarWidget()))
-                    {
-                        EntryWidget = ConsumableItem->GetTestLinkedItemBarWidget();
-                    }
-                    else
-                    {
-                        ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
-                    }
-                }
+                //if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
+                //{
+                //    if (IsValid(ConsumableItem->GetTestLinkedItemBarWidget()))
+                //    {
+                //        EntryWidget = ConsumableItem->GetTestLinkedItemBarWidget();
+                //    }
+                //    else
+                //    {
+                //        ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
+                //    }
+                //}
                 EntryWidget->UpdateWidget(Item);
             }
         }
@@ -100,7 +121,7 @@ void UC_BasicItemPanelWidget::InitializeItemList(const TArray<AC_Item*>& AroundI
     if (!IsValid(ItemListView1)) return;
 
     ItemListView1->ClearListItems(); // 기존 아이템 삭제
-
+    //ItemListView1->SetListItems
     if (!(AroundItemList.Num() > 0)) return;
 
     for (auto& AroundItem : AroundItemList)
@@ -114,11 +135,13 @@ void UC_BasicItemPanelWidget::InitializeItemList(const TArray<AC_Item*>& AroundI
         {
             return;
         }
-
+        
         UC_BasicItemBarWidget* EntryWidget = Cast<UC_BasicItemBarWidget>(ItemListView1->GetEntryWidgetFromItem(Item));
 
         if (EntryWidget)
             EntryWidget->UpdateWidget(Item);
+
+
     }
 }
 

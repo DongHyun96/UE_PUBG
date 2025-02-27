@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -48,6 +48,8 @@ public:
 
 	void SetItemLevel(EEquipableItemLevel inItemLevel) { ItemLevel = inItemLevel; }
 
+	EEquipableItemLevel GetItemLevel() const { return ItemLevel; }
+	
 public:
 	/// <summary>
 	/// Equipable Item에 Damage 적용
@@ -62,9 +64,10 @@ public:
 	/// <returns> : Damage 감소 Factor </returns>
 	virtual float GetDamageReduceFactor() const;
 
+	UFUNCTION(BlueprintCallable)
 	float GetCurDurabilityRate() const {return CurDurability / DURABILITY_MAX; }
 	
-private:
+protected:
 	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
 
 	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
@@ -85,7 +88,9 @@ protected: // Equipable 내구도 관련
 	static const float DURABILITY_MAX;
 	
 	float CurDurability = DURABILITY_MAX; // 현재 내구도
-	
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	//class UProgressBar* DurabilityBar = nullptr;
 };
 
 
