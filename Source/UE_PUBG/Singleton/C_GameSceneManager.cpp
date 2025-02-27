@@ -45,12 +45,6 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;
 		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor)) AirplaneManager = AP_Manager;
-
-		if (ANavMeshBoundsVolume* Volume = Cast<ANavMeshBoundsVolume>(*Actor))
-		{
-			UC_Util::Print("Initing NavMesh Bounds Volume", FColor::MakeRandomColor(), 10.f);
-			NavMeshBoundsVolume = Volume;
-		}
 	}
 }
 
@@ -65,10 +59,10 @@ void UC_GameSceneManager::Deinitialize()
 {
 	Super::Deinitialize();
 
-	for (UObject* NONGCObject : NonGCObjects)
+	for (UObject* NONGCObject : GCProtectedObjects)
 		NONGCObject->RemoveFromRoot();
 
-	NonGCObjects.Empty();
+	GCProtectedObjects.Empty();
 
 	HUDWidgets.Empty();
 	MiniMapWidget = nullptr;
@@ -113,5 +107,3 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 //
 //	
 //}
-
-

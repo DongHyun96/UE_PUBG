@@ -118,9 +118,9 @@ void AC_ThrowingWeapon::BeginPlay()
 		II_ExplodeStrategy* SmokeExplode = NewObject<AC_SmokeGrndExplode>();
 		SmokeExplode->_getUObject()->AddToRoot();
 
-		GAMESCENE_MANAGER->AddNonGCObject(GrenadeExplode->_getUObject());
-		GAMESCENE_MANAGER->AddNonGCObject(FlashBangExplode->_getUObject());
-		GAMESCENE_MANAGER->AddNonGCObject(SmokeExplode->_getUObject());
+		GAMESCENE_MANAGER->AddGCProtectedObject(GrenadeExplode->_getUObject());
+		GAMESCENE_MANAGER->AddGCProtectedObject(FlashBangExplode->_getUObject());
+		GAMESCENE_MANAGER->AddGCProtectedObject(SmokeExplode->_getUObject());
 
 		ExplodeStrategies.Add(EThrowableType::GRENADE,	GrenadeExplode);
 		ExplodeStrategies.Add(EThrowableType::FLASH_BANG,	FlashBangExplode);
@@ -143,9 +143,9 @@ void AC_ThrowingWeapon::BeginPlay()
 		SmokeGrenadeAttackStrategy->_getUObject()->AddToRoot();
 
 
-		GAMESCENE_MANAGER->AddNonGCObject(GrenadeAttackStrategy->_getUObject());
-		GAMESCENE_MANAGER->AddNonGCObject(FlashBangAttackStrategy->_getUObject());
-		GAMESCENE_MANAGER->AddNonGCObject(SmokeGrenadeAttackStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddGCProtectedObject(GrenadeAttackStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddGCProtectedObject(FlashBangAttackStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddGCProtectedObject(SmokeGrenadeAttackStrategy->_getUObject());
 
 		AIAttackStrategies.Add(EThrowableType::GRENADE,		GrenadeAttackStrategy);
 		AIAttackStrategies.Add(EThrowableType::FLASH_BANG,	FlashBangAttackStrategy);

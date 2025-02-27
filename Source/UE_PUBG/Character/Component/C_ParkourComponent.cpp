@@ -61,10 +61,10 @@ void UC_ParkourComponent::BeginPlay()
 		II_ParkourActionStrategy* MantleHighStrategy = NewObject<UC_MantleHighActionStrategy>();
 		MantleHighStrategy->_getUObject()->AddToRoot();
 
-		GAMESCENE_MANAGER->AddNonGCObject(VaultingLowStrategy->_getUObject());
-		GAMESCENE_MANAGER->AddNonGCObject(VaultingHighStrategy->_getUObject());
-		GAMESCENE_MANAGER->AddNonGCObject(MantleLowStrategy->_getUObject());
-		GAMESCENE_MANAGER->AddNonGCObject(MantleHighStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddGCProtectedObject(VaultingLowStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddGCProtectedObject(VaultingHighStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddGCProtectedObject(MantleLowStrategy->_getUObject());
+		GAMESCENE_MANAGER->AddGCProtectedObject(MantleHighStrategy->_getUObject());
 
 		ParkourActionStrategies.Add(EParkourActionType::VAULTING_LOW,  VaultingLowStrategy);
 		ParkourActionStrategies.Add(EParkourActionType::VAULTING_HIGH, VaultingHighStrategy);

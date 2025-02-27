@@ -22,6 +22,16 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
+	
+	/// <summary>
+	/// SearchLocation에서 가장 가까운 NavMeshLocation 찾기 
+	/// </summary>
+	/// <param name="SearchLocation"></param>
+	/// <param name="OutNavMeshLocation"></param>
+	/// <returns> 찾을 수 없다면 return false </returns>
+	bool FindNearestNavMeshPoint(const FVector& SearchLocation, FVector& OutNavMeshLocation);
+
+private:
 
 	class ANavLinkProxy* NavLink{};
 };
