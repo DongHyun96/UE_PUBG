@@ -24,10 +24,12 @@ public:
 
 	void UpdateVolumeBar(AC_BasicCharacter* Character);
 
-	void InitializeListView();
-
 	void UpdateWidget();
 
+	void UpdateAroundItemPanelWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateInventroyItemPanelWidget();
 public:
 	bool GetIsDragging() { return bIsDragging; }
 
@@ -39,7 +41,13 @@ public:
 
 	void SetUsingItem(AC_Item* inItem) { UsingItem = inItem; }
 
-	class UC_BasicDivideItemPanelWidget* GetDivideItemDropWidget() { return DivideItemDropWidget; }
+	class UC_BasicDivideItemPanelWidget* GetDivideItemAroundDropWidget() { return DivideItemAroundDropWidget; }
+
+	class UC_BasicDivideItemPanelWidget* GetDivideItemInventoryDropWidget() { return DivideItemInventoryDropWidget; }
+
+protected:
+
+
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
@@ -84,7 +92,10 @@ protected:
 	AC_Item* UsingItem = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	UC_BasicDivideItemPanelWidget* DivideItemDropWidget = nullptr;
+	UC_BasicDivideItemPanelWidget* DivideItemAroundDropWidget = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UC_BasicDivideItemPanelWidget* DivideItemInventoryDropWidget = nullptr;
 
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	//class UC_BasicDivideItemPanelWidget* DivideItemPickUpWidget = nullptr;

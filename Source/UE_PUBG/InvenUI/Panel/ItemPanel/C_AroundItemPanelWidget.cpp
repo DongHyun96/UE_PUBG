@@ -17,9 +17,11 @@ bool UC_AroundItemPanelWidget::HandleDrop(AC_Item* DroppedItem)
 
 void UC_AroundItemPanelWidget::ShowDividePanelWidget(AC_Item* DividedItem)
 {
-    UC_BasicDivideItemPanelWidget* DivideItemDropWidget = GetOwnerPlayer()->GetInvenSystem()->GetInvenUI()->GetDivideItemDropWidget();
+    UC_BasicDivideItemPanelWidget* DivideItemDropWidget = GetOwnerPlayer()->GetInvenSystem()->GetInvenUI()->GetDivideItemAroundDropWidget();
 
     DivideItemDropWidget->SetCachedItem(DividedItem);
+
+    DivideItemDropWidget->UpdateWidget();
 
     DivideItemDropWidget->SetVisibility(ESlateVisibility::Visible);
 }

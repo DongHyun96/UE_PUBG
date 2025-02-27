@@ -290,7 +290,7 @@ protected:
 	class UC_HUDWidget* HUDWidget{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_InvenSystem* InvenSystem{};
+	UC_InvenSystem* InvenSystem{};
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
