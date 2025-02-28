@@ -301,10 +301,11 @@ void UC_InputComponent::OnJump()
 		return;
 	}
 	SetToNonAimCamera();
-	//Player->GetPressedJum
-	Player->bPressedJump = true;
+	
+	Player->Jump(); // 밑에 주석 두 줄 실행됨
+	//Player->bPressedJump = true;
+	//Player->JumpKeyHoldTime = 0.0f;
 	Player->SetIsJumping(true);
-	Player->JumpKeyHoldTime = 0.0f;
 }
 
 void UC_InputComponent::OnSwimmingJump()

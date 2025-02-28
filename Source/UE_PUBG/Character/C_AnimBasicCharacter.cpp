@@ -140,8 +140,8 @@ void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_HardLand_To_Stand()
 void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_Falling_To_Standing()
 {
 	OwnerCharacter->SetIsJumping(false);
-	OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = 600;
-	OwnerCharacter->GetCharacterMovement()->MaxAcceleration = 2048;
+	//OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = 200;
+	//OwnerCharacter->GetCharacterMovement()->MaxAcceleration = 2048;
 
 
 }

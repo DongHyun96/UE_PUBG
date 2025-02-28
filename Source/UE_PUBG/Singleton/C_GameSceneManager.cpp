@@ -29,7 +29,11 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 	// Level에 배치된 Actor들의 BeginPlay 호출되기 이전에 객체 초기화
 	for (FActorIterator Actor(&InWorld); Actor; ++Actor)
 	{
-		if (AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(*Actor)) AllCharacters.Add(Character);
+		if (AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(*Actor))
+		{
+			AllCharacters.Add(Character);
+			AllCharacterActors.Add(Character);
+		}
 
 		if (AC_Player* P = Cast<AC_Player>(*Actor))
 		{
