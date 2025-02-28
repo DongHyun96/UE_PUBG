@@ -205,26 +205,25 @@ void UC_InputComponent::MoveEnd(const FInputActionValue& Value)
 
 void UC_InputComponent::Look(const FInputActionValue& Value)
 {
+	if (!Player->Controller) return;
+	
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (Player->Controller != nullptr)
-	{
-		Player->AddControllerYawInput(LookAxisVector.X);
-		Player->AddControllerPitchInput(LookAxisVector.Y);
-		//TODO : Aim Down Sight 일 때 메쉬 숨기기
-		//if (PoseState == EPoseState::CRAWL)
-		//{
-		//if (GetControlRotation().Pitch >= 350.f && GetControlRotation().Pitch < 360.f)
-		//	{
-		//		GetMesh()->SetOwnerNoSee(true);
-		//		UC_Util::Print(float(GetControlRotation().Pitch));
-		//	}
-		//	else
-		//		GetMesh()->SetOwnerNoSee(false);
+	Player->AddControllerYawInput(LookAxisVector.X);
+	Player->AddControllerPitchInput(LookAxisVector.Y);
+	//TODO : Aim Down Sight 일 때 메쉬 숨기기
+	//if (PoseState == EPoseState::CRAWL)
+	//{
+	//if (GetControlRotation().Pitch >= 350.f && GetControlRotation().Pitch < 360.f)
+	//	{
+	//		GetMesh()->SetOwnerNoSee(true);
+	//		UC_Util::Print(float(GetControlRotation().Pitch));
+	//	}
+	//	else
+	//		GetMesh()->SetOwnerNoSee(false);
 
 
-		//}
-	}
+	//}
 }
 
 void UC_InputComponent::Crouch()
@@ -303,9 +302,7 @@ void UC_InputComponent::OnJump()
 	SetToNonAimCamera();
 	
 	Player->Jump(); // 밑에 주석 두 줄 실행됨
-	//Player->bPressedJump = true;
-	//Player->JumpKeyHoldTime = 0.0f;
-	Player->SetIsJumping(true);
+	GAMESCENE_MANAGER->GetEnemy()->Jump(); // For Testing
 }
 
 void UC_InputComponent::OnSwimmingJump()

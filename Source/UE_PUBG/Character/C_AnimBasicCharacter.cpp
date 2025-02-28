@@ -131,7 +131,7 @@ void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_HardLand_To_Stand()
 	//OwnerCharacter->SetCanMove(true);
 
 	OwnerCharacter->SetCanMove(true);
-
+	
 	AnimNotify_OnEndTransition_Falling_To_Standing();
 
 
@@ -149,6 +149,8 @@ void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_Falling_To_Standing()
 void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_Falling_To_HardLand()
 {
 	OwnerCharacter->SetCanMove(false);
+	// HardLanding 모션 중 PlayerCharacter 회전 방지
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter)) Player->SetStrafeRotationToIdleStop();
 }
 
 void UC_AnimBasicCharacter::ControlHeadRotation()

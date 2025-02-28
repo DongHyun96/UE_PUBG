@@ -396,6 +396,12 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 	return true;
 }
 
+void AC_BasicCharacter::Jump()
+{
+	Super::Jump();
+	bIsJumping = true;
+}
+
 void AC_BasicCharacter::PoolingBullets()
 {
 	FActorSpawnParameters Param2{};
