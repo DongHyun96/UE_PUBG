@@ -38,9 +38,9 @@ void AC_Enemy::BeginPlay()
     ItemSpawnerHelper->SpawnDefaultWeaponsAndItems();
 }
 
-void AC_Enemy::Tick(float DeltaSeoncds)
+void AC_Enemy::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaSeoncds);
+	Super::Tick(DeltaSeconds);
 
 	/*switch (HandState)
 	{

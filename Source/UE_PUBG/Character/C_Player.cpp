@@ -683,6 +683,7 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 
 	if (GetVelocity().Size() > 0.f)				return;
 	if (bIsHoldDirection)						return;
 	if (bIsActivatingConsumableItem)			return;
+	
 	//if (ParkourComponent->GetIsCurrentlyWarping()) return;
 
 	// 0 360

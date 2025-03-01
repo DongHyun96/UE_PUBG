@@ -301,6 +301,10 @@ public:
 
 	FGenericTeamId GetGenericTeamId() const override { return FGenericTeamId(TeamID); }
 
+public:
+
+	void Jump() override;
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
