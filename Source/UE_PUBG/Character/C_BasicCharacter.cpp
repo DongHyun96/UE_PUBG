@@ -46,8 +46,8 @@ AC_BasicCharacter::AC_BasicCharacter()
 	EquippedComponent = CreateDefaultSubobject<UC_EquippedComponent>("EquippedComponent");
 	EquippedComponent->SetOwnerCharacter(this);
 
-	Inventory = CreateDefaultSubobject<UC_InvenComponent>("C_Inventory");
-	Inventory->SetOwnerCharacter(this);
+	InvenComponent = CreateDefaultSubobject<UC_InvenComponent>("C_Inventory");
+	InvenComponent->SetOwnerCharacter(this);
 
 	//InvenSystem = CreateDefaultSubobject<UC_InvenSystem>("C_InvenSystem");
 	//InvenSystem->SetOwnerCharacter(this);
@@ -137,7 +137,7 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 {
 	
 
-	FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetCurVolume());
+	FString TheFloatStr = FString::SanitizeFloat(this->InvenComponent->GetCurVolume());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
 
 	HandleOverlapBegin(OtherActor);

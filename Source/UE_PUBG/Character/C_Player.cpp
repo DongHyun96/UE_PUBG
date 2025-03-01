@@ -457,8 +457,8 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 		if (OverlappedItem->GetOwnerCharacter() == nullptr)
 
 		{
-			if (!IsValid(Inventory)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
-			Inventory->AddItemToAroundList(OverlappedItem);
+			if (!IsValid(InvenComponent)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
+			InvenComponent->AddItemToAroundList(OverlappedItem);
 			//Inventory->InitInvenUI();
 			//if (!IsValid(InvenSystem)) return;
 		}
@@ -480,8 +480,8 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 	{
 		//Inventory->GetNearItems().Remove(OverlappedItem);
 		//Inventory->RemoveItemToAroundList(OverlappedItem);
-		if (!IsValid(Inventory)) return;
-		Inventory->RemoveItemToAroundList(OverlappedItem);
+		if (!IsValid(InvenComponent)) return;
+		InvenComponent->RemoveItemToAroundList(OverlappedItem);
 		//Inventory->InitInvenUI();
 		//if (!IsValid(InvenSystem)) return;
 		InvenSystem->InitializeList();
@@ -490,7 +490,7 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 
 AC_Item* AC_Player::FindBestInteractable()
 {
-	if (Inventory->GetTestAroundItems().IsEmpty()) return nullptr;
+	if (InvenComponent->GetTestAroundItems().IsEmpty()) return nullptr;
 
 	AC_Item* TargetInteractableItem = nullptr;
 
@@ -499,7 +499,7 @@ AC_Item* AC_Player::FindBestInteractable()
 	//UGameplayStatics::controller
 
 	APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
-	for (auto& AroundItem : Inventory->GetTestAroundItems())
+	for (auto& AroundItem : InvenComponent->GetTestAroundItems())
 	{
 		AC_Item* CachedInteractableItem = AroundItem;
 		

@@ -239,7 +239,7 @@ bool UC_BasicItemBarWidget::HalfStackItemInteraction()
 
 	int HalfStack = CachedItem->GetItemDatas().ItemCurStack * 0.5;
 
-	float RestVolume = PlayerCharacter->GetInventory()->GetMaxVolume() - PlayerCharacter->GetInventory()->GetCurVolume();
+	float RestVolume = PlayerCharacter->GetInvenComponent()->GetMaxVolume() - PlayerCharacter->GetInvenComponent()->GetCurVolume();
 
 	if (CachedItem->GetItemDatas().ItemPlace == EItemPlace::AROUND)
 	{

@@ -227,7 +227,7 @@ public:
 
 	
 	UFUNCTION(BlueprintCallable)
-	class UC_InvenComponent* GetInvenComponent() { return Inventory; }
+	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
 
 	void SetIsHoldDirection(bool InIsHoldDirection) { bIsHoldDirection = InIsHoldDirection; }
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
@@ -257,8 +257,6 @@ public:
 	void SetIsSprinting(bool InIsSprinting) { bIsSprinting = InIsSprinting; }
 	bool GetIsReloadingBullet() { return bIsReloadingBullet; }
 	void SetIsReloadingBullet(bool bInIsReloading) { bIsReloadingBullet = bInIsReloading; }
-	UFUNCTION(BlueprintCallable)
-	UC_InvenComponent* GetInventory() const { return Inventory; }
 
 	class UC_ConsumableUsageMeshComponent* GetConsumableUsageMeshComponent() const { return ConsumableUsageMeshComponent; }
 
@@ -268,9 +266,6 @@ public:
 
 	UFUNCTION(BlueprintGetter)
 	class UC_SkyDivingComponent* GetSkyDivingComponent() const { return SkyDiveComponent; }
-
-	//UFUNCTION(BlueprintCallable)
-	//class UC_InvenSystem* GetInvenSystem() { return InvenSystem; }
 
 	class UC_AttachableItemMeshComponent* GetAttachmentMeshComponent() { return AttachmentMeshComponent; };
 
@@ -383,7 +378,7 @@ protected:
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UC_InvenComponent* Inventory{};
+	UC_InvenComponent* InvenComponent{};
 
 protected: // PriorityAnimMontage 관련
 

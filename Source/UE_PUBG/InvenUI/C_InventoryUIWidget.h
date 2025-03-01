@@ -31,6 +31,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateInventroyItemPanelWidget();
 
+	/// <summary>
+	/// UC_BasicPanelWidget에서 DivideItemPanel이 열릴 때 뒤의 Around, Inventory Panel등의 상호작용을 막기 위한 함수.
+	/// 이 함수에서 DivideItemPanel을 여는 기능은 없음.
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void MainPanelsSetVisivility(ESlateVisibility InVisibility);
+
+	/// <summary>
+	/// 이 함수로 DivideItemPanelWidget들을 한번에 닫음.
+	/// </summary>
 	void CloseDivideItemWidget();
 public:
 	bool GetIsDragging() { return bIsDragging; }
