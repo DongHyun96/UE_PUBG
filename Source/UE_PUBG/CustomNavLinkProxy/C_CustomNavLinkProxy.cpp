@@ -104,6 +104,5 @@ bool AC_CustomNavLinkProxy::ExecuteParkour(class AC_Enemy* Enemy, const FVector&
 	// TODO : 파쿠르 끝난 뒤에는 가장 가까운 NavMesh 지점으로 캐릭터 스무스하게 옮겨놔야 할듯
 	bool ParkourSucceeded = Enemy->GetParkourComponent()->TryExecuteParkourAction();
 	UC_Util::Print(ParkourSucceeded ? "ParkourSucceeded" : "Parkour Failed!", FColor::MakeRandomColor(), 10.f);
-	
 	return ParkourSucceeded;
 }

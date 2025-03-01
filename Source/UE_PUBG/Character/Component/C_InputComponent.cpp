@@ -301,8 +301,7 @@ void UC_InputComponent::OnJump()
 	}
 	SetToNonAimCamera();
 	
-	Player->Jump(); // 밑에 주석 두 줄 실행됨
-	GAMESCENE_MANAGER->GetEnemy()->Jump(); // For Testing
+	Player->Jump();
 }
 
 void UC_InputComponent::OnSwimmingJump()
