@@ -29,6 +29,9 @@ const float UC_SkyDivingComponent::PLAYER_PARACHUTE_MAINCAM_ARMLENGTH	= 600.f;
 const float UC_SkyDivingComponent::PLAYER_SKYDIVE_MAINCAM_ARMLENGTH		= 400.f;
 const float UC_SkyDivingComponent::PLAYER_ORIGIN_MAINCAM_ARMLENGTH		= 220.f;
 
+// SKYDIVING 상태에서 고도를 측정할 때 고도 0m 기준으로 잡을 위치
+const float UC_SkyDivingComponent::ALTITUDE_ZERO_Z = 4000.f;
+
 // 원작 수치
 //const float PARACHUTE_DEPLOY_LIMIT_HEIGHT = 43000.f;
 //const float MAX_SKYDIVE_JUMP_ALTITUDE = 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
@@ -223,7 +226,7 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		//OwnerMovement->MaxFlySpeed = 1000.f;
 		//OwnerMovement->BrakingDecelerationFlying = 2048.f;
 
-		// SkyDive Widget Jumped고도 잡아주기
+		// SkyDive Widget Jumped 고도 잡아주기
 		if (OwnerPlayer)
 		{
 			UpdateCurrentHeight();
@@ -232,6 +235,7 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 
 			PlayerSkyDiveWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 
+			// TODO : Airplane 높이로 잡을 것
 			PlayerSkyDiveWidget->SetJumpedAltitude(CurrentHeight);
 
 			// TODO: 맵에 따른 parachute Limit 고도 설정(SkyDiveWidget에서 사용)
@@ -401,7 +405,10 @@ void UC_SkyDivingComponent::UpdateCurrentHeight()
 {
 	switch (SkyDivingState)
 	{
-	case ESkyDivingState::SKYDIVING: case ESkyDivingState::PARACHUTING:
+	case ESkyDivingState::SKYDIVING:
+		CurrentHeight = OwnerCharacter->GetActorLocation().Z - ALTITUDE_ZERO_Z;
+		return;
+	case ESkyDivingState::PARACHUTING:
 	{
 		FCollisionQueryParams CollisionParams{};
 		CollisionParams.AddIgnoredActor(OwnerCharacter);
@@ -418,6 +425,7 @@ void UC_SkyDivingComponent::UpdateCurrentHeight()
 
 		// Update CurrentHeight
 		CurrentHeight = HitResult.Distance;
+		return;
 	}
 	default: return;
 	}

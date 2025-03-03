@@ -204,6 +204,8 @@ void AC_Player::Tick(float DeltaTime)
 		UpdateInteractable(NewInteractableItem);
 	}
 
+	UC_Util::Print(GetVelocity().Size2D());
+	
 	//DrawingItemOutLine();
 	//UpdateInteractable(FindBestInteractable());
 	//DistanceToGround = GetCharacterMovement()->CurrentFloor.FloorDist;
