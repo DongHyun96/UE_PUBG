@@ -72,7 +72,8 @@ public: // Getters and setters
 	void SetSpringArmRelativeLocationDest(EPoseState InNextPoseState) { MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
 	void SetAimingSpringArmRelativeLocationDest(EPoseState InNextPoseState) { AimingSpringArmRelativeLocationDest = AimingSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
 
-	class UC_HUDWidget* GetHUDWidget() const { return HUDWidget; }
+	class UC_HUDWidget*		GetHUDWidget()		const { return HUDWidget; }
+	class UC_MainMapWidget* GetMainMapWidget()	const { return MainMapWidget; }
 	 
 	class UC_PingSystemComponent* GetPingSystemComponent() const { return PingSystemComponent; }
 
@@ -288,6 +289,9 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_HUDWidget* HUDWidget{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_MainMapWidget* MainMapWidget{};	
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UC_InvenSystem* InvenSystem{};

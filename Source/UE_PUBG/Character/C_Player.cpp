@@ -120,10 +120,15 @@ void AC_Player::BeginPlay()
 		StatComponent->SetOwnerHUDWidget(HUDWidget);
 		PingSystemComponent->SetOwnerPlayer(this);
 		HUDWidget->GetSkyDiveWidget()->SetOwnerPlayer(this);
-
-		HUDWidget->GetMainMapWidget()->SetOwnerPlayer(this);
 		HUDWidget->GetMiniMapWidget()->SetOwnerPlayer(this);
 	}
+
+	if (MainMapWidget)
+	{
+		MainMapWidget->AddToViewport(9);
+		MainMapWidget->SetOwnerPlayer(this);
+	}
+	
 
 	if (InvenSystem)
 	{

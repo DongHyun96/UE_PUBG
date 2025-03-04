@@ -32,14 +32,15 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 
 	if (!OwnerCharacter) return;
 
-	//Speed = OwnerCharacter->GetVelocity().Size2D();		
-	Speed = FMath::Lerp(Speed, OwnerCharacter->GetNextSpeed(), DeltaSeconds * 15.f);
+	//Speed = OwnerCharacter->GetVelocity().Size2D();
+	float SpeedDest = FMath::Clamp(OwnerCharacter->GetNextSpeed(), 0.f, 700.f);
+	Speed			= FMath::Lerp(Speed, SpeedDest, DeltaSeconds * 10.f);
 
-	const FRotator Rotation = OwnerCharacter->GetActorRotation();
+	const FRotator YawRotation(0, OwnerCharacter->GetActorRotation().Yaw, 0);
 
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-	Direction = CalculateDirection(OwnerCharacter->GetVelocity().GetSafeNormal2D(), YawRotation);
+	float DirectionDest = CalculateDirection(OwnerCharacter->GetVelocity().GetSafeNormal2D(), YawRotation); 
+	Direction			= FMath::Lerp(Direction, DirectionDest, DeltaSeconds * 5.f);
+	
 
 	//FString TheFloatStr = FString::SanitizeFloat(Direction);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
