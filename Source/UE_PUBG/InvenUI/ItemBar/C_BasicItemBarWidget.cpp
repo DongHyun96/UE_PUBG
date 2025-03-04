@@ -123,7 +123,8 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	DragOperation->Pivot = EDragPivot::MouseDown;
 	//DragOperation->Pivot = EDragPivot::CenterCenter;
 	FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
-	 // 현재 마우스 클릭 위치 가져오기 (화면 좌표)
+
+	// 현재 마우스 클릭 위치 가져오기 (화면 좌표)
 	FVector2D Offset = DragVisual->Brush.ImageSize * 0.5f;
 	FVector2D CenteredPosition = MousePosition - Offset;
 
@@ -262,9 +263,18 @@ bool UC_BasicItemBarWidget::HalfStackItemInteraction()
 	{
 		AC_Item* SpawnItem = CachedItem->SpawnItem(PlayerCharacter);
 		CachedItem->SetItemStack(CachedItem->GetItemDatas().ItemCurStack - HalfStack);
+
 		SpawnItem->SetItemStack(HalfStack);
+
+		float DividedItemVolume = PlayerCharacter->GetInvenComponent()->GetCurVolume() - SpawnItem->GetAllVolume();
+
 		SpawnItem->SetActorEnableCollision(true);
+
 		SpawnItem->MoveToAround(PlayerCharacter);
+
+		PlayerCharacter->GetInvenComponent()->AddInvenCurVolume(-DividedItemVolume);
+
+		PlayerCharacter->GetInvenSystem()->GetInvenUI()->UpdateVolumeBar(PlayerCharacter);
 		return true;
 	}
 

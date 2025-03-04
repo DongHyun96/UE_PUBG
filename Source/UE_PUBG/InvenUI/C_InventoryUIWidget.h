@@ -22,6 +22,7 @@ public:
 
 	//void SetWidgetsOwner(AC_BasicCharacter* Character);
 
+	UFUNCTION(BlueprintCallable)
 	void UpdateVolumeBar(AC_BasicCharacter* Character);
 
 	void UpdateWidget();

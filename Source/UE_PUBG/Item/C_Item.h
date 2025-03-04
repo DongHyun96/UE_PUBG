@@ -48,7 +48,7 @@ enum class EAttachmentNames : uint8
 /// 하위클래스에서는 생성자에서 정의하고 있음.
 /// </summary>
 UENUM(BlueprintType)
-enum class EItemTypes : uint8
+enum class   : uint8
 {
 	NONE,
 	HELMET,
@@ -244,16 +244,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual AC_Item* SpawnItem(AC_BasicCharacter* Character);
 
-	void SetItemPlace(EItemPlace InPlace) { ItemDatas.ItemPlace = InPlace; }
-
-	//캐릭터의 밑바닥을 라인 트레이스로 location을 반환해줌.
-	FVector GetGroundLocation(AC_BasicCharacter* Character);
-
 	/// <summary>
-	/// 아웃라인을 그리고 꺼주는 함수.
+	/// 아이템을 
 	/// </summary>
-	/// <param name="bEnable"></param>
-	void SetOutlineEffect(bool bEnable);
+	/// <param name="DivideNum">나눌 아이템의 갯수</param>
+	/// <param name="Character">스폰 위치 데이터를 주는 캐릭터(보통 플레이어)</param>
+	/// <param name="bIsActorEnableCollision">나누어준 아이템의 ActorEnableCollision을 킬지 말지. 버릴 경우에는 키고(true) 줍는 경우에는 끈다(false)</param>
+	/// <returns>새로 생성한 나뉘어진 아이템, nullptr이면 CurStack이 1이여서 못나누는 상황</returns>
+	UFUNCTION(BlueprintCallable)
+	AC_Item* DividItemSpawn(int DivideNum, AC_BasicCharacter* Character, bool bIsActorEnableCollision);
 
 protected:
 	//MoveTo~에 사용되는 Template Methode Patern 9개.
@@ -284,6 +283,16 @@ public:
 
 	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 
+	void SetItemPlace(EItemPlace InPlace) { ItemDatas.ItemPlace = InPlace; }
+
+	//캐릭터의 밑바닥을 라인 트레이스로 location을 반환해줌.
+	FVector GetGroundLocation(AC_BasicCharacter* Character);
+
+	/// <summary>
+	/// 아웃라인을 그리고 꺼주는 함수.
+	/// </summary>
+	/// <param name="bEnable"></param>
+	void SetOutlineEffect(bool bEnable);
 
 protected:
 
