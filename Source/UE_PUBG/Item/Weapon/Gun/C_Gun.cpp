@@ -86,7 +86,7 @@ void AC_Gun::BeginPlay()
 		AimSightCamera->SetActive(false);
 	//블루프린트에서 할당한 Skeletal Mesh 찾아서 변수에 저장
 	GunMesh = FindComponentByClass<USkeletalMeshComponent>();
-	GunMesh->SetupAttachment(RootComponent);
+	//GunMesh->SetupAttachment(RootComponent);
 	
 	LoadMagazine();
 
@@ -738,12 +738,33 @@ bool AC_Gun::FireBullet()
 		{
 			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity, HitLocation);
 			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
+			if (IsValid(MuzzleFlameEffectParticle))
+			{
+				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, OwnerCharacter->GetActorLocation(),GunMesh->GetForwardVector().Rotation(),FVector(0.2f, 0.2f, 0.2f));
+				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, GunMesh->GetSocketLocation(FName("MuzzleSocket")) + GunMesh->GetForwardVector() *30, FRotator::MakeFromEuler(GunMesh->GetForwardVector()),FVector(0.2f, 0.2f, 0.2f));
+				UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, GunMesh->GetSocketLocation(FName("MuzzleSocket")) + GunMesh->GetForwardVector() *30, FRotator(0,90,0),FVector(0.2f, 0.2f, 0.2f));
+
+			
+				
+			}
 			return Succeeded;
 		}
 		else
 		{
 			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
 			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
+			if (IsValid(MuzzleFlameEffectParticle))
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, GunMesh->GetSocketLocation(FName("MuzzleSocket")) + GunMesh->GetForwardVector() *30, FRotator(0,90,0),FVector(0.2f, 0.2f, 0.2f));
+				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, Get, GunMesh->GetForwardVector().Rotation(),FVector(0.2f, 0.2f, 0.2f));
+
+				// MuzzleFlameEffectParticle->SetWorldLocation(FireLocation);
+				// //MuzzleFlameEffectParticle->SetRelativeRotation(this->GetActorForwardVector().Rotation());
+				// MuzzleFlameEffectParticle->SetWorldRotation(OwnerCharacter->GetActorForwardVector().Rotation());
+				//
+				// MuzzleFlameEffectParticle->Activate();
+				
+			}
 			return Succeeded;
 		}
 

@@ -2,6 +2,8 @@
 
 
 #include "Item/Weapon/Gun/C_Bullet.h"
+
+#include "NiagaraComponent.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 
 #include "UMG.h"
@@ -14,6 +16,7 @@
 #include "Animation/AnimMontage.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Utility/C_Util.h"
 
 AC_Bullet::AC_Bullet()
 {
@@ -41,7 +44,7 @@ void AC_Bullet::BeginPlay()
 	BulletProjectileMovement->SetUpdatedComponent(RootComponent);
 	BulletProjectileMovement->SetActive(false);
 	//BulletMesh = FindComponentByClass<UStaticMeshComponent>();
-	InstancedBulletMesh = FindComponentByClass<UInstancedStaticMeshComponent>();
+	//InstancedBulletMesh = FindComponentByClass<UInstancedStaticMeshComponent>();
 	SphereCollider = FindComponentByClass<USphereComponent>();
 	
 	//if (IsValid(SphereCollider))
@@ -70,8 +73,8 @@ void AC_Bullet::DeactivateInstance()
 	//FString Message = "Deactivated" + FString::FromInt(InstanceNum);
 	//UC_Util::Print(Message);
 
-	InstancedBulletMesh->SetActive(false);
-	InstancedBulletMesh->SetComponentTickEnabled(false);
+	//InstancedBulletMesh->SetActive(false);
+	//InstancedBulletMesh->SetComponentTickEnabled(false);
 	//	InstancedBulletMesh->SetVisibility(false);
 	
 	SetActorHiddenInGame(true);
@@ -85,15 +88,19 @@ void AC_Bullet::DeactivateInstance()
 	SphereCollider->SetActive(false);
 	SphereCollider->SetComponentTickEnabled(false);
 	IsActive = false;
-
+	UNiagaraComponent* BulletParticle = FindComponentByClass<UNiagaraComponent>();
+	if (BulletParticle)
+	{
+		BulletParticle->Deactivate();
+	}
 }
 
 void AC_Bullet::ActivateInstance()
 {
 
-	InstancedBulletMesh->SetActive(true);
-	InstancedBulletMesh->SetVisibility(true);
-	InstancedBulletMesh->SetComponentTickEnabled(true);
+	//InstancedBulletMesh->SetActive(true);
+	//InstancedBulletMesh->SetVisibility(true);
+	//InstancedBulletMesh->SetComponentTickEnabled(true);
 
 
 
@@ -112,7 +119,12 @@ void AC_Bullet::ActivateInstance()
 bool AC_Bullet::Fire(AC_Gun* InOwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity, FVector InHitLocation)
 {
 	FiredGun = InOwnerGun;
-	
+	UNiagaraComponent* BulletParticle = FindComponentByClass<UNiagaraComponent>();
+	if (BulletParticle)
+	{
+		UC_Util::Print("Found Effect");
+		BulletParticle->Deactivate();
+	}
 	if (EnableGravity)
 		BulletProjectileMovement->ProjectileGravityScale = 1.0f;
 	else
@@ -147,6 +159,12 @@ bool AC_Bullet::Fire(AC_Gun* InOwnerGun, FVector InLocation, FVector InDirection
 
 		//Bullet->BulletProjectileMovement->SetActive(true);
 		InitialVelocityNormalized = InDirection.GetSafeNormal();
+		
+		if (BulletParticle)
+		{
+			UC_Util::Print("Found Effect");
+			BulletParticle->Activate();
+		}
 		return true;
 	}
 	else
@@ -221,6 +239,7 @@ void AC_Bullet::CustomPhysics(float DeltaTime)
 void AC_Bullet::CalculateTravelDistanceAndDeactivate(float DeltaTime)
 {
 
+
 	if (!IsValid(BulletProjectileMovement))
 		return;
 	IsActive = BulletProjectileMovement->IsActive();
@@ -235,7 +254,7 @@ void AC_Bullet::CalculateTravelDistanceAndDeactivate(float DeltaTime)
 		CustomPhysics(DeltaTime);
 		//UC_Util::Print(BulletProjectileMovement->Velocity.Size());
 		float TravelDistance = (GetActorLocation() - FireLocation).Size();
-		if (TravelDistance > 1000000.0f || GetActorLocation().Z < -900)
+		if (TravelDistance > 100000.0f  || GetActorLocation().Z < -900)
 		{
 			DeactivateInstance();
 		}
@@ -257,4 +276,3 @@ void AC_Bullet::OnProjectileStop(const FHitResult& ImpactResult)
 	HittedCharacter->GetStatComponent()->TakeDamage(TotalDamage, HittedBoneName, OwnerCharacter);
 	HittedCharacter->ActivateBloodParticle(ImpactResult.Location);
 }
-

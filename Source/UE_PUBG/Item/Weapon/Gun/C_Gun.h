@@ -356,6 +356,13 @@ public:
 	virtual float GetDamageRateByBodyPart(const FName& BodyPart) PURE_VIRTUAL(AC_Gun::GetDamageRateByBodyPart, return 0.f;);
 
 	float GetDamageBase() const { return DamageBase; }
+
+protected:
+	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	// UCapsuleComponent* CapsuleComponent{};
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UParticleSystem* MuzzleFlameEffectParticle{};
+	
 };
 
 
