@@ -746,7 +746,7 @@ void AC_ThrowingWeapon::OnThrowReadyLoop()
 	{
 		// UI 창이 켜졌을 때
 		if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() ||
-			OwnerPlayer->GetHUDWidget()->GetMainMapWidget()->GetIsPanelOpened())
+			OwnerPlayer->GetMainMapWidget()->GetIsPanelOpened())
 		{
 			ClearSpline();
 

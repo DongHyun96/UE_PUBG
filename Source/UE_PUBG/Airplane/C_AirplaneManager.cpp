@@ -31,7 +31,6 @@ void AC_AirplaneManager::BeginPlay()
 	// Airplane TakeOff Timer Setting
 
 	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
-
 	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 0.5f, false);
 
 }
@@ -68,6 +67,11 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 			Character->SetMainState(EMainState::SKYDIVING);
 			Character->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::READY);
 		}
+
+		// Player HUD에 비행기 경로 추가
+		AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+		Player->GetMainMapWidget()->SetAirplaneRoute(GetPlaneRouteStartDestPair());
+		Player->GetHUDWidget()->GetMiniMapWidget()->SetAirplaneRoute(GetPlaneRouteStartDestPair());
 	}
 }
 
@@ -241,15 +245,15 @@ void AC_AirplaneManager::CheckFlightFinished()
 		FMath::Abs(AirplaneLocation.Y) > ACTUAL_START_DEST_BORDER_VALUE)
 	{
 		Airplane->SetIsFlying(false);
-		UC_HUDWidget* HUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget();
-		HUDWidget->GetMainMapWidget()->ToggleAirplaneImageVisibility(false);
-		HUDWidget->GetMiniMapWidget()->ToggleAirplaneImageVisibility(false);
+		AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+		Player->GetMainMapWidget()->ToggleAirplaneImageVisibility(false);
+		Player->GetHUDWidget()->GetMiniMapWidget()->ToggleAirplaneImageVisibility(false);
 	}
 }
 
 void AC_AirplaneManager::InitAirplaneStartPosAndFlightDirection()
 {
-	// TODO : Init Airplane actual StartPosition and FlightDirection
+	/* Init Airplane actual StartPosition and FlightDirection */
 	// L(t) = (x0 + t dx, y0 + t dy)
 
 	FVector FlightDirection = PlaneRouteDest - PlaneRouteStart;

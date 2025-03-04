@@ -198,7 +198,7 @@ void AC_MagneticFieldManager::SetRandomNextCircleAndSpeedDirection()
 void AC_MagneticFieldManager::UpdateMainCircleInfoOnMapUI()
 {
 	UC_MapWidget* MiniMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget();
-	UC_MapWidget* MainMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMainMapWidget();
+	UC_MapWidget* MainMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetMainMapWidget();
 
 	// 중점과 반지름 UV 좌표계로 변환
 	float U		=  MainCircle.MidLocation.Y * MAP_LENGTH_TO_UV_FACTOR + 0.5f;
@@ -212,7 +212,7 @@ void AC_MagneticFieldManager::UpdateMainCircleInfoOnMapUI()
 void AC_MagneticFieldManager::UpdateNextCircleInfoOnMapUI()
 {
 	UC_MapWidget* MiniMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget();
-	UC_MapWidget* MainMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMainMapWidget();
+	UC_MapWidget* MainMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetMainMapWidget();
 
 	// 중점과 반지름 UV 좌표계로 변환
 	float U		=  NextCircle.MidLocation.Y * MAP_LENGTH_TO_UV_FACTOR + 0.5f;

@@ -122,10 +122,7 @@ void UC_SkyDivingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 void UC_SkyDivingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
 {
-	switch (SkyDivingState)
-	{
-	case ESkyDivingState::READY: case ESkyDivingState::LANDING: case ESkyDivingState::MAX: return;
-	}
+	switch (SkyDivingState) case ESkyDivingState::READY: case ESkyDivingState::LANDING: case ESkyDivingState::MAX: return;
 
 	if (MovementVector.X == -1)  // 뒷방향 input 낙하속도 적절히 조정
 	{
@@ -205,12 +202,13 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 			UC_Util::Print("Cannot SkyDive at the current pos");
 			return;
 		}
+
+		OwnerCharacter->SetActorLocation(GAMESCENE_MANAGER->GetAirplaneManager()->GetAirplane()->GetActorLocation());
 		
 		OwnerCharacter->SetCanMove(true);
 
 		SkyDivingState = InSkyDivingState;
 
-		// TODO : 비행기 위치에 Character spawn(Visibility on) & Player일 경우 MainCamera Player로 다시 잡아주기
 		OwnerCharacter->SetActorHiddenInGame(false);
 		ParachuteBackpackStaticMeshComponent->SetVisibility(true);
 
@@ -234,12 +232,8 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 			UC_SkyDiveWidget* PlayerSkyDiveWidget = OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget();
 
 			PlayerSkyDiveWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
-
-			// TODO : Airplane 높이로 잡을 것
 			PlayerSkyDiveWidget->SetJumpedAltitude(CurrentHeight);
-
-			// TODO: 맵에 따른 parachute Limit 고도 설정(SkyDiveWidget에서 사용)
-			PlayerSkyDiveWidget->SetParachuteLimitAltitude(PARACHUTE_DEPLOY_LIMIT_HEIGHT);
+			PlayerSkyDiveWidget->SetParachuteLimitAltitude(PARACHUTE_DEPLOY_LIMIT_HEIGHT); // TODO: 맵에 따른 parachute Limit 고도 설정(SkyDiveWidget에서 사용)
 
 			// Player 마커 MainMap에 다시 표시하기
 			//UC_MainMapWidget* PlayerMainMapWidget = OwnerPlayer->GetHUDWidget()->GetMainMapWidget();

@@ -75,18 +75,7 @@ void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
 
 		//this->SetUserFocus(PC);
 
-		// Init AirplaneRoute Start Dest pos
-		if (AirplaneRouteStartPos.X == 0.f)
-		{
-			if (AC_AirplaneManager* AirplaneManager = GAMESCENE_MANAGER->GetAirplaneManager())
-			{
-				TPair<FVector, FVector> StartDestPair = AirplaneManager->GetPlaneRouteStartDestPair();
-				SetAirplaneRoute(StartDestPair);
-				GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget()->SetAirplaneRoute(StartDestPair);
-			}
-		}
-
-		// TODO : 이 부분 외부로 옮기기
+		// SkyDive HUD hidden 처리
 		OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
@@ -100,7 +89,7 @@ void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
 		PC->SetIgnoreLookInput(false);  // 마우스 이동에 의한 카메라 회전을 막음
 		//PC->SetIgnoreMoveInput(false);  // 마우스 클릭에 의한 움직임을 막음
 
-		// TODO : 이 부분 외부로 옮기기
+		// SkyDive HUD hidden 처리
 		ESkyDivingState PlayerSkyDivingState = OwnerPlayer->GetSkyDivingComponent()->GetSkyDivingState();
 		if (PlayerSkyDivingState == ESkyDivingState::SKYDIVING || PlayerSkyDivingState == ESkyDivingState::PARACHUTING)
 			OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -300,7 +289,9 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 {
 	if (!PingMarkerBorder) return false;
 
+	UC_Util::Print("MousePos : " + MousePos.ToString(), FColor::MakeRandomColor(), 10.f);
 	PingMarkerPos = MousePos - MID_POINT;
+	
 	PingMarkerPos -= MainMapImg->GetRenderTransform().Translation;
 	PingMarkerPos /= MainMapScale;
 
@@ -390,8 +381,6 @@ bool UC_MainMapWidget::HandleLMBDown(const FGeometry& InGeometry, const FPointer
 		return false;
 	}
 
-
-	FVector2D ScreenSpacePosition = InMouseEvent.GetScreenSpacePosition();
 	FVector2D MousePos = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
 
 	//UC_Util::Print(MousePos);
@@ -408,19 +397,16 @@ bool UC_MainMapWidget::HandleRMBDown(const FGeometry& InGeometry, const FPointer
 	// 오른쪽 마우스 버튼 클릭 처리
 	if (InMouseEvent.GetEffectingButton() != EKeys::RightMouseButton) return false;
 
-	FVector2D ScreenSpacePosition = InMouseEvent.GetScreenSpacePosition();
 	FVector2D MousePos = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
 
 	// Border 처리
 	float BorderXBottom = MID_POINT.X - CANVAS_SIZE * 0.5f;
-	float BorderXTop = MID_POINT.X + CANVAS_SIZE * 0.5f;
-
+	float BorderXTop	= MID_POINT.X + CANVAS_SIZE * 0.5f;
 	if (MousePos.X < BorderXBottom || MousePos.X > BorderXTop) return false;
 
 	// PingMarker가 Hidden이 아닐 때 PingMarker위에 Input 처리하면 Marker 없애기
 	if (PingMarkerBorder->GetVisibility() != ESlateVisibility::Hidden)
 	{
-
 		FVector2D MarkedPos = MousePos - MID_POINT;
 		MarkedPos -= MainMapImg->GetRenderTransform().Translation;
 		MarkedPos /= MainMapScale;
@@ -436,9 +422,6 @@ bool UC_MainMapWidget::HandleRMBDown(const FGeometry& InGeometry, const FPointer
 
 	// 새로운 핑 찍기
 	SpawnPingImage(MousePos);
-
-	//UC_Util::Print(MousePos);
-
 	return true;
 }
 
