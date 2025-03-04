@@ -48,7 +48,7 @@ enum class EAttachmentNames : uint8
 /// 하위클래스에서는 생성자에서 정의하고 있음.
 /// </summary>
 UENUM(BlueprintType)
-enum class   : uint8
+enum class EItemTypes : uint8
 {
 	NONE,
 	HELMET,
