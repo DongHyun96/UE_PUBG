@@ -346,9 +346,6 @@ public:
 	// OnTransitionFinish에서 호출될 Multicast Delegate
 	FDele_PoseTransitionFin Delegate_OnPoseTransitionFin;
 
-
-	float GetDistanceToGround() { return DistanceToGround; }
-
 protected:
 
 	// AnimCharacter에서 참조할 Speed의 다음 Lerp destination 값
@@ -364,7 +361,7 @@ protected:
 	bool bIsReloadingBullet = false;
 	bool bIsFiringBullet = false;
 	FRotator CharacterMovingDirection;
-	float DistanceToGround{};
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanMove = true;
 

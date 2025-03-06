@@ -4,8 +4,10 @@
 #include "Character/Component/C_StatComponent.h"
 
 #include "C_InvenComponent.h"
+#include "C_SwimmingComponent.h"
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Enemy.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_OxygenWidget.h"
 #include "InvenUserInterface/C_ItemBarWidget.h"
@@ -81,6 +83,8 @@ void UC_StatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	UpdateBoostEffect(DeltaTime);
 	//UC_Util::Print("CurHP : " + FString::SanitizeFloat(CurHP));
 	HandleOxygenExhausted(DeltaTime);
+
+	HandleFallingDamage();
 }
 
 void UC_StatComponent::SetCurHP(const float& InCurHP)
@@ -186,10 +190,8 @@ bool UC_StatComponent::ApplyHeal(const float& HealAmount)
 	if (CurHP >= MAX_HP)  return false; // 이미 체력이 모두 찼을 때
 	if (HealAmount < 0.f) return false;
 
-	CurHP += HealAmount;
-
-	if (CurHP > MAX_HP) CurHP = MAX_HP;
-
+	CurHP = FMath::Min(CurHP + HealAmount, MAX_HP);
+	
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
 
 	return true;
@@ -200,9 +202,7 @@ bool UC_StatComponent::AddBoost(const float& BoostAmount)
 	if (CurBoosting >= MAX_BOOSTING)	return false;
 	if (BoostAmount < 0.f)				return false;
 
-	CurBoosting += BoostAmount;
-
-	if (CurBoosting > MAX_BOOSTING) CurBoosting = MAX_BOOSTING;
+	CurBoosting = FMath::Min(CurBoosting + BoostAmount, MAX_BOOSTING);
 
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
 
@@ -267,5 +267,60 @@ FBoostingEffectFactor UC_StatComponent::GetBoostingEffectFactorByCurBoostingAmou
 	return FBoostingEffectFactor();
 }
 
+void UC_StatComponent::HandleFallingDamage()
+{
+	// TODO : 차에서 떨어졌을 때에는 아마 차에서 내리는 함수에서 따로 처리를 해줘야 함
+	
+	// SkyDiving 중이라면 Damage 처리 x
+	if (OwnerCharacter->GetMainState() == EMainState::SKYDIVING) return;
+	
+	if (OwnerCharacter->GetCharacterMovement()->IsFalling()) // 떨어지고 있는 중
+	{
+		if (!bFallingFlag) // 떨어지기 시작한 시점
+		{
+			bFallingFlag = true;
+			FallingStartedHeight = OwnerCharacter->GetActorLocation().Z;
+		}
+		return;
+	}
 
+	// 떨어지지 않고 있는 중
 
+	if (FallDamageAmount > 0.f) // 이전 Tick에서 FallDamageAmount가 setting 되었을 때(Deferred Damage taking 처리)
+	{
+		if (OwnerCharacter->GetSwimmingComponent()->IsSwimming())
+		{
+			// 물 속으로 들어간 처리라면 Damage 처리하지 않기
+			FallDamageAmount = 0.f;
+			return;
+		}
+
+		TakeDamage(FallDamageAmount, OwnerCharacter); // 낙하 데미지 적용
+		FallDamageAmount = 0.f;
+	}
+	
+
+	if (bFallingFlag) // 착지한 시점, damage 계산하기
+	{
+		FColor Color = FColor::MakeRandomColor();
+		bFallingFlag = false;
+		
+		float FallenHeight = FallingStartedHeight - OwnerCharacter->GetActorLocation().Z;
+
+		UC_Util::Print("Fallen Height : " + FString::SanitizeFloat(FallenHeight * 0.01f) + "M", Color, 10.f);
+		
+		// 15m 이상
+		if (FallenHeight >= 1500.f)
+		{
+			FallDamageAmount = 100.f;
+			UC_Util::Print("Damage Amount : " + FString::SanitizeFloat(FallDamageAmount), Color, 10.f);
+			return;
+		}
+
+		// 3m ~ 10m 사이 -> 비율에 따른 FallDamageAmount 설정
+		FallDamageAmount = FMath::GetMappedRangeValueClamped(FVector2D(500.f, 1500.f), FVector2D(0.f, 100.f), FallenHeight);
+		UC_Util::Print("Damage Amount : " + FString::SanitizeFloat(FallDamageAmount), Color, 10.f);
+
+		// Deferred 방식으로 Damage를 Apply할지 결정 -> 수영 상태를 확인해야해서
+	}
+}
