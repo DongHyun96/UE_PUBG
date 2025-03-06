@@ -28,8 +28,11 @@ class UE_PUBG_API UC_GameSceneManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
-public:
-
+private:
+	/// <summary>
+	/// Level에 배치된 모든 Actor들의 BeginPlay보다 먼저 호출됨
+	/// </summary>
+	/// <param name="InWorld"></param>
 	void OnWorldBeginPlay(UWorld& InWorld) override;
 
 	//void Deinitialize() override;

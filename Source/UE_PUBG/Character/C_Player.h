@@ -48,6 +48,12 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void SetPlayerMappingContext();
+
+	/// <summary>
+	/// 레벨의 모든 Actor의 BeginPlay 이 후 호출될 함수
+	/// </summary>
+	void OnPostWorldBeginPlay();
+	
 private:
 
 	/// <summary>

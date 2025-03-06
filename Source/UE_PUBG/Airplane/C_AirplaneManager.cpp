@@ -2,6 +2,7 @@
 
 
 #include "Airplane/C_AirplaneManager.h"
+
 #include "Airplane/C_Airplane.h"
 #include "Utility/C_Util.h"
 
@@ -24,15 +25,20 @@ AC_AirplaneManager::AC_AirplaneManager()
 void AC_AirplaneManager::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	InitRandomStartDestPosition();
-	if (Airplane) InitAirplaneStartPosAndFlightDirection();
-
+	
 	// Airplane TakeOff Timer Setting
-
-	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 10.f, false);
 	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 0.5f, false);
 
+	if (!IsValid(Airplane))
+	{
+		UC_Util::Print("From AC_AirplaneManager::BeginPlay : Airplane not valid!", FColor::MakeRandomColor(), 10.f);
+		return;
+	}
+
+	InitAirplaneStartPosAndFlightDirection();
 }
 
 // Called every frame
@@ -56,7 +62,6 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 
 	if (TakeOffTimer <= 0.f) // 이륙 시작
 	{
-		InitAirplaneStartPosAndFlightDirection();
 		Airplane->StartFlight();
 		HasAirplaneTakeOff = true;
 
@@ -67,11 +72,6 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 			Character->SetMainState(EMainState::SKYDIVING);
 			Character->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::READY);
 		}
-
-		// Player HUD에 비행기 경로 추가
-		AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
-		Player->GetMainMapWidget()->SetAirplaneRoute(GetPlaneRouteStartDestPair());
-		Player->GetHUDWidget()->GetMiniMapWidget()->SetAirplaneRoute(GetPlaneRouteStartDestPair());
 	}
 }
 

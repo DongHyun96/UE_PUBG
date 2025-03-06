@@ -52,6 +52,7 @@
 #include "Utility/C_Util.h"
 #include "Utility/C_TimelineUtility.h"
 #include "UMG.h"
+#include "Airplane/C_AirplaneManager.h"
 #include "Styling/SlateBrush.h"
 #include "Engine/Texture2D.h"
 
@@ -59,6 +60,7 @@
 #include "HUD/C_MainMapWidget.h"
 #include "HUD/C_SkyDiveWidget.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
+#include "Singleton/C_GameSceneManager.h"
 
 AC_Player::AC_Player()
 {
@@ -125,7 +127,7 @@ void AC_Player::BeginPlay()
 
 	if (MainMapWidget)
 	{
-		MainMapWidget->AddToViewport(9);
+		// MainMapWidget->AddToViewport(9);
 		MainMapWidget->SetOwnerPlayer(this);
 	}
 	
@@ -181,6 +183,8 @@ void AC_Player::BeginPlay()
 	ParkourComponent->SetOwnerPlayer(this);
 
 	SetControllerPitchLimits(PoseState);
+
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &AC_Player::OnPostWorldBeginPlay);
 }
 
 void AC_Player::Tick(float DeltaTime)
@@ -248,6 +252,18 @@ void AC_Player::SetPlayerMappingContext()
 		}
 		//FSlateApplication::Get().SetNavigationConfig(MakeShared<FNavigationConfig>());
 	}
+}
+
+void AC_Player::OnPostWorldBeginPlay()
+{
+	// Player HUD에 비행기 경로 추가 (여기서 추가하는 이유는 BeginPlay 상호 Dependency 해결을 위함
+
+	if (!IsValid(GAMESCENE_MANAGER))						return;
+	if (!IsValid(GAMESCENE_MANAGER->GetAirplaneManager())) return;
+	
+	TPair<FVector, FVector> PlaneStartDestPair = GAMESCENE_MANAGER->GetAirplaneManager()->GetPlaneRouteStartDestPair();
+	MainMapWidget->SetAirplaneRoute(PlaneStartDestPair);
+	HUDWidget->GetMiniMapWidget()->SetAirplaneRoute(PlaneStartDestPair);
 }
 
 void AC_Player::HandleControllerRotation(float DeltaTime)

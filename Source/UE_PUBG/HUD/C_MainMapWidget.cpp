@@ -36,7 +36,7 @@ void UC_MainMapWidget::NativeConstruct()
 
 	//SetVisibility(ESlateVisibility::Visible);
 	//bIsFocusable = true;
-	bIsEnabled = true;
+	SetIsEnabled(true);
 }
 
 void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
@@ -288,8 +288,7 @@ bool UC_MainMapWidget::SpawnPingImage(FVector WorldPingLocation)
 bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 {
 	if (!PingMarkerBorder) return false;
-
-	UC_Util::Print("MousePos : " + MousePos.ToString(), FColor::MakeRandomColor(), 10.f);
+	
 	PingMarkerPos = MousePos - MID_POINT;
 	
 	PingMarkerPos -= MainMapImg->GetRenderTransform().Translation;
@@ -397,7 +396,7 @@ bool UC_MainMapWidget::HandleRMBDown(const FGeometry& InGeometry, const FPointer
 	// 오른쪽 마우스 버튼 클릭 처리
 	if (InMouseEvent.GetEffectingButton() != EKeys::RightMouseButton) return false;
 
-	FVector2D MousePos = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
+	FVector2D MousePos = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition()); 
 
 	// Border 처리
 	float BorderXBottom = MID_POINT.X - CANVAS_SIZE * 0.5f;

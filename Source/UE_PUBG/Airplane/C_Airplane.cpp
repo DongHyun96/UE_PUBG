@@ -87,9 +87,6 @@ void AC_Airplane::StartFlight()
 	if (!Player) Player = GAMESCENE_MANAGER->GetPlayer();
 	Player->GetMainMapWidget()->ToggleAirplaneImageVisibility(true);
 	Player->GetHUDWidget()->GetMiniMapWidget()->ToggleAirplaneImageVisibility(true);
-
-	// MainMap UI에 PlayerMarker 이미지 Visibility 토글
-	//PlayerHUDWidget->GetMainMapWidget()->TogglePlayerMarkerImageVisibility(false);
 }
 
 void AC_Airplane::Move(const float& DeltaTime)
