@@ -188,7 +188,7 @@ void UC_PoseColliderHandlerComponent::HandleLerpBodySizeByPose(const float& Delt
 
 	// Lerp Finish
 	if (FMath::Abs(Height - RootColliderHeightRadiusLerpDest.Key)	< LERP_DIFF_EPSILON &&
-		FMath::Abs(Radius - RootColliderHeightRadiusLerpDest.Value) < LERP_DIFF_EPSILON &&
+		FMath::Abs(Radius - RootColliderHeightRadiusLerpDest.Value)  < LERP_DIFF_EPSILON &&
 		FMath::Abs(MeshZPos - MeshZPosLerpDest)						< LERP_DIFF_EPSILON)
 	{
 		OwnerCharacter->GetCapsuleComponent()->SetCapsuleSize
@@ -225,12 +225,11 @@ void UC_PoseColliderHandlerComponent::HandleLerpBodySizeByPose(const float& Delt
 void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& DeltaTime)
 {
 	if (OwnerCharacter->GetIsPoseTransitioning()) return;
+	if (OwnerCharacter->GetPoseState() != EPoseState::CRAWL) return;
 
 	static const float LERP_SPEED		= 20.f;
 	static const float HEIGHT_OFFSET	= 50.f;
 	TPair<float, float> ImpactDistances{};
-
-	if (OwnerCharacter->GetPoseState() != EPoseState::CRAWL) return;
 
 	FRotator CrawlRelativeRotation	= CrawlCapsuleComponent->GetRelativeRotation();
 	CrawlSlopeAngle					= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET);

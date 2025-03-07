@@ -295,7 +295,7 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 	}
 }
 
-void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime)
+void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(const float& DeltaTime)
 {
 	// SkyDiving & Parachuting 중에서의 Lerp Destination 적용
 
@@ -680,10 +680,7 @@ void AC_Player::SetAimPressCameraLocation()
 	FVector HeadLocation = GetMesh()->GetBoneLocation("Head" ,EBoneSpaces::ComponentSpace);
 	FVector NewLocation = FVector(0, 0, 0);
 	NewLocation.Z += HeadLocation.Z;
-	//MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::STAND, C_MainSpringArm->GetRelativeLocation());
-	//MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CROUCH, C_MainSpringArm->GetRelativeLocation() + FVector(0.f, 0.f, -32.f));
-	////MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CRAWL, C_MainSpringArm->GetRelativeLocation()  + FVector(0.f, 0.f, -99.f));
-	//MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CRAWL, C_MainSpringArm->GetRelativeLocation() + FVector(0.f, 0.f, -20.f));
+
 	AimingSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::STAND , NewLocation);
 	AimingSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CROUCH, NewLocation + FVector(0.f,   0.f, -50.f));
 	AimingSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CRAWL , NewLocation + FVector(0.f, -50.f, -90.f));

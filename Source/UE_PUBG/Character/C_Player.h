@@ -65,7 +65,7 @@ private:
 	/// <summary>
 	/// MainSpringArm 로컬 위치 Dest변수값으로 계속 Lerp 시키기
 	/// </summary>
-	void HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime);
+	void HandleLerpMainSpringArmToDestRelativeLocation(const float& DeltaTime);
 
 public: // Getters and setters
 

@@ -85,8 +85,8 @@ protected:
 
 private:
 
-	const float PLANE_ALTITUDE = 30000.f; // 600m
-	//const float PLANE_ALTITUDE = 60000.f; // 600m
+	// const float PLANE_ALTITUDE = 30000.f;
+	const float PLANE_ALTITUDE = 60000.f; // 600m
 
 	const float PLANE_START_DEST_BORDER_VALUE = 40000.f;
 

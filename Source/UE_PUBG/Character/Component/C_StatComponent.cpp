@@ -317,7 +317,7 @@ void UC_StatComponent::HandleFallingDamage()
 			return;
 		}
 
-		// 3m ~ 10m 사이 -> 비율에 따른 FallDamageAmount 설정
+		// 5m ~ 15m 사이 -> 비율에 따른 FallDamageAmount 설정
 		FallDamageAmount = FMath::GetMappedRangeValueClamped(FVector2D(500.f, 1500.f), FVector2D(0.f, 100.f), FallenHeight);
 		UC_Util::Print("Damage Amount : " + FString::SanitizeFloat(FallDamageAmount), Color, 10.f);
 
