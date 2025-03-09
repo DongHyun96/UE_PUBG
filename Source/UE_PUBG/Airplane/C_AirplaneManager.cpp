@@ -15,6 +15,7 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
 #include "HUD/C_InstructionWidget.h"
+#include "MagneticField/C_MagneticFieldManager.h"
 
 AC_AirplaneManager::AC_AirplaneManager()
 {
@@ -221,6 +222,9 @@ void AC_AirplaneManager::CheckAirplaneArrivedToRouteDestLimit()
 	if (FlightDirection.Equals(DestToAirplaneDirection, KINDA_SMALL_NUMBER))
 	{
 		RouteDestLimitReached = true;
+
+		// 자기장 Phase 시작
+		GAMESCENE_MANAGER->GetMagneticFieldManager()->SetIsHandleUpdateStateStarted(true);
 
 		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
 		{

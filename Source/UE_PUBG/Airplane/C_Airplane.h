@@ -40,8 +40,6 @@ public:
 
 private:
 
-	void Move(const float& DeltaTime);
-
 	/// <summary>
 	/// Player의 Map에 비행기 표시 Update
 	/// </summary>

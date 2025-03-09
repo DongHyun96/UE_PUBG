@@ -27,10 +27,14 @@ const TMap<ESkyDivingState, FDivingSpeeds> UC_SkyDivingComponent::STATE_DIVINGSP
 		ESkyDivingState::SKYDIVING, 
 		FDivingSpeeds(0.f, 3000.f, -2500.f, -3000.f, -6000.f) 
 	},
-	
 	{
 		ESkyDivingState::PARACHUTING,
 		FDivingSpeeds(400.f, 1000.f, -300.f, -500.f, -2000.f)
+	},
+	{
+		// Landing 이후에 MoveEnd 처리 버그를 막기 위한 Dummy data
+		ESkyDivingState::LANDING,
+		FDivingSpeeds(0.f, 0.f, 0.f, 0.f, 0.f)
 	}
 };
 
@@ -388,8 +392,6 @@ void UC_SkyDivingComponent::LerpVelocityZ(const float& DeltaTime)
 	
 	float ZSpeed = FMath::Lerp(OwnerMovement->Velocity.Z, VelocityZLerpDest, DeltaTime * 10.f);
 	OwnerMovement->Velocity.Z = ZSpeed;
-	
-	if (OwnerPlayer) UC_Util::Print(ZSpeed);
 }
 
 void UC_SkyDivingComponent::HandleStateTransitionByHeight()
