@@ -24,6 +24,7 @@ void AC_MagneticFieldManager::BeginPlay()
 	Super::BeginPlay();
 
 	//GAMESCENE_MANAGER->SetMagneticFieldManager(this);
+	
 }
 
 void AC_MagneticFieldManager::Tick(float DeltaTime)
@@ -33,8 +34,11 @@ void AC_MagneticFieldManager::Tick(float DeltaTime)
 	Timer += DeltaTime;
 
 	//UC_Util::Print(CurrentPhase);
-
+	if (!bIsHandleUpdateStateStarted) return;
+	
 	HandleUpdateState(DeltaTime);
+
+	HandleDamagingCharacters(DeltaTime);
 }
 
 void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
@@ -108,6 +112,32 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 		return;
 	default: 
 		return;
+	}
+}
+
+void AC_MagneticFieldManager::HandleDamagingCharacters(const float& DeltaTime)
+{
+	static float DamageTimer{};
+
+	DamageTimer += DeltaTime;
+
+	// 1초 단위로 Damage 적용
+	if (DamageTimer > 1.f)
+	{
+		DamageTimer -= 1.f;
+
+		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
+		{
+			// FVector2D::Distan
+			FVector2D CharacterLocation  = FVector2D(Character->GetActorLocation().X, Character->GetActorLocation().Y);
+			FVector2D MainCircleLocation = FVector2D(MainCircle.MidLocation.X, MainCircle.MidLocation.Y);
+
+			if (FVector2D::Distance(CharacterLocation, MainCircleLocation) > MainCircle.Radius)
+			{
+				float DamageAmount = PhaseInfos[CurrentPhase].DamagePerSecond;
+				Character->GetStatComponent()->TakeDamage(DamageAmount, nullptr);
+			}
+		}
 	}
 }
 
