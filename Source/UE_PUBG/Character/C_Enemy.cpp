@@ -32,15 +32,15 @@ void AC_Enemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetCharacterMovement()->MaxWalkSpeed = 200.f;
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
     // TODO : 비행기 타기 이전에 spawn하는 것으로 수정하기
     ItemSpawnerHelper->SpawnDefaultWeaponsAndItems();
 }
 
-void AC_Enemy::Tick(float DeltaSeoncds)
+void AC_Enemy::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaSeoncds);
+	Super::Tick(DeltaSeconds);
 
 	/*switch (HandState)
 	{
@@ -54,6 +54,7 @@ void AC_Enemy::Tick(float DeltaSeoncds)
 
 	//float DistanceToPlayer = FVector::Distance(GAMESCENE_MANAGER->GetPlayer()->GetActorLocation(), this->GetActorLocation());
 	//UC_Util::Print(DistanceToPlayer * 0.01f);
+	// UC_Util::Print(GetVelocity().Size2D());
 }
 
 bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)

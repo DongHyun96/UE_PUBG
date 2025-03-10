@@ -205,26 +205,25 @@ void UC_InputComponent::MoveEnd(const FInputActionValue& Value)
 
 void UC_InputComponent::Look(const FInputActionValue& Value)
 {
+	if (!Player->Controller) return;
+	
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (Player->Controller != nullptr)
-	{
-		Player->AddControllerYawInput(LookAxisVector.X);
-		Player->AddControllerPitchInput(LookAxisVector.Y);
-		//TODO : Aim Down Sight 일 때 메쉬 숨기기
-		//if (PoseState == EPoseState::CRAWL)
-		//{
-		//if (GetControlRotation().Pitch >= 350.f && GetControlRotation().Pitch < 360.f)
-		//	{
-		//		GetMesh()->SetOwnerNoSee(true);
-		//		UC_Util::Print(float(GetControlRotation().Pitch));
-		//	}
-		//	else
-		//		GetMesh()->SetOwnerNoSee(false);
+	Player->AddControllerYawInput(LookAxisVector.X);
+	Player->AddControllerPitchInput(LookAxisVector.Y);
+	//TODO : Aim Down Sight 일 때 메쉬 숨기기
+	//if (PoseState == EPoseState::CRAWL)
+	//{
+	//if (GetControlRotation().Pitch >= 350.f && GetControlRotation().Pitch < 360.f)
+	//	{
+	//		GetMesh()->SetOwnerNoSee(true);
+	//		UC_Util::Print(float(GetControlRotation().Pitch));
+	//	}
+	//	else
+	//		GetMesh()->SetOwnerNoSee(false);
 
 
-		//}
-	}
+	//}
 }
 
 void UC_InputComponent::Crouch()
@@ -301,10 +300,8 @@ void UC_InputComponent::OnJump()
 		return;
 	}
 	SetToNonAimCamera();
-	//Player->GetPressedJum
-	Player->bPressedJump = true;
-	Player->SetIsJumping(true);
-	Player->JumpKeyHoldTime = 0.0f;
+	
+	Player->Jump();
 }
 
 void UC_InputComponent::OnSwimmingJump()
@@ -517,16 +514,15 @@ void UC_InputComponent::OnXKey()
 
 void UC_InputComponent::OnBKey()
 {
-	// Testing 용 Heal 주기 TODO : 이 라인 지우기
-	//if (IsValid(Player->ConsumableItems[Player->ConsumableIterator])) 
-	//	Player->ConsumableItems[Player->ConsumableIterator]->StartUsingConsumableItem(Player);
-
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteBKey();
 }
 
 void UC_InputComponent::OnRKey()
 {
+	// Testing용 Heal 주기
+	Player->GetStatComponent()->ApplyHeal(100.f);
+	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteRKey();
 }

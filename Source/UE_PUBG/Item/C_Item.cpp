@@ -263,3 +263,18 @@ void AC_Item::SetOutlineEffect(bool bEnable)
 	}
 
 }
+
+AC_Item* AC_Item::DividItemSpawn(int DivideNum, AC_BasicCharacter* Character, bool ActorEnAbleCollision)
+{
+	if (this->GetItemDatas().ItemCurStack == 1) return nullptr; // 갯수가 1이면 나누기 불가. nullptr 반환.
+
+	AC_Item* DividedItem = this->SpawnItem(Character);
+
+	this->SetItemStack(GetItemDatas().ItemCurStack - DivideNum);
+
+	DividedItem->SetItemStack(DivideNum);
+
+	DividedItem->SetActorEnableCollision(ActorEnAbleCollision);
+
+	return DividedItem;
+}

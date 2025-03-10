@@ -48,6 +48,12 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void SetPlayerMappingContext();
+
+	/// <summary>
+	/// 레벨의 모든 Actor의 BeginPlay 이 후 호출될 함수
+	/// </summary>
+	void OnPostWorldBeginPlay();
+	
 private:
 
 	/// <summary>
@@ -59,7 +65,7 @@ private:
 	/// <summary>
 	/// MainSpringArm 로컬 위치 Dest변수값으로 계속 Lerp 시키기
 	/// </summary>
-	void HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime);
+	void HandleLerpMainSpringArmToDestRelativeLocation(const float& DeltaTime);
 
 public: // Getters and setters
 
@@ -72,7 +78,8 @@ public: // Getters and setters
 	void SetSpringArmRelativeLocationDest(EPoseState InNextPoseState) { MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
 	void SetAimingSpringArmRelativeLocationDest(EPoseState InNextPoseState) { AimingSpringArmRelativeLocationDest = AimingSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
 
-	class UC_HUDWidget* GetHUDWidget() const { return HUDWidget; }
+	class UC_HUDWidget*		GetHUDWidget()		const { return HUDWidget; }
+	class UC_MainMapWidget* GetMainMapWidget()	const { return MainMapWidget; }
 	 
 	class UC_PingSystemComponent* GetPingSystemComponent() const { return PingSystemComponent; }
 
@@ -288,6 +295,9 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_HUDWidget* HUDWidget{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_MainMapWidget* MainMapWidget{};	
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UC_InvenSystem* InvenSystem{};

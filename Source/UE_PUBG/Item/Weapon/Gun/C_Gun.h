@@ -30,10 +30,10 @@ enum class EGunType : uint8
 UENUM(BlueprintType)
 enum class EShootingMode : uint8
 {
-	SEMI_AUTO,
-	FULL_AUTO,
-	BURST,
-	SINGLE_SHOT,
+	SEMI_AUTO,		// 단발
+	FULL_AUTO,		// 연사
+	BURST,			// 점사
+	SINGLE_SHOT,	// SR용 Shooting Mode
 	MAX
 };
 
@@ -195,8 +195,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float RecoilFactorVertical;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float RecoilFactorHorizontal;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -356,6 +356,13 @@ public:
 	virtual float GetDamageRateByBodyPart(const FName& BodyPart) PURE_VIRTUAL(AC_Gun::GetDamageRateByBodyPart, return 0.f;);
 
 	float GetDamageBase() const { return DamageBase; }
+
+protected:
+	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	// UCapsuleComponent* CapsuleComponent{};
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UParticleSystem* MuzzleFlameEffectParticle{};
+	
 };
 
 

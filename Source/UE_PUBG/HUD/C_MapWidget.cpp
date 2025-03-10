@@ -47,17 +47,6 @@ bool UC_MapWidget::SpawnPingImage(FVector2D MousePos)
 	return SpawnPingImageWithMousePos(MousePos);
 }
 
-//void UC_MapWidget::SetAirplaneRouteStartDestPosOrigin(TPair<FVector, FVector> StartDest)
-//{
-//	AirplaneRouteStartPosOrigin = { StartDest.Key.Y,   -StartDest.Key.X };
-//	AirplaneRouteDestPosOrigin  = { StartDest.Value.Y, -StartDest.Value.X };
-//
-//	//AirplaneRouteMidPos = (AirplaneRouteStartPosOrigin + AirplaneRouteDestPosOrigin) * 0.5f;
-//
-//	//AirplaneRouteStartPosOrigin *= (CANVAS_SIZE / WORLD_MAP_SIZE);
-//	//AirplaneRouteDestPosOrigin  *= (CANVAS_SIZE / WORLD_MAP_SIZE);
-//}
-
 void UC_MapWidget::SetAirplaneRoute(TPair<FVector, FVector> StartDest)
 {
 	// Map에 배치될 위치 지점 찾기

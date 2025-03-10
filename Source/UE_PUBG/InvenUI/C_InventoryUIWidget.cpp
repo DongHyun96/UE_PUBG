@@ -171,4 +171,19 @@ void UC_InventoryUIWidget::UpdateInventroyItemPanelWidget()
     }
 }
 
+void UC_InventoryUIWidget::MainPanelsSetVisivility(ESlateVisibility InVisibility)
+{
+    AroundItemPanel->SetVisibility(InVisibility);
+     InventoryPanel->SetVisibility(InVisibility);
+     EquipmentPanel->SetVisibility(InVisibility);
+}
+
+void UC_InventoryUIWidget::CloseDivideItemWidget()
+{
+    if (DivideItemAroundDropWidget->Visibility == ESlateVisibility::Visible)
+        DivideItemAroundDropWidget->SetVisibility(ESlateVisibility::Collapsed);
+    if (DivideItemInventoryDropWidget->Visibility == ESlateVisibility::Visible)
+        DivideItemInventoryDropWidget->SetVisibility(ESlateVisibility::Collapsed);
+}
+
 

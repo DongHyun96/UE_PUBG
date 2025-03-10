@@ -139,18 +139,7 @@ private: // 중력가속 사용 x -> 직접 Velocity.Z를 조절
 
 private: // SkyDiving & Parachuting 자세 speed 관련
 
-	const TMap<ESkyDivingState, FDivingSpeeds> State_DivingSpeeds =
-	{
-		{
-			ESkyDivingState::SKYDIVING, 
-			FDivingSpeeds(0.f, 3000.f, -2500.f, -3000.f, -6000.f) 
-		},
-
-		{
-			ESkyDivingState::PARACHUTING,
-			FDivingSpeeds(400.f, 1000.f, -300.f, -500.f, -2000.f)
-		}
-	};
+	static const TMap<ESkyDivingState, FDivingSpeeds> STATE_DIVINGSPEEDS;
 
 protected:
 
@@ -188,6 +177,8 @@ protected: // Parachute Skeletal Mesh AnimMontages
 
 private:
 
+	static const float ALTITUDE_ZERO_Z;
+
 	// 원작 수치
 	//const float PARACHUTE_DEPLOY_LIMIT_HEIGHT = 43000.f;
 	//const float MAX_SKYDIVE_JUMP_ALTITUDE = 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
@@ -201,7 +192,6 @@ private:
 	
 	// 현재 낙하 높이(고도)
 	float CurrentHeight{};
-
 
 };
 

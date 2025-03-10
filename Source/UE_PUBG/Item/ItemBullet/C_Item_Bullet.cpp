@@ -62,8 +62,9 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 			// 인벤에 동일한 이름의 아이템이 존재 한다면 실행.
 
 			invenComp->AddItemToMyList(this);
-			AddBulletStackToCharacter(CurBulletType);
-
+			AddBulletStackToCharacter(CurBulletType,Character);
+			UC_Util::Print(int(CurBulletType));
+			UC_Util::Print("Item Stack Add!!!!!!!!!!!!!!!!");
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 
@@ -72,7 +73,7 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 		else
 		{
 			invenComp->AddItemToMyList(this);
-			AddBulletStackToCharacter(CurBulletType);
+			AddBulletStackToCharacter(CurBulletType, Character);
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
@@ -93,7 +94,7 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 		{
 			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
 
-			SpawnedItem->AddBulletStackToCharacter(CurBulletType);
+			SpawnedItem->AddBulletStackToCharacter(CurBulletType,Character);
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
@@ -104,7 +105,7 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 		{
 			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
 			UC_Util::Print(ItemStackCount);
-			SpawnedItem->AddBulletStackToCharacter(CurBulletType);
+			SpawnedItem->AddBulletStackToCharacter(CurBulletType,Character);
 
 			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
@@ -159,18 +160,20 @@ void AC_Item_Bullet::UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer)
 
 
 
-void AC_Item_Bullet::AddBulletStackToCharacter(EBulletType InBulletType)
+void AC_Item_Bullet::AddBulletStackToCharacter(EBulletType InBulletType, AC_BasicCharacter* InLootingCharacter)
 {
-	if (!OwnerCharacter) return;
+	//if (!OwnerCharacter) return;
 
 	switch (InBulletType)
 	{
 	case EBulletType::FIVEMM:
-		OwnerCharacter->AddFivemmBulletStack(ItemDatas.ItemCurStack);
-		// UC_Util::Print("Fivemm",FColor::Blue);
+		InLootingCharacter->AddFivemmBulletStack(ItemDatas.ItemCurStack);
+		
+		UC_Util::Print(ItemDatas.ItemCurStack,FColor::Blue);
+		UC_Util::Print(InLootingCharacter->GetCurrentFivemmBulletCount(),FColor::Blue);
 		break;
 	case EBulletType::SEVENMM:
-		OwnerCharacter->AddSevenmmBulletStack(ItemDatas.ItemCurStack);
+		InLootingCharacter->AddSevenmmBulletStack(ItemDatas.ItemCurStack);
 		// UC_Util::Print("Sevenmm",FColor::Blue);
 
 		break;
@@ -192,6 +195,7 @@ void AC_Item_Bullet::DeBulletStackToCharacter()
 	{
 	case EBulletType::FIVEMM:
 		OwnerCharacter->AddFivemmBulletStack(-ItemDatas.ItemCurStack);
+		UC_Util::Print(ItemDatas.ItemCurStack,FColor::Blue);
 		break;
 	case EBulletType::SEVENMM:
 		OwnerCharacter->AddSevenmmBulletStack(-ItemDatas.ItemCurStack);

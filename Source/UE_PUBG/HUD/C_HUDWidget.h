@@ -97,7 +97,6 @@ public:
 
 	class UC_MapWidget*			GetMiniMapWidget()		const { return MiniMapWidget; }
 	class UBorder*				GetMiniMapBorder() 		const { return MiniMapBorder; }
-	class UC_MainMapWidget*		GetMainMapWidget() 		const { return MainMapWidget; }
 	class UC_OxygenWidget*		GetOxygenWidget()		const { return OxygenWidget; }
 	class UC_SkyDiveWidget*		GetSkyDiveWidget()		const { return SkyDiveWidget; }
 	class UC_InstructionWidget* GetInstructionWidget()	const { return InstructionWidget; }
@@ -125,9 +124,6 @@ protected: // Map 관련
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UBorder* MiniMapBorder{};
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_MainMapWidget* MainMapWidget{};
 
 protected:
 

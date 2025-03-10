@@ -32,14 +32,15 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 
 	if (!OwnerCharacter) return;
 
-	//Speed = OwnerCharacter->GetVelocity().Size2D();		
-	Speed = FMath::Lerp(Speed, OwnerCharacter->GetNextSpeed(), DeltaSeconds * 15.f);
+	//Speed = OwnerCharacter->GetVelocity().Size2D();
+	float SpeedDest = FMath::Clamp(OwnerCharacter->GetNextSpeed(), 0.f, 700.f);
+	Speed			= FMath::Lerp(Speed, SpeedDest, DeltaSeconds * 10.f);
 
-	const FRotator Rotation = OwnerCharacter->GetActorRotation();
+	const FRotator YawRotation(0, OwnerCharacter->GetActorRotation().Yaw, 0);
 
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-	Direction = CalculateDirection(OwnerCharacter->GetVelocity().GetSafeNormal2D(), YawRotation);
+	float DirectionDest = CalculateDirection(OwnerCharacter->GetVelocity().GetSafeNormal2D(), YawRotation); 
+	Direction			= FMath::Lerp(Direction, DirectionDest, DeltaSeconds * 5.f);
+	
 
 	//FString TheFloatStr = FString::SanitizeFloat(Direction);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
@@ -131,7 +132,7 @@ void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_HardLand_To_Stand()
 	//OwnerCharacter->SetCanMove(true);
 
 	OwnerCharacter->SetCanMove(true);
-
+	
 	AnimNotify_OnEndTransition_Falling_To_Standing();
 
 
@@ -140,8 +141,8 @@ void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_HardLand_To_Stand()
 void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_Falling_To_Standing()
 {
 	OwnerCharacter->SetIsJumping(false);
-	OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = 600;
-	OwnerCharacter->GetCharacterMovement()->MaxAcceleration = 2048;
+	//OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = 200;
+	//OwnerCharacter->GetCharacterMovement()->MaxAcceleration = 2048;
 
 
 }
@@ -149,6 +150,8 @@ void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_Falling_To_Standing()
 void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_Falling_To_HardLand()
 {
 	OwnerCharacter->SetCanMove(false);
+	// HardLanding 모션 중 PlayerCharacter 회전 방지
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter)) Player->SetStrafeRotationToIdleStop();
 }
 
 void UC_AnimBasicCharacter::ControlHeadRotation()

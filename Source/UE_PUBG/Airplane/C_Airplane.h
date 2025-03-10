@@ -40,17 +40,10 @@ public:
 
 private:
 
-	void Move(const float& DeltaTime);
-
 	/// <summary>
 	/// Player의 Map에 비행기 표시 Update
 	/// </summary>
 	void UpdatePlayerMapHUD();
-
-	/// <summary>
-	/// 승객들 위치 조정
-	/// </summary>
-	void UpdatePassengersPosition();
 
 	/// <summary>
 	/// 프로펠러 회전시키기
@@ -75,8 +68,8 @@ private:
 	float PropRotZValue{};
 
 private:
-
-	class UC_HUDWidget* PlayerHUDWidget{};
+	// Player Map 관련 및 HUD 정보 계속해서 수정 필요해서 레퍼런스 들고 있게 처리
+	class AC_Player* Player{};
 
 };
 

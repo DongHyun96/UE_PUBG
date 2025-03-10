@@ -2,6 +2,7 @@
 
 
 #include "Airplane/C_AirplaneManager.h"
+
 #include "Airplane/C_Airplane.h"
 #include "Utility/C_Util.h"
 
@@ -14,6 +15,7 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
 #include "HUD/C_InstructionWidget.h"
+#include "MagneticField/C_MagneticFieldManager.h"
 
 AC_AirplaneManager::AC_AirplaneManager()
 {
@@ -24,16 +26,20 @@ AC_AirplaneManager::AC_AirplaneManager()
 void AC_AirplaneManager::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	InitRandomStartDestPosition();
-	if (Airplane) InitAirplaneStartPosAndFlightDirection();
-
+	
 	// Airplane TakeOff Timer Setting
+	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 10.f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 0.5f, false);
 
-	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
+	if (!IsValid(Airplane))
+	{
+		UC_Util::Print("From AC_AirplaneManager::BeginPlay : Airplane not valid!", FColor::MakeRandomColor(), 10.f);
+		return;
+	}
 
-	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 0.5f, false);
-
+	InitAirplaneStartPosAndFlightDirection();
 }
 
 // Called every frame
@@ -57,7 +63,6 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 
 	if (TakeOffTimer <= 0.f) // 이륙 시작
 	{
-		InitAirplaneStartPosAndFlightDirection();
 		Airplane->StartFlight();
 		HasAirplaneTakeOff = true;
 
@@ -218,6 +223,9 @@ void AC_AirplaneManager::CheckAirplaneArrivedToRouteDestLimit()
 	{
 		RouteDestLimitReached = true;
 
+		// 자기장 Phase 시작
+		GAMESCENE_MANAGER->GetMagneticFieldManager()->SetIsHandleUpdateStateStarted(true);
+
 		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
 		{
 			if (Character->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
@@ -241,15 +249,15 @@ void AC_AirplaneManager::CheckFlightFinished()
 		FMath::Abs(AirplaneLocation.Y) > ACTUAL_START_DEST_BORDER_VALUE)
 	{
 		Airplane->SetIsFlying(false);
-		UC_HUDWidget* HUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget();
-		HUDWidget->GetMainMapWidget()->ToggleAirplaneImageVisibility(false);
-		HUDWidget->GetMiniMapWidget()->ToggleAirplaneImageVisibility(false);
+		AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+		Player->GetMainMapWidget()->ToggleAirplaneImageVisibility(false);
+		Player->GetHUDWidget()->GetMiniMapWidget()->ToggleAirplaneImageVisibility(false);
 	}
 }
 
 void AC_AirplaneManager::InitAirplaneStartPosAndFlightDirection()
 {
-	// TODO : Init Airplane actual StartPosition and FlightDirection
+	/* Init Airplane actual StartPosition and FlightDirection */
 	// L(t) = (x0 + t dx, y0 + t dy)
 
 	FVector FlightDirection = PlaneRouteDest - PlaneRouteStart;

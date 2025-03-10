@@ -3,6 +3,7 @@
 
 #include "MagneticField/C_MagneticFieldManager.h"
 #include "C_MagneticWall.h"
+#include "C_WaterTileCheckerComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Utility/C_Util.h"
 
@@ -17,6 +18,9 @@
 AC_MagneticFieldManager::AC_MagneticFieldManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	WaterTileCheckerComponent = CreateDefaultSubobject<UC_WaterTileCheckerComponent>("WaterTileCheckerComponent");
+	WaterTileCheckerComponent->SetMagneticFieldManager(this);
 }
 
 void AC_MagneticFieldManager::BeginPlay()
@@ -24,6 +28,8 @@ void AC_MagneticFieldManager::BeginPlay()
 	Super::BeginPlay();
 
 	//GAMESCENE_MANAGER->SetMagneticFieldManager(this);
+	SetIsHandleUpdateStateStarted(true); // For Testing
+	
 }
 
 void AC_MagneticFieldManager::Tick(float DeltaTime)
@@ -33,8 +39,11 @@ void AC_MagneticFieldManager::Tick(float DeltaTime)
 	Timer += DeltaTime;
 
 	//UC_Util::Print(CurrentPhase);
-
+	if (!bIsHandleUpdateStateStarted) return;
+	
 	HandleUpdateState(DeltaTime);
+
+	HandleDamagingCharacters(DeltaTime);
 }
 
 void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
@@ -111,6 +120,32 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 	}
 }
 
+void AC_MagneticFieldManager::HandleDamagingCharacters(const float& DeltaTime)
+{
+	static float DamageTimer{};
+
+	DamageTimer += DeltaTime;
+
+	// 1초 단위로 Damage 적용
+	if (DamageTimer > 1.f)
+	{
+		DamageTimer -= 1.f;
+
+		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
+		{
+			// FVector2D::Distan
+			FVector2D CharacterLocation  = FVector2D(Character->GetActorLocation().X, Character->GetActorLocation().Y);
+			FVector2D MainCircleLocation = FVector2D(MainCircle.MidLocation.X, MainCircle.MidLocation.Y);
+
+			if (FVector2D::Distance(CharacterLocation, MainCircleLocation) > MainCircle.Radius)
+			{
+				float DamageAmount = PhaseInfos[CurrentPhase].DamagePerSecond;
+				Character->GetStatComponent()->TakeDamage(DamageAmount, nullptr);
+			}
+		}
+	}
+}
+
 void AC_MagneticFieldManager::InitManager()
 {
 	// 첫 Main 자기장은 아예 맵 밖에 존재 -> 1페이즈 줄어들 때의 NextCircle로 줄어들었을 때 비로소 맵에 잡힘
@@ -170,19 +205,44 @@ void AC_MagneticFieldManager::SetRandomNextCircleAndSpeedDirection()
 {
 	// Next random circle setting
 
-	float XDir = FMath::FRandRange(-1.f, 1.f);
-	float YDir = FMath::FRandRange(-1.f, 1.f);
+	// Set Radius
+	NextCircle.Radius = PhaseInfos[CurrentPhase + 1].PhaseRadius;
+	
+	if (PhaseInfos[CurrentPhase + 1].bHasExactLocation)
+		NextCircle.MidLocation = PhaseInfos[CurrentPhase + 1].ExactPhaseLocation;
+	else
+	{
+		uint8 TryCount{};
+		while (true)
+		{
+			++TryCount;
+			float XDir = FMath::FRandRange(-1.f, 1.f);
+			float YDir = FMath::FRandRange(-1.f, 1.f);
 
-	FVector RandomDirection = FVector(XDir, YDir, 0.f);
-	RandomDirection.Normalize();
+			FVector RandomDirection = FVector(XDir, YDir, 0.f);
+			RandomDirection.Normalize();
 
-	float RandomScalar = FMath::FRandRange(0.f, MainCircle.Radius - PhaseInfos[CurrentPhase + 1].PhaseRadius);
+			float RandomScalar = FMath::FRandRange(0.f, MainCircle.Radius - NextCircle.Radius);
 
-	FVector RandomNextCirclePos = MainCircle.MidLocation + RandomDirection * RandomScalar;
+			FVector RandomNextCirclePos = MainCircle.MidLocation + RandomDirection * RandomScalar;
 
-	NextCircle.Radius		= PhaseInfos[CurrentPhase + 1].PhaseRadius;
-	NextCircle.MidLocation	= RandomNextCirclePos;
+			NextCircle.MidLocation	= RandomNextCirclePos; // Set NextCircle MidLocation
 
+			if (!PhaseInfos[CurrentPhase + 1].bShouldTryToAvoidWater) break;
+			
+			// 만약 WaterTile 개수를 따져서 위치를 잡아야 한다면 제대로 된 위치가 잡힐 때 까지 반복
+			uint8 WaterTileCount = WaterTileCheckerComponent->GetWaterTileCount(NextCircle);
+			if (WaterTileCount <= PhaseInfos[CurrentPhase + 1].WaterTileCountLimit) break;
+
+			// 500번 시도해서 WaterTile을 피해도 적절한 위치가 나오지 않았을 때에는 적절한 위치가 없다고 판단, 그냥 진행하기
+			if (++TryCount > 500) break;
+		}
+		
+		UC_Util::Print("Try Avoiding Water count : " + FString::FromInt(TryCount), FColor::Cyan, 10.f);
+	}
+	
+	/* Speed and direction settings */
+	
 	// 속력 setting
 	float RadiusDifference = MainCircle.Radius - NextCircle.Radius;
 	PhaseInfos[CurrentPhase].RadiusShrinkSpeed = RadiusDifference / PhaseInfos[CurrentPhase].ShrinkTotalTime;
@@ -198,7 +258,7 @@ void AC_MagneticFieldManager::SetRandomNextCircleAndSpeedDirection()
 void AC_MagneticFieldManager::UpdateMainCircleInfoOnMapUI()
 {
 	UC_MapWidget* MiniMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget();
-	UC_MapWidget* MainMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMainMapWidget();
+	UC_MapWidget* MainMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetMainMapWidget();
 
 	// 중점과 반지름 UV 좌표계로 변환
 	float U		=  MainCircle.MidLocation.Y * MAP_LENGTH_TO_UV_FACTOR + 0.5f;
@@ -212,7 +272,7 @@ void AC_MagneticFieldManager::UpdateMainCircleInfoOnMapUI()
 void AC_MagneticFieldManager::UpdateNextCircleInfoOnMapUI()
 {
 	UC_MapWidget* MiniMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget();
-	UC_MapWidget* MainMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMainMapWidget();
+	UC_MapWidget* MainMapWidget = GAMESCENE_MANAGER->GetPlayer()->GetMainMapWidget();
 
 	// 중점과 반지름 UV 좌표계로 변환
 	float U		=  NextCircle.MidLocation.Y * MAP_LENGTH_TO_UV_FACTOR + 0.5f;

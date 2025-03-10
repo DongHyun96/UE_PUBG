@@ -133,11 +133,12 @@ bool UC_ParkourComponent::TryExecuteParkourAction()
 	// Init CurParkourDesc
 	FParkourDescriptor CurParkourDesc{};
 
-	CurParkourDesc.CollisionParams.AddIgnoredActor(OwnerCharacter);
+	CurParkourDesc.CollisionParams.AddIgnoredActors(GAMESCENE_MANAGER->GetAllCharacterActors());
 
 	TArray<AActor*> AttachedActors{};
 	OwnerCharacter->GetAttachedActors(AttachedActors);
 	CurParkourDesc.CollisionParams.AddIgnoredActors(AttachedActors);
+
 
 	// Init CanMoveTimer
 	CanMoveTimerAfterWarpActionFin = 0.f;

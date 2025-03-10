@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -28,8 +28,11 @@ class UE_PUBG_API UC_GameSceneManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
-public:
-
+private:
+	/// <summary>
+	/// Level에 배치된 모든 Actor들의 BeginPlay보다 먼저 호출됨
+	/// </summary>
+	/// <param name="InWorld"></param>
 	void OnWorldBeginPlay(UWorld& InWorld) override;
 
 	//void Deinitialize() override;
@@ -52,6 +55,7 @@ public: // Getters and setters
 	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
 
 	TArray<class AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
+	TArray<class AActor*>& GetAllCharacterActors() { return AllCharacterActors; }
 
 	/// <summary>
 	/// GameScene에서 GC로부터 보호된 Object들 추가 -> GameScene 끝날 때 일괄 삭제처리 예정
@@ -71,6 +75,7 @@ private:
 
 	// 인게임 모든 캐릭터들(Player + Enemies)
 	TArray<class AC_BasicCharacter*> AllCharacters{};
+	TArray<AActor*> AllCharacterActors{};
 
 private: // Test용 Enemy
 

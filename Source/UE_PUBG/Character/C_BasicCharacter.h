@@ -194,6 +194,8 @@ public: // Getters and setters
 	EPoseState GetPoseState() const { return PoseState; }
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }
 
+	void SetIsHitting(bool bHit) { bIsHitting = bHit; }
+
 protected:
 	void SetPoseState(EPoseState InPoseState);
 
@@ -227,7 +229,7 @@ public:
 
 	
 	UFUNCTION(BlueprintCallable)
-	class UC_InvenComponent* GetInvenComponent() { return Inventory; }
+	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
 
 	void SetIsHoldDirection(bool InIsHoldDirection) { bIsHoldDirection = InIsHoldDirection; }
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
@@ -257,8 +259,6 @@ public:
 	void SetIsSprinting(bool InIsSprinting) { bIsSprinting = InIsSprinting; }
 	bool GetIsReloadingBullet() { return bIsReloadingBullet; }
 	void SetIsReloadingBullet(bool bInIsReloading) { bIsReloadingBullet = bInIsReloading; }
-	UFUNCTION(BlueprintCallable)
-	UC_InvenComponent* GetInventory() const { return Inventory; }
 
 	class UC_ConsumableUsageMeshComponent* GetConsumableUsageMeshComponent() const { return ConsumableUsageMeshComponent; }
 
@@ -268,9 +268,6 @@ public:
 
 	UFUNCTION(BlueprintGetter)
 	class UC_SkyDivingComponent* GetSkyDivingComponent() const { return SkyDiveComponent; }
-
-	//UFUNCTION(BlueprintCallable)
-	//class UC_InvenSystem* GetInvenSystem() { return InvenSystem; }
 
 	class UC_AttachableItemMeshComponent* GetAttachmentMeshComponent() { return AttachmentMeshComponent; };
 
@@ -305,6 +302,10 @@ public:
 public:
 
 	FGenericTeamId GetGenericTeamId() const override { return FGenericTeamId(TeamID); }
+
+public:
+
+	void Jump() override;
 
 protected:
 
@@ -347,9 +348,6 @@ public:
 	// OnTransitionFinish에서 호출될 Multicast Delegate
 	FDele_PoseTransitionFin Delegate_OnPoseTransitionFin;
 
-
-	float GetDistanceToGround() { return DistanceToGround; }
-
 protected:
 
 	// AnimCharacter에서 참조할 Speed의 다음 Lerp destination 값
@@ -365,12 +363,15 @@ protected:
 	bool bIsReloadingBullet = false;
 	bool bIsFiringBullet = false;
 	FRotator CharacterMovingDirection;
-	float DistanceToGround{};
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bCanMove = true;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsJumping = false;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsHitting = false;
 
 protected:
 	// 장착된 무기 및 장구류 component
@@ -383,7 +384,7 @@ protected:
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UC_InvenComponent* Inventory{};
+	UC_InvenComponent* InvenComponent{};
 
 protected: // PriorityAnimMontage 관련
 
@@ -393,6 +394,9 @@ protected: // PriorityAnimMontage 관련
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FPriorityAnimMontage DyingMontage{};
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FPriorityAnimMontage HitMontage{};
 
 protected: // Consumable 관련
 	

@@ -26,6 +26,7 @@ bool UC_BasicPanelWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 	if (InDragDropEvent.IsControlDown() && DroppedItem->GetItemDatas().ItemCurStack > 1)
 	{
 		//OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		OwnerPlayer->GetInvenSystem()->GetInvenUI()->MainPanelsSetVisivility(ESlateVisibility::HitTestInvisible);
 		ShowDividePanelWidget(DroppedItem);
 		return true;
 	}

@@ -49,12 +49,17 @@ void AC_Airplane::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (!IsFlying) return;
+	
+	// 실질적인 비행기 이동 처리
+	AddActorWorldOffset(FlightDirection * FLIGHT_SPEED * DeltaTime, false);
 
-	Move(DeltaTime);
-	UpdatePassengersPosition();
+	// 다른 Character의 위치는 상관 x Player의 위치만 Update(Map에 표기되기 때문)
+	if (!IsValid(Player)) Player = GAMESCENE_MANAGER->GetPlayer();
+	if (Player->GetMainState() == EMainState::SKYDIVING && Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
+		Player->SetActorLocation(this->GetActorLocation());
+	
 	UpdateProps(DeltaTime);
 	UpdatePlayerMapHUD();
-
 }
 
 void AC_Airplane::SetFlightDirection(FVector InDirection)
@@ -80,37 +85,15 @@ void AC_Airplane::StartFlight()
 	this->SetActorRotation(FlightDirection.Rotation());
 
 	// MainMap UI에 비행기 이미지 Visibility 토글
-	if (!PlayerHUDWidget) PlayerHUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget();
-	PlayerHUDWidget->GetMainMapWidget()->ToggleAirplaneImageVisibility(true);
-	PlayerHUDWidget->GetMiniMapWidget()->ToggleAirplaneImageVisibility(true);
-
-	// MainMap UI에 PlayerMarker 이미지 Visibility 토글
-	//PlayerHUDWidget->GetMainMapWidget()->TogglePlayerMarkerImageVisibility(false);
-}
-
-void AC_Airplane::Move(const float& DeltaTime)
-{ 
-	if (!IsFlying) return;
-	AddActorWorldOffset(FlightDirection * FLIGHT_SPEED * DeltaTime, false);
+	if (!Player) Player = GAMESCENE_MANAGER->GetPlayer();
+	Player->GetMainMapWidget()->ToggleAirplaneImageVisibility(true);
+	Player->GetHUDWidget()->GetMiniMapWidget()->ToggleAirplaneImageVisibility(true);
 }
 
 void AC_Airplane::UpdatePlayerMapHUD()
 {
-	PlayerHUDWidget->GetMainMapWidget()->UpdateAirplaneImagePosition(this->GetActorLocation());
-	PlayerHUDWidget->GetMiniMapWidget()->UpdateAirplaneImagePosition(this->GetActorLocation());
-}
-
-void AC_Airplane::UpdatePassengersPosition()
-{
-	for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
-	{
-		EMainState MainState		= Character->GetMainState();
-		ESkyDivingState DivingState = Character->GetSkyDivingComponent()->GetSkyDivingState();
-
-		if (MainState != EMainState::SKYDIVING || DivingState != ESkyDivingState::READY) continue;
-		
-		Character->SetActorLocation(this->GetActorLocation());
-	}
+	Player->GetMainMapWidget()->UpdateAirplaneImagePosition(this->GetActorLocation());
+	Player->GetHUDWidget()->GetMiniMapWidget()->UpdateAirplaneImagePosition(this->GetActorLocation());
 }
 
 void AC_Airplane::UpdateProps(const float& DeltaTime)

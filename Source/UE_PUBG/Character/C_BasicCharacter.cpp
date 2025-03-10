@@ -46,8 +46,8 @@ AC_BasicCharacter::AC_BasicCharacter()
 	EquippedComponent = CreateDefaultSubobject<UC_EquippedComponent>("EquippedComponent");
 	EquippedComponent->SetOwnerCharacter(this);
 
-	Inventory = CreateDefaultSubobject<UC_InvenComponent>("C_Inventory");
-	Inventory->SetOwnerCharacter(this);
+	InvenComponent = CreateDefaultSubobject<UC_InvenComponent>("C_Inventory");
+	InvenComponent->SetOwnerCharacter(this);
 
 	//InvenSystem = CreateDefaultSubobject<UC_InvenSystem>("C_InvenSystem");
 	//InvenSystem->SetOwnerCharacter(this);
@@ -137,7 +137,7 @@ void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 {
 	
 
-	FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetCurVolume());
+	FString TheFloatStr = FString::SanitizeFloat(this->InvenComponent->GetCurVolume());
 	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
 
 	HandleOverlapBegin(OtherActor);
@@ -243,8 +243,15 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	FString Str = "Character Damaged! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
 
 	UC_Util::Print(Str, FColor::Cyan, 3.f);
+	UC_Util::Print("TakeDamage!!", FColor::Blue, 10);
 
 	StatComponent->TakeDamage(DamageAmount, Cast<AC_BasicCharacter>(DamageCauser));
+
+	if (bIsHitting) return DamageAmount; //hitting Motion이 출력중인지 체크.
+
+	bIsHitting = true;
+
+	PlayAnimMontage(HitMontage);
 
 	return DamageAmount;
 }
@@ -394,6 +401,12 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 	bIsPoseTransitioning	= true;
 
 	return true;
+}
+
+void AC_BasicCharacter::Jump()
+{
+	Super::Jump();
+	bIsJumping = true;
 }
 
 void AC_BasicCharacter::PoolingBullets()

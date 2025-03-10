@@ -19,7 +19,7 @@ public:
 
 	void BeginPlay() override;
 
-	void Tick(float DeltaSeoncds) override;
+	void Tick(float DeltaSeconds) override;
 
 
 	class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }

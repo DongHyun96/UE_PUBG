@@ -52,6 +52,7 @@
 #include "Utility/C_Util.h"
 #include "Utility/C_TimelineUtility.h"
 #include "UMG.h"
+#include "Airplane/C_AirplaneManager.h"
 #include "Styling/SlateBrush.h"
 #include "Engine/Texture2D.h"
 
@@ -59,6 +60,7 @@
 #include "HUD/C_MainMapWidget.h"
 #include "HUD/C_SkyDiveWidget.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
+#include "Singleton/C_GameSceneManager.h"
 
 AC_Player::AC_Player()
 {
@@ -120,10 +122,15 @@ void AC_Player::BeginPlay()
 		StatComponent->SetOwnerHUDWidget(HUDWidget);
 		PingSystemComponent->SetOwnerPlayer(this);
 		HUDWidget->GetSkyDiveWidget()->SetOwnerPlayer(this);
-
-		HUDWidget->GetMainMapWidget()->SetOwnerPlayer(this);
 		HUDWidget->GetMiniMapWidget()->SetOwnerPlayer(this);
 	}
+
+	if (MainMapWidget)
+	{
+		// MainMapWidget->AddToViewport(9);
+		MainMapWidget->SetOwnerPlayer(this);
+	}
+	
 
 	if (InvenSystem)
 	{
@@ -176,6 +183,8 @@ void AC_Player::BeginPlay()
 	ParkourComponent->SetOwnerPlayer(this);
 
 	SetControllerPitchLimits(PoseState);
+
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &AC_Player::OnPostWorldBeginPlay);
 }
 
 void AC_Player::Tick(float DeltaTime)
@@ -245,6 +254,18 @@ void AC_Player::SetPlayerMappingContext()
 	}
 }
 
+void AC_Player::OnPostWorldBeginPlay()
+{
+	// Player HUD에 비행기 경로 추가 (여기서 추가하는 이유는 BeginPlay 상호 Dependency 해결을 위함
+
+	if (!IsValid(GAMESCENE_MANAGER))						return;
+	if (!IsValid(GAMESCENE_MANAGER->GetAirplaneManager())) return;
+	
+	TPair<FVector, FVector> PlaneStartDestPair = GAMESCENE_MANAGER->GetAirplaneManager()->GetPlaneRouteStartDestPair();
+	MainMapWidget->SetAirplaneRoute(PlaneStartDestPair);
+	HUDWidget->GetMiniMapWidget()->SetAirplaneRoute(PlaneStartDestPair);
+}
+
 void AC_Player::HandleControllerRotation(float DeltaTime)
 {
 	//Alt 를 누른적 없으면 리턴
@@ -274,7 +295,7 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 	}
 }
 
-void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime)
+void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(const float& DeltaTime)
 {
 	// SkyDiving & Parachuting 중에서의 Lerp Destination 적용
 
@@ -457,8 +478,8 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 		if (OverlappedItem->GetOwnerCharacter() == nullptr)
 
 		{
-			if (!IsValid(Inventory)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
-			Inventory->AddItemToAroundList(OverlappedItem);
+			if (!IsValid(InvenComponent)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
+			InvenComponent->AddItemToAroundList(OverlappedItem);
 			//Inventory->InitInvenUI();
 			//if (!IsValid(InvenSystem)) return;
 		}
@@ -480,8 +501,8 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 	{
 		//Inventory->GetNearItems().Remove(OverlappedItem);
 		//Inventory->RemoveItemToAroundList(OverlappedItem);
-		if (!IsValid(Inventory)) return;
-		Inventory->RemoveItemToAroundList(OverlappedItem);
+		if (!IsValid(InvenComponent)) return;
+		InvenComponent->RemoveItemToAroundList(OverlappedItem);
 		//Inventory->InitInvenUI();
 		//if (!IsValid(InvenSystem)) return;
 		InvenSystem->InitializeList();
@@ -490,7 +511,7 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 
 AC_Item* AC_Player::FindBestInteractable()
 {
-	if (Inventory->GetTestAroundItems().IsEmpty()) return nullptr;
+	if (InvenComponent->GetTestAroundItems().IsEmpty()) return nullptr;
 
 	AC_Item* TargetInteractableItem = nullptr;
 
@@ -499,7 +520,7 @@ AC_Item* AC_Player::FindBestInteractable()
 	//UGameplayStatics::controller
 
 	APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
-	for (auto& AroundItem : Inventory->GetTestAroundItems())
+	for (auto& AroundItem : InvenComponent->GetTestAroundItems())
 	{
 		AC_Item* CachedInteractableItem = AroundItem;
 		
@@ -659,10 +680,7 @@ void AC_Player::SetAimPressCameraLocation()
 	FVector HeadLocation = GetMesh()->GetBoneLocation("Head" ,EBoneSpaces::ComponentSpace);
 	FVector NewLocation = FVector(0, 0, 0);
 	NewLocation.Z += HeadLocation.Z;
-	//MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::STAND, C_MainSpringArm->GetRelativeLocation());
-	//MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CROUCH, C_MainSpringArm->GetRelativeLocation() + FVector(0.f, 0.f, -32.f));
-	////MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CRAWL, C_MainSpringArm->GetRelativeLocation()  + FVector(0.f, 0.f, -99.f));
-	//MainSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CRAWL, C_MainSpringArm->GetRelativeLocation() + FVector(0.f, 0.f, -20.f));
+
 	AimingSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::STAND , NewLocation);
 	AimingSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CROUCH, NewLocation + FVector(0.f,   0.f, -50.f));
 	AimingSpringArmRelativeLocationByPoseMap.Emplace(EPoseState::CRAWL , NewLocation + FVector(0.f, -50.f, -90.f));
@@ -683,6 +701,7 @@ void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 
 	if (GetVelocity().Size() > 0.f)				return;
 	if (bIsHoldDirection)						return;
 	if (bIsActivatingConsumableItem)			return;
+	
 	//if (ParkourComponent->GetIsCurrentlyWarping()) return;
 
 	// 0 360
