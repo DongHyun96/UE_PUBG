@@ -44,7 +44,7 @@ public:
 	void UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer);
 
 
-	void AddBulletStackToCharacter(EBulletType InBulletType);
+	void AddBulletStackToCharacter(EBulletType InBulletType, AC_BasicCharacter* InLootingCharacter);
 
 	void DeBulletStackToCharacter();
 protected:

@@ -818,7 +818,7 @@ bool AC_Gun::ReloadBullet()
 		
 		CarryingBullet->SetItemStack(ChangedStack);
 		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
-		
+		UC_Util::Print("Reload Bullet");
 		//장전한 총알 갯수만큼 curVolume 조절
 		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas().ItemVolume));
 
@@ -1104,6 +1104,7 @@ void AC_Gun::LoadMagazine()
 	else
 	{
 		UC_Util::Print("Failed To Load Magazine", FColor::Blue, 10.0f);
+		
 	}
 
 //	else
