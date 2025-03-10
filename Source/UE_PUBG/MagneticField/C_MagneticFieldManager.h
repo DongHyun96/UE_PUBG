@@ -35,17 +35,31 @@ struct FPhaseInfo
 	FPhaseInfo(float _PhaseRadius, float _ShrinkDelayTime, float _ShrinkTotalTime, float _DamagePerSecond)
 		:PhaseRadius(_PhaseRadius), ShrinkDelayTime(_ShrinkDelayTime), ShrinkTotalTime(_ShrinkTotalTime), DamagePerSecond(_DamagePerSecond) {}
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float PhaseRadius{}; // 현재 페이즈의 Radius 크기
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float ShrinkDelayTime{}; // 자기장 다음 목표 지점으로 줄어들기 시작하기 전까지의 Holding time
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float ShrinkTotalTime{}; // 줄어드는 총 시간
 	
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float DamagePerSecond{}; // 초당 피해량
 
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bShouldTryToAvoidWater{}; // 물 쪽을 피해서 적용해야 하는 Phase 원인지
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	uint8 WaterTileCountLimit{}; // 물이 포함된 Tile의 개수 Limit -> bShouldTryAvoidWater가 true일 때 유효
+
+public:
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bHasExactLocation{}; // 정확한 위치에 페이즈 원을 잡아야 하는지
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FVector ExactPhaseLocation{}; // bHasExactLocation이 true일 때 사용할 정확한 위치
+
+public:
 	/* 밑은 NextCircle 정보가 나왔을 때 계산해서 Setting 처리 */
 	
 	float RadiusShrinkSpeed{}; // 현재 Phase의 반지름 줄이는 속도값
@@ -59,7 +73,7 @@ class UE_PUBG_API AC_MagneticFieldManager : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
 	AC_MagneticFieldManager();
 
 protected:
@@ -148,15 +162,15 @@ private:
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TMap<int, FPhaseInfo> PhaseInfos{};
-	/*{
+	TMap<int, FPhaseInfo> PhaseInfos =
+	{
 		{1, FPhaseInfo(71300.f, 5.f, 20.f, 0.4f)},	// 713m -> 첫 페이즈의 MainCircle이 될 값
 		{2, FPhaseInfo(40000.f, 5.f, 20.f, 0.7f)},	// 400m
 		{3, FPhaseInfo(20000.f, 5.f, 20.f, 1.5f)},	// 200m
 		{4, FPhaseInfo(10000.f, 5.f, 20.f, 4.f)},	// 100m
 		{5, FPhaseInfo(5000.f, 5.f, 20.f, 7.f)},	// 50m
 		{6, FPhaseInfo(0.f, 0.f, 0.f, 9.f)}			// 제일 마지막 도착 지점 (전체 Phase보다 하나 더 많게끔 만들어놔야 정상 작동함)
-	};*/
+	};
 
 
 	// 시간 재기용
@@ -174,6 +188,11 @@ private:
 
 	// 자기장이 줄어들고 다음 자기장 설정 등의 Managing이 실질적으로 시작되었는지 체크
 	bool bIsHandleUpdateStateStarted{};
+
+private:
+
+	class UC_WaterTileCheckerComponent* WaterTileCheckerComponent{};
+	
 };
 
 

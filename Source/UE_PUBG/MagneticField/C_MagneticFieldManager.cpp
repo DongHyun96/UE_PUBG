@@ -3,6 +3,7 @@
 
 #include "MagneticField/C_MagneticFieldManager.h"
 #include "C_MagneticWall.h"
+#include "C_WaterTileCheckerComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Utility/C_Util.h"
 
@@ -17,6 +18,9 @@
 AC_MagneticFieldManager::AC_MagneticFieldManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	WaterTileCheckerComponent = CreateDefaultSubobject<UC_WaterTileCheckerComponent>("WaterTileCheckerComponent");
+	WaterTileCheckerComponent->SetMagneticFieldManager(this);
 }
 
 void AC_MagneticFieldManager::BeginPlay()
@@ -201,19 +205,44 @@ void AC_MagneticFieldManager::SetRandomNextCircleAndSpeedDirection()
 {
 	// Next random circle setting
 
-	float XDir = FMath::FRandRange(-1.f, 1.f);
-	float YDir = FMath::FRandRange(-1.f, 1.f);
+	// Set Radius
+	NextCircle.Radius = PhaseInfos[CurrentPhase + 1].PhaseRadius;
+	
+	if (PhaseInfos[CurrentPhase + 1].bHasExactLocation)
+		NextCircle.MidLocation = PhaseInfos[CurrentPhase + 1].ExactPhaseLocation;
+	else
+	{
+		uint8 TryCount{};
+		while (true)
+		{
+			++TryCount;
+			float XDir = FMath::FRandRange(-1.f, 1.f);
+			float YDir = FMath::FRandRange(-1.f, 1.f);
 
-	FVector RandomDirection = FVector(XDir, YDir, 0.f);
-	RandomDirection.Normalize();
+			FVector RandomDirection = FVector(XDir, YDir, 0.f);
+			RandomDirection.Normalize();
 
-	float RandomScalar = FMath::FRandRange(0.f, MainCircle.Radius - PhaseInfos[CurrentPhase + 1].PhaseRadius);
+			float RandomScalar = FMath::FRandRange(0.f, MainCircle.Radius - NextCircle.Radius);
 
-	FVector RandomNextCirclePos = MainCircle.MidLocation + RandomDirection * RandomScalar;
+			FVector RandomNextCirclePos = MainCircle.MidLocation + RandomDirection * RandomScalar;
 
-	NextCircle.Radius		= PhaseInfos[CurrentPhase + 1].PhaseRadius;
-	NextCircle.MidLocation	= RandomNextCirclePos;
+			NextCircle.MidLocation	= RandomNextCirclePos; // Set NextCircle MidLocation
 
+			if (!PhaseInfos[CurrentPhase + 1].bShouldTryToAvoidWater) break;
+			
+			// 만약 WaterTile 개수를 따져서 위치를 잡아야 한다면 제대로 된 위치가 잡힐 때 까지 반복
+			uint8 WaterTileCount = WaterTileCheckerComponent->GetWaterTileCount(NextCircle);
+			if (WaterTileCount <= PhaseInfos[CurrentPhase + 1].WaterTileCountLimit) break;
+
+			// 500번 시도해서 WaterTile을 피해도 적절한 위치가 나오지 않았을 때에는 적절한 위치가 없다고 판단, 그냥 진행하기
+			if (++TryCount > 500) break;
+		}
+		
+		UC_Util::Print("Try Avoiding Water count : " + FString::FromInt(TryCount), FColor::Cyan, 10.f);
+	}
+	
+	/* Speed and direction settings */
+	
 	// 속력 setting
 	float RadiusDifference = MainCircle.Radius - NextCircle.Radius;
 	PhaseInfos[CurrentPhase].RadiusShrinkSpeed = RadiusDifference / PhaseInfos[CurrentPhase].ShrinkTotalTime;
