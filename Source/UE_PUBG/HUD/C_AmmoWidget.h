@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -42,6 +42,7 @@ public:
 	/// </summary>
 	/// <param name="Ammo"> : 탄알 갯수 </param>
 	/// <param name="bHasEffect"> : 탄알 text 업데이트 효과를 적용할지 (처음 총을 들 때에는 false로 하기 -> 재장전 시 true로 사용 예정) </param>
+	UFUNCTION(BlueprintCallable)
 	void SetLeftAmmoText(int Ammo, bool bHasEffect = false);
 
 	void SetVisibility(ESlateVisibility InVisibility) override;
