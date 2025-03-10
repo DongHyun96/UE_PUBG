@@ -194,6 +194,8 @@ public: // Getters and setters
 	EPoseState GetPoseState() const { return PoseState; }
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }
 
+	void SetIsHitting(bool bHit) { bIsHitting = bHit; }
+
 protected:
 	void SetPoseState(EPoseState InPoseState);
 
@@ -371,6 +373,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsJumping = false;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsHitting = false;
+
 protected:
 	// 장착된 무기 및 장구류 component
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -392,6 +397,9 @@ protected: // PriorityAnimMontage 관련
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FPriorityAnimMontage DyingMontage{};
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FPriorityAnimMontage HitMontage{};
 
 protected: // Consumable 관련
 	
