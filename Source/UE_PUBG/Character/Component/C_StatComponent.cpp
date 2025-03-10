@@ -307,19 +307,19 @@ void UC_StatComponent::HandleFallingDamage()
 		
 		float FallenHeight = FallingStartedHeight - OwnerCharacter->GetActorLocation().Z;
 
-		UC_Util::Print("Fallen Height : " + FString::SanitizeFloat(FallenHeight * 0.01f) + "M", Color, 10.f);
+		// UC_Util::Print("Fallen Height : " + FString::SanitizeFloat(FallenHeight * 0.01f) + "M", Color, 10.f);
 		
 		// 15m 이상
 		if (FallenHeight >= 1500.f)
 		{
 			FallDamageAmount = 100.f;
-			UC_Util::Print("Damage Amount : " + FString::SanitizeFloat(FallDamageAmount), Color, 10.f);
+			// UC_Util::Print("Damage Amount : " + FString::SanitizeFloat(FallDamageAmount), Color, 10.f);
 			return;
 		}
 
 		// 5m ~ 15m 사이 -> 비율에 따른 FallDamageAmount 설정
 		FallDamageAmount = FMath::GetMappedRangeValueClamped(FVector2D(500.f, 1500.f), FVector2D(0.f, 100.f), FallenHeight);
-		UC_Util::Print("Damage Amount : " + FString::SanitizeFloat(FallDamageAmount), Color, 10.f);
+		// UC_Util::Print("Damage Amount : " + FString::SanitizeFloat(FallDamageAmount), Color, 10.f);
 
 		// Deferred 방식으로 Damage를 Apply할지 결정 -> 수영 상태를 확인해야해서
 	}

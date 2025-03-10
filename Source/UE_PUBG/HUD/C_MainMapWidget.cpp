@@ -320,6 +320,8 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 	FVector WorldPingPos = (HasHit) ? HitResult.ImpactPoint :
 		FVector(-WorldPingPos2D.Y, WorldPingPos2D.X, FIXED_LANDSCAPE_HEIGHT);
 
+	// UC_Util::Print("Picked world ping pos : " + WorldPingPos.ToString(), FColor::MakeRandomColor(), 10.f);
+	
 	// Spawn World ping
 	OwnerPlayer->GetPingSystemComponent()->SpawnWorldPingActor(WorldPingPos);
 

@@ -34,12 +34,16 @@ struct FPhaseInfo
 
 	FPhaseInfo(float _PhaseRadius, float _ShrinkDelayTime, float _ShrinkTotalTime, float _DamagePerSecond)
 		:PhaseRadius(_PhaseRadius), ShrinkDelayTime(_ShrinkDelayTime), ShrinkTotalTime(_ShrinkTotalTime), DamagePerSecond(_DamagePerSecond) {}
-	
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	float PhaseRadius{}; // 현재 페이즈의 Radius 크기
-	
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	float ShrinkDelayTime{}; // 자기장 다음 목표 지점으로 줄어들기 시작하기 전까지의 Holding time
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	float ShrinkTotalTime{}; // 줄어드는 총 시간
 	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	float DamagePerSecond{}; // 초당 피해량
 
 	/* 밑은 NextCircle 정보가 나왔을 때 계산해서 Setting 처리 */
@@ -81,7 +85,7 @@ private:
 protected:
 
 	/// <summary>
-	/// 첫 자기장 Init, BluePrint Beginplay에서 호출될 예정
+	/// 첫 자기장 Init, BluePrint BeginPlay에서 호출될 예정
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void InitManager();
@@ -89,7 +93,6 @@ protected:
 	/// <summary>
 	/// 블루프린트 내에서 호출할 함수
 	/// </summary>
-	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
 	int32 GetSliceCount() const { return SLICE_COUNT; }
 
@@ -142,27 +145,18 @@ private:
 	// 현재 자기장 phase
 	int CurrentPhase = 1;
 
-	// TODO : 정확한 값으로 나중에 수정, 현재 Test 값
-	// FPhaseInfo(해당 Phase때 줄어들 자기장 rad | 줄어들기까지 대기시간 | 줄어드는 총 시간)
-	//TMap<int, FPhaseInfo> PhaseInfos = 
-	//{
-	//	{1, FPhaseInfo(71300.f, 5.f, 20.f)},	// 713m
-	//	{2, FPhaseInfo(40000.f, 5.f, 20.f)},	// 400m
-	//	{3, FPhaseInfo(20000.f, 5.f, 20.f)},	// 200m
-	//	{4, FPhaseInfo(10000.f, 5.f, 20.f)},	// 100m
-	//	{5, FPhaseInfo(5000.f, 5.f, 20.f)},		// 50m
-	//	{6, FPhaseInfo(0.f, 0.f, 0.f)}			// 제일 마지막 도착 지점 (전체 Phase보다 하나 더 많게끔 만들어놔야 정상 작동함)
-	//};
+protected:
 
-	TMap<int, FPhaseInfo> PhaseInfos =
-	{
-		{1, FPhaseInfo(71300.f, 5.f, 20.f, 0.4f)},	// 713m
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<int, FPhaseInfo> PhaseInfos{};
+	/*{
+		{1, FPhaseInfo(71300.f, 5.f, 20.f, 0.4f)},	// 713m -> 첫 페이즈의 MainCircle이 될 값
 		{2, FPhaseInfo(40000.f, 5.f, 20.f, 0.7f)},	// 400m
 		{3, FPhaseInfo(20000.f, 5.f, 20.f, 1.5f)},	// 200m
 		{4, FPhaseInfo(10000.f, 5.f, 20.f, 4.f)},	// 100m
-		{5, FPhaseInfo(5000.f, 5.f, 20.f, 7.f)},		// 50m
+		{5, FPhaseInfo(5000.f, 5.f, 20.f, 7.f)},	// 50m
 		{6, FPhaseInfo(0.f, 0.f, 0.f, 9.f)}			// 제일 마지막 도착 지점 (전체 Phase보다 하나 더 많게끔 만들어놔야 정상 작동함)
-	};
+	};*/
 
 
 	// 시간 재기용

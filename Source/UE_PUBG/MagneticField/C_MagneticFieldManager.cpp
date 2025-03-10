@@ -24,6 +24,7 @@ void AC_MagneticFieldManager::BeginPlay()
 	Super::BeginPlay();
 
 	//GAMESCENE_MANAGER->SetMagneticFieldManager(this);
+	SetIsHandleUpdateStateStarted(true); // For Testing
 	
 }
 
