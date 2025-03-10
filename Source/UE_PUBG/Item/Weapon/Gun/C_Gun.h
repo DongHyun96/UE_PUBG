@@ -30,10 +30,10 @@ enum class EGunType : uint8
 UENUM(BlueprintType)
 enum class EShootingMode : uint8
 {
-	SEMI_AUTO,
-	FULL_AUTO,
-	BURST,
-	SINGLE_SHOT,
+	SEMI_AUTO,		// 단발
+	FULL_AUTO,		// 연사
+	BURST,			// 점사
+	SINGLE_SHOT,	// SR용 Shooting Mode
 	MAX
 };
 

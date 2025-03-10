@@ -48,6 +48,12 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void SetPlayerMappingContext();
+
+	/// <summary>
+	/// 레벨의 모든 Actor의 BeginPlay 이 후 호출될 함수
+	/// </summary>
+	void OnPostWorldBeginPlay();
+	
 private:
 
 	/// <summary>
@@ -59,7 +65,7 @@ private:
 	/// <summary>
 	/// MainSpringArm 로컬 위치 Dest변수값으로 계속 Lerp 시키기
 	/// </summary>
-	void HandleLerpMainSpringArmToDestRelativeLocation(float DeltaTime);
+	void HandleLerpMainSpringArmToDestRelativeLocation(const float& DeltaTime);
 
 public: // Getters and setters
 

@@ -134,6 +134,18 @@ private:
 
 	FBoostingEffectFactor GetBoostingEffectFactorByCurBoostingAmount() const;
 
+private:
+	/// <summary>
+	/// 낙하 Damage 처리
+	/// </summary>
+	void HandleFallingDamage();
+
+private:
+
+	bool bFallingFlag{};
+	float FallingStartedHeight{};
+	float FallDamageAmount{};
+
 protected:
 
 	class AC_BasicCharacter*	OwnerCharacter{};

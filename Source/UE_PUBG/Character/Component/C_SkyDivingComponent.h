@@ -139,18 +139,7 @@ private: // 중력가속 사용 x -> 직접 Velocity.Z를 조절
 
 private: // SkyDiving & Parachuting 자세 speed 관련
 
-	const TMap<ESkyDivingState, FDivingSpeeds> State_DivingSpeeds =
-	{
-		{
-			ESkyDivingState::SKYDIVING, 
-			FDivingSpeeds(0.f, 3000.f, -2500.f, -3000.f, -6000.f) 
-		},
-
-		{
-			ESkyDivingState::PARACHUTING,
-			FDivingSpeeds(400.f, 1000.f, -300.f, -500.f, -2000.f)
-		}
-	};
+	static const TMap<ESkyDivingState, FDivingSpeeds> STATE_DIVINGSPEEDS;
 
 protected:
 
@@ -203,7 +192,6 @@ private:
 	
 	// 현재 낙하 높이(고도)
 	float CurrentHeight{};
-
 
 };
 

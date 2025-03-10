@@ -107,13 +107,19 @@ void UC_AmmoWidget::SetShootingMode(EShootingMode Mode)
 		CurrentShootingMode = Mode;
 		
 		// 들어온 Mode와 다르게 PrevShootingMode 세팅시키기
-		for (int i = 0; i < (int)EShootingMode::MAX; i++)
+		// Single_Shot과 Semi_auto의 이미지가 동일하기 때문에 생기는 버그 방지
+		if (CurrentShootingMode == EShootingMode::SINGLE_SHOT)
+			PrevShootingMode = EShootingMode::FULL_AUTO;
+		else
 		{
-			EShootingMode _mode = static_cast<EShootingMode>(i);
-			if (Mode != _mode)
+			for (int i = 0; i < (int)EShootingMode::MAX; i++)
 			{
-				PrevShootingMode = _mode;
-				break;
+				EShootingMode _mode = static_cast<EShootingMode>(i);
+				if (Mode != _mode)
+				{
+					PrevShootingMode = _mode;
+					break;
+				}
 			}
 		}
 
@@ -173,6 +179,10 @@ void UC_AmmoWidget::SetVisibility(ESlateVisibility InVisibility, bool IsGun)
 		// LeftAmmoText Alpha 0으로 세팅
 		for (auto& T : LeftAmmoTexts) SetFontAlpha(T, 0.f);
 	}
+
+	// Hidden이 이 함수로 들어올 때 버그를 방지하기 위함
+	if (InVisibility == ESlateVisibility::Hidden)
+		CurrentShootingMode = EShootingMode::MAX;
 	
 }
 

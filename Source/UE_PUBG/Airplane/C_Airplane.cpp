@@ -50,7 +50,8 @@ void AC_Airplane::Tick(float DeltaTime)
 
 	if (!IsFlying) return;
 	
-	Move(DeltaTime);
+	// 실질적인 비행기 이동 처리
+	AddActorWorldOffset(FlightDirection * FLIGHT_SPEED * DeltaTime, false);
 
 	// 다른 Character의 위치는 상관 x Player의 위치만 Update(Map에 표기되기 때문)
 	if (!IsValid(Player)) Player = GAMESCENE_MANAGER->GetPlayer();
@@ -87,15 +88,6 @@ void AC_Airplane::StartFlight()
 	if (!Player) Player = GAMESCENE_MANAGER->GetPlayer();
 	Player->GetMainMapWidget()->ToggleAirplaneImageVisibility(true);
 	Player->GetHUDWidget()->GetMiniMapWidget()->ToggleAirplaneImageVisibility(true);
-
-	// MainMap UI에 PlayerMarker 이미지 Visibility 토글
-	//PlayerHUDWidget->GetMainMapWidget()->TogglePlayerMarkerImageVisibility(false);
-}
-
-void AC_Airplane::Move(const float& DeltaTime)
-{ 
-	if (!IsFlying) return;
-	AddActorWorldOffset(FlightDirection * FLIGHT_SPEED * DeltaTime, false);
 }
 
 void AC_Airplane::UpdatePlayerMapHUD()

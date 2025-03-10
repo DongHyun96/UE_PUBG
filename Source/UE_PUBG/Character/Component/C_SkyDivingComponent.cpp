@@ -21,6 +21,23 @@
 #include "Airplane/C_AirplaneManager.h"
 #include "Airplane/C_Airplane.h"
 
+const TMap<ESkyDivingState, FDivingSpeeds> UC_SkyDivingComponent::STATE_DIVINGSPEEDS =
+{
+	{
+		ESkyDivingState::SKYDIVING, 
+		FDivingSpeeds(0.f, 3000.f, -2500.f, -3000.f, -6000.f) 
+	},
+	{
+		ESkyDivingState::PARACHUTING,
+		FDivingSpeeds(400.f, 1000.f, -300.f, -500.f, -2000.f)
+	},
+	{
+		// Landing 이후에 MoveEnd 처리 버그를 막기 위한 Dummy data
+		ESkyDivingState::LANDING,
+		FDivingSpeeds(0.f, 0.f, 0.f, 0.f, 0.f)
+	}
+};
+
 const FName UC_SkyDivingComponent::PARABACKPACK_SOCKET_NAME = "ParachuteBackPackSocket";
 const FName UC_SkyDivingComponent::PARACHUTE_SOCKET_NAME    = "ParachuteSocket";
 
@@ -92,32 +109,6 @@ void UC_SkyDivingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	LerpVelocityZ(DeltaTime);
 
 	HandleStateTransitionByHeight();
-
-	if (!IsValid(ParachuteSkeletalMeshComponent) || !IsValid(ParachuteBackpackStaticMeshComponent)) UC_Util::Print("WARNING");
-
-	
-
-	/*switch (SkyDivingState)
-	{
-	case ESkyDivingState::READY:
-		UC_Util::Print("Ready");
-		break;
-	case ESkyDivingState::SKYDIVING:
-		UC_Util::Print("SkyDiving");
-		break;
-	case ESkyDivingState::PARACHUTING:
-		UC_Util::Print("Parachuting");
-		break;
-	case ESkyDivingState::LANDING:
-		break;
-	case ESkyDivingState::MAX:
-		break;
-	default:
-		break;
-	}*/
-	//UC_Util::Print(VelocityZLerpDest);
-	//UC_Util::Print(OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed);
-	//UC_Util::Print(OwnerCharacter->GetCharacterMovement()->Velocity);
 }
 
 void UC_SkyDivingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
@@ -128,7 +119,7 @@ void UC_SkyDivingComponent::HandlePlayerMovement(const FVector2D& MovementVector
 	{
 		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = 0.f;
 		//VelocityZLerpDest = SKYDIVE_BACKKEY_ZSPEED;
-		VelocityZLerpDest = State_DivingSpeeds[SkyDivingState].BackKeyZSpeed;
+		VelocityZLerpDest = STATE_DIVINGSPEEDS[SkyDivingState].BackKeyZSpeed;
 
 		OwnerCharacter->SetNextSpeed(0.f);
 		return;
@@ -147,15 +138,15 @@ void UC_SkyDivingComponent::HandlePlayerMovement(const FVector2D& MovementVector
 	// Update MaxWalkSpeed & 중력 또한 Pitch에 따라 조정처리
 	if (!HoldingDirection)
 	{
-		if (270.f <= Rotation.Pitch)
+		if (270.f <= Rotation.Pitch) // 아랫방향으로 숙였을 때 ( 360 ~ 270(아래로 최대로 숙였을 때) )
 		{
-			OwnerMovement->MaxWalkSpeed = FMath::GetMappedRangeValueClamped(FVector2D(360.f, 270.f), State_DivingSpeeds[SkyDivingState].GetMaxWalkSpeedMaxMin(), Rotation.Pitch);
-			VelocityZLerpDest           = FMath::GetMappedRangeValueClamped(FVector2D(360.f, 270.f), State_DivingSpeeds[SkyDivingState].GetZSpeedMinMax(), Rotation.Pitch);
+			OwnerMovement->MaxWalkSpeed = FMath::GetMappedRangeValueClamped(FVector2D(360.f, 270.f), STATE_DIVINGSPEEDS[SkyDivingState].GetMaxWalkSpeedMaxMin(), Rotation.Pitch);
+			VelocityZLerpDest           = FMath::GetMappedRangeValueClamped(FVector2D(360.f, 270.f), STATE_DIVINGSPEEDS[SkyDivingState].GetZSpeedMinMax(), Rotation.Pitch);
 		}
-		else
+		else // Pitch 0 ~ 89.99 -> 윗 방향
 		{
-			OwnerMovement->MaxWalkSpeed = State_DivingSpeeds[SkyDivingState].MaxWalkSpeed_Max;
-			VelocityZLerpDest = State_DivingSpeeds[SkyDivingState].ZSpeedMin;
+			OwnerMovement->MaxWalkSpeed = STATE_DIVINGSPEEDS[SkyDivingState].MaxWalkSpeed_Max;
+			VelocityZLerpDest = STATE_DIVINGSPEEDS[SkyDivingState].ZSpeedMin;
 		}
 	}
 
@@ -173,16 +164,16 @@ void UC_SkyDivingComponent::HandlePlayerMovement(const FVector2D& MovementVector
 	if (HoldingDirection) return; // HoldDirection 중이라면 return (HoldDirection 이전에 조정한 값으로 계속 유지)
 
 	float AnimNextSpeed = (270.f <= Rotation.Pitch) ? 
-		                  FMath::GetMappedRangeValueClamped(FVector2D(360.f, 270.f), FVector2D(2000.f, 4000.f), Rotation.Pitch) :
-						  2000.f;
+		                  FMath::GetMappedRangeValueClamped(FVector2D(360.f, 270.f), FVector2D(250.f, 700.f), Rotation.Pitch) :
+						  250.f;
 
 	OwnerCharacter->SetNextSpeed(AnimNextSpeed); // AnimCharacter에서 Speed Lerp할 값 setting
 }
 
 void UC_SkyDivingComponent::OnSkyMoveEnd()
 {
-	if (SkyDivingState == ESkyDivingState::SKYDIVING)
-		VelocityZLerpDest = State_DivingSpeeds[SkyDivingState].ZSpeedMin;
+	// if (SkyDivingState == ESkyDivingState::SKYDIVING)
+	VelocityZLerpDest = STATE_DIVINGSPEEDS[SkyDivingState].ZSpeedMin;
 }
 
 void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
@@ -214,9 +205,9 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 
 		UCharacterMovementComponent* OwnerMovement = OwnerCharacter->GetCharacterMovement();
 
-		OwnerMovement->AirControl   = 1.f;
+		OwnerMovement->AirControl = 1.f;
 		//OwnerMovement->GravityScale = 0.5f;
-		VelocityZLerpDest = State_DivingSpeeds[SkyDivingState].BackKeyZSpeed;
+		VelocityZLerpDest = STATE_DIVINGSPEEDS[SkyDivingState].ZSpeedMin;
 
 		OwnerMovement->BrakingDecelerationFalling = 2048.f;
 
@@ -250,11 +241,42 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 	case ESkyDivingState::PARACHUTING:
 	{
 		ParachuteSkeletalMeshComponent->SetVisibility(true);
-		VelocityZLerpDest = State_DivingSpeeds[SkyDivingState].BackKeyZSpeed;
+			
 		SkyDivingState = ESkyDivingState::PARACHUTING;
+
+		// Alt키가 눌려있을 때에, Character Rotation 비율에 따라 Speed를 갱신시켜주어야 함
+		if (OwnerCharacter->GetIsHoldDirection() || OwnerCharacter->GetIsAltPressed())
+		{
+			float CharacterPitch = OwnerCharacter->GetActorRotation().Pitch;
+			UCharacterMovementComponent* OwnerMovement = OwnerCharacter->GetCharacterMovement();
+			
+			if (270.f <= CharacterPitch) // 아랫방향으로 숙였을 때 ( 360 ~ 270(아래로 최대로 숙였을 때) )
+			{
+				OwnerMovement->MaxWalkSpeed = FMath::GetMappedRangeValueClamped
+				(
+					FVector2D(360.f, 270.f),
+					STATE_DIVINGSPEEDS[SkyDivingState].GetMaxWalkSpeedMaxMin(),
+					CharacterPitch
+				);
+				
+				VelocityZLerpDest = FMath::GetMappedRangeValueClamped
+				(
+					FVector2D(360.f, 270.f),
+					STATE_DIVINGSPEEDS[SkyDivingState].GetZSpeedMinMax(),
+					CharacterPitch
+				);
+			}
+			else // Pitch 0 ~ 89.99 -> 윗 방향
+			{
+				OwnerMovement->MaxWalkSpeed = STATE_DIVINGSPEEDS[SkyDivingState].MaxWalkSpeed_Max;
+				VelocityZLerpDest = STATE_DIVINGSPEEDS[SkyDivingState].ZSpeedMin;
+			}
+		}
+		else VelocityZLerpDest = STATE_DIVINGSPEEDS[SkyDivingState].ZSpeedMin;
+			
+		
 		OwnerCharacter->PlayAnimMontage(DeployParachuteMontage);
 		ParachuteSkeletalMeshComponent->GetAnimInstance()->Montage_Play(ParachuteDeployMontage);
-		//ParachuteSkeletalMesh->PlayAnimation()
 
 		// Instruction Key HUD 업데이트
 		if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->ToggleDeployParachuteInstructionVisibility(false);
@@ -340,7 +362,6 @@ void UC_SkyDivingComponent::LerpPlayerMainCameraArmLength(const float& DeltaTime
 
 		return;
 	}
-
 	
 	switch (SkyDivingState)
 	{
@@ -368,9 +389,8 @@ void UC_SkyDivingComponent::LerpVelocityZ(const float& DeltaTime)
 	if (OwnerCharacter->GetMainState() != EMainState::SKYDIVING) return;
 
 	UCharacterMovementComponent* OwnerMovement = OwnerCharacter->GetCharacterMovement();
-
-	float ZSpeed = OwnerMovement->Velocity.Z;
-	ZSpeed = FMath::Lerp(ZSpeed, VelocityZLerpDest, DeltaTime * 10.f);
+	
+	float ZSpeed = FMath::Lerp(OwnerMovement->Velocity.Z, VelocityZLerpDest, DeltaTime * 10.f);
 	OwnerMovement->Velocity.Z = ZSpeed;
 }
 
@@ -381,10 +401,7 @@ void UC_SkyDivingComponent::HandleStateTransitionByHeight()
 	case ESkyDivingState::SKYDIVING:
 	{
 		if (CurrentHeight < PARACHUTE_DEPLOY_LIMIT_HEIGHT)
-		{
-			UC_Util::Print(CurrentHeight, FColor::Red, 10.f);
 			SetSkyDivingState(ESkyDivingState::PARACHUTING);
-		}
 		return;
 	}
 	case ESkyDivingState::PARACHUTING:
