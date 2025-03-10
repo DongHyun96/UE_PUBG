@@ -100,6 +100,7 @@ void AC_Gun::BeginPlay()
 		);
 	}
 	SetSightCameraSpringArmLocation(ScopeCameraLocations[EAttachmentNames::MAX]);
+
 }
 
 void AC_Gun::Tick(float DeltaTime)
@@ -742,9 +743,16 @@ bool AC_Gun::FireBullet()
 			{
 				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, OwnerCharacter->GetActorLocation(),GunMesh->GetForwardVector().Rotation(),FVector(0.2f, 0.2f, 0.2f));
 				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, GunMesh->GetSocketLocation(FName("MuzzleSocket")) + GunMesh->GetForwardVector() *30, FRotator::MakeFromEuler(GunMesh->GetForwardVector()),FVector(0.2f, 0.2f, 0.2f));
-				UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, GunMesh->GetSocketLocation(FName("MuzzleSocket")) + GunMesh->GetForwardVector() *30, FRotator(0,90,0),FVector(0.2f, 0.2f, 0.2f));
-
-			
+				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, GunMesh->GetSocketLocation(FName("MuzzleSocket")) , FRotator(0,0,0),FVector(0.2f, 0.2f, 0.2f));
+				UGameplayStatics::SpawnEmitterAttached(
+															MuzzleFlameEffectParticle,  // 파티클 시스템
+															GunMesh,      // 부착할 메쉬 (총)
+															TEXT("MuzzleSocket") // 총구 소켓에 부착
+															,FVector(0, 0, 0)
+															,FRotator(0, 0, 0),
+															FVector(0.2f, 0.2f, 0.2f)
+														);
+																	
 				
 			}
 			return Succeeded;
@@ -755,9 +763,16 @@ bool AC_Gun::FireBullet()
 			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
 			if (IsValid(MuzzleFlameEffectParticle))
 			{
-				UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, GunMesh->GetSocketLocation(FName("MuzzleSocket")) + GunMesh->GetForwardVector() *30, FRotator(0,90,0),FVector(0.2f, 0.2f, 0.2f));
+				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, GunMesh->GetSocketLocation(FName("MuzzleSocket")), FRotator(0,0,0),FVector(0.2f, 0.2f, 0.2f));
 				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, Get, GunMesh->GetForwardVector().Rotation(),FVector(0.2f, 0.2f, 0.2f));
-
+				UGameplayStatics::SpawnEmitterAttached(
+												MuzzleFlameEffectParticle,  // 파티클 시스템
+												GunMesh,      // 부착할 메쉬 (총)
+												TEXT("MuzzleSocket") // 총구 소켓에 부착
+												,FVector(0	)
+												,FRotator(0	, 0, 0),
+												FVector(0.2f, 0.2f, 0.2f)
+											);
 				// MuzzleFlameEffectParticle->SetWorldLocation(FireLocation);
 				// //MuzzleFlameEffectParticle->SetRelativeRotation(this->GetActorForwardVector().Rotation());
 				// MuzzleFlameEffectParticle->SetWorldRotation(OwnerCharacter->GetActorForwardVector().Rotation());
@@ -1061,6 +1076,10 @@ void AC_Gun::ShowAndHideWhileAiming()
 
 void AC_Gun::LoadMagazine()
 {
+	if (CurGunType == EGunType::SR)
+	{
+		return;
+	}
 	FString ClassPath = TEXT("/Game/Project_PUBG/Common/Weapon/GunWeapon/Magazine/BPC_Magazine.BPC_Magazine_C");
 	//Magazine = LoadObject<AC_AttachableItem>(nullptr, ));
 
