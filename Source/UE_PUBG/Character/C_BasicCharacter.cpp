@@ -243,8 +243,15 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	FString Str = "Character Damaged! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
 
 	UC_Util::Print(Str, FColor::Cyan, 3.f);
+	UC_Util::Print("TakeDamage!!", FColor::Blue, 10);
 
 	StatComponent->TakeDamage(DamageAmount, Cast<AC_BasicCharacter>(DamageCauser));
+
+	if (bIsHitting) return DamageAmount; //hitting Motion이 출력중인지 체크.
+
+	bIsHitting = true;
+
+	PlayAnimMontage(HitMontage);
 
 	return DamageAmount;
 }

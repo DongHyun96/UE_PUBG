@@ -195,8 +195,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float RecoilFactorVertical;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float RecoilFactorHorizontal;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
