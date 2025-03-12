@@ -184,7 +184,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<FString, AC_Item*> testMyItems;
-
+	
+	// TMap<FString, TArray<AC_Item*>> 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<AC_Item*> testAroundItems;

@@ -16,6 +16,7 @@
 #include "Utility/C_Util.h"
 
 //#include "Components/CanvasPanel.h"
+#include "Character/C_Enemy.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Border.h"
 #include "Components/Image.h"
@@ -157,6 +158,23 @@ void UC_MainMapWidget::HandleUpdateMarkers()
 	PingMarkerToMainMapPos += MainMapImg->GetRenderTransform().Translation;
 
 	PingMarkerBorder->SetRenderTranslation(PingMarkerToMainMapPos);
+
+	// TODO : 이 밑줄 지우기
+	FVector2D TargetPosToMainMapPos = TargetLocationPos * MainMapScale;
+	TargetPosToMainMapPos += MainMapImg->GetRenderTransform().Translation;
+	TargetPosImg->SetRenderTranslation(TargetPosToMainMapPos);
+
+	FVector2D JumpPosToMainMapPos = JumpPos * MainMapScale;
+	JumpPosToMainMapPos += MainMapImg->GetRenderTransform().Translation;
+	JumpPosImg->SetRenderTranslation(JumpPosToMainMapPos);
+
+	if (GAMESCENE_MANAGER->GetEnemies().IsEmpty()) return;
+	
+	AC_Enemy* Enemy = GAMESCENE_MANAGER->GetEnemies()[0];
+	FVector2D EnemyPos = {Enemy->GetActorLocation().Y, -Enemy->GetActorLocation().X };
+	FVector2D EnemyMarkerPos = EnemyPos * (CANVAS_SIZE / WORLD_MAP_SIZE) * MainMapScale;
+	EnemyMarkerPos += MainMapImg->GetRenderTransform().Translation;
+	EnemyLocationImg->SetRenderTranslation(EnemyMarkerPos);
 }
 
 void UC_MainMapWidget::HandleUpdatePlaneRouteTransform()
@@ -331,6 +349,19 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 	// Spawn Compass bar ping
 	OwnerPlayer->GetHUDWidget()->SpawnCompassBarPingMarker(WorldPingPos);
 
+	return true;
+}
+
+bool UC_MainMapWidget::SpawnJumpPosAndTargetPosImage(FVector JumpLocation, FVector TargetLocation)
+{
+	if (!JumpPosImg || !TargetPosImg) return false;
+
+	JumpPos				= GetWorldToMapSizePos(JumpLocation);
+	TargetLocationPos	= GetWorldToMapSizePos(TargetLocation);
+
+	JumpPosImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	TargetPosImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	
 	return true;
 }
 

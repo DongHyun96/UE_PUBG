@@ -173,7 +173,7 @@ void UC_SkyDivingComponent::OnSkyMoveEnd()
 	VelocityZLerpDest = STATE_DIVINGSPEEDS[SkyDivingState].ZSpeedMin;
 }
 
-void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
+bool UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 {
 	switch (InSkyDivingState)
 	{
@@ -181,14 +181,14 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		OwnerCharacter->SetActorHiddenInGame(true);
 		OwnerCharacter->GetCharacterMovement()->GravityScale = 0.f;
 		SkyDivingState = InSkyDivingState;
-		return;
+		return true;
 	case ESkyDivingState::SKYDIVING:
 	{
 		// SkyDiving 가능한지 체크
 		if (!GAMESCENE_MANAGER->GetAirplaneManager()->GetCanDive())
 		{
 			UC_Util::Print("Cannot SkyDive at the current pos");
-			return;
+			return false;
 		}
 
 		OwnerCharacter->SetActorLocation(GAMESCENE_MANAGER->GetAirplaneManager()->GetAirplane()->GetActorLocation());
@@ -233,7 +233,7 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 			InstructionWidget->ToggleEjectInstructionVisibility(false);
 		}
 
-		return;
+		return true;
 	}
 	case ESkyDivingState::PARACHUTING:
 	{
@@ -278,7 +278,7 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		// Instruction Key HUD 업데이트
 		if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->ToggleDeployParachuteInstructionVisibility(false);
 
-		return;
+		return true;
 	}
 	case ESkyDivingState::LANDING:
 	{
@@ -296,9 +296,9 @@ void UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 
 		// HUD 끄기
 		if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden);
-		return;
+		return true;
 	}
-	default: return;
+	default: return true;
 	}
 }
 
