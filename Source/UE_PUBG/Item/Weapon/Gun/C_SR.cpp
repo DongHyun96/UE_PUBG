@@ -52,6 +52,12 @@ void AC_SR::Tick(float DeltaTime)
 
 bool AC_SR::ExecuteReloadMontage()
 {
+	int LeftAmmoCount = 0;
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItem(GetCurrentBulletTypeName()));
+	if (IsValid(CurBullet))
+	{
+		LeftAmmoCount = CurBullet->GetItemCurStack();
+	}
 	if (!IsValid(OwnerCharacter)) return false;
 	if (SniperReloadMontages.IsEmpty()) return false;
 	
@@ -82,7 +88,7 @@ bool AC_SR::ExecuteReloadMontage()
 	}
 	else
 	{
-		if (OwnerCharacter->GetCurrentSevenmmBulletCount() == 0) return false;
+		if (LeftAmmoCount == 0) return false;
 		OwnerCharacter->SetIsReloadingBullet(true);
 		OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
 		BackToMainCamera();

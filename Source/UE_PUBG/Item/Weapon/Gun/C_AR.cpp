@@ -52,8 +52,14 @@ void AC_AR::Tick(float DeltaTime)
 
 bool AC_AR::ExecuteReloadMontage()
 {
+	int LeftAmmoCount = 0;
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItem(GetCurrentBulletTypeName()));
+	if (IsValid(CurBullet))
+	{
+		LeftAmmoCount = CurBullet->GetItemCurStack();
+	}
 	if (!OwnerCharacter) return false;
-	if (OwnerCharacter->GetCurrentFivemmBulletCount() == 0) return false;
+	if (LeftAmmoCount == 0) return false;
 	if (CurBulletCount == MaxBulletCount)
 	{
 		return false;

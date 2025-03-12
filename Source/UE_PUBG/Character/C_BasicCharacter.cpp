@@ -413,7 +413,7 @@ void AC_BasicCharacter::PoolingBullets()
 {
 	FActorSpawnParameters Param2{};
 	Param2.Owner = this;
-	for (int i = 0; i < 1000; i++)
+	for (int i = 0; i < 300; i++)
 	{
 		UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
 		AC_Bullet* Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
@@ -433,15 +433,7 @@ void AC_BasicCharacter::PoolingBullets()
 	}
 }
 
-void AC_BasicCharacter::AddSevenmmBulletStack(int inBulletCount)
-{
-	SevenmmBulletCount += inBulletCount;
-}
 
-void AC_BasicCharacter::AddFivemmBulletStack(int inBulletCount)
-{
-	FivemmBulletCount += inBulletCount;
-}
 
 void AC_BasicCharacter::ActivateBloodParticle(FVector InLocation)
 {

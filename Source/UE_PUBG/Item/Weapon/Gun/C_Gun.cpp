@@ -227,13 +227,20 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 	FName CurSocketName = GetAttachParentSocketName();
 
 	// 총기 HUD 켜주기
+	int LeftAmmoCount = 0;
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItem(GetCurrentBulletTypeName()));
+	if (IsValid(CurBullet))
+	{
+		LeftAmmoCount = CurBullet->GetItemCurStack();
+	}
+
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 	{
 		UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
 
 		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, true);
 		AmmoWidget->SetShootingMode(CurrentShootingMode);
-		AmmoWidget->SetLeftAmmoText(OwnerCharacter->GetCurrentFivemmBulletCount());
+		AmmoWidget->SetLeftAmmoText(LeftAmmoCount);
 		AmmoWidget->SetMagazineText(CurBulletCount);
 	}
 
@@ -794,75 +801,44 @@ bool AC_Gun::FireBullet()
 bool AC_Gun::ReloadBullet()
 {
 	if (CurBulletCount == MaxBulletCount) return false;
-	
+	int LeftAmmoCount = 0;
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItem(GetCurrentBulletTypeName()));
+	if (IsValid(CurBullet))
+	{
+		LeftAmmoCount = CurBullet->GetItemCurStack();
+	}
+
 	OwnerCharacter->SetIsReloadingBullet(false);
 	int BeforeChangeAmmo = CurBulletCount;
 	UC_Util::Print(BeforeChangeAmmo);
 	int RemainAmmo;
 	int ChangedStack;
-	AC_Item_Bullet* CarryingBullet;
+	//AC_Item_Bullet* CarryingBullet;
 	AC_SR* CurrentSR = Cast<AC_SR>(this);
 	if (IsValid(CurrentSR))
 		CurrentSR->SetIsReloadingSR(false);
-	switch (CurGunBulletType)
-	{
-	case EBulletType::FIVEMM:
-		if (OwnerCharacter->GetCurrentFivemmBulletCount() == 0) return false;
+	if (LeftAmmoCount == 0) return false;
 
-		CurBulletCount = FMath::Min(MaxBulletCount, CurBulletCount+OwnerCharacter->GetCurrentFivemmBulletCount());
+	CurBulletCount = FMath::Min(MaxBulletCount, LeftAmmoCount);
 
-		RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
+	RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
 
-		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("5.56mm Ammo"));
-		ChangedStack = CarryingBullet->GetItemCurStack() - RemainAmmo;
+	
+	ChangedStack = LeftAmmoCount - RemainAmmo;
 		
-		CarryingBullet->SetItemStack(ChangedStack);
-		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
-		UC_Util::Print("Reload Bullet");
-		//장전한 총알 갯수만큼 curVolume 조절
-		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas()->ItemVolume));
+	CurBullet->SetItemStack(ChangedStack);
+	UC_Util::Print("Reload Bullet");
+	//장전한 총알 갯수만큼 curVolume 조절
+	OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CurBullet->GetItemDatas()->ItemVolume));
 
-		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
-		{
-			OwnerPlayer->GetInvenSystem()->InitializeList();
-			OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(OwnerCharacter->GetCurrentFivemmBulletCount(), true);
-			OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
-		}
-		return true;
-
-		break;
-	case EBulletType::SEVENMM:
-		if (OwnerCharacter->GetCurrentSevenmmBulletCount() == 0) return false;
-
-		CurBulletCount = FMath::Min(MaxBulletCount, CurBulletCount + OwnerCharacter->GetCurrentSevenmmBulletCount());
-
-		RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
-
-		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("7.7mm Ammo"));
-		ChangedStack = CarryingBullet->GetItemCurStack() - RemainAmmo;
-
-		CarryingBullet->SetItemStack(ChangedStack);
-		OwnerCharacter->AddSevenmmBulletStack(-RemainAmmo);
-
-		//장전한 총알 갯수만큼 curVolume 조절
-		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas()->ItemVolume));
-
-		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
-		{
-			OwnerPlayer->GetInvenSystem()->InitializeList();
-			OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(OwnerCharacter->GetCurrentSevenmmBulletCount(), true);
-			OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
-		}
-
-		return true;
-
-		break;
-	case EBulletType::NONE:
-		break;
-	default:
-		break;
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	{
+		OwnerPlayer->GetInvenSystem()->InitializeList();
+		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(CurBullet->GetItemCurStack(), true);
+		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
 	}
 	return true;
+
 }
 
 void AC_Gun::SetBulletSpeed()
@@ -1264,6 +1240,23 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 	UC_Util::Print("No More Bullets in Pool", FColor::MakeRandomColor(), 10.f);
 	return false;
 
+}
+
+FString AC_Gun::GetCurrentBulletTypeName()
+{
+	switch (CurGunBulletType) {
+	case EBulletType::FIVEMM:
+		return "5.56mm Ammo";
+		break;
+	case EBulletType::SEVENMM:
+		return "7.62mm Ammo";
+		break;
+	case EBulletType::NONE:
+		return "NONE";
+		break;
+
+	}
+	return "";
 }
 
 

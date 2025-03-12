@@ -362,6 +362,10 @@ protected:
 	// UCapsuleComponent* CapsuleComponent{};
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UParticleSystem* MuzzleFlameEffectParticle{};
+
+
+public:
+	FString GetCurrentBulletTypeName();
 	
 };
 
