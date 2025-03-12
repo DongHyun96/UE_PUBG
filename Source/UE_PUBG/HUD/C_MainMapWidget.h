@@ -119,11 +119,9 @@ protected:
 
 protected: // TODO : 이 점들 지우기
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UImage* JumpPosImg{};
 	FVector2D JumpPos{};
 	
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UImage* TargetPosImg{};
 	FVector2D TargetLocationPos{};
 

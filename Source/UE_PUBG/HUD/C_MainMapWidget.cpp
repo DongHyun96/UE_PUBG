@@ -38,6 +38,12 @@ void UC_MainMapWidget::NativeConstruct()
 	//SetVisibility(ESlateVisibility::Visible);
 	//bIsFocusable = true;
 	SetIsEnabled(true);
+
+	UWidget* JumpPosImage = GetWidgetFromName(TEXT("JumpPosImage"));
+	JumpPosImg = Cast<UImage>(JumpPosImage);
+
+	UWidget* TargetPosImage = GetWidgetFromName(TEXT("TargetPosImage"));
+	TargetPosImg = Cast<UImage>(TargetPosImage);
 }
 
 void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
