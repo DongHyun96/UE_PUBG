@@ -39,10 +39,17 @@ private:
 	/// <return> 제대로 setting 되지 않았다면 return false </return>
 	bool SetRandomLandingTargetLocation();
 
+	/// <summary>
+	/// 비행기에서 SkyDive 시작할 지점 정하기 (낙하 목표위치와 가장 가까운 지점으로 setting)
+	/// </summary>
+	/// <returns> : 제대로 setting되지 않았다면 return false </returns>
+	bool SetAirplaneJumpPosXY();
+
 private:
 	
-	class AC_Enemy*				OwnerEnemy{};
-	class UC_BehaviorComponent* OwnerBehaviorComponent{};
+	class AC_Enemy*					OwnerEnemy{};
+	class UC_BehaviorComponent* 	OwnerBehaviorComponent{};
+	class UC_SkyDivingComponent*	OwnerSkyDivingComponent{};
 
 private:
 
@@ -55,6 +62,14 @@ private:
 		{5, 4}, {5, 5},
 		{6, 5}
 	};
+
+private:
+
+	FVector2D AirplaneJumpPosXY{};
+
+	// true이면 skyDive 시작해야 하는 flag
+	bool bSkyDiveStartFlag{};
+	
 };
 
 

@@ -70,7 +70,13 @@ public:
 	void SetOwnerCharcter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 	ESkyDivingState GetSkyDivingState() const { return SkyDivingState; }
-	void SetSkyDivingState(ESkyDivingState InSkyDivingState);
+
+	/// <summary>
+	/// 현 SKyDivingState setting
+	/// </summary>
+	/// <param name="InSkyDivingState"></param>
+	/// <returns> : 원하는 값으로 setting되지 않았다면 return false </returns>
+	bool SetSkyDivingState(ESkyDivingState InSkyDivingState);
 
 public:
 

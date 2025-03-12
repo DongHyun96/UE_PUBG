@@ -62,6 +62,9 @@ public:
 	/// <returns> : 제대로 Spawn 되었다면 return true </returns>
 	bool SpawnPingImage(FVector2D MousePos) override;
 
+	// TODO : 이 함수 지우기
+	bool SpawnJumpPosAndTargetPosImage(FVector JumpLocation, FVector TargetLocation);
+
 protected:
 
 	bool CancelPingMarker();
@@ -114,6 +117,19 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UBorder* PingMarkerBorder{};
 
+protected: // TODO : 이 점들 지우기
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UImage* JumpPosImg{};
+	FVector2D JumpPos{};
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UImage* TargetPosImg{};
+	FVector2D TargetLocationPos{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UImage* EnemyLocationImg{};
+	
 private:
 
 	float MainMapScaleLerpDest = 1.f;

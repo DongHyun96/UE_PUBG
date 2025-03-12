@@ -81,9 +81,7 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 				UC_BehaviorComponent* EnemyBehvaiorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent(); 
 				EnemyBehvaiorComponent->SetServiceType(EServiceType::SKYDIVE);
 				// EnemyBehvaiorComponent->SetIdleTaskType;
-				
 			}
-			
 		}
 	}
 }

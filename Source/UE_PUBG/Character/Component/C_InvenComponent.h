@@ -192,6 +192,7 @@ protected:
 	TMap<FName, AC_Item*> MyItems;
 
 
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<AC_Item*> AroundItems;
 
