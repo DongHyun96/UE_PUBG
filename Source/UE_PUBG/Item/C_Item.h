@@ -272,6 +272,8 @@ protected:
 	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character);
 
 public:
+	FName GetItemCode() { return ItemCode; }
+
 	const FItemData* GetItemDatas() const { return ItemDataRef; }
 
 	/// <summary>

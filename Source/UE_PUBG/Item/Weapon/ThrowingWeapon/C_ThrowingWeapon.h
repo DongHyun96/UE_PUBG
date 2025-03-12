@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -341,7 +341,7 @@ protected:
 
 private:
 
-	static const TMap<EThrowableType, FString> THROWABLETYPE_ITEMNAME_MAP;
+	static const TMap<EThrowableType, FName> THROWABLETYPE_ITEMNAME_MAP;
 
 private:
 

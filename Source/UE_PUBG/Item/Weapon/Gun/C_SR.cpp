@@ -53,7 +53,7 @@ void AC_SR::Tick(float DeltaTime)
 bool AC_SR::ExecuteReloadMontage()
 {
 	int LeftAmmoCount = 0;
-	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItem(GetCurrentBulletTypeName()));
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
 	if (IsValid(CurBullet))
 	{
 		LeftAmmoCount = CurBullet->GetItemCurStack();

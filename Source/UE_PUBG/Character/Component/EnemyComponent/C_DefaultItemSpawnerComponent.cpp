@@ -56,7 +56,7 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 
 	// "FlashBang"
 	// "Grenade"
-	AC_ThrowingWeapon* Grenade = Cast<AC_ThrowingWeapon>(OwnerEnemy->GetInvenComponent()->FindMyItem("Grenade"));
+	AC_ThrowingWeapon* Grenade = Cast<AC_ThrowingWeapon>(OwnerEnemy->GetInvenComponent()->FindMyItemByName("Grenade"));
 	if (!IsValid(Grenade))
 	{
 		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade nullptr", FColor::Red, 10.f);

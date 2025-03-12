@@ -33,7 +33,7 @@ public:
     /// InventoryItemList의 Update함수
     /// </summary>
     /// <param name="MyItemMap"></param>
-    void UpdateInventoryItemList(TMap<FString, AC_Item*> MyItemMap);
+    void UpdateInventoryItemList(TMap<FName, AC_Item*> MyItemMap);
 
     /// <summary>
     /// AroundItemList의 Update함수.

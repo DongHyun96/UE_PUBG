@@ -246,7 +246,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 
 	// 총기 HUD 켜주기
 	int LeftAmmoCount = 0;
-	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItem(GetCurrentBulletTypeName()));
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
 	if (IsValid(CurBullet))
 	{
 		LeftAmmoCount = CurBullet->GetItemCurStack();
@@ -820,7 +820,7 @@ bool AC_Gun::ReloadBullet()
 {
 	if (CurBulletCount == MaxBulletCount) return false;
 	int LeftAmmoCount = 0;
-	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItem(GetCurrentBulletTypeName()));
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
 	if (IsValid(CurBullet))
 	{
 		LeftAmmoCount = CurBullet->GetItemCurStack();
@@ -1260,15 +1260,15 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 
 }
 
-FString AC_Gun::GetCurrentBulletTypeName()
+FName AC_Gun::GetCurrentBulletTypeName()
 {
 	switch (GunDataRef->CurGunBulletType) 
 	{
 	case EBulletType::FIVEMM:
-		return "5.56mm Ammo";
+		return "Item_Ammo_556mm_C";
 		break;
 	case EBulletType::SEVENMM:
-		return "7.62mm Ammo";
+		return "Item_Ammo_762mm_C";
 		break;
 	case EBulletType::NONE:
 		return "NONE";

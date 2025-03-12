@@ -52,11 +52,11 @@ int AC_ThrowingWeapon::ThrowingWeaponCount{};
 
 TMap<EThrowableType, II_ExplodeStrategy*> AC_ThrowingWeapon::ExplodeStrategies{};
 
-const TMap<EThrowableType, FString> AC_ThrowingWeapon::THROWABLETYPE_ITEMNAME_MAP =
+const TMap<EThrowableType, FName> AC_ThrowingWeapon::THROWABLETYPE_ITEMNAME_MAP =
 {
-	{EThrowableType::GRENADE,		"Grenade"},
-	{EThrowableType::FLASH_BANG,	"FlashBang"},
-	{EThrowableType::SMOKE,			"Smoke Grenade"},
+	{EThrowableType::GRENADE,		"Item_Weapon_Grenade_C"},
+	{EThrowableType::FLASH_BANG,	"Item_Weapon_FlashBang_C"},
+	{EThrowableType::SMOKE,			"Item_Weapon_SmokeBomb_C"},
 };
 
 USkeletalMeshComponent* AC_ThrowingWeapon::OwnerMeshTemp{};
@@ -242,7 +242,7 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 		UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
 		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, false);
 		
-		AC_Item* InvenThrowable = OwnerCharacter->GetInvenComponent()->FindMyItem(ItemDataRef->ItemName);
+		AC_Item* InvenThrowable = OwnerCharacter->GetInvenComponent()->FindMyItemByName(ItemCode);
 		int MagazineCount = !InvenThrowable ? 1 : InvenThrowable->GetItemCurStack() + 1;
 		AmmoWidget->SetMagazineText(MagazineCount);
 	}
@@ -863,7 +863,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	{
 		if (Pair.Key == this->ThrowableType) continue;
 
-		ThrowWeapon = OwnerCharacter->GetInvenComponent()->FindMyItem(Pair.Value);
+		ThrowWeapon = OwnerCharacter->GetInvenComponent()->FindMyItemByName(Pair.Value);
 
 		UC_Util::Print("1");
 
