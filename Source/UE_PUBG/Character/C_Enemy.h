@@ -30,6 +30,8 @@ public:
 
 	class UProgressBar* GetHPBar() const { return HPBar; }
 
+	class AC_EnemyAIController* GetEnemyAIController() const;
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)

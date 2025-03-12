@@ -93,7 +93,7 @@ void UC_EquipmentSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, c
 
 	if (!SlotItem) return;
 
-	Texture = Cast<UTexture2D>(SlotItem->GetItemDatas().ItemBarIcon);
+	Texture = Cast<UTexture2D>(SlotItem->GetItemDatas()->ItemBarIcon);
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
@@ -144,7 +144,7 @@ void UC_EquipmentSlotWidget::UpdateSlotItemImage(AC_EquipableItem* SlotItem)
 	{
 		UpdateDurabilityBar(SlotItem->GetCurDurabilityRate());
 		
-		ItemImage->SetBrushFromTexture(SlotItem->GetItemDatas().ItemSlotImage);
+		ItemImage->SetBrushFromTexture(SlotItem->GetItemDatas()->ItemSlotImage);
 		FSlateBrush Brush = ItemImage->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		ItemImage->SetBrush(Brush);

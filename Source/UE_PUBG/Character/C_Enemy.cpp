@@ -4,6 +4,7 @@
 #include "Character/C_Enemy.h"
 
 #include "C_Player.h"
+#include "AI/C_EnemyAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "Character/Component/C_EquippedComponent.h"
@@ -137,6 +138,11 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 	case EPoseState::POSE_MAX: default: return false;
 	}
 
+}
+
+AC_EnemyAIController* AC_Enemy::GetEnemyAIController() const
+{
+	return Cast<AC_EnemyAIController>(GetController());
 }
 
 

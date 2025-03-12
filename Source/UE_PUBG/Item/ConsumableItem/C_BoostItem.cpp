@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/ConsumableItem/C_BoostItem.h"
@@ -40,7 +40,7 @@ void AC_BoostItem::HandleActivatingState()
 void AC_BoostItem::HandleActivateCompletedState()
 {
 	ItemUser->GetStatComponent()->AddBoost(BoostAmount);
-	if (ItemDatas.ItemCurStack > 1)
+	if (ItemCurStack > 1)
 		UsingTimer = 0.f;
 	ConsumableItemState = EConsumableItemState::USED;
 }

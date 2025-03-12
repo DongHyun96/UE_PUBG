@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 
@@ -110,7 +110,7 @@ bool AC_Weapon::ExecuteMrb_Completed()
 
 void AC_Weapon::PickUpItem(AC_BasicCharacter* Character)
 {
-	EItemTypes Type = ItemDatas.ItemType;
+	EItemTypes Type = ItemDataRef->ItemType;
 
 	switch (Type)
 	{
@@ -225,7 +225,7 @@ bool AC_Weapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 		if (prevVolume > invenComp->GetMaxVolume()) return false; //교체하는 아이템이 인벤에 들어오면서 MaxVolume을 넘으면 return.
 	}
 
-	if (this->GetItemDatas().ItemCurStack == 1)//MeleeWeapon의 갯수는 0으로 해놨음;; TODO : 새로운 방법 찾기, 찾지 못한다면 우선 MeleeWeapon의 stack을 1로 사용하기.
+	if (ItemCurStack == 1)//MeleeWeapon의 갯수는 0으로 해놨음;; TODO : 새로운 방법 찾기, 찾지 못한다면 우선 MeleeWeapon의 stack을 1로 사용하기.
 	{
 		curWeapon = equipComp->SetSlotWeapon(curWeaponSlot, this);
 		invenComp->RemoveItemToMyList(this);
@@ -262,7 +262,7 @@ bool AC_Weapon::MoveAroundToInven(AC_BasicCharacter* Character)
 		return false; //인벤에 넣을 수 있는 아이템의 갯수가 0 이면 넣을 수 없으므로 return false;
 	}
 
-	if (ItemStackCount == this->GetItemDatas().ItemCurStack)
+	if (ItemStackCount == ItemCurStack)
 	{
 		//아이템을 전부 인벤에 넣을 수 있는 경우.
 		invenComp->AddItemToMyList(this);
@@ -271,7 +271,7 @@ bool AC_Weapon::MoveAroundToInven(AC_BasicCharacter* Character)
 	else
 	{
 		//아이템을 일부만 넣을 수 있는 경우.
-		this->SetItemStack(GetItemDatas().ItemCurStack - ItemStackCount);//현재 객체의 stack을 조절
+		this->SetItemStack(ItemCurStack - ItemStackCount);               //현재 객체의 stack을 조절
 		AC_Weapon* SpawnedItem = Cast<AC_Weapon>(SpawnItem(Character));  //동일한 아이템 객체를 생성
 		SpawnedItem->SetItemStack(ItemStackCount);						 //생성한 아이템 stack을 설정
 		invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가.
@@ -294,7 +294,7 @@ bool AC_Weapon::MoveAroundToSlot(AC_BasicCharacter* Character)
 			curWeapon->MoveSlotToAround(Character);
 	}
 
-	if (this->GetItemDatas().ItemCurStack == 1) //Gun과 MeleeWeapon은 stack = 0 임. TODO : 새로운 방법 찾기, 우선은 curStack = 1로 사용. 
+	if (ItemCurStack == 1) //Gun과 MeleeWeapon은 stack = 0 임. TODO : 새로운 방법 찾기, 우선은 curStack = 1로 사용. 
 	{
 		equipComp->SetSlotWeapon(curWeaponSlot, this);
 		invenComp->RemoveItemToAroundList(this);
@@ -316,7 +316,7 @@ bool AC_Weapon::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharact
 
 EWeaponSlot AC_Weapon::GetWeaponSlot()
 {
-	switch (this->GetItemDatas().ItemType)
+	switch (this->GetItemDatas()->ItemType)
 	{
 	case EItemTypes::MAINGUN:
 

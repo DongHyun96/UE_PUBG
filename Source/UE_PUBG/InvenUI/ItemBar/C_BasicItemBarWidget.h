@@ -50,6 +50,9 @@ public:
 
 	void UpdateWidget(AC_Item* MyItem);
 
+	//void UpdateWidget();
+
+
 	/// <summary>
     /// 아이템 사용시 눈으로 알려주는 progressbar타이머.
     /// </summary>
@@ -88,6 +91,10 @@ protected:
 	// C++에서 처리할 아이템
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_Item* CachedItem;
+
+	//에디터에서 바인딩으로 처리한다면?
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//const FItemData* CachedItemData = nullptr; 
 
 };
 

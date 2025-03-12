@@ -93,7 +93,7 @@ AC_ThrowingWeapon::AC_ThrowingWeapon()
 	PredictedEndPoint->SetVisibility(false);
 
 	//ItemType 설정.
-	ItemDatas.ItemType = EItemTypes::THROWABLE;
+	//ItemDataRef.ItemType = EItemTypes::THROWABLE;
 
 	ExplosionSphere = CreateDefaultSubobject<USphereComponent>("ExplosionSphere");
 }
@@ -242,8 +242,8 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 		UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
 		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, false);
 		
-		AC_Item* InvenThrowable = OwnerCharacter->GetInvenComponent()->FindMyItem(ItemDatas.ItemName);
-		int MagazineCount = !InvenThrowable ? 1 : InvenThrowable->GetItemDatas().ItemCurStack + 1;
+		AC_Item* InvenThrowable = OwnerCharacter->GetInvenComponent()->FindMyItem(ItemDataRef->ItemName);
+		int MagazineCount = !InvenThrowable ? 1 : InvenThrowable->GetItemCurStack() + 1;
 		AmmoWidget->SetMagazineText(MagazineCount);
 	}
 
@@ -269,7 +269,7 @@ void AC_ThrowingWeapon::DropItem(AC_BasicCharacter* Character)
 {
 	//TODO : 아이템이 장착(Attach)되었던 상태를 해제하는 작업에 관한 처리 생각
 	//TODO : 분할해서 버리는 경우 새로 스폰해주어야함.
-	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);               //OwnerCharacter 해제
 	SetActorHiddenInGame(false);			  //모습이 보이도록 Hidden 해제.
 	SetActorEnableCollision(true);			  //Overlap가능 하도록 Collision On
@@ -300,16 +300,16 @@ bool AC_ThrowingWeapon::LegacyMoveToInven(AC_BasicCharacter* Character)
 	// 현재 손에 들고있는 투척류가 this라면 HandState NONE으로 전환
 	if (equipComp->GetCurWeapon() == this) equipComp->ChangeCurWeapon(EWeaponSlot::NONE);
 
-	if (ItemDatas.ItemCurStack == ItemStackCount)
+	if (ItemCurStack == ItemStackCount)
 	{
 		//아이템 전부를 인벤에 넣을 수 있을 때.
 		if (IsValid(FoundItem))
 		{
 			//인벤에 해당 아이템이 존재 할 때.
-			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
+			FoundItem->SetItemStack(FoundItem->GetItemCurStack() + ItemStackCount);
 			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
 			//TODO : destroy를 해도 잔상이 남는것을 대비해서 해놓음 만약 없이도 잔상이 안남는다면 지울 것.
-			invenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
+			invenComp->AddInvenCurVolume(this->ItemDataRef->ItemVolume * ItemStackCount);
 
 			this->SetActorEnableCollision(false);
 			this->SetActorHiddenInGame(true);
@@ -334,10 +334,10 @@ bool AC_ThrowingWeapon::LegacyMoveToInven(AC_BasicCharacter* Character)
 		//아이템의 일부만 인벤에 넣을 수 있을 때.
 		if (IsValid(FoundItem))
 		{
-			     this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
-			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
+			     this->SetItemStack(ItemCurStack - ItemStackCount);
+			FoundItem->SetItemStack(FoundItem->GetItemCurStack() + ItemStackCount);
 
-			invenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
+			invenComp->AddInvenCurVolume(this->ItemDataRef->ItemVolume * ItemStackCount);
 
 			return true;
 		}
@@ -345,7 +345,7 @@ bool AC_ThrowingWeapon::LegacyMoveToInven(AC_BasicCharacter* Character)
 		{
 			AC_Weapon* NewItem = Cast<AC_Weapon>(SpawnItem(Character));//아이템 복제 생성
 			NewItem->SetItemStack(ItemStackCount);
-			   this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
+			   this->SetItemStack(ItemCurStack - ItemStackCount);
 
 			invenComp->AddItemToMyList(NewItem);
 
@@ -373,9 +373,9 @@ bool AC_ThrowingWeapon::LegacyMoveToAround(AC_BasicCharacter* Character)
 		EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
 	}
 
-	if (this->GetItemDatas().ItemPlace == EItemPlace::INVEN)
+	if (ItemPlace == EItemPlace::INVEN)
 		Character->GetInvenComponent()->RemoveItemToMyList(this);
-	else if (this->GetItemDatas().ItemPlace == EItemPlace::SLOT)
+	else if (ItemPlace == EItemPlace::SLOT)
 	{
 		Character->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
 		//this->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
@@ -384,7 +384,7 @@ bool AC_ThrowingWeapon::LegacyMoveToAround(AC_BasicCharacter* Character)
 	//DetachmentItem();
 
 	//TODO: 분할해서 버리는 경우 새로 스폰해주어야함.
-	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
@@ -425,11 +425,11 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 		//int nextVolume = invenComp->GetCurVolume() - ItemDatas.ItemVolume + curWeapaon->GetItemDatas().ItemVolume; //이건 인벤에 존재하는 아이템을 옮길때만 유효 한거 같은데?
 		int nextVolume = 0;
 
-		nextVolume = (this->ItemDatas.ItemPlace == EItemPlace::INVEN) ? invenComp->GetCurVolume() -
-																		ItemDatas.ItemVolume +
-																		curWeapon->GetItemDatas().ItemVolume 
+		nextVolume = (this->ItemPlace == EItemPlace::INVEN) ? invenComp->GetCurVolume() -
+																		ItemDataRef->ItemVolume +
+																		curWeapon->GetItemDatas()->ItemVolume 
 																		:
-																		invenComp->GetCurVolume() + curWeapon->GetItemDatas().ItemVolume;
+																		invenComp->GetCurVolume() + curWeapon->GetItemDatas()->ItemVolume;
 
 		if (nextVolume > invenComp->GetMaxVolume())
 		{
@@ -438,10 +438,10 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 		}
 
 		//SetActorEnableCollision(false);
-		if (ItemDatas.ItemCurStack == 1)
+		if (ItemCurStack == 1)
 		{
-			if (this->ItemDatas.ItemPlace == EItemPlace::INVEN)       invenComp->RemoveItemToMyList(this);//아마 InvenUI를 초기화 시켜주는 작업이 추가적으로 필요할것.
-			else if (this->ItemDatas.ItemPlace == EItemPlace::AROUND) invenComp->RemoveItemToAroundList(this);
+			if (this->ItemPlace == EItemPlace::INVEN)       invenComp->RemoveItemToMyList(this);//아마 InvenUI를 초기화 시켜주는 작업이 추가적으로 필요할것.
+			else if (this->ItemPlace == EItemPlace::AROUND) invenComp->RemoveItemToAroundList(this);
 
 			PrevSlotWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
 		}
@@ -449,7 +449,7 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 		{
 			AC_Weapon* InToSlotWeapon = Cast<AC_Weapon>(SpawnItem(Character));
 			InToSlotWeapon->SetItemStack(1);
-			this->SetItemStack(ItemDatas.ItemCurStack - 1);
+			this->SetItemStack(ItemCurStack - 1);
 
 			//if (ItemDatas.ItemPlace == EItemPlace::AROUND) return this->LegacyMoveToInven(Character);//하나를 뺴서 장착시킨 아이템을 MoveToInven으로 인벤에 넣는 작업 실행.
 			//else if (ItemDatas.ItemPlace == EItemPlace::INVEN) return true;
@@ -488,13 +488,13 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 
 	//슬롯에 아이템이 없을 때
 
-	if (ItemDatas.ItemCurStack == 1)
+	if (ItemCurStack == 1)
 	{
 		//this의 stack이 1 이라면 실행.
 		//this를 슬롯에 장착 하고 목록에서 제거
 
-		if      (ItemDatas.ItemPlace == EItemPlace::AROUND) invenComp->RemoveItemToAroundList(this);
-		else if (ItemDatas.ItemPlace == EItemPlace::INVEN)  invenComp->RemoveItemToMyList(this);
+		if      (ItemPlace == EItemPlace::AROUND) invenComp->RemoveItemToAroundList(this);
+		else if (ItemPlace == EItemPlace::INVEN)  invenComp->RemoveItemToMyList(this);
 
 		equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
 		return true;
@@ -505,12 +505,12 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 	//this를 복제 생성해서 하나는 장착하고 나머지는 갯수를 수정
 	AC_Weapon* NewWeapon = Cast<AC_Weapon>(SpawnItem(Character));
 	NewWeapon->SetItemStack(1);
-	     this->SetItemStack(ItemDatas.ItemCurStack - 1);
+	     this->SetItemStack(ItemCurStack - 1);
 	
 	equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, NewWeapon); //슬롯에 장착. 아래의 NewWeapon과 다름.
 
-	return  (ItemDatas.ItemPlace == EItemPlace::AROUND) ? this->MoveToInven(Character) : //하나를 뺴서 장착시킨 아이템을 MoveToInven으로 인벤에 넣는 작업 실행.
-			(ItemDatas.ItemPlace == EItemPlace::INVEN)  ? true : false;
+	return  (ItemPlace == EItemPlace::AROUND) ? this->MoveToInven(Character) : //하나를 뺴서 장착시킨 아이템을 MoveToInven으로 인벤에 넣는 작업 실행.
+			(ItemPlace == EItemPlace::INVEN)  ? true : false;
 }
 
 bool AC_ThrowingWeapon::Interaction(AC_BasicCharacter* Character)
@@ -538,7 +538,7 @@ bool AC_ThrowingWeapon::Interaction(AC_BasicCharacter* Character)
 	//	return MoveToSlot(Character);
 	//}
 
-	switch (ItemDatas.ItemPlace)
+	switch (ItemPlace)
 	{
 	case EItemPlace::SLOT:
 
@@ -638,7 +638,7 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 		if (prevVolume > invenComp->GetMaxVolume()) return false; //교체하는 아이템이 인벤에 들어오면서 MaxVolume을 넘으면 return.
 	}
 
-	if (this->GetItemDatas().ItemCurStack == 1)
+	if (ItemCurStack == 1)
 	{
 		curWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
 		invenComp->RemoveItemToMyList(this);
@@ -648,7 +648,7 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 		this->DeductItemStack();
 		AC_ThrowingWeapon* SwapItem = Cast<AC_ThrowingWeapon>(SpawnItem(Character));
 		SwapItem->SetItemStack(1);
-		invenComp->AddInvenCurVolume(-SwapItem->GetItemDatas().ItemVolume);
+		invenComp->AddInvenCurVolume(-SwapItem->GetItemDatas()->ItemVolume);
 		curWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
 	}
 
@@ -691,7 +691,7 @@ bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character)
 		return false; //인벤에 넣을 수 있는 아이템의 갯수가 0 이면 넣을 수 없으므로 return false;
 	}
 
-	if (ItemStackCount == this->GetItemDatas().ItemCurStack)
+	if (ItemStackCount == ItemCurStack)
 	{
 		//아이템을 전부 인벤에 넣을 수 있는 경우.
 		invenComp->AddItemToMyList(this);
@@ -700,7 +700,7 @@ bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character)
 	else 
 	{
 		//아이템을 전부 넣을 수 없는 경우.
-		this->SetItemStack(GetItemDatas().ItemCurStack - ItemStackCount);//현재 객체의 stack을 조절
+		this->SetItemStack(ItemCurStack - ItemStackCount);//현재 객체의 stack을 조절
 		AC_Weapon* SpawnedItem = Cast<AC_Weapon>(SpawnItem(Character));  //동일한 아이템 객체를 생성
 		SpawnedItem->SetItemStack(ItemStackCount);						 //생성한 아이템 stack을 설정
 		invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가.
@@ -721,7 +721,7 @@ bool AC_ThrowingWeapon::MoveAroundToSlot(AC_BasicCharacter* Character)
 			curWeapon->MoveSlotToAround(Character);
 	}
 
-	if (this->GetItemDatas().ItemCurStack == 1)
+	if (ItemCurStack == 1)
 	{
 		equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
 		invenComp->RemoveItemToAroundList(this);

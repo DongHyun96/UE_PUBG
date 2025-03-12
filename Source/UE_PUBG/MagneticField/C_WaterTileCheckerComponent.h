@@ -52,15 +52,6 @@ public:
 	
 private:
 	
-	/// <summary>
-	/// 해당 Tile의 중앙점을 World 좌표로 환산한 값 구하기, Z는 항상 0.f
-	/// </summary>
-	/// <param name="TileCoordinate"></param>
-	/// <returns></returns>
-	FVector ConvertTileCoordinateToTileMiddleLocation(const TPair<uint8, uint8>& TileCoordinate) const;
-		
-private:
-	
 	class AC_MagneticFieldManager* MagneticFieldManager{};
 
 private:
@@ -78,6 +69,4 @@ private:
 		{8, 0}, {8, 1}, {8, 8}, {8, 9},
 		{9, 0}, {9, 1}, {9, 8}, {9, 9}
 	};
-
-	const float CELL_WORLDSIZE = 10000.f;
 };

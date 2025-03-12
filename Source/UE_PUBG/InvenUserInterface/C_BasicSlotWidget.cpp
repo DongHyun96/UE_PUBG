@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUserInterface/C_BasicSlotWidget.h"
@@ -26,10 +26,12 @@ void UC_BasicSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const
 	//UObject* ResourceObject = Cast<UImage>(CachedItem->GetItemDatas().ItemIcon)->Brush.GetResourceObject();//UTexture2D인데 아랫줄에서 바로 사용 가능할 것 같은데?
 	UTexture2D* Texture = nullptr;
 
-	if (CachedItem->GetItemDatas().ItemType == EItemTypes::MAINGUN)
+	const FItemData* CachedItemData = CachedItem->GetItemDatas();
+
+	if (CachedItemData->ItemType == EItemTypes::MAINGUN)
 		Texture = Cast<UTexture2D>(Cast<AC_Gun>(CachedItem)->GetDragIcon());
 	else
-		Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemBarIcon);//크기및 형태 조절하기.
+		Texture = Cast<UTexture2D>(CachedItemData->ItemBarIcon);//크기및 형태 조절하기.
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)

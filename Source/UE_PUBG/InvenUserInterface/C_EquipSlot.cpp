@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUserInterface/C_EquipSlot.h"
@@ -63,9 +63,9 @@ void UC_EquipSlot::Init()
 	}
 	else
 	{
-		if (CachedItem->GetItemDatas().ItemType != SlotItemType) return;
+		if (CachedItem->GetItemDatas()->ItemType != SlotItemType) return;
 
-		ItemImage1->SetBrushFromTexture(CachedItem->GetItemDatas().ItemSlotImage);
+		ItemImage1->SetBrushFromTexture(CachedItem->GetItemDatas()->ItemSlotImage);
 		FSlateBrush Brush = ItemImage1->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f); // 완전 불투명
 		ItemImage1->SetBrush(Brush);

@@ -9,10 +9,8 @@
 
 #include "GameFramework/SpringArmComponent.h"
 
-#include "Character/Component/C_SwimmingComponent.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_SkyDiveWidget.h"
-#include "HUD/C_MainMapWidget.h"
 #include "HUD/C_InstructionWidget.h"
 
 #include "Utility/C_Util.h"
@@ -20,7 +18,6 @@
 #include "Singleton/C_GameSceneManager.h"
 #include "Airplane/C_AirplaneManager.h"
 #include "Airplane/C_Airplane.h"
-
 const TMap<ESkyDivingState, FDivingSpeeds> UC_SkyDivingComponent::STATE_DIVINGSPEEDS =
 {
 	{

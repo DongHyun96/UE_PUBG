@@ -80,8 +80,8 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 		// Activating end
 
-		ItemDatas.ItemCurStack--;
-		FString Left = "Item Used: ItemStack -> " + FString::FromInt(ItemDatas.ItemCurStack);
+		ItemCurStack--;
+		FString Left = "Item Used: ItemStack -> " + FString::FromInt(ItemCurStack);
 		UC_Util::Print(Left, FColor::Red, 5.f);
 
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser))
@@ -122,7 +122,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
 		}
 		
-		if (ItemDatas.ItemCurStack == 0)
+		if (ItemCurStack == 0)
 		{
 
 			ItemUser->GetInvenComponent()->RemoveItemToMyList(this);
@@ -244,7 +244,7 @@ bool AC_ConsumableItem::CancelActivating()
 bool AC_ConsumableItem::Interaction(AC_BasicCharacter* Character)
 {
 
-	switch (ItemDatas.ItemPlace)
+	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
 		if (!OwnerCharacter) return LegacyMoveToInven(Character);
@@ -273,16 +273,16 @@ bool AC_ConsumableItem::LegacyMoveToInven(AC_BasicCharacter* Character)
 
 	
 
-	if (ItemDatas.ItemCurStack == ItemStackCount)
+	if (ItemCurStack == ItemStackCount)
 	{
 		//아이템 전부를 인벤에 넣을 수 있을 때.
 		if (IsValid(FoundItem))
 		{
 			//인벤에 해당 아이템이 존재 할 때.
-			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
-			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
+			FoundItem->SetItemStack(FoundItem->GetItemCurStack() + ItemStackCount);
+			//invenComp->GetCurVolume() += FoundItem->GetItemDatas()->ItemVolume * ItemStackCount;
 			//TODO : destroy를 해도 잔상이 남는것을 대비해서 해놓음 만약 없이도 잔상이 안남는다면 지울 것.
-			invenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
+			invenComp->AddInvenCurVolume(this->ItemDataRef->ItemVolume * ItemStackCount);
 
 			this->SetActorEnableCollision(false);
 			this->SetActorHiddenInGame(true);
@@ -309,10 +309,10 @@ bool AC_ConsumableItem::LegacyMoveToInven(AC_BasicCharacter* Character)
 
 		if (IsValid(FoundItem)) // 인벤에 아이템이 이미 있을 때
 		{
-			this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
-			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
+			this->SetItemStack(ItemCurStack - ItemStackCount);
+			FoundItem->SetItemStack(FoundItem->GetItemCurStack() + ItemStackCount);
 
-			invenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
+			invenComp->AddInvenCurVolume(this->ItemDataRef->ItemVolume * ItemStackCount);
 
 			return true;
 		}
@@ -321,7 +321,7 @@ bool AC_ConsumableItem::LegacyMoveToInven(AC_BasicCharacter* Character)
 			AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//아이템 복제 생성
 
 			NewItem->SetItemStack(ItemStackCount);
-			this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
+			this->SetItemStack(ItemCurStack - ItemStackCount);
 
 			invenComp->AddItemToMyList(NewItem);
 
@@ -344,7 +344,7 @@ bool AC_ConsumableItem::LegacyMoveToAround(AC_BasicCharacter* Character)
 
 	Character->GetInvenComponent()->RemoveItemToMyList(this);
 	//TODO: 분할해서 버리는 경우 새로 스폰해주어야함.
-	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
@@ -366,7 +366,7 @@ bool AC_ConsumableItem::MoveInvenToAround(AC_BasicCharacter* Character)
 
 	Character->GetInvenComponent()->RemoveItemToMyList(this);
 	//TODO: 분할해서 버리는 경우 새로 스폰해주어야함.
-	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
@@ -413,16 +413,16 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character)
 
 
 
-	if (ItemDatas.ItemCurStack == ItemStackCount)
+	if (ItemCurStack == ItemStackCount)
 	{
 		//아이템 전부를 인벤에 넣을 수 있을 때.
 		if (IsValid(FoundItem))
 		{
 			//인벤에 해당 아이템이 존재 할 때.
-			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
+			FoundItem->SetItemStack(FoundItem->GetItemCurStack() + ItemStackCount);
 			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
 			//TODO : destroy를 해도 잔상이 남는것을 대비해서 해놓음 만약 없이도 잔상이 안남는다면 지울 것.
-			InvenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
+			InvenComp->AddInvenCurVolume(this->ItemDataRef->ItemVolume * ItemStackCount);
 
 			this->SetActorEnableCollision(false);
 			this->SetActorHiddenInGame(true);
@@ -449,10 +449,10 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character)
 
 		if (IsValid(FoundItem)) // 인벤에 아이템이 이미 있을 때
 		{
-			this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
-			FoundItem->SetItemStack(FoundItem->GetItemDatas().ItemCurStack + ItemStackCount);
+			this->SetItemStack(ItemCurStack - ItemStackCount);
+			FoundItem->SetItemStack(FoundItem->GetItemCurStack() + ItemStackCount);
 
-			InvenComp->AddInvenCurVolume(this->ItemDatas.ItemVolume * ItemStackCount);
+			InvenComp->AddInvenCurVolume(this->ItemDataRef->ItemVolume * ItemStackCount);
 
 			return true;
 		}
@@ -461,7 +461,7 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character)
 			AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//아이템 복제 생성
 
 			NewItem->SetItemStack(ItemStackCount);
-			this->SetItemStack(ItemDatas.ItemCurStack - ItemStackCount);
+			this->SetItemStack(ItemCurStack - ItemStackCount);
 
 			InvenComp->AddItemToMyList(NewItem);
 

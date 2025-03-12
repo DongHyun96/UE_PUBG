@@ -154,7 +154,7 @@ void UC_InventoryUIWidget::UpdateAroundItemPanelWidget()
         TestAroundItemList = OwnerPlayer->GetInvenComponent()->GetTestAroundItems();
         AroundItemPanel->SetVisibility(ESlateVisibility::Visible);
 
-        AroundItemPanel->InitializeItemList(TestAroundItemList);
+        AroundItemPanel->UpdateAroundItemList(TestAroundItemList);
     }
 }
 
@@ -167,7 +167,7 @@ void UC_InventoryUIWidget::UpdateInventroyItemPanelWidget()
         InventoryPanel->SetVisibility(ESlateVisibility::Visible);
 
         //InventoryPanel->AddTMapItem(MyItems); // 아이템 리스트 추가
-        InventoryPanel->UpdateMyItemList(MyItems);
+        InventoryPanel->UpdateInventoryItemList(MyItems);
     }
 }
 
@@ -184,6 +184,11 @@ void UC_InventoryUIWidget::CloseDivideItemWidget()
         DivideItemAroundDropWidget->SetVisibility(ESlateVisibility::Collapsed);
     if (DivideItemInventoryDropWidget->Visibility == ESlateVisibility::Visible)
         DivideItemInventoryDropWidget->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void UC_InventoryUIWidget::RemoveItemInList(AC_Item* InItem)
+{
+    AroundItemPanel->RemoveItemInList(InItem);
 }
 
 

@@ -29,14 +29,20 @@ public:
     //UFUNCTION(BlueprintCallable)
     void AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItemMap);
 
-    void UpdateMyItemList(TMap<FString, AC_Item*> MyItemMap);
+    /// <summary>
+    /// InventoryItemList의 Update함수
+    /// </summary>
+    /// <param name="MyItemMap"></param>
+    void UpdateInventoryItemList(TMap<FString, AC_Item*> MyItemMap);
 
     /// <summary>
-    /// AroundItemListWidget를 초기화 하는 함수.
+    /// AroundItemList의 Update함수.
     /// </summary>
     /// <param name="AroundItemList"></param>
     UFUNCTION(BlueprintCallable)
-    void InitializeItemList(const TArray<AC_Item*>& AroundItemList);
+    void UpdateAroundItemList(const TArray<AC_Item*>& AroundItemList);
+
+    void RemoveItemInList(AC_Item* InItem);
 
 public:
     UListView* GetItemListView() { return ItemListView1; }

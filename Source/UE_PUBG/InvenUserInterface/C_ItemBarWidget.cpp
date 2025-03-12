@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUserInterface/C_ItemBarWidget.h"
@@ -131,7 +131,7 @@ void UC_ItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 	//dragdrop class를 새로 만들어 사용해야 할 수 있음.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 	
-	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemBarIcon);//크기및 형태 조절하기.
+	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas()->ItemBarIcon);//크기및 형태 조절하기.
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
@@ -249,17 +249,19 @@ void UC_ItemBarWidget::InitBar(AC_Item* item)
 	{
 		CachedItem = item;
 
-		ItemImage1->SetBrushFromTexture(item->GetItemDatas().ItemBarIcon);
+		const FItemData* CachedItemData = CachedItem->GetItemDatas();
 
-		ItemType = item->GetItemDatas().ItemType;
+		ItemImage1->SetBrushFromTexture(CachedItemData->ItemBarIcon);
 
-		ItemName1->SetText(FText::FromString(item->GetItemDatas().ItemName));
+		ItemType = CachedItemData->ItemType;
+
+		ItemName1->SetText(FText::FromString(CachedItemData->ItemName));
 
 
-		if (item->GetItemDatas().ItemCurStack == 0)
+		if (item->GetItemCurStack() == 0)
 			ItemStackBlock1->SetVisibility(ESlateVisibility::Hidden);
 		else
-			ItemStackBlock1->SetText(FText::AsNumber(item->GetItemDatas().ItemCurStack));
+			ItemStackBlock1->SetText(FText::AsNumber(item->GetItemCurStack()));
 		//AddToViewport();
 		//SetVisibility(ESlateVisibility::Visible);
 
@@ -301,10 +303,10 @@ void UC_ItemBarWidget::InitInvenUIWidget()
 	if (UC_InvenUiWidget* InvenUiWidget = GetTypedOuter<UC_InvenUiWidget>())
 	{
 		if (
-			CachedItem->GetItemDatas().ItemType == EItemTypes::CONSUMPTIONITEM
-			|| CachedItem->GetItemDatas().ItemType == EItemTypes::THROWABLE
-			|| CachedItem->GetItemDatas().ItemType == EItemTypes::MELEEWEAPON
-			|| CachedItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT
+			   CachedItem->GetItemDatas()->ItemType == EItemTypes::CONSUMPTIONITEM
+			|| CachedItem->GetItemDatas()->ItemType == EItemTypes::THROWABLE
+			|| CachedItem->GetItemDatas()->ItemType == EItemTypes::MELEEWEAPON
+			|| CachedItem->GetItemDatas()->ItemType == EItemTypes::ATTACHMENT
 			)
 		{
 			InvenUiWidget->InitListView();

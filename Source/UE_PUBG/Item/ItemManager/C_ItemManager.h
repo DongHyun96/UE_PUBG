@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "Item/C_Item.h"
 #include "C_ItemManager.generated.h"
 
 
@@ -27,46 +28,25 @@
 //    BULLET
 //};
 
-USTRUCT(BlueprintType)
-struct FBasicItemData : public FTableRowBase
-{
-    GENERATED_BODY()
 
-public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FName ItemName;  // 아이템 이름
-
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    //EItemTypes ItemType;  // 아이템 타입 (무기, 소비 아이템 등)
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UTexture2D* ItemIcon;  // 아이템 UI 아이콘
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    uint8 ItemMaxStack;  // 최대 스택 가능 개수
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    uint8 ItemVolume;  // 인벤토리에서 차지하는 크기
-};
-
-USTRUCT(BlueprintType)
-struct FWeaponData : public FBasicItemData
-{
-    GENERATED_BODY()
-
-public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    USoundBase* FireSound;  // 총기 발사 사운드
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 Damage;  // 총기 공격력
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 AmmoCapacity;  // 탄창 크기
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UTexture2D* WeaponSlotImage;  // 아이템 UI 아이콘
-};
+//USTRUCT(BlueprintType)
+//struct FWeaponData : public FBasicItemData
+//{
+//    GENERATED_BODY()
+//
+//public:
+//    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//    USoundBase* FireSound;  // 총기 발사 사운드
+//
+//    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//    int32 Damage;  // 총기 공격력
+//
+//    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//    int32 AmmoCapacity;  // 탄창 크기
+//
+//    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+//    UTexture2D* WeaponSlotImage;  // 아이템 UI 아이콘
+//};
 /**
  * 
  */
@@ -78,16 +58,27 @@ class UE_PUBG_API UC_ItemManager : public UObject
 public:
     UC_ItemManager();
 
-    // 일반 아이템 정보 가져오기
-    FBasicItemData* GetItemData(FName ItemName);
+    // 아이템 매니저 초기화
+    void InitializeItemManager();
+
+    // 아이템을 데이터 테이블에서 불러오고 캐싱
+    void LoadItemDataTable();
+
+public:
+    // 아이템을 이름으로 조회
+    FItemData* GetItemData(FName ItemCode);
 
     // 총기 데이터 정보 가져오기
-    FWeaponData* GetWeaponData(FName WeaponName);
+    //FWeaponData* GetWeaponData(FName WeaponName);
 protected:
     UPROPERTY(EditAnywhere, Category = "Item Data")
     UDataTable* GeneralItemTable;
 
     // 총기 데이터 테이블
-    UPROPERTY(EditAnywhere, Category = "Weapon Data")
-    UDataTable* WeaponItemTable;
+    //UPROPERTY(EditAnywhere, Category = "Weapon Data")
+    //UDataTable* WeaponItemTable;
+
+private:
+    // 아이템을 이름을 키로 하여 캐싱
+    TMap<FName, FItemData> ItemDataCache{};
 };

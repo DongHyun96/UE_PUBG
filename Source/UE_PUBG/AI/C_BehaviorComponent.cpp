@@ -35,18 +35,6 @@ void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-bool UC_BehaviorComponent::SetTargetCharacter(AActor* InTargetCharacter)
-{
-	if (!IsValid(InTargetCharacter)) return false;
-	Blackboard->SetValueAsObject(TargetCharacterKey, InTargetCharacter);
-	return true;
-}
-
-class AC_BasicCharacter* UC_BehaviorComponent::GetTargetCharacter()
-{
-	return Cast<AC_BasicCharacter>(Blackboard->GetValueAsObject(TargetCharacterKey));
-}
-
 bool UC_BehaviorComponent::SetBehaviorType(EBehaviorType Type)
 {
 	if (Type == EBehaviorType::MAX) return false;
@@ -72,5 +60,27 @@ bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 	return false;
 }
 
+bool UC_BehaviorComponent::SetTargetCharacter(AActor* InTargetCharacter)
+{
+	if (!IsValid(InTargetCharacter)) return false;
+	Blackboard->SetValueAsObject(TargetCharacterKey, InTargetCharacter);
+	return true;
+}
+
+bool UC_BehaviorComponent::SetTargetLocation(const FVector& InTargetLocation)
+{
+	Blackboard->SetValueAsVector(TargetLocationKey, InTargetLocation);
+	return true;
+}
+
+FVector UC_BehaviorComponent::GetTargetLocation() const
+{
+	return Blackboard->GetValueAsVector(TargetLocationKey);
+}
+
+class AC_BasicCharacter* UC_BehaviorComponent::GetTargetCharacter() const
+{
+	return Cast<AC_BasicCharacter>(Blackboard->GetValueAsObject(TargetCharacterKey));
+}
 
 
