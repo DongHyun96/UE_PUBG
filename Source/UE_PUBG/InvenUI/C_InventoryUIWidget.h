@@ -43,6 +43,8 @@ public:
 	/// 이 함수로 DivideItemPanelWidget들을 한번에 닫음.
 	/// </summary>
 	void CloseDivideItemWidget();
+
+	void RemoveItemInList(AC_Item* InItem);
 public:
 	bool GetIsDragging() { return bIsDragging; }
 

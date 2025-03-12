@@ -1,4 +1,4 @@
-﻿
+
 
 // Fill out your copyright notice in the Description page of Project Settings.
 
@@ -64,7 +64,7 @@ AC_Gun::AC_Gun()
 	//ItemType 설정.
 	//Magazine = LoadObject<AC_AttachableItem>(nullptr, TEXT("/Game/Project_PUBG/Common/Weapon/GunWeapon/Magazine/BPC_Magazine.BPC_Magazine"));
 
-	ItemDatas.ItemType = EItemTypes::MAINGUN;
+	//ItemDataRef.ItemType = EItemTypes::MAINGUN;
 
 	SetHolsterNames();
 
@@ -371,7 +371,7 @@ bool AC_Gun::LegacyMoveToAround(AC_BasicCharacter* Character)
 
 	this->SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
 
-	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	ItemPlace = EItemPlace::AROUND;
 	DetachItem();
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
@@ -551,7 +551,7 @@ void AC_Gun::DropItem(AC_BasicCharacter* Character)
 		Player->GetHUDWidget()->GetAmmoWidget()->SetVisibility(ESlateVisibility::Hidden);
 	
 	DetachItem();
-	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	ItemPlace = EItemPlace::AROUND;
 }
 
 AC_AttachableItem* AC_Gun::SetAttachableItemSlot(EPartsName InPartsName, AC_AttachableItem* InAttachableItem)
@@ -814,13 +814,13 @@ bool AC_Gun::ReloadBullet()
 		RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
 
 		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("5.56mm Ammo"));
-		ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - RemainAmmo;
+		ChangedStack = CarryingBullet->GetItemCurStack() - RemainAmmo;
 		
 		CarryingBullet->SetItemStack(ChangedStack);
 		OwnerCharacter->AddFivemmBulletStack(-RemainAmmo);
 		UC_Util::Print("Reload Bullet");
 		//장전한 총알 갯수만큼 curVolume 조절
-		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas().ItemVolume));
+		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas()->ItemVolume));
 
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 		{
@@ -839,13 +839,13 @@ bool AC_Gun::ReloadBullet()
 		RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
 
 		CarryingBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItem("7.7mm Ammo"));
-		ChangedStack = CarryingBullet->GetItemDatas().ItemCurStack - RemainAmmo;
+		ChangedStack = CarryingBullet->GetItemCurStack() - RemainAmmo;
 
 		CarryingBullet->SetItemStack(ChangedStack);
 		OwnerCharacter->AddSevenmmBulletStack(-RemainAmmo);
 
 		//장전한 총알 갯수만큼 curVolume 조절
-		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas().ItemVolume));
+		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CarryingBullet->GetItemDatas()->ItemVolume));
 
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 		{

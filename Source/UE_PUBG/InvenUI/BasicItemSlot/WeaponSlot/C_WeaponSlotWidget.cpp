@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/BasicItemSlot/WeaponSlot/C_WeaponSlotWidget.h"
@@ -88,7 +88,7 @@ void UC_WeaponSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, cons
 
 	if (!SlotItem) return;
 
-	Texture = Cast<UTexture2D>(SlotItem->GetItemDatas().ItemBarIcon);
+	Texture = Cast<UTexture2D>(SlotItem->GetItemDatas()->ItemBarIcon);
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
@@ -141,8 +141,11 @@ void UC_WeaponSlotWidget::UpdateSlotItemImage(AC_Weapon* SlotItem)
 {
 	if (SlotItem)
 	{
-		WeaponImage->SetBrushFromTexture(SlotItem->GetItemDatas().ItemSlotImage);
-		WeaponName->SetText(FText::FromString(SlotItem->GetItemDatas().ItemName));
+		const FItemData* CachedItemData = SlotItem->GetItemDatas();
+
+
+		WeaponImage->SetBrushFromTexture(CachedItemData->ItemSlotImage);
+		WeaponName->SetText(FText::FromString(CachedItemData->ItemName));
 		FSlateBrush Brush = WeaponImage->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		WeaponImage->SetBrush(Brush);

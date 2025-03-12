@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
@@ -31,7 +31,7 @@ AC_MeleeWeapon::AC_MeleeWeapon()
 	CurSheathMontage.Priority = EMontagePriority::DRAW_SHEATH_WEAPON;
 
 	//ItemType 설정.
-	ItemDatas.ItemType = EItemTypes::MELEEWEAPON;
+	//ItemDataRef.ItemType = EItemTypes::MELEEWEAPON;
 }
 
 void AC_MeleeWeapon::BeginPlay()
@@ -96,7 +96,7 @@ bool AC_MeleeWeapon::Interaction(AC_BasicCharacter* Character)
 {
 	AC_Weapon* curWeapaon = Character->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MELEE_WEAPON];
 
-	switch (ItemDatas.ItemPlace)
+	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
 		if (curWeapaon) return MoveToInven(Character);
@@ -114,7 +114,7 @@ bool AC_MeleeWeapon::LegacyMoveToInven(AC_BasicCharacter* Character)
 {
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 
-	if (invenComp->GetMaxVolume() < invenComp->GetCurVolume() + this->ItemDatas.ItemVolume) return false;
+	if (invenComp->GetMaxVolume() < invenComp->GetCurVolume() + this->ItemDataRef->ItemVolume) return false;
 
 	invenComp->AddItemToMyList(this);
 	//AttachToHolster(Character->GetMesh());
@@ -132,7 +132,7 @@ bool AC_MeleeWeapon::LegacyMoveToAround(AC_BasicCharacter* Character)
 	//if (ItemDatas.ItemPlace == EItemPlace::SLOT)
 	//TODO:여기 말고 다른 함수에서 때어 줘야 할 거 같음.
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
@@ -162,10 +162,10 @@ bool AC_MeleeWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 
 		int nextVolume = 0;
 
-		if (this->ItemDatas.ItemPlace == EItemPlace::INVEN) 
-			nextVolume = invenComp->GetCurVolume() - ItemDatas.ItemVolume + curWeapaon->GetItemDatas().ItemVolume;
+		if (ItemPlace == EItemPlace::INVEN) 
+			nextVolume = invenComp->GetCurVolume() - ItemDataRef->ItemVolume + curWeapaon->GetItemDatas()->ItemVolume;
 		else
-			nextVolume = invenComp->GetCurVolume() + curWeapaon->GetItemDatas().ItemVolume;
+			nextVolume = invenComp->GetCurVolume() + curWeapaon->GetItemDatas()->ItemVolume;
 
 		if (nextVolume > invenComp->GetMaxVolume()) return false;
 		else

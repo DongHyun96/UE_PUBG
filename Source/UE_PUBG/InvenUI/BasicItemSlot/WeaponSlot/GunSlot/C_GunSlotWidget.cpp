@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_GunSlotWidget.h"
@@ -141,11 +141,13 @@ bool UC_GunSlotWidget::SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, AC_Attac
 	
 	if (!SlotGun) return false;
 
-	if (InAttachableItem->GetItemDatas().ItemPlace == EItemPlace::INVEN)
+	EItemPlace InAttachableItemPlace = InAttachableItem->GetItemPlace();
+
+	if (InAttachableItemPlace == EItemPlace::INVEN)
 	{
 		OwnerPlayer->GetInvenComponent()->RemoveItemToMyList(InAttachableItem);
 	}
-	else if (InAttachableItem->GetItemDatas().ItemPlace == EItemPlace::AROUND)
+	else if (InAttachableItemPlace == EItemPlace::AROUND)
 	{
 		OwnerPlayer->GetInvenComponent()->RemoveItemToAroundList(InAttachableItem);
 	}
@@ -218,9 +220,9 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 	//Around의 아이템과 Slot의 아이템을 교체하는 것과 다른 슬롯으로 아이템을 이동하는 것 구현하기.
 
 	//Around의 아이템과 Slot의 아이템을 교체하는 작업은 간단하게 MoveToSlot으로 처리
-	if (DroppedItem->GetItemDatas().ItemPlace == EItemPlace::AROUND || DroppedItem->GetItemDatas().ItemPlace == EItemPlace::INVEN)
+	if (DroppedItem->GetItemPlace() == EItemPlace::AROUND || DroppedItem->GetItemPlace() == EItemPlace::INVEN)
 	{
-		if (DroppedItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT)
+		if (DroppedItem->GetItemDatas()->ItemType == EItemTypes::ATTACHMENT)
 		{
 			
 
@@ -230,7 +232,7 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 		return DroppedItem->MoveToSlot(OwnerPlayer);
 	}
 
-	if (DroppedItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT)
+	if (DroppedItem->GetItemDatas()->ItemType == EItemTypes::ATTACHMENT)
 	{
 		if (InOperation->curWeaponSlot != WeaponType)
 			Cast<AC_AttachableItem>(DroppedItem)->MoveToSlot(OwnerPlayer);

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/BasicItemSlot/EquipmentSlot/C_AttachableItemSlotWidget.h"
@@ -113,7 +113,7 @@ void UC_AttachableItemSlotWidget::NativeOnDragDetected(const FGeometry& InGeomet
 
 	if (!SlotItem) return;
 
-	Texture = Cast<UTexture2D>(SlotItem->GetItemDatas().ItemBarIcon);
+	Texture = Cast<UTexture2D>(SlotItem->GetItemDatas()->ItemBarIcon);
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
@@ -158,7 +158,7 @@ void UC_AttachableItemSlotWidget::UpdateSlotItemImage(AC_Gun* SlotItem)
 
 	if (curItem)
 	{
-		ItemImage->SetBrushFromTexture(curItem->GetItemDatas().ItemSlotImage);
+		ItemImage->SetBrushFromTexture(curItem->GetItemDatas()->ItemSlotImage);
 		FSlateBrush Brush = ItemImage->GetBrush();
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		ItemImage->SetBrush(Brush);

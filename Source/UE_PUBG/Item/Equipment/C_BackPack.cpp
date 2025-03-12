@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Item/Equipment/C_BackPack.h"
 #include "Character/C_BasicCharacter.h"
@@ -17,17 +17,17 @@ AC_BackPack::AC_BackPack()
 	PrimaryActorTick.bCanEverTick = true;
 
 	//ItemType 설정.
-	ItemDatas.ItemType = EItemTypes::BACKPACK;
+	//ItemDataRef->ItemType = EItemTypes::BACKPACK;
 
 	Level = 3;
 
 	//BackpackMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BackPackMesh"));
 	//RootComponent = BackpackMesh;
 
-	static ConstructorHelpers::FObjectFinder<UTexture2D> ImageTexture(TEXT("/Game/Project_PUBG/Common/InventoryUI/Icons/Item/Equipment/Backpack/Item_Back_BlueBlocker.Item_Back_BlueBlocker"));
-	ItemDatas.ItemBarIcon = ImageTexture.Object;
-
-	ItemDatas.ItemName = TEXT("BackPack");
+	//static ConstructorHelpers::FObjectFinder<UTexture2D> ImageTexture(TEXT("/Game/Project_PUBG/Common/InventoryUI/Icons/Item/Equipment/Backpack/Item_Back_BlueBlocker.Item_Back_BlueBlocker"));
+	//ItemDataRef.ItemBarIcon = ImageTexture.Object;
+	//
+	//ItemDataRef.ItemName = TEXT("BackPack");
 
 }
 
@@ -130,7 +130,7 @@ void AC_BackPack::DetachToSocket(AC_BasicCharacter* character)
 bool AC_BackPack::Interaction(AC_BasicCharacter* Character)
 {
 	//PickUpItem(Character);
-	switch (GetItemDatas().ItemPlace)
+	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
 		return LegacyMoveToSlot(Character);

@@ -505,7 +505,8 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 		InvenComponent->RemoveItemToAroundList(OverlappedItem);
 		//Inventory->InitInvenUI();
 		//if (!IsValid(InvenSystem)) return;
-		InvenSystem->InitializeList();
+		//InvenSystem->InitializeList();
+		InvenSystem->GetInvenUI()->RemoveItemInList(OverlappedItem);
 	}
 }
 
@@ -601,7 +602,7 @@ void AC_Player::DrawingItemOutLine()
 			// 새 아이템의 아웃라인 활성화
 			DetectedItem->SetOutlineEffect(true);
 			CurOutLinedItem = DetectedItem;
-			UC_Util::Print(DetectedItem->GetItemDatas().ItemName);
+			UC_Util::Print(DetectedItem->GetItemDatas()->ItemName);
 		}
 	}
 	else if (CurOutLinedItem)

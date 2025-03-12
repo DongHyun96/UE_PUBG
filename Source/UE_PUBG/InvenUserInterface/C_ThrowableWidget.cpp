@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InvenUserInterface/C_ThrowableWidget.h"
 #include "InvenUserInterface/C_InvenUiWidget.h"
@@ -69,10 +69,13 @@ void UC_ThrowableWidget::Init()
 		CachedItem = OwnerCharacter->GetEquippedComponent()->GetWeapons()[WeaponSlotType];
 	}
 
+
 	if (IsValid(CachedItem))
 	{
-		ItemIcon->SetBrushFromTexture(CachedItem->GetItemDatas().ItemBarIcon);
-		ItemName->SetText(FText::FromString(CachedItem->GetItemDatas().ItemName));
+		const FItemData* CachedItemData = CachedItem->GetItemDatas();
+
+		ItemIcon->SetBrushFromTexture(CachedItemData->ItemBarIcon);
+		ItemName->SetText(FText::FromString(CachedItemData->ItemName));
 		SetVisibility(ESlateVisibility::Visible);
 		FSlateBrush Brush = ItemIcon->GetBrush();
 
@@ -87,7 +90,7 @@ void UC_ThrowableWidget::Init()
 
 void UC_ThrowableWidget::SetWeapon(AC_Item* item)
 {
-	switch (item->GetItemDatas().ItemType)
+	switch (item->GetItemDatas()->ItemType)
 	{
 	case EItemTypes::MELEEWEAPON:
 		if (WeaponSlotType == EWeaponSlot::MELEE_WEAPON)

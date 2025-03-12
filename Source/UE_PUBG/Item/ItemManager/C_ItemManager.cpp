@@ -7,12 +7,39 @@ UC_ItemManager::UC_ItemManager()
 {
 }
 
-FBasicItemData* UC_ItemManager::GetItemData(FName ItemName)
+void UC_ItemManager::InitializeItemManager()
 {
-	return nullptr;
+    LoadItemDataTable();
 }
 
-FWeaponData* UC_ItemManager::GetWeaponData(FName WeaponName)
+void UC_ItemManager::LoadItemDataTable()
 {
-	return nullptr;
+    static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Game/Project_PUBG/Common/Item/DB_Item.DB_Item"));
+
+    if (ItemDataTableObject.Succeeded())
+    {
+        GeneralItemTable = ItemDataTableObject.Object;
+
+        TArray<FName> RowNames = GeneralItemTable->GetRowNames();
+
+        //데이터 테이블에서 모든 아이템을 캐싱
+        for (const FName& RowName : RowNames)
+        {
+            FItemData* ItemData = GeneralItemTable->FindRow<FItemData>(RowName, TEXT("LoadItemDataTable"));
+
+            if (ItemData)
+            {
+                ItemDataCache.Add(RowName, *ItemData);
+            }
+        }
+    }
+}
+
+FItemData* UC_ItemManager::GetItemData(FName ItemCode)
+{
+    if (ItemDataCache.Contains(ItemCode))
+    {
+        return &ItemDataCache[ItemCode];
+    }
+    return nullptr;
 }

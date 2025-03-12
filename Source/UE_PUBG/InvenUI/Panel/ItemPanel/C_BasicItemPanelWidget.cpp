@@ -73,33 +73,77 @@ void UC_BasicItemPanelWidget::AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItem
     }
 }
 
-void UC_BasicItemPanelWidget::UpdateMyItemList(TMap<FString, AC_Item*> MyItemMap)
+void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FString, AC_Item*> MyItemMap)
 {
+    //if (!IsValid(ItemListView1)) return;
+    //
+    //ItemListView1->ClearListItems(); // 기존 아이템 삭제
+    //
+    //if (!(MyItemMap.Num() > 0)) return;
+    //
+    //for (const auto& MyItem: MyItemMap)
+    //{
+    //    AC_Item* Item = MyItem.Value;
+    //
+    //    if (IsValid(Item))
+    //    {
+    //        ItemListView1->AddItem(Item);
+    //    }
+    //    else
+    //    {
+    //        continue;
+    //    }
+    //
+    //    //ItemBar갱신.
+    //    UC_BasicItemBarWidget* EntryWidget = Cast<UC_BasicItemBarWidget>(ItemListView1->GetEntryWidgetFromItem(Item));
+    //    //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
+    //
+    //    if (IsValid(EntryWidget))
+    //    {
+    //        if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
+    //        {
+    //            if (IsValid(ConsumableItem->GetTestLinkedItemBarWidget()))
+    //            {
+    //                EntryWidget = ConsumableItem->GetTestLinkedItemBarWidget();
+    //            }
+    //            else
+    //            {
+    //                ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
+    //            }
+    //        }
+    //        EntryWidget->UpdateWidget(Item);
+    //    }
+    //}
+
+    ////
+
     if (!IsValid(ItemListView1)) return;
 
-    ItemListView1->ClearListItems(); // 기존 아이템 삭제
+    // 아이템 리스트를 먼저 비우고, 아이템 리스트의 수가 0이면 종료
+    ItemListView1->ClearListItems();
+    if (MyItemMap.Num() == 0) return;
 
-    if (!(MyItemMap.Num() > 0)) return;
+    // 한 번에 추가할 아이템들을 저장할 TArray 준비
+    TArray<AC_Item*> ItemsToAdd;
+    TArray<UC_BasicItemBarWidget*> EntryWidgetsToUpdate;
 
-    for (const auto& MyItem: MyItemMap)
+    // 아이템 맵에서 아이템을 하나씩 처리
+    for (const auto& MyItem : MyItemMap)
     {
         AC_Item* Item = MyItem.Value;
 
-        if (IsValid(Item))
-        {
-            ItemListView1->AddItem(Item);
-        }
-        else
-        {
-            continue;
-        }
+        // 아이템이 유효하지 않으면 건너뛰기
+        if (!IsValid(Item)) continue;
 
-        //ItemBar갱신.
+        // 아이템을 추가할 리스트에 저장
+        ItemsToAdd.Add(Item);
+
+        // 아이템 바 위젯 갱신 준비
         UC_BasicItemBarWidget* EntryWidget = Cast<UC_BasicItemBarWidget>(ItemListView1->GetEntryWidgetFromItem(Item));
-        //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
 
         if (IsValid(EntryWidget))
         {
+            // ConsumableItem에 대한 처리는 미리 해두기
             if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
             {
                 if (IsValid(ConsumableItem->GetTestLinkedItemBarWidget()))
@@ -112,11 +156,24 @@ void UC_BasicItemPanelWidget::UpdateMyItemList(TMap<FString, AC_Item*> MyItemMap
                 }
             }
             EntryWidget->UpdateWidget(Item);
+            // EntryWidget을 업데이트할 목록에 추가
+            EntryWidgetsToUpdate.Add(EntryWidget);
         }
+    }
+
+    //TODO : 아이템 우선순위 만들기, DataTable의 순서를 가져오는 방법은?
+    ItemsToAdd.Sort([](const AC_Item& A, const AC_Item& B) {
+        return A.GetItemType() < B.GetItemType();
+        });
+
+    // 한 번에 아이템을 추가
+    if (ItemsToAdd.Num() > 0)
+    {
+        ItemListView1->SetListItems(ItemsToAdd);
     }
 }
 
-void UC_BasicItemPanelWidget::InitializeItemList(const TArray<AC_Item*>& AroundItemList)
+void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& AroundItemList)
 {
     if (!IsValid(ItemListView1)) return;
 
@@ -124,7 +181,14 @@ void UC_BasicItemPanelWidget::InitializeItemList(const TArray<AC_Item*>& AroundI
     //ItemListView1->SetListItems
     if (!(AroundItemList.Num() > 0)) return;
 
-    for (auto& AroundItem : AroundItemList)
+    TArray<AC_Item*> SortedItems = AroundItemList;
+
+    //오름차순 정렬
+    SortedItems.Sort([](const AC_Item& A, const AC_Item& B) {
+        return A.GetItemName() < B.GetItemName(); 
+        });
+
+    for (auto& AroundItem : SortedItems)
     {
         AC_Item* Item = AroundItem;
         if (IsValid(Item))
@@ -140,9 +204,12 @@ void UC_BasicItemPanelWidget::InitializeItemList(const TArray<AC_Item*>& AroundI
 
         if (EntryWidget)
             EntryWidget->UpdateWidget(Item);
-
-
     }
+}
+
+void UC_BasicItemPanelWidget::RemoveItemInList(AC_Item* InItem)
+{
+    ItemListView1->RemoveItem(InItem);
 }
 
 
