@@ -103,8 +103,8 @@ void AC_EnemyAIController::OnPossess(APawn* InPawn)
 
 void AC_EnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-	//FString str = "OnPerceptionUpdated " + FString::FromInt(UpdatedActors.Num());
-	//UC_Util::Print(str, FColor::Red, 10.f);
+	FString str = "OnPerceptionUpdated " + FString::FromInt(UpdatedActors.Num());
+	UC_Util::Print(str, FColor::MakeRandomColor(), 10.f);
 
 	// TODO : 시야에 들어온 새로운 TargetCharacter 업데이트 로직 필요함 (or 이미 TargetCharacter인 Character에 대한 Target해제 처리)
 
@@ -112,6 +112,7 @@ void AC_EnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedAct
 	{
 		if (AC_Player* Player = Cast<AC_Player>(actor))
 		{
+			BehaviorComponent->SetTargetLocation(Player->GetActorLocation());
 			Blackboard->SetValueAsObject("Player", Player);
 			return;
 		}

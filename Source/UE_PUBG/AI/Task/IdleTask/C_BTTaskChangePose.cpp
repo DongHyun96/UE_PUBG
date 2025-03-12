@@ -33,7 +33,7 @@ EBTNodeResult::Type UC_BTTaskChangePose::ExecuteTask(UBehaviorTreeComponent& Own
 		AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
 		if (!IsValid(Controller))
 		{
-			UC_Util::Print("From BTTaskSwapWeapon ExecuteTask : Controller Casting failed!", FColor::Red, 10.f);
+			UC_Util::Print("From UC_BTTaskChangePose ExecuteTask : Controller Casting failed!", FColor::Red, 10.f);
 			return EBTNodeResult::Failed;
 		}
 
@@ -41,7 +41,7 @@ EBTNodeResult::Type UC_BTTaskChangePose::ExecuteTask(UBehaviorTreeComponent& Own
 
 		if (!IsValid(OwnerEnemy))
 		{
-			UC_Util::Print("From BTTaskSwapWeapon ExecuteTask : OwnerEnemy Casting failed!", FColor::Red, 10.f);
+			UC_Util::Print("From UC_BTTaskChangePose ExecuteTask : OwnerEnemy Casting failed!", FColor::Red, 10.f);
 			return EBTNodeResult::Failed;
 		}
 
@@ -49,7 +49,7 @@ EBTNodeResult::Type UC_BTTaskChangePose::ExecuteTask(UBehaviorTreeComponent& Own
 
 		if (!IsValid(OwnerBehaviorComponent))
 		{
-			UC_Util::Print("From BTTaskSwapWeapon ExecuteTask : OwnerBehaviorComponent Casting failed!", FColor::Red, 10.f);
+			UC_Util::Print("From UC_BTTaskChangePose ExecuteTask : OwnerBehaviorComponent Casting failed!", FColor::Red, 10.f);
 			return EBTNodeResult::Failed;
 		}
 	}

@@ -45,7 +45,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 			MiniMapWidget = Player->GetHUDWidget()->GetMiniMapWidget();
 		}
 
-		if (AC_Enemy* E = Cast<AC_Enemy>(*Actor)) Enemy = E;
+		if (AC_Enemy* E = Cast<AC_Enemy>(*Actor)) Enemies.Add(E);
 
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;
 		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor)) AirplaneManager = AP_Manager;
@@ -106,6 +106,21 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 		return;
 	case EHUDMode::MAX: default: return;
 	}
+}
+
+FVector UC_GameSceneManager::ConvertTileCoordinateToTileMiddleLocation(const TPair<uint8, uint8>& TileCoordinate) const
+{
+	uint8 TileX = TileCoordinate.Key;
+	uint8 TileY = TileCoordinate.Value;
+
+	// (0, 0) Cell의 World Location X, Y
+	float TopRightWorldX =  CELL_WORLDSIZE * 4.5f;
+	float TopRightWorldY = -CELL_WORLDSIZE * 4.5f;
+
+	float XLocation = TopRightWorldX - CELL_WORLDSIZE * TileX;
+	float YLocation = TopRightWorldY + CELL_WORLDSIZE * TileY;
+	
+	return FVector(XLocation, YLocation, 0.f);
 }
 
 //void UC_GameSceneManager::OnWorldEndPlay(UWorld* InWorld)

@@ -49,7 +49,8 @@ private:
 public: // Getters and setters
 
 	class AC_Player* GetPlayer() const { return Player; }
-	class AC_Enemy* GetEnemy() const { return Enemy; }
+	
+	TArray<class AC_Enemy*>& GetEnemies() { return Enemies; }
 
 	class AC_MagneticFieldManager* GetMagneticFieldManager() const { return MagneticFieldManager; }
 	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
@@ -65,6 +66,17 @@ public: // Getters and setters
 	EHUDMode GetCurrentHUDMode() const { return CurrentHUDMode; }
 	void SetCurrentHUDMode(EHUDMode InHUDMode);
 
+	float GetCellWorldSize() const { return CELL_WORLDSIZE; }
+
+public:
+
+	/// <summary>
+	/// 100 x 100m 크기 Tile coordinate의 중앙점을 World 좌표로 환산한 값 구하기, 단, Z는 항상 0.f로 고정
+	/// </summary>
+	/// <param name="TileCoordinate"></param>
+	/// <returns></returns>
+	FVector ConvertTileCoordinateToTileMiddleLocation(const TPair<uint8, uint8>& TileCoordinate) const;
+
 private:
 
 	class AC_Player*				Player{};
@@ -77,9 +89,9 @@ private:
 	TArray<class AC_BasicCharacter*> AllCharacters{};
 	TArray<AActor*> AllCharacterActors{};
 
-private: // Test용 Enemy
+private:
 
-	class AC_Enemy* Enemy{};
+	class TArray<AC_Enemy*> Enemies{};
 
 private:
 
@@ -93,6 +105,10 @@ private:
 
 	TMap<EHUDMode, class UUserWidget*> HUDWidgets{};
 	UUserWidget*					   MiniMapWidget{};
+
+private:
+	
+	const float CELL_WORLDSIZE = 10000.f;
 
 };
 

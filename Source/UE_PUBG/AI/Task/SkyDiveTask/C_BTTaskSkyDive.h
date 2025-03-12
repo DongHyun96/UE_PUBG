@@ -33,7 +33,28 @@ public:
 
 private:
 	
-	class AC_Enemy* OwnerEnemy{};
+	/// <summary>
+	/// SKYDIVE_TARGET_TILES의 영역 내에서 Random한 위치로 TargetLocation 세팅
+	/// </summary>
+	/// <return> 제대로 setting 되지 않았다면 return false </return>
+	bool SetRandomLandingTargetLocation();
+
+private:
+	
+	class AC_Enemy*				OwnerEnemy{};
+	class UC_BehaviorComponent* OwnerBehaviorComponent{};
+
+private:
+
+	// Shanty-town에서 적절한 Landing 위치의 Tile 좌표들 (100 * 100 타일 크기 기준)
+	const TArray<TPair<uint8, uint8>> SKYDIVE_LANDING_TARGET_TILES =
+	{
+		{2, 5}, {2, 6}, {2, 7},
+		{3, 4}, {3, 5}, {3, 6}, {3, 7}, {3, 8},
+		{4, 4}, {4, 5},
+		{5, 4}, {5, 5},
+		{6, 5}
+	};
 };
 
 

@@ -26,10 +26,6 @@ AC_MagneticFieldManager::AC_MagneticFieldManager()
 void AC_MagneticFieldManager::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//GAMESCENE_MANAGER->SetMagneticFieldManager(this);
-	SetIsHandleUpdateStateStarted(true); // For Testing
-	
 }
 
 void AC_MagneticFieldManager::Tick(float DeltaTime)
@@ -215,7 +211,6 @@ void AC_MagneticFieldManager::SetRandomNextCircleAndSpeedDirection()
 		uint8 TryCount{};
 		while (true)
 		{
-			++TryCount;
 			float XDir = FMath::FRandRange(-1.f, 1.f);
 			float YDir = FMath::FRandRange(-1.f, 1.f);
 

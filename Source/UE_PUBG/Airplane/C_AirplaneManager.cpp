@@ -3,12 +3,15 @@
 
 #include "Airplane/C_AirplaneManager.h"
 
+#include "AI/C_BehaviorComponent.h"
+#include "AI/C_EnemyAIController.h"
 #include "Airplane/C_Airplane.h"
 #include "Utility/C_Util.h"
 
 #include "Singleton/C_GameSceneManager.h"
 
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_SkyDivingComponent.h"
 
@@ -72,6 +75,15 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 		{
 			Character->SetMainState(EMainState::SKYDIVING);
 			Character->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::READY);
+
+			if (AC_Enemy* Enemy = Cast<AC_Enemy>(Character))
+			{
+				UC_BehaviorComponent* EnemyBehvaiorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent(); 
+				EnemyBehvaiorComponent->SetServiceType(EServiceType::SKYDIVE);
+				// EnemyBehvaiorComponent->SetIdleTaskType;
+				
+			}
+			
 		}
 	}
 }
