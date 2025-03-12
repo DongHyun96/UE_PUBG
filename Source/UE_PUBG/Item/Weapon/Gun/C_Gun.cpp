@@ -914,6 +914,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	}
 	HitResult = {};
 	FVector WorldLocation, WorldDirection;
+	FVector CenterLocation, CenterDirection;
 	APlayerController* WolrdContorller = GetWorld()->GetFirstPlayerController();
 	TArray<UUserWidget*> FoundWidgets;
 	UUserWidget* MyWidget = AimWidget;
@@ -932,8 +933,11 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 		{
 			// 이때, Cast<UPanelSlot>(ImageSlot)으로 다른 타입으로 캐스팅할 수 있음
 			FVector2D ImageSize = ImageSlot->GetSize();
+			
 			RandomPoint = FMath::RandPointInCircle(ImageSize.X * 0.5f * 0.373f);
-			UC_Util::Print("Find Slot");
+			UC_Util::Print(ImageSize.X);
+			UC_Util::Print(ImageSize.Y);
+
 		}
 		else
 		{
@@ -987,10 +991,12 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	//UC_Util::Print(FireLocation);
 	//UC_Util::Print(FireLocation2, FColor::Blue);
 	FVector FireDirection;
-
+	WolrdContorller->DeprojectScreenPositionToWorld(0.5 * ViewportSize.X, 0.5 * ViewportSize.Y, CenterLocation,CenterDirection);
 	if (HitResult.Distance <= 1000 && HitResult.Distance >0)
 	{
-		FireDirection = HitResult.Location - FireLocation;
+		FireLocation.Z += 20;
+		
+		FireDirection = DestLocation - WorldLocation;
 		FireDirection = FireDirection.GetSafeNormal();
 		
 		//UC_Util::Print(HitResult.Location, FColor::Emerald);
