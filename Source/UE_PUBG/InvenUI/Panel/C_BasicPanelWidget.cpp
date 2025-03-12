@@ -23,7 +23,7 @@ bool UC_BasicPanelWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 
 	//bool bIsCtrlDown = InDragDropEvent.IsControlDown();
 
-	if (InDragDropEvent.IsControlDown() && DroppedItem->GetItemDatas().ItemCurStack > 1)
+	if (InDragDropEvent.IsControlDown() && DroppedItem->GetItemCurStack() > 1)
 	{
 		//OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		OwnerPlayer->GetInvenSystem()->GetInvenUI()->MainPanelsSetVisivility(ESlateVisibility::HitTestInvisible);
@@ -31,7 +31,7 @@ bool UC_BasicPanelWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 		return true;
 	}
 
-	switch (DroppedItem->GetItemDatas().ItemType)
+	switch (DroppedItem->GetItemDatas()->ItemType)
 	{
 	case EItemTypes::NONE:
 	case EItemTypes::BULLET:

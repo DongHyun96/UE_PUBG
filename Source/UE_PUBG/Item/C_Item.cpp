@@ -28,12 +28,31 @@ AC_Item::AC_Item()
 void AC_Item::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InitializeItem(ItemCode);
 }
 
 // Called every frame
 void AC_Item::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AC_Item::InitializeItem(FName NewItemCode)
+{
+	static const FString ContextString(TEXT("Item Lookup"));
+	//D:/UE_Project/UE_PUBG/Content/Project_PUBG/Common/Item/DB_Item.uasset
+	///Script/Engine.DataTable'/Game/Project_PUBG/Common/Item/DB_Item.DB_Item'
+	UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/DB_Item.DB_Item"));
+
+	if (ItemDataTable)
+	{
+		const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(ItemCode, ContextString);
+		if (ItemData)
+		{
+			ItemDataRef = ItemData;  // 원본 참조 저장
+		}
+	}
 }
 
 void AC_Item::DetachItem()
@@ -113,7 +132,7 @@ AC_Item* AC_Item::SpawnItem(AC_BasicCharacter* Character)
 bool AC_Item::MoveToInven(AC_BasicCharacter* Character)
 {
 	
-	switch (GetItemDatas().ItemPlace)
+	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
 		return MoveAroundToInven(Character);
@@ -129,7 +148,7 @@ bool AC_Item::MoveToInven(AC_BasicCharacter* Character)
 
 bool AC_Item::MoveToAround(AC_BasicCharacter* Character)
 {
-	switch (GetItemDatas().ItemPlace)
+	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
 		return MoveAroundToAround(Character);
@@ -145,7 +164,7 @@ bool AC_Item::MoveToAround(AC_BasicCharacter* Character)
 
 bool AC_Item::MoveToSlot(AC_BasicCharacter* Character)
 {
-	switch (GetItemDatas().ItemPlace)
+	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
 		return MoveAroundToSlot(Character);
@@ -206,7 +225,7 @@ void AC_Item::DropItem(AC_BasicCharacter* Character)
 {
 	//TODO : 아이템이 장착(Attach)되었던 상태를 해제하는 작업에 관한 처리 생각
 	//TODO : 분할해서 버리는 경우 새로 스폰해주어야함.
-	ItemDatas.ItemPlace = EItemPlace::AROUND;
+	ItemPlace = EItemPlace::AROUND;
 
 	SetOwnerCharacter(nullptr);               //OwnerCharacter 해제
 	SetActorHiddenInGame(false);			  //모습이 보이도록 Hidden 해제.
@@ -221,11 +240,11 @@ void AC_Item::DropItem(AC_BasicCharacter* Character)
 
 void AC_Item::SetItemStack(uint8 inItemStack)
 {
-	ItemDatas.ItemCurStack = inItemStack;
+	ItemCurStack = inItemStack;
 	
 	if (!OwnerCharacter) return;
 
-	if (ItemDatas.ItemCurStack == 0)
+	if (ItemCurStack == 0)
 	{
 		OwnerCharacter->GetInvenComponent()->DestroyMyItem(this);
 	}
@@ -266,11 +285,11 @@ void AC_Item::SetOutlineEffect(bool bEnable)
 
 AC_Item* AC_Item::DividItemSpawn(int DivideNum, AC_BasicCharacter* Character, bool ActorEnAbleCollision)
 {
-	if (this->GetItemDatas().ItemCurStack == 1) return nullptr; // 갯수가 1이면 나누기 불가. nullptr 반환.
+	if (ItemCurStack == 1) return nullptr; // 갯수가 1이면 나누기 불가. nullptr 반환.
 
 	AC_Item* DividedItem = this->SpawnItem(Character);
 
-	this->SetItemStack(GetItemDatas().ItemCurStack - DivideNum);
+	this->SetItemStack(ItemCurStack - DivideNum);
 
 	DividedItem->SetItemStack(DivideNum);
 

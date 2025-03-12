@@ -47,7 +47,7 @@ void UC_InvenComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 bool UC_InvenComponent::CheckVolume(AC_Item* item)
 {
 	//item의 용량은 ItemVolume * ItemStack 이다.
-	float ItemVolume = item->GetOnceVolume() * item->GetItemDatas().ItemCurStack;
+	float ItemVolume = item->GetOnceVolume() * item->GetItemCurStack();
 
 	if (MaxVolume > CurVolume + ItemVolume)
 	{
@@ -58,7 +58,7 @@ bool UC_InvenComponent::CheckVolume(AC_Item* item)
 }
 float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 {
-	for (float i = item->GetItemDatas().ItemCurStack; i > 0; i--)
+	for (float i = item->GetItemCurStack(); i > 0; i--)
 	{
 		if (MaxVolume > CurVolume + item->GetOnceVolume() * i) 
 			return i;
@@ -385,9 +385,9 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 	{
 		PrevSlotEquipItem->DetachItem(); //장착 해제.
 
-		if (PrevSlotEquipItem->GetItemDatas().ItemType == EItemTypes::BACKPACK)
+		if (PrevSlotEquipItem->GetItemDatas()->ItemType == EItemTypes::BACKPACK)
 			MaxVolume -= CheckBackPackVolume(Cast<AC_BackPack>(PrevSlotEquipItem)->GetLevel()); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기.
-		else if (PrevSlotEquipItem->GetItemDatas().ItemType == EItemTypes::VEST)
+		else if (PrevSlotEquipItem->GetItemDatas()->ItemType == EItemTypes::VEST)
 			MaxVolume -= 50.f;
 		//AddItemToAroundList(PrevSlotEquipItem);// TODO : Collision을 키고 끄는 방식으로 할 지 아니면 강제로 넣고 빼줄지 생각
 	}
@@ -395,12 +395,12 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 	
 	if (EquipmentItems[InSlot] == nullptr)	return PrevSlotEquipItem; //nullptr이면 종료.
 
-	if (EquipmentItems[InSlot]->GetItemDatas().ItemType == EItemTypes::BACKPACK)
+	if (EquipmentItems[InSlot]->GetItemDatas()->ItemType == EItemTypes::BACKPACK)
 	{
 		MyBackPack = Cast<AC_BackPack>(GetEquipmentItems()[EEquipSlot::BACKPACK]); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기. 및 BackPack의 쓸데없이 Level이 2개임 하나로 통일하기.
 		MaxVolume += CheckBackPackVolume(MyBackPack->GetLevel());
 	}
-	else if (EquipmentItems[InSlot]->GetItemDatas().ItemType == EItemTypes::VEST)
+	else if (EquipmentItems[InSlot]->GetItemDatas()->ItemType == EItemTypes::VEST)
 		MaxVolume += 50.f;
 
 	EquipmentItems[InSlot]->SetItemPlace(EItemPlace::SLOT);
@@ -415,7 +415,7 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 
 AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 {
-	if (AC_Item** FoundItemPtr = testMyItems.Find(item->GetItemDatas().ItemName))
+	if (AC_Item** FoundItemPtr = testMyItems.Find(item->GetItemDatas()->ItemName))
 	{
 		AC_Item* FoundItem = *FoundItemPtr;
 		return FoundItem;
@@ -442,11 +442,11 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 	//AC_Item* FoundItem = FindMyItem(item); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;
 	if (!IsValid(item)) return; //nullptr가 들어 오면 return.
 	//if (testMyItems.Contains(item->GetItemDatas().ItemName))
-	if (AC_Item** FoundItemPtr = testMyItems.Find(item->GetItemDatas().ItemName))
+	if (AC_Item** FoundItemPtr = testMyItems.Find(item->GetItemDatas()->ItemName))
 	{
 		AC_Item* FoundItem = *FoundItemPtr;
 
-		int sum = FoundItem->GetItemDatas().ItemCurStack + item->GetItemDatas().ItemCurStack;
+		int sum = FoundItem->GetItemCurStack() + item->GetItemCurStack();
 
 		FoundItem->SetItemStack(sum);
 
@@ -461,7 +461,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 	else 
 	{
 		// 해당키의 값이 추가.
-		testMyItems.Add(item->GetItemDatas().ItemName, item);
+		testMyItems.Add(item->GetItemDatas()->ItemName, item);
 
 		if (IsValid(OwnerCharacter))
 		{
@@ -480,7 +480,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 
 void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 {
-	testMyItems.Remove(item->GetItemDatas().ItemName);
+	testMyItems.Remove(item->GetItemDatas()->ItemName);
 	//Add와 달리 슬롯으로 가는 경우를 대비하여 OwnerCharacter의 설정을 건드리지 않았음.
 	//item->SetItemPlace(EItemPlace::AROUND);
 	CurVolume -= item->GetAllVolume();
@@ -491,9 +491,9 @@ void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 
 void UC_InvenComponent::DestroyMyItem(AC_Item* DestroyedItem)
 {
-	if (testMyItems.Contains(DestroyedItem->GetItemDatas().ItemName))
+	if (testMyItems.Contains(DestroyedItem->GetItemDatas()->ItemName))
 	{
-		AC_Item* MyItem = testMyItems[DestroyedItem->GetItemDatas().ItemName];
+		AC_Item* MyItem = testMyItems[DestroyedItem->GetItemDatas()->ItemName];
 
 		if (MyItem) //TMap에 해당 요소가 있는지 확인.
 		{

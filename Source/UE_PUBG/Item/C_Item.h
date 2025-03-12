@@ -55,11 +55,11 @@ enum class EItemTypes : uint8
 	VEST,
 	BACKPACK,
 	MAINGUN,
-	MELEEWEAPON,
+	CONSUMPTIONITEM,
+	BULLET,
 	THROWABLE,
 	ATTACHMENT,
-	CONSUMPTIONITEM,
-	BULLET
+	MELEEWEAPON
 };
 
 UENUM(BlueprintType)
@@ -121,8 +121,8 @@ struct FItemData : public FTableRowBase
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Mesh")
 	//FSoftObjectPath ItemMeshPath{};
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	int ItemCurStack = 0;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	//int ItemCurStack = 0; 변수로 이동
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	int ItemMaxStack = 0;
@@ -130,8 +130,8 @@ struct FItemData : public FTableRowBase
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	float ItemVolume = 0;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	EItemPlace ItemPlace = EItemPlace::AROUND;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	//EItemPlace ItemPlace = EItemPlace::AROUND; 변수로 이동
 };	
 
 
@@ -158,6 +158,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void InitializeItem(FName NewItemCode);
 
 	//아이템의 장착을 해제하고 땅에 떨구게 해줌.
 	UFUNCTION(BlueprintCallable)
@@ -202,11 +204,12 @@ public:
 
 	//아이템의 스택을 1 올려줌.
 	UFUNCTION(BlueprintCallable)
-	void AddItemStack() { ItemDatas.ItemCurStack += 1; }
-	
+	void AddItemStack() { ItemCurStack += 1; }
+
 	//아이템의 스택을 1 내려줌.
 	UFUNCTION(BlueprintCallable)
-	void DeductItemStack() { ItemDatas.ItemCurStack -= 1; }
+	void DeductItemStack() { ItemCurStack -= 1; }
+
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool LegacyMoveToInven(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToInven, return false;);
@@ -269,21 +272,39 @@ protected:
 	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character);
 
 public:
-	FItemData GetItemDatas() { return ItemDatas; }
+	const FItemData* GetItemDatas() const { return ItemDataRef; }
 
+	/// <summary>
+	/// 아이템의 현재 갯수 반환
+	/// </summary>
+	/// <returns>아이템 갯수</returns>
+	int GetItemCurStack() { return ItemCurStack; }
+
+	UFUNCTION(BlueprintCallable)
+	EItemPlace GetItemPlace() { return ItemPlace; }
+
+	UFUNCTION(BlueprintCallable)
+	EItemTypes GetItemType() const { return ItemDataRef->ItemType; }
+
+	UFUNCTION(BlueprintCallable)
+	FString GetItemName() const { return ItemDataRef->ItemName; }
 	/// <summary>
 	/// 아이템 하나의 Volume
 	/// </summary>
 	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
-	float GetOnceVolume() { return ItemDatas.ItemVolume; }
+	float GetOnceVolume() { return ItemDataRef->ItemVolume; }
+
 
 	UFUNCTION(BlueprintCallable)
-	float GetAllVolume() { return ItemDatas.ItemVolume * ItemDatas.ItemCurStack; }
+
+	float GetAllVolume() { return ItemDataRef->ItemVolume * ItemCurStack; }
 
 	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 
-	void SetItemPlace(EItemPlace InPlace) { ItemDatas.ItemPlace = InPlace; }
+	//void SetItemPlace(EItemPlace InPlace) { ItemDataRef.ItemPlace = InPlace; }
+
+	void SetItemPlace(EItemPlace InPlace) { ItemPlace = InPlace; }
 
 	//캐릭터의 밑바닥을 라인 트레이스로 location을 반환해줌.
 	FVector GetGroundLocation(AC_BasicCharacter* Character);
@@ -296,9 +317,35 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	FItemData ItemDatas;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	//FItemData ItemDataRef;
 
+	/// <summary>
+	/// 아이템의 고유 코드, 현재는 블프에서 정의 할 예정
+	/// </summary>
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	FName ItemCode = "NONE";  
+
+	/// <summary>
+	/// 아이템의 현재 위치 상태
+	/// </summary>
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	EItemPlace ItemPlace = EItemPlace::AROUND;
+
+	/// <summary>
+	/// 현재 아이템의 갯수
+	/// </summary>
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	int ItemCurStack = 0;
+
+	/// <summary>
+	/// 아이템 데이터 구조체
+	/// </summary>
+	const FItemData* ItemDataRef = nullptr;
+
+	/// <summary>
+	/// 이 아이템을 들고 있는 Character
+	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	AC_BasicCharacter* OwnerCharacter{};
 };

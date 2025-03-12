@@ -90,7 +90,7 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	//dragdrop class를 새로 만들어 사용해야 할 수 있음.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 
-	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas().ItemBarIcon);//크기및 형태 조절하기.
+	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas()->ItemBarIcon);//크기및 형태 조절하기.
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
@@ -172,39 +172,19 @@ void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
 	{
 		CachedItem = MyItem;
 
-		ItemImage->SetBrushFromTexture(MyItem->GetItemDatas().ItemBarIcon);
+		const FItemData* CachedItemData = CachedItem->GetItemDatas();
 
-		ItemType = MyItem->GetItemDatas().ItemType;
+		ItemImage->SetBrushFromTexture(CachedItemData->ItemBarIcon);
 
-		ItemName->SetText(FText::FromString(MyItem->GetItemDatas().ItemName));
+		ItemType = CachedItemData->ItemType;
+
+		ItemName->SetText(FText::FromString(CachedItemData->ItemName));
 		SetVisibility(ESlateVisibility::Visible);
-
-		
-
-
-		if (MyItem->GetItemDatas().ItemCurStack == 0)
-		{
-			//TODO : 근접무기와 부착물을 제외한 아이템은 curStack이 0이 되면 사라지도록 Inven에서 관리하기.
-			if (MyItem->GetItemDatas().ItemType == EItemTypes::MELEEWEAPON && MyItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT)
-			{
-				ItemStackBlock->SetVisibility(ESlateVisibility::Hidden);
-			}
-			else
-			{
-				CachedItem = nullptr;
-
-				//SetVisibility(ESlateVisibility::Hidden);
-			}
-		}
-		else
-			ItemStackBlock->SetText(FText::AsNumber(MyItem->GetItemDatas().ItemCurStack));
-		//AddToViewport();
-		//SetVisibility(ESlateVisibility::Visible);
-
 	}
 	//UpdateInvenUIWidget();
 
 }
+
 
 void UC_BasicItemBarWidget::SetPercent(float curTime, float endTime)
 {
@@ -215,11 +195,13 @@ void UC_BasicItemBarWidget::UpdateInvenUIWidget()
 {
 	if (UC_InventoryUIWidget* InvenUiWidget = GetTypedOuter<UC_InventoryUIWidget>())
 	{
+		const FItemData* CachedItemData = CachedItem->GetItemDatas();
+
 		if (
-			CachedItem->GetItemDatas().ItemType == EItemTypes::CONSUMPTIONITEM
-			|| CachedItem->GetItemDatas().ItemType == EItemTypes::THROWABLE
-			|| CachedItem->GetItemDatas().ItemType == EItemTypes::MELEEWEAPON
-			|| CachedItem->GetItemDatas().ItemType == EItemTypes::ATTACHMENT
+			   CachedItemData->ItemType == EItemTypes::CONSUMPTIONITEM
+			|| CachedItemData->ItemType == EItemTypes::THROWABLE
+			|| CachedItemData->ItemType == EItemTypes::MELEEWEAPON
+			|| CachedItemData->ItemType == EItemTypes::ATTACHMENT
 			)
 		{
 			InvenUiWidget->UpdateAroundItemPanelWidget();
@@ -232,22 +214,23 @@ void UC_BasicItemBarWidget::UpdateInvenUIWidget()
 
 bool UC_BasicItemBarWidget::HalfStackItemInteraction()
 {
-	if (CachedItem->GetItemDatas().ItemCurStack < 2) return false; //만약 뒤의 우클릭으로 안넘어간다면 여기서 Interaction 해야함.
+	int CachedItemCurStack = CachedItem->GetItemCurStack();
+	if (CachedItemCurStack < 2) return false; //만약 뒤의 우클릭으로 안넘어간다면 여기서 Interaction 해야함.
 
 	AC_Player* PlayerCharacter = Cast<AC_Player>(UGameplayStatics::GetPlayerCharacter(this, 0));
 
 	if (!PlayerCharacter) return false; //PlayerCharacter가 없다면 return;
 
-	int HalfStack = CachedItem->GetItemDatas().ItemCurStack * 0.5;
+	int HalfStack = CachedItemCurStack * 0.5;
 
 	float RestVolume = PlayerCharacter->GetInvenComponent()->GetMaxVolume() - PlayerCharacter->GetInvenComponent()->GetCurVolume();
 
-	if (CachedItem->GetItemDatas().ItemPlace == EItemPlace::AROUND)
+	if (CachedItem->GetItemPlace() == EItemPlace::AROUND)
 	{
-		if (RestVolume >= HalfStack * CachedItem->GetItemDatas().ItemVolume)
+		if (RestVolume >= HalfStack * CachedItem->GetItemDatas()->ItemVolume)
 		{
 			AC_Item* SpawnItem = CachedItem->SpawnItem(PlayerCharacter);
-			CachedItem->SetItemStack(CachedItem->GetItemDatas().ItemCurStack - HalfStack);
+			CachedItem->SetItemStack(CachedItem->GetItemCurStack() - HalfStack);
 			SpawnItem->SetItemStack(HalfStack);
 			SpawnItem->MoveToInven(PlayerCharacter);
 			return true;
@@ -259,10 +242,10 @@ bool UC_BasicItemBarWidget::HalfStackItemInteraction()
 		}
 
 	}
-	else if (CachedItem->GetItemDatas().ItemPlace == EItemPlace::INVEN)
+	else if (CachedItem->GetItemPlace() == EItemPlace::INVEN)
 	{
 		AC_Item* SpawnItem = CachedItem->SpawnItem(PlayerCharacter);
-		CachedItem->SetItemStack(CachedItem->GetItemDatas().ItemCurStack - HalfStack);
+		CachedItem->SetItemStack(CachedItem->GetItemCurStack() - HalfStack);
 
 		SpawnItem->SetItemStack(HalfStack);
 
