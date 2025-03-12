@@ -5,6 +5,7 @@
 
 UC_ItemManager::UC_ItemManager()
 {
+    InitializeItemManager();
 }
 
 void UC_ItemManager::InitializeItemManager()
@@ -14,11 +15,12 @@ void UC_ItemManager::InitializeItemManager()
 
 void UC_ItemManager::LoadItemDataTable()
 {
-    static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableObject(TEXT("/Game/Project_PUBG/Common/Item/DB_Item.DB_Item"));
+    static ConstructorHelpers::FObjectFinder<UDataTable> GeneralItemDataTableObject(TEXT("/Game/Project_PUBG/Common/Item/DB_Item.DB_Item"));
+    static ConstructorHelpers::FObjectFinder<UDataTable>     GunItemDataTableObject(TEXT("/Game/Project_PUBG/Common/Item/DT_GunData.DT_GunData"));
 
-    if (ItemDataTableObject.Succeeded())
+    if (GeneralItemDataTableObject.Succeeded())
     {
-        GeneralItemTable = ItemDataTableObject.Object;
+        GeneralItemTable = GeneralItemDataTableObject.Object;
 
         TArray<FName> RowNames = GeneralItemTable->GetRowNames();
 
@@ -29,7 +31,25 @@ void UC_ItemManager::LoadItemDataTable()
 
             if (ItemData)
             {
-                ItemDataCache.Add(RowName, *ItemData);
+                GeneralItemDataCache.Add(RowName, *ItemData);
+            }
+        }
+    }
+
+    if (GunItemDataTableObject.Succeeded())
+    {
+        GunItemTable = GunItemDataTableObject.Object;
+
+        TArray<FName> RowNames = GunItemTable->GetRowNames();
+
+        //데이터 테이블에서 모든 아이템을 캐싱
+        for (const FName& RowName : RowNames)
+        {
+            FGunData* GunItemData = GunItemTable->FindRow<FGunData>(RowName, TEXT("LoadItemDataTable"));
+
+            if (GunItemData)
+            {
+                GunItemDataCache.Add(RowName, *GunItemData);
             }
         }
     }
@@ -37,9 +57,18 @@ void UC_ItemManager::LoadItemDataTable()
 
 FItemData* UC_ItemManager::GetItemData(FName ItemCode)
 {
-    if (ItemDataCache.Contains(ItemCode))
+    if (GeneralItemDataCache.Contains(ItemCode))
     {
-        return &ItemDataCache[ItemCode];
+        return &GeneralItemDataCache[ItemCode];
+    }
+    return nullptr;
+}
+
+FGunData* UC_ItemManager::GetGunData(FName ItemCode)
+{
+    if (GunItemDataCache.Contains(ItemCode))
+    {
+        return &GunItemDataCache[ItemCode];
     }
     return nullptr;
 }

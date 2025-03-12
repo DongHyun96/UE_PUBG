@@ -41,8 +41,8 @@ void AC_Item::Tick(float DeltaTime)
 void AC_Item::InitializeItem(FName NewItemCode)
 {
 	static const FString ContextString(TEXT("Item Lookup"));
-	//D:/UE_Project/UE_PUBG/Content/Project_PUBG/Common/Item/DB_Item.uasset
-	///Script/Engine.DataTable'/Game/Project_PUBG/Common/Item/DB_Item.DB_Item'
+
+	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 ItemDataRef 정의해 주기.
 	UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/DB_Item.DB_Item"));
 
 	if (ItemDataTable)
