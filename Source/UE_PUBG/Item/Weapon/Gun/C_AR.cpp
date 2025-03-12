@@ -33,7 +33,7 @@ AC_AR::AC_AR()
 	PrimaryActorTick.bCanEverTick = true;
 	//ItemType 설정.
 	//ItemDataRef.ItemType = EItemTypes::MAINGUN; ItemType
-	CurGunType = EGunType::AR;
+	//CurGunType = EGunType::AR;
 	EQUIPPED_SOCKET_NAME = FName("Rifle_Equip"); // 무기가 손에 부착될 socket 이름
 	IronSightWindowLocation = FVector2D(0.5f, 0.4f);
 

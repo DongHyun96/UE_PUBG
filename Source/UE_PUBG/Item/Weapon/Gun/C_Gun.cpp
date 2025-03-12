@@ -73,8 +73,9 @@ AC_Gun::AC_Gun()
 void AC_Gun::BeginPlay()
 {
 	Super::BeginPlay();
-	//Add Grip for Test
+	InitializeItem(ItemCode);
 
+	//Add Grip for Test
 	//SetHolsterNames();
 	//AttachedParts[EPartsName::GRIP] = Cast<UStaticMeshComponent>(GetDefaultSubobjectByName("VertgripMesh"));
 	IronSightMesh = Cast<USkeletalMeshComponent>(GetDefaultSubobjectByName("IronSightMesh"));
@@ -148,6 +149,23 @@ void AC_Gun::Tick(float DeltaTime)
 	CheckPlayerIsRunning();
 	//CheckBackPackLevelChange();
 	ShowAndHideWhileAiming();
+}
+
+void AC_Gun::InitializeItem(FName NewItemCode)
+{
+	Super::InitializeItem(NewItemCode);
+	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunDataRef 정의해 주기.
+	static const FString ContextString(TEXT("GunItem Lookup"));
+	UDataTable* GunDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/DT_GunData.DT_GunData"));
+
+	if (GunDataTable)
+	{
+		const FGunData* GunData = GunDataTable->FindRow<FGunData>(ItemCode, ContextString);
+		if (GunData)
+		{
+			GunDataRef = GunData;  // 원본 참조 저장
+		}
+	}
 }
 
 bool AC_Gun::AttachToHolster(USceneComponent* InParent)
@@ -263,7 +281,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 	{
 		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
-		OwnerPlayer->SetRecoilTimelineValues(BulletRPM);
+		OwnerPlayer->SetRecoilTimelineValues(GunDataRef->BulletRPM);
 	}
 	return AttachToComponent
 	(
@@ -706,8 +724,8 @@ bool AC_Gun::MoveSlotToInven(AC_BasicCharacter* Character)
 
 FVector2D AC_Gun::GetRecoilFactors()
 {
-	float VerticalFactor   = RecoilFactorVertical * RecoilMultiplierByGripVert * RecoilMultiplierMuzzleVert;
-	float HorizontalFactor = RecoilFactorHorizontal * RecoilMultiplierByGripHorizon * RecoilMultiplierMuzzleHorizon;
+	float VerticalFactor   = GunDataRef->RecoilFactorVertical * RecoilMultiplierByGripVert * RecoilMultiplierMuzzleVert;
+	float HorizontalFactor = GunDataRef->RecoilFactorHorizontal * RecoilMultiplierByGripHorizon * RecoilMultiplierMuzzleHorizon;
 
 	return FVector2D(HorizontalFactor, VerticalFactor);
 }
@@ -857,7 +875,7 @@ void AC_Gun::SetBulletSpeed()
 			UProjectileMovementComponent* ProjectileMovement = Bullet->FindComponentByClass<UProjectileMovementComponent>();
 			if (ProjectileMovement)
 			{
-				ProjectileMovement->InitialSpeed = BulletSpeed;
+				ProjectileMovement->InitialSpeed = GunDataRef->BulletSpeed;
 
 			}
 		}
@@ -1001,7 +1019,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	UC_Util::Print(FireDirection, FColor::Blue);
 
 	FireDirection *= 100;
-	FireDirection *= BulletSpeed;
+	FireDirection *= GunDataRef->BulletSpeed;
 	OutLocation = FireLocation;
 	OutDirection = FireDirection;
 	OutHasHit = HasHit;
@@ -1052,7 +1070,7 @@ void AC_Gun::ShowAndHideWhileAiming()
 
 void AC_Gun::LoadMagazine()
 {
-	if (CurGunType == EGunType::SR)
+	if (GunDataRef->CurGunType == EGunType::SR)
 	{
 		return;
 	}
@@ -1207,7 +1225,7 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
 	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
 
-	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * BulletSpeed;
+	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
 
 	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
 
@@ -1244,7 +1262,8 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 
 FString AC_Gun::GetCurrentBulletTypeName()
 {
-	switch (CurGunBulletType) {
+	switch (GunDataRef->CurGunBulletType) 
+	{
 	case EBulletType::FIVEMM:
 		return "5.56mm Ammo";
 		break;

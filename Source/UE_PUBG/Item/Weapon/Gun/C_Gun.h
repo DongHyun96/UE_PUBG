@@ -38,6 +38,42 @@ enum class EShootingMode : uint8
 };
 
 USTRUCT(BlueprintType)
+struct FGunData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float BulletSpeed;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float BulletRPM{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float ReloadTime{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float BaseBulletSpreadDegree{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float RecoilFactorVertical{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float RecoilFactorHorizontal{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EGunType CurGunType = EGunType::MAX;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float DamageBase{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EBulletType CurGunBulletType = EBulletType::NONE;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float SprintSpeedFactor = 0.0f;
+};
+
+USTRUCT(BlueprintType)
 struct FAnimationMontages
 {
 	GENERATED_BODY()
@@ -59,6 +95,8 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void InitializeItem(FName NewItemCode) override;
 
 public:
 	virtual bool AttachToHolster(class USceneComponent* InParent) override;
@@ -170,8 +208,17 @@ public:
 	int GetCurBulletCount() { return CurBulletCount; }
 	int GetMaxBulletCount() { return MaxBulletCount; }
 
-	EBulletType GetCurBulletType() { return CurGunBulletType; }
+	EBulletType GetCurBulletType() { return GunDataRef->CurGunBulletType; }
 
+	/// <summary>
+	/// const GunData*를 반환해주는 함수.
+	/// </summary>
+	/// <returns>const FGunData*</returns>
+	const FGunData* GetGunData() const { return GunDataRef; }
+
+protected:
+	//GunData 구조체를 const 포인터 변수로 가지고 있음.
+	const FGunData* GunDataRef = nullptr;
 protected:
 	/// <summary>
 	/// 총알 발사 관련 변수들
@@ -181,27 +228,30 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int MaxBulletCount;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float BulletSpeed;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float BulletRPM;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float ReloadTime;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float BaseBulletSpreadDegree;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float RecoilFactorVertical;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float RecoilFactorHorizontal;
+	/// WeaponData 구조체에 넣을 거.
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//float BulletSpeed;
+	//
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//float BulletRPM;
+	//
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//float ReloadTime;
+	//
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//float BaseBulletSpreadDegree;
+	//
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//float RecoilFactorVertical;
+	//
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//float RecoilFactorHorizontal;
+	///
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EShootingMode CurrentShootingMode = EShootingMode::FULL_AUTO;
 
+	//WeaponData 구조체에 안넣음
 	float RecoilMultiplierByGripVert = 1;
 	float RecoilMultiplierByGripHorizon = 1;
 	float RecoilMultiplierMuzzleVert = 1;
@@ -213,7 +263,7 @@ public:
 	void SetRecoilMultiplierMuzzleVert(float InValue)    { RecoilMultiplierMuzzleVert    = InValue; }
 	void SetRecoilMultiplierMuzzleHorizon(float InValue) { RecoilMultiplierMuzzleHorizon = InValue; }
 	FVector2D GetRecoilFactors();
-	float GetBulletRPM() { return BulletRPM; }
+	float GetBulletRPM() { return GunDataRef->BulletRPM; }
 	virtual bool FireBullet();
 
 	virtual bool ReloadBullet();
@@ -230,7 +280,7 @@ public:
 
 	void SetAimSightWidget();
 
-	float GetBaseBulletSpreadDegree() { return BaseBulletSpreadDegree; }
+	float GetBaseBulletSpreadDegree() { return GunDataRef->BaseBulletSpreadDegree; }
 protected:
 	//Aim 위젯
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -244,9 +294,8 @@ protected:
 	class AC_AttachableItem* Magazine{};
 
 	void LoadMagazine();
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	EBulletType CurGunBulletType;
-
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//EBulletType CurGunBulletType;
 public:
 	void SetMagazineVisibility(bool InIsVisible);
 	TArray<EPartsName> GetAttachableParts() { return AttachableParts; }
@@ -283,7 +332,7 @@ protected:
 	//해당 부위 장착된 파츠(AAttachmentActor) mesh 객체 
 	TMap<EPartsName, class AAttachmentActor*> AttachedItem{};
 
-	//해당 부위에 장착된 파츠(C_AttachableItem)
+	//해당 부위에 장착될 수 있는 파츠(C_AttachableItem)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EPartsName, AC_AttachableItem*> AttachableItem{};
 
@@ -322,9 +371,10 @@ public:
 	void SetScopeCameraMode(EAttachmentNames InAttachmentName);
 	void BackTo_RightHand();
 protected:
-	EGunType CurGunType = EGunType::MAX;
+	//WeaponData구조체에 넣어도 됨
+	//EGunType CurGunType = EGunType::MAX;
 public:
-	EGunType GetGunType() { return CurGunType; }
+	EGunType GetGunType() { return GunDataRef->CurGunType; }
 	UTexture2D* GetDragIcon() { return DragIcon; }
 protected:
 	FVector2D IronSightWindowLocation{};
@@ -342,10 +392,10 @@ public:
 	//테스트 주석
 
 protected: // Damage 관련
-	
+	//WeaponData구조체에 넣어도 됨
 	// 무기 별 DamageBase
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	float DamageBase{};
+	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	//float DamageBase{};
 
 public: 
 	/// <summary>
@@ -355,7 +405,7 @@ public:
 	/// <returns></returns>
 	virtual float GetDamageRateByBodyPart(const FName& BodyPart) PURE_VIRTUAL(AC_Gun::GetDamageRateByBodyPart, return 0.f;);
 
-	float GetDamageBase() const { return DamageBase; }
+	float GetDamageBase() const { return GunDataRef->DamageBase; }
 
 protected:
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
