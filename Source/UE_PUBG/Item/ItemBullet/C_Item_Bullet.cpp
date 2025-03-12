@@ -57,7 +57,7 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 	{
 		//아이템을 전부 인벤에 넣을 수 있는 경우
 
-		if (invenComp->FindMyItem(this->GetItemDatas()->ItemName))
+		if (invenComp->FindMyItemByName(this->GetItemCode()))
 		{
 			// 인벤에 동일한 이름의 아이템이 존재 한다면 실행.
 
@@ -88,7 +88,7 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 		AC_Item_Bullet* SpawnedItem = Cast<AC_Item_Bullet>(SpawnItem(Character));  	//동일한 아이템 객체를 생성
 		SpawnedItem->SetItemStack(ItemStackCount);						 			//생성한 아이템 stack을 설정
 																					
-		if (invenComp->FindMyItem(this->GetItemDatas()->ItemName))
+		if (invenComp->FindMyItemByName(this->GetItemCode()))
 		{
 			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
 
@@ -144,7 +144,7 @@ void AC_Item_Bullet::UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer)
 
 		if (curGun->GetCurBulletType() == CurBulletType) //들고 있는 총이 사용하는 탄과 지금 습득한 이 총알과 Type이 같다면 실행.
 		{
-			AC_Item* curItem = InOwnerPlayer->GetInvenComponent()->FindMyItem(this->GetItemDatas()->ItemName);
+			AC_Item* curItem = InOwnerPlayer->GetInvenComponent()->FindMyItemByName(this->GetItemCode());
 			int LeftAmmoStack = 0;
 			if (curItem != nullptr)
 			{

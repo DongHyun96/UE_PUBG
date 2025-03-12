@@ -415,7 +415,7 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 
 AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 {
-	if (AC_Item** FoundItemPtr = testMyItems.Find(item->GetItemDatas()->ItemName))
+	if (AC_Item** FoundItemPtr = MyItems.Find(item->GetItemCode()))
 	{
 		AC_Item* FoundItem = *FoundItemPtr;
 		return FoundItem;
@@ -425,9 +425,9 @@ AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 	return nullptr;
 }
 
-AC_Item* UC_InvenComponent::FindMyItem(FString itemName)
+AC_Item* UC_InvenComponent::FindMyItemByName(FName itemName)
 {
-	if (AC_Item** FoundItemPtr = testMyItems.Find(itemName))
+	if (AC_Item** FoundItemPtr = MyItems.Find(itemName))
 	{
 		AC_Item* FoundItem = *FoundItemPtr;
 		return FoundItem;
@@ -442,7 +442,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 	//AC_Item* FoundItem = FindMyItem(item); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;
 	if (!IsValid(item)) return; //nullptr가 들어 오면 return.
 	//if (testMyItems.Contains(item->GetItemDatas().ItemName))
-	if (AC_Item** FoundItemPtr = testMyItems.Find(item->GetItemDatas()->ItemName))
+	if (AC_Item** FoundItemPtr = MyItems.Find(item->GetItemCode()))
 	{
 		AC_Item* FoundItem = *FoundItemPtr;
 
@@ -461,7 +461,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 	else 
 	{
 		// 해당키의 값이 추가.
-		testMyItems.Add(item->GetItemDatas()->ItemName, item);
+		MyItems.Add(item->GetItemCode(), item);
 
 		if (IsValid(OwnerCharacter))
 		{
@@ -480,7 +480,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 
 void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 {
-	testMyItems.Remove(item->GetItemDatas()->ItemName);
+	MyItems.Remove(item->GetItemCode());
 	//Add와 달리 슬롯으로 가는 경우를 대비하여 OwnerCharacter의 설정을 건드리지 않았음.
 	//item->SetItemPlace(EItemPlace::AROUND);
 	CurVolume -= item->GetAllVolume();
@@ -491,9 +491,9 @@ void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 
 void UC_InvenComponent::DestroyMyItem(AC_Item* DestroyedItem)
 {
-	if (testMyItems.Contains(DestroyedItem->GetItemDatas()->ItemName))
+	if (MyItems.Contains(DestroyedItem->GetItemCode()))
 	{
-		AC_Item* MyItem = testMyItems[DestroyedItem->GetItemDatas()->ItemName];
+		AC_Item* MyItem = MyItems[DestroyedItem->GetItemCode()];
 
 		if (MyItem) //TMap에 해당 요소가 있는지 확인.
 		{

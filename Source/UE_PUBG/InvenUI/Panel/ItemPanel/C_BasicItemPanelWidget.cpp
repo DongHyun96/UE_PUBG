@@ -73,50 +73,8 @@ void UC_BasicItemPanelWidget::AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItem
     }
 }
 
-void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FString, AC_Item*> MyItemMap)
+void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, AC_Item*> MyItemMap)
 {
-    //if (!IsValid(ItemListView1)) return;
-    //
-    //ItemListView1->ClearListItems(); // 기존 아이템 삭제
-    //
-    //if (!(MyItemMap.Num() > 0)) return;
-    //
-    //for (const auto& MyItem: MyItemMap)
-    //{
-    //    AC_Item* Item = MyItem.Value;
-    //
-    //    if (IsValid(Item))
-    //    {
-    //        ItemListView1->AddItem(Item);
-    //    }
-    //    else
-    //    {
-    //        continue;
-    //    }
-    //
-    //    //ItemBar갱신.
-    //    UC_BasicItemBarWidget* EntryWidget = Cast<UC_BasicItemBarWidget>(ItemListView1->GetEntryWidgetFromItem(Item));
-    //    //UC_ItemBarWidget* EntryWidget = Cast<UC_ItemBarWidget>(MyItemListWidget->ItemListBar->GetEntryWidgetFromItem(Item));
-    //
-    //    if (IsValid(EntryWidget))
-    //    {
-    //        if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
-    //        {
-    //            if (IsValid(ConsumableItem->GetTestLinkedItemBarWidget()))
-    //            {
-    //                EntryWidget = ConsumableItem->GetTestLinkedItemBarWidget();
-    //            }
-    //            else
-    //            {
-    //                ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
-    //            }
-    //        }
-    //        EntryWidget->UpdateWidget(Item);
-    //    }
-    //}
-
-    ////
-
     if (!IsValid(ItemListView1)) return;
 
     // 아이템 리스트를 먼저 비우고, 아이템 리스트의 수가 0이면 종료

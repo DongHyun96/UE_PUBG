@@ -415,7 +415,8 @@ protected:
 
 
 public:
-	FString GetCurrentBulletTypeName();
+	UFUNCTION(BlueprintCallable)
+	FName GetCurrentBulletTypeName();
 	
 };
 

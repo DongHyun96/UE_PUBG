@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InvenUserInterface/C_InvenUiWidget.h"
 
@@ -195,8 +195,8 @@ void UC_InvenUiWidget::InitListView()
 
     if (MyItemListWidget)
     {
-        TMap<FString, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
-        MyItems = OwnerCharacter->GetInvenComponent()->GetTestMyItems();
+        TMap<FName, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
+        MyItems = OwnerCharacter->GetInvenComponent()->GetMyItems();
         MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
 
         //MyItemListWidget->AddTMapItem(MyItems); // 아이템 리스트 추가
