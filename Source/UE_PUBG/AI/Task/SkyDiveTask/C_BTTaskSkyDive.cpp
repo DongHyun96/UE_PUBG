@@ -56,8 +56,6 @@ void UC_BTTaskSkyDive::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 			bSkyDiveStartFlag = true; // SKyDiving할 수 없는 상황일 수도 있기 때문에 다음 Tick에서 SkyDiving 다시 시도하는 장치 마련
 			OwnerSkyDivingComponent->SetSkyDivingState(ESkyDivingState::SKYDIVING);
 		}
-		else UC_Util::Print(DistanceToJumpLocation);
-			
 	}
 		break;
 	case ESkyDivingState::SKYDIVING:

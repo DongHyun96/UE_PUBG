@@ -208,7 +208,8 @@ public:
 	int GetCurBulletCount() { return CurBulletCount; }
 	int GetMaxBulletCount() { return MaxBulletCount; }
 
-	EBulletType GetCurBulletType() { return GunDataRef->CurGunBulletType; }
+	UFUNCTION(BlueprintCallable)
+	EBulletType GetCurBulletType() const { return GunDataRef->CurGunBulletType; }
 
 	/// <summary>
 	/// const GunData*를 반환해주는 함수.
@@ -247,7 +248,9 @@ protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//float RecoilFactorHorizontal;
 	///
-
+	
+	
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EShootingMode CurrentShootingMode = EShootingMode::FULL_AUTO;
 
