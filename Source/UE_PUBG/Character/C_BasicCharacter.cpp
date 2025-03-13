@@ -16,7 +16,7 @@
 #include "Component/C_ConsumableUsageMeshComponent.h"
 #include "Component/C_PoseColliderHandlerComponent.h"
 #include "Component/C_SwimmingComponent.h"
-#include "Component/C_SkyDivingComponent.h"
+#include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "C_Player.h"   
 
 #include "Component/C_ParkourComponent.h"
@@ -71,8 +71,8 @@ AC_BasicCharacter::AC_BasicCharacter()
 	SwimmingComponent = CreateDefaultSubobject<UC_SwimmingComponent>("SwimmingComponent");
 	SwimmingComponent->SetOwnerCharacter(this);
 
-	SkyDiveComponent = CreateDefaultSubobject<UC_SkyDivingComponent>("SkyDivingComponent");
-	SkyDiveComponent->SetOwnerCharcter(this);
+	/*SkyDiveComponent = CreateDefaultSubobject<UC_SkyDivingComponent>("SkyDivingComponent");
+	SkyDiveComponent->SetOwnerCharcter(this);*/
 
 	AttachmentMeshComponent = CreateDefaultSubobject<UC_AttachableItemMeshComponent>("AttachmentMeshComponent");
 	AttachmentMeshComponent->SetOwnerCharacter(this);

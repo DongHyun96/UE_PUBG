@@ -16,7 +16,7 @@
 
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
-#include "Character/Component/C_SkyDivingComponent.h"
+#include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 
 void UC_AnimBasicCharacter::NativeBeginPlay()
 {

@@ -11,7 +11,7 @@
 #include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
-#include "Character/Component/C_SkyDivingComponent.h"
+#include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 
 #include "Utility/C_Util.h"
 

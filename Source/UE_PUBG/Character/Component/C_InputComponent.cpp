@@ -11,7 +11,7 @@
 #include "Character/Component/C_PingSystemComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
-#include "Character/Component/C_SkyDivingComponent.h"
+#include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_ParkourComponent.h"
 
@@ -34,6 +34,7 @@
 #include "GameFramework/PhysicsVolume.h"
 
 #include "Singleton/C_GameSceneManager.h"
+#include "SkyDivingComponent/C_PlayerSkyDivingComponent.h"
 
 // Sets default values for this component's properties
 UC_InputComponent::UC_InputComponent()
@@ -167,7 +168,7 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 	// SkyDiving Movement 처리
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 	{
-		Player->GetSkyDivingComponent()->HandlePlayerMovement(MovementVector);
+		Player->GetPlayerSkyDivingComponent()->HandlePlayerMovement(MovementVector);
 		return;
 	}
 
@@ -198,7 +199,7 @@ void UC_InputComponent::MoveEnd(const FInputActionValue& Value)
 		Player->GetSwimmingComponent()->OnSwimmingMoveEnd();
 
 	if (Player->GetMainState() == EMainState::SKYDIVING)
-		Player->GetSkyDivingComponent()->OnSkyMoveEnd();
+		Player->GetPlayerSkyDivingComponent()->OnPlayerSkyMoveEnd();
 
 	Player->GetParkourComponent()->SetHasTryVaulting(false);
 }

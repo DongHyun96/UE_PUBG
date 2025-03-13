@@ -43,7 +43,7 @@ struct FDivingSpeeds
 	float ZSpeedMax{};			// 일반 상황에서의 Z Speed Max
 };
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Abstract, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_SkyDivingComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -57,14 +57,7 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	/// <summary>
-	/// SkyDiving시에 Player InputComponent Move 함수 내에서 호출될 함수
-	/// </summary>
-	/// <param name="MovementVector"></param>
-	void HandlePlayerMovement(const FVector2D& MovementVector);
-
-	void OnSkyMoveEnd();
-
+	
 public:
 
 	void SetOwnerCharcter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
@@ -78,12 +71,20 @@ public:
 	/// <returns> : 원하는 값으로 setting되지 않았다면 return false </returns>
 	bool SetSkyDivingState(ESkyDivingState InSkyDivingState);
 
+protected: // SetSkyDivingState 내부의 Template pattern methods
+	
+	virtual void SetStateToSkyDivingState() PURE_VIRTUAL( UC_SkyDivingComponent::SetStateToSkyDivingState; );
+
+	virtual void SetStateToParachutingState() PURE_VIRTUAL( UC_SkyDivingComponent::SetStateToParachutingState; );
+
+	virtual void SetStateToLandingState() PURE_VIRTUAL( UC_SkyDivingComponent::SetStateToLandingState; );
+	
 public:
 
 	/// <summary>
 	/// Parachuting 상태일 때 물 위로 착륙했을 때 호출될 예외처리 함수
 	/// </summary>
-	void OnCharacterLandedOnWater();
+	virtual void OnCharacterLandedOnWater();
 
 public:
 
@@ -107,45 +108,26 @@ public:
 
 private:
 
-	/// <summary>
-	/// Player 카메라 SpringArm 길이 Lerp 시키기
-	/// </summary>
-	/// <param name="DeltaTime"></param>
-	void LerpPlayerMainCameraArmLength(const float& DeltaTime);
-
-	/// <summary>
-	/// 중력 가속도를 사용하는 대신 OwnerCharacter의 VelocityZ를 직접 조정
-	/// </summary>
-	/// <param name="DeltaTime"></param>
-	void LerpVelocityZ(const float& DeltaTime);
 
 	/// <summary>
 	/// 높이에 따른 State 전환 담당 (ex -> 일정 높이 이하면 낙하산 자동으로 펼치기)
 	/// </summary>
 	void HandleStateTransitionByHeight();
+
+protected:
 	
 	/// <summary>
 	/// 현재 높이(고도) Update
 	/// </summary>
 	void UpdateCurrentHeight();
 
-	void UpdatePlayerSkyDiveHUD();
+	
 
-private:
+protected:
 
 	class AC_BasicCharacter* OwnerCharacter{};
-	class AC_Player* OwnerPlayer{};
 
-	//ESkyDivingState SkyDivingState = ESkyDivingState::LANDING;
 	ESkyDivingState SkyDivingState = ESkyDivingState::READY;
-
-private: // 중력가속 사용 x -> 직접 Velocity.Z를 조절
-
-	float VelocityZLerpDest{};
-
-private: // SkyDiving & Parachuting 자세 speed 관련
-
-	static const TMap<ESkyDivingState, FDivingSpeeds> STATE_DIVINGSPEEDS;
 
 protected:
 
@@ -158,12 +140,7 @@ protected:
 	static const FName PARABACKPACK_SOCKET_NAME;
 	static const FName PARACHUTE_SOCKET_NAME;
 
-private: // Player Main camera spring arm 거리 조절 관련
 
-	static const float PLAYER_READY_MAINCAM_ARMLENGTH;// 비행기 안에 탑승했을 때의 ArmLength
-	static const float PLAYER_PARACHUTE_MAINCAM_ARMLENGTH;
-	static const float PLAYER_SKYDIVE_MAINCAM_ARMLENGTH;
-	static const float PLAYER_ORIGIN_MAINCAM_ARMLENGTH;
 
 protected: // Character AnimMontages
 
@@ -181,7 +158,7 @@ protected: // Parachute Skeletal Mesh AnimMontages
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UAnimMontage* ParachuteEjectMontage{};
 
-private:
+protected:
 
 	static const float ALTITUDE_ZERO_Z;
 
@@ -194,7 +171,7 @@ private:
 	static const float MAX_SKYDIVE_JUMP_ALTITUDE;
 
 
-private:
+protected:
 	
 	// 현재 낙하 높이(고도)
 	float CurrentHeight{};

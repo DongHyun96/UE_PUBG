@@ -49,6 +49,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UC_DefaultItemSpawnerComponent* ItemSpawnerHelper{};
 
+private:
+
+	class UC_EnemySkyDivingComponent* EnemySkyDivingComponent{};
+
 };
 
 

@@ -11,6 +11,7 @@
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
+#include "Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
 
 #include "Item/C_Item.h"
 #include "Item/Weapon/Gun/C_Gun.h"
@@ -23,10 +24,16 @@
 
 AC_Enemy::AC_Enemy()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	
 	TeamID = ETeamAttitude::Hostile;
 
 	ItemSpawnerHelper = CreateDefaultSubobject<UC_DefaultItemSpawnerComponent>("ItemSpawnerHelper");
 	ItemSpawnerHelper->SetOwnerEnemy(this);
+	
+	SkyDivingComponent = CreateDefaultSubobject<UC_EnemySkyDivingComponent>("EnemySkyDivingComponent");
+	SkyDivingComponent->SetOwnerCharcter(this);
+	EnemySkyDivingComponent = Cast<UC_EnemySkyDivingComponent>(SkyDivingComponent);
 }
 
 void AC_Enemy::BeginPlay()
