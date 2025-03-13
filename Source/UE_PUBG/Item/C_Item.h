@@ -125,7 +125,7 @@ struct FItemData : public FTableRowBase
 	//int ItemCurStack = 0; 변수로 이동
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	int ItemMaxStack = 0;
+	int32 ItemMaxStack = 0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	float ItemVolume = 0;
@@ -191,7 +191,7 @@ public:
 	/// Around -> MyItems로 아이템이 이동할 때, 이미 해당 아이템이 존재할때 ItemStack을 C_Item내에서 Set하는 함수.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	void SetItemStack(uint8 inItemStack);// { ItemDatas.ItemCurStack = inItemStack; }
+	void SetItemStack(int32 inItemStack);// { ItemDatas.ItemCurStack = inItemStack; }
 	
 	/// <summary>
 	/// 플레이어가 아이템을 버릴 때 사용되는 함수.
@@ -255,7 +255,7 @@ public:
 	/// <param name="bIsActorEnableCollision">나누어준 아이템의 ActorEnableCollision을 킬지 말지. 버릴 경우에는 키고(true) 줍는 경우에는 끈다(false)</param>
 	/// <returns>새로 생성한 나뉘어진 아이템, nullptr이면 CurStack이 1이여서 못나누는 상황</returns>
 	UFUNCTION(BlueprintCallable)
-	AC_Item* DividItemSpawn(int DivideNum, AC_BasicCharacter* Character, bool bIsActorEnableCollision);
+	AC_Item* DividItemSpawn(int32 DivideNum, AC_BasicCharacter* Character, bool bIsActorEnableCollision);
 
 protected:
 	//MoveTo~에 사용되는 Template Methode Patern 9개.
@@ -280,7 +280,7 @@ public:
 	/// 아이템의 현재 갯수 반환
 	/// </summary>
 	/// <returns>아이템 갯수</returns>
-	int GetItemCurStack() { return ItemCurStack; }
+	int32 GetItemCurStack() { return ItemCurStack; }
 
 	UFUNCTION(BlueprintCallable)
 	EItemPlace GetItemPlace() { return ItemPlace; }
@@ -338,7 +338,7 @@ protected:
 	/// 현재 아이템의 갯수
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	int ItemCurStack = 0;
+	int32 ItemCurStack = 0;
 
 	/// <summary>
 	/// 아이템 데이터 구조체
