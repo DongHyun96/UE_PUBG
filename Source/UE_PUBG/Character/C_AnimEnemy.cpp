@@ -11,5 +11,3 @@ void UC_AnimEnemy::NativeUpdateAnimation(float DeltaSeconds)
 
 	Speed = OwnerCharacter->GetVelocity().Size2D();
 }
-
-

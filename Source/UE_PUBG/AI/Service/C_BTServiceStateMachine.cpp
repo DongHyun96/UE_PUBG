@@ -9,7 +9,7 @@
 
 #include "Character/C_Enemy.h"
 
-#include "Character/Component/C_SkyDivingComponent.h"
+#include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 
 #include "Utility/C_Util.h"
 

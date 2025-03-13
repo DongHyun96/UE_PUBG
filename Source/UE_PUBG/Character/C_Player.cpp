@@ -60,6 +60,8 @@
 #include "HUD/C_MainMapWidget.h"
 #include "HUD/C_SkyDiveWidget.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
+#include "Component/SkyDivingComponent/C_PlayerSkyDivingComponent.h"
+#include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "Singleton/C_GameSceneManager.h"
 
 AC_Player::AC_Player()
@@ -106,6 +108,10 @@ AC_Player::AC_Player()
 
 	CameraEffectComponent = CreateDefaultSubobject<UC_CameraEffectComponent>("CameraEffectComponent");
 	CameraEffectComponent->SetOwnerPlayer(this);
+
+	SkyDivingComponent = CreateDefaultSubobject<UC_PlayerSkyDivingComponent>("PlayerSkyDivingComponent");
+	SkyDivingComponent->SetOwnerCharcter(this);
+	PlayerSkyDivingComponent = Cast<UC_PlayerSkyDivingComponent>(SkyDivingComponent);
 }
 
 void AC_Player::BeginPlay()
@@ -116,6 +122,7 @@ void AC_Player::BeginPlay()
 	InitialMainCameraRelativeRotation = MainCamera->GetRelativeRotation().Quaternion();
 	AimCamera->SetRelativeLocation(FVector(0));
 	AimCamera->SetRelativeRotation(FQuat(0));
+	
 	if (HUDWidget)
 	{
 		HUDWidget->AddToViewport(10);

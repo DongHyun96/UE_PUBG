@@ -58,14 +58,10 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 	// "Grenade"
 	AC_ThrowingWeapon* Grenade = Cast<AC_ThrowingWeapon>(OwnerEnemy->GetInvenComponent()->FindMyItemByName("Grenade"));
 	if (!IsValid(Grenade))
-	{
 		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade nullptr", FColor::Red, 10.f);
-		return;
-	}
-	
-	if (!Grenade->MoveToSlot(OwnerEnemy))
+		
+	if (Grenade) if (!Grenade->MoveToSlot(OwnerEnemy))
 		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade MoveToSlot Failed!", FColor::Red, 10.f);
-
 
 	// Body Armors and Backpack
 	AC_Vest* Vest = GetWorld()->SpawnActor<AC_Vest>(VestClass, Param);

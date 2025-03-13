@@ -8,7 +8,7 @@
 #include "Airplane/C_AirplaneManager.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_PingSystemComponent.h"
-#include "Character/Component/C_SkyDivingComponent.h"
+#include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "Character/Component/C_PlayerController.h"
 #include "HUD/C_SkyDiveWidget.h"
 #include "HUD/C_MapWidget.h"
