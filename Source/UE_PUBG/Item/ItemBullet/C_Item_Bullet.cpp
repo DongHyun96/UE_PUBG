@@ -64,20 +64,14 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 			invenComp->AddItemToMyList(this);
 			UC_Util::Print(int(CurBulletType));
 			UC_Util::Print("Item Stack Add!!!!!!!!!!!!!!!!");
-			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
-
-			this->Destroy(); // Inven에 존재하던 동일한 아이템과 합쳐졌으므로 삭제.
+			//this->Destroy(); // Inven에 존재하던 동일한 아이템과 합쳐졌으므로 삭제.
 		}
 		else
 		{
 			invenComp->AddItemToMyList(this);
-
-			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 		}
-		
-
+		if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
+			UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 
 		return true;
 	}
@@ -91,24 +85,16 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 		if (invenComp->FindMyItemByName(this->GetItemCode()))
 		{
 			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
-
-			
-
-			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
-
-			this->Destroy();
+			//this->Destroy();
 		}
 		else
 		{
 			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
 			UC_Util::Print(ItemStackCount);
-			
-
-			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 		}
 
+		if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
+			UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 
 		return true;
 	}

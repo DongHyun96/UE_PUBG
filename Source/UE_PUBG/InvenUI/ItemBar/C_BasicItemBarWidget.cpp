@@ -221,7 +221,7 @@ bool UC_BasicItemBarWidget::HalfStackItemInteraction()
 
 	if (!PlayerCharacter) return false; //PlayerCharacter가 없다면 return;
 
-	int HalfStack = CachedItemCurStack * 0.5;
+	uint32 HalfStack = CachedItemCurStack * 0.5;
 
 	float RestVolume = PlayerCharacter->GetInvenComponent()->GetMaxVolume() - PlayerCharacter->GetInvenComponent()->GetCurVolume();
 

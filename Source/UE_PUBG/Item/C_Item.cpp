@@ -238,7 +238,7 @@ void AC_Item::DropItem(AC_BasicCharacter* Character)
 	this->SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
 }
 
-void AC_Item::SetItemStack(uint8 inItemStack)
+void AC_Item::SetItemStack(int32 inItemStack)
 {
 	ItemCurStack = inItemStack;
 	
@@ -252,25 +252,8 @@ void AC_Item::SetItemStack(uint8 inItemStack)
 
 void AC_Item::SetOutlineEffect(bool bEnable)
 {
-	//UPrimitiveComponent* CachedComponent = GetComponentByClass<UPrimitiveComponent>();
-	//
-	//if (CachedComponent)
-	//{
-	//	CachedComponent->SetRenderCustomDepth(bEnable);
-	//	CachedComponent->SetCustomDepthStencilValue(bEnable ? 1 : 0);
-	//}
-
-	//this->GetComponentByClass()
-
-	//for (UStaticMeshComponent* MeshComp : CachedComponent)
-	//{
-	//	MeshComp->SetRenderCustomDepth(bEnable);
-	//}
-
 	TArray<UPrimitiveComponent*> PrimitiveComponents;
 	GetComponents<UPrimitiveComponent>(PrimitiveComponents);
-
-
 
 	for (UPrimitiveComponent* Comp : PrimitiveComponents)
 	{
@@ -280,10 +263,9 @@ void AC_Item::SetOutlineEffect(bool bEnable)
 			Comp->SetCustomDepthStencilValue(bEnable ? 1 : 0);
 		}
 	}
-
 }
 
-AC_Item* AC_Item::DividItemSpawn(int DivideNum, AC_BasicCharacter* Character, bool ActorEnAbleCollision)
+AC_Item* AC_Item::DividItemSpawn(int32 DivideNum, AC_BasicCharacter* Character, bool ActorEnAbleCollision)
 {
 	if (ItemCurStack == 1) return nullptr; // 갯수가 1이면 나누기 불가. nullptr 반환.
 
