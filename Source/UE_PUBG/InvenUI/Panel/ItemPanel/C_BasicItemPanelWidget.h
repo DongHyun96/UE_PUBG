@@ -8,6 +8,16 @@
 
 #include "C_BasicItemPanelWidget.generated.h"
 
+struct FInventoryItemBox :public UObject
+{
+    AC_Item* ItemRef;  // 실제 AC_Item 객체 참조 (새로 만들지 않음)
+    int32 StackCount;  // UI에서 보여줄 개수
+
+    FInventoryItemBox(AC_Item* InItem, int32 InStackCount)
+        : ItemRef(InItem), StackCount(InStackCount) {
+    }
+};
+
 /**
  * 
  */

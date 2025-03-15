@@ -77,13 +77,13 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, AC_Item*> MyIt
 {
     if (!IsValid(ItemListView1)) return;
 
-    // 아이템 리스트를 먼저 비우고, 아이템 리스트의 수가 0이면 종료
+    // 아이템 리스트를 먼저 비우고, 아이템 리스트내의 원소가 0이면 종료
     ItemListView1->ClearListItems();
     if (MyItemMap.Num() == 0) return;
 
     // 한 번에 추가할 아이템들을 저장할 TArray 준비
-    TArray<AC_Item*> ItemsToAdd;
-    TArray<UC_BasicItemBarWidget*> EntryWidgetsToUpdate;
+    TArray<FInventoryItemBox*> ItemsToAdd;
+    //TArray<UC_BasicItemBarWidget*> EntryWidgetsToUpdate;
 
     // 아이템 맵에서 아이템을 하나씩 처리
     for (const auto& MyItem : MyItemMap)
@@ -93,8 +93,22 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, AC_Item*> MyIt
         // 아이템이 유효하지 않으면 건너뛰기
         if (!IsValid(Item)) continue;
 
+        int32 MaxStack = Item->GetItemDatas()->ItemMaxStack; // 아이템의 최대 스택 크기 가져오기
+        int32 TotalCount = Item->GetItemCurStack(); // 현재 아이템 개수
+
+        while (TotalCount > 0)
+        {
+            int32 StackToAdd = FMath::Min(TotalCount, MaxStack);
+            FInventoryItemBox* NewItemBox = NewObject<FInventoryItemBox>();
+            NewItemBox->ItemRef = Item;
+            NewItemBox->StackCount = StackToAdd;
+
+            ItemsToAdd.Add(NewItemBox);
+
+            TotalCount -= StackToAdd;
+        }
         // 아이템을 추가할 리스트에 저장
-        ItemsToAdd.Add(Item);
+        //ItemsToAdd.Add(Item);
 
         // 아이템 바 위젯 갱신 준비
         UC_BasicItemBarWidget* EntryWidget = Cast<UC_BasicItemBarWidget>(ItemListView1->GetEntryWidgetFromItem(Item));
@@ -104,9 +118,9 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, AC_Item*> MyIt
             // ConsumableItem에 대한 처리는 미리 해두기
             if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(Item))
             {
-                if (IsValid(ConsumableItem->GetTestLinkedItemBarWidget()))
+                if (IsValid(ConsumableItem->GetLinkedItemBarWidget()))
                 {
-                    EntryWidget = ConsumableItem->GetTestLinkedItemBarWidget();
+                    EntryWidget = ConsumableItem->GetLinkedItemBarWidget();
                 }
                 else
                 {
@@ -115,7 +129,7 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, AC_Item*> MyIt
             }
             EntryWidget->UpdateWidget(Item);
             // EntryWidget을 업데이트할 목록에 추가
-            EntryWidgetsToUpdate.Add(EntryWidget);
+            //EntryWidgetsToUpdate.Add(EntryWidget);
         }
     }
 
@@ -129,6 +143,7 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, AC_Item*> MyIt
     {
         ItemListView1->SetListItems(ItemsToAdd);
     }
+    //ItemListView1->RegenerateAllEntries();
 }
 
 void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& AroundItemList)

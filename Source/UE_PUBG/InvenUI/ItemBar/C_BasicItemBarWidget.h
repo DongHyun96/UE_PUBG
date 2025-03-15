@@ -8,6 +8,8 @@
 #include "Item/C_Item.h"
 #include "C_BasicItemBarWidget.generated.h"
 
+
+struct FInventoryItemBox;
 /**
  * 
  */
@@ -90,7 +92,7 @@ protected:
 
 	// C++에서 처리할 아이템
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	AC_Item* CachedItem;
+	FInventoryItemBox* CachedItem;
 
 	//에디터에서 바인딩으로 처리한다면?
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
