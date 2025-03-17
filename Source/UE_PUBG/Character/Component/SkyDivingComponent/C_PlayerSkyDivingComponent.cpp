@@ -55,7 +55,7 @@ void UC_PlayerSkyDivingComponent::LerpPlayerMainCameraArmLength(const float& Del
 	case ESkyDivingState::PARACHUTING:
 		MainCamSpringArm->TargetArmLength = FMath::Lerp(MainCamSpringArm->TargetArmLength, PLAYER_PARACHUTE_MAINCAM_ARMLENGTH, DeltaTime * 5.f);
 		return;
-	case ESkyDivingState::LANDING: // TODO : Landing 한 이후로 TargetArmLength 원위치 되어있는지 확인(LANDING 단계에서 AnimMontage로 Landing 동작 재생할 예정)
+	case ESkyDivingState::LANDING:
 		MainCamSpringArm->TargetArmLength = FMath::Lerp(MainCamSpringArm->TargetArmLength, PLAYER_ORIGIN_MAINCAM_ARMLENGTH, DeltaTime * 5.f);
 		return;
 	case ESkyDivingState::READY:
@@ -179,29 +179,33 @@ void UC_PlayerSkyDivingComponent::HandlePlayerMovement(const FVector2D& Movement
 
 	bool HoldingDirection = OwnerCharacter->GetIsHoldDirection() || OwnerCharacter->GetIsAltPressed();
 
-	FRotator Rotation = (!HoldingDirection) ? OwnerCharacter->GetController()->GetControlRotation() :
+	// Alt키가 눌리지 않은 상황에서 Pitch Rotation의 크기를 통해 Speed와 ZSpeed를 구하기에, Yaw만 쓰는 것이 아닌 전체 ControlRotation으로 Rotation을 구함
+	FRotator Rotation = (!HoldingDirection) ? OwnerCharacter->GetController()->GetControlRotation() : 
 									          OwnerCharacter->GetActorRotation();
-	Rotation.Roll = 0.f;
+
+	const float Pitch = Rotation.Pitch;
+	Rotation.Pitch	= 0.f;
+	Rotation.Roll	= 0.f;
 
 	UCharacterMovementComponent* OwnerMovement = OwnerCharacter->GetCharacterMovement();
 
 	// Update MaxWalkSpeed & 중력 또한 Pitch에 따라 조정처리
 	if (!HoldingDirection)
 	{
-		if (270.f <= Rotation.Pitch) // 아랫방향으로 숙였을 때 ( 360 ~ 270(아래로 최대로 숙였을 때) )
+		if (270.f <= Pitch) // 아랫방향으로 숙였을 때 ( 360 ~ 270(아래로 최대로 숙였을 때) )
 		{
 			OwnerMovement->MaxWalkSpeed = FMath::GetMappedRangeValueClamped
 			(
 				FVector2D(360.f, 270.f),
 				STATE_DIVINGSPEEDS[SkyDivingState].GetMaxWalkSpeedMaxMin(),
-				Rotation.Pitch
+				Pitch
 			);
 			
 			VelocityZLerpDest = FMath::GetMappedRangeValueClamped
 			(
 				FVector2D(360.f, 270.f),
 				STATE_DIVINGSPEEDS[SkyDivingState].GetZSpeedMinMax(),
-				Rotation.Pitch
+				Pitch
 			);
 		}
 		else // Pitch 0 ~ 89.99 -> 윗 방향
@@ -210,9 +214,7 @@ void UC_PlayerSkyDivingComponent::HandlePlayerMovement(const FVector2D& Movement
 			VelocityZLerpDest = STATE_DIVINGSPEEDS[SkyDivingState].ZSpeedMin;
 		}
 	}
-
-	//UC_Util::Print(FVector2D(OwnerMovement->MaxWalkSpeed, OwnerMovement->GravityScale));
-
+	
 	const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
 	const FVector   RightDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
 
@@ -224,8 +226,8 @@ void UC_PlayerSkyDivingComponent::HandlePlayerMovement(const FVector2D& Movement
 
 	if (HoldingDirection) return; // HoldDirection 중이라면 return (HoldDirection 이전에 조정한 값으로 계속 유지)
 
-	float AnimNextSpeed = (270.f <= Rotation.Pitch) ? 
-		                  FMath::GetMappedRangeValueClamped(FVector2D(360.f, 270.f), FVector2D(250.f, 700.f), Rotation.Pitch) :
+	float AnimNextSpeed = (270.f <= Pitch) ? 
+		                  FMath::GetMappedRangeValueClamped(FVector2D(360.f, 270.f), FVector2D(250.f, 700.f), Pitch) :
 						  250.f;
 
 	OwnerCharacter->SetNextSpeed(AnimNextSpeed); // AnimCharacter에서 Speed Lerp할 값 setting

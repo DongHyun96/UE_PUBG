@@ -39,11 +39,17 @@ void UC_MainMapWidget::NativeConstruct()
 	//bIsFocusable = true;
 	SetIsEnabled(true);
 
-	UWidget* JumpPosImage = GetWidgetFromName(TEXT("JumpPosImage"));
-	JumpPosImg = Cast<UImage>(JumpPosImage);
+	// TODO : 밑에 중괄호 지우기
+	{
+		UWidget* JumpPosImage = GetWidgetFromName(TEXT("JumpPosImage"));
+		JumpPosImg = Cast<UImage>(JumpPosImage);
 
-	UWidget* TargetPosImage = GetWidgetFromName(TEXT("TargetPosImage"));
-	TargetPosImg = Cast<UImage>(TargetPosImage);
+		UWidget* TargetPosImage = GetWidgetFromName(TEXT("TargetPosImage"));
+		TargetPosImg = Cast<UImage>(TargetPosImage);
+
+		UWidget* SkyDivingStateDestinationImage = GetWidgetFromName(TEXT("SkyDivingStateDestinationImage"));
+		SkyDivingStateDestinationImg = Cast<UImage>(SkyDivingStateDestinationImage);
+	}
 }
 
 void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
@@ -165,22 +171,29 @@ void UC_MainMapWidget::HandleUpdateMarkers()
 
 	PingMarkerBorder->SetRenderTranslation(PingMarkerToMainMapPos);
 
-	// TODO : 이 밑줄 지우기
-	FVector2D TargetPosToMainMapPos = TargetLocationPos * MainMapScale;
-	TargetPosToMainMapPos += MainMapImg->GetRenderTransform().Translation;
-	TargetPosImg->SetRenderTranslation(TargetPosToMainMapPos);
+	// TODO : 이 밑줄 중괄호 싹 지우기
+	{
+		FVector2D TargetPosToMainMapPos = TargetLocationPos * MainMapScale;
+		TargetPosToMainMapPos += MainMapImg->GetRenderTransform().Translation;
+		TargetPosImg->SetRenderTranslation(TargetPosToMainMapPos);
 
-	FVector2D JumpPosToMainMapPos = JumpPos * MainMapScale;
-	JumpPosToMainMapPos += MainMapImg->GetRenderTransform().Translation;
-	JumpPosImg->SetRenderTranslation(JumpPosToMainMapPos);
+		FVector2D JumpPosToMainMapPos = JumpPos * MainMapScale;
+		JumpPosToMainMapPos += MainMapImg->GetRenderTransform().Translation;
+		JumpPosImg->SetRenderTranslation(JumpPosToMainMapPos);
 
-	if (GAMESCENE_MANAGER->GetEnemies().IsEmpty()) return;
+		FVector2D SkyDivingStateDestinationToMainMapPos = SkyDivingStateDestinationPos * MainMapScale;
+		SkyDivingStateDestinationToMainMapPos += MainMapImg->GetRenderTransform().Translation;
+		SkyDivingStateDestinationImg->SetRenderTranslation(SkyDivingStateDestinationToMainMapPos);
+
+		if (GAMESCENE_MANAGER->GetEnemies().IsEmpty()) return;
+		
+		AC_Enemy* Enemy = GAMESCENE_MANAGER->GetEnemies()[0];
+		FVector2D EnemyPos = {Enemy->GetActorLocation().Y, -Enemy->GetActorLocation().X };
+		FVector2D EnemyMarkerPos = EnemyPos * (CANVAS_SIZE / WORLD_MAP_SIZE) * MainMapScale;
+		EnemyMarkerPos += MainMapImg->GetRenderTransform().Translation;
+		EnemyLocationImg->SetRenderTranslation(EnemyMarkerPos);
+	}
 	
-	AC_Enemy* Enemy = GAMESCENE_MANAGER->GetEnemies()[0];
-	FVector2D EnemyPos = {Enemy->GetActorLocation().Y, -Enemy->GetActorLocation().X };
-	FVector2D EnemyMarkerPos = EnemyPos * (CANVAS_SIZE / WORLD_MAP_SIZE) * MainMapScale;
-	EnemyMarkerPos += MainMapImg->GetRenderTransform().Translation;
-	EnemyLocationImg->SetRenderTranslation(EnemyMarkerPos);
 }
 
 void UC_MainMapWidget::HandleUpdatePlaneRouteTransform()
@@ -368,6 +381,14 @@ bool UC_MainMapWidget::SpawnJumpPosAndTargetPosImage(FVector JumpLocation, FVect
 	JumpPosImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	TargetPosImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	
+	return true;
+}
+
+bool UC_MainMapWidget::SpawnSkyDivingStateDestinationImage(FVector Location)
+{
+	if (!SkyDivingStateDestinationImg) return false;
+	SkyDivingStateDestinationPos = GetWorldToMapSizePos(Location);
+	SkyDivingStateDestinationImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	return true;
 }
 

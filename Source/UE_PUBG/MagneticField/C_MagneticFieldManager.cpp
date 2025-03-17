@@ -208,7 +208,7 @@ void AC_MagneticFieldManager::SetRandomNextCircleAndSpeedDirection()
 		NextCircle.MidLocation = PhaseInfos[CurrentPhase + 1].ExactPhaseLocation;
 	else
 	{
-		uint8 TryCount{};
+		uint16 TryCount{};
 		while (true)
 		{
 			float XDir = FMath::FRandRange(-1.f, 1.f);

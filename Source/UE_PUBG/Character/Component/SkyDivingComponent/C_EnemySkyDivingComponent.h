@@ -24,6 +24,13 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+public:
+
+	void SetSkyDivingStateDestination(const FVector& InDestination) { SkyDivingStateDestination = InDestination; }
+	void SetParachutingStateDestination(const FVector& InDestination) { ParachutingStateDestination = InDestination; }
+
+	FVector GetParachutingStateDestination() const { return ParachutingStateDestination; }
+
 private:
 
 	/// <summary>
@@ -43,6 +50,10 @@ private:
 	/// </summary>
 	/// <returns></returns>
 	void SetStateToLandingState() override;
+	
+private:
 
+	FVector SkyDivingStateDestination{};	// SKYDIVING State인 상태에서의 목적지
+	FVector ParachutingStateDestination{};	// PARACHUTING State인 상태에서의 목적지 (LandingTargetLocation)
 	
 };

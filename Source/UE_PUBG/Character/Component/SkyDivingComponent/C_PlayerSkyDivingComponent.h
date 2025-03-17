@@ -9,6 +9,32 @@
 /**
  * 
  */
+
+/// <summary>
+/// 자세 speed 관련 struct
+/// </summary>
+struct FDivingSpeeds
+{
+	FDivingSpeeds() {}
+
+	FDivingSpeeds(float MinWalk, float MaxWalk, float BackKeyZSpeed, float ZSpeedMin, float ZSpeedMax) :
+		MaxWalkSpeed_Min(MinWalk),
+		MaxWalkSpeed_Max(MaxWalk),
+		BackKeyZSpeed(BackKeyZSpeed),
+		ZSpeedMin(ZSpeedMin),
+		ZSpeedMax(ZSpeedMax) 
+	{}
+
+	FVector2D GetZSpeedMinMax() const { return FVector2D(ZSpeedMin, ZSpeedMax); }
+	FVector2D GetMaxWalkSpeedMaxMin() const { return FVector2D(MaxWalkSpeed_Max, MaxWalkSpeed_Min); }
+
+	float MaxWalkSpeed_Min{};	// 캐릭터 최소 이동 속력
+	float MaxWalkSpeed_Max{};	// 캐릭터 최대 이동 속력
+	float BackKeyZSpeed{};		// 뒷방향 input일 때의 Z Speed
+	float ZSpeedMin{};			// 일반 상황에서의 Z Speed Min
+	float ZSpeedMax{};			// 일반 상황에서의 Z Speed Max
+};
+
 UCLASS()
 class UE_PUBG_API UC_PlayerSkyDivingComponent : public UC_SkyDivingComponent
 {
@@ -92,6 +118,11 @@ private: // SkyDiving & Parachuting 자세 speed 관련
 
 	const TMap<ESkyDivingState, FDivingSpeeds> STATE_DIVINGSPEEDS =
 	{
+		{
+			// Dummy data
+			ESkyDivingState::READY,
+			FDivingSpeeds(0.f, 0.f, 0.f, 0.f, 0.f)
+		},
 		{
 			ESkyDivingState::SKYDIVING, 
 			FDivingSpeeds(0.f, 3000.f, -2500.f, -3000.f, -6000.f) 
