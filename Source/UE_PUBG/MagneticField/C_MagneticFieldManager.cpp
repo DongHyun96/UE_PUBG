@@ -4,12 +4,14 @@
 #include "MagneticField/C_MagneticFieldManager.h"
 #include "C_MagneticWall.h"
 #include "C_WaterTileCheckerComponent.h"
+#include "Character/C_Enemy.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Utility/C_Util.h"
 
 #include "Singleton/C_GameSceneManager.h"
 
 #include "Character/C_Player.h"
+#include "Character/Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MapWidget.h"
 #include "HUD/C_MainMapWidget.h"
@@ -54,6 +56,10 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 		Timer = 0.f;
 
 		MagneticFieldState = EMagneticFieldState::SHRINK;
+
+		// Enemy들 NextCircle random TargetLocation 잡아주기
+		for (AC_Enemy* Enemy : GAMESCENE_MANAGER->GetEnemies())
+			Enemy->GetTargetLocationSettingHelper()->TrySetRandomTargetLocationAtMagneticCircle(NextCircle);
 
 		return;
 	case EMagneticFieldState::SHRINK:

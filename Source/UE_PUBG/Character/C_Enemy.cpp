@@ -4,6 +4,7 @@
 #include "Character/C_Enemy.h"
 
 #include "C_Player.h"
+#include "NavigationSystem.h"
 #include "AI/C_EnemyAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -11,6 +12,7 @@
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
+#include "Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
 
 #include "Item/C_Item.h"
@@ -30,6 +32,9 @@ AC_Enemy::AC_Enemy()
 
 	ItemSpawnerHelper = CreateDefaultSubobject<UC_DefaultItemSpawnerComponent>("ItemSpawnerHelper");
 	ItemSpawnerHelper->SetOwnerEnemy(this);
+
+	TargetLocationSettingHelper = CreateDefaultSubobject<UC_TargetLocationSettingHelper>("TargetLocationSetter");
+	TargetLocationSettingHelper->SetOwnerEnemy(this);
 	
 	SkyDivingComponent = CreateDefaultSubobject<UC_EnemySkyDivingComponent>("EnemySkyDivingComponent");
 	SkyDivingComponent->SetOwnerCharcter(this);

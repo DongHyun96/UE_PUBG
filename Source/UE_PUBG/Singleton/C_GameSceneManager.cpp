@@ -123,6 +123,24 @@ FVector UC_GameSceneManager::ConvertTileCoordinateToTileMiddleLocation(const TPa
 	return FVector(XLocation, YLocation, 0.f);
 }
 
+TPair<uint8, uint8> UC_GameSceneManager::GetContainingTileCoordinate(const FVector2D& WorldPositionXY) const
+{
+	const float X = WorldPositionXY.X;
+	const float Y = WorldPositionXY.Y;
+	
+	FVector2D XYBorderLimits = {-CELL_WORLDSIZE * 5.f, CELL_WORLDSIZE * 5.f};
+
+	if (X < XYBorderLimits.X || X > XYBorderLimits.Y || Y < XYBorderLimits.X || Y > XYBorderLimits.Y)
+	{
+		UC_Util::Print("From UC_GameSceneManager::GetContainingTileCoordinate : Parameter WorldPositionXY out of border!", FColor::Red, 10.f);
+		return {};
+	}
+
+	return { (CELL_WORLDSIZE * 5.f - X) / 100, (CELL_WORLDSIZE * 5.f + Y) / 100 };
+}
+
+// TPair<uint8, uint8> Get
+
 //void UC_GameSceneManager::OnWorldEndPlay(UWorld* InWorld)
 //{
 //	//UC_Util::PrintLogMessage("OnWorldEndPlay");

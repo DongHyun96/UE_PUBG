@@ -32,6 +32,8 @@ public:
 
 	class AC_EnemyAIController* GetEnemyAIController() const;
 
+	class UC_TargetLocationSettingHelper* GetTargetLocationSettingHelper() const { return TargetLocationSettingHelper; }
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
@@ -48,6 +50,10 @@ protected:
 	// Default 아이템 스폰 처리 Component
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UC_DefaultItemSpawnerComponent* ItemSpawnerHelper{};
+
+private:
+	
+	class UC_TargetLocationSettingHelper* TargetLocationSettingHelper{};
 
 private:
 
