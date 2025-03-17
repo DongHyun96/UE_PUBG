@@ -46,6 +46,11 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
+	if (!IsValid(CurWeapon)) return false;
+	if (CurWeapon->GetMaxBulletCount() == CurWeapon->GetCurBulletCount())
+	{
+		return false;
+	}
 	//if (CurWeapon->GetIsPartAttached(EPartsName::GRIP))
 	//{
 	//	WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);

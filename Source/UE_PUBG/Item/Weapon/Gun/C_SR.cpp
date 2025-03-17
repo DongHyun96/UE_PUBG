@@ -60,7 +60,7 @@ bool AC_SR::ExecuteReloadMontage()
 	}
 	if (!IsValid(OwnerCharacter)) return false;
 	if (SniperReloadMontages.IsEmpty()) return false;
-	
+	//if (CurBulletCount == MaxBulletCount) return false;
 
 	AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
 
