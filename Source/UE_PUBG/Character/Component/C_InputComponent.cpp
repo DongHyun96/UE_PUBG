@@ -135,7 +135,7 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 	if (!Player->GetCanMove()) return;
 	if (Player->GetIsActivatingConsumableItem() && Player->GetPoseState() == EPoseState::CRAWL) return;
 
-	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
+	//Turn In Place중 움직이면 Turn In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
 	CancelTurnInPlaceMotion();
 
 	// 움직일 땐 카메라가 바라보는 방향으로 몸체도 돌려버림 (수업 기본 StrafeOn 세팅)
@@ -158,7 +158,7 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		PlayerMovement->bOrientRotationToMovement		= false;
 		Player->bUseControllerRotationYaw				= false;
 	}
-	else
+	else // Alt키 누르고 있지 않은 상황에서의 Move
 	{
 		Player->bUseControllerRotationYaw				= true;
 		PlayerMovement->bUseControllerDesiredRotation	= false;
@@ -321,12 +321,8 @@ void UC_InputComponent::CancelTurnInPlaceMotion()
 {
 	//Turn In Place중 움직이면 Turn In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
 	
-	UAnimMontage* RightMontage = Player->GetPoseTurnAnimMontage(Player->GetHandState()).RightMontages[Player->GetPoseState()].AnimMontage;
+	UAnimMontage* RightMontage	= Player->GetPoseTurnAnimMontage(Player->GetHandState()).RightMontages[Player->GetPoseState()].AnimMontage;
 	UAnimInstance* AnimInstance = Player->GetMesh()->GetAnimInstance();
-
-	if (!AnimInstance) return;
-
-	if (!IsValid(RightMontage)) return;
 
 	if (AnimInstance->Montage_IsPlaying(RightMontage))
 	{ 
@@ -521,9 +517,9 @@ void UC_InputComponent::OnBKey()
 
 void UC_InputComponent::OnRKey()
 {
-	// Testing용 Heal 주기
+	// Testing용 Heal 주기 TODO : Test라인 지우기
 	Player->GetStatComponent()->ApplyHeal(100.f);
-	
+
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteRKey();
 }
