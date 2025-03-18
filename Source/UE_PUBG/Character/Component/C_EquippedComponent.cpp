@@ -179,7 +179,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
                 if (!NextThrowableWeapon) continue; // NextThrowable이 Inven에 없는 경우
 
-                NextThrowableWeapon->MoveToSlot(OwnerCharacter);
+                NextThrowableWeapon->MoveToSlot(OwnerCharacter, NextThrowableWeapon->GetItemCurStack());
                 if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter)) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 
                 // 바로 다음 투척류 꺼내기
