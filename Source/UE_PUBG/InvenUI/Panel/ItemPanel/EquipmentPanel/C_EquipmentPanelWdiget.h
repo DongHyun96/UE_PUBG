@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -21,7 +21,7 @@ public:
 	void SetOwnerPlayer(class AC_Player* InOwnerPlayer) override;
 
 protected:
-	bool HandleDrop(class AC_Item* DroppedItem) override;
+	bool HandleDrop(class UC_ItemBox* DroppedItemBox) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))

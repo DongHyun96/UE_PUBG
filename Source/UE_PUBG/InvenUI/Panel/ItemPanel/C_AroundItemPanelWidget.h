@@ -15,9 +15,9 @@ class UE_PUBG_API UC_AroundItemPanelWidget : public UC_BasicItemPanelWidget
 	GENERATED_BODY()
 
 protected:
-	bool HandleDrop(class AC_Item* DroppedItem) override;
+	bool HandleDrop(class UC_ItemBox* DroppedItemBox) override;
 	
-	void ShowDividePanelWidget(AC_Item* DividedItem) override;
+	void ShowDividePanelWidget(UC_ItemBox* DividedItemBox) override;
 };
 
 

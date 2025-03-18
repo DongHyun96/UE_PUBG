@@ -68,9 +68,9 @@ public:
 	float GetCurDurabilityRate() const {return CurDurability / DURABILITY_MAX; }
 	
 protected:
-	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
+	bool MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack) override;
 
-	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
+	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
 
 protected:

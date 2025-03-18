@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -126,17 +126,17 @@ public:
 	void SetRelativeTranformToInitial() { SetActorRelativeTransform(InitialRelativeTransform); }
 
 protected:
-	virtual bool MoveSlotToAround(AC_BasicCharacter* Character) override;
-	virtual bool MoveSlotToInven(AC_BasicCharacter* Character) override;
-	virtual bool MoveSlotToSlot(AC_BasicCharacter* Character) override;
+	virtual bool MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack) override;
+	virtual bool MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	virtual bool MoveSlotToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
-	virtual bool MoveInvenToAround(AC_BasicCharacter* Character) override;
-	virtual bool MoveInvenToInven(AC_BasicCharacter* Character) override;
-	virtual bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
+	virtual bool MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack) override;
+	virtual bool MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	virtual bool MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
-	virtual bool MoveAroundToAround(AC_BasicCharacter* Character) override;
-	virtual bool MoveAroundToInven(AC_BasicCharacter* Character) override;
-	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
+	virtual bool MoveAroundToAround(AC_BasicCharacter* Character, int32 InStack) override;
+	virtual bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
 
 protected:

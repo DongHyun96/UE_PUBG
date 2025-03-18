@@ -74,7 +74,7 @@ void AC_Helmet::AttachToSocket(class AC_BasicCharacter* InParent)
 	
 }
 
-bool AC_Helmet::MoveSlotToAround(AC_BasicCharacter* Character)
+bool AC_Helmet::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, nullptr);
 	//OwnerCharacter = nullptr;
@@ -88,7 +88,7 @@ bool AC_Helmet::MoveSlotToAround(AC_BasicCharacter* Character)
 }
 
 
-bool AC_Helmet::MoveAroundToSlot(AC_BasicCharacter* Character)
+bool AC_Helmet::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, this);
 	return true;

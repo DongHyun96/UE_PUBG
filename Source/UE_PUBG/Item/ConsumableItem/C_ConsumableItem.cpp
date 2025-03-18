@@ -66,7 +66,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 				{
 					
 					//LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
-					TestLinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
+					LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
 
 					return;
 				}
@@ -107,7 +107,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser)) Player->GetHUDWidget()->OnConsumableUsed();
 
 		//LinkedItemBarWidget->SetPercent(0.f, UsageTime);
-		TestLinkedItemBarWidget->SetPercent(0.f, UsageTime);
+		LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 
 		ConsumableItemState = EConsumableItemState::IDLE;
 		
@@ -149,7 +149,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 void AC_ConsumableItem::SetLinkedItemBarWidget(UC_BasicItemBarWidget* InItemBarWidget)
 {
-	TestLinkedItemBarWidget = InItemBarWidget;
+	LinkedItemBarWidget = InItemBarWidget;
 }
 
 
@@ -233,7 +233,7 @@ bool AC_ConsumableItem::CancelActivating()
 
 	ConsumableItemState = EConsumableItemState::IDLE;
 	//LinkedItemBarWidget->SetPercent(0.f, UsageTime);
-	TestLinkedItemBarWidget->SetPercent(0.f, UsageTime);
+	LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 
 	UsingTimer			= 0.f;
 	//ItemUser			= nullptr;
@@ -247,7 +247,7 @@ bool AC_ConsumableItem::Interaction(AC_BasicCharacter* Character)
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		if (!OwnerCharacter) return LegacyMoveToInven(Character);
+		if (!OwnerCharacter) return MoveToInven(Character, this->GetItemCurStack());
 	case EItemPlace::INVEN:
 		return StartUsingConsumableItem(Character);
 		//break;
@@ -358,7 +358,7 @@ bool AC_ConsumableItem::LegacyMoveToAround(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_ConsumableItem::MoveInvenToAround(AC_BasicCharacter* Character)
+bool AC_ConsumableItem::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 
@@ -382,22 +382,22 @@ bool AC_ConsumableItem::MoveInvenToAround(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_ConsumableItem::MoveInvenToInven(AC_BasicCharacter* Character)
+bool AC_ConsumableItem::MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_ConsumableItem::MoveInvenToSlot(AC_BasicCharacter* Character)
+bool AC_ConsumableItem::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_ConsumableItem::MoveAroundToAround(AC_BasicCharacter* Character)
+bool AC_ConsumableItem::MoveAroundToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character)
+bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 
@@ -473,9 +473,9 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character)
 	}
 }
 
-bool AC_ConsumableItem::MoveAroundToSlot(AC_BasicCharacter* Character)
+bool AC_ConsumableItem::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
-	return MoveToInven(Character);
+	return MoveToInven(Character, InStack);
 }
 
 

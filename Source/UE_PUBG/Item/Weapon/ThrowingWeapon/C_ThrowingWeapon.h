@@ -120,14 +120,23 @@ private:
 	AC_Item* SpawnItem(AC_BasicCharacter* Character) override;
 
 protected:
-	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
-	bool MoveSlotToInven(AC_BasicCharacter* Character) override;
+	//bool MoveSlotToAround(AC_BasicCharacter* Character) override;
+	//bool MoveSlotToInven(AC_BasicCharacter* Character) override;
+	//
+	//bool MoveInvenToAround(AC_BasicCharacter* Character) override;
+	//bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
+	//
+	//bool MoveAroundToInven(AC_BasicCharacter* Character) override;
+	//bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 
-	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
-	bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
+	bool MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack) override;
 
-	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
-	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
+	bool MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack) override;
+
+	bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
 public:
 

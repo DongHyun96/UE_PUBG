@@ -78,7 +78,7 @@ void AC_Vest::AttachToSocket(AC_BasicCharacter* InParent)
 	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);
 }
 
-bool AC_Vest::MoveSlotToAround(AC_BasicCharacter* Character)
+bool AC_Vest::MoveSlotToAround(AC_BasicCharacter* Character,int32 InStack)
 {
 	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, nullptr);
 	//OwnerCharacter = nullptr;
@@ -91,7 +91,7 @@ bool AC_Vest::MoveSlotToAround(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_Vest::MoveAroundToSlot(AC_BasicCharacter* Character)
+bool AC_Vest::MoveAroundToSlot(AC_BasicCharacter* Character,int32 InStack)
 {
 	//TODO : 장착되어 있던 Vest 처리해주기 및 제대로 구현하기, SetSlotEquipment함수 참고하기.
 	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, this);

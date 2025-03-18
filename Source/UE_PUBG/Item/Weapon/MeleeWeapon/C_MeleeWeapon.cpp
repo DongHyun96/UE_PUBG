@@ -99,11 +99,11 @@ bool AC_MeleeWeapon::Interaction(AC_BasicCharacter* Character)
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		if (curWeapaon) return MoveToInven(Character);
+		if (curWeapaon) return MoveToInven(Character, this->GetItemCurStack());
 	case EItemPlace::INVEN:
-		return MoveToSlot(Character);
+		return MoveToSlot(Character, this->GetItemCurStack());
 	case EItemPlace::SLOT:
-		return MoveToInven(Character);
+		return MoveToInven(Character, this->GetItemCurStack());
 	default:
 		break;
 	}

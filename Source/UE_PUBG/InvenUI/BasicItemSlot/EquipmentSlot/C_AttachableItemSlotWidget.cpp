@@ -49,7 +49,7 @@ FReply UC_AttachableItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InG
 		if (AC_AttachableItem* SlotItem = curGun->GetAttachableItem()[SlotName])
 		{   // 우클릭 이벤트 실행
 			//EquippedItem->Interaction(OwnerCharacter);
-			SlotItem->MoveToInven(OwnerPlayer);
+			SlotItem->MoveToInven(OwnerPlayer, SlotItem->GetItemCurStack());
 			//InitInvenUIWidget();
 
 			//NativeOnListItemObjectSet에서의 호출과 중복으로 일단 주석처리, 다만 이벤트시에 초기화가 필요하면 사용해야 할 수 있음.
