@@ -62,8 +62,10 @@ public:
 	/// <returns> : 제대로 Spawn 되었다면 return true </returns>
 	bool SpawnPingImage(FVector2D MousePos) override;
 
-	// TODO : 이 함수 지우기
+public: // TODO : 이 블록 지우기
+	
 	bool SpawnJumpPosAndTargetPosImage(FVector JumpLocation, FVector TargetLocation);
+	bool SpawnSkyDivingStateDestinationImage(FVector Location);
 
 protected:
 
@@ -124,6 +126,9 @@ protected: // TODO : 이 점들 지우기
 	
 	class UImage* TargetPosImg{};
 	FVector2D TargetLocationPos{};
+
+	class UImage* SkyDivingStateDestinationImg{};
+	FVector2D SkyDivingStateDestinationPos{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UImage* EnemyLocationImg{};

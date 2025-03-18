@@ -4,6 +4,7 @@
 #include "Character/C_Enemy.h"
 
 #include "C_Player.h"
+#include "NavigationSystem.h"
 #include "AI/C_EnemyAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -11,6 +12,7 @@
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
+#include "Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
 
 #include "Item/C_Item.h"
@@ -30,6 +32,9 @@ AC_Enemy::AC_Enemy()
 
 	ItemSpawnerHelper = CreateDefaultSubobject<UC_DefaultItemSpawnerComponent>("ItemSpawnerHelper");
 	ItemSpawnerHelper->SetOwnerEnemy(this);
+
+	TargetLocationSettingHelper = CreateDefaultSubobject<UC_TargetLocationSettingHelper>("TargetLocationSetter");
+	TargetLocationSettingHelper->SetOwnerEnemy(this);
 	
 	SkyDivingComponent = CreateDefaultSubobject<UC_EnemySkyDivingComponent>("EnemySkyDivingComponent");
 	SkyDivingComponent->SetOwnerCharcter(this);
@@ -42,8 +47,8 @@ void AC_Enemy::BeginPlay()
 
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
-    // TODO : 비행기 타기 이전에 spawn하는 것으로 수정하기
-    ItemSpawnerHelper->SpawnDefaultWeaponsAndItems();
+    // 비행기 타기 이전에 spawn하는 것으로 수정되었음
+    // ItemSpawnerHelper->SpawnDefaultWeaponsAndItems();
 }
 
 void AC_Enemy::Tick(float DeltaSeconds)

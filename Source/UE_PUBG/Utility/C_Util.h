@@ -29,6 +29,12 @@ public:
 	static void PrintLogMessage(const FString& str);
 
 	static void ClearAllMessages() { GEngine->ClearOnScreenDebugMessages(); }
+
+public:
+	/// <summary>
+	/// FVector XY 성분 떼어서 FVector2D return
+	/// </summary>
+	static FVector2D GetXY(const FVector& InVector) { return FVector2D(InVector.X, InVector.Y); }
 };
 
 

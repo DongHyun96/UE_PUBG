@@ -30,6 +30,23 @@ enum class EThrowableType : uint8
 	MAX
 };
 
+/// <summary>
+/// ThrowableType에 대한 Iterator 구현을 위한 연산자 오버로딩 (Prefix (++Type))
+/// </summary>
+/// <param name="Type"></param>
+/// <returns></returns>
+inline EThrowableType& operator++(EThrowableType& Type)
+{
+	if (Type == EThrowableType::MAX || Type == EThrowableType::SMOKE)
+	{
+		Type = EThrowableType::GRENADE;
+		return Type;
+	}
+	
+	Type = static_cast<EThrowableType>(static_cast<uint8>(Type) + 1);
+	return Type;
+}
+
 /**
  *
  */
@@ -60,6 +77,12 @@ public:
 	bool AttachToHolster(class USceneComponent* InParent) override;
 
 	bool AttachToHand(class USceneComponent* InParent) override;
+
+public:
+
+	static TMap<EThrowableType, FName> GetThrowableItemNameMap() { return THROWABLETYPE_ITEMNAME_MAP; }
+
+	EThrowableType GetThrowableType() const { return ThrowableType; }
 
 private:
 

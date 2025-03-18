@@ -17,20 +17,8 @@ enum class EServiceType : uint8
 	MAX
 };
 
-// TODO : Behavior type 카테고리 수정 (기존 수업 Behavior Type -> BT Service에서 해당 type transition 시켰음)
-UENUM(BlueprintType)
-enum class EBehaviorType : uint8
-{
-	WAIT,
-	PATROL,
-	TRACE,
-	ATTACK,
-	HIT,
-	DEATH,
-	MAX
-};
-
-enum class EIdleTaskType : uint8;
+enum class EIdleTaskType   : uint8;
+enum class ECombatTaskType : uint8;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_BehaviorComponent : public UActorComponent
@@ -48,12 +36,12 @@ public:
 
 	void SetBlackboard(class UBlackboardComponent* InBlackboard) { Blackboard = InBlackboard; }
 
-
-	bool SetBehaviorType(EBehaviorType Type);
-
 	bool SetServiceType(EServiceType Type);
 
+public:
+
 	bool SetIdleTaskType(EIdleTaskType Type);
+	bool SetCombatTaskType(ECombatTaskType Type);
 
 public:
 	
@@ -74,9 +62,6 @@ protected:
 	FName ServiceKey = "Service";
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName BehaviorKey = "Behavior";
-	
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName TargetCharacterKey = "TargetCharacter";
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
@@ -87,8 +72,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName IdleTaskKey = "IdleTask";
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FName CombatTaskKey = "CombatTask";
+	
 private:
 	class UBlackboardComponent* Blackboard{};
 };
+
+
 
 

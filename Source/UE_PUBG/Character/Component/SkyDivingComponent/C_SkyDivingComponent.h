@@ -18,30 +18,6 @@ enum class ESkyDivingState : uint8
 	MAX
 };
 
-/// <summary>
-/// 자세 speed 관련 struct
-/// </summary>
-struct FDivingSpeeds
-{
-	FDivingSpeeds() {}
-
-	FDivingSpeeds(float MinWalk, float MaxWalk, float BackKeyZSpeed, float ZSpeedMin, float ZSpeedMax) :
-		MaxWalkSpeed_Min(MinWalk),
-		MaxWalkSpeed_Max(MaxWalk),
-		BackKeyZSpeed(BackKeyZSpeed),
-		ZSpeedMin(ZSpeedMin),
-		ZSpeedMax(ZSpeedMax) 
-	{}
-
-	FVector2D GetZSpeedMinMax() const { return FVector2D(ZSpeedMin, ZSpeedMax); }
-	FVector2D GetMaxWalkSpeedMaxMin() const { return FVector2D(MaxWalkSpeed_Max, MaxWalkSpeed_Min); }
-
-	float MaxWalkSpeed_Min{};	// 캐릭터 최소 이동 속력
-	float MaxWalkSpeed_Max{};	// 캐릭터 최대 이동 속력
-	float BackKeyZSpeed{};		// 뒷방향 input일 때의 Z Speed
-	float ZSpeedMin{};			// 일반 상황에서의 Z Speed Min
-	float ZSpeedMax{};			// 일반 상황에서의 Z Speed Max
-};
 
 UCLASS(Abstract, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_SkyDivingComponent : public UActorComponent
@@ -71,6 +47,13 @@ public:
 	/// <returns> : 원하는 값으로 setting되지 않았다면 return false </returns>
 	bool SetSkyDivingState(ESkyDivingState InSkyDivingState);
 
+	static float GetParachuteDeployLimitHeight() { return PARACHUTE_DEPLOY_LIMIT_HEIGHT; }
+
+	/// <summary>
+	/// 현재 Character Landing Montage가 재생 중인지
+	/// </summary>
+	bool IsCharacterLandingMontagePlaying() const { return OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(LandingMontage.AnimMontage); }
+
 protected: // SetSkyDivingState 내부의 Template pattern methods
 	
 	virtual void SetStateToSkyDivingState() PURE_VIRTUAL( UC_SkyDivingComponent::SetStateToSkyDivingState; );
@@ -78,7 +61,7 @@ protected: // SetSkyDivingState 내부의 Template pattern methods
 	virtual void SetStateToParachutingState() PURE_VIRTUAL( UC_SkyDivingComponent::SetStateToParachutingState; );
 
 	virtual void SetStateToLandingState() PURE_VIRTUAL( UC_SkyDivingComponent::SetStateToLandingState; );
-	
+
 public:
 
 	/// <summary>
