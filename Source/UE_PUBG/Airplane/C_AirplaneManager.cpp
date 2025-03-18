@@ -13,7 +13,8 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
-#include "Character/Component/C_SkyDivingComponent.h"
+#include "Character/Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
+#include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
@@ -33,8 +34,8 @@ void AC_AirplaneManager::BeginPlay()
 	InitRandomStartDestPosition();
 	
 	// Airplane TakeOff Timer Setting
-	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 10.f, false);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 0.5f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
+	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 0.5f, false);
 
 	if (!IsValid(Airplane))
 	{
@@ -68,9 +69,7 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 	{
 		Airplane->StartFlight();
 		HasAirplaneTakeOff = true;
-
-		//GAMESCENE_MANAGER->GetPlayer()->SetMainState(EMainState::SKYDIVING);
-		//GAMESCENE_MANAGER->GetPlayer()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::READY);
+		
 		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
 		{
 			Character->SetMainState(EMainState::SKYDIVING);
@@ -78,12 +77,12 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 
 			if (AC_Enemy* Enemy = Cast<AC_Enemy>(Character))
 			{
+				Enemy->GetItemSpawnerHelper()->SpawnDefaultWeaponsAndItems(); // 기본으로 가지고 있을 무기와 Item 스폰 시키기
+				
 				UC_BehaviorComponent* EnemyBehvaiorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent(); 
 				EnemyBehvaiorComponent->SetServiceType(EServiceType::SKYDIVE);
 				// EnemyBehvaiorComponent->SetIdleTaskType;
-				
 			}
-			
 		}
 	}
 }

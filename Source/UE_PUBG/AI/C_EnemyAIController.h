@@ -6,6 +6,8 @@
 #include "AIController.h"
 #include "C_EnemyAIController.generated.h"
 
+
+
 /**
  * 
  */
@@ -29,7 +31,12 @@ public:
 	UFUNCTION()
 	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
+	UFUNCTION()
+	void OnTargetPerceptionUpdated(AActor* Actor, struct FAIStimulus Stimulus);
+
 	class UC_BehaviorComponent* GetBehaviorComponent() const { return BehaviorComponent; }
+
+	
 
 protected:
 
@@ -37,11 +44,18 @@ protected:
 
 	class AC_Enemy* OwnerCharacter{};
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	float BehaviorRange = 150.f;
+	/*UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	float BehaviorRange = 150.f;*/
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UC_BehaviorComponent* BehaviorComponent{};
+
+private:
+
+	// TODO : 이 Color 지우기
+	FColor TickColor{};
+	
 };
+
 
 

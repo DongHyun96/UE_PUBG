@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWdiget.h"
@@ -18,6 +18,7 @@
 #include "InvenUserInterface/C_DragDropOperation.h"
 
 #include "Item/C_Item.h"
+#include "Item/C_ItemBox.h"
 
 #include "Utility/C_Util.h"
 
@@ -86,10 +87,10 @@ void UC_EquipmentPanelWdiget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
 
 }
 
-bool UC_EquipmentPanelWdiget::HandleDrop(AC_Item* DroppedItem)
+bool UC_EquipmentPanelWdiget::HandleDrop(UC_ItemBox* DroppedItemBox)
 {
 	UC_Util::Print("MoveToSlot");
-	return DroppedItem->MoveToSlot(OwnerPlayer);
+	return DroppedItemBox->GetItemRef()->MoveToSlot(OwnerPlayer,DroppedItemBox->GetItemStackCount());
 }
 
 

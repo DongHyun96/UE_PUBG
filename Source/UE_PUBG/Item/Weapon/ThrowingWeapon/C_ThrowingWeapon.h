@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -30,6 +30,23 @@ enum class EThrowableType : uint8
 	MAX
 };
 
+/// <summary>
+/// ThrowableType에 대한 Iterator 구현을 위한 연산자 오버로딩 (Prefix (++Type))
+/// </summary>
+/// <param name="Type"></param>
+/// <returns></returns>
+inline EThrowableType& operator++(EThrowableType& Type)
+{
+	if (Type == EThrowableType::MAX || Type == EThrowableType::SMOKE)
+	{
+		Type = EThrowableType::GRENADE;
+		return Type;
+	}
+	
+	Type = static_cast<EThrowableType>(static_cast<uint8>(Type) + 1);
+	return Type;
+}
+
 /**
  *
  */
@@ -60,6 +77,12 @@ public:
 	bool AttachToHolster(class USceneComponent* InParent) override;
 
 	bool AttachToHand(class USceneComponent* InParent) override;
+
+public:
+
+	static TMap<EThrowableType, FName> GetThrowableItemNameMap() { return THROWABLETYPE_ITEMNAME_MAP; }
+
+	EThrowableType GetThrowableType() const { return ThrowableType; }
 
 private:
 
@@ -97,14 +120,23 @@ private:
 	AC_Item* SpawnItem(AC_BasicCharacter* Character) override;
 
 protected:
-	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
-	bool MoveSlotToInven(AC_BasicCharacter* Character) override;
+	//bool MoveSlotToAround(AC_BasicCharacter* Character) override;
+	//bool MoveSlotToInven(AC_BasicCharacter* Character) override;
+	//
+	//bool MoveInvenToAround(AC_BasicCharacter* Character) override;
+	//bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
+	//
+	//bool MoveAroundToInven(AC_BasicCharacter* Character) override;
+	//bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
 
-	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
-	bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
+	bool MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack) override;
 
-	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
-	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
+	bool MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack) override;
+
+	bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
 public:
 
@@ -341,7 +373,7 @@ protected:
 
 private:
 
-	static const TMap<EThrowableType, FString> THROWABLETYPE_ITEMNAME_MAP;
+	static const TMap<EThrowableType, FName> THROWABLETYPE_ITEMNAME_MAP;
 
 private:
 

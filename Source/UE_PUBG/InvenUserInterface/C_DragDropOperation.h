@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -22,12 +22,20 @@ public:
 		curWeaponSlot = EWeaponSlot::NONE;
 	}
 
+	void SetDraggedItemBox(class AC_Item* InItem);
+
+	void SetDraggedItemBox(class UC_ItemBox* InItemBox);
+
+
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UUserWidget* WidgetReference = nullptr;
 
 	UPROPERTY(BlueprintReadWrite)
-	class AC_Item* DraggedItem;
+	class AC_Item* DraggedItem = nullptr;
+
+	//UPROPERTY(BlueprintReadWrite)
+	class UC_ItemBox* DraggedItemBox = nullptr;
 
 
 	UPROPERTY(BlueprintReadWrite)

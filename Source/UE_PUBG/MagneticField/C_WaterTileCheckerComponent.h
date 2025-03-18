@@ -9,8 +9,6 @@
 
 struct FMagneticCircle;
 
-// TODO : Enemy 낙하지점 정할 때 물인지 체크
-
 /// <summary>
 /// <para> Level에서 특정 위치가 물인지 판별하는 WaterTileChecker 클래스 </para>
 /// <para> Shanty-town 맵 기준 우측 상단 Tile 좌표(0,0), 좌측 하단 Tile 좌표(9,9) | 타일 크기는 100 x 100(m)로 잡음 </para>
@@ -41,6 +39,11 @@ public:
 	/// <returns> Water Tile 개수 </returns>
 	uint8 GetWaterTileCount(const FMagneticCircle& TargetCircle) const;
 
+	/// <summary>
+	/// 해당 Tile좌표가 WaterTile인지 조사 
+	/// </summary>
+	static bool IsWaterTileCoord(const TPair<uint8, uint8>& TileCoord) { return WATERTILE_COORDINATES.Contains(TileCoord); }
+
 
 	/*/// <summary>
 	/// TargetLocation이 Water인지 아닌지 WaterTile 위치와 TargetPhaseRadius를 통해 대략적으로 판별
@@ -57,16 +60,5 @@ private:
 private:
 
 	// Water로 지정된 Tile 좌표들
-	const TArray<TPair<uint8, uint8>> WATERTILE_COORDINATES =
-	{
-		{0, 8}, {0, 9}, {1, 6}, {1, 7}, {1, 8}, {1, 9},
-		{2, 8}, {2, 9},
-		{3, 9},
-		{4, 6}, {4, 7}, {4 ,8}, {4, 9},
-		{5, 6}, {5, 7}, {5, 8}, {5, 9},
-		{6, 7}, {6, 8}, {6, 9},
-		{7, 8}, {7, 9},
-		{8, 0}, {8, 1}, {8, 8}, {8, 9},
-		{9, 0}, {9, 1}, {9, 8}, {9, 9}
-	};
+	static const TArray<TPair<uint8, uint8>> WATERTILE_COORDINATES;
 };

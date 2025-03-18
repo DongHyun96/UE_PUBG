@@ -33,7 +33,7 @@ AC_SR::AC_SR()
 	PrimaryActorTick.bCanEverTick = true;
 	//ItemType 설정.
 	//ItemDataRef.ItemType = EItemTypes::MAINGUN;
-	CurGunType = EGunType::SR;
+	//CurGunType = EGunType::SR;
 	EQUIPPED_SOCKET_NAME = FName("Sniper_Equip"); // 무기가 손에 부착될 socket 이름
 	IronSightWindowLocation = FVector2D(0.5f, 0.5f);
 	CurrentShootingMode = EShootingMode::SEMI_AUTO;
@@ -52,15 +52,21 @@ void AC_SR::Tick(float DeltaTime)
 
 bool AC_SR::ExecuteReloadMontage()
 {
+	int LeftAmmoCount = 0;
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
+	if (IsValid(CurBullet))
+	{
+		LeftAmmoCount = CurBullet->GetItemCurStack();
+	}
 	if (!IsValid(OwnerCharacter)) return false;
 	if (SniperReloadMontages.IsEmpty()) return false;
-	
+	//if (CurBulletCount == MaxBulletCount) return false;
 
 	AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
 
 	if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
 
-	if (CurBulletCount > 0 && CurrentShootingMode == EShootingMode::SINGLE_SHOT &&!IsReloadingSR)
+	if (CurBulletCount > 1 && CurrentShootingMode == EShootingMode::SINGLE_SHOT &&!IsReloadingSR)
 	{
 		UAnimMontage* DrawMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
 		OwnerCharacter->PlayAnimMontage(SniperReloadMontages[OwnerCharacter->GetPoseState()]);
@@ -82,10 +88,13 @@ bool AC_SR::ExecuteReloadMontage()
 	}
 	else
 	{
-		if (OwnerCharacter->GetCurrentSevenmmBulletCount() == 0) return false;
-		OwnerCharacter->SetIsReloadingBullet(true);
-		OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
-		BackToMainCamera();
+		if (LeftAmmoCount == 0) return false;
+		if (CurBulletCount == 0)
+		{
+			OwnerCharacter->SetIsReloadingBullet(true);
+			OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
+			BackToMainCamera();
+		}
 	}
 	return true;
 }	

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "InvenUI/Panel/C_BasicPanelWidget.h"
 #include "Components/ListView.h"
-
+#include "Item/C_ItemBox.h"
 #include "C_BasicItemPanelWidget.generated.h"
 
 /**
@@ -18,22 +18,11 @@ class UE_PUBG_API UC_BasicItemPanelWidget : public UC_BasicPanelWidget
 	
 public:
 	
-   //void NativeConstruct();
-   //
-   //void OnEntryInitialized(UUserWidget& EntryWidget, AC_Item* ListItem);
-    
-    /// <summary>
-    /// MyItemListWidget(UI에 보이는 Inventory의 itemlist)를 초기화 하는 함수.
-    /// </summary>
-    /// <param name="itemlist"></param>
-    //UFUNCTION(BlueprintCallable)
-    void AddTMapItem(TMap<FString, TArray<AC_Item*>> MyItemMap);
-
     /// <summary>
     /// InventoryItemList의 Update함수
     /// </summary>
     /// <param name="MyItemMap"></param>
-    void UpdateInventoryItemList(TMap<FString, AC_Item*> MyItemMap);
+    void UpdateInventoryItemList(TMap<FName, AC_Item*> MyItemMap);
 
     /// <summary>
     /// AroundItemList의 Update함수.

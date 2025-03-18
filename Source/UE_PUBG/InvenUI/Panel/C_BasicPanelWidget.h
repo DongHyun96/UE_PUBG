@@ -17,9 +17,9 @@ public:
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 protected:
-	virtual bool HandleDrop(class AC_Item* DroppedItem); //TODO: 순수가상함수로
+	virtual bool HandleDrop(class UC_ItemBox* DroppedItemBox); //TODO: 순수가상함수로
 
-	virtual void ShowDividePanelWidget(AC_Item* DividedItem);
+	virtual void ShowDividePanelWidget(UC_ItemBox* DividedItemBox);
 };
 
 

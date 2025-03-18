@@ -66,10 +66,10 @@ void AC_AttachableItem::Tick(float DeltaTime)
 
 bool AC_AttachableItem::Interaction(AC_BasicCharacter* Character)
 {
-	return MoveToSlot(Character);
+	return MoveToSlot(Character, this->GetItemCurStack());
 }
 
-bool AC_AttachableItem::MoveAroundToInven(AC_BasicCharacter* Character)
+bool AC_AttachableItem::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 
@@ -86,7 +86,7 @@ bool AC_AttachableItem::MoveAroundToInven(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_AttachableItem::MoveAroundToSlot(AC_BasicCharacter* Character)
+bool AC_AttachableItem::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 	
@@ -104,10 +104,10 @@ bool AC_AttachableItem::MoveAroundToSlot(AC_BasicCharacter* Character)
 			return true;
 	}
 
-	return MoveToInven(Character);
+	return MoveToInven(Character, InStack);
 }
 
-bool AC_AttachableItem::MoveInvenToAround(AC_BasicCharacter* Character)
+bool AC_AttachableItem::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 
@@ -124,7 +124,7 @@ bool AC_AttachableItem::MoveInvenToAround(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_AttachableItem::MoveInvenToSlot(AC_BasicCharacter* Character)
+bool AC_AttachableItem::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
@@ -143,7 +143,7 @@ bool AC_AttachableItem::MoveInvenToSlot(AC_BasicCharacter* Character)
 	return false;
 }
 
-bool AC_AttachableItem::MoveSlotToAround(AC_BasicCharacter* Character)
+bool AC_AttachableItem::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 
@@ -156,7 +156,7 @@ bool AC_AttachableItem::MoveSlotToAround(AC_BasicCharacter* Character)
 	return false;
 }
 
-bool AC_AttachableItem::MoveSlotToInven(AC_BasicCharacter* Character)
+bool AC_AttachableItem::MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	//if (!GetOwnerGun()) return false;
 
@@ -173,7 +173,7 @@ bool AC_AttachableItem::MoveSlotToInven(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_AttachableItem::MoveSlotToSlot(AC_BasicCharacter* Character)
+bool AC_AttachableItem::MoveSlotToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
 
@@ -219,8 +219,8 @@ bool AC_AttachableItem::AttachItemToWeaponAndMove(AC_Gun* Weapon, AC_BasicCharac
 	if (ChangedItem) //return false; // ChangedItem이 nullptr 라면 return false;
 	{
 		// 부착된 아이템을 인벤토리 또는 주변 리스트로 이동
-		if (!ChangedItem->MoveToInven(Character)) //왜 중간에 return false를 넘어가서 마지막 return true까지 갔는데도 결과가 false지?-> MoveTo~에서 return을 제대로 안해줬음.
-			ChangedItem->MoveToAround(Character);
+		if (!ChangedItem->MoveToInven(Character, ChangedItem->GetItemCurStack())) //왜 중간에 return false를 넘어가서 마지막 return true까지 갔는데도 결과가 false지?-> MoveTo~에서 return을 제대로 안해줬음.
+			ChangedItem->MoveToAround(Character, ChangedItem->GetItemCurStack());
 	}
 	Weapon->SetAttachableItemSlot(this->Name, this);
 
@@ -246,8 +246,8 @@ bool AC_AttachableItem::AttachItemToWeaponAndMoveInven(AC_Gun* Weapon, UC_InvenC
 	
 	if (ChangedItem)
 	{
-		if (!ChangedItem->MoveToInven(OwnerCharacter))
-			ChangedItem->MoveToAround(OwnerCharacter);
+		if (!ChangedItem->MoveToInven(OwnerCharacter, ChangedItem->GetItemCurStack()))
+			ChangedItem->MoveToAround(OwnerCharacter, ChangedItem->GetItemCurStack());
 	}
 	Weapon->SetAttachableItemSlot(this->Name, this);  // 부착물 설정
 

@@ -8,8 +8,7 @@ void UC_AnimEnemy::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
 	if (!OwnerCharacter) return;
-
+	if (OwnerCharacter->GetMainState() == EMainState::SKYDIVING) return;
+	
 	Speed = OwnerCharacter->GetVelocity().Size2D();
 }
-
-

@@ -31,8 +31,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	bool Interaction(AC_BasicCharacter* Character) override;
-	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
-	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
+	bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack) override;
 
 	/// <summary>
 	/// 이 아이템의 주인이 player인 경우 실행하여
@@ -44,9 +44,7 @@ public:
 	void UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer);
 
 
-	void AddBulletStackToCharacter(EBulletType InBulletType, AC_BasicCharacter* InLootingCharacter);
 
-	void DeBulletStackToCharacter();
 protected:
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 

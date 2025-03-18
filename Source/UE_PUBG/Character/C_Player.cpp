@@ -60,6 +60,8 @@
 #include "HUD/C_MainMapWidget.h"
 #include "HUD/C_SkyDiveWidget.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
+#include "Component/SkyDivingComponent/C_PlayerSkyDivingComponent.h"
+#include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "Singleton/C_GameSceneManager.h"
 
 AC_Player::AC_Player()
@@ -106,6 +108,10 @@ AC_Player::AC_Player()
 
 	CameraEffectComponent = CreateDefaultSubobject<UC_CameraEffectComponent>("CameraEffectComponent");
 	CameraEffectComponent->SetOwnerPlayer(this);
+
+	SkyDivingComponent = CreateDefaultSubobject<UC_PlayerSkyDivingComponent>("PlayerSkyDivingComponent");
+	SkyDivingComponent->SetOwnerCharcter(this);
+	PlayerSkyDivingComponent = Cast<UC_PlayerSkyDivingComponent>(SkyDivingComponent);
 }
 
 void AC_Player::BeginPlay()
@@ -116,6 +122,7 @@ void AC_Player::BeginPlay()
 	InitialMainCameraRelativeRotation = MainCamera->GetRelativeRotation().Quaternion();
 	AimCamera->SetRelativeLocation(FVector(0));
 	AimCamera->SetRelativeRotation(FQuat(0));
+	
 	if (HUDWidget)
 	{
 		HUDWidget->AddToViewport(10);
@@ -284,7 +291,7 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 		Controller->SetControlRotation(FMath::Lerp(Controller->GetControlRotation(), CharacterMovingDirection, DeltaTime * 10.0f));
 	}
 	//일정각도 이하로 차이나면 캐릭터 로테이션으로 정해버리기(가끔 적용이 안되는데 이유를 아직 못찾음)
-	float DeltaYawTemp= FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Yaw);
+	float DeltaYawTemp = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Yaw);
 	float DeltaPitchTemp = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Pitch);
 
 
@@ -476,9 +483,9 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 		//Inventory->AddItemToAroundList(OverlappedItem);
 
 		if (OverlappedItem->GetOwnerCharacter() == nullptr)
-
 		{
 			if (!IsValid(InvenComponent)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
+			if (InvenComponent->GetTestAroundItems().Contains(OverlappedItem)) return;
 			InvenComponent->AddItemToAroundList(OverlappedItem);
 			//Inventory->InitInvenUI();
 			//if (!IsValid(InvenSystem)) return;

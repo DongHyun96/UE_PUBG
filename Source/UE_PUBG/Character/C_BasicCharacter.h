@@ -117,6 +117,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	/// <summary>
+	/// Enemy AI Controller가 Team인지 아닌지 인식할 때 사용 -> 여기서는 무조건 모두 적으로 간주(Enemy AI 서로도 적으로 간주)
+	/// </summary>
+	/// <param name="Other"></param>
+	/// <returns></returns>
+	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override { return ETeamAttitude::Hostile; }
+
 private:
 
 	/// <summary>
@@ -267,7 +274,7 @@ public:
 	class UC_SwimmingComponent* GetSwimmingComponent() const { return SwimmingComponent; }
 
 	UFUNCTION(BlueprintGetter)
-	class UC_SkyDivingComponent* GetSkyDivingComponent() const { return SkyDiveComponent; }
+	class UC_SkyDivingComponent* GetSkyDivingComponent() const { return SkyDivingComponent; }
 
 	class UC_AttachableItemMeshComponent* GetAttachmentMeshComponent() { return AttachmentMeshComponent; };
 
@@ -417,8 +424,7 @@ protected: // 총알 Object Pooling(AC_Item으로 만들어진 Bullet은 사용X
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<class AC_Item*> Bullets;
 
-	int SevenmmBulletCount = 0;
-	int FivemmBulletCount  = 0;
+
 
 protected:
 	//총알 Object Pooling (World에서 작업할 예정)
@@ -429,10 +435,7 @@ protected:
 
 public:
 	TArray<AC_Bullet*>& GetBullets() { return PooledBullets; }
-	int GetCurrentSevenmmBulletCount() { return SevenmmBulletCount; }
-	int GetCurrentFivemmBulletCount()  { return FivemmBulletCount;}
-	void AddSevenmmBulletStack(int inBulletCount);
-	void AddFivemmBulletStack(int inBulletCount);
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -441,7 +444,7 @@ protected:
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_SkyDivingComponent* SkyDiveComponent{};
+	class UC_SkyDivingComponent* SkyDivingComponent{};
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -458,7 +461,7 @@ protected: // 파쿠르 관련 Components
 protected: // AI 피아 식별 관련
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TEnumAsByte<ETeamAttitude::Type> TeamID = ETeamAttitude::Neutral;
+	TEnumAsByte<ETeamAttitude::Type> TeamID = ETeamAttitude::Hostile;
 ///
 ///캐릭터 피 파티클시스템
 ///

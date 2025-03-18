@@ -112,7 +112,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	AC_Item* FindMyItem(AC_Item* item);
 
-	AC_Item* FindMyItem(FString itemName);
+	/// <summary>
+	/// 아이템 객체의 변수 ItemCode를 통해 InvenComponent에 있는 MyItems에 해당 코드의 아이템이 있는지 확인.
+	/// </summary>
+	/// <param name="itemName">찾고자 하는 아이템</param>
+	/// <returns>찾고자 하는 아이템. (없다면 nullptr 반환)</returns>
+	UFUNCTION(BlueprintCallable)
+	AC_Item* FindMyItemByName(FName itemName);
 
 	void AddItemToMyList(AC_Item* item); //{ testMyItems.Add(item->GetItemDatas().ItemName, item); }
 
@@ -120,9 +126,9 @@ public:
 
 	void DestroyMyItem(AC_Item* DestroyedItem);
 
-	void AddItemToAroundList(AC_Item* item) { testAroundItems.Add(item); }
+	void AddItemToAroundList(AC_Item* item) { AroundItems.Add(item); }
 
-	void RemoveItemToAroundList(AC_Item* item) { testAroundItems.Remove(item); }
+	void RemoveItemToAroundList(AC_Item* item) { AroundItems.Remove(item); }
 
 	UFUNCTION(BlueprintCallable)
 	void GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values);
@@ -154,9 +160,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	TMap<EEquipSlot, AC_EquipableItem*> GetEquipmentItems() { return EquipmentItems; }
 
-	const TMap<FString, class AC_Item*>& GetTestMyItems() { return testMyItems; }
+	const TMap<FName, class AC_Item*>& GetMyItems() { return MyItems; }
 
-	TArray<AC_Item*>& GetTestAroundItems() { return testAroundItems; }
+	TArray<AC_Item*>& GetTestAroundItems() { return AroundItems; }
 
 
 protected:
@@ -182,12 +188,14 @@ protected:
 	/// 두번째는 MyItem에 다 넣고 한번에 떨구는 것.
 	/// </summary>
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<FString, AC_Item*> testMyItems;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<FName, AC_Item*> MyItems;
+
+	//TMap<FName, UC_ItemBox*> MyItems;
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TArray<AC_Item*> testAroundItems;
+	TArray<AC_Item*> AroundItems;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EEquipSlot, AC_EquipableItem*> EquipmentItems = 

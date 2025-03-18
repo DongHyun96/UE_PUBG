@@ -104,14 +104,14 @@ protected:
 
 	virtual void HandleDestroy() PURE_VIRTUAL(AC_ConsumableItem::HandleDestroy, );
 
-private:
-	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
-	bool MoveInvenToInven(AC_BasicCharacter* Character) override;
-	bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
+protected:
+	bool MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
-	bool MoveAroundToAround(AC_BasicCharacter* Character) override;
-	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
-	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
+	bool MoveAroundToAround(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
 public: // getters and setters
 
@@ -120,10 +120,10 @@ public: // getters and setters
 	float GetUsingTimer() const { return UsingTimer; }
 	
 	//이전 코드
-	class UC_ItemBarWidget* GetLinkedItemBarWidget() { return LinkedItemBarWidget; }
+	//class UC_ItemBarWidget* GetLinkedItemBarWidget() { return LinkedItemBarWidget; }
 
 	//리팩토링중인 ItemBar
-	class UC_BasicItemBarWidget* GetTestLinkedItemBarWidget() { return TestLinkedItemBarWidget; }
+	class UC_BasicItemBarWidget* GetLinkedItemBarWidget() { return LinkedItemBarWidget; }
 
 protected:
 	
@@ -149,11 +149,11 @@ protected:
 protected:
 
 	// 이 Consumable Item과 연결된 ItemBarWidget 객체
-	UC_ItemBarWidget* LinkedItemBarWidget{};
+	//UC_ItemBarWidget* LinkedItemBarWidget{};
 
 	//// 이 Consumable Item과 연결된 ItemBarWidget 객체
 	//UI리팩토링중에 사용중인 ItemBar
-	UC_BasicItemBarWidget* TestLinkedItemBarWidget{};
+	UC_BasicItemBarWidget* LinkedItemBarWidget{};
 
 
 };

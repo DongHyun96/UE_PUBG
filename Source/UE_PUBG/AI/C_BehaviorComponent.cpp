@@ -6,6 +6,7 @@
 #include "Character/C_BasicCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/C_Player.h"
+#include "Service/C_BTServiceCombat.h"
 
 #include "Service/C_BTServiceIdle.h"
 #include "Singleton/C_GameSceneManager.h"
@@ -23,10 +24,8 @@ void UC_BehaviorComponent::BeginPlay()
 	Super::BeginPlay();
 
 	SetServiceType(EServiceType::IDLE);
-	SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
+	SetIdleTaskType(EIdleTaskType::WAIT);
 
-	// TODO : TargetCharacter 다른 곳에서 잡아주는 로직 만들기
-	SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer());
 	// SetServiceType(EServiceType::COMBAT);
 }
 
@@ -35,28 +34,24 @@ void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-bool UC_BehaviorComponent::SetBehaviorType(EBehaviorType Type)
-{
-	if (Type == EBehaviorType::MAX) return false;
-
-	Blackboard->SetValueAsEnum(BehaviorKey, (uint8)Type);
-	return true;
-}
-
 bool UC_BehaviorComponent::SetServiceType(EServiceType Type)
 {
 	if (Type == EServiceType::MAX) return false;
-
-	Blackboard->SetValueAsEnum(ServiceKey, (uint8)Type);
+	Blackboard->SetValueAsEnum(ServiceKey, static_cast<uint8>(Type));
 	return true;
 }
 
 bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 {
 	if (Type == EIdleTaskType::MAX) return false;
+	Blackboard->SetValueAsEnum(IdleTaskKey, static_cast<uint8>(Type));
+	return false;
+}
 
-	Blackboard->SetValueAsEnum(IdleTaskKey, (uint8)Type);
-
+bool UC_BehaviorComponent::SetCombatTaskType(ECombatTaskType Type)
+{
+	if (Type == ECombatTaskType::MAX) return false;
+	Blackboard->SetValueAsEnum(CombatTaskKey, static_cast<uint8>(Type));
 	return false;
 }
 

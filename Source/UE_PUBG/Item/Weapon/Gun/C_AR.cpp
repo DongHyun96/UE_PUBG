@@ -33,7 +33,7 @@ AC_AR::AC_AR()
 	PrimaryActorTick.bCanEverTick = true;
 	//ItemType 설정.
 	//ItemDataRef.ItemType = EItemTypes::MAINGUN; ItemType
-	CurGunType = EGunType::AR;
+	//CurGunType = EGunType::AR;
 	EQUIPPED_SOCKET_NAME = FName("Rifle_Equip"); // 무기가 손에 부착될 socket 이름
 	IronSightWindowLocation = FVector2D(0.5f, 0.4f);
 
@@ -52,8 +52,14 @@ void AC_AR::Tick(float DeltaTime)
 
 bool AC_AR::ExecuteReloadMontage()
 {
+	int LeftAmmoCount = 0;
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
+	if (IsValid(CurBullet))
+	{
+		LeftAmmoCount = CurBullet->GetItemCurStack();
+	}
 	if (!OwnerCharacter) return false;
-	if (OwnerCharacter->GetCurrentFivemmBulletCount() == 0) return false;
+	if (LeftAmmoCount == 0) return false;
 	if (CurBulletCount == MaxBulletCount)
 	{
 		return false;

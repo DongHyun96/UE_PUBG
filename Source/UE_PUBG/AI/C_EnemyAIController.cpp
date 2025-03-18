@@ -22,14 +22,18 @@ AC_EnemyAIController::AC_EnemyAIController()
 	Sight				= CreateDefaultSubobject<UAISenseConfig_Sight>("Sight");		// 시야 | Perception, sight 둘이 세트로 씀
 
 	Sight->SightRadius								= 600.f;
-	Sight->LoseSightRadius							= 800.f;
+	Sight->LoseSightRadius							= 700.f;
 	Sight->PeripheralVisionAngleDegrees				= 360.f;
 	Sight->SetMaxAge(2);											// LoseSight를 넘어갔을 때 2초 있다가 놓침
 	
 	// Affiliation - 소속, 그룹 | 그룹을 설정해서 사용가능
-	Sight->DetectionByAffiliation.bDetectFriendlies = false;		
+	//Sight->DetectionByAffiliation.bDetectFriendlies = false;		
+	//Sight->DetectionByAffiliation.bDetectEnemies	= true;
+	//Sight->DetectionByAffiliation.bDetectNeutrals	= false;
+
+	Sight->DetectionByAffiliation.bDetectFriendlies = true;		
 	Sight->DetectionByAffiliation.bDetectEnemies	= true;
-	Sight->DetectionByAffiliation.bDetectNeutrals	= false;
+	Sight->DetectionByAffiliation.bDetectNeutrals	= true;
 
 	PerceptionComponent->ConfigureSense(*Sight);
 	PerceptionComponent->SetDominantSense(Sight->GetSenseImplementation()); 
@@ -62,9 +66,25 @@ void AC_EnemyAIController::Tick(float DeltaTime)
 		OwnerCharacter->GetActorForwardVector()
 	);
 
-	Center.Z += 1.f;
+	TickColor = FColor::MakeRandomColor();
 
+	Center.Z += 1.f;
+	
+	// Lose sight circle
 	DrawDebugCircle
+	(
+		GetWorld(),
+		Center,
+		Sight->LoseSightRadius,
+		300,
+		FColor::Red,
+		false,
+		-1.f, 0, 0,
+		OwnerCharacter->GetActorRightVector(),
+		OwnerCharacter->GetActorForwardVector()
+	);
+
+	/*DrawDebugCircle
 	(
 		GetWorld(),
 		Center,
@@ -75,7 +95,7 @@ void AC_EnemyAIController::Tick(float DeltaTime)
 		-1.f, 0, 0,
 		OwnerCharacter->GetActorRightVector(),
 		OwnerCharacter->GetActorForwardVector()
-	);
+	);*/
 }
 
 void AC_EnemyAIController::OnPossess(APawn* InPawn)
@@ -89,7 +109,8 @@ void AC_EnemyAIController::OnPossess(APawn* InPawn)
 	SetGenericTeamId(OwnerCharacter->GetGenericTeamId());
 
 	PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &AC_EnemyAIController::OnPerceptionUpdated);
-
+	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AC_EnemyAIController::OnTargetPerceptionUpdated);
+	
 	// Set Black board & Behavior tree
 
 	UBlackboardComponent* blackBoard = Blackboard;
@@ -103,18 +124,34 @@ void AC_EnemyAIController::OnPossess(APawn* InPawn)
 
 void AC_EnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-	FString str = "OnPerceptionUpdated " + FString::FromInt(UpdatedActors.Num());
-	UC_Util::Print(str, FColor::MakeRandomColor(), 10.f);
+	// FString str = "OnPerceptionUpdated " + FString::FromInt(UpdatedActors.Num());
+	// UC_Util::Print(str, TickColor, 10.f);
 
 	// TODO : 시야에 들어온 새로운 TargetCharacter 업데이트 로직 필요함 (or 이미 TargetCharacter인 Character에 대한 Target해제 처리)
 
 	for (AActor* actor : UpdatedActors)
 	{
-		if (AC_Player* Player = Cast<AC_Player>(actor))
+		// BehaviorComponent->SetTargetLocation(actor->GetActorLocation());
+		// if (AC_Player* Player = Cast<AC_Player>(actor))
+		// {
+		// 	BehaviorComponent->SetTargetLocation(Player->GetActorLocation());
+		// 	Blackboard->SetValueAsObject("Player", Player);
+		// 	return;
+		// }
+	}
+}
+
+void AC_EnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, struct FAIStimulus Stimulus)
+{
+	if (Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>()) // 시야 Sense라면,
+	{
+		if (Stimulus.WasSuccessfullySensed()) // 새로 인지된 Actor인 상황
 		{
-			BehaviorComponent->SetTargetLocation(Player->GetActorLocation());
-			Blackboard->SetValueAsObject("Player", Player);
-			return;
+			
+		}
+		else // Lose Sight
+		{
+			
 		}
 	}
 }

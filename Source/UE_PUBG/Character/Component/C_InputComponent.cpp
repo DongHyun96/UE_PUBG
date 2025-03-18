@@ -11,7 +11,7 @@
 #include "Character/Component/C_PingSystemComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
-#include "Character/Component/C_SkyDivingComponent.h"
+#include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_ParkourComponent.h"
 
@@ -34,6 +34,7 @@
 #include "GameFramework/PhysicsVolume.h"
 
 #include "Singleton/C_GameSceneManager.h"
+#include "SkyDivingComponent/C_PlayerSkyDivingComponent.h"
 
 // Sets default values for this component's properties
 UC_InputComponent::UC_InputComponent()
@@ -134,7 +135,7 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 	if (!Player->GetCanMove()) return;
 	if (Player->GetIsActivatingConsumableItem() && Player->GetPoseState() == EPoseState::CRAWL) return;
 
-	//Turn In Place중 움직이면 Tunr In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
+	//Turn In Place중 움직이면 Turn In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
 	CancelTurnInPlaceMotion();
 
 	// 움직일 땐 카메라가 바라보는 방향으로 몸체도 돌려버림 (수업 기본 StrafeOn 세팅)
@@ -157,7 +158,7 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 		PlayerMovement->bOrientRotationToMovement		= false;
 		Player->bUseControllerRotationYaw				= false;
 	}
-	else
+	else // Alt키 누르고 있지 않은 상황에서의 Move
 	{
 		Player->bUseControllerRotationYaw				= true;
 		PlayerMovement->bUseControllerDesiredRotation	= false;
@@ -167,7 +168,7 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 	// SkyDiving Movement 처리
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 	{
-		Player->GetSkyDivingComponent()->HandlePlayerMovement(MovementVector);
+		Player->GetPlayerSkyDivingComponent()->HandlePlayerMovement(MovementVector);
 		return;
 	}
 
@@ -198,7 +199,7 @@ void UC_InputComponent::MoveEnd(const FInputActionValue& Value)
 		Player->GetSwimmingComponent()->OnSwimmingMoveEnd();
 
 	if (Player->GetMainState() == EMainState::SKYDIVING)
-		Player->GetSkyDivingComponent()->OnSkyMoveEnd();
+		Player->GetPlayerSkyDivingComponent()->OnPlayerSkyMoveEnd();
 
 	Player->GetParkourComponent()->SetHasTryVaulting(false);
 }
@@ -320,12 +321,8 @@ void UC_InputComponent::CancelTurnInPlaceMotion()
 {
 	//Turn In Place중 움직이면 Turn In place 몽타주 끊고 해당 방향으로 바로 움직이게 하기
 	
-	UAnimMontage* RightMontage = Player->GetPoseTurnAnimMontage(Player->GetHandState()).RightMontages[Player->GetPoseState()].AnimMontage;
+	UAnimMontage* RightMontage	= Player->GetPoseTurnAnimMontage(Player->GetHandState()).RightMontages[Player->GetPoseState()].AnimMontage;
 	UAnimInstance* AnimInstance = Player->GetMesh()->GetAnimInstance();
-
-	if (!AnimInstance) return;
-
-	if (!IsValid(RightMontage)) return;
 
 	if (AnimInstance->Montage_IsPlaying(RightMontage))
 	{ 
@@ -520,9 +517,9 @@ void UC_InputComponent::OnBKey()
 
 void UC_InputComponent::OnRKey()
 {
-	// Testing용 Heal 주기
+	// Testing용 Heal 주기 TODO : Test라인 지우기
 	Player->GetStatComponent()->ApplyHeal(100.f);
-	
+
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteRKey();
 }
@@ -611,15 +608,9 @@ void UC_InputComponent::OnFKey()
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 	{
 		if (Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
-		{
 			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING);
-			//GAMESCENE_MANAGER->GetEnemy()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::SKYDIVING); // TODO : 이 라인 지우기
-		}
 		else if (Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::SKYDIVING)
-		{
 			Player->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING);
-			//GAMESCENE_MANAGER->GetEnemy()->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::PARACHUTING); // TODO : 이 라인 지우기
-		}
 		return;
 	}
 
@@ -631,7 +622,10 @@ void UC_InputComponent::OnFKey()
 	}
 
 	if (Player->GetCurOutLinedItem())
+	{
 		Player->GetCurOutLinedItem()->Interaction(Player);
+		Player->GetInvenSystem()->GetInvenUI()->UpdateInventroyItemPanelWidget();
+	}
 		
 	// TODO : Consumable Item 사용 중이라면 취소 시키기
 	// Testing용 ConsumableItem 작동 취소 TODO : 이 라인 지우기

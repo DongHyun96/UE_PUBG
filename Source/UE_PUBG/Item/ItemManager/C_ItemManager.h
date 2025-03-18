@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Item/C_Item.h"
+#include "item/Weapon/Gun/C_Gun.h"
 #include "C_ItemManager.generated.h"
 
 
@@ -69,16 +70,18 @@ public:
     FItemData* GetItemData(FName ItemCode);
 
     // 총기 데이터 정보 가져오기
-    //FWeaponData* GetWeaponData(FName WeaponName);
+    FGunData* GetGunData(FName ItemCode);
 protected:
     UPROPERTY(EditAnywhere, Category = "Item Data")
     UDataTable* GeneralItemTable;
 
     // 총기 데이터 테이블
-    //UPROPERTY(EditAnywhere, Category = "Weapon Data")
-    //UDataTable* WeaponItemTable;
+    UPROPERTY(EditAnywhere, Category = "Weapon Data")
+    UDataTable* GunItemTable;
 
 private:
     // 아이템을 이름을 키로 하여 캐싱
-    TMap<FName, FItemData> ItemDataCache{};
+    TMap<FName, FItemData> GeneralItemDataCache{};
+
+    TMap<FName, FGunData> GunItemDataCache{};
 };

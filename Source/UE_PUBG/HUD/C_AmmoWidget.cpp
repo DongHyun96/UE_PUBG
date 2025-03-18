@@ -112,7 +112,7 @@ void UC_AmmoWidget::SetShootingMode(EShootingMode Mode)
 			PrevShootingMode = EShootingMode::FULL_AUTO;
 		else
 		{
-			for (int i = 0; i < (int)EShootingMode::MAX; i++)
+			for (int i = 0; i < static_cast<int>(EShootingMode::MAX); i++)
 			{
 				EShootingMode _mode = static_cast<EShootingMode>(i);
 				if (Mode != _mode)

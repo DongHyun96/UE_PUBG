@@ -41,8 +41,8 @@ void AC_Item::Tick(float DeltaTime)
 void AC_Item::InitializeItem(FName NewItemCode)
 {
 	static const FString ContextString(TEXT("Item Lookup"));
-	//D:/UE_Project/UE_PUBG/Content/Project_PUBG/Common/Item/DB_Item.uasset
-	///Script/Engine.DataTable'/Game/Project_PUBG/Common/Item/DB_Item.DB_Item'
+
+	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 ItemDataRef 정의해 주기.
 	UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/DB_Item.DB_Item"));
 
 	if (ItemDataTable)
@@ -129,94 +129,94 @@ AC_Item* AC_Item::SpawnItem(AC_BasicCharacter* Character)
 	return SpawnItem;
 }
 
-bool AC_Item::MoveToInven(AC_BasicCharacter* Character)
+bool AC_Item::MoveToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		return MoveAroundToInven(Character);
+		return MoveAroundToInven(Character, InStack);
 	case EItemPlace::INVEN:
-		return MoveInvenToInven(Character);
+		return MoveInvenToInven(Character, InStack);
 	case EItemPlace::SLOT:
-		return MoveSlotToInven(Character);
+		return MoveSlotToInven(Character, InStack);
 	default:
 		break;
 	}
 	return false;
 }
 
-bool AC_Item::MoveToAround(AC_BasicCharacter* Character)
+bool AC_Item::MoveToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		return MoveAroundToAround(Character);
+		return MoveAroundToAround(Character, InStack);
 	case EItemPlace::INVEN:
-		return MoveInvenToAround(Character);
+		return MoveInvenToAround(Character, InStack);
 	case EItemPlace::SLOT:
-		return MoveSlotToAround(Character);
+		return MoveSlotToAround(Character, InStack);
 	default:
 		break;
 	}
 	return false;
 }
 
-bool AC_Item::MoveToSlot(AC_BasicCharacter* Character)
+bool AC_Item::MoveToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		return MoveAroundToSlot(Character);
+		return MoveAroundToSlot(Character, InStack);
 	case EItemPlace::INVEN:
-		return MoveInvenToSlot(Character);
+		return MoveInvenToSlot(Character, InStack);
 	case EItemPlace::SLOT:
-		return MoveSlotToSlot(Character);
+		return MoveSlotToSlot(Character, InStack);
 	default:
 		break;
 	}
 	return false;
 }
 
-bool AC_Item::MoveSlotToAround(AC_BasicCharacter* Character)
+bool AC_Item::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
-bool AC_Item::MoveSlotToInven(AC_BasicCharacter* Character)
-{
-	return false;
-}
-
-bool AC_Item::MoveSlotToSlot(AC_BasicCharacter* Character)
+bool AC_Item::MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_Item::MoveInvenToAround(AC_BasicCharacter* Character)
+bool AC_Item::MoveSlotToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_Item::MoveInvenToInven(AC_BasicCharacter* Character)
+bool AC_Item::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
+{
+	return false;
+}
+
+bool AC_Item::MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }			  
-bool AC_Item::MoveInvenToSlot(AC_BasicCharacter* Character)
+bool AC_Item::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_Item::MoveAroundToAround(AC_BasicCharacter* Character)
+bool AC_Item::MoveAroundToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_Item::MoveAroundToInven(AC_BasicCharacter* Character)
+bool AC_Item::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_Item::MoveAroundToSlot(AC_BasicCharacter* Character)
+bool AC_Item::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
@@ -238,7 +238,7 @@ void AC_Item::DropItem(AC_BasicCharacter* Character)
 	this->SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
 }
 
-void AC_Item::SetItemStack(uint8 inItemStack)
+void AC_Item::SetItemStack(int32 inItemStack)
 {
 	ItemCurStack = inItemStack;
 	
@@ -252,25 +252,8 @@ void AC_Item::SetItemStack(uint8 inItemStack)
 
 void AC_Item::SetOutlineEffect(bool bEnable)
 {
-	//UPrimitiveComponent* CachedComponent = GetComponentByClass<UPrimitiveComponent>();
-	//
-	//if (CachedComponent)
-	//{
-	//	CachedComponent->SetRenderCustomDepth(bEnable);
-	//	CachedComponent->SetCustomDepthStencilValue(bEnable ? 1 : 0);
-	//}
-
-	//this->GetComponentByClass()
-
-	//for (UStaticMeshComponent* MeshComp : CachedComponent)
-	//{
-	//	MeshComp->SetRenderCustomDepth(bEnable);
-	//}
-
 	TArray<UPrimitiveComponent*> PrimitiveComponents;
 	GetComponents<UPrimitiveComponent>(PrimitiveComponents);
-
-
 
 	for (UPrimitiveComponent* Comp : PrimitiveComponents)
 	{
@@ -280,10 +263,9 @@ void AC_Item::SetOutlineEffect(bool bEnable)
 			Comp->SetCustomDepthStencilValue(bEnable ? 1 : 0);
 		}
 	}
-
 }
 
-AC_Item* AC_Item::DividItemSpawn(int DivideNum, AC_BasicCharacter* Character, bool ActorEnAbleCollision)
+AC_Item* AC_Item::DividItemSpawn(int32 DivideNum, AC_BasicCharacter* Character, bool ActorEnAbleCollision)
 {
 	if (ItemCurStack == 1) return nullptr; // 갯수가 1이면 나누기 불가. nullptr 반환.
 

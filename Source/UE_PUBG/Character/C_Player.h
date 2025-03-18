@@ -93,6 +93,9 @@ public: // Getters and setters
 	AC_Item* GetCurOutLinedItem() { return CurOutLinedItem; }
 
 	void SetCanFireWhileCrawl();
+
+	class UC_PlayerSkyDivingComponent* GetPlayerSkyDivingComponent() const { return PlayerSkyDivingComponent; }
+		
 public:
 	bool GetIsHighEnoughToFall() override;
 public:
@@ -310,6 +313,11 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_CameraEffectComponent* CameraEffectComponent{};
+
+private:
+
+	// 부모의 SkyDivingComponent 객체와 동일한 객체
+	class UC_PlayerSkyDivingComponent* PlayerSkyDivingComponent{};
 
 private:
 

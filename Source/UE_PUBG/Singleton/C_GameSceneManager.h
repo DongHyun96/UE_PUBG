@@ -73,9 +73,12 @@ public:
 	/// <summary>
 	/// 100 x 100m 크기 Tile coordinate의 중앙점을 World 좌표로 환산한 값 구하기, 단, Z는 항상 0.f로 고정
 	/// </summary>
-	/// <param name="TileCoordinate"></param>
-	/// <returns></returns>
 	FVector ConvertTileCoordinateToTileMiddleLocation(const TPair<uint8, uint8>& TileCoordinate) const;
+
+	/// <summary>
+	/// 해당 X, Y좌표를 포함시키는 Tile의 좌표 구하기
+	/// </summary>
+	TPair<uint8, uint8> GetContainingTileCoordinate(const FVector2D& WorldPositionXY) const;
 
 private:
 

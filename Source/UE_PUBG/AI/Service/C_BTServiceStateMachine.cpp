@@ -9,7 +9,7 @@
 
 #include "Character/C_Enemy.h"
 
-#include "Character/Component/C_SkyDivingComponent.h"
+#include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 
 #include "Utility/C_Util.h"
 
@@ -21,8 +21,6 @@ UC_BTServiceStateMachine::UC_BTServiceStateMachine()
 void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
-
-	UC_Util::Print("UC_BTServiceStateMachine::TickNode");
 
 	//AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
 

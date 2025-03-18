@@ -138,7 +138,7 @@ bool AC_Weapon::Interaction(AC_BasicCharacter* Character)
 	return false;
 }
 
-bool AC_Weapon::MoveSlotToAround(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -160,7 +160,7 @@ bool AC_Weapon::MoveSlotToAround(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_Weapon::MoveSlotToInven(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -181,13 +181,13 @@ bool AC_Weapon::MoveSlotToInven(AC_BasicCharacter* Character)
 }
 
 //Gun만 사용 O
-bool AC_Weapon::MoveSlotToSlot(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveSlotToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
 //Gun만 사용 X
-bool AC_Weapon::MoveInvenToAround(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -204,13 +204,13 @@ bool AC_Weapon::MoveInvenToAround(AC_BasicCharacter* Character)
 }
 
 //사용하지 않음.
-bool AC_Weapon::MoveInvenToInven(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
 //Gun만 사용 X
-bool AC_Weapon::MoveInvenToSlot(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -243,13 +243,13 @@ bool AC_Weapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 }
 
 //사용하지 않음.
-bool AC_Weapon::MoveAroundToAround(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveAroundToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
 //Gun만 사용 X
-bool AC_Weapon::MoveAroundToInven(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -279,7 +279,7 @@ bool AC_Weapon::MoveAroundToInven(AC_BasicCharacter* Character)
 	}
 }
 
-bool AC_Weapon::MoveAroundToSlot(AC_BasicCharacter* Character)
+bool AC_Weapon::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -290,8 +290,8 @@ bool AC_Weapon::MoveAroundToSlot(AC_BasicCharacter* Character)
 
 	if (curWeapon)
 	{
-		if (!curWeapon->MoveSlotToInven(Character)) //이곳에서 curWeapon의 장착을 해제함.
-			curWeapon->MoveSlotToAround(Character);
+		if (!curWeapon->MoveSlotToInven(Character, InStack)) //이곳에서 curWeapon의 장착을 해제함.
+			curWeapon->MoveSlotToAround(Character,InStack);
 	}
 
 	if (ItemCurStack == 1) //Gun과 MeleeWeapon은 stack = 0 임. TODO : 새로운 방법 찾기, 우선은 curStack = 1로 사용. 

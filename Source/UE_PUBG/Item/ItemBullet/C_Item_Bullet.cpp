@@ -35,12 +35,12 @@ bool AC_Item_Bullet::Interaction(AC_BasicCharacter* Character)
 {
 	if (ItemPlace == EItemPlace::AROUND)
 	{
-		return MoveAroundToInven(Character);
+		return MoveAroundToInven(Character, this->GetItemCurStack());
 	}
 	else return false;
 }
 
-bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
+bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -57,29 +57,21 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 	{
 		//아이템을 전부 인벤에 넣을 수 있는 경우
 
-		if (invenComp->FindMyItem(this->GetItemDatas()->ItemName))
+		if (invenComp->FindMyItemByName(this->GetItemCode()))
 		{
 			// 인벤에 동일한 이름의 아이템이 존재 한다면 실행.
 
 			invenComp->AddItemToMyList(this);
-			AddBulletStackToCharacter(CurBulletType,Character);
 			UC_Util::Print(int(CurBulletType));
 			UC_Util::Print("Item Stack Add!!!!!!!!!!!!!!!!");
-			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
-
-			this->Destroy(); // Inven에 존재하던 동일한 아이템과 합쳐졌으므로 삭제.
+			//this->Destroy(); // Inven에 존재하던 동일한 아이템과 합쳐졌으므로 삭제.
 		}
 		else
 		{
 			invenComp->AddItemToMyList(this);
-			AddBulletStackToCharacter(CurBulletType, Character);
-
-			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 		}
-		
-
+		if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
+			UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 
 		return true;
 	}
@@ -90,47 +82,44 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 		AC_Item_Bullet* SpawnedItem = Cast<AC_Item_Bullet>(SpawnItem(Character));  	//동일한 아이템 객체를 생성
 		SpawnedItem->SetItemStack(ItemStackCount);						 			//생성한 아이템 stack을 설정
 																					
-		if (invenComp->FindMyItem(this->GetItemDatas()->ItemName))
+		if (invenComp->FindMyItemByName(this->GetItemCode()))
 		{
 			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
-
-			SpawnedItem->AddBulletStackToCharacter(CurBulletType,Character);
-
-			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
-
-			this->Destroy();
+			//this->Destroy();
 		}
 		else
 		{
 			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
 			UC_Util::Print(ItemStackCount);
-			SpawnedItem->AddBulletStackToCharacter(CurBulletType,Character);
-
-			if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
-				UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 		}
 
+		if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
+			UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 
 		return true;
 	}
 }
 
-bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character)
+bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
 
 	if (!invenComp->FindMyItem(this)) return false;
 
-	invenComp->RemoveItemToMyList(this);				 //내 아이템 리스트에서 아이템 제거.
-
-	DeBulletStackToCharacter();
-
-	//invenComp->AddInvenCurVolume(-this->GetAllVolume()); // 버리는 아이템만큼 curVolume 조절하기. TODO : Inven에서 아이템 버릴 때 문제 생기면 체크하기.
-
-
-	DropItem(Character);
+	if (this->GetItemCurStack() > InStack)
+	{
+		AC_Item_Bullet* DroppedItem = Cast<AC_Item_Bullet>(SpawnItem(Character));
+		this->SetItemStack(GetItemCurStack() - InStack);
+		DroppedItem->SetItemStack(InStack);
+		DroppedItem->DropItem(Character);
+	}
+	else
+	{
+		invenComp->RemoveItemToMyList(this);				 //내 아이템 리스트에서 아이템 제거.
+		//invenComp->AddInvenCurVolume(-this->GetAllVolume()); // 버리는 아이템만큼 curVolume 조절하기. TODO : Inven에서 아이템 버릴 때 문제 생기면 체크하기.
+		DropItem(Character);
+	}
 	//AddFivemmBulletStack을 통해서 총에 또 정보를 전달해 주어야 함
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 		UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행
@@ -146,7 +135,7 @@ void AC_Item_Bullet::UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer)
 
 		if (curGun->GetCurBulletType() == CurBulletType) //들고 있는 총이 사용하는 탄과 지금 습득한 이 총알과 Type이 같다면 실행.
 		{
-			AC_Item* curItem = InOwnerPlayer->GetInvenComponent()->FindMyItem(this->GetItemDatas()->ItemName);
+			AC_Item* curItem = InOwnerPlayer->GetInvenComponent()->FindMyItemByName(this->GetItemCode());
 			int LeftAmmoStack = 0;
 			if (curItem != nullptr)
 			{
@@ -160,51 +149,5 @@ void AC_Item_Bullet::UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer)
 
 
 
-void AC_Item_Bullet::AddBulletStackToCharacter(EBulletType InBulletType, AC_BasicCharacter* InLootingCharacter)
-{
-	//if (!OwnerCharacter) return;
 
-	switch (InBulletType)
-	{
-	case EBulletType::FIVEMM:
-		InLootingCharacter->AddFivemmBulletStack(ItemCurStack);
-		
-		UC_Util::Print(ItemCurStack,FColor::Blue);
-		UC_Util::Print(InLootingCharacter->GetCurrentFivemmBulletCount(),FColor::Blue);
-		break;
-	case EBulletType::SEVENMM:
-		InLootingCharacter->AddSevenmmBulletStack(ItemCurStack);
-		// UC_Util::Print("Sevenmm",FColor::Blue);
-
-		break;
-	case EBulletType::NONE:
-		// UC_Util::Print("None",FColor::Blue);
-		break;
-	default:
-		// UC_Util::Print("None",FColor::Blue);
-
-		break;
-	}
-}
-
-void AC_Item_Bullet::DeBulletStackToCharacter()
-{
-	if (!OwnerCharacter) return;
-
-	switch (CurBulletType)
-	{
-	case EBulletType::FIVEMM:
-		OwnerCharacter->AddFivemmBulletStack(-ItemCurStack);
-		UC_Util::Print(ItemCurStack,FColor::Blue);
-		break;
-	case EBulletType::SEVENMM:
-		OwnerCharacter->AddSevenmmBulletStack(-ItemCurStack);
-
-		break;
-	case EBulletType::NONE:
-		break;
-	default:
-		break;
-	}
-}
 

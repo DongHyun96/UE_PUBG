@@ -34,15 +34,33 @@ public:
 private:
 	
 	/// <summary>
-	/// SKYDIVE_TARGET_TILES의 영역 내에서 Random한 위치로 TargetLocation 세팅
+	/// <para> SKYDIVE_TARGET_TILES의 영역 내에서 Random한 위치로 TargetLocation 세팅 -> </para>
+	/// <para> 비행기에서 SkyDive 시작할 지점 정하기 (낙하 목표위치와 가장 가까운 지점으로 setting) </para>
 	/// </summary>
 	/// <return> 제대로 setting 되지 않았다면 return false </return>
-	bool SetRandomLandingTargetLocation();
+	bool SetRandomLandingTargetLocationAndJumpPosXY();
+
+	/// <summary>
+	/// LandingTargetLocation에 살짝 못 미치는 거리로 낙하산을 펼치기 전까지의 목표 지점 setting
+	/// </summary>
+	void SetSkyDivingStateDestination();
 
 private:
 	
-	class AC_Enemy*				OwnerEnemy{};
-	class UC_BehaviorComponent* OwnerBehaviorComponent{};
+	/// <summary>
+	/// 특정 위치로부터 Line에 수선의 발을 내린 Line에서의 최단거리 지점 Get
+	/// </summary>
+	/// <param name="TargetPoint"> : 특정 위치 </param>
+	/// <param name="LineStart"> : Line 시작점 </param>
+	/// <param name="LineEnd"> : Line 끝점 </param>
+	/// <returns></returns>
+	FVector2D GetClosestPointOnLine(const FVector2D& TargetPoint, const FVector2D& LineStart, const FVector2D& LineEnd) const;
+
+private:
+	
+	class AC_Enemy*						OwnerEnemy{};
+	class UC_BehaviorComponent* 		OwnerBehaviorComponent{};
+	class UC_EnemySkyDivingComponent*	OwnerSkyDivingComponent{};
 
 private:
 
@@ -55,6 +73,11 @@ private:
 		{5, 4}, {5, 5},
 		{6, 5}
 	};
+
+private:
+	FVector2D AirplaneJumpPosXY{};
+	
+	bool bSkyDiveStartFlag{}; // true이면 skyDive 시작해야 하는 flag
 };
 
 

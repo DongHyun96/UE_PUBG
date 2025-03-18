@@ -2,7 +2,7 @@
 
 
 #include "InvenUI/ItemBar/C_BasicItemBarWidget.h"
-#include "InvenUserInterface/C_InvenUiWidget.h"
+#include "InvenUI/Panel/C_BasicPanelWidget.h"
 #include "InvenUserInterface/C_DragDropOperation.h"
 
 #include "Character/C_Player.h"
@@ -15,6 +15,8 @@
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "Components/Progressbar.h"
+
+#include "Item/C_ItemBox.h"
 
 #include "Kismet/GameplayStatics.h"
 
@@ -90,7 +92,7 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	//dragdrop class를 새로 만들어 사용해야 할 수 있음.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 
-	UTexture2D* Texture = Cast<UTexture2D>(CachedItem->GetItemDatas()->ItemBarIcon);//크기및 형태 조절하기.
+	UTexture2D* Texture = Cast<UTexture2D>( CachedItem->GetItemDatas()->ItemBarIcon);//크기및 형태 조절하기.
 
 	UBorder* Border = NewObject<UBorder>();
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
@@ -134,7 +136,23 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	// 드래그 비주얼 위치를 강제로 설정 (렌더링 기준으로 설정)
 	Border->SetRenderTranslation(WidgetScreenPosition);
 
-	DragOperation->DraggedItem = CachedItem;
+	//DragOperation->SetDraggedItemBox(CachedItem);
+
+	//TODO : UDragDropOperation내의 DraggedItem을 UItemBox의 DraggedItemBox로 대체하기. 
+	DragOperation->DraggedItem =  CachedItem;
+
+	if (!CachedItemBox)
+	{
+		UC_ItemBox* CreateItemBox = NewObject<UC_ItemBox>();
+		CreateItemBox->Init(CachedItem, CachedItem->GetItemCurStack());
+
+		CachedItemBox = CreateItemBox;
+	}
+
+	////if (CachedItem->GetItemPlace() == EItemPlace::INVEN)
+	DragOperation->DraggedItemBox = CachedItemBox;
+	//else
+	//DragOperation->DraggedItemBox->Init(CachedItem, CachedItem->GetItemCurStack());
 
 	DragOperation->curWeaponSlot = EWeaponSlot::NONE;
 
@@ -159,18 +177,26 @@ void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 	// ListItemObject를 UC_Item 클래스로 캐스팅하여 아이템 데이터 사용
+	CachedItemBox = Cast<UC_ItemBox>(ListItemObject);
+
+	if (CachedItemBox)
+	{
+		UpdateWidget(CachedItemBox);
+		return;
+	}
+
 	CachedItem = Cast<AC_Item>(ListItemObject);
-
+	
 	if (!CachedItem) return;
-
+	
 	UpdateWidget(CachedItem);
 }
 
-void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
+void UC_BasicItemBarWidget::UpdateWidget(UC_ItemBox* MyItem)
 {
 	if (MyItem)
 	{
-		CachedItem = MyItem;
+		CachedItem = MyItem->GetItemRef();
 
 		const FItemData* CachedItemData = CachedItem->GetItemDatas();
 
@@ -179,11 +205,62 @@ void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
 		ItemType = CachedItemData->ItemType;
 
 		ItemName->SetText(FText::FromString(CachedItemData->ItemName));
+
+		if (MyItem->GetItemStackCount() == 0)
+		{
+			ItemStackBlock->SetText(FText::FromString(""));
+		}
+		else
+		{
+			ItemStackBlock->SetText(FText::AsNumber(MyItem->GetItemStackCount()));
+		}
 		SetVisibility(ESlateVisibility::Visible);
 	}
-	//UpdateInvenUIWidget();
-
 }
+
+void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
+{
+	if (MyItem)
+	{
+		CachedItem = MyItem;
+
+		const FItemData* CachedItemData =  CachedItem->GetItemDatas();
+
+		ItemImage->SetBrushFromTexture(CachedItemData->ItemBarIcon);
+
+		ItemType = CachedItemData->ItemType;
+
+		ItemName->SetText(FText::FromString(CachedItemData->ItemName));
+
+		if (CachedItem->GetItemCurStack() == 0)
+		{
+			ItemStackBlock->SetText(FText::FromString(""));
+		}
+		else
+		{
+			ItemStackBlock->SetText(FText::AsNumber(CachedItem->GetItemCurStack()));
+		}
+
+		SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+//void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
+//{
+//	if (MyItem)
+//	{
+//		CachedItemBox = MyItem;
+//
+//		const FItemData* CachedItemData =  CachedItemBox->GetItemDatas();
+//
+//		ItemImage->SetBrushFromTexture(CachedItemData->ItemBarIcon);
+//
+//		ItemType = CachedItemData->ItemType;
+//
+//		ItemName->SetText(FText::FromString(CachedItemData->ItemName));
+//		SetVisibility(ESlateVisibility::Visible);
+//	}
+//}
 
 
 void UC_BasicItemBarWidget::SetPercent(float curTime, float endTime)
@@ -195,7 +272,7 @@ void UC_BasicItemBarWidget::UpdateInvenUIWidget()
 {
 	if (UC_InventoryUIWidget* InvenUiWidget = GetTypedOuter<UC_InventoryUIWidget>())
 	{
-		const FItemData* CachedItemData = CachedItem->GetItemDatas();
+		const FItemData* CachedItemData =  CachedItem->GetItemDatas();
 
 		if (
 			   CachedItemData->ItemType == EItemTypes::CONSUMPTIONITEM
@@ -214,38 +291,38 @@ void UC_BasicItemBarWidget::UpdateInvenUIWidget()
 
 bool UC_BasicItemBarWidget::HalfStackItemInteraction()
 {
-	int CachedItemCurStack = CachedItem->GetItemCurStack();
+	int CachedItemCurStack =  CachedItem->GetItemCurStack();
 	if (CachedItemCurStack < 2) return false; //만약 뒤의 우클릭으로 안넘어간다면 여기서 Interaction 해야함.
 
 	AC_Player* PlayerCharacter = Cast<AC_Player>(UGameplayStatics::GetPlayerCharacter(this, 0));
 
 	if (!PlayerCharacter) return false; //PlayerCharacter가 없다면 return;
 
-	int HalfStack = CachedItemCurStack * 0.5;
+	uint32 HalfStack = CachedItemCurStack * 0.5;
 
 	float RestVolume = PlayerCharacter->GetInvenComponent()->GetMaxVolume() - PlayerCharacter->GetInvenComponent()->GetCurVolume();
 
-	if (CachedItem->GetItemPlace() == EItemPlace::AROUND)
+	if ( CachedItem->GetItemPlace() == EItemPlace::AROUND)
 	{
-		if (RestVolume >= HalfStack * CachedItem->GetItemDatas()->ItemVolume)
+		if (RestVolume >= HalfStack *  CachedItem->GetItemDatas()->ItemVolume)
 		{
-			AC_Item* SpawnItem = CachedItem->SpawnItem(PlayerCharacter);
-			CachedItem->SetItemStack(CachedItem->GetItemCurStack() - HalfStack);
+			AC_Item* SpawnItem =  CachedItem->SpawnItem(PlayerCharacter);
+			 CachedItem->SetItemStack( CachedItem->GetItemCurStack() - HalfStack);
 			SpawnItem->SetItemStack(HalfStack);
-			SpawnItem->MoveToInven(PlayerCharacter);
+			SpawnItem->MoveToInven(PlayerCharacter, HalfStack);
 			return true;
 		}
 		else
 		{
-			CachedItem->MoveToInven(PlayerCharacter);
+			 CachedItem->MoveToInven(PlayerCharacter, HalfStack);
 			return true;
 		}
 
 	}
-	else if (CachedItem->GetItemPlace() == EItemPlace::INVEN)
+	else if ( CachedItem->GetItemPlace() == EItemPlace::INVEN)
 	{
-		AC_Item* SpawnItem = CachedItem->SpawnItem(PlayerCharacter);
-		CachedItem->SetItemStack(CachedItem->GetItemCurStack() - HalfStack);
+		AC_Item* SpawnItem =  CachedItem->SpawnItem(PlayerCharacter);
+		 CachedItem->SetItemStack( CachedItem->GetItemCurStack() - HalfStack);
 
 		SpawnItem->SetItemStack(HalfStack);
 
@@ -253,7 +330,7 @@ bool UC_BasicItemBarWidget::HalfStackItemInteraction()
 
 		SpawnItem->SetActorEnableCollision(true);
 
-		SpawnItem->MoveToAround(PlayerCharacter);
+		SpawnItem->MoveToAround(PlayerCharacter, HalfStack);
 
 		PlayerCharacter->GetInvenComponent()->AddInvenCurVolume(-DividedItemVolume);
 

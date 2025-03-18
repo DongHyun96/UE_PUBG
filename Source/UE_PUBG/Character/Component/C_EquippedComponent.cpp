@@ -161,7 +161,34 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
     NextWeaponType = InChangeTo;
 
-    if (CurWeaponType == NextWeaponType) return false; // 현재 무기와 다음 무기가 같을 때 무기를 굳이 다시 꺼내지 않음
+    if (CurWeaponType == NextWeaponType)
+    {
+        // 현재 투척류를 들고 있을 경우, 다른 종류의 투척류로 전환 시도
+        if (AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(GetCurWeapon()))
+        {
+            // 전환 시도하려는 기존 투척류의 쿠킹이 이미 시작되었고, 아직 손에서 떠나지 않은 투척류라면 전환 시도 x
+            if (ThrowingWeapon->GetIsCooked() && ThrowingWeapon->GetAttachParentActor()) return false;
+
+            // 다음 종류의 투척류로 전환 시도
+            EThrowableType ThrowableTypeTemp = ThrowingWeapon->GetThrowableType();
+            while (++ThrowableTypeTemp != ThrowingWeapon->GetThrowableType())
+            {
+                FName NextWeaponName = AC_ThrowingWeapon::GetThrowableItemNameMap()[ThrowableTypeTemp];
+                AC_Item* NextThrowableItem = OwnerCharacter->GetInvenComponent()->FindMyItemByName(NextWeaponName);
+                AC_ThrowingWeapon* NextThrowableWeapon = Cast<AC_ThrowingWeapon>(NextThrowableItem);
+
+                if (!NextThrowableWeapon) continue; // NextThrowable이 Inven에 없는 경우
+
+                NextThrowableWeapon->MoveToSlot(OwnerCharacter, NextThrowableWeapon->GetItemCurStack());
+                if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter)) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+
+                // 바로 다음 투척류 꺼내기
+                OwnerCharacter->PlayAnimMontage(NextThrowableWeapon->GetCurDrawMontage());
+                return true;
+            }
+        }
+        return false; // 현재 무기와 다음 무기가 같을 때 무기를 굳이 다시 꺼내지 않음
+    }
 
     // NextWeaponType이 None이 아니고, 바꾸려는 무기 슬롯에 무기가 없을 때
     if (NextWeaponType != EWeaponSlot::NONE && !IsValid(Weapons[NextWeaponType])) return false;
