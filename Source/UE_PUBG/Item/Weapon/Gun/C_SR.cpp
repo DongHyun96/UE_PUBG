@@ -66,7 +66,7 @@ bool AC_SR::ExecuteReloadMontage()
 
 	if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
 
-	if (CurBulletCount > 0 && CurrentShootingMode == EShootingMode::SINGLE_SHOT &&!IsReloadingSR)
+	if (CurBulletCount > 1 && CurrentShootingMode == EShootingMode::SINGLE_SHOT &&!IsReloadingSR)
 	{
 		UAnimMontage* DrawMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
 		OwnerCharacter->PlayAnimMontage(SniperReloadMontages[OwnerCharacter->GetPoseState()]);
@@ -89,9 +89,12 @@ bool AC_SR::ExecuteReloadMontage()
 	else
 	{
 		if (LeftAmmoCount == 0) return false;
-		OwnerCharacter->SetIsReloadingBullet(true);
-		OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
-		BackToMainCamera();
+		if (CurBulletCount == 0)
+		{
+			OwnerCharacter->SetIsReloadingBullet(true);
+			OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
+			BackToMainCamera();
+		}
 	}
 	return true;
 }	
