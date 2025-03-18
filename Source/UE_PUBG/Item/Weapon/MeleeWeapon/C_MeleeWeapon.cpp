@@ -211,6 +211,8 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 )
 {
 	static const float DAMAGE = 80.f;
+
+	UC_Util::Print("FryPan Attack Collider BeginOverlap", FColor::Red, 10.f);
 	
 	// 피격체에 데미지 주기
 	AC_BasicCharacter* OverlappedCharacter = Cast<AC_BasicCharacter>(OtherActor);

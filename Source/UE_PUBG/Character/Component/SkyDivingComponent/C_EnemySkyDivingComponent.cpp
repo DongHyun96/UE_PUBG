@@ -4,6 +4,7 @@
 #include "Character/Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Utility/C_Util.h"
 
 UC_EnemySkyDivingComponent::UC_EnemySkyDivingComponent()
@@ -36,6 +37,13 @@ void UC_EnemySkyDivingComponent::SetStateToSkyDivingState()
 	
 	OwnerMovement->Velocity = Direction * 4500.f;
 
+	// Character 가는 방향으로 회전 맞추기
+	FRotator LookAtRotation = Direction.ToOrientationRotator();
+	LookAtRotation.Pitch	= 0.f;
+	LookAtRotation.Roll		= 0.f;
+	OwnerCharacter->SetActorRotation(LookAtRotation);
+	
+	
 	// BS 속도 setting
 	OwnerCharacter->SetNextSpeed(400.f);
 }

@@ -117,6 +117,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	/// <summary>
+	/// Enemy AI Controller가 Team인지 아닌지 인식할 때 사용 -> 여기서는 무조건 모두 적으로 간주(Enemy AI 서로도 적으로 간주)
+	/// </summary>
+	/// <param name="Other"></param>
+	/// <returns></returns>
+	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override { return ETeamAttitude::Hostile; }
+
 private:
 
 	/// <summary>
@@ -454,7 +461,7 @@ protected: // 파쿠르 관련 Components
 protected: // AI 피아 식별 관련
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TEnumAsByte<ETeamAttitude::Type> TeamID = ETeamAttitude::Neutral;
+	TEnumAsByte<ETeamAttitude::Type> TeamID = ETeamAttitude::Hostile;
 ///
 ///캐릭터 피 파티클시스템
 ///

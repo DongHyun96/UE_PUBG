@@ -32,6 +32,8 @@ public:
 
 	class AC_EnemyAIController* GetEnemyAIController() const;
 
+	class UC_DefaultItemSpawnerComponent* GetItemSpawnerHelper() const { return ItemSpawnerHelper; }
+
 	class UC_TargetLocationSettingHelper* GetTargetLocationSettingHelper() const { return TargetLocationSettingHelper; }
 
 protected:

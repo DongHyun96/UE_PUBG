@@ -47,8 +47,8 @@ void AC_Enemy::BeginPlay()
 
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
-    // TODO : 비행기 타기 이전에 spawn하는 것으로 수정하기
-    ItemSpawnerHelper->SpawnDefaultWeaponsAndItems();
+    // 비행기 타기 이전에 spawn하는 것으로 수정되었음
+    // ItemSpawnerHelper->SpawnDefaultWeaponsAndItems();
 }
 
 void AC_Enemy::Tick(float DeltaSeconds)

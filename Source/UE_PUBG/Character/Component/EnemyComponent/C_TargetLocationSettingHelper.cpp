@@ -6,6 +6,7 @@
 #include "NavigationSystem.h"
 #include "AI/C_BehaviorComponent.h"
 #include "AI/C_EnemyAIController.h"
+#include "AI/Service/C_BTServiceIdle.h"
 #include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
 #include "HUD/C_MainMapWidget.h"
@@ -114,6 +115,11 @@ bool UC_TargetLocationSettingHelper::TrySetRandomTargetLocationAtMagneticCircle(
 	// Random하게 Pick해서 Setting
 	int RandomIndex = FMath::RandRange(0, PickedNavMeshLocations.Num() - 1);	
 	OwnerBehaviorComponent->SetTargetLocation(PickedNavMeshLocations[RandomIndex]);
+
+	// TODO : 일단은 자기장 줄어들기 시작할 때에 NextCircle 외부에 있는 Enemy들 한 번에 단순히 이동으로 처리 (추후, 자기장 대기시간에 미리 이동시킬
+	// TODO : Enemy들 정해서 미리 이동시키고, 이동시킨 Enemy들 또 다시 TargetLocation 잡아서 이동 방지 시키기
+	OwnerBehaviorComponent->SetServiceType(EServiceType::IDLE);
+	OwnerBehaviorComponent->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
 	
 	// TODO : For Testing : 이 라인 지우기
 	DrawDebugSphere(GetWorld(), PickedNavMeshLocations[RandomIndex], 20, 20, FColor::Green, true);

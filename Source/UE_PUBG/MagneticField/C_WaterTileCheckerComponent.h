@@ -9,8 +9,6 @@
 
 struct FMagneticCircle;
 
-// TODO : Enemy 낙하지점 정할 때 물인지 체크
-
 /// <summary>
 /// <para> Level에서 특정 위치가 물인지 판별하는 WaterTileChecker 클래스 </para>
 /// <para> Shanty-town 맵 기준 우측 상단 Tile 좌표(0,0), 좌측 하단 Tile 좌표(9,9) | 타일 크기는 100 x 100(m)로 잡음 </para>

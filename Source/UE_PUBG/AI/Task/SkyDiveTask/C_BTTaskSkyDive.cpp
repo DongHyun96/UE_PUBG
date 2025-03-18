@@ -26,7 +26,7 @@ void UC_BTTaskSkyDive::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	// SkyDiving이 잘 끝났다고 간주 IdleTask로 돌아가기 TODO : Landing Animation이 끝날 때까지 기다려주기
+	// SkyDiving이 잘 끝났다고 간주 IdleTask로 돌아가기 
 	if (OwnerEnemy->GetMainState() != EMainState::SKYDIVING && !OwnerSkyDivingComponent->IsCharacterLandingMontagePlaying())
 	{
 		OwnerBehaviorComponent->SetServiceType(EServiceType::IDLE);
