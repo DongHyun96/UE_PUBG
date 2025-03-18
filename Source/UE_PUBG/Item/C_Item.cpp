@@ -129,94 +129,94 @@ AC_Item* AC_Item::SpawnItem(AC_BasicCharacter* Character)
 	return SpawnItem;
 }
 
-bool AC_Item::MoveToInven(AC_BasicCharacter* Character)
+bool AC_Item::MoveToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		return MoveAroundToInven(Character);
+		return MoveAroundToInven(Character, InStack);
 	case EItemPlace::INVEN:
-		return MoveInvenToInven(Character);
+		return MoveInvenToInven(Character, InStack);
 	case EItemPlace::SLOT:
-		return MoveSlotToInven(Character);
+		return MoveSlotToInven(Character, InStack);
 	default:
 		break;
 	}
 	return false;
 }
 
-bool AC_Item::MoveToAround(AC_BasicCharacter* Character)
+bool AC_Item::MoveToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		return MoveAroundToAround(Character);
+		return MoveAroundToAround(Character, InStack);
 	case EItemPlace::INVEN:
-		return MoveInvenToAround(Character);
+		return MoveInvenToAround(Character, InStack);
 	case EItemPlace::SLOT:
-		return MoveSlotToAround(Character);
+		return MoveSlotToAround(Character, InStack);
 	default:
 		break;
 	}
 	return false;
 }
 
-bool AC_Item::MoveToSlot(AC_BasicCharacter* Character)
+bool AC_Item::MoveToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		return MoveAroundToSlot(Character);
+		return MoveAroundToSlot(Character, InStack);
 	case EItemPlace::INVEN:
-		return MoveInvenToSlot(Character);
+		return MoveInvenToSlot(Character, InStack);
 	case EItemPlace::SLOT:
-		return MoveSlotToSlot(Character);
+		return MoveSlotToSlot(Character, InStack);
 	default:
 		break;
 	}
 	return false;
 }
 
-bool AC_Item::MoveSlotToAround(AC_BasicCharacter* Character)
+bool AC_Item::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
-bool AC_Item::MoveSlotToInven(AC_BasicCharacter* Character)
-{
-	return false;
-}
-
-bool AC_Item::MoveSlotToSlot(AC_BasicCharacter* Character)
+bool AC_Item::MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_Item::MoveInvenToAround(AC_BasicCharacter* Character)
+bool AC_Item::MoveSlotToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_Item::MoveInvenToInven(AC_BasicCharacter* Character)
+bool AC_Item::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
+{
+	return false;
+}
+
+bool AC_Item::MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }			  
-bool AC_Item::MoveInvenToSlot(AC_BasicCharacter* Character)
+bool AC_Item::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_Item::MoveAroundToAround(AC_BasicCharacter* Character)
+bool AC_Item::MoveAroundToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_Item::MoveAroundToInven(AC_BasicCharacter* Character)
+bool AC_Item::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_Item::MoveAroundToSlot(AC_BasicCharacter* Character)
+bool AC_Item::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }

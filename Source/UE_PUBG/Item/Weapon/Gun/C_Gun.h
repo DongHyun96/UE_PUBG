@@ -142,10 +142,10 @@ public:
 	class AC_AttachableItem* SetAttachableItemSlot(EPartsName InPartsName, AC_AttachableItem* InAttachableItem);
 protected:
 	//bool MoveSlotToAround(AC_BasicCharacter* Character) override;
-	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
-	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
+	bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
-	bool MoveSlotToInven(AC_BasicCharacter* Character) override;
+	bool MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack) override;
 
 protected:
 	/// <summary>

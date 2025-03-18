@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -61,9 +61,9 @@ public:
 
 	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 protected:
-	bool MoveSlotToAround(AC_BasicCharacter* Character) override;
+	bool MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack) override;
 
-	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
+	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
 protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)

@@ -4,6 +4,7 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 #include "Item/C_Item.h"
+#include "Item/C_ItemBox.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Equipment/C_EquipableItem.h"

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+//#include "DataTables/C_ItemDataTables.h"
 #include "C_Item.generated.h"
 
 
@@ -87,22 +88,6 @@ enum class EItemNames : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FSpawnItemData : public FTableRowBase
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpawnItemData")
-	FSoftObjectPath itemMesh{};
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpawnItemData")
-	FSoftObjectPath  SpawnedItemData{};
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpawnItemData")
-	TSubclassOf<AC_Item> ItemClass{};
-
-};
-
-USTRUCT(BlueprintType)
 struct FItemData : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -118,20 +103,12 @@ struct FItemData : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	UTexture2D* ItemSlotImage = nullptr;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Mesh")
-	//FSoftObjectPath ItemMeshPath{};
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	//int ItemCurStack = 0; 변수로 이동
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	int32 ItemMaxStack = 0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	float ItemVolume = 0;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	//EItemPlace ItemPlace = EItemPlace::AROUND; 변수로 이동
 };	
 
 
@@ -176,6 +153,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool Interaction(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item::Interaction, return false;);
 
+	//virtual bool Interaction(AC_BasicCharacter* Character, int32 InStack) PURE_VIRTUAL(AC_Item::Interaction, return false;);
+
+
 	virtual bool UseItem() PURE_VIRTUAL(AC_Item::UseItem, return false;);
 
 	/// <summary>
@@ -198,6 +178,7 @@ public:
 	/// 각 클래스에서 override해서 알맞게 사용
 	/// 추후에 이름 변경가능
 	/// RemoveItemFromInventory
+	/// TODO : InStack초기값 설정에 관해 다시 보기
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	virtual void DropItem(AC_BasicCharacter* Character); //PURE_VIRTUAL(AC_Item:DropItem, );
@@ -226,7 +207,7 @@ public:
 	/// <param name="Character"></param>
 	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
-	virtual bool MoveToInven(AC_BasicCharacter* Character);
+	virtual bool MoveToInven(AC_BasicCharacter* Character, int32 InStack);
 	
 	/// <summary>
 	/// 아이템을 Around로 보낼 때 사용하면 현재 Place에 맞게 작동.
@@ -234,7 +215,7 @@ public:
 	/// <param name="Character"></param>
 	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
-	virtual bool MoveToAround(AC_BasicCharacter* Character);
+	virtual bool MoveToAround(AC_BasicCharacter* Character, int32 InStack);
 	
 	/// <summary>
 	/// 아이템을 Slot으로 보낼 때 Place에 따라 작동.
@@ -242,7 +223,7 @@ public:
 	/// <param name="Character"></param>
 	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
-	virtual bool MoveToSlot(AC_BasicCharacter* Character);
+	virtual bool MoveToSlot(AC_BasicCharacter* Character, int32 InStack);
 
 	UFUNCTION(BlueprintCallable)
 	virtual AC_Item* SpawnItem(AC_BasicCharacter* Character);
@@ -259,17 +240,17 @@ public:
 
 protected:
 	//MoveTo~에 사용되는 Template Methode Patern 9개.
-	virtual bool MoveSlotToAround(AC_BasicCharacter* Character);
-	virtual bool MoveSlotToInven(AC_BasicCharacter* Character);
-	virtual bool MoveSlotToSlot(AC_BasicCharacter* Character);
+	virtual bool MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool MoveSlotToSlot(AC_BasicCharacter* Character, int32 InStack);
 
-	virtual bool MoveInvenToAround(AC_BasicCharacter* Character);
-	virtual bool MoveInvenToInven(AC_BasicCharacter* Character);
-	virtual bool MoveInvenToSlot(AC_BasicCharacter* Character);
+	virtual bool MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack);
 
-	virtual bool MoveAroundToAround(AC_BasicCharacter* Character);
-	virtual bool MoveAroundToInven(AC_BasicCharacter* Character);
-	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character);
+	virtual bool MoveAroundToAround(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack);
 
 public:
 	FName GetItemCode() { return ItemCode; }

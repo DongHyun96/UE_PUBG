@@ -94,7 +94,7 @@ bool UC_GunSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 
 bool UC_GunSlotWidget::MouseRBDownInteraction(AC_Weapon* inSlotWeapon)
 {
-    return inSlotWeapon->MoveToAround(OwnerPlayer);
+    return inSlotWeapon->MoveToAround(OwnerPlayer, inSlotWeapon->GetItemCurStack());
 }
 
 void UC_GunSlotWidget::UpdateWidget()
@@ -156,8 +156,8 @@ bool UC_GunSlotWidget::SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, AC_Attac
 
 	if (ChangedItem)
 	{
-		if (!ChangedItem->MoveToInven(OwnerPlayer))
-			ChangedItem->MoveToAround(OwnerPlayer);
+		if (!ChangedItem->MoveToInven(OwnerPlayer, ChangedItem->GetItemCurStack()))
+			ChangedItem->MoveToAround(OwnerPlayer, ChangedItem->GetItemCurStack());
 	}
 	SlotGun->SetAttachableItemSlot(InAttachableItem->GetName(), InAttachableItem);
 
@@ -229,13 +229,13 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 			//드롭된 아이템이 부착물이라면 드롭된 슬롯에 우선 장착.
 			if (SetAttachmentSlotOnDrop(curWeapon, Cast<AC_AttachableItem>(DroppedItem))) return true;
 		}
-		return DroppedItem->MoveToSlot(OwnerPlayer);
+		return DroppedItem->MoveToSlot(OwnerPlayer, DroppedItem->GetItemCurStack());
 	}
 
 	if (DroppedItem->GetItemDatas()->ItemType == EItemTypes::ATTACHMENT)
 	{
 		if (InOperation->curWeaponSlot != WeaponType)
-			Cast<AC_AttachableItem>(DroppedItem)->MoveToSlot(OwnerPlayer);
+			Cast<AC_AttachableItem>(DroppedItem)->MoveToSlot(OwnerPlayer, DroppedItem->GetItemCurStack());
 
 		//if (InOperation->curWeaponSlot == EWeaponSlot::MAIN_GUN && WeaponType == EWeaponSlot::SUB_GUN)
 		//{

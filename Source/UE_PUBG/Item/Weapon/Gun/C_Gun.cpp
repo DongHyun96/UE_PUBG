@@ -672,12 +672,12 @@ bool AC_Gun::ExecuteReloadMontage()
 	return true;
 }
 
-bool AC_Gun::MoveAroundToInven(AC_BasicCharacter* Character)
+bool AC_Gun::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }
 
-bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character)
+bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -717,7 +717,7 @@ bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character)
 	}
 }
 
-bool AC_Gun::MoveSlotToInven(AC_BasicCharacter* Character)
+bool AC_Gun::MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
 }

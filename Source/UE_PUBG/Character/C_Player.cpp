@@ -483,9 +483,9 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 		//Inventory->AddItemToAroundList(OverlappedItem);
 
 		if (OverlappedItem->GetOwnerCharacter() == nullptr)
-
 		{
 			if (!IsValid(InvenComponent)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
+			if (InvenComponent->GetTestAroundItems().Contains(OverlappedItem)) return;
 			InvenComponent->AddItemToAroundList(OverlappedItem);
 			//Inventory->InitInvenUI();
 			//if (!IsValid(InvenSystem)) return;

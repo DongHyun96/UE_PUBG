@@ -35,12 +35,12 @@ bool AC_Item_Bullet::Interaction(AC_BasicCharacter* Character)
 {
 	if (ItemPlace == EItemPlace::AROUND)
 	{
-		return MoveAroundToInven(Character);
+		return MoveAroundToInven(Character, this->GetItemCurStack());
 	}
 	else return false;
 }
 
-bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
+bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -100,21 +100,26 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character)
 	}
 }
 
-bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character)
+bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
 
 	if (!invenComp->FindMyItem(this)) return false;
 
-	invenComp->RemoveItemToMyList(this);				 //내 아이템 리스트에서 아이템 제거.
-
-
-
-	//invenComp->AddInvenCurVolume(-this->GetAllVolume()); // 버리는 아이템만큼 curVolume 조절하기. TODO : Inven에서 아이템 버릴 때 문제 생기면 체크하기.
-
-
-	DropItem(Character);
+	if (this->GetItemCurStack() > InStack)
+	{
+		AC_Item_Bullet* DroppedItem = Cast<AC_Item_Bullet>(SpawnItem(Character));
+		this->SetItemStack(GetItemCurStack() - InStack);
+		DroppedItem->SetItemStack(InStack);
+		DroppedItem->DropItem(Character);
+	}
+	else
+	{
+		invenComp->RemoveItemToMyList(this);				 //내 아이템 리스트에서 아이템 제거.
+		//invenComp->AddInvenCurVolume(-this->GetAllVolume()); // 버리는 아이템만큼 curVolume 조절하기. TODO : Inven에서 아이템 버릴 때 문제 생기면 체크하기.
+		DropItem(Character);
+	}
 	//AddFivemmBulletStack을 통해서 총에 또 정보를 전달해 주어야 함
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 		UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행

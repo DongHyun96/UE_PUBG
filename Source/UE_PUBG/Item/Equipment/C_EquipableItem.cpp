@@ -76,12 +76,12 @@ float AC_EquipableItem::GetDamageReduceFactor() const
 	return 0.f;
 }
 
-bool AC_EquipableItem::MoveSlotToAround(AC_BasicCharacter* Character)
+bool AC_EquipableItem::MoveSlotToAround(AC_BasicCharacter* Character,int32 InStack)
 {
 	return false;
 }
 
-bool AC_EquipableItem::MoveAroundToSlot(AC_BasicCharacter* Character)
+bool AC_EquipableItem::MoveAroundToSlot(AC_BasicCharacter* Character,int32 InStack)
 {
 	return false;
 }

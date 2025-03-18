@@ -191,6 +191,7 @@ protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<FName, AC_Item*> MyItems;
 
+	//TMap<FName, UC_ItemBox*> MyItems;
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

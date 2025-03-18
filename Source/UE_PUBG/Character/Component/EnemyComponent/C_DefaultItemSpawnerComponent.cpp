@@ -40,18 +40,18 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 	OwnerEnemy->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MELEE_WEAPON, MeleeWeapon);
 
 	AC_Gun* MainGun = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::MAIN_GUN], Param);
-	MainGun->MoveToSlot(OwnerEnemy);
+	MainGun->MoveToSlot(OwnerEnemy, MainGun->GetItemCurStack());
 	//EquippedComponent->SetSlotWeapon(EWeaponSlot::MAIN_GUN, MainGun);
 
 	AC_Gun* SubGun = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::SUB_GUN], Param);
-	SubGun->MoveToSlot(OwnerEnemy);
+	SubGun->MoveToSlot(OwnerEnemy, SubGun->GetItemCurStack());
 	//EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, SubGun);
 
 	// Throwable Weapon setting 하기
 	for (auto& pair : ThrowableClasses)
 	{
 		AC_ThrowingWeapon* ThrowWeapon = GetWorld()->SpawnActor<AC_ThrowingWeapon>(pair.Value, Param);
-		ThrowWeapon->MoveToSlot(OwnerEnemy);
+		ThrowWeapon->MoveToSlot(OwnerEnemy, ThrowWeapon->GetItemCurStack());
 	}
 
 	// "FlashBang"
@@ -60,7 +60,7 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 	if (!IsValid(Grenade))
 		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade nullptr", FColor::Red, 10.f);
 		
-	if (Grenade) if (!Grenade->MoveToSlot(OwnerEnemy))
+	if (Grenade) if (!Grenade->MoveToSlot(OwnerEnemy, Grenade->GetItemCurStack()))
 		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade MoveToSlot Failed!", FColor::Red, 10.f);
 
 	// Body Armors and Backpack
@@ -73,7 +73,7 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 
 	Vest->InitVestDatasAndStaticMesh();
 	
-	Vest->MoveToSlot(OwnerEnemy);
+	Vest->MoveToSlot(OwnerEnemy, Vest->GetItemCurStack());
 
 	// UC_Util::Print("Setting Vest Lv : " + FString::FromInt(static_cast<uint8>(Vest->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
 
@@ -82,7 +82,7 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 										static_cast<EEquipableItemLevel>(FMath::RandRange(0, 1));
 	
 	AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[BackPackLevel]);
-	BackPack->MoveToSlot(OwnerEnemy);
+	BackPack->MoveToSlot(OwnerEnemy, BackPack->GetItemCurStack());
 
 	// UC_Util::Print("Setting BackPack Lv : " + FString::FromInt(static_cast<uint8>(BackPack->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
 
@@ -91,7 +91,7 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 										static_cast<EEquipableItemLevel>(FMath::RandRange(0, 1));
 		
 	AC_Helmet* Helmet = GetWorld()->SpawnActor<AC_Helmet>(HelmetClasses[HelmetLevel]);
-	Helmet->MoveToSlot(OwnerEnemy);
+	Helmet->MoveToSlot(OwnerEnemy, Helmet->GetItemCurStack());
 
 	// UC_Util::Print("Setting Helmet Lv : " + FString::FromInt(static_cast<uint8>(Helmet->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
 	

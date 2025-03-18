@@ -224,7 +224,7 @@ bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
+bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character,int32 InStack)
 {
 	
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
@@ -255,7 +255,7 @@ bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character)
+bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 
 	
@@ -273,7 +273,7 @@ bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character)
 	if (curVolume >= preMaxVolume) return false;
 
 	if (curBackPack)
-		curBackPack->MoveToAround(Character);
+		curBackPack->MoveToAround(Character, InStack);
 
 	//InvenComp->EquippedBackPack(this);
 

@@ -105,13 +105,13 @@ protected:
 	virtual void HandleDestroy() PURE_VIRTUAL(AC_ConsumableItem::HandleDestroy, );
 
 protected:
-	bool MoveInvenToAround(AC_BasicCharacter* Character) override;
-	bool MoveInvenToInven(AC_BasicCharacter* Character) override;
-	bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
+	bool MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
-	bool MoveAroundToAround(AC_BasicCharacter* Character) override;
-	bool MoveAroundToInven(AC_BasicCharacter* Character) override;
-	bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
+	bool MoveAroundToAround(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
 public: // getters and setters
 

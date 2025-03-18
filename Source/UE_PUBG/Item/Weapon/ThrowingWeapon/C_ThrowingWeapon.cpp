@@ -508,9 +508,9 @@ bool AC_ThrowingWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 	     this->SetItemStack(ItemCurStack - 1);
 	
 	equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, NewWeapon); //슬롯에 장착. 아래의 NewWeapon과 다름.
-
-	return  (ItemPlace == EItemPlace::AROUND) ? this->MoveToInven(Character) : //하나를 뺴서 장착시킨 아이템을 MoveToInven으로 인벤에 넣는 작업 실행.
-			(ItemPlace == EItemPlace::INVEN)  ? true : false;
+	return false;
+	//return  (ItemPlace == EItemPlace::AROUND) ? this->MoveToInven(Character) : //하나를 뺴서 장착시킨 아이템을 MoveToInven으로 인벤에 넣는 작업 실행.
+	//		(ItemPlace == EItemPlace::INVEN)  ? true : false;
 }
 
 bool AC_ThrowingWeapon::Interaction(AC_BasicCharacter* Character)
@@ -543,9 +543,9 @@ bool AC_ThrowingWeapon::Interaction(AC_BasicCharacter* Character)
 	case EItemPlace::SLOT:
 
 	case EItemPlace::AROUND:
-		if (curWeapaon) return MoveToInven(Character);
+		if (curWeapaon) return MoveToInven(Character, curWeapaon->GetItemCurStack());
 	case EItemPlace::INVEN:
-		return MoveToSlot(Character);
+		return MoveToSlot(Character, this->GetItemCurStack());
 		break;
 	default:
 		break;
@@ -575,7 +575,7 @@ AC_Item* AC_ThrowingWeapon::SpawnItem(AC_BasicCharacter* Character)
 	return SpawnItem;
 }
 
-bool AC_ThrowingWeapon::MoveSlotToAround(AC_BasicCharacter* Character)
+bool AC_ThrowingWeapon::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -591,7 +591,7 @@ bool AC_ThrowingWeapon::MoveSlotToAround(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_ThrowingWeapon::MoveSlotToInven(AC_BasicCharacter* Character)
+bool AC_ThrowingWeapon::MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -609,7 +609,7 @@ bool AC_ThrowingWeapon::MoveSlotToInven(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_ThrowingWeapon::MoveInvenToAround(AC_BasicCharacter* Character)
+bool AC_ThrowingWeapon::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -625,7 +625,7 @@ bool AC_ThrowingWeapon::MoveInvenToAround(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
+bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -678,7 +678,7 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character)
 	return true;
 }
 
-bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character)
+bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -708,7 +708,7 @@ bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character)
 	}
 }
 
-bool AC_ThrowingWeapon::MoveAroundToSlot(AC_BasicCharacter* Character)
+bool AC_ThrowingWeapon::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
@@ -717,8 +717,8 @@ bool AC_ThrowingWeapon::MoveAroundToSlot(AC_BasicCharacter* Character)
 
 	if (curWeapon)
 	{
-		if (!curWeapon->MoveSlotToInven(Character)) //이곳에서 curWeapon의 장착을 해제함.
-			curWeapon->MoveSlotToAround(Character);
+		if (!curWeapon->MoveSlotToInven(Character,InStack)) //이곳에서 curWeapon의 장착을 해제함.
+			curWeapon->MoveSlotToAround(Character, InStack);
 	}
 
 	if (ItemCurStack == 1)
@@ -848,7 +848,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 			UC_Util::Print("OnProcessEnd Change to Last New Throwing Weapon casting failed!", FColor::Red, 10.f);
 			return;
 		}
-		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter);
+		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter,TargetThrowWeapon->GetItemCurStack());
 
 		if (OwnerPlayer) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 
@@ -879,7 +879,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 			return;
 		}
 
-		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter);
+		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter, TargetThrowWeapon->GetItemCurStack());
 
 		if (OwnerPlayer) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 

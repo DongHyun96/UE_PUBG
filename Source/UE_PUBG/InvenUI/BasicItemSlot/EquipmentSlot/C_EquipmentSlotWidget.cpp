@@ -22,7 +22,7 @@ FReply UC_EquipmentSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 		if (AC_EquipableItem* SlotItem = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EquipSlot])
 		{   // 우클릭 이벤트 실행
 			//EquippedItem->Interaction(OwnerCharacter);
-			SlotItem->MoveToAround(OwnerPlayer);
+			SlotItem->MoveToAround(OwnerPlayer, SlotItem->GetItemCurStack());
 			//InitInvenUIWidget();
 
 			//NativeOnListItemObjectSet에서의 호출과 중복으로 일단 주석처리, 다만 이벤트시에 초기화가 필요하면 사용해야 할 수 있음.
@@ -107,6 +107,7 @@ void UC_EquipmentSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, c
 
 	DragOperation->DefaultDragVisual = Border;
 	DragOperation->Payload = SlotItem; // 드래그 중 전달할 데이터 (아이템)
+	DragOperation->SetDraggedItemBox(SlotItem);
 	DragOperation->Pivot = EDragPivot::MouseDown;
 
 	FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
