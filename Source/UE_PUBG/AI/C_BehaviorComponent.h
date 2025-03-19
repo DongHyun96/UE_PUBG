@@ -43,6 +43,14 @@ public:
 	bool SetIdleTaskType(EIdleTaskType Type);
 	bool SetCombatTaskType(ECombatTaskType Type);
 
+public: // TODO : Player에 관련한 내용 지우기 (For Testing)
+
+	bool SetPlayer(class AC_Player* Player);
+	
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FName PlayerKey = "Player";
+
 public:
 	
 	/// <summary>

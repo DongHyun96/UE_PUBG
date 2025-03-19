@@ -41,7 +41,7 @@ public:
 protected:
 	
 	/// <summary>
-	/// SmartLink에 도달했을 때 받을 call back 함수 
+	/// SmartLink에 도달했을 때 받을 call back 함수
 	/// </summary>
 	/// <param name="Agent"> : 도달한 Agent </param>
 	/// <param name="Destination"> : 도달할 지점 </param>

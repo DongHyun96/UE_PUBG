@@ -3,6 +3,7 @@
 
 #include "AI/C_BehaviorComponent.h"
 
+#include "EnhancedInputSubsystemInterface.h"
 #include "Character/C_BasicCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/C_Player.h"
@@ -53,6 +54,13 @@ bool UC_BehaviorComponent::SetCombatTaskType(ECombatTaskType Type)
 	if (Type == ECombatTaskType::MAX) return false;
 	Blackboard->SetValueAsEnum(CombatTaskKey, static_cast<uint8>(Type));
 	return false;
+}
+
+bool UC_BehaviorComponent::SetPlayer(class AC_Player* Player)
+{
+	if (!IsValid(Player)) return false;
+	Blackboard->SetValueAsObject(PlayerKey, Player);
+	return true;
 }
 
 bool UC_BehaviorComponent::SetTargetCharacter(AActor* InTargetCharacter)

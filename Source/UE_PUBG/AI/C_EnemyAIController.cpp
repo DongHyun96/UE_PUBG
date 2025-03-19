@@ -10,6 +10,7 @@
 #include "Character/C_Player.h"
 #include "Character/C_Enemy.h"
 #include "AI/C_BehaviorComponent.h"
+#include "Singleton/C_GameSceneManager.h"
 
 #include "Utility/C_Util.h"
 
@@ -45,6 +46,9 @@ AC_EnemyAIController::AC_EnemyAIController()
 void AC_EnemyAIController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// TODO : 이 라인 지우기
+	BehaviorComponent->SetPlayer(GAMESCENE_MANAGER->GetPlayer());
 }
 
 void AC_EnemyAIController::Tick(float DeltaTime)
@@ -108,7 +112,7 @@ void AC_EnemyAIController::OnPossess(APawn* InPawn)
 
 	SetGenericTeamId(OwnerCharacter->GetGenericTeamId());
 
-	PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &AC_EnemyAIController::OnPerceptionUpdated);
+	// PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &AC_EnemyAIController::OnPerceptionUpdated);
 	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AC_EnemyAIController::OnTargetPerceptionUpdated);
 	
 	// Set Black board & Behavior tree
@@ -147,7 +151,7 @@ void AC_EnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, struct FAISt
 	{
 		if (Stimulus.WasSuccessfullySensed()) // 새로 인지된 Actor인 상황
 		{
-			
+			BehaviorComponent->SetTargetCharacter(Actor);
 		}
 		else // Lose Sight
 		{

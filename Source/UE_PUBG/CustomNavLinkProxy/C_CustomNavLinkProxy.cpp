@@ -24,6 +24,8 @@ void AC_CustomNavLinkProxy::BeginPlay()
 
 void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVector& Destination)
 {
+	UC_Util::Print("OnReceiveSmartLinkReached", FColor::MakeRandomColor(), 10.f);
+	
 	AC_Enemy* Enemy = Cast<AC_Enemy>(Agent);
 	if (!Enemy) return;
 
@@ -41,10 +43,18 @@ void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVect
 	
 	EDirection CurDirection = (LeftToDest > RightToDest) ? EDirection::LEFT_TO_RIGHT : EDirection::RIGHT_TO_LEFT;
 
+	FVector StartLocation = (CurDirection == EDirection::LEFT_TO_RIGHT) ? LeftWorldLocation : RightWorldLocation;
+
 	UC_Util::Print((CurDirection == EDirection::RIGHT_TO_LEFT) ? "Right_To_Left" : "Left_To_Right", FColor::MakeRandomColor(), 10.f);
 
-	if (DirectionActionStrategies[CurDirection] == ELinkActionStrategy::JUMP)			ExecuteJump(Enemy, Destination);
-	else if (DirectionActionStrategies[CurDirection] == ELinkActionStrategy::PARKOUR)
+	switch (DirectionActionStrategies[CurDirection])
+	{
+	case ELinkActionStrategy::DEFAULT: case ELinkActionStrategy::MAX:
+		return;
+	case ELinkActionStrategy::JUMP:
+		ExecuteJump(Enemy, Destination);
+		return;
+	case ELinkActionStrategy::PARKOUR:
 	{
 		// 파쿠르 할 지점으로 Enemy 회전
 		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation
@@ -57,8 +67,10 @@ void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVect
 		LookAtRotation.Roll = 0.f;
 		Enemy->SetActorRotation(LookAtRotation);
 
+		// 파쿠르를 정확히 시도하기 위해 파쿠르 시작 지점으로 위치 지정
+		Enemy->SetActorLocation(StartLocation);
+		
 		FTimerHandle TimerHandle{};
-
 		GetWorld()->GetTimerManager().SetTimer
 		(
 			TimerHandle,
@@ -69,8 +81,9 @@ void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVect
 			0.2f,
 			false
 		);
-
-		ExecuteParkour(Enemy, Destination);
+		// ExecuteParkour(Enemy, Destination);
+	}
+		return;
 	}
 }
 
@@ -103,6 +116,8 @@ bool AC_CustomNavLinkProxy::ExecuteJump(class AC_Enemy* Enemy, const FVector& De
 	Velocity *= 5.f;	
 	Enemy->GetCharacterMovement()->Velocity.X = Velocity.X;
 	Enemy->GetCharacterMovement()->Velocity.Y = Velocity.Y;*/
+
+	// TODO : 점프하기 전 Enemy 회전 및 위치 잡아야하는지 확인
 
 	FTimerHandle TimerHandle{};
 
