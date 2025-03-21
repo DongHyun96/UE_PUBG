@@ -507,6 +507,27 @@ bool UC_ParkourComponent::CheckHighParkourTarget(FParkourDescriptor& CurParkourD
 	// 파쿠르 할 수 있는 높이가 아님
 	if (NotPossibleHeight) return false;
 
+	// 머리 위로 충분한 공간이 있는지 체크해줘야 함
+	// DrawDebugBox(GetWorld(), StartLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Blue, true);
+	const FVector CheckSpaceAboveStart = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * 60.f;
+	const FVector CheckSpaceAboveDest = OwnerCharacter->GetActorLocation()  + FVector::UnitZ() * 180.f;
+	const float CheckSpaceAboveRad = OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() * 0.65f;
+	DrawDebugCylinder(GetWorld(), CheckSpaceAboveStart, CheckSpaceAboveDest, CheckSpaceAboveRad, 20, FColor::Red, true);
+	HitResult = {};
+
+	bool HasSomethingAboveHead = GetWorld()->SweepSingleByChannel
+	(
+		HitResult,
+		CheckSpaceAboveStart,
+		CheckSpaceAboveDest,
+		FQuat::Identity,
+		ECC_Visibility,
+		FCollisionShape::MakeSphere(CheckSpaceAboveRad),
+		CurParkourDesc.CollisionParams
+	);
+
+	if (HasSomethingAboveHead) return false;
+	
 	HitResult = {};
 
 	// 180, 150, 120, 90

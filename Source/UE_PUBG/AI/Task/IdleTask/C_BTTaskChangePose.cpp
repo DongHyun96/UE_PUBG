@@ -13,14 +13,21 @@
 
 UC_BTTaskChangePose::UC_BTTaskChangePose()
 {
+	bNotifyTick = true;
 }
 
 void UC_BTTaskChangePose::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	if (!OwnerEnemy->GetIsPoseTransitioning()) FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	else UC_Util::Print("PoseTransitioning going");
+	if (!OwnerEnemy->GetIsPoseTransitioning())
+	{
+		UC_Util::Print("Pose Transitioning Finished!", FColor::Red, 10.f);
+		OwnerBehaviorComponent->SetIdleTaskTypeToPrevType();
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return;
+	}
+	
 }
 
 EBTNodeResult::Type UC_BTTaskChangePose::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -54,14 +61,14 @@ EBTNodeResult::Type UC_BTTaskChangePose::ExecuteTask(UBehaviorTreeComponent& Own
 		}
 	}
 
-	// Change to random pose state
-	EPoseState NextPoseState = OwnerEnemy->GetPoseState();
-	while (NextPoseState == OwnerEnemy->GetPoseState()) 
-		NextPoseState = static_cast<EPoseState>(FMath::RandRange(0, (int)EPoseState::POSE_MAX));
-		
-	bool Succeeded = OwnerEnemy->SetPoseState(OwnerEnemy->GetPoseState(), NextPoseState);
+	bool Succeeded = OwnerEnemy->SetPoseState(OwnerEnemy->GetPoseState(), OwnerBehaviorComponent->GetNextPoseState());
+	if (!Succeeded)
+	{
+		OwnerBehaviorComponent->SetIdleTaskTypeToPrevType();
+		return EBTNodeResult::Failed;
+	}
 
-	return Succeeded ? EBTNodeResult::InProgress : EBTNodeResult::Failed;
+	return EBTNodeResult::InProgress; // TickTask에서 PoseTransition 액션 중인지 확인
 }
 
 

@@ -3,7 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Components/ActorComponent.h"
+#include "Service/C_BTServiceIdle.h"
+// #include "Service/C_BTServiceIdle.h"
 #include "C_BehaviorComponent.generated.h"
 
 UENUM(BlueprintType)
@@ -17,8 +20,9 @@ enum class EServiceType : uint8
 	MAX
 };
 
-enum class EIdleTaskType   : uint8;
-enum class ECombatTaskType : uint8;
+enum class EIdleTaskType   	: uint8;
+enum class ECombatTaskType 	: uint8;
+enum class EPoseState		: uint8;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_BehaviorComponent : public UActorComponent
@@ -64,6 +68,12 @@ public:
 	bool SetTargetLocation(const FVector& InTargetLocation);
 	FVector GetTargetLocation() const;
 
+public:
+
+	void SetNextPoseState(EPoseState InNextPoseState) { NextPoseState = InNextPoseState; }
+	EPoseState GetNextPoseState() const { return NextPoseState; }
+	bool SetIdleTaskTypeToPrevType();
+	
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
@@ -85,6 +95,13 @@ protected:
 	
 private:
 	class UBlackboardComponent* Blackboard{};
+
+private: // ChangePoseState 관련
+
+	EIdleTaskType PrevIdleTaskType = EIdleTaskType::MAX;
+	
+	// BTTask ChangePoseState에 활용될 값
+	EPoseState NextPoseState{};
 };
 
 

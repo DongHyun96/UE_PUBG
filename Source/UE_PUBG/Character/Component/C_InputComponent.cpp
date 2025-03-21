@@ -28,6 +28,9 @@
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Item/ConsumableItem/C_ConsumableItem.h"
 #include "EnhancedInputComponent.h"
+#include "AI/C_BehaviorComponent.h"
+#include "AI/C_EnemyAIController.h"
+#include "AI/Service/C_BTServiceIdle.h"
 
 #include "Utility/C_Util.h"
 
@@ -232,6 +235,7 @@ void UC_InputComponent::Crouch()
 	if (Player->GetSwimmingComponent()->IsSwimming()) return;
 	//if (Player->GetParkourComponent()->GetIsCurrentlyWarping()) return;
 
+	
 	switch (Player->GetPoseState())
 	{
 	case EPoseState::STAND: // Stand to crouch (Pose transition 없이 바로 처리)

@@ -6,6 +6,11 @@
 #include "Character/C_BasicCharacter.h"
 #include "C_Enemy.generated.h"
 
+namespace EPathFollowingResult
+{
+	enum Type : int;
+}
+
 /**
  * 
  */
@@ -36,6 +41,13 @@ public:
 
 	class UC_TargetLocationSettingHelper* GetTargetLocationSettingHelper() const { return TargetLocationSettingHelper; }
 
+	/// <summary>
+	/// <para> Character Capsule 밑 부분을 들어온 Parameter값으로 맞춰서 ActorLocation set하기 </para>
+	/// </summary>
+	/// <param name="BottomLocation"> : Character Capsule 밑 부분이 될 값 </param>
+	/// <param name="TeleportType"></param>
+	void SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType = ETeleportType::None);
+	
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)

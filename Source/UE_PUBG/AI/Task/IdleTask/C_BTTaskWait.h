@@ -1,24 +1,22 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BehaviorTree/BTTaskNode.h"
-#include "C_BTTaskChangePose.generated.h"
+#include "BehaviorTree/Tasks/BTTask_Wait.h"
+#include "C_BTTaskWait.generated.h"
 
-enum class EPoseState : uint8;
-enum class EIdleTaskType : uint8;
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_BTTaskChangePose : public UBTTaskNode
+class UE_PUBG_API UC_BTTaskWait : public UBTTask_Wait
 {
 	GENERATED_BODY()
 
 public:
 
-	UC_BTTaskChangePose();
+	UC_BTTaskWait();
 
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
@@ -28,6 +26,5 @@ private:
 
 	class AC_Enemy*				OwnerEnemy{};
 	class UC_BehaviorComponent* OwnerBehaviorComponent{};
+	
 };
-
-
