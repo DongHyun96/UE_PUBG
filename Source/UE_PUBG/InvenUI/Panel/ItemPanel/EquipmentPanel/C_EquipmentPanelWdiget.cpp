@@ -18,7 +18,6 @@
 #include "InvenUserInterface/C_DragDropOperation.h"
 
 #include "Item/C_Item.h"
-#include "Item/C_ItemBox.h"
 
 #include "Utility/C_Util.h"
 
@@ -87,10 +86,10 @@ void UC_EquipmentPanelWdiget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
 
 }
 
-bool UC_EquipmentPanelWdiget::HandleDrop(UC_ItemBox* DroppedItemBox)
+bool UC_EquipmentPanelWdiget::HandleDrop(AC_Item* DroppedItemBox)
 {
 	UC_Util::Print("MoveToSlot");
-	return DroppedItemBox->GetItemRef()->MoveToSlot(OwnerPlayer,DroppedItemBox->GetItemStackCount());
+	return DroppedItemBox->MoveToSlot(OwnerPlayer,DroppedItemBox->GetItemCurStack());
 }
 
 

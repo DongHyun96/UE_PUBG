@@ -118,7 +118,9 @@ public:
 	/// <param name="itemName">찾고자 하는 아이템</param>
 	/// <returns>찾고자 하는 아이템. (없다면 nullptr 반환)</returns>
 	UFUNCTION(BlueprintCallable)
-	AC_Item* FindMyItemByName(FName itemName);
+	AC_Item* FindMyItemByName(const FName& itemName);
+
+	bool HandleItemStackOverflow(AC_Item* InItem);
 
 	void AddItemToMyList(AC_Item* item); //{ testMyItems.Add(item->GetItemDatas().ItemName, item); }
 
@@ -160,10 +162,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	TMap<EEquipSlot, AC_EquipableItem*> GetEquipmentItems() { return EquipmentItems; }
 
-	const TMap<FName, class AC_Item*>& GetMyItems() { return MyItems; }
+	const TMap<FName, TArray<class AC_Item*>>& GetMyItems() { return MyItems; }
 
 	TArray<AC_Item*>& GetTestAroundItems() { return AroundItems; }
 
+	UFUNCTION(BlueprintCallable)
+	int32 GetTotalStackByItemName(const FName& ItemName);
 
 protected:
 	void InitMyitems();
@@ -189,9 +193,9 @@ protected:
 	/// </summary>
 
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<FName, AC_Item*> MyItems;
+	//TMap<FName, AC_Item*> MyItems;
 
-	//TMap<FName, UC_ItemBox*> MyItems;
+	TMap<FName, TArray<AC_Item*>> MyItems;
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

@@ -4,7 +4,6 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 #include "Item/C_Item.h"
-#include "Item/C_ItemBox.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Equipment/C_EquipableItem.h"
@@ -213,91 +212,181 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 
 AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 {
-	if (AC_Item** FoundItemPtr = MyItems.Find(item->GetItemCode()))
+	if (!item) return nullptr; // 유효성 검사
+
+	if (TArray<AC_Item*>* ItemArrayPtr = MyItems.Find(item->GetItemCode()))
 	{
-		AC_Item* FoundItem = *FoundItemPtr;
-		return FoundItem;
+		if (AC_Item* FoundItemPtr = ItemArrayPtr->Last()) 
+		{
+			return FoundItemPtr; 
+		}
 	}
 
 	//TODO : CheckPoint - 장착, 사용 아이템의 위치가 어디에 있는지 확인할 것.
 	return nullptr;
 }
 
-AC_Item* UC_InvenComponent::FindMyItemByName(FName itemName)
+AC_Item* UC_InvenComponent::FindMyItemByName(const FName& itemName)
 {
-	if (AC_Item** FoundItemPtr = MyItems.Find(itemName))
+	if (TArray<AC_Item*>* ItemArrayPtr = MyItems.Find(itemName))
 	{
-		AC_Item* FoundItem = *FoundItemPtr;
-		return FoundItem;
+		if (ItemArrayPtr->Num() > 0) // 배열이 비어 있지 않은지 확인
+		{
+			return ItemArrayPtr->Last(); // 마지막 원소 반환
+		}
 	}
 
 	return nullptr;
 }
 
+bool UC_InvenComponent::HandleItemStackOverflow(AC_Item* InItem)
+{
+	if (!IsValid(InItem)) return false;
+
+	// 해당 아이템의 코드로 배열을 가져옴 (여기서는 무조건 존재해야 함)
+	TArray<AC_Item*>& ItemArray = MyItems[InItem->GetItemCode()];
+
+	if (ItemArray.Num() == 0)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("HandleItemStackOverflow: 아이템 배열이 비어 있음! ItemCode: %s"), *item->GetItemCode().ToString());
+		UC_Util::Print("ItemArray of HandleItemStackOverflow is NULL");
+		return false;
+	}
+
+	AC_Item* LastItem = ItemArray.Last(); // 마지막 아이템 가져오기
+
+	int32 MaxStack = LastItem->GetItemDatas()->ItemMaxStack;
+	int32 NewStack = LastItem->GetItemCurStack() + InItem->GetItemCurStack();
+
+	// 최대 스택 초과 여부 확인
+	if (NewStack > MaxStack)
+	{
+		int32 OverflowAmount = NewStack - MaxStack;
+		LastItem->SetItemStack(MaxStack); // 기존 아이템을 최대 스택까지만 설정
+
+		// 초과된 개수를 새 아이템으로 생성 후 배열 끝에 추가
+		AC_Item* NewItem = InItem->SpawnItem(OwnerCharacter);
+		//NewItem = LastItem->SpawnItem(OwnerCharacter);
+		NewItem->SetItemStack(OverflowAmount);
+		NewItem->SetOwnerCharacter(OwnerCharacter);
+		NewItem->SetItemPlace(EItemPlace::INVEN);
+		NewItem->SetActorHiddenInGame(true);
+		NewItem->SetActorEnableCollision(false);
+
+		ItemArray.Add(NewItem);
+	}
+	else
+	{
+		// 초과하지 않으면 기존 아이템에 합산
+		LastItem->SetItemStack(NewStack);
+	}
+
+	return true;
+}
+
 void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 {
+	if (!IsValid(item)) return; // nullptr 방지
 
-	//AC_Item* FoundItem = FindMyItem(item); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;
-	if (!IsValid(item)) return; //nullptr가 들어 오면 return.
-	//if (testMyItems.Contains(item->GetItemDatas().ItemName))
-	if (AC_Item** FoundItemPtr = MyItems.Find(item->GetItemCode()))
+	// 아이템 코드로 MyItems에서 TArray<AC_Item*>를 찾음
+	if (MyItems.Contains(item->GetItemCode()))
 	{
-		AC_Item* FoundItem = *FoundItemPtr;
-
-		int32 sum = FoundItem->GetItemCurStack() + item->GetItemCurStack();
-
-		FoundItem->SetItemStack(sum);
+		// HandleItemStackOverflow가 정상적으로 처리되었는지 확인
+		if (!HandleItemStackOverflow(item)) return;
 
 		CurVolume += item->GetAllVolume();
 
-		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
-			Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
+		// UI 업데이트
+		//if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+		//	Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
 
-		item->Destroy();//가지고 있던 아이템에 새로 넣는 아이템을 다 넣었으므로 삭제.
+		// 원본 아이템 삭제
+		item->Destroy();
 	}
-	else 
+	else
 	{
-		// 해당키의 값이 추가.
-		MyItems.Add(item->GetItemCode(), item);
+		// 새로운 TArray 생성 후 아이템 추가
+		MyItems.Add(item->GetItemCode(), { item });
 
 		if (IsValid(OwnerCharacter))
 		{
 			item->SetOwnerCharacter(OwnerCharacter);
 		}
+
 		item->SetItemPlace(EItemPlace::INVEN);
 		item->SetActorHiddenInGame(true);
 		item->SetActorEnableCollision(false);
 
 		CurVolume += item->GetAllVolume();
 
-		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
-			Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
 	}
-}
-
-void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
-{
-	MyItems.Remove(item->GetItemCode());
-	//Add와 달리 슬롯으로 가는 경우를 대비하여 OwnerCharacter의 설정을 건드리지 않았음.
-	//item->SetItemPlace(EItemPlace::AROUND);
-	CurVolume -= item->GetAllVolume();
-
+	// UI 업데이트
 	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
 		Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
 }
 
-void UC_InvenComponent::DestroyMyItem(AC_Item* DestroyedItem)
+void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 {
-	if (MyItems.Contains(DestroyedItem->GetItemCode()))
+	if (MyItems.Contains(item->GetItemCode()))
 	{
-		AC_Item* MyItem = MyItems[DestroyedItem->GetItemCode()];
+		TArray<AC_Item*>& ItemArray = MyItems[item->GetItemCode()]; // 해당 아이템 코드의 아이템 배열 가져오기
 
-		if (MyItem) //TMap에 해당 요소가 있는지 확인.
+		// 배열에서 아이템 찾기
+		for (int32 i = 0; i < ItemArray.Num(); ++i)
 		{
-			RemoveItemToMyList(MyItem);
-			MyItem->Destroy();
+			if (ItemArray[i] == item) // 배열 내에서 일치하는 아이템 찾음
+			{
+				CurVolume -= item->GetAllVolume(); // 아이템 볼륨 감소
+				ItemArray.RemoveAt(i); // 배열에서 아이템 제거
+
+				// 배열이 비어 있으면 MyItems에서 해당 키 삭제
+				if (ItemArray.Num() == 0)
+				{
+					MyItems.Remove(item->GetItemCode());
+				}
+
+				// 백팩 용량 갱신
+				if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+				{
+					Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
+				}
+				return;
+			}
 		}
 	}
+}
+
+void UC_InvenComponent::DestroyMyItem(AC_Item* DestroyedItem)
+{
+	RemoveItemToMyList(DestroyedItem);
+
+	DestroyedItem->Destroy();
+
+	//if (MyItems.Contains(DestroyedItem->GetItemCode())) // MyItems에 해당 아이템 코드가 존재하는지 확인
+	//{
+	//	TArray<AC_Item*>& ItemArray = MyItems[DestroyedItem->GetItemCode()]; // 해당 아이템 코드의 아이템 배열 가져오기
+	//
+	//	// 배열에서 아이템 찾기
+	//	for (int32 i = 0; i < ItemArray.Num(); ++i)
+	//	{
+	//		if (ItemArray[i] == DestroyedItem) // 배열 내에서 일치하는 아이템 찾음
+	//		{
+	//			// 아이템 제거
+	//			RemoveItemToMyList(ItemArray[i]);
+	//			
+	//			//if (ItemArray[i]) ItemArray.RemoveAt(i); // 배열에서 아이템 제거
+	//			
+	//			//ItemArray[i]->Destroy(); // 아이템 파괴
+	//			break; // 해당 아이템을 찾았으므로 루프 종료
+	//		}
+	//	}
+	//
+	//	// 배열이 비어 있으면 MyItems에서 해당 키 삭제
+	//	if (ItemArray.Num() == 0)
+	//	{
+	//		MyItems.Remove(DestroyedItem->GetItemCode());
+	//	}
+	//}
 }
 
 void UC_InvenComponent::GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values)
@@ -338,6 +427,24 @@ float UC_InvenComponent::GetVestVolume()
 	return 50.0f;
 }
 
+
+int32 UC_InvenComponent::GetTotalStackByItemName(const FName& ItemName)
+{
+	if (!MyItems.Contains(ItemName)) return 0; // 아이템이 없으면 0 반환
+
+	int32 AllStack = 0;
+
+	// 해당 아이템의 배열을 가져와서 순회하면서 CurStack을 합산
+	for (AC_Item* Item : MyItems[ItemName])
+	{
+		if (IsValid(Item))
+		{
+			AllStack += Item->GetItemCurStack();
+		}
+	}
+
+	return AllStack;
+}
 
 void UC_InvenComponent::InitMyitems()
 {
