@@ -9,17 +9,17 @@
 #include "Utility/C_Util.h"
 
 
-bool UC_InventoryItemPanelWidget::HandleDrop(UC_ItemBox* DroppedItemBox)
+bool UC_InventoryItemPanelWidget::HandleDrop(AC_Item* DroppedItem)
 {
     UC_Util::Print("MoveToInven");
-    return DroppedItemBox->GetItemRef()->MoveToInven(OwnerPlayer, DroppedItemBox->GetItemStackCount());
+    return DroppedItem->MoveToInven(OwnerPlayer, DroppedItem->GetItemCurStack());
 }
 
-void UC_InventoryItemPanelWidget::ShowDividePanelWidget(UC_ItemBox* DividedItemBox)
+void UC_InventoryItemPanelWidget::ShowDividePanelWidget(AC_Item* DroppedItem)
 {
     UC_BasicDivideItemPanelWidget* DivideItemDropWidget = GetOwnerPlayer()->GetInvenSystem()->GetInvenUI()->GetDivideItemInventoryDropWidget();
 
-    DivideItemDropWidget->SetCachedItem(DividedItemBox);
+    DivideItemDropWidget->SetCachedItem(DroppedItem);
 
     DivideItemDropWidget->UpdateWidget();
 

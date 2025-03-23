@@ -3,8 +3,11 @@
 
 #include "Item/C_Item.h"
 #include "Utility/C_Util.h"
-#include "Character/C_BasicCharacter.h"
+//#include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_InvenSystem.h"
+#include "InvenUI/C_InventoryUIWidget.h"
 #include "Engine/World.h"
 
 //#include "GameFramework/Actor.h"
@@ -60,18 +63,18 @@ void AC_Item::DetachItem()
 	
 	if (!OwnerCharacter) return;
 	
-	DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 
 	//후에 라인 트레이스를 사용해서 바꿔주기.
 	SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
-	SetActorRotation(FRotator(0.f, 0.f, -90.f));
 	SetOwnerCharacter(nullptr);
+	SetActorRotation(FRotator(0.f, 0.f, -90.f));
 
 	//한번 껏다 꺼줘야 OverlapBegin이 작동 -> 장착할때 꺼주고 버릴 때 켜주면 될듯?
 	SetActorEnableCollision(false);
 	SetActorEnableCollision(true);
 	
 	
+	DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 
 	UC_Util::Print("Check");
 }
@@ -164,18 +167,26 @@ bool AC_Item::MoveToAround(AC_BasicCharacter* Character, int32 InStack)
 
 bool AC_Item::MoveToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
+	bool bIsMoveItem = false;
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		return MoveAroundToSlot(Character, InStack);
+		bIsMoveItem = MoveAroundToSlot(Character, InStack);
+		break;
 	case EItemPlace::INVEN:
-		return MoveInvenToSlot(Character, InStack);
+		bIsMoveItem = MoveInvenToSlot(Character, InStack);
+		break;
 	case EItemPlace::SLOT:
-		return MoveSlotToSlot(Character, InStack);
+		bIsMoveItem = MoveSlotToSlot(Character, InStack);
+		break;
 	default:
 		break;
 	}
-	return false;
+
+	if (AC_Player* Player = Cast<AC_Player>(Character))
+		Player->GetInvenSystem()->GetInvenUI()->UpdateEquipmentItemPanelWidget();
+
+	return bIsMoveItem;
 }
 
 bool AC_Item::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)

@@ -14,11 +14,11 @@ class UE_PUBG_API UC_BasicDivideItemPanelWidget : public UC_CustomUserWidget
 {
 	GENERATED_BODY()
 public:
-	void SetCachedItem(class UC_ItemBox* InteractionItemBox) { CachedItemBox = InteractionItemBox; }
+	void SetCachedItem(class AC_Item* InteractionItem) { CachedItem = InteractionItem; }
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateWidget();
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UC_ItemBox* CachedItemBox = nullptr;
+	AC_Item* CachedItem = nullptr;
 };

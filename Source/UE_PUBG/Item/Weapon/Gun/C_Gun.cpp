@@ -258,7 +258,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 
 		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, true);
 		AmmoWidget->SetShootingMode(CurrentShootingMode);
-		AmmoWidget->SetLeftAmmoText(LeftAmmoCount);
+		//AmmoWidget->SetLeftAmmoText(LeftAmmoCount);
 		AmmoWidget->SetMagazineText(CurBulletCount);
 	}
 
@@ -852,7 +852,7 @@ bool AC_Gun::ReloadBullet()
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 	{
 		OwnerPlayer->GetInvenSystem()->InitializeList();
-		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(CurBullet->GetItemCurStack(), true);
+		//OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(CurBullet->GetItemCurStack(), true);
 		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
 	}
 	return true;

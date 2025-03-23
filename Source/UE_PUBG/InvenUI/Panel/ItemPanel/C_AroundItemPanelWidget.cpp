@@ -7,19 +7,19 @@
 #include "Character/C_Player.h"
 #include "Character/Component/C_InvenSystem.h"
 #include "Utility/C_Util.h"
-bool UC_AroundItemPanelWidget::HandleDrop(UC_ItemBox* DroppedItemBox)
+bool UC_AroundItemPanelWidget::HandleDrop(AC_Item* DroppedItem)
 {
     UC_Util::Print("MoveToAround");
     
 
-    return DroppedItemBox->GetItemRef()->MoveToAround(OwnerPlayer, DroppedItemBox->GetItemStackCount());
+    return DroppedItem->MoveToAround(OwnerPlayer, DroppedItem->GetItemCurStack());
 }
 
-void UC_AroundItemPanelWidget::ShowDividePanelWidget(UC_ItemBox* DividedItemBox)
+void UC_AroundItemPanelWidget::ShowDividePanelWidget(AC_Item* DroppedItem)
 {
     UC_BasicDivideItemPanelWidget* DivideItemDropWidget = GetOwnerPlayer()->GetInvenSystem()->GetInvenUI()->GetDivideItemAroundDropWidget();
 
-    DivideItemDropWidget->SetCachedItem(DividedItemBox);
+    DivideItemDropWidget->SetCachedItem(DroppedItem);
 
     DivideItemDropWidget->UpdateWidget();
 

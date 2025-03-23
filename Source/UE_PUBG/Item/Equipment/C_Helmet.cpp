@@ -30,7 +30,8 @@ void AC_Helmet::BeginPlay()
 
 bool AC_Helmet::Interaction(AC_BasicCharacter* Character)
 {
-	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, this);
+	//Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, this);
+	MoveToSlot(Character, GetItemCurStack());
 	return true;
 }
 
