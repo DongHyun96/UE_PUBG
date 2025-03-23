@@ -70,7 +70,7 @@ public:
 
 public:
 
-	void SetNextPoseState(EPoseState InNextPoseState) { NextPoseState = InNextPoseState; }
+	void SetNextPoseState(EPoseState InNextPoseState);
 	EPoseState GetNextPoseState() const { return NextPoseState; }
 	bool SetIdleTaskTypeToPrevType();
 	

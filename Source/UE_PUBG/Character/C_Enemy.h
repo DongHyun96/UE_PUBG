@@ -48,6 +48,12 @@ public:
 	/// <param name="TeleportType"></param>
 	void SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType = ETeleportType::None);
 	
+	/// <summary>
+	/// Pose와 캐릭터 이동방향에 따른 MaxWalkSpeed 조정 (Enemy는 이동방향 고려 x(언제나 Forward 방면으로 이동 처리 중))
+	/// </summary>
+	/// <param name="MovementVector"> : Input action movement vector </param>
+	void UpdateMaxWalkSpeed(const FVector2D& MovementVector) override;
+	
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)

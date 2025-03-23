@@ -189,7 +189,7 @@ public:
 	/// Pose와 캐릭터 이동방향에 따른 MaxWalkSpeed 조정
 	/// </summary>
 	/// <param name="MovementVector"> : Input action movement vector </param>
-	void UpdateMaxWalkSpeed(const FVector2D& MovementVector);
+	virtual void UpdateMaxWalkSpeed(const FVector2D& MovementVector);
 
 
 public: // Getters and setters

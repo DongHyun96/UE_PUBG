@@ -68,6 +68,12 @@ public: // Getters and setters
 
 	float GetCellWorldSize() const { return CELL_WORLDSIZE; }
 
+	/// <summary>
+	/// <para> 현재 Tick에서의 RandomColor 받아오기 </para>
+	/// <para> (Level에 TickRandomColorGenerator Actor가 배치되어 있지 않다면 FColor::Red 반환) </para>
+	/// </summary>
+	FColor GetTickRandomColor() const;
+
 public:
 
 	/// <summary>
@@ -112,6 +118,10 @@ private:
 private:
 	
 	const float CELL_WORLDSIZE = 10000.f;
+
+private:
+
+	class AC_TickRandomColorGenerator* TickRandomColorGenerator{};
 
 };
 

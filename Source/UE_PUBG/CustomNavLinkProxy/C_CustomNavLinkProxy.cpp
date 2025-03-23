@@ -5,16 +5,12 @@
 
 #include "C_NavLinkJumpStrategy.h"
 #include "C_NavLinkParkourStrategy.h"
-#include "NavigationSystem.h"
+
 #include "NavLinkCustomComponent.h"
-#include "StaticMeshAttributes.h"
+
 #include "AI/C_BehaviorComponent.h"
 #include "AI/C_EnemyAIController.h"
-
-#include "AI/NavigationSystemBase.h"
 #include "Character/C_Enemy.h"
-#include "Character/Component/C_ParkourComponent.h"
-#include "Components/SphereComponent.h"
 
 #include "Kismet/KismetMathLibrary.h"
 #include "Singleton/C_GameSceneManager.h"
@@ -35,10 +31,12 @@ void AC_CustomNavLinkProxy::BeginPlay()
 	Super::BeginPlay();
 
 	++CustomNavLinkProxyCount;
-
-	InitLeftRightColliderSphere();
 	TryInitLinkActionStrategies();
-	
+
+	FVector LeftPointLocation = GetTransform().TransformPosition(PointLinks[0].Left);
+	FVector RightPointLocation = GetTransform().TransformPosition(PointLinks[0].Right);
+	DestinationXY[EDirection::LEFT_TO_RIGHT] = UC_Util::GetXY(RightPointLocation);
+	DestinationXY[EDirection::RIGHT_TO_LEFT] = UC_Util::GetXY(LeftPointLocation);
 }
 
 void AC_CustomNavLinkProxy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -54,53 +52,6 @@ void AC_CustomNavLinkProxy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		return;
 	}
 	if (!LinkActionStrategies.IsEmpty()) LinkActionStrategies.Empty(); // GC는 GameSceneManager에서 처리 예정
-}
-
-void AC_CustomNavLinkProxy::InitLeftRightColliderSphere()
-{
-	LeftSphereCollider  = Cast<UShapeComponent>(GetDefaultSubobjectByName("LeftSphereCollision"));
-	RightSphereCollider = Cast<UShapeComponent>(GetDefaultSubobjectByName("RightSphereCollision"));
-
-	if (!IsValid(LeftSphereCollider) || !IsValid(RightSphereCollider))
-	{
-		UC_Util::Print("From AC_CustomNavLinkProxy::BeginPlay() : Sphere Colliders not inited properly!", FColor::Red, 10.f);
-		return;
-	}
-
-	FVector LeftPointLinkLocation = GetTransform().TransformPosition(PointLinks[0].Left);
-	FVector RightPointLinkLocation = GetTransform().TransformPosition(PointLinks[0].Right);
-
-	FNavLocation NavLocation{};
-
-	bool Founded = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld())->ProjectPointToNavigation
-	(
-		LeftPointLinkLocation,
-		NavLocation,
-		FVector(100.f, 100.f, 100.f)
-	);
-
-	FColor RandomColor = FColor::MakeRandomColor();
-
-	if (!Founded) UC_Util::Print("From " + GetActorLabel() + " : LeftCollider location not properly inited!", RandomColor, 10.f);
-	LeftSphereCollider->SetWorldLocation(NavLocation.Location);
-	
-	NavLocation = {};
-	Founded = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld())->ProjectPointToNavigation
-		(
-			RightPointLinkLocation,
-			NavLocation,
-			FVector(100.f, 100.f, 100.f)
-		);
-
-	if (!Founded) UC_Util::Print("From " + GetActorLabel() + " : RightCollider location not properly inited!", RandomColor, 10.f);
-	RightSphereCollider->SetWorldLocation(NavLocation.Location);
-
-	LeftSphereCollider->OnComponentBeginOverlap.AddDynamic(this, &AC_CustomNavLinkProxy::OnLeftSphereBeginOverlap);
-	RightSphereCollider->OnComponentBeginOverlap.AddDynamic(this, &AC_CustomNavLinkProxy::OnRightSphereBeginOverlap);
-
-	SetActorEnableCollision(true);
-	LeftSphereCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	RightSphereCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 bool AC_CustomNavLinkProxy::TryInitLinkActionStrategies()
@@ -127,26 +78,42 @@ void AC_CustomNavLinkProxy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/*switch (LeftSphereCollider->GetCollisionEnabled())
-	{
-	case ECollisionEnabled::NoCollision: UC_Util::Print("NoCollision", FColor::Red, 10.f); break;;
-	case ECollisionEnabled::QueryOnly: UC_Util::Print("QueryOnly", FColor::Red, 10.f); break;
-	case ECollisionEnabled::PhysicsOnly: UC_Util::Print("PhysicsOnly", FColor::Red, 10.f); break;
-	case ECollisionEnabled::QueryAndPhysics: UC_Util::Print("QueryAndPhysics", FColor::Red, 10.f); break;
-	case ECollisionEnabled::ProbeOnly: UC_Util::Print("ProbeOnly", FColor::Red, 10.f); break;
-	case ECollisionEnabled::QueryAndProbe: UC_Util::Print("QueryAndProbe", FColor::Red, 10.f); break;
-	}*/
+	HandleEnteredEnemiesDestArrival();
+}
 
-	if (LeftSphereCollider->GetCollisionEnabled() == ECollisionEnabled::NoCollision)
+void AC_CustomNavLinkProxy::HandleEnteredEnemiesDestArrival()
+{
+	for (int i = 0; i < static_cast<int>(EDirection::MAX); ++i)
 	{
-		UC_Util::Print("Setting!");
-		LeftSphereCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	}
+		EDirection Direction = static_cast<EDirection>(i);
+		if (LinkEnteredEnemies[Direction].IsEmpty()) continue;
 
-	if (RightSphereCollider->GetCollisionEnabled() == ECollisionEnabled::NoCollision)
-	{
-		RightSphereCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		
+		FVector2D Destination			= DestinationXY[Direction];
+		TSet<AC_Enemy*>& EnteredEnemies = LinkEnteredEnemies[Direction];
+
+		for (auto It = EnteredEnemies.CreateIterator(); It; ++It)
+		{
+			AC_Enemy* Enemy = *It;
+
+			// 이동 중 사망한 Enemy 체크
+			if (Enemy->GetMainState() == EMainState::DEAD)
+			{
+				It.RemoveCurrent();
+				continue;
+			}
+			
+			FVector2D XYPos = UC_Util::GetXY(Enemy->GetActorLocation());
+			if (FVector2D::Distance(Destination, XYPos) > 20.f) continue;
+
+			// Reach End Point
+			UC_Util::Print("End Point Reached!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+
+			UC_BehaviorComponent* BehaviorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent();
+			BehaviorComponent->SetNextPoseState(DirectionPoseStates[Direction].DestPointPoseState);
+			BehaviorComponent->SetIdleTaskType(EIdleTaskType::CHANGE_POSE);
+			
+			It.RemoveCurrent(); // Destination 처리 완료한 인원 제거
+		}
 	}
 }
 
@@ -161,7 +128,6 @@ void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVect
 		UC_Util::Print("From AC_CustomNavLinkProxy::OnReceiveSmartLinkReached : PointLinks is empty!", FColor::Red, 10.f);
 		return;
 	}
-	UC_Util::Print("OnReceiveSmartLinkReached", FColor::Red, 10.f);
 	
 	// 방향 확인하기
 	FVector LeftWorldLocation	= GetTransform().TransformPosition(PointLinks[0].Left);
@@ -171,6 +137,9 @@ void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVect
 	
 	EDirection CurDirection = (LeftToDest > RightToDest) ? EDirection::LEFT_TO_RIGHT : EDirection::RIGHT_TO_LEFT;
 	FVector StartLocation	= (CurDirection == EDirection::LEFT_TO_RIGHT) ? LeftWorldLocation : RightWorldLocation;
+	FString str = "OnReceiveSmartLinkReached";
+	str += (CurDirection == EDirection::LEFT_TO_RIGHT) ? " : Left" : " : Right";
+	UC_Util::Print(str, GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 	// UC_Util::Print((CurDirection == EDirection::RIGHT_TO_LEFT) ? "Right_To_Left" : "Left_To_Right", FColor::MakeRandomColor(), 10.f);
 
 	// 시작 지점 자세 변환 적용, 이미 같은 자세라면 전환 x
@@ -184,32 +153,19 @@ void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVect
 	FTimerHandle TimerHandle{};
 	
 	// 도착 지점 확인 Set에 Enemy 넣어두기
-	if (CurDirection == EDirection::LEFT_TO_RIGHT)
-	{
-		RightSideDestEnemies.Add(Enemy, CurDirection);
+	LinkEnteredEnemies[CurDirection].Add(Enemy);
 
-		// 불가피하게 도착지점에 도착 못할 수 있을 때 인원체크 set에서 삭제
-		GetWorld()->GetTimerManager().SetTimer
-		(
-			TimerHandle,
-			[this, Enemy]() {RightSideDestEnemies.Remove(Enemy);},
-			20.f,
-			false
-		);
-	}
-	else
-	{
-		LeftSideDestEnemies.Add(Enemy, CurDirection);
-		
-		GetWorld()->GetTimerManager().SetTimer
-		(
-			TimerHandle,
-			[this, Enemy]() {LeftSideDestEnemies.Remove(Enemy);},
-			20.f,
-			false
-		);
-	}
+	// 불가피하게 도착지점에 도착 못할 수 있을 때 인원체크 set에서 삭제
+	GetWorld()->GetTimerManager().SetTimer
+	(
+		TimerHandle,
+		[this, Enemy, CurDirection]() { LinkEnteredEnemies[CurDirection].Remove(Enemy); },
+		20.f,
+		false
+	);
 
+	/* NavLinkProxy Strategy handling */
+	
 	if (DirectionActionStrategies[CurDirection] == ELinkActionStrategy::DEFAULT ||
 		DirectionActionStrategies[CurDirection] == ELinkActionStrategy::MAX)
 		return;
@@ -235,59 +191,3 @@ void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVect
 	}
 }
 
-void AC_CustomNavLinkProxy::OnLeftSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	UC_Util::Print("LeftBeginOverlap", FColor::Red, 10.f);
-
-	AC_Enemy* Enemy = Cast<AC_Enemy>(OtherActor);
-	if (!Enemy) return;
-
-	if (!LeftSideDestEnemies.Contains(Enemy))
-	{
-		UC_Util::Print("LeftSideDest map does not contain overlapped Enemy", FColor::Red, 10.f);
-		return;
-	}
-	EDirection CurDirection = LeftSideDestEnemies[Enemy];
-	LeftSideDestEnemies.Remove(Enemy);
-	
-	// 도착지점 취할 자세 적용, 이미 같은 자세라면 전환 x
-	if (Enemy->GetPoseState() == DirectionPoseStates[CurDirection].DestPointPoseState)
-	{
-		UC_Util::Print("Left side Enemy Overlapped but Same PoseState", FColor::Red, 10.f);
-		return;
-	}
-		
-	UC_BehaviorComponent* BehaviorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent();
-	BehaviorComponent->SetNextPoseState(DirectionPoseStates[CurDirection].DestPointPoseState);
-	BehaviorComponent->SetIdleTaskType(EIdleTaskType::CHANGE_POSE);
-	
-}
-
-void AC_CustomNavLinkProxy::OnRightSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	UC_Util::Print("RightBeginOverlap", FColor::Red, 10.f);
-	
-	AC_Enemy* Enemy = Cast<AC_Enemy>(OtherActor);
-	if (!Enemy) return;
-
-	if (!RightSideDestEnemies.Contains(Enemy))
-	{
-		UC_Util::Print("RightSideDest map does not contain overlapped Enemy", FColor::Red, 10.f);
-		return;
-	}
-	EDirection CurDirection = RightSideDestEnemies[Enemy];
-	RightSideDestEnemies.Remove(Enemy);
-	
-	// 도착지점 취할 자세 적용, 이미 같은 자세라면 전환 x
-	if (Enemy->GetPoseState() == DirectionPoseStates[CurDirection].DestPointPoseState)
-	{
-		UC_Util::Print("Right side Enemy Overlapped but Same PoseState", FColor::Red, 10.f);
-		return;
-	}
-		
-	UC_BehaviorComponent* BehaviorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent();
-	BehaviorComponent->SetNextPoseState(DirectionPoseStates[CurDirection].DestPointPoseState);
-	BehaviorComponent->SetIdleTaskType(EIdleTaskType::CHANGE_POSE);
-}

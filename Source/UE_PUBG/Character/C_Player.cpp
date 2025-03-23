@@ -476,7 +476,7 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 
 	if (IsValid(OverlappedItem))
 	{
-		UC_Util::Print("OverlappedItem");
+		// UC_Util::Print("OverlappedItem");
 		//UC_Util::Print(*OverlappedItem->GetName());
 
 		//Inventory->GetNearItems().Add(OverlappedItem);
@@ -494,7 +494,7 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 	}
 	else
 	{
-		UC_Util::Print("No item");
+		// UC_Util::Print("No item");
 
 		return;
 	}
@@ -1195,7 +1195,7 @@ void AC_Player::SetRecoilTimelineValues(float InGunRPM)
 	float PlayRate = 1.0f;
 	if (InGunRPM != 0)
 		PlayRate /= InGunRPM;
-	UC_Util::Print(PlayRate, FColor::Red, 10);
+	// UC_Util::Print(PlayRate, FColor::Red, 10);
 	RecoilTimeline->SetTimelinePlayRate(PlayRate);
 	//CameraTransitionTimeline->SetPlayRate(PlayRate);  // 재생 속도 설정
 	//CameraTransitionTimeline->SetLooping(false);  // 반복하지 않도록 설정

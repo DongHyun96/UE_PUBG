@@ -38,8 +38,7 @@ void AC_Enemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// GetCharacterMovement()->MaxWalkSpeed = 600.f;
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
     // 비행기 타기 이전에 spawn하는 것으로 수정되었음
     // ItemSpawnerHelper->SpawnDefaultWeaponsAndItems();
@@ -81,6 +80,7 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
 
 			Super::SetPoseState(EPoseState::STAND);
+			
 			return true;
 
 		case EPoseState::CRAWL: // Crawl To Stand
@@ -156,6 +156,11 @@ void AC_Enemy::SetActorBottomLocation(const FVector& BottomLocation, ETeleportTy
 	// 실제 CapsuleComponent의 HalfHeight는 88 -> but PIE에서 ActorLocation Z는 90이 나와서 90 상수값 적용
 	static const float ACTOR_HALF_Z = 90.f; 
 	SetActorLocation(BottomLocation + FVector::UnitZ() * ACTOR_HALF_Z, false, nullptr, TeleportType);	
+}
+
+void AC_Enemy::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
+{
+	Super::UpdateMaxWalkSpeed(MovementVector);
 }
 
 
