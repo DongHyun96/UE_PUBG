@@ -4,24 +4,17 @@
 #include "Character/C_Enemy.h"
 
 #include "C_Player.h"
-#include "NavigationSystem.h"
+
 #include "AI/C_EnemyAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-#include "Character/Component/C_EquippedComponent.h"
+
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
 
-#include "Item/C_Item.h"
-#include "Item/Weapon/Gun/C_Gun.h"
-#include "Item/Weapon/Gun/C_AR.h"
-#include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
-#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
-#include "Singleton/C_GameSceneManager.h"
-#include "Utility/C_Util.h"
 
 
 AC_Enemy::AC_Enemy()
@@ -87,6 +80,7 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
 
 			Super::SetPoseState(EPoseState::STAND);
+			
 			return true;
 
 		case EPoseState::CRAWL: // Crawl To Stand
@@ -155,6 +149,18 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 AC_EnemyAIController* AC_Enemy::GetEnemyAIController() const
 {
 	return Cast<AC_EnemyAIController>(GetController());
+}
+
+void AC_Enemy::SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType)
+{
+	// 실제 CapsuleComponent의 HalfHeight는 88 -> but PIE에서 ActorLocation Z는 90이 나와서 90 상수값 적용
+	static const float ACTOR_HALF_Z = 90.f; 
+	SetActorLocation(BottomLocation + FVector::UnitZ() * ACTOR_HALF_Z, false, nullptr, TeleportType);	
+}
+
+void AC_Enemy::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
+{
+	Super::UpdateMaxWalkSpeed(MovementVector);
 }
 
 

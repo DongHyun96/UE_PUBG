@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "InvenUI/Panel/C_BasicPanelWidget.h"
 #include "Components/ListView.h"
-#include "Item/C_ItemBox.h"
 #include "C_BasicItemPanelWidget.generated.h"
 
 /**
@@ -22,7 +21,7 @@ public:
     /// InventoryItemList의 Update함수
     /// </summary>
     /// <param name="MyItemMap"></param>
-    void UpdateInventoryItemList(TMap<FName, AC_Item*> MyItemMap);
+    void UpdateInventoryItemList(TMap<FName, TArray<AC_Item*>> MyItemMap);
 
     /// <summary>
     /// AroundItemList의 Update함수.

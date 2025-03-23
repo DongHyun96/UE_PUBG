@@ -162,12 +162,20 @@ void UC_InventoryUIWidget::UpdateInventroyItemPanelWidget()
 {
     if (InventoryPanel)
     {
-        TMap<FName, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
+        TMap<FName, TArray<AC_Item*>> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
         MyItems = OwnerPlayer->GetInvenComponent()->GetMyItems();
         InventoryPanel->SetVisibility(ESlateVisibility::Visible);
 
         //InventoryPanel->AddTMapItem(MyItems); // 아이템 리스트 추가
         InventoryPanel->UpdateInventoryItemList(MyItems);
+    }
+}
+
+void UC_InventoryUIWidget::UpdateEquipmentItemPanelWidget()
+{
+    if (EquipmentPanel)
+    {
+        EquipmentPanel->UpdateWidget();
     }
 }
 

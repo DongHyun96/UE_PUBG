@@ -22,10 +22,6 @@ public:
 		curWeaponSlot = EWeaponSlot::NONE;
 	}
 
-	void SetDraggedItemBox(class AC_Item* InItem);
-
-	void SetDraggedItemBox(class UC_ItemBox* InItemBox);
-
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -33,10 +29,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	class AC_Item* DraggedItem = nullptr;
-
-	//UPROPERTY(BlueprintReadWrite)
-	class UC_ItemBox* DraggedItemBox = nullptr;
-
 
 	UPROPERTY(BlueprintReadWrite)
 	EWeaponSlot curWeaponSlot = EWeaponSlot::NONE;

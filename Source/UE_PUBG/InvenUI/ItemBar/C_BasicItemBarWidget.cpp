@@ -16,8 +16,6 @@
 #include "Components/Border.h"
 #include "Components/Progressbar.h"
 
-#include "Item/C_ItemBox.h"
-
 #include "Kismet/GameplayStatics.h"
 
 //#include "Blueprint/WidgetBlueprintLibrary.h"
@@ -141,19 +139,6 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	//TODO : UDragDropOperation내의 DraggedItem을 UItemBox의 DraggedItemBox로 대체하기. 
 	DragOperation->DraggedItem =  CachedItem;
 
-	if (!CachedItemBox)
-	{
-		UC_ItemBox* CreateItemBox = NewObject<UC_ItemBox>();
-		CreateItemBox->Init(CachedItem, CachedItem->GetItemCurStack());
-
-		CachedItemBox = CreateItemBox;
-	}
-
-	////if (CachedItem->GetItemPlace() == EItemPlace::INVEN)
-	DragOperation->DraggedItemBox = CachedItemBox;
-	//else
-	//DragOperation->DraggedItemBox->Init(CachedItem, CachedItem->GetItemCurStack());
-
 	DragOperation->curWeaponSlot = EWeaponSlot::NONE;
 
 	//오너캐릭터 체크
@@ -177,44 +162,12 @@ void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 	// ListItemObject를 UC_Item 클래스로 캐스팅하여 아이템 데이터 사용
-	CachedItemBox = Cast<UC_ItemBox>(ListItemObject);
-
-	if (CachedItemBox)
-	{
-		UpdateWidget(CachedItemBox);
-		return;
-	}
-
 	CachedItem = Cast<AC_Item>(ListItemObject);
-	
-	if (!CachedItem) return;
-	
-	UpdateWidget(CachedItem);
-}
 
-void UC_BasicItemBarWidget::UpdateWidget(UC_ItemBox* MyItem)
-{
-	if (MyItem)
+	if (CachedItem)
 	{
-		CachedItem = MyItem->GetItemRef();
-
-		const FItemData* CachedItemData = CachedItem->GetItemDatas();
-
-		ItemImage->SetBrushFromTexture(CachedItemData->ItemBarIcon);
-
-		ItemType = CachedItemData->ItemType;
-
-		ItemName->SetText(FText::FromString(CachedItemData->ItemName));
-
-		if (MyItem->GetItemStackCount() == 0)
-		{
-			ItemStackBlock->SetText(FText::FromString(""));
-		}
-		else
-		{
-			ItemStackBlock->SetText(FText::AsNumber(MyItem->GetItemStackCount()));
-		}
-		SetVisibility(ESlateVisibility::Visible);
+		UpdateWidget(CachedItem);
+		return;
 	}
 }
 
@@ -232,14 +185,14 @@ void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
 
 		ItemName->SetText(FText::FromString(CachedItemData->ItemName));
 
-		if (CachedItem->GetItemCurStack() == 0)
-		{
-			ItemStackBlock->SetText(FText::FromString(""));
-		}
-		else
-		{
-			ItemStackBlock->SetText(FText::AsNumber(CachedItem->GetItemCurStack()));
-		}
+		//if (CachedItem->GetItemCurStack() == 0)
+		//{
+		//	ItemStackBlock->SetText(FText::FromString(""));
+		//}
+		//else
+		//{
+		//	ItemStackBlock->SetText(FText::AsNumber(CachedItem->GetItemCurStack()));
+		//}
 
 		SetVisibility(ESlateVisibility::Visible);
 	}

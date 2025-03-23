@@ -18,8 +18,8 @@ AC_Vest::AC_Vest()
 
 bool AC_Vest::Interaction(AC_BasicCharacter* Character)
 {
-	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, this);
-
+	//Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, this);
+	MoveToSlot(Character, GetItemCurStack());
 	return true;
 }
 

@@ -133,9 +133,11 @@ bool AC_BackPack::Interaction(AC_BasicCharacter* Character)
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		return LegacyMoveToSlot(Character);
+		//return LegacyMoveToSlot(Character);
+		return MoveToSlot(Character, GetItemCurStack());
 	case EItemPlace::SLOT:
-		return LegacyMoveToAround(Character);
+		//return LegacyMoveToAround(Character);
+		return MoveToAround(Character, GetItemCurStack());
 	default:
 		return false;
 	}

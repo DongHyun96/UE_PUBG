@@ -195,7 +195,7 @@ void UC_InvenUiWidget::InitListView()
 
     if (MyItemListWidget)
     {
-        TMap<FName, AC_Item*> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
+        TMap<FName, TArray<AC_Item*>> MyItems; // 실제 아이템 리스트를 가져오는 로직 필요
         MyItems = OwnerCharacter->GetInvenComponent()->GetMyItems();
         MyItemListWidget->SetVisibility(ESlateVisibility::Visible);
 

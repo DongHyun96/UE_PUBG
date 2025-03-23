@@ -53,7 +53,7 @@ AC_BasicCharacter::AC_BasicCharacter()
 	//InvenSystem->SetOwnerCharacter(this);
 
 	StatComponent = CreateDefaultSubobject<UC_StatComponent>("StatComponent");
-
+	
 	ConsumableUsageMeshComponent = CreateDefaultSubobject<UC_ConsumableUsageMeshComponent>("ConsumableUsageMeshComponent");
 	ConsumableUsageMeshComponent->SetOwnerCharacter(this);
 

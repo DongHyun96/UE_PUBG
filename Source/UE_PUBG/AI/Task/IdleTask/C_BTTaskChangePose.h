@@ -7,7 +7,7 @@
 #include "C_BTTaskChangePose.generated.h"
 
 enum class EPoseState : uint8;
-
+enum class EIdleTaskType : uint8;
 /**
  * 
  */
@@ -28,7 +28,6 @@ private:
 
 	class AC_Enemy*				OwnerEnemy{};
 	class UC_BehaviorComponent* OwnerBehaviorComponent{};
-	
 };
 
 

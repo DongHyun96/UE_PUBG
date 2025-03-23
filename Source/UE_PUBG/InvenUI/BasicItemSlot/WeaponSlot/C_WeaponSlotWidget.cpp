@@ -104,7 +104,7 @@ void UC_WeaponSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, cons
 	DragOperation->DefaultDragVisual = Border;
 	DragOperation->Payload = SlotItem; // 드래그 중 전달할 데이터 (아이템)
 
-	DragOperation->SetDraggedItemBox(SlotItem);
+	DragOperation->DraggedItem = SlotItem;
 
 	DragOperation->Pivot = EDragPivot::MouseDown;
 

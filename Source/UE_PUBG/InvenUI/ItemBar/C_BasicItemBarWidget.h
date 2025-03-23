@@ -6,7 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/IUserObjectListEntry.h"
 #include "Item/C_Item.h"
-#include "Item/C_ItemBox.h"
 #include "C_BasicItemBarWidget.generated.h"
 
 /**
@@ -49,7 +48,6 @@ public:
 	// ListView에서 항목 객체가 설정될 때 호출되는 함수
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
-	void UpdateWidget(UC_ItemBox* MyItem);
 
 	void UpdateWidget(AC_Item* MyItem);
 
@@ -94,10 +92,8 @@ protected:
 
 	// C++에서 처리할 아이템
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	AC_Item* CachedItem;
+	AC_Item* CachedItem = nullptr;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UC_ItemBox* CachedItemBox = nullptr;
 
 	//에디터에서 바인딩으로 처리한다면?
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)

@@ -3,29 +3,125 @@
 
 #include "CustomNavLinkProxy/C_CustomNavLinkProxy.h"
 
+#include "C_NavLinkJumpStrategy.h"
+#include "C_NavLinkParkourStrategy.h"
+
+#include "NavLinkCustomComponent.h"
+
+#include "AI/C_BehaviorComponent.h"
+#include "AI/C_EnemyAIController.h"
 #include "Character/C_Enemy.h"
-#include "Character/Component/C_ParkourComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
+
 #include "Kismet/KismetMathLibrary.h"
-#include "Particles/Velocity/ParticleModuleVelocityOverLifetime.h"
+#include "Singleton/C_GameSceneManager.h"
+
 #include "Utility/C_Util.h"
+
+int AC_CustomNavLinkProxy::CustomNavLinkProxyCount = 0;
+TMap<ELinkActionStrategy, class II_NavLinkProxyActionStrategy*> AC_CustomNavLinkProxy::LinkActionStrategies{};
+
 
 AC_CustomNavLinkProxy::AC_CustomNavLinkProxy()
 {
-	// PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AC_CustomNavLinkProxy::BeginPlay()
 {
 	Super::BeginPlay();
-}	
+
+	++CustomNavLinkProxyCount;
+	TryInitLinkActionStrategies();
+
+	FVector LeftPointLocation = GetTransform().TransformPosition(PointLinks[0].Left);
+	FVector RightPointLocation = GetTransform().TransformPosition(PointLinks[0].Right);
+	DestinationXY[EDirection::LEFT_TO_RIGHT] = UC_Util::GetXY(RightPointLocation);
+	DestinationXY[EDirection::RIGHT_TO_LEFT] = UC_Util::GetXY(LeftPointLocation);
+}
+
+void AC_CustomNavLinkProxy::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (EndPlayReason == EEndPlayReason::Type::Destroyed)
+	{
+		if (--CustomNavLinkProxyCount <= 0)
+		{
+			if (!LinkActionStrategies.IsEmpty()) LinkActionStrategies.Empty(); // GC는 GameSceneManager에서 처리 예정
+		}
+		return;
+	}
+	if (!LinkActionStrategies.IsEmpty()) LinkActionStrategies.Empty(); // GC는 GameSceneManager에서 처리 예정
+}
+
+bool AC_CustomNavLinkProxy::TryInitLinkActionStrategies()
+{
+	if (!LinkActionStrategies.IsEmpty()) return false;
+	
+	II_NavLinkProxyActionStrategy* LinkJumpStrategy = NewObject<UC_NavLinkJumpStrategy>();
+	LinkJumpStrategy->_getUObject()->AddToRoot(); // GC 방지
+
+	II_NavLinkProxyActionStrategy* LinkParkourStrategy = NewObject<UC_NavLinkParkourStrategy>();
+	LinkParkourStrategy->_getUObject()->AddToRoot();
+
+	GAMESCENE_MANAGER->AddGCProtectedObject(LinkJumpStrategy->_getUObject());
+	GAMESCENE_MANAGER->AddGCProtectedObject(LinkParkourStrategy->_getUObject());
+
+	LinkActionStrategies.Add(ELinkActionStrategy::DEFAULT, nullptr);
+	LinkActionStrategies.Add(ELinkActionStrategy::MAX, nullptr);
+	LinkActionStrategies.Add(ELinkActionStrategy::JUMP, LinkJumpStrategy);
+	LinkActionStrategies.Add(ELinkActionStrategy::PARKOUR, LinkParkourStrategy);
+	return true;
+}
+
+void AC_CustomNavLinkProxy::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	HandleEnteredEnemiesDestArrival();
+}
+
+void AC_CustomNavLinkProxy::HandleEnteredEnemiesDestArrival()
+{
+	for (int i = 0; i < static_cast<int>(EDirection::MAX); ++i)
+	{
+		EDirection Direction = static_cast<EDirection>(i);
+		if (LinkEnteredEnemies[Direction].IsEmpty()) continue;
+
+		FVector2D Destination			= DestinationXY[Direction];
+		TSet<AC_Enemy*>& EnteredEnemies = LinkEnteredEnemies[Direction];
+
+		for (auto It = EnteredEnemies.CreateIterator(); It; ++It)
+		{
+			AC_Enemy* Enemy = *It;
+
+			// 이동 중 사망한 Enemy 체크
+			if (Enemy->GetMainState() == EMainState::DEAD)
+			{
+				It.RemoveCurrent();
+				continue;
+			}
+			
+			FVector2D XYPos = UC_Util::GetXY(Enemy->GetActorLocation());
+			if (FVector2D::Distance(Destination, XYPos) > 20.f) continue;
+
+			// Reach End Point
+			UC_Util::Print("End Point Reached!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+
+			UC_BehaviorComponent* BehaviorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent();
+			BehaviorComponent->SetNextPoseState(DirectionPoseStates[Direction].DestPointPoseState);
+			BehaviorComponent->SetIdleTaskType(EIdleTaskType::CHANGE_POSE);
+			
+			It.RemoveCurrent(); // Destination 처리 완료한 인원 제거
+		}
+	}
+}
 
 void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVector& Destination)
 {
-	AC_Enemy* Enemy = Cast<AC_Enemy>(Agent);
-	if (!Enemy) return;
+	// 도착지점에선 Callback이 안들어오는 중
+	
+	AC_Enemy* Enemy = Cast<AC_Enemy>(Agent); if (!Enemy) return;
 
 	if (PointLinks.IsEmpty())
 	{
@@ -40,89 +136,58 @@ void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVect
 	float RightToDest			= FVector::Distance(RightWorldLocation, Destination);
 	
 	EDirection CurDirection = (LeftToDest > RightToDest) ? EDirection::LEFT_TO_RIGHT : EDirection::RIGHT_TO_LEFT;
+	FVector StartLocation	= (CurDirection == EDirection::LEFT_TO_RIGHT) ? LeftWorldLocation : RightWorldLocation;
+	FString str = "OnReceiveSmartLinkReached";
+	str += (CurDirection == EDirection::LEFT_TO_RIGHT) ? " : Left" : " : Right";
+	UC_Util::Print(str, GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+	// UC_Util::Print((CurDirection == EDirection::RIGHT_TO_LEFT) ? "Right_To_Left" : "Left_To_Right", FColor::MakeRandomColor(), 10.f);
 
-	UC_Util::Print((CurDirection == EDirection::RIGHT_TO_LEFT) ? "Right_To_Left" : "Left_To_Right", FColor::MakeRandomColor(), 10.f);
-
-	if (DirectionActionStrategies[CurDirection] == ELinkActionStrategy::JUMP)			ExecuteJump(Enemy, Destination);
-	else if (DirectionActionStrategies[CurDirection] == ELinkActionStrategy::PARKOUR)
+	// 시작 지점 자세 변환 적용, 이미 같은 자세라면 전환 x
+	if (Enemy->GetPoseState() != DirectionPoseStates[CurDirection].StartPointPoseState)
 	{
-		// 파쿠르 할 지점으로 Enemy 회전
+		UC_BehaviorComponent* BehaviorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent();
+		BehaviorComponent->SetNextPoseState(DirectionPoseStates[CurDirection].StartPointPoseState);
+		BehaviorComponent->SetIdleTaskType(EIdleTaskType::CHANGE_POSE); // Service는 현재 MoveToTask 진행 중이였기 때문에 바꿀 필요 x	
+	}
+	
+	FTimerHandle TimerHandle{};
+	
+	// 도착 지점 확인 Set에 Enemy 넣어두기
+	LinkEnteredEnemies[CurDirection].Add(Enemy);
+
+	// 불가피하게 도착지점에 도착 못할 수 있을 때 인원체크 set에서 삭제
+	GetWorld()->GetTimerManager().SetTimer
+	(
+		TimerHandle,
+		[this, Enemy, CurDirection]() { LinkEnteredEnemies[CurDirection].Remove(Enemy); },
+		20.f,
+		false
+	);
+
+	/* NavLinkProxy Strategy handling */
+	
+	if (DirectionActionStrategies[CurDirection] == ELinkActionStrategy::DEFAULT ||
+		DirectionActionStrategies[CurDirection] == ELinkActionStrategy::MAX)
+		return;
+
+	// Strategy 적용
+	if (LinkActionStrategies[DirectionActionStrategies[CurDirection]])
+	{
+		// Strategy를 사용할 지점으로 Enemy 회전
 		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation
 		(
-		Enemy->GetActorLocation(),
-		Destination
+			Enemy->GetActorLocation(),
+			Destination
 		);
 
 		LookAtRotation.Pitch = 0.f;
 		LookAtRotation.Roll = 0.f;
-		Enemy->SetActorRotation(LookAtRotation);
+		Enemy->SetActorRotation(LookAtRotation, ETeleportType::ResetPhysics);
 
-		FTimerHandle TimerHandle{};
-
-		GetWorld()->GetTimerManager().SetTimer
-		(
-			TimerHandle,
-			[this, Enemy, Destination]()
-			{
-				ExecuteParkour(Enemy, Destination);
-			},
-			0.2f,
-			false
-		);
-
-		ExecuteParkour(Enemy, Destination);
+		// 정확한 처리를 위해서 Enemy StartPoint로 위치 지정 -> TODO : StartPoint 위치말고 더 정확한 Strategy 위치 지정을 두어야 할 수도 있음
+		Enemy->SetActorBottomLocation(StartLocation, ETeleportType::ResetPhysics);
+		
+		LinkActionStrategies[DirectionActionStrategies[CurDirection]]->ExecuteStartPointAction(this, Enemy, StartLocation);
 	}
 }
 
-bool AC_CustomNavLinkProxy::ExecuteJump(class AC_Enemy* Enemy, const FVector& Destination)
-{
-	UC_Util::Print("Execute Jump", FColor::Red, 10.f);
-
-	// 문제 : 말 그대로 Launch 하는 방식임, Jump를 뛰는 방식이 아님 / Enemy의 MaxWalkSpeed에 따라 비거리가 달라짐
-	
-	/*static const float LAUNCH_BOOST_FACTOR = 1.5f;
-	
-	FVector LaunchVelocity{};
-	UGameplayStatics::SuggestProjectileVelocity_CustomArc(GetWorld(), LaunchVelocity, Enemy->GetActorLocation(), Destination);
-	LaunchVelocity *= LAUNCH_BOOST_FACTOR;
-	FTimerHandle TimerHandle{};
-	
-	GetWorld()->GetTimerManager().SetTimer
-	(
-		TimerHandle,
-		[Enemy, LaunchVelocity]()
-		{
-			Enemy->LaunchCharacter(LaunchVelocity, true, true);
-		},
-		0.1f,
-		false
-	);
-	*/
-
-	/*FVector Velocity = Enemy->GetVelocity();
-	Velocity *= 5.f;	
-	Enemy->GetCharacterMovement()->Velocity.X = Velocity.X;
-	Enemy->GetCharacterMovement()->Velocity.Y = Velocity.Y;*/
-
-	FTimerHandle TimerHandle{};
-
-	GetWorld()->GetTimerManager().SetTimer
-	(
-		TimerHandle,
-		[Enemy]() { Enemy->Jump(); },
-		0.1f,
-		false
-	);
-	
-	// Enemy->Jump();
-	
-	return true;
-}
-
-bool AC_CustomNavLinkProxy::ExecuteParkour(class AC_Enemy* Enemy, const FVector& Destination)
-{
-	// TODO : 파쿠르를 실패할 경우도 있음 -> 무조건적으로 성공시켜야 함
-	bool ParkourSucceeded = Enemy->GetParkourComponent()->TryExecuteParkourAction();
-	UC_Util::Print(ParkourSucceeded ? "ParkourSucceeded" : "Parkour Failed!", FColor::MakeRandomColor(), 10.f);
-	return ParkourSucceeded;
-}

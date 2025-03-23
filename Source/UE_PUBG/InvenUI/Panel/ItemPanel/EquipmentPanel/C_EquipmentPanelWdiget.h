@@ -21,7 +21,7 @@ public:
 	void SetOwnerPlayer(class AC_Player* InOwnerPlayer) override;
 
 protected:
-	bool HandleDrop(class UC_ItemBox* DroppedItemBox) override;
+	bool HandleDrop(class AC_Item* DroppedItemBox) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))

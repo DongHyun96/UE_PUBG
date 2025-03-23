@@ -6,6 +6,11 @@
 #include "Character/C_BasicCharacter.h"
 #include "C_Enemy.generated.h"
 
+namespace EPathFollowingResult
+{
+	enum Type : int;
+}
+
 /**
  * 
  */
@@ -36,6 +41,19 @@ public:
 
 	class UC_TargetLocationSettingHelper* GetTargetLocationSettingHelper() const { return TargetLocationSettingHelper; }
 
+	/// <summary>
+	/// <para> Character Capsule 밑 부분을 들어온 Parameter값으로 맞춰서 ActorLocation set하기 </para>
+	/// </summary>
+	/// <param name="BottomLocation"> : Character Capsule 밑 부분이 될 값 </param>
+	/// <param name="TeleportType"></param>
+	void SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType = ETeleportType::None);
+	
+	/// <summary>
+	/// Pose와 캐릭터 이동방향에 따른 MaxWalkSpeed 조정 (Enemy는 이동방향 고려 x(언제나 Forward 방면으로 이동 처리 중))
+	/// </summary>
+	/// <param name="MovementVector"> : Input action movement vector </param>
+	void UpdateMaxWalkSpeed(const FVector2D& MovementVector) override;
+	
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)

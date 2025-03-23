@@ -34,7 +34,7 @@ void AC_AirplaneManager::BeginPlay()
 	InitRandomStartDestPosition();
 	
 	// Airplane TakeOff Timer Setting
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
+	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
 	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 0.5f, false);
 
 	if (!IsValid(Airplane))

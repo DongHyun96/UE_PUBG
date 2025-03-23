@@ -141,7 +141,7 @@ void AC_Item_Bullet::UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer)
 			{
 				LeftAmmoStack = curItem->GetItemCurStack();
 			}
-			InOwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(LeftAmmoStack);
+			//InOwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(LeftAmmoStack);
 		}
 	}
 }
