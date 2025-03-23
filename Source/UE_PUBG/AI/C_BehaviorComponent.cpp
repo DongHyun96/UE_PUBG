@@ -96,6 +96,12 @@ FVector UC_BehaviorComponent::GetTargetLocation() const
 	return Blackboard->GetValueAsVector(TargetLocationKey);
 }
 
+void UC_BehaviorComponent::SetNextPoseState(EPoseState InNextPoseState)
+{
+	UC_Util::Print("SetNextPoseState", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+	NextPoseState = InNextPoseState;
+}
+
 bool UC_BehaviorComponent::SetIdleTaskTypeToPrevType()
 {
 	if (PrevIdleTaskType == EIdleTaskType::MAX) return false;

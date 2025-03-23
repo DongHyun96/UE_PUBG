@@ -19,6 +19,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "NavMesh/NavMeshBoundsVolume.h"
+#include "Utility/C_TickRandomColorGenerator.h"
 
 void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 {
@@ -49,6 +50,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;
 		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor)) AirplaneManager = AP_Manager;
+		if (AC_TickRandomColorGenerator* RandomColorGenerator = Cast<AC_TickRandomColorGenerator>(*Actor)) TickRandomColorGenerator = RandomColorGenerator;
 	}
 }
 
@@ -106,6 +108,12 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 		return;
 	case EHUDMode::MAX: default: return;
 	}
+}
+
+FColor UC_GameSceneManager::GetTickRandomColor() const
+{
+	if (!TickRandomColorGenerator) return FColor::Red;
+	return TickRandomColorGenerator->GetTickRandomColor();
 }
 
 FVector UC_GameSceneManager::ConvertTileCoordinateToTileMiddleLocation(const TPair<uint8, uint8>& TileCoordinate) const

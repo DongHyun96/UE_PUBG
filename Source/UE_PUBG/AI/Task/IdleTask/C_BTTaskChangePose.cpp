@@ -25,6 +25,7 @@ void UC_BTTaskChangePose::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		UC_Util::Print("Pose Transitioning Finished!", FColor::Red, 10.f);
 		OwnerBehaviorComponent->SetIdleTaskTypeToPrevType();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		OwnerEnemy->UpdateMaxWalkSpeed({1.f, 0.f}); // Forward 방면 기준으로 MaxWalkSpeed 새로 지정
 		return;
 	}
 	
@@ -67,6 +68,8 @@ EBTNodeResult::Type UC_BTTaskChangePose::ExecuteTask(UBehaviorTreeComponent& Own
 		OwnerBehaviorComponent->SetIdleTaskTypeToPrevType();
 		return EBTNodeResult::Failed;
 	}
+
+	// 자세별 속력으로 setting
 
 	return EBTNodeResult::InProgress; // TickTask에서 PoseTransition 액션 중인지 확인
 }

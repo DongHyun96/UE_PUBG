@@ -67,10 +67,6 @@ private:
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
-	/// <summary>
-	/// Left Right 충돌체 초기화
-	/// </summary>
-	void InitLeftRightColliderSphere();
 
 	/// <summary>
 	/// static Action Strategies 초기화 시도 (이미 초기화 되어있다면 x)
@@ -80,6 +76,12 @@ private:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	/// <summary>
+	/// 이 NavLinkProxy에 도달한 Enemy에 대한 PoseState 전환 담당
+	/// </summary>
+	void HandleEnteredEnemiesDestArrival();
 
 protected:
 	
@@ -91,36 +93,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void OnReceiveSmartLinkReached(AActor* Agent, const FVector& Destination);
 
-protected:
+	UFUNCTION(BlueprintCallable)
+	FVector GetLeftPointWorldLocation() const { return GetTransform().TransformPosition(PointLinks[0].Left); }
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetRightPointWorldLocation() const { return GetTransform().TransformPosition(PointLinks[0].Right); }
 	
-	/// <summary>
-	/// 도착 지점 판단용 Collider Overlap Callback 함수
-	/// </summary>
-	UFUNCTION()
-	void OnLeftSphereBeginOverlap
-	(
-		UPrimitiveComponent* 	OverlappedComponent,
-		AActor* 				OtherActor,
-		UPrimitiveComponent* 	OtherComp,
-		int32 					OtherBodyIndex,
-		bool 					bFromSweep,
-		const FHitResult& 		SweepResult
-	);
-
-	/// <summary>
-	/// 도착 지점 판단용 Collider Overlap Callback 함수
-	/// </summary>
-	UFUNCTION()
-	void OnRightSphereBeginOverlap
-	(
-		UPrimitiveComponent* 	OverlappedComponent,
-		AActor* 				OtherActor,
-		UPrimitiveComponent* 	OtherComp,
-		int32 					OtherBodyIndex,
-		bool 					bFromSweep,
-		const FHitResult& 		SweepResult
-	);
-
 protected:
 
 	// 각 방향에 적용할 Strategy 종류 지정 (Default일 경우, 기본 NavLinkProxy기능을 따름)
@@ -147,10 +125,21 @@ private:
 	static TMap<ELinkActionStrategy, class II_NavLinkProxyActionStrategy*> LinkActionStrategies;
 
 private:
-	class UShapeComponent* LeftSphereCollider{};
-	UShapeComponent*       RightSphereCollider{};
 
 	// 도착 지점 인원 확인 Map (Enemy & CurDirection)
-	TMap<class AC_Enemy*, EDirection> LeftSideDestEnemies{};
-	TMap<class AC_Enemy*, EDirection> RightSideDestEnemies{};
+	// TMap<class AC_Enemy*, EDirection> LeftSideDestEnemies{};
+	// TMap<class AC_Enemy*, EDirection> RightSideDestEnemies{};
+
+	// 이 링크의 시작점에 도달한 Enemy들	
+	TMap<EDirection, TSet<class AC_Enemy*>> LinkEnteredEnemies =
+	{
+		{EDirection::LEFT_TO_RIGHT, {}},
+		{EDirection::RIGHT_TO_LEFT, {}}
+	};
+
+	TMap<EDirection, FVector2D> DestinationXY =
+	{
+		{EDirection::LEFT_TO_RIGHT, {}},
+		{EDirection::RIGHT_TO_LEFT, {}}
+	};
 };
