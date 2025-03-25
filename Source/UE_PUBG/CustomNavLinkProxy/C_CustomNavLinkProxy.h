@@ -46,11 +46,33 @@ struct FLinkedStartDestPoseState : public FTableRowBase
 		: StartPointPoseState(_StartPointPoseState), DestPointPoseState(_DestPointPoseState) {}
 
 public:
+
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EPoseState StartPointPoseState{}; // 출발 지점에서 취해야 할 PoseState
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EPoseState DestPointPoseState{};  // 도착 지점에서 취해야 할 PoseState
 };
+
+USTRUCT(BlueprintType)
+struct FJumpDescriptor : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	
+	// Descriptor에 Setting된 Jump 속도를 쓸 것인지
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bUseJumpDescriptorSettings{};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<EDirection, float> DirectionVelocityZMap =
+	{
+		{EDirection::LEFT_TO_RIGHT, 420.f},
+		{EDirection::RIGHT_TO_LEFT, 420.f},
+	};
+};
+
 
 UCLASS()
 class UE_PUBG_API AC_CustomNavLinkProxy : public ANavLinkProxy
@@ -98,6 +120,11 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	FVector GetRightPointWorldLocation() const { return GetTransform().TransformPosition(PointLinks[0].Right); }
+
+public:
+
+	bool IsUsingJumpDescriptorSettings() const { return JumpDescriptor.bUseJumpDescriptorSettings; }
+	float GetJumpVelocityZ(EDirection Direction) const {return JumpDescriptor.DirectionVelocityZMap[Direction];}
 	
 protected:
 
@@ -142,4 +169,9 @@ private:
 		{EDirection::LEFT_TO_RIGHT, {}},
 		{EDirection::RIGHT_TO_LEFT, {}}
 	};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FJumpDescriptor JumpDescriptor{};
 };

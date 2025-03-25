@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "I_NavLinkProxyActionStrategy.generated.h"
 
+enum class EDirection : uint8;
 
 UINTERFACE(MinimalAPI)
 class UI_NavLinkProxyActionStrategy : public UInterface
@@ -29,7 +30,8 @@ public:
 	/// <param name="CustomNavLinkProxy"> : 이 전략을 사용하는 CustomNavLink 객체 </param>
 	/// <param name="EnemyAgent"> : 이 전략을 사용하는 Enemy Character </param>
 	/// <param name="StartPoint"> : CustomNavLink에서의 시작 지점(Left나 Right 지점) </param>
+	/// <param name="Direction"> : NavLinkProxy를 건너는 방향 </param>
 	/// <returns> : 실행 성공하였다면 return true </returns>
-	virtual bool ExecuteStartPointAction(class AC_CustomNavLinkProxy* CustomNavLinkProxy, class AC_Enemy* EnemyAgent, const FVector& StartPoint) = 0;
+	virtual bool ExecuteStartPointAction(class AC_CustomNavLinkProxy* CustomNavLinkProxy, class AC_Enemy* EnemyAgent, const FVector& StartPoint, const EDirection& Direction) = 0;
 
 };

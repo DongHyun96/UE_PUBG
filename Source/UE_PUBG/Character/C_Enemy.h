@@ -29,6 +29,13 @@ public:
 
 	class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 
+protected:
+	
+	/// <summary>
+	/// 캐릭터가 땅에 착지했을 때 호출될 함수 
+	/// </summary>
+	void Landed(const FHitResult& Hit) override;
+
 public:
 
 	bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) override;
@@ -47,12 +54,8 @@ public:
 	/// <param name="BottomLocation"> : Character Capsule 밑 부분이 될 값 </param>
 	/// <param name="TeleportType"></param>
 	void SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType = ETeleportType::None);
-	
-	/// <summary>
-	/// Pose와 캐릭터 이동방향에 따른 MaxWalkSpeed 조정 (Enemy는 이동방향 고려 x(언제나 Forward 방면으로 이동 처리 중))
-	/// </summary>
-	/// <param name="MovementVector"> : Input action movement vector </param>
-	void UpdateMaxWalkSpeed(const FVector2D& MovementVector) override;
+
+	static float GetJumpVelocityZOrigin() { return JUMP_VELOCITYZ_ORIGIN; }
 	
 protected:
 
@@ -78,6 +81,10 @@ private:
 private:
 
 	class UC_EnemySkyDivingComponent* EnemySkyDivingComponent{};
+
+private:
+
+	static const float JUMP_VELOCITYZ_ORIGIN;
 
 };
 
