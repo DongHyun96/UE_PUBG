@@ -8,14 +8,14 @@
 #include "Kismet/KismetMathLibrary.h"
 
 bool UC_NavLinkParkourStrategy::ExecuteStartPointAction(AC_CustomNavLinkProxy* CustomNavLinkProxy, AC_Enemy* EnemyAgent,
-                                                        const FVector& StartPoint)
+                                                        const FVector& StartPoint, const EDirection& Direction)
 {
 	// TODO : 파쿠르 위치조정 Descriptor같은 거 만들어서 링크 위치 말고 좀 더 정확한 파쿠르 시도 위치를 두어야 할 수도 있음
 		
 	// EnemyAIController->StopMovement();
 		
 	/*FTimerHandle TimerHandle{};
-	GetWorld()->GetTimerManager().SetTimer
+	EnemyAgent->GetWorld()->GetTimerManager().SetTimer
 	(
 		TimerHandle,
 		[this, EnemyAgent]()
