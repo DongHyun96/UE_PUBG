@@ -102,7 +102,21 @@ void AC_Gun::BeginPlay()
 	}
 	SetSightCameraSpringArmLocation(ScopeCameraLocations[EAttachmentNames::MAX]);
 
+	static const FString ContextString(TEXT("Item Lookup"));
+
+	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 ItemDataRef 정의해 주기.
+	UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/DT_GunSoundData.DT_GunSoundData"));
+
+	if (ItemDataTable)
+	{
+		const FGunSoundData* ItemData = ItemDataTable->FindRow<FGunSoundData>(ItemCode, ContextString);
+		if (ItemData)
+		{
+			GunSoundData = ItemData;  // 원본 참조 저장
+		}
+	}
 }
+
 
 void AC_Gun::Tick(float DeltaTime)
 {
@@ -763,6 +777,7 @@ bool AC_Gun::FireBullet()
 		if (HasHit)
 		{
 			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity, HitLocation);
+			if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
 			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
 			if (IsValid(MuzzleFlameEffectParticle))
 			{
@@ -785,6 +800,8 @@ bool AC_Gun::FireBullet()
 		else
 		{
 			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+			if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
+
 			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
 			if (IsValid(MuzzleFlameEffectParticle))
 			{
@@ -813,6 +830,7 @@ bool AC_Gun::FireBullet()
 		//	return true;
 	}
 	UC_Util::Print("No More Bullets in Pool");
+
 	return false;
 }
 
@@ -828,11 +846,14 @@ bool AC_Gun::ReloadBullet()
 
 	OwnerCharacter->SetIsReloadingBullet(false);
 	int BeforeChangeAmmo = CurBulletCount;
+
 	UC_Util::Print(BeforeChangeAmmo);
+
 	int RemainAmmo;
 	int ChangedStack;
 	//AC_Item_Bullet* CarryingBullet;
 	AC_SR* CurrentSR = Cast<AC_SR>(this);
+
 	if (IsValid(CurrentSR))
 		CurrentSR->SetIsReloadingSR(false);
 	if (LeftAmmoCount == 0) return false;
@@ -841,7 +862,6 @@ bool AC_Gun::ReloadBullet()
 
 	RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
 
-	
 	ChangedStack = LeftAmmoCount - RemainAmmo;
 		
 	CurBullet->SetItemStack(ChangedStack);

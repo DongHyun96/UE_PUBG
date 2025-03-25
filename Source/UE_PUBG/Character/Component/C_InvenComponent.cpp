@@ -3,11 +3,14 @@
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
+#include "Character/Component/C_InvenSystem.h"
+#include "Character/Component/C_EquippedComponent.h"
+
 #include "Item/C_Item.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Equipment/C_EquipableItem.h"
-#include "Character/Component/C_EquippedComponent.h"
+#include "InvenUI/C_InventoryUIWidget.h"
 #include "HUD/C_ArmorInfoWidget.h"
 #include "HUD/C_HUDWidget.h"
 
@@ -181,9 +184,9 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 	if (PrevSlotEquipItem)
 	{
 		PrevSlotEquipItem->DetachItem(); //장착 해제.
-
+		//PrevSlotEquipItem->DropItem(PrevSlotEquipItem->GetOwnerCharacter());
 		if (PrevSlotEquipItem->GetItemDatas()->ItemType == EItemTypes::BACKPACK)
-			MaxVolume -= CheckBackPackVolume(Cast<AC_BackPack>(PrevSlotEquipItem)->GetLevel()); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기.
+			MaxVolume -= CheckBackPackVolume(Cast<AC_BackPack>(PrevSlotEquipItem)->GetLevel());//TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기.
 		else if (PrevSlotEquipItem->GetItemDatas()->ItemType == EItemTypes::VEST)
 			MaxVolume -= 50.f;
 		//AddItemToAroundList(PrevSlotEquipItem);// TODO : Collision을 키고 끄는 방식으로 할 지 아니면 강제로 넣고 빼줄지 생각

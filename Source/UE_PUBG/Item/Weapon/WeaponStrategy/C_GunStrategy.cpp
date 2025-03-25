@@ -89,6 +89,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	}
 	else if (CurWeapon->GetCurBulletCount() == 0)
 	{
+		if (CurWeapon->GetGunSoundData()->NullBulletSound) UGameplayStatics::PlaySoundAtLocation(this, CurWeapon->GetGunSoundData()->NullBulletSound, CurWeapon->GetActorLocation());
 
 		CurWeapon->ExecuteReloadMontage();
 		return false;

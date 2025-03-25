@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_BasicCharacter.h"
@@ -87,7 +87,7 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
 
     Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
-
+    Weapons[InSlot]->SetActorHiddenInGame(true);
     //충돌체 켜주기, 1117 상연, 근접무기는 장착만 해도 보이는 상태.
     if (InSlot == EWeaponSlot::MELEE_WEAPON)
         Weapons[InSlot]->SetActorHiddenInGame(false);

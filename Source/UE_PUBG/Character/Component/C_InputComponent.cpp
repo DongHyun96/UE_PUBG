@@ -628,7 +628,7 @@ void UC_InputComponent::OnFKey()
 	if (Player->GetCurOutLinedItem())
 	{
 		Player->GetCurOutLinedItem()->Interaction(Player);
-		Player->GetInvenSystem()->GetInvenUI()->UpdateInventroyItemPanelWidget();
+		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 	}
 		
 	// TODO : Consumable Item 사용 중이라면 취소 시키기

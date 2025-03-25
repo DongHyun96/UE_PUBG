@@ -4,10 +4,12 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_InvenSystem.h"
+#include "InvenUI/C_InventoryUIWidget.h"
 #include "Components/SphereComponent.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Utility/C_Util.h"
-#include "Character/Component/C_InvenComponent.h"
 #include "HUD/C_ArmorInfoWidget.h"
 #include "HUD/C_HUDWidget.h"
 
