@@ -44,13 +44,17 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 {
 	//if (WeaponUser->GetIsHoldDirection()) return false;
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
+
 	if (!IsValid(CurPlayer)) return false;
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
-
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( WeaponUser->GetInvenComponent()->FindMyItemByName(CurWeapon->GetCurrentBulletTypeName()));
+	int CurBulletStack = 0;
+	if (IsValid(CurBullet))
+		CurBulletStack = CurBullet->GetItemCurStack();
 	if (!IsValid(CurWeapon)) return false;
 	if (CurWeapon->GetMaxBulletCount() == CurWeapon->GetCurBulletCount()) return false;
-
+	if (CurBulletStack == 0) return false;
 	if (CurWeapon->GetIsPlayingMontagesOfAny()) return false;
 	//if (CurWeapon->GetIsPartAttached(EPartsName::GRIP))
 	//{
@@ -82,20 +86,21 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
 	MlbPressTimeCount = 0;
-	if (CurWeapon->GetCurBulletCount() > 0)
-	{
-		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SINGLE_SHOT && !CurPlayer->GetIsAimDown())
-			CurWeapon->ExecuteReloadMontage();
-	}
-	else if (CurWeapon->GetCurBulletCount() == 0)
+	if (CurWeapon->GetCurBulletCount() == 0)
 	{
 		if (CurWeapon->GetGunSoundData()->NullBulletSound) UGameplayStatics::PlaySoundAtLocation(this, CurWeapon->GetGunSoundData()->NullBulletSound, CurWeapon->GetActorLocation());
 
 		CurWeapon->ExecuteReloadMontage();
 		return false;
 	}
-
-	return CurWeapon->FireBullet();
+	bool IsBulletFired = CurWeapon->FireBullet();
+	if (CurWeapon->GetCurBulletCount() > 0)
+	{
+		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SINGLE_SHOT && !CurPlayer->GetIsAimDown())
+			CurWeapon->ExecuteReloadMontage();
+	}
+	
+	return IsBulletFired;
 }
 
 bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
