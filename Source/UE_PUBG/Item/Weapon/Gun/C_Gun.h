@@ -220,6 +220,7 @@ public:
 	bool bIsPlayerAimDownPress = false;
 
 	UCameraComponent* AimSightCamera;
+
 	class USpringArmComponent* AimSightSpringArm{};
 	int GetCurBulletCount() { return CurBulletCount; }
 	int GetMaxBulletCount() { return MaxBulletCount; }
@@ -242,6 +243,9 @@ public:
 protected:
 	//GunData 구조체를 const 포인터 변수로 가지고 있음.
 	const FGunData* GunDataRef = nullptr;
+
+	//Gun Sound Datas, TODO : 
+	const FGunSoundData* GunSoundData = nullptr;
 protected:
 	/// <summary>
 	/// 총알 발사 관련 변수들
@@ -368,9 +372,6 @@ public:
 	void  SetAttachedItemNameInPart(EPartsName InPartName, EAttachmentNames InAttachmentName) { AttachedItemName[InPartName] = InAttachmentName; }
 	void SetSightCameraSpringArmLocation(FVector4 InLocationAndArmLength);
 	//For Test
-
-	
-
 	void SetScopeCameraMode(EAttachmentNames InAttachmentName);
 	void BackTo_RightHand();
 protected:
@@ -401,9 +402,6 @@ protected:
 	// UCapsuleComponent* CapsuleComponent{};
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UParticleSystem* MuzzleFlameEffectParticle{};
-
-	//Gun Sound Datas, TODO : 
-	const FGunSoundData* GunSoundData = nullptr;
 
 public:
 	UFUNCTION(BlueprintCallable)

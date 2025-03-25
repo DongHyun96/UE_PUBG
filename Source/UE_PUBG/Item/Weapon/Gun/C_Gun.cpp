@@ -575,11 +575,12 @@ void AC_Gun::CheckBackPackLevelChange()
 {
 	AC_EquipableItem* curBackPack = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK];
 
-	if (curBackPack)
-	{
-		if(OwnerCharacter->GetEquippedComponent()->GetCurWeapon() != this)
-			AttachToHolster(OwnerCharacter->GetMesh());
-	}
+	//if (curBackPack)
+	//{
+	if(OwnerCharacter->GetEquippedComponent()->GetCurWeapon() != this)
+		AttachToHolster(OwnerCharacter->GetMesh());
+	
+
 	PrevBackPackLevel = OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel();
 
 }

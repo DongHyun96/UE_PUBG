@@ -198,24 +198,6 @@ void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
 	}
 }
 
-//void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
-//{
-//	if (MyItem)
-//	{
-//		CachedItemBox = MyItem;
-//
-//		const FItemData* CachedItemData =  CachedItemBox->GetItemDatas();
-//
-//		ItemImage->SetBrushFromTexture(CachedItemData->ItemBarIcon);
-//
-//		ItemType = CachedItemData->ItemType;
-//
-//		ItemName->SetText(FText::FromString(CachedItemData->ItemName));
-//		SetVisibility(ESlateVisibility::Visible);
-//	}
-//}
-
-
 void UC_BasicItemBarWidget::SetPercent(float curTime, float endTime)
 {
 	ItemUsingTimer->SetPercent(curTime / endTime);
@@ -279,7 +261,7 @@ bool UC_BasicItemBarWidget::HalfStackItemInteraction()
 
 		SpawnItem->SetItemStack(HalfStack);
 
-		float DividedItemVolume = PlayerCharacter->GetInvenComponent()->GetCurVolume() - SpawnItem->GetAllVolume();
+		float DividedItemVolume = PlayerCharacter->GetInvenComponent()->GetCurVolume() - SpawnItem->GetItemAllVolume();
 
 		SpawnItem->SetActorEnableCollision(true);
 

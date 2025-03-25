@@ -69,10 +69,6 @@ public:
 	/// <returns>넣을 수 있는 아이템의 Stack(갯수)</returns>
 	float LoopCheckVolume(AC_Item* item);
 
-	//가방과 용량을 검사해서 가방 교체 및 장착.
-	//UFUNCTION(BlueprintCallable)
-	//bool CheckMyBackPack(class AC_BackPack* backpack);
-
 	//UFUNCTION(BlueprintCallable)
 	void Interaction(AC_Item* wilditem);
 
@@ -86,21 +82,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveBackPack();
 	
-	//UFUNCTION(BlueprintCallable)
-	//void EquippedBackPack(AC_BackPack* backpack);
-
-	/// <summary>
-	/// 아이템을 내 인벤에 추가하는 함수.
-	/// item->OwnerCharacter = this->OwnerCharacter
-	/// item->HiddeninGame = ture;
-	/// item->SetActorEnableCollision = false; 상태로 전환
-	/// 인벤토리 공간체크후 아이템을 습득하는 과정을 거침.
-	/// </summary>
-	/// <param name="item"></param>
-	/// <returns></returns>
-	//UFUNCTION(BlueprintCallable)
-	//bool AddItem(AC_Item* item);
-
 	UFUNCTION(BlueprintCallable)
 	class AC_EquipableItem* SetSlotEquipment(EEquipSlot InSlot, AC_EquipableItem* EquipItem);
 
@@ -132,20 +113,12 @@ public:
 
 	void RemoveItemToAroundList(AC_Item* item) { AroundItems.Remove(item); }
 
-	UFUNCTION(BlueprintCallable)
-	void GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values);
-	
-	void SetMyBackPack(AC_BackPack* inBackPack) { MyBackPack = inBackPack; }
-
 	void CheckBackPackOnCharacter();
-
+	
 	void AddInvenCurVolume(float ItemVolume);
 
-	float GetVestVolume();
-
-	//void SetEquipmentItem(EEquipSlot inSlot, AC_EquipableItem EquipableItem);
-	//Getter and Seter
-public:
+	
+public: //Getter and Seter
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; } 
 	//EBackPackLevel SetCurBackPackLevel(uint8 level) { CurBackPackLevel = (EBackPackLevel)level; }
 
@@ -158,7 +131,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
 
-public:
+	UFUNCTION(BlueprintCallable)
+	void GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values);
+
+	void SetMyBackPack(AC_BackPack* inBackPack) { MyBackPack = inBackPack; }
+
+	float GetVestVolume();
+
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	TMap<EEquipSlot, AC_EquipableItem*> GetEquipmentItems() { return EquipmentItems; }
 
@@ -169,8 +148,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetTotalStackByItemName(const FName& ItemName);
 
-protected:
-	void InitMyitems();
 protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
@@ -209,14 +186,6 @@ protected:
 	{EEquipSlot::VEST, nullptr}
 	};
 
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//class UC_InvenUiWidget* InvenUI;
-	//
-	//UPROPERTY(EditAnywhere, Category = "UI")
-	//TSubclassOf<UUserWidget> InvenUiClass;
-protected:
-	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_BackPack* MyBackPack {};
 	

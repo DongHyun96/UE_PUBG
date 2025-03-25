@@ -295,15 +295,15 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 	if (MyItems.Contains(item->GetItemCode()))
 	{
 		// HandleItemStackOverflow가 정상적으로 처리되었는지 확인
-		if (!HandleItemStackOverflow(item)) return;
+		if (!HandleItemStackOverflow(item))
+		{
+			UC_Util::Print("HandleItemStackOverflow Is False!");
+			return;
+		}
 
-		CurVolume += item->GetAllVolume();
+		CurVolume += item->GetItemAllVolume();
 
-		// UI 업데이트
-		//if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
-		//	Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
-
-		// 원본 아이템 삭제
+		// 원본 아이템 삭제 TODO : 혹시 중복 삭제가 되는 경우가 생기는지 확인하기.
 		item->Destroy();
 	}
 	else
@@ -320,7 +320,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 		item->SetActorHiddenInGame(true);
 		item->SetActorEnableCollision(false);
 
-		CurVolume += item->GetAllVolume();
+		CurVolume += item->GetItemAllVolume();
 
 	}
 	// UI 업데이트
@@ -339,7 +339,7 @@ void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 		{
 			if (ItemArray[i] == item) // 배열 내에서 일치하는 아이템 찾음
 			{
-				CurVolume -= item->GetAllVolume(); // 아이템 볼륨 감소
+				CurVolume -= item->GetItemAllVolume(); // 아이템 볼륨 감소
 				ItemArray.RemoveAt(i); // 배열에서 아이템 제거
 
 				// 배열이 비어 있으면 MyItems에서 해당 키 삭제
@@ -447,11 +447,6 @@ int32 UC_InvenComponent::GetTotalStackByItemName(const FName& ItemName)
 	}
 
 	return AllStack;
-}
-
-void UC_InvenComponent::InitMyitems()
-{
-
 }
 
 

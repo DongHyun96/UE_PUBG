@@ -225,6 +225,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool MoveToSlot(AC_BasicCharacter* Character, int32 InStack);
 
+	/// <summary>
+	/// 현재 아이템과 동일한 아이템을 매개변수 Character의 발 아래에 spawn하는 함수.
+	/// </summary>
+	/// <param name="Character"></param>
+	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
 	virtual AC_Item* SpawnItem(AC_BasicCharacter* Character);
 
@@ -253,7 +258,7 @@ protected:
 	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack);
 
 public:
-	FName GetItemCode() { return ItemCode; }
+	FName GetItemCode() const { return ItemCode; }
 
 	const FItemData* GetItemDatas() const { return ItemDataRef; }
 
@@ -278,10 +283,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetOnceVolume() { return ItemDataRef->ItemVolume; }
 
-
 	UFUNCTION(BlueprintCallable)
-
-	float GetAllVolume() { return ItemDataRef->ItemVolume * ItemCurStack; }
+	float GetItemAllVolume() { return ItemDataRef->ItemVolume * ItemCurStack; }
 
 	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 
@@ -300,11 +303,9 @@ public:
 
 protected:
 
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	//FItemData ItemDataRef;
-
 	/// <summary>
 	/// 아이템의 고유 코드, 현재는 블프에서 정의 할 예정
+	/// ClickUp에 공유한 PUBG파일의 Item의 Dictionaries에 나온 Code를 사용.
 	/// </summary>
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FName ItemCode = "NONE";  
