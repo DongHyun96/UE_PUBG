@@ -56,15 +56,12 @@ public:
 	void CloseInvenUI();
 
 public:
-	//UFUNCTION(BlueprintCallable)
-	//UC_InvenUiWidget* GetInvenUI() { return InvenUI; }
 	UFUNCTION(BlueprintCallable)
 	UC_InventoryUIWidget* GetInvenUI() { return InvenUI; }
 
 	class AC_PlayerController* GetPlayerController() { return PlayerController; }
 protected:
-	//UPROPERTY()
-	//class UC_InvenUiWidget* InvenUI = nullptr;
+
 	UPROPERTY()
 	UC_InventoryUIWidget* InvenUI = nullptr;
 	UPROPERTY()
