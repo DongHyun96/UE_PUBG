@@ -14,6 +14,8 @@ void UC_BTTaskMoveTo::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
+	// UC_Util::Print("Moving", FColor::Cyan);
+
 	// TODO : 너무 한 자리에 머무는 시간이 길어지면 MoveTo하는 중 막혔다고 판단, 다른 루트로 업데이트 시키기
 }
 

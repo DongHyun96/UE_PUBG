@@ -7,6 +7,7 @@
 #include "C_TargetLocationSettingHelper.generated.h"
 
 struct FMagneticCircle;
+
 /// <summary>
 /// 상황 별로 BehaviorComponent의 TargetLocation setting을 처리 담당하는 Enemy ActorComponent 
 /// </summary>

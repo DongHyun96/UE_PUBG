@@ -956,8 +956,8 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 			FVector2D ImageSize = ImageSlot->GetSize();
 			
 			RandomPoint = FMath::RandPointInCircle(ImageSize.X * 0.5f * 0.373f);
-			UC_Util::Print(ImageSize.X);
-			UC_Util::Print(ImageSize.Y);
+			//UC_Util::Print(ImageSize.X);
+			//UC_Util::Print(ImageSize.Y);
 
 		}
 		else

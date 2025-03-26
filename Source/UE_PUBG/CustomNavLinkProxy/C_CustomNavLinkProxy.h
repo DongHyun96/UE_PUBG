@@ -174,4 +174,13 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FJumpDescriptor JumpDescriptor{};
+
+protected: // LeftPoint와 RightPoint를 근처의 NavLinkProxy위의 점으로 조정할지
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bAdjustLeftPointToNearestNavLinkProxyPoint = true;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bAdjustRightPointToNearestNavLinkProxyPoint = true;
+	
 };
