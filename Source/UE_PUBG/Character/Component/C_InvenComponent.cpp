@@ -335,7 +335,8 @@ void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 		TArray<AC_Item*>& ItemArray = MyItems[item->GetItemCode()]; // 해당 아이템 코드의 아이템 배열 가져오기
 
 		// 배열에서 아이템 찾기
-		for (int32 i = 0; i < ItemArray.Num(); ++i)
+		//int32 i = ItemArray->Num() - 1; i >= 0; i--
+		for (int32 i = ItemArray.Num() - 1; i >= 0; --i)
 		{
 			if (ItemArray[i] == item) // 배열 내에서 일치하는 아이템 찾음
 			{
@@ -447,6 +448,37 @@ int32 UC_InvenComponent::GetTotalStackByItemName(const FName& ItemName)
 	}
 
 	return AllStack;
+}
+
+void UC_InvenComponent::DecreaseItemStack(const FName& ItemName, int32 Amount)
+{
+	TArray<AC_Item*>* ItemArray = MyItems.Find(ItemName);
+	if (!ItemArray || ItemArray->Num() == 0) return;
+
+	int32 RemainingAmount = Amount;
+
+	// 뒤에서부터 차감
+	for (int32 i = ItemArray->Num() - 1; i >= 0; i--)
+	{
+		AC_Item* Item = (*ItemArray)[i];
+		if (!Item) continue;
+
+		int32 CurrentStack = Item->GetItemCurStack(); // 현재 아이템 개수
+		if (RemainingAmount >= CurrentStack)
+		{
+			// 현재 아이템을 전부 삭제해야 하는 경우
+			RemainingAmount -= CurrentStack;
+			//ItemArray->RemoveAt(i);
+			Item->SetItemStack(0);
+		}
+		else
+		{
+			// 일부만 차감하는 경우
+			Item->SetItemStack(CurrentStack - RemainingAmount);
+			RemainingAmount = 0;
+			break;
+		}
+	}
 }
 
 

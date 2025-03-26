@@ -256,6 +256,25 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 	);
 }
 
+void AC_ThrowingWeapon::InitializeItem(FName NewItemCode)
+{
+	Super::InitializeItem(NewItemCode);
+
+	static const FString ContextString(TEXT("GunItem Lookup"));
+	
+	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunSoundData 정의해 주기.
+	UDataTable* GunSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_ThrowingWeaponSoundData.DT_ThrowingWeaponSoundData"));
+
+	if (GunSoundDataTable)
+	{
+		const FThrowingWeaponSoundData* ItemData = GunSoundDataTable->FindRow<FThrowingWeaponSoundData>(ItemCode, ContextString);
+		if (ItemData)
+		{
+			ThrowingWeaponSoundData = ItemData;  // 원본 참조 저장
+		}
+	}
+}
+
 void AC_ThrowingWeapon::PickUpItem(AC_BasicCharacter* Character)
 {
 	//여기서하는 용량체크는 인벤에서 이미 한번 처리 되었지만 혹시몰라 넣어 놓은것으로 확인후 제거할 것.
@@ -739,6 +758,8 @@ bool AC_ThrowingWeapon::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InS
 void AC_ThrowingWeapon::OnRemovePinFin()
 {
 	OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
+
+	if (ThrowingWeaponSoundData->PinPullSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->PinPullSound, GetActorLocation());
 }
 
 void AC_ThrowingWeapon::OnThrowReadyLoop()
@@ -900,6 +921,9 @@ void AC_ThrowingWeapon::StartCooking()
 	UC_Util::Print("Throwable Starts cooking", FColor::Red, 10.f);
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);
+	
+	if (ThrowingWeaponSoundData->CookingSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->CookingSound, GetActorLocation());
+
 }
 
 bool AC_ThrowingWeapon::ReleaseOnGround()
@@ -930,14 +954,17 @@ void AC_ThrowingWeapon::Explode()
 
 	bool Exploded = ExplodeStrategy->UseStrategy(this);
 
+
+
 	if (GetAttachParentActor()) ReleaseOnGround(); // 손에서 아직 떠나지 않았을 때
 		
 	//if (Exploded) this->Destroy();
 	if (Exploded)
 	{
 		this->SetActorHiddenInGame(true);
+		if (ThrowingWeaponSoundData->ExprosionSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->ExprosionSound, GetActorLocation());
 
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()	
 			{
 				this->Destroy();
 			}, 10.f, false);

@@ -22,10 +22,6 @@
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
 
-//#include "Components/Image.h"
-//#include "Components/Widget.h"
-//#include "Components/CanvasPanelSlot.h"
-//#include "Components/PanelWidget.h"
 #include "Components/NamedSlotInterface.h"
 #include "Components/ShapeComponent.h"
 #include "Components/SceneComponent.h"
@@ -40,7 +36,6 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 
-//#include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 #include "Character/C_Enemy.h"
 
@@ -101,20 +96,6 @@ void AC_Gun::BeginPlay()
 		);
 	}
 	SetSightCameraSpringArmLocation(ScopeCameraLocations[EAttachmentNames::MAX]);
-
-	static const FString ContextString(TEXT("Item Lookup"));
-
-	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 ItemDataRef 정의해 주기.
-	UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/DT_GunSoundData.DT_GunSoundData"));
-
-	if (ItemDataTable)
-	{
-		const FGunSoundData* ItemData = ItemDataTable->FindRow<FGunSoundData>(ItemCode, ContextString);
-		if (ItemData)
-		{
-			GunSoundData = ItemData;  // 원본 참조 저장
-		}
-	}
 }
 
 
@@ -170,7 +151,7 @@ void AC_Gun::InitializeItem(FName NewItemCode)
 	Super::InitializeItem(NewItemCode);
 	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunDataRef 정의해 주기.
 	static const FString ContextString(TEXT("GunItem Lookup"));
-	UDataTable* GunDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/DT_GunData.DT_GunData"));
+	UDataTable* GunDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunData.DT_GunData"));
 
 	if (GunDataTable)
 	{
@@ -178,6 +159,18 @@ void AC_Gun::InitializeItem(FName NewItemCode)
 		if (GunData)
 		{
 			GunDataRef = GunData;  // 원본 참조 저장
+		}
+	}
+
+	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunSoundData 정의해 주기.
+	UDataTable* GunSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunSoundData.DT_GunSoundData"));
+
+	if (GunSoundDataTable)
+	{
+		const FGunSoundData* ItemData = GunSoundDataTable->FindRow<FGunSoundData>(ItemCode, ContextString);
+		if (ItemData)
+		{
+			GunSoundData = ItemData;  // 원본 참조 저장
 		}
 	}
 }
@@ -215,7 +208,7 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 			break;
 		default:
 			return false;
-			break;
+			break;	
 		}
 	}
 	else
@@ -840,9 +833,11 @@ bool AC_Gun::ReloadBullet()
 	if (CurBulletCount == MaxBulletCount) return false;
 	int LeftAmmoCount = 0;
 	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
+	UC_InvenComponent* InvenComp = OwnerCharacter->GetInvenComponent();
 	if (IsValid(CurBullet))
 	{
-		LeftAmmoCount = CurBullet->GetItemCurStack();
+		//LeftAmmoCount = CurBullet->GetItemCurStack();
+		LeftAmmoCount = InvenComp->GetTotalStackByItemName(CurBullet->GetItemCode());
 	}
 
 	OwnerCharacter->SetIsReloadingBullet(false);
@@ -865,7 +860,8 @@ bool AC_Gun::ReloadBullet()
 
 	ChangedStack = LeftAmmoCount - RemainAmmo;
 		
-	CurBullet->SetItemStack(ChangedStack);
+	InvenComp->DecreaseItemStack(CurBullet->GetItemCode(), RemainAmmo);
+	//CurBullet->SetItemStack(ChangedStack); //TODO : InvenComponent에서 한번에 조절하는 기능 만들기.
 	UC_Util::Print("Reload Bullet");
 	//장전한 총알 갯수만큼 curVolume 조절
 	OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CurBullet->GetItemDatas()->ItemVolume));

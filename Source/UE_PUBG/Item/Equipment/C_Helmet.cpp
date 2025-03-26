@@ -91,6 +91,8 @@ bool AC_Helmet::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 
 bool AC_Helmet::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
+	if (AC_EquipableItem* curHelmet = Character->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::HELMET])
+		curHelmet->MoveToAround(Character, InStack);
 	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, this);
 	return true;
 }

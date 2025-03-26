@@ -94,6 +94,8 @@ bool AC_Vest::MoveSlotToAround(AC_BasicCharacter* Character,int32 InStack)
 bool AC_Vest::MoveAroundToSlot(AC_BasicCharacter* Character,int32 InStack)
 {
 	//TODO : 장착되어 있던 Vest 처리해주기 및 제대로 구현하기, SetSlotEquipment함수 참고하기.
+	if (AC_EquipableItem* curVest = Character->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::VEST])
+		curVest->MoveToAround(Character, InStack);
 	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::VEST, this);
 	return true;
 }

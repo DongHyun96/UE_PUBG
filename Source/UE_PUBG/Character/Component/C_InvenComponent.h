@@ -148,6 +148,8 @@ public: //Getter and Seter
 	UFUNCTION(BlueprintCallable)
 	int32 GetTotalStackByItemName(const FName& ItemName);
 
+	void DecreaseItemStack(const FName& ItemName, int32 Amount);
+
 protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
