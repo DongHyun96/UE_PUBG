@@ -6,6 +6,8 @@
 #include "Character/C_Enemy.h"
 #include "Character/Component/C_ParkourComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Singleton/C_GameSceneManager.h"
+#include "Utility/C_Util.h"
 
 bool UC_NavLinkParkourStrategy::ExecuteStartPointAction(AC_CustomNavLinkProxy* CustomNavLinkProxy, AC_Enemy* EnemyAgent,
                                                         const FVector& StartPoint, const EDirection& Direction)
@@ -25,5 +27,10 @@ bool UC_NavLinkParkourStrategy::ExecuteStartPointAction(AC_CustomNavLinkProxy* C
 		0.2f,
 		false
 	);*/
+
+	// bool ParkourSucceeded = EnemyAgent->GetParkourComponent()->TryExecuteParkourAction(); 
+	//if (ParkourSucceeded) UC_Util::Print("ParkourSucceeded On NavLinkProxy!", UC_GameSceneManager::GetInstance(EnemyAgent->GetWorld())->GetTickRandomColor(), 10.f);
+	//else				  UC_Util::Print("Parkour failed NavLinkProxy!", UC_GameSceneManager::GetInstance(EnemyAgent->GetWorld())->GetTickRandomColor(), 10.f);
+	// return ParkourSucceeded;
 	return EnemyAgent->GetParkourComponent()->TryExecuteParkourAction();
 }

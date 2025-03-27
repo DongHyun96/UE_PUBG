@@ -162,6 +162,6 @@ AC_EnemyAIController* AC_Enemy::GetEnemyAIController() const
 void AC_Enemy::SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType)
 {
 	// 실제 CapsuleComponent의 HalfHeight는 88 -> but PIE에서 ActorLocation Z는 90이 나와서 90 상수값 적용
-	static const float ACTOR_HALF_Z = 90.f; 
+	static const float ACTOR_HALF_Z = 90.f;
 	SetActorLocation(BottomLocation + FVector::UnitZ() * ACTOR_HALF_Z, false, nullptr, TeleportType);	
 }

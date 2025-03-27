@@ -112,7 +112,7 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 
 FColor UC_GameSceneManager::GetTickRandomColor() const
 {
-	if (!TickRandomColorGenerator) return FColor::Red;
+	if (!IsValid(TickRandomColorGenerator)) return FColor::Red;
 	return TickRandomColorGenerator->GetTickRandomColor();
 }
 

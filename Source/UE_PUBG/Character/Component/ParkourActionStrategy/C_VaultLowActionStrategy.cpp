@@ -15,12 +15,18 @@
 
 void UC_VaultLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* TargetCharacter, const FParkourDescriptor& CurParkourDesc)
 {
-	// TODO : Vault 시 LandPos 허공인지 체크해서 다르게 처리해주어야 함
-
+	
 	// WarpStartPos, WarpMiddlePos, WarpLandPos 잡아주기
 	FVector WarpStartPos	= CurParkourDesc.VerticalHitPositions[0];
 	FVector WarpMiddlePos	= CurParkourDesc.VerticalHitPositions.Last();
 	FVector WarpLandPos		= CurParkourDesc.LandPos;
+	
+	// VaultLow 높이 조절용 값
+	static const float START_Z_OFFSET  = 50.f; 
+	static const float MIDDLE_Z_OFFSET = 120.f;
+
+	WarpStartPos.Z  -= START_Z_OFFSET;
+	WarpMiddlePos.Z -= MIDDLE_Z_OFFSET;
 
 	// LandPos 예외처리
 	if (!CurParkourDesc.bLandPosInited || FMath::Abs(CurParkourDesc.LandPos.Z - TargetCharacter->GetActorLocation().Z) > 50.f)
