@@ -116,10 +116,6 @@ bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(
 			FCollisionShape::MakeSphere(SWEEP_SPHERE_RAD),
 			CollisionParams
 		);
-
-		UC_Util::Print("Try Stand");
-
-		if (HasHit) UC_Util::Print(HitResult.GetActor()->GetName());
 		
 		//DrawDebugSphere(GetWorld(), StartLocation, SWEEP_SPHERE_RAD, 10, FColor::Red, true);
 		//DrawDebugSphere(GetWorld(), DestLocation,  SWEEP_SPHERE_RAD, 10, FColor::Red, true);

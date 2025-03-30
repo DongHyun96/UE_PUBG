@@ -32,9 +32,9 @@ public:
 	/// <summary>
 	/// World Ping Actor spawn 시키기
 	/// </summary>
-	/// <param name="SpawnPos"> : Spawn world 위치</param>
+	/// <param name="SpawnLocation"> : Spawn world 위치</param>
 	/// <returns> : Spawn이 성공적으로 일어났다면 return true </returns>
-	bool SpawnWorldPingActor(FVector SpawnPos);
+	bool SpawnWorldPingActor(FVector SpawnLocation);
 
 	/// <summary>
 	/// World ping Hidden으로 감추기
