@@ -17,8 +17,10 @@
 #include "Item/Weapon/Gun/C_Gun.h"
 //#include "Item/ConsumableItem/C_ConsumableItem.h"
 #include "InvenUI/ItemBar/C_BasicItemBarWidget.h"
-#include "InvenUserInterface/C_ItemBarWidget.h"
+//#include "InvenUserInterface/C_ItemBarWidget.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 #include "Utility/C_Util.h"
 
 #include "HUD/C_InstructionWidget.h"
@@ -26,11 +28,17 @@
 AC_ConsumableItem::AC_ConsumableItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+
+	AudioComponent->bAutoActivate = false; //자동 실행 방지
 }
 
 void AC_ConsumableItem::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 }
 
 void AC_ConsumableItem::Tick(float DeltaTime)
@@ -152,6 +160,24 @@ void AC_ConsumableItem::SetLinkedItemBarWidget(UC_BasicItemBarWidget* InItemBarW
 	LinkedItemBarWidget = InItemBarWidget;
 }
 
+void AC_ConsumableItem::InitializeItem(FName NewItemCode)
+{
+	Super::InitializeItem(NewItemCode);
+	static const FString ContextString(TEXT("HealItem Lookup"));
+
+	UDataTable* HealSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_HealingItemUsingSound.DT_HealingItemUsingSound"));
+
+	if (HealSoundDataTable)
+	{
+		const FHealItemSoundData* ItemData = HealSoundDataTable->FindRow<FHealItemSoundData>(ItemCode, ContextString);
+		if (ItemData)
+		{
+			UsingSoundData = ItemData;  // 원본 참조 저장
+			AudioComponent->SetSound(UsingSoundData->UsingSound);
+		}
+	}
+}
+
 
 
 bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
@@ -174,6 +200,9 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 	// 사용 시작하기
 	ConsumableItemState = EConsumableItemState::ACTIVATING;
 
+	//사용 효과음 재생.
+	PlayUsingSound();
+	
 	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
 	{
 		//InvenUI에 현재 사용중인 아이템 설정. InvenUI UsingItem이 있을 때 Tick에서 visibility 조정하는 중
@@ -199,6 +228,9 @@ bool AC_ConsumableItem::CancelActivating()
 
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->OnCancelActivatingConsumableItem();
+
+	//사운드 중지.
+	StopUsingSound();
 
 	UAnimInstance* UserAnimInstance = ItemUser->GetMesh()->GetAnimInstance();
 
@@ -478,4 +510,18 @@ bool AC_ConsumableItem::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InS
 	return MoveToInven(Character, InStack);
 }
 
+void AC_ConsumableItem::PlayUsingSound()
+{
+	if (UsingSoundData->UsingSound && AudioComponent)
+	{
+		AudioComponent->Play();
+	}
+}
 
+void AC_ConsumableItem::StopUsingSound()
+{
+	if (UsingSoundData->UsingSound && AudioComponent)
+	{
+		AudioComponent->Stop();
+	}
+}

@@ -18,6 +18,16 @@ enum class EConsumableItemState : uint8
 	USED
 };
 
+USTRUCT(BlueprintType)
+struct FHealItemSoundData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* UsingSound = nullptr;
+
+};
+
 UCLASS(Abstract)
 class UE_PUBG_API AC_ConsumableItem : public AC_Item
 {
@@ -39,6 +49,8 @@ public:
 	//void SetLinkedItemBarWidget(class UC_ItemBarWidget* InItemBarWidget);
 	
 	void SetLinkedItemBarWidget(class UC_BasicItemBarWidget* InItemBarWidget);
+
+	void InitializeItem(FName NewItemCode) override;
 
 	//void SetConsumableItemState(EConsumableItemState NewState);
 
@@ -113,6 +125,11 @@ protected:
 	bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack) override;
 	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
+protected:
+	void PlayUsingSound();
+
+	void StopUsingSound();
+
 public: // getters and setters
 
 	EConsumableItemState GetConsumableItemState() const { return ConsumableItemState; }
@@ -125,6 +142,8 @@ public: // getters and setters
 	//리팩토링중인 ItemBar
 	class UC_BasicItemBarWidget* GetLinkedItemBarWidget() { return LinkedItemBarWidget; }
 
+	const FHealItemSoundData* GetUsingSoundData() const { return UsingSoundData; }
+
 protected:
 	
 	EConsumableItemState ConsumableItemState{};
@@ -135,6 +154,13 @@ protected:
 
 	// 사용 시간 및 아이템 효과 적용 시간 체크 Timer
 	float UsingTimer{};
+
+	//효과음 구조체
+	const FHealItemSoundData* UsingSoundData = nullptr;
+
+	//오디오 컨트롤러
+	UAudioComponent* AudioComponent = nullptr;
+
 
 protected:
 
