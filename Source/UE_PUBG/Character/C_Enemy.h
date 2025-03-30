@@ -56,6 +56,11 @@ public:
 	void SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType = ETeleportType::None);
 
 	static float GetJumpVelocityZOrigin() { return JUMP_VELOCITYZ_ORIGIN; }
+
+public:
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetTargetCharacterWidgetName(const FString& TargetCharacterName);
 	
 protected:
 

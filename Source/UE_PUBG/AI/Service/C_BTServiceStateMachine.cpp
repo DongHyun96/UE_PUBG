@@ -48,4 +48,9 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		
 }
 
+void UC_BTServiceStateMachine::UpdateDetectedCharactersRangeLevel()
+{
+	OwnerController->UpdateDetectedCharactersRangeLevel();
+}
+
 

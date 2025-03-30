@@ -399,28 +399,28 @@ bool UC_ParkourComponent::CheckParkourFramework(FParkourDescriptor& CurParkourDe
 {
 	if ((bCheckLowAction) ? !CheckLowParkourTarget(CurParkourDesc) : !CheckHighParkourTarget(CurParkourDesc))
 	{
-		FString str = "Failed Checking Parkour Target!";
+		/*FString str = "Failed Checking Parkour Target!";
 		str += bCheckLowAction ? " : LowAction" : " : HighAction";
-		UC_Util::Print(str, DebugMsgColor, 10.f);
+		UC_Util::Print(str, DebugMsgColor, 10.f);*/
 		return false;
 	}
 	if (!InitVerticalHitPositionsAndLandPos(CurParkourDesc))
 	{
-		UC_Util::Print("Failed Initing VerticalHitPositions and landPos!", DebugMsgColor, 10.f);
+		// UC_Util::Print("Failed Initing VerticalHitPositions and landPos!", DebugMsgColor, 10.f);
 		return false;
 	}
 	if (!InitMustVaultOrMustMantle(CurParkourDesc))
 	{
-		UC_Util::Print("Failed Initing Must Vault Or Must Mantle!", DebugMsgColor, 10.f);
+		// UC_Util::Print("Failed Initing Must Vault Or Must Mantle!", DebugMsgColor, 10.f);
 		return false;
 	}
 	if (!CheckSpaceForParkourAction(CurParkourDesc))
 	{
-		UC_Util::Print("Failed Checking Space for Parkour Action!", DebugMsgColor, 10.f);
+		// UC_Util::Print("Failed Checking Space for Parkour Action!", DebugMsgColor, 10.f);
 		return false;
 	}
 
-	UC_Util::Print("Parkour Framework checking succeeded!", DebugMsgColor, 10.f);
+	// UC_Util::Print("Parkour Framework checking succeeded!", DebugMsgColor, 10.f);
 
 	return true;
 }
@@ -651,7 +651,7 @@ bool UC_ParkourComponent::CheckSpaceForMantling(const FParkourDescriptor& CurPar
 
 	if (HasHit)
 	{
-		UC_Util::Print("From CheckSpaceForMantling : Obstacle detected along the mantle path.", DebugMsgColor, 10.f);
+		// UC_Util::Print("From CheckSpaceForMantling : Obstacle detected along the mantle path.", DebugMsgColor, 10.f);
 		return false;
 	}
 

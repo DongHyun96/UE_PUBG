@@ -61,9 +61,9 @@ void UC_PingSystemComponent::OnMMBStarted()
 	OwnerPlayer->GetHUDWidget()->SpawnCompassBarPingMarker(HitResult.ImpactPoint);
 }
 
-bool UC_PingSystemComponent::SpawnWorldPingActor(FVector SpawnPos)
+bool UC_PingSystemComponent::SpawnWorldPingActor(FVector SpawnLocation)
 {
-	return WorldPingActor->SpawnPingActorToWorld(SpawnPos);
+	return WorldPingActor->SpawnPingActorToWorld(SpawnLocation);
 }
 
 void UC_PingSystemComponent::OnCancelWorldPing()
