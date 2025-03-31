@@ -25,12 +25,15 @@ public:
 
 private:
 
-	class AC_Enemy* OwnerEnemy{};
-	class UC_BehaviorComponent* OwnerBehaviorComponent{};
+	// class AC_Enemy* OwnerEnemy{};
+	// class UC_BehaviorComponent* OwnerBehaviorComponent{};
 
-	float TotalTime{};
+	// float TotalTime{};
 
-	EWeaponSlot SwapTargetWeaponSlot{};
+	TMap<class AC_Enemy*, EWeaponSlot> SwapTargetWeaponSlotMap{};
+	TMap<AC_Enemy*, float> TotalTimeMap{};
+	
+	// EWeaponSlot SwapTargetWeaponSlot{};
 };
 
 

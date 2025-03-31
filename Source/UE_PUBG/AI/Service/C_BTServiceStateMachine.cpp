@@ -10,31 +10,31 @@
 #include "Character/C_Enemy.h"
 
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
+#include "Singleton/C_GameSceneManager.h"
 
 #include "Utility/C_Util.h"
 
 
 UC_BTServiceStateMachine::UC_BTServiceStateMachine()
 {
+	bNotifyTick = true;
 }
 
 void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	//AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
-
-	if (!IsValid(OwnerController))
-	{
-		OwnerController			= Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
-		OwnerEnemy				= Cast<AC_Enemy>(OwnerController->GetPawn());
-		OwnerBehaviorComponent	= OwnerController->GetBehaviorComponent();
-	}
-
+	AC_EnemyAIController* OwnerController = Cast<AC_EnemyAIController>(OwnerComp.GetAIOwner());
+	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerController->GetPawn());
+	UC_BehaviorComponent* OwnerBehaviorComponent = OwnerController->GetBehaviorComponent(); 
+	
 	// 총괄 FSM 및 기타 Main 처리 담당하기
 	if (OwnerEnemy->GetMainState() == EMainState::SKYDIVING)
 		OwnerBehaviorComponent->SetServiceType(EServiceType::SKYDIVE);
 
+	// TODO : RangeLevel 업데이트 -> 행동 취하기 전에만 Update해서 계산해주면 됨 (이 라인은 테스트용)
+	OwnerController->UpdateDetectedCharactersRangeLevel();
+	
 	/*// Testing Pose Transition
 	Timer += DeltaSeconds;
 
@@ -47,10 +47,3 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	*/
 		
 }
-
-void UC_BTServiceStateMachine::UpdateDetectedCharactersRangeLevel()
-{
-	OwnerController->UpdateDetectedCharactersRangeLevel();
-}
-
-
