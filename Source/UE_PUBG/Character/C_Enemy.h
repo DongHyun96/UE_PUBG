@@ -11,6 +11,7 @@ namespace EPathFollowingResult
 	enum Type : int;
 }
 
+enum class ESightRangeLevel : uint8;
 /**
  * 
  */
@@ -57,16 +58,19 @@ public:
 
 	static float GetJumpVelocityZOrigin() { return JUMP_VELOCITYZ_ORIGIN; }
 
-public:
-
+public: // For Testing
+	
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetTargetCharacterWidgetName(const FString& TargetCharacterName);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetSightRangeCharactersName(ESightRangeLevel SightRangeLevel, const FString& SightRangeCharactersName);	
 	
 protected:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UBehaviorTree* BehaviorTree{};
-
+	
 protected:
 
 	// 디버깅용 HPBar

@@ -23,6 +23,7 @@ UC_DefaultItemSpawnerComponent::UC_DefaultItemSpawnerComponent()
 void UC_DefaultItemSpawnerComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	SpawnDefaultWeaponsAndItems(); // TODO : 이 라인 지우기
 }
 
 
