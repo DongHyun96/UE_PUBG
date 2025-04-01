@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,6 +9,62 @@
 /**
  * 
  */
+
+USTRUCT(BlueprintType)
+struct FBulletImpactSoundData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactBody_01 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactBody_02 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactConcrete_01 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactConcrete_02 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactMetal_01 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactMetal_02 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactFly_01 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactFly_02 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactGround_01 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactGround_02 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactGround_03 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactGround_04 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactWood_01 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactWood_02 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactWood_03 = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImpactWood_04 = nullptr;
+
+};
+
 UCLASS()
 class UE_PUBG_API AC_Bullet : public AActor
 {
@@ -23,6 +79,12 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void InitializeItem(FName NewItemCode);
+
+	UFUNCTION(BlueprintCallable)
+	void PlaySound(const FHitResult& ImpactResult);
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UInstancedStaticMeshComponent* InstancedBulletMesh;
@@ -93,6 +155,11 @@ private:
 	UFUNCTION()
 	void OnProjectileStop(const FHitResult& ImpactResult);
 
+
+protected:
+	const FBulletImpactSoundData* BulletImpactSoundData = nullptr;
+
+	FName ItemCode = "FiredBullet";
 private:
 
 	// 해당 Bullet을 발사한 총기 
