@@ -159,12 +159,12 @@ bool UC_BTTaskSkyDive::SetRandomLandingTargetLocationAndJumpPosXY(AC_Enemy* Enem
 		UC_Util::Print("From UC_BTTaskSkyDive::SetRandomLandingTargetLocation : RayCasting to find Z failed! Setting alternative Z value.", FColor::Red, 10.f);
 		FVector TargetLocation	= LineTraceStartLocation;
 		TargetLocation.Z		= 3000.f;
-		BehaviorComponent->SetTargetLocation(TargetLocation);	// RayCasting 실패해도 임의의 높이의 지점으로 낙하지점위치 setting하기
+		BehaviorComponent->SetBasicTargetLocation(TargetLocation);	// RayCasting 실패해도 임의의 높이의 지점으로 낙하지점위치 setting하기
 		SkyDivingComponent->SetParachutingStateDestination(TargetLocation);
 		return false;
 	}
 
-	BehaviorComponent->SetTargetLocation(HitResult.ImpactPoint);
+	BehaviorComponent->SetBasicTargetLocation(HitResult.ImpactPoint);
 	SkyDivingComponent->SetParachutingStateDestination(HitResult.ImpactPoint);
 	return true;
 }

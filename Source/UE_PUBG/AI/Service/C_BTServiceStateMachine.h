@@ -22,7 +22,8 @@ public:
 
 private:
 
-	float Timer{};
+	TMap<class UC_BehaviorComponent*, float> EnemyTimers{};
+
 };
 
 

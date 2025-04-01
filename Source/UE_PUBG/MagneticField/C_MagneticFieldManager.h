@@ -84,6 +84,11 @@ public:
 
 	void SetIsHandleUpdateStateStarted(bool InIsHandleUpdateStateStarted) { bIsHandleUpdateStateStarted = InIsHandleUpdateStateStarted; }
 
+	/// <summary>
+	/// 해당 캐릭터가 자기장 영역 안에 있는지 조사 
+	/// </summary>
+	bool IsInMainCircle(class AC_BasicCharacter* Character) const;
+
 private:
 
 	/// <summary>
@@ -194,5 +199,3 @@ private:
 	class UC_WaterTileCheckerComponent* WaterTileCheckerComponent{};
 	
 };
-
-

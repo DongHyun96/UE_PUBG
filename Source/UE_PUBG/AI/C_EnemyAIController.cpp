@@ -11,6 +11,7 @@
 #include "Character/C_Player.h"
 #include "Character/C_Enemy.h"
 #include "AI/C_BehaviorComponent.h"
+#include "Navigation/PathFollowingComponent.h"
 #include "Singleton/C_GameSceneManager.h"
 
 #include "Utility/C_Util.h"
@@ -56,9 +57,7 @@ AC_EnemyAIController::AC_EnemyAIController()
 void AC_EnemyAIController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// TODO : 이 라인 지우기
-	BehaviorComponent->SetPlayer(GAMESCENE_MANAGER->GetPlayer());
+	BehaviorComponent->SetPlayer(GAMESCENE_MANAGER->GetPlayer()); // TODO : 이 라인 지우기
 }
 
 void AC_EnemyAIController::Tick(float DeltaTime)
@@ -136,6 +135,14 @@ void AC_EnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, struct FAISt
 	}
 }
 
+void AC_EnemyAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
+{
+	Super::OnMoveCompleted(RequestID, Result);
+
+	if (Result.Code != EPathFollowingResult::Success) return;
+	BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
+}
+
 void AC_EnemyAIController::UpdateDetectedCharactersRangeLevel()
 {
 	// DetectedCharacters에 들어있는 Character들 모두 RangeLevel 갱신시키기
@@ -155,6 +162,8 @@ void AC_EnemyAIController::UpdateDetectedCharactersRangeLevel()
 
 			// 새로운 거리로 갱신 시키기
 			It.RemoveCurrent();
+			if (CurrentCharacter->GetMainState() == EMainState::DEAD) continue; // 이미 죽은 Character라면 빼버리고 진행
+				
 			AddCharacterToDetectedCharacters(CurrentCharacter);
 		}
 	}

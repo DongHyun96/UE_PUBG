@@ -30,8 +30,8 @@ void UC_BehaviorComponent::BeginPlay()
 
 	SetServiceType(EServiceType::IDLE);
 	// SetServiceType(EServiceType::COMBAT);
-
-	SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
+	SetIdleTaskType(EIdleTaskType::WAIT);
+	// SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
 }
 
 void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -67,6 +67,9 @@ bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 		// 이전 Type 저장하고 ChangePose 끝날 때 다시 돌아가기
 		PrevIdleTaskType = static_cast<EIdleTaskType>(Blackboard->GetValueAsEnum(IdleTaskKey));
 	}
+
+	// Random wait time 지정
+	if (Type == EIdleTaskType::WAIT) WaitTime = FMath::RandRange(5.f, 60.f);
 	
 	Blackboard->SetValueAsEnum(IdleTaskKey, static_cast<uint8>(Type));
 	return false;
@@ -82,6 +85,11 @@ bool UC_BehaviorComponent::SetCombatTaskType(ECombatTaskType Type)
 	if (Type == ECombatTaskType::MAX) return false;
 	Blackboard->SetValueAsEnum(CombatTaskKey, static_cast<uint8>(Type));
 	return false;
+}
+
+ECombatTaskType UC_BehaviorComponent::GetCombatTaskType() const
+{
+	return static_cast<ECombatTaskType>(Blackboard->GetValueAsEnum(CombatTaskKey));
 }
 
 bool UC_BehaviorComponent::SetPlayer(class AC_Player* Player)
@@ -115,6 +123,11 @@ bool UC_BehaviorComponent::SetTargetCharacter(AActor* InTargetCharacter)
 		OwnerEnemy->SetTargetCharacterWidgetName("NONE");
 		return false;
 	}
+
+	// 현재 공격중인 때에는 TargetCharacter를 새로 바꾸지 않음
+	if (GetServiceType() == EServiceType::COMBAT && GetCombatTaskType() == ECombatTaskType::ATTACK) return false;
+	
+	
 	Blackboard->SetValueAsObject(TargetCharacterKey, InTargetCharacter);
 
 	OwnerEnemy->SetTargetCharacterWidgetName(InTargetCharacter->GetName()); // TODO : 이 라인 지우기(For Testing)
@@ -122,9 +135,9 @@ bool UC_BehaviorComponent::SetTargetCharacter(AActor* InTargetCharacter)
 	return true;
 }
 
-bool UC_BehaviorComponent::SetTargetLocation(const FVector& InTargetLocation)
+bool UC_BehaviorComponent::SetBasicTargetLocation(const FVector& InTargetLocation)
 {
-	Blackboard->SetValueAsVector(TargetLocationKey, InTargetLocation);
+	Blackboard->SetValueAsVector(BasicTargetLocationKey, InTargetLocation);
 
 	// 만약에 현재 이동 중이라면, 새로운 이동 목표지점 바로 setting
 	if (GetServiceType() == EServiceType::IDLE && GetIdleTaskType() == EIdleTaskType::BASIC_MOVETO)
@@ -133,9 +146,25 @@ bool UC_BehaviorComponent::SetTargetLocation(const FVector& InTargetLocation)
 	return true;
 }
 
-FVector UC_BehaviorComponent::GetTargetLocation() const
+FVector UC_BehaviorComponent::GetBasicTargetLocation() const
 {
-	return Blackboard->GetValueAsVector(TargetLocationKey);
+	return Blackboard->GetValueAsVector(BasicTargetLocationKey);
+}
+
+bool UC_BehaviorComponent::SetInCircleTargetLocation(const FVector& InTargetLocation)
+{
+	Blackboard->SetValueAsVector(InCircleTargetLocationKey, InTargetLocation);
+
+	// 만약에 현재 이동 중이라면, 새로운 이동 목표지점 바로 setting
+	if (GetServiceType() == EServiceType::IDLE && GetIdleTaskType() == EIdleTaskType::INCIRCLE_MOVETO)
+		OwnerEnemy->GetEnemyAIController()->MoveToLocation(InTargetLocation);
+	
+	return true;
+}
+
+FVector UC_BehaviorComponent::GetInCircleTargetLocation() const
+{
+	return Blackboard->GetValueAsVector(InCircleTargetLocationKey);
 }
 
 void UC_BehaviorComponent::SetNextPoseState(EPoseState InNextPoseState)

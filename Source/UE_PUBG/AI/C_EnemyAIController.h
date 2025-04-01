@@ -52,6 +52,12 @@ public:
 
 	class UC_BehaviorComponent* GetBehaviorComponent() const { return BehaviorComponent; }
 
+private:
+	/// <summary>
+	/// 이동 완료되었을 떄 호출될 함수
+	/// </summary>
+	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+
 public:
 
 	/// <summary>
