@@ -51,6 +51,7 @@ public:
 	EIdleTaskType GetIdleTaskType() const;
 	
 	bool SetCombatTaskType(ECombatTaskType Type);
+	ECombatTaskType GetCombatTaskType() const;
 
 public: // TODO : Player에 관련한 내용 지우기 (For Testing)
 
@@ -67,6 +68,8 @@ protected:
 	FName PlayerKey = "Player";
 
 public:
+
+	float GetWaitTime() const { return WaitTime; }
 	
 	/// <summary>
 	/// TargetCharacter 세팅하기 
@@ -76,8 +79,11 @@ public:
 	bool SetTargetCharacter(AActor* InTargetCharacter);
 	class AC_BasicCharacter* GetTargetCharacter() const;
 
-	bool SetTargetLocation(const FVector& InTargetLocation);
-	FVector GetTargetLocation() const;
+	bool SetBasicTargetLocation(const FVector& InTargetLocation);
+	FVector GetBasicTargetLocation() const;
+
+	bool SetInCircleTargetLocation(const FVector& InTargetLocation);
+	FVector GetInCircleTargetLocation() const;
 
 public:
 
@@ -99,7 +105,10 @@ protected:
 	FName TargetCharacterKey = "TargetCharacter";
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName TargetLocationKey = "TargetLocation";
+	FName BasicTargetLocationKey = "BasicTargetLocation";
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FName InCircleTargetLocationKey = "InCircleTargetLocation";
 	
 protected:
 
@@ -118,6 +127,12 @@ private: // ChangePoseState 관련
 	
 	// BTTask ChangePoseState에 활용될 값
 	EPoseState NextPoseState{};
+
+private: // WAIT_TASK 시간
+
+	float WaitTime{};
+
+	
 };
 
 

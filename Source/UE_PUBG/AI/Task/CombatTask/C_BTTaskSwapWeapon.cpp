@@ -35,18 +35,29 @@ void UC_BTTaskSwapWeapon::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	//	//OwnerBehaviorComponent->SetServiceType(EServiceType::IDLE);
 	//	//FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	//}
+	
+	AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
+	if (!IsValid(Controller))
+	{
+		UC_Util::Print("From BTTaskSwapWeapon ExecuteTask : Controller Casting failed!", FColor::Red, 10.f);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
 
+	AC_Enemy* Enemy = Cast<AC_Enemy>(Controller->GetPawn());
+	UC_BehaviorComponent* BehaviorComponent = Controller->GetBehaviorComponent();
+	
 	// TODO : 현재는 Testing용 처리 중
-	UC_EquippedComponent* EquippedComponent = OwnerEnemy->GetEquippedComponent();
-	if (EquippedComponent->GetCurWeaponType() != SwapTargetWeaponSlot) return;
+	UC_EquippedComponent* EquippedComponent = Enemy->GetEquippedComponent();
+	if (EquippedComponent->GetCurWeaponType() != SwapTargetWeaponSlotMap[Enemy]) return;
 
 	// 여기서부터 초 세기
-	TotalTime += DeltaSeconds;
+	TotalTimeMap[Enemy] += DeltaSeconds;
 
-	if (TotalTime > 1.5f) // Task 끝났다고 간주
+	if (TotalTimeMap[Enemy] > 1.5f) // Task 끝났다고 간주
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		TotalTime = 0.f;
+		TotalTimeMap[Enemy] = 0.f;
 	}
 }
 
@@ -54,37 +65,22 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	// Initialization
-	if (!IsValid(OwnerEnemy))
+	AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
+	if (!IsValid(Controller))
 	{
-		AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
-		if (!IsValid(Controller))
-		{
-			UC_Util::Print("From BTTaskSwapWeapon ExecuteTask : Controller Casting failed!", FColor::Red, 10.f);
-			return EBTNodeResult::Failed;
-		}
-
-		OwnerEnemy = Cast<AC_Enemy>(Controller->GetPawn());
-
-		if (!IsValid(OwnerEnemy))
-		{
-			UC_Util::Print("From BTTaskSwapWeapon ExecuteTask : OwnerEnemy Casting failed!", FColor::Red, 10.f);
-			return EBTNodeResult::Failed;
-		}
-
-		OwnerBehaviorComponent = Controller->GetBehaviorComponent();
-
-		if (!IsValid(OwnerBehaviorComponent))
-		{
-			UC_Util::Print("From BTTaskSwapWeapon ExecuteTask : OwnerBehaviorComponent Casting failed!", FColor::Red, 10.f);
-			return EBTNodeResult::Failed;
-		}
+		UC_Util::Print("From BTTaskSwapWeapon ExecuteTask : Controller Casting failed!", FColor::Red, 10.f);
+		return EBTNodeResult::Failed;
 	}
+
+	AC_Enemy* Enemy = Cast<AC_Enemy>(Controller->GetPawn());
+
+	UC_BehaviorComponent* BehaviorComponent = Controller->GetBehaviorComponent();
 	
 	// Testing
 	// TODO : SwapWeapon Type 지정해서 해당 타입으로 지정하기
-	SwapTargetWeaponSlot = EWeaponSlot::MAIN_GUN;
-	bool Succeeded = OwnerEnemy->GetEquippedComponent()->ChangeCurWeapon(SwapTargetWeaponSlot);
+	SwapTargetWeaponSlotMap.Add(Enemy, EWeaponSlot::MAIN_GUN);
+	TotalTimeMap.Add(Enemy, 0.f);
+	bool Succeeded = Enemy->GetEquippedComponent()->ChangeCurWeapon(SwapTargetWeaponSlotMap[Enemy]);
 
 	/*Succeeded,
 	Failed,

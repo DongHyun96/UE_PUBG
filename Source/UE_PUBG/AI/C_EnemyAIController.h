@@ -9,6 +9,7 @@
 /// <summary>
 /// Sight에 잡혔던 Character들의 처리를 거리별로 나누어 처리 (ex. 거리로만 따졌을 때, TargetCharacter로 잡힐 Character는 Level1의 Character가 가장 높은 우선순위를 가짐)
 /// </summary>
+UENUM(BlueprintType)
 enum class ESightRangeLevel : uint8
 {
 	Level1, // 20m 이내
@@ -51,6 +52,12 @@ public:
 
 	class UC_BehaviorComponent* GetBehaviorComponent() const { return BehaviorComponent; }
 
+private:
+	/// <summary>
+	/// 이동 완료되었을 떄 호출될 함수
+	/// </summary>
+	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+
 public:
 
 	/// <summary>
@@ -72,6 +79,11 @@ private:
 	/// <param name="InCharacter"></param>
 	/// <returns> : 추가할 수 없는 거리라면 return false </returns>
 	bool AddCharacterToDetectedCharacters(class AC_BasicCharacter* InCharacter);
+
+private:
+	
+	void DrawSightRange();
+	
 
 protected:
 
@@ -101,4 +113,3 @@ private:
 	};
 	
 };
-

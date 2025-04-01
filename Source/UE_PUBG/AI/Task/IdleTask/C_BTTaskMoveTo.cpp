@@ -21,26 +21,9 @@ void UC_BTTaskMoveTo::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 
 EBTNodeResult::Type UC_BTTaskMoveTo::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// First initialization
-	if (!IsValid(OwnerEnemy))
+	if (!IsValid(NavSystem))
 	{
-		OwnerAIController = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
-		if (!IsValid(OwnerAIController))
-		{
-			UC_Util::Print("From UC_BTTaskMoveTo ExecuteTask : Controller Casting failed!", FColor::Red, 10.f);
-			return EBTNodeResult::Failed;
-		}
-
-		OwnerEnemy = Cast<AC_Enemy>(OwnerAIController->GetPawn());
-
-		if (!IsValid(OwnerEnemy))
-		{
-			UC_Util::Print("From UC_BTTaskMoveTo ExecuteTask : OwnerEnemy Casting failed!", FColor::Red, 10.f);
-			return EBTNodeResult::Failed;
-		}
-		
 		NavSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-
 		if (!IsValid(NavSystem))
 		{
 			UC_Util::Print("From UC_BTTaskMoveTo ExecuteTask : NavSystem not inited!", FColor::Red, 10.f);
@@ -76,13 +59,14 @@ EBTNodeResult::Type UC_BTTaskMoveTo::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	else bHasMoveToNearestNavMeshStarted = false;
 
 	UC_Util::Print("MoveExecute", FColor::Red);*/
+	
 	return Super::ExecuteTask(OwnerComp, NodeMemory);
 }
 
-bool UC_BTTaskMoveTo::IsAgentOnNavMesh()
+bool UC_BTTaskMoveTo::IsAgentOnNavMesh(AActor* Agent)
 {
 	static const float ACTOR_HALF_Z = 90.f;
-	FVector ActorBottomLocation = OwnerEnemy->GetActorLocation() - FVector::UnitZ() * ACTOR_HALF_Z;
+	FVector ActorBottomLocation = Agent->GetActorLocation() - FVector::UnitZ() * ACTOR_HALF_Z;
 	FNavLocation OutLocation{};
 	return NavSystem->ProjectPointToNavigation(ActorBottomLocation, OutLocation, FVector(10.f, 10.f, 10.f));
 }

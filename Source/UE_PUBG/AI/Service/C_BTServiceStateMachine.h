@@ -21,21 +21,9 @@ public:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 private:
-	
-	/// <summary>
-	/// DetectedCharacters 내에 존재하는 Character들의 RangeLevel 갱신시키기
-	/// </summary>
-	void UpdateDetectedCharactersRangeLevel();
-	
-private:
 
-	class AC_Enemy*				OwnerEnemy{};
-	class AC_EnemyAIController* OwnerController{};
-	class UC_BehaviorComponent* OwnerBehaviorComponent{};
+	TMap<class UC_BehaviorComponent*, float> EnemyTimers{};
 
-private:
-
-	float Timer{};
 };
 
 

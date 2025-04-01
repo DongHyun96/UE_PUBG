@@ -1236,6 +1236,7 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid InTargetCharacter", FColor::MakeRandomColor(), 10.f);
 		return false;
 	}
+	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false;
 
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
 	if (!OnScreen)
@@ -1254,14 +1255,14 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 
 	//UC_Util::Print(FireLocation);
 	//UC_Util::Print(FireDirection);
-	AC_Enemy* OwnerPlayer = Cast<AC_Enemy>(OwnerCharacter); // TODO : OwnerPlayer -> Enemy도 총을 쏠 수 있으니 예외처리 시켜야 함
-	if (!IsValid(OwnerPlayer))
+	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter); 
+	if (!IsValid(OwnerEnemy))
 	{
 		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid OwnerEnemy", FColor::MakeRandomColor(), 10.f);
 		return false;
 	}
 	bool ApplyGravity = true;
-	for (auto& Bullet : OwnerPlayer->GetBullets())
+	for (auto& Bullet : OwnerEnemy->GetBullets())
 	{
 		if (Bullet->GetIsActive())
 		{

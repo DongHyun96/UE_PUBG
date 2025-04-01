@@ -11,6 +11,7 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MapWidget.h"
 #include "HUD/C_MainMapWidget.h"
+#include "Singleton/C_GameSceneManager.h"
 
 
 #include "Utility/C_Util.h"
@@ -48,6 +49,9 @@ void UC_PingSystemComponent::OnMMBStarted()
 
 	FCollisionQueryParams CollisionParams{};
 	CollisionParams.AddIgnoredActor(OwnerPlayer);
+
+	CollisionParams.AddIgnoredActors(GAMESCENE_MANAGER->GetAllCharacterActors());
+	
 	FHitResult HitResult{};
 	
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, CamPos, DestLocation, ECC_Visibility, CollisionParams);

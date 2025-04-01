@@ -14,6 +14,7 @@
 #include "Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
+#include "Utility/C_Util.h"
 
 const float AC_Enemy::JUMP_VELOCITYZ_ORIGIN = 420.f;
 
