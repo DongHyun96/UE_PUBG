@@ -306,8 +306,9 @@ bool UC_EquippedComponent::TryAttachCurWeaponToHolsterWithoutSheathMotion()
     GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
     OwnerCharacter->SetHandState(EHandState::UNARMED);
 
-    // 총기류 예외처리
-    if (AC_Gun* Gun = Cast<AC_Gun>(GetCurWeapon())) Gun->BackToMainCamera();
+    // Player 총기류 예외처리
+    if (IsValid(Cast<AC_Player>(OwnerCharacter))) if (AC_Gun* Gun = Cast<AC_Gun>(GetCurWeapon()))
+        Gun->BackToMainCamera();
 
     return true;
 }

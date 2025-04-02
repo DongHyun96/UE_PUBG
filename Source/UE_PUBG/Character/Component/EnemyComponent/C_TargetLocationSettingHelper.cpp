@@ -32,7 +32,7 @@ void UC_TargetLocationSettingHelper::TickComponent(float DeltaTime, ELevelTick T
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-bool UC_TargetLocationSettingHelper::TrySetRandomTargetLocationAtMagneticCircle(const FMagneticCircle& Circle)
+bool UC_TargetLocationSettingHelper::TrySetRandomInCircleTargetLocationAtMagneticCircle(const FMagneticCircle& Circle)
 {
 	if (Circle.Radius <= 0.f) return false;
 	
@@ -81,40 +81,22 @@ bool UC_TargetLocationSettingHelper::TrySetRandomTargetLocationAtMagneticCircle(
 	} while (UC_WaterTileCheckerComponent::IsWaterTileCoord(PickedPositionTile) || ++AvoidingWaterTryCount > 100);
 
 	UC_Util::Print("Try avoiding water count : " + FString::FromInt(AvoidingWaterTryCount), FColor::Red, 10.f);
-	
-	TArray<FVector> ImpactPoints{}; // 상공에서 z와 평행한 위치로 LineTraceMulti한 ImpactPoint결과를 담을 배열
-	bool TraceSucceeded = GetTraceMultiDownward(RandomPosition, ImpactPoints);
 
-	if (!TraceSucceeded)
+	FVector PickedNavMeshLocation{};
+	bool Picked = PickRandomNavMeshLocationAtXYPos(RandomPosition, PickedNavMeshLocation);
+
+	if (!Picked)
 	{
 		UC_Util::Print
 		(
-			"From UC_TargetLocationSettingHelper::TrySetRandomTargetLocationAtMagneticCircle : LineTrace Downward Failed!, seems wrong position set!",
+			"From UC_TargetLocationSettingHelper::TrySetRandomTargetLocationAtMagneticCircle : PickRandomNavMeshLocationAtXYPos failed!, seems wrong position set!",
 			FColor::Red,
 			10.f
 		);
 		return false;
 	}
-
-	// ImpactPoint에서 근처 NavMesh 조사해서 추리기
-	TArray<FVector> PickedNavMeshLocations{};
-	for (const FVector& ImpactPoint : ImpactPoints)
-	{
-		static const FVector Extent = {200.f, 200.f, 200.f}; // 2m 반경으로 조사 예정
-		FVector ProjectedLocation{};
-
-		if (FindNearestNavMeshAtLocation(ImpactPoint, Extent, ProjectedLocation))
-		{
-			PickedNavMeshLocations.Add(ProjectedLocation);
-			
-			// TODO : For Testing : 이 라인 지우기
-			DrawDebugSphere(GetWorld(), ProjectedLocation, 20, 20, FColor::Red, true);
-		}
-	}
-
-	// Random하게 Pick해서 Setting
-	int RandomIndex = FMath::RandRange(0, PickedNavMeshLocations.Num() - 1);	
-	OwnerBehaviorComponent->SetInCircleTargetLocation(PickedNavMeshLocations[RandomIndex]);
+	
+	OwnerBehaviorComponent->SetInCircleTargetLocation(PickedNavMeshLocation);
 
 	// TODO : 일단은 자기장 줄어들기 시작할 때에 NextCircle 외부에 있는 Enemy들 한 번에 단순히 이동으로 처리 (추후, 자기장 대기시간에 미리 이동시킬
 	// TODO : Enemy들 정해서 미리 이동시키고, 이동시킨 Enemy들 또 다시 TargetLocation 잡아서 이동 방지 시키기
@@ -122,8 +104,64 @@ bool UC_TargetLocationSettingHelper::TrySetRandomTargetLocationAtMagneticCircle(
 	OwnerBehaviorComponent->SetIdleTaskType(EIdleTaskType::INCIRCLE_MOVETO);
 	
 	// TODO : For Testing : 이 라인 지우기
-	DrawDebugSphere(GetWorld(), PickedNavMeshLocations[RandomIndex], 20, 20, FColor::Green, true);
-	GAMESCENE_MANAGER->GetPlayer()->GetMainMapWidget()->SpawnSkyDivingStateDestinationImage(PickedNavMeshLocations[RandomIndex]);
+	DrawDebugSphere(GetWorld(), PickedNavMeshLocation, 20, 20, FColor::Green, true);
+	GAMESCENE_MANAGER->GetPlayer()->GetMainMapWidget()->SpawnSkyDivingStateDestinationImage(PickedNavMeshLocation);
+	return true;
+}
+
+bool UC_TargetLocationSettingHelper::SetRandomBasicTargetLocationInsideMainCircle(const float& MaxRadius)
+{
+	if (!IsValid(GAMESCENE_MANAGER->GetMagneticFieldManager())) return false;
+	
+	FMagneticCircle MainCircle	= GAMESCENE_MANAGER->GetMagneticFieldManager()->GetMainCircle();
+	const FVector2D CirclePos	= UC_Util::GetXY(MainCircle.MidLocation);
+	const FVector2D OwnerPos	= UC_Util::GetXY(OwnerEnemy->GetActorLocation());
+
+	// 2가지 -> MainCircle 내의 점으로 잡혀야 함 / 밑으로 Trace가 성공한 지점이어야 함
+
+	FVector2D RandomPosition{};
+	int TryCount{};
+	do
+	{
+		const FVector2D RandomDirection = FVector2D(FMath::RandRange(-1.f, 1.f), FMath::RandRange(-1.f, 1.f)).GetSafeNormal();
+		const float RandomScalar = FMath::RandRange(0.f, MaxRadius);
+		RandomPosition = OwnerPos + RandomDirection * RandomScalar;
+	} while (FVector2D::Distance(CirclePos, RandomPosition) > MainCircle.Radius || ++TryCount > 50);
+
+	// 제대로 된 위치를 못잡았다고 판단
+	if (TryCount > 50) return false;
+
+	// 상공에서 RayCasting하여 걸린 NavMesh 위치 중 Random한 위치 뽑기 
+	FVector PickedNavMeshLocation{};
+	if (!PickRandomNavMeshLocationAtXYPos(RandomPosition, PickedNavMeshLocation)) return false;
+
+	OwnerBehaviorComponent->SetBasicTargetLocation(PickedNavMeshLocation);
+	return true;
+}
+
+bool UC_TargetLocationSettingHelper::PickRandomNavMeshLocationAtXYPos(const FVector2D& XYPosition, FVector& OutLocation)
+{
+	TArray<FVector> ImpactPoints{};
+	bool TraceSucceeded = GetTraceMultiDownward(XYPosition, ImpactPoints);
+
+	if (!TraceSucceeded) return false;
+
+	TArray<FVector> PickedNavMeshLocations{};
+
+	for (const FVector& ImpactPoint : ImpactPoints)
+	{
+		static const FVector Extent = {200.f, 200.f, 200.f}; // 2m 반경으로 조사 예정
+		FVector ProjectedLocation{};
+
+		if (FindNearestNavMeshAtLocation(ImpactPoint, Extent, ProjectedLocation))
+			PickedNavMeshLocations.Add(ProjectedLocation);
+	}
+
+	if (PickedNavMeshLocations.Num() <= 0) return false;
+
+	// Random하게 Pick
+	int RandomIndex = FMath::RandRange(0, PickedNavMeshLocations.Num() - 1);
+	OutLocation = PickedNavMeshLocations[RandomIndex];	
 	return true;
 }
 
@@ -132,7 +170,7 @@ bool UC_TargetLocationSettingHelper::GetTraceMultiDownward(const FVector2D& Trac
 	static const float TRACE_START_Z = 60000.f;
 
 	FVector Start = { TracePosition.X, TracePosition.Y, TRACE_START_Z };
-	FVector End = {Start.X, Start.Y, 0.f};
+	FVector End   = {Start.X, Start.Y, 0.f};
 
 	FCollisionQueryParams CollisionParams{};
 	CollisionParams.AddIgnoredActors(GAMESCENE_MANAGER->GetAllCharacterActors());

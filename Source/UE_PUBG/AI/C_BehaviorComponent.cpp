@@ -69,7 +69,7 @@ bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 	}
 
 	// Random wait time 지정
-	if (Type == EIdleTaskType::WAIT) WaitTime = FMath::RandRange(5.f, 60.f);
+	if (Type == EIdleTaskType::WAIT) WaitTime = FMath::RandRange(5.f, 10.f);
 	
 	Blackboard->SetValueAsEnum(IdleTaskKey, static_cast<uint8>(Type));
 	return false;
@@ -114,7 +114,7 @@ void UC_BehaviorComponent::OnTargetCharacterDead(class AC_BasicCharacter* DeadCh
 	SetTargetCharacter(nullptr);
 }
 
-bool UC_BehaviorComponent::SetTargetCharacter(AActor* InTargetCharacter)
+bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharacter)
 {
 	if (!IsValid(InTargetCharacter))
 	{
@@ -123,6 +123,9 @@ bool UC_BehaviorComponent::SetTargetCharacter(AActor* InTargetCharacter)
 		OwnerEnemy->SetTargetCharacterWidgetName("NONE");
 		return false;
 	}
+
+	// TargetCharacter가 이미 죽었을 때
+	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false;
 
 	// 현재 공격중인 때에는 TargetCharacter를 새로 바꾸지 않음
 	if (GetServiceType() == EServiceType::COMBAT && GetCombatTaskType() == ECombatTaskType::ATTACK) return false;

@@ -89,6 +89,8 @@ public:
 	/// </summary>
 	bool IsInMainCircle(class AC_BasicCharacter* Character) const;
 
+	FMagneticCircle GetMainCircle() const { return MainCircle; }
+
 private:
 
 	/// <summary>

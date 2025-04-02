@@ -3,11 +3,13 @@
 
 #include "AI/Service/C_BTServiceStateMachine.h"
 
+#include "C_BTServiceCombat.h"
 #include "AI/C_EnemyAIController.h"
 #include "AI/C_BehaviorComponent.h"
 #include "AI/Service/C_BTServiceIdle.h"
 
 #include "Character/C_Enemy.h"
+#include "Character/Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "MagneticField/C_MagneticFieldManager.h"
@@ -31,8 +33,8 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 
 	if (!EnemyTimers.Contains(EnemyBehaviorComponent)) EnemyTimers.Add(EnemyBehaviorComponent, 0.f);
 
-	// TODO : RangeLevel 업데이트 -> 행동 취하기 전에만 Update해서 계산해주면 됨 (이 라인은 테스트용)
-	EnemyAIController->UpdateDetectedCharactersRangeLevel();
+	if (Enemy->GetMainState() != EMainState::SKYDIVING)
+		EnemyAIController->UpdateDetectedCharactersRangeLevel();
 	
 	// Wait 상황의 FSM transition 처리하기
 	
@@ -53,12 +55,23 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	{
 		if (!MagneticFieldManager->IsInMainCircle(Enemy))
 		{
+			// InCircle targetLocation은 이미 잡혀 있음
+			EnemyBehaviorComponent->SetServiceType(EServiceType::IDLE);
 			EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::INCIRCLE_MOVETO);
 			return;
 		}
 	}
 
+	// Lv1 영역으로 다른 캐릭터가 들어왔다면 TargetCharacter로 set해서 공격 시도
+	if (EnemyAIController->TrySetTargetCharacterToLevel1EnteredCharacter())
+	{
+		EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
+		EnemyBehaviorComponent->SetCombatTaskType(ECombatTaskType::SWAP_WEAPON);
+		return;
+	}
+
 	// TODO : 피 또는 부스트 량이 너무 없을 때 처리(STAT_CARE) and return
+	
 
 	EnemyTimers[EnemyBehaviorComponent] += DeltaSeconds;
 
@@ -68,6 +81,22 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		EnemyTimers[EnemyBehaviorComponent] = 0.f;
 
 		// TODO : MoveToRandomPos or Attack trial or 다시 Wait 중 택 1
+		
+		// MoveToRandomPos
+		Enemy->GetTargetLocationSettingHelper()->SetRandomBasicTargetLocationInsideMainCircle(1000.f);
+		EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO); // Testing
+		// return;
+		
+		// SetTargetCharacter & AttackTrial
+		/*EnemyAIController->TrySetTargetCharacterBasedOnPriority();
+		if (IsValid(EnemyBehaviorComponent->GetTargetCharacter()))
+		{
+			EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
+			EnemyBehaviorComponent->SetCombatTaskType(ECombatTaskType::SWAP_WEAPON);
+			// return;
+		}*/
+
+		// EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT); // 다시금 기다리기 처리(이 호출로 기다리는 총 시간 랜덤하게 다시 setting 됨)
 	}
 		
 }

@@ -52,6 +52,8 @@ public:
 
 	class UC_BehaviorComponent* GetBehaviorComponent() const { return BehaviorComponent; }
 
+	bool HasAnyCharacterEnteredLevel1SightRange() const { return !DetectedCharacters[ESightRangeLevel::Level1].IsEmpty(); }
+
 private:
 	/// <summary>
 	/// 이동 완료되었을 떄 호출될 함수
@@ -59,6 +61,19 @@ private:
 	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
 public:
+	
+	/// <summary>
+	/// Level 1 Sight Range Level에 들어온 Character들을 체크해서, 있다면 해당 캐릭터들 중 가장 적합한 대상으로 TargetCharacter 세팅 시도 
+	/// </summary>
+	/// <returns> : Level 1 캐릭터가 없거나 세팅되지 않았을 때, return false </returns>
+	bool TrySetTargetCharacterToLevel1EnteredCharacter();
+
+	/// <summary>
+	/// <para> 우선순위에 따른 TargetCharacter 지정하기 </para>
+	/// <para> 현재 공격중인 TargetCharacter | Lv1 | 자신에게 피해를 입힌 캐릭터 | Lv2 | Lv3 | Lv4 </para>
+	/// </summary>
+	/// <returns> : TargetCharacter가 nullptr로 setting 되었다면 return false </returns>
+	bool TrySetTargetCharacterBasedOnPriority();
 
 	/// <summary>
 	/// DetectedCharacters 내에 존재하는 Character들의 RangeLevel 갱신시키기
@@ -83,8 +98,14 @@ private:
 private:
 	
 	void DrawSightRange();
-	
 
+private:
+	
+	/// <summary>
+	/// 현재 Sight에 직접적으로 잡히는 Character인지 조사 (DetectedCharacters에 들어 있어도 엄폐물에 가려져 있으면 return false) 
+	/// </summary>
+	bool IsCurrentlyOnSight(class AC_BasicCharacter* TargetCharacter);
+	
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)

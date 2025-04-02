@@ -340,7 +340,9 @@ bool AC_Gun::SetAimingPress()
 
 bool AC_Gun::BackToMainCamera()
 {
-
+	AC_Player* Player = Cast<AC_Player>(OwnerCharacter);
+	if (!IsValid(Player)) return false;
+	
 	AimSightCamera->SetActive(false);
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() != OwnerCharacter)
 	{
@@ -349,7 +351,7 @@ bool AC_Gun::BackToMainCamera()
 	OwnerCharacter->GetMesh()->UnHideBoneByName(FName("Head"));
 	OwnerCharacter->bUseControllerRotationYaw = false;
 	bIsAimDown = false;
-	Cast<AC_Player>(OwnerCharacter)->BackToMainCamera();
+	Player->BackToMainCamera();
 	if (IsValid(AttachedItem[EPartsName::SCOPE]))
 		AttachedItem[EPartsName::SCOPE]->UseMrbStrategy();
 	return true;

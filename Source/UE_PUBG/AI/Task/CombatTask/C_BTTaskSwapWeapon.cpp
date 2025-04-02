@@ -78,6 +78,8 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	
 	// Testing
 	// TODO : SwapWeapon Type 지정해서 해당 타입으로 지정하기
+	// TODO : 어떤 무기로 Swap할지 상황에 따라 처리하기
+	
 	SwapTargetWeaponSlotMap.Add(Enemy, EWeaponSlot::MAIN_GUN);
 	TotalTimeMap.Add(Enemy, 0.f);
 	bool Succeeded = Enemy->GetEquippedComponent()->ChangeCurWeapon(SwapTargetWeaponSlotMap[Enemy]);

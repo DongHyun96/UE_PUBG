@@ -12,6 +12,8 @@
 #include "Character/C_Enemy.h"
 #include "AI/C_BehaviorComponent.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "ProfilingDebugging/StallDetector.h"
+#include "Service/C_BTServiceCombat.h"
 #include "Singleton/C_GameSceneManager.h"
 
 #include "Utility/C_Util.h"
@@ -64,7 +66,6 @@ void AC_EnemyAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	DrawSightRange();
-	
 }
 
 void AC_EnemyAIController::OnPossess(APawn* InPawn)
@@ -141,6 +142,60 @@ void AC_EnemyAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFo
 
 	if (Result.Code != EPathFollowingResult::Success) return;
 	BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
+}
+
+bool AC_EnemyAIController::TrySetTargetCharacterToLevel1EnteredCharacter()
+{
+	if (DetectedCharacters[ESightRangeLevel::Level1].IsEmpty()) return false;
+
+	// 시야에 포착되는 캐릭터 중 거리가 가장 가까운 캐릭터로 세팅 시도
+	// 시야에 포착되는 캐릭터가 없다면 거리가 가장 가까운 캐릭터로 세팅하기
+	TArray<AC_BasicCharacter*> Level1Characters = DetectedCharacters[ESightRangeLevel::Level1].Array();
+
+	FVector OwnerLocation = OwnerCharacter->GetActorLocation();
+	
+	Level1Characters.Sort([OwnerLocation](const AC_BasicCharacter& A, const AC_BasicCharacter& B)
+	{
+		// 오름차순 정렬
+		return FVector::DistSquared(A.GetActorLocation(), OwnerLocation) <
+			FVector::DistSquared(B.GetActorLocation(), OwnerLocation);  
+	});
+
+	for (AC_BasicCharacter* Level1Character : Level1Characters)
+		if (IsCurrentlyOnSight(Level1Character))
+			return BehaviorComponent->SetTargetCharacter(Level1Character);
+
+	// 시야에 포착되는 캐릭터가 없다면 거리가 가장 가까운 캐릭터로 세팅
+	return BehaviorComponent->SetTargetCharacter(Level1Characters[0]);
+}
+
+bool AC_EnemyAIController::TrySetTargetCharacterBasedOnPriority()
+{
+	// 이미 누군가를 공격 중이라면
+	if (BehaviorComponent->GetServiceType() == EServiceType::COMBAT &&
+		BehaviorComponent->GetCombatTaskType() == ECombatTaskType::ATTACK)
+		return false;
+
+	// Level 1부터 4까지 차례로 우선순위대로 TargetCharacter setting 시도
+	for (int i = 0; i < static_cast<int>(ESightRangeLevel::Max); ++i)
+	{
+		ESightRangeLevel Level = static_cast<ESightRangeLevel>(i);
+		if (DetectedCharacters[Level].IsEmpty()) continue;
+
+		int RandomIndex = FMath::RandRange(0, DetectedCharacters[Level].Num() - 1), CurrentIndex{};
+		AC_BasicCharacter* PickedCharacter{};
+		for (AC_BasicCharacter* Lv1Character : DetectedCharacters[Level])
+		{
+			if (CurrentIndex == RandomIndex)
+			{
+				PickedCharacter = Lv1Character;
+				break;
+			}
+			++CurrentIndex;
+		}
+		if (BehaviorComponent->SetTargetCharacter(PickedCharacter)) return true; 
+	}
+	return false;
 }
 
 void AC_EnemyAIController::UpdateDetectedCharactersRangeLevel()
@@ -253,4 +308,13 @@ void AC_EnemyAIController::DrawSightRange()
 		OwnerCharacter->GetActorRightVector(),
 		OwnerCharacter->GetActorForwardVector()
 	);
+}
+
+bool AC_EnemyAIController::IsCurrentlyOnSight(AC_BasicCharacter* TargetCharacter)
+{
+	if (const FActorPerceptionInfo* ActorPerceptionInfo = PerceptionComponent->GetActorInfo(*TargetCharacter))
+		for (FAIStimulus Stimulus : ActorPerceptionInfo->LastSensedStimuli)
+			if (Stimulus.WasSuccessfullySensed()) return true;
+	
+	return false;
 }

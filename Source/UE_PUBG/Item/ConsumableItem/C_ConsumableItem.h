@@ -18,6 +18,17 @@ enum class EConsumableItemState : uint8
 	USED
 };
 
+UENUM(BlueprintType)
+enum class EConsumableItemType : uint8
+{
+	MEDKIT,
+	FIRST_AID_KIT,
+	BANDAGE,
+	PAIN_KILLER,
+	ENERGY_DRINK,
+	MAX
+};
+
 USTRUCT(BlueprintType)
 struct FHealItemSoundData : public FTableRowBase
 {
@@ -52,8 +63,11 @@ public:
 
 	void InitializeItem(FName NewItemCode) override;
 
-	//void SetConsumableItemState(EConsumableItemState NewState);
-
+public:
+	
+	// static const TMap<EConsumableItemType, FName> ConsumableItemNameMap	
+	static FName GetConsumableItemName(EConsumableItemType InConsumableItemType);
+	
 public:
 
 	/// <summary>
@@ -181,6 +195,9 @@ protected:
 	//UI리팩토링중에 사용중인 ItemBar
 	UC_BasicItemBarWidget* LinkedItemBarWidget{};
 
+private:
+
+	static const TMap<EConsumableItemType, FName> ConsumableItemNameMap;
 
 };
 

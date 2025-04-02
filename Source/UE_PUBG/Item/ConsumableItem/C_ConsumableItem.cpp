@@ -25,6 +25,15 @@
 
 #include "HUD/C_InstructionWidget.h"
 
+const TMap<EConsumableItemType, FName> AC_ConsumableItem::ConsumableItemNameMap =
+{
+	{EConsumableItemType::MEDKIT,			"MedKit"},
+	{EConsumableItemType::FIRST_AID_KIT,	"FirstAid"},
+	{EConsumableItemType::BANDAGE,			"Bandage"},
+	{EConsumableItemType::PAIN_KILLER,		"PainKiller"},
+	{EConsumableItemType::ENERGY_DRINK,		"EnergyDrink"},
+};
+
 AC_ConsumableItem::AC_ConsumableItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -178,6 +187,11 @@ void AC_ConsumableItem::InitializeItem(FName NewItemCode)
 	}
 }
 
+FName AC_ConsumableItem::GetConsumableItemName(EConsumableItemType InConsumableItemType)
+{
+	if (InConsumableItemType == EConsumableItemType::MAX) return "";
+	return ConsumableItemNameMap[InConsumableItemType];
+}
 
 
 bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
