@@ -15,8 +15,6 @@ enum class EServiceType : uint8
 	IDLE,
 	SKYDIVE,
 	COMBAT,
-	FARMING,
-	STAT_CARE,
 	MAX
 };
 
@@ -41,49 +39,74 @@ public:
 	void SetBlackboard(class UBlackboardComponent* InBlackboard) { Blackboard = InBlackboard; }
 
 	bool SetServiceType(EServiceType Type);
+	EServiceType GetServiceType() const;
 
 public:
 
+	void SetOwnerEnemy(class AC_Enemy* InOwnerEnemy) { OwnerEnemy = InOwnerEnemy; }
+	
 	bool SetIdleTaskType(EIdleTaskType Type);
+	EIdleTaskType GetIdleTaskType() const;
+	
 	bool SetCombatTaskType(ECombatTaskType Type);
+	ECombatTaskType GetCombatTaskType() const;
 
 public: // TODO : Player에 관련한 내용 지우기 (For Testing)
 
 	bool SetPlayer(class AC_Player* Player);
+
+private:
+	/// <summary>
+	/// TargetCharacter가 죽었을 때 Callback을 받는 함수
+	/// </summary>
+	void OnTargetCharacterDead(class AC_BasicCharacter* DeadCharacter);
 	
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName PlayerKey = "Player";
 
 public:
+
+	float GetWaitTime() const { return WaitTime; }
 	
 	/// <summary>
 	/// TargetCharacter 세팅하기 
 	/// </summary>
 	/// <param name="InTargetCharacter"> : 공격 대상, 회피 대상 등이 될 TargetCharacter </param>
-	/// <returns> 제대로 setting되었다면 return true </returns>
-	bool SetTargetCharacter(AActor* InTargetCharacter);
+	/// <returns> nullptr나 valid하지 않은 Actor로 setting되었다면 return false </returns>
+	bool SetTargetCharacter(class AC_BasicCharacter* InTargetCharacter);
 	class AC_BasicCharacter* GetTargetCharacter() const;
 
-	bool SetTargetLocation(const FVector& InTargetLocation);
-	FVector GetTargetLocation() const;
+	bool SetBasicTargetLocation(const FVector& InTargetLocation);
+	FVector GetBasicTargetLocation() const;
+
+	bool SetInCircleTargetLocation(const FVector& InTargetLocation);
+	FVector GetInCircleTargetLocation() const;
 
 public:
 
 	void SetNextPoseState(EPoseState InNextPoseState);
 	EPoseState GetNextPoseState() const { return NextPoseState; }
 	bool SetIdleTaskTypeToPrevType();
+
+private:
+
+	class AC_Enemy* OwnerEnemy{};
 	
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName ServiceKey = "Service";
 
+	// 현재 교전중인 Character
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName TargetCharacterKey = "TargetCharacter";
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName TargetLocationKey = "TargetLocation";
+	FName BasicTargetLocationKey = "BasicTargetLocation";
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FName InCircleTargetLocationKey = "InCircleTargetLocation";
 	
 protected:
 
@@ -102,8 +125,13 @@ private: // ChangePoseState 관련
 	
 	// BTTask ChangePoseState에 활용될 값
 	EPoseState NextPoseState{};
-};
 
+private: // WAIT_TASK 시간
+
+	float WaitTime{};
+
+	
+};
 
 
 

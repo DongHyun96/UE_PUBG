@@ -38,6 +38,25 @@ enum class EShootingMode : uint8
 };
 
 USTRUCT(BlueprintType)
+struct FGunSoundData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ShoottingSound = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ReloadMagazineSound = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* LoadBulletSound = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* NullBulletSound = nullptr;
+};
+
+
+USTRUCT(BlueprintType)
 struct FGunData : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -204,6 +223,7 @@ public:
 	bool bIsPlayerAimDownPress = false;
 
 	UCameraComponent* AimSightCamera;
+
 	class USpringArmComponent* AimSightSpringArm{};
 	int GetCurBulletCount() { return CurBulletCount; }
 	int GetMaxBulletCount() { return MaxBulletCount; }
@@ -217,9 +237,18 @@ public:
 	/// <returns>const FGunData*</returns>
 	const FGunData* GetGunData() const { return GunDataRef; }
 
+	/// <summary>
+	/// const GunSoundData*를 반환해 주는 함수.
+	/// </summary>
+	/// <returns></returns>
+	const FGunSoundData* GetGunSoundData() const { return GunSoundData; }
+
 protected:
 	//GunData 구조체를 const 포인터 변수로 가지고 있음.
 	const FGunData* GunDataRef = nullptr;
+
+	//Gun Sound Datas, TODO : 
+	const FGunSoundData* GunSoundData = nullptr;
 protected:
 	/// <summary>
 	/// 총알 발사 관련 변수들
@@ -229,32 +258,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int MaxBulletCount;
 
-	/// WeaponData 구조체에 넣을 거.
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//float BulletSpeed;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//float BulletRPM;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//float ReloadTime;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//float BaseBulletSpreadDegree;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//float RecoilFactorVertical;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//float RecoilFactorHorizontal;
-	///
-	
-	
-	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EShootingMode CurrentShootingMode = EShootingMode::FULL_AUTO;
 
-	//WeaponData 구조체에 안넣음
+	//GunData 구조체에 안넣음
 	float RecoilMultiplierByGripVert = 1;
 	float RecoilMultiplierByGripHorizon = 1;
 	float RecoilMultiplierMuzzleVert = 1;
@@ -368,9 +375,6 @@ public:
 	void  SetAttachedItemNameInPart(EPartsName InPartName, EAttachmentNames InAttachmentName) { AttachedItemName[InPartName] = InAttachmentName; }
 	void SetSightCameraSpringArmLocation(FVector4 InLocationAndArmLength);
 	//For Test
-
-	
-
 	void SetScopeCameraMode(EAttachmentNames InAttachmentName);
 	void BackTo_RightHand();
 protected:
@@ -378,27 +382,13 @@ protected:
 	//EGunType CurGunType = EGunType::MAX;
 public:
 	EGunType GetGunType() { return GunDataRef->CurGunType; }
-	UTexture2D* GetDragIcon() { return DragIcon; }
 protected:
 	FVector2D IronSightWindowLocation{};
-	
-protected:
-	/// <summary>
-	/// MainGun은 Slot에 장착되는 Icon과 Drag 혹은 바닥에 놓여있을 때의 Icon이 다름.
-	/// </summary>
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "DragIcon")
-	UTexture2D* DragIcon = nullptr; 
+
 
 public:
 	//AI 총알 발사 관련 함수
 	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
-	//테스트 주석
-
-protected: // Damage 관련
-	//WeaponData구조체에 넣어도 됨
-	// 무기 별 DamageBase
-	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	//float DamageBase{};
 
 public: 
 	/// <summary>
@@ -415,7 +405,6 @@ protected:
 	// UCapsuleComponent* CapsuleComponent{};
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UParticleSystem* MuzzleFlameEffectParticle{};
-
 
 public:
 	UFUNCTION(BlueprintCallable)

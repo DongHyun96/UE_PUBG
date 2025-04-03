@@ -18,6 +18,27 @@ enum class EConsumableItemState : uint8
 	USED
 };
 
+UENUM(BlueprintType)
+enum class EConsumableItemType : uint8
+{
+	MEDKIT,
+	FIRST_AID_KIT,
+	BANDAGE,
+	PAIN_KILLER,
+	ENERGY_DRINK,
+	MAX
+};
+
+USTRUCT(BlueprintType)
+struct FHealItemSoundData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* UsingSound = nullptr;
+
+};
+
 UCLASS(Abstract)
 class UE_PUBG_API AC_ConsumableItem : public AC_Item
 {
@@ -40,8 +61,13 @@ public:
 	
 	void SetLinkedItemBarWidget(class UC_BasicItemBarWidget* InItemBarWidget);
 
-	//void SetConsumableItemState(EConsumableItemState NewState);
+	void InitializeItem(FName NewItemCode) override;
 
+public:
+	
+	// static const TMap<EConsumableItemType, FName> ConsumableItemNameMap	
+	static FName GetConsumableItemName(EConsumableItemType InConsumableItemType);
+	
 public:
 
 	/// <summary>
@@ -113,6 +139,11 @@ protected:
 	bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack) override;
 	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
+protected:
+	void PlayUsingSound();
+
+	void StopUsingSound();
+
 public: // getters and setters
 
 	EConsumableItemState GetConsumableItemState() const { return ConsumableItemState; }
@@ -125,6 +156,15 @@ public: // getters and setters
 	//리팩토링중인 ItemBar
 	class UC_BasicItemBarWidget* GetLinkedItemBarWidget() { return LinkedItemBarWidget; }
 
+	const FHealItemSoundData* GetUsingSoundData() const { return UsingSoundData; }
+
+	/// <summary>
+	/// Activating 단계에서 (활성화한 시간 / 총 활성화 시간) 비율 구하기
+	/// </summary>
+	/// <param name="OutRatio"> : 구한 비율 </param>
+	/// <returns> : 만약 ACTIVATING State가 아니라면 return false </returns>
+	bool GetActivationProgressTimeRatio(float& OutRatio) const;
+
 protected:
 	
 	EConsumableItemState ConsumableItemState{};
@@ -136,6 +176,13 @@ protected:
 	// 사용 시간 및 아이템 효과 적용 시간 체크 Timer
 	float UsingTimer{};
 
+	//효과음 구조체
+	const FHealItemSoundData* UsingSoundData = nullptr;
+
+	//오디오 컨트롤러
+	UAudioComponent* AudioComponent = nullptr;
+
+
 protected:
 
 	// 아이템 사용 캐릭터 객체
@@ -146,15 +193,15 @@ protected:
 	TMap<EPoseState, FPriorityAnimMontage> UsingMontageMap{};
 
 
-protected:
-
-	// 이 Consumable Item과 연결된 ItemBarWidget 객체
-	//UC_ItemBarWidget* LinkedItemBarWidget{};
+private:
 
 	//// 이 Consumable Item과 연결된 ItemBarWidget 객체
 	//UI리팩토링중에 사용중인 ItemBar
 	UC_BasicItemBarWidget* LinkedItemBarWidget{};
 
+private:
+
+	static const TMap<EConsumableItemType, FName> ConsumableItemNameMap;
 
 };
 

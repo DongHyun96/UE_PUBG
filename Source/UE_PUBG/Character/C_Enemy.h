@@ -11,6 +11,7 @@ namespace EPathFollowingResult
 	enum Type : int;
 }
 
+enum class ESightRangeLevel : uint8;
 /**
  * 
  */
@@ -29,11 +30,19 @@ public:
 
 	class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 
+protected:
+	
+	/// <summary>
+	/// 캐릭터가 땅에 착지했을 때 호출될 함수 
+	/// </summary>
+	void Landed(const FHitResult& Hit) override;
+
 public:
 
 	bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) override;
 
 	class UProgressBar* GetHPBar() const { return HPBar; }
+	class UProgressBar* GetBoostBar() const { return BoostBar; }
 
 	class AC_EnemyAIController* GetEnemyAIController() const;
 
@@ -47,24 +56,31 @@ public:
 	/// <param name="BottomLocation"> : Character Capsule 밑 부분이 될 값 </param>
 	/// <param name="TeleportType"></param>
 	void SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType = ETeleportType::None);
+
+	static float GetJumpVelocityZOrigin() { return JUMP_VELOCITYZ_ORIGIN; }
+
+public: // For Testing
 	
-	/// <summary>
-	/// Pose와 캐릭터 이동방향에 따른 MaxWalkSpeed 조정 (Enemy는 이동방향 고려 x(언제나 Forward 방면으로 이동 처리 중))
-	/// </summary>
-	/// <param name="MovementVector"> : Input action movement vector </param>
-	void UpdateMaxWalkSpeed(const FVector2D& MovementVector) override;
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetTargetCharacterWidgetName(const FString& TargetCharacterName);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetSightRangeCharactersName(ESightRangeLevel SightRangeLevel, const FString& SightRangeCharactersName);	
 	
 protected:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UBehaviorTree* BehaviorTree{};
-
+	
 protected:
 
 	// 디버깅용 HPBar
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UProgressBar* HPBar{};
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UProgressBar* BoostBar{};
+	
 protected:
 
 	// Default 아이템 스폰 처리 Component
@@ -78,6 +94,10 @@ private:
 private:
 
 	class UC_EnemySkyDivingComponent* EnemySkyDivingComponent{};
+
+private:
+
+	static const float JUMP_VELOCITYZ_ORIGIN;
 
 };
 

@@ -203,8 +203,6 @@ bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
 	// 투척류를 핀까지만 뽑았고 쿠킹을 안했을 시 다시 집어넣음
 	// 투척류를 안전손잡이까지 뽑았다면 현재 위치에 현재 투척류 그냥 바닥에 떨굼
 
-	UC_Util::Print("AttachToHolster");
-
 	SetActorHiddenInGame(true);
 	
 
@@ -221,8 +219,6 @@ bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
 bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 {
 	//this->SetHidden(false);
-
-	UC_Util::Print("AttachToHand", FColor::Red, 10.f);
 
 	SetActorHiddenInGame(false);
 	//SetActorHiddenInGame(true);
@@ -256,6 +252,25 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 	);
 }
 
+void AC_ThrowingWeapon::InitializeItem(FName NewItemCode)
+{
+	Super::InitializeItem(NewItemCode);
+
+	static const FString ContextString(TEXT("GunItem Lookup"));
+	
+	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunSoundData 정의해 주기.
+	UDataTable* GunSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_ThrowingWeaponSoundData.DT_ThrowingWeaponSoundData"));
+
+	if (GunSoundDataTable)
+	{
+		const FThrowingWeaponSoundData* ItemData = GunSoundDataTable->FindRow<FThrowingWeaponSoundData>(ItemCode, ContextString);
+		if (ItemData)
+		{
+			ThrowingWeaponSoundData = ItemData;  // 원본 참조 저장
+		}
+	}
+}
+
 void AC_ThrowingWeapon::PickUpItem(AC_BasicCharacter* Character)
 {
 	//여기서하는 용량체크는 인벤에서 이미 한번 처리 되었지만 혹시몰라 넣어 놓은것으로 확인후 제거할 것.
@@ -267,8 +282,12 @@ void AC_ThrowingWeapon::PickUpItem(AC_BasicCharacter* Character)
 
 void AC_ThrowingWeapon::DropItem(AC_BasicCharacter* Character)
 {
+	
 	//TODO : 아이템이 장착(Attach)되었던 상태를 해제하는 작업에 관한 처리 생각
 	//TODO : 분할해서 버리는 경우 새로 스폰해주어야함.
+	
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	
 	ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);               //OwnerCharacter 해제
 	SetActorHiddenInGame(false);			  //모습이 보이도록 Hidden 해제.
@@ -585,6 +604,17 @@ bool AC_ThrowingWeapon::MoveSlotToAround(AC_BasicCharacter* Character, int32 InS
 	
 	if (curWeapon != this) return false; //장착된 아이템이 자신이 아니라면 return.
 
+	// 장착된 무기의 Sheath나 Draw Montage가 이미 재생 중이라면 return false
+	UAnimInstance* CharacterAnimInstance = Character->GetMesh()->GetAnimInstance();
+	if (CharacterAnimInstance->Montage_IsPlaying(CurDrawMontage.AnimMontage) ||
+		CharacterAnimInstance->Montage_IsPlaying(CurSheathMontage.AnimMontage))
+	{
+		UC_Util::Print("Throwable SlotToAround Failed due to Sheath/draw Montage is currently playing!",
+			FColor::Red,
+			10.f);
+		return false; 
+	}
+	
 	equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr); //장착된 아이템이 자신이면, 장착해제를 진행.
 
 	DropItem(Character);
@@ -615,6 +645,17 @@ bool AC_ThrowingWeapon::MoveInvenToAround(AC_BasicCharacter* Character, int32 In
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
 
 	if (!invenComp->FindMyItem(this)) return false;
+
+	// Inven에서 Around로 버리려 할 때, Sheath Montage나 DrawMontage가 재생중이라면 return false
+	UAnimInstance* CharacterAnimInstance = Character->GetMesh()->GetAnimInstance();
+	if (CharacterAnimInstance->Montage_IsPlaying(CurDrawMontage.AnimMontage) ||
+		CharacterAnimInstance->Montage_IsPlaying(CurSheathMontage.AnimMontage))
+	{
+		UC_Util::Print("Throwable SlotToAround Failed due to Sheath/draw Montage is currently playing!",
+			FColor::Red,
+			10.f);
+		return false; 
+	}
 
 	invenComp->RemoveItemToMyList(this);				 //내 아이템 리스트에서 아이템 제거.
 														 
@@ -739,6 +780,8 @@ bool AC_ThrowingWeapon::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InS
 void AC_ThrowingWeapon::OnRemovePinFin()
 {
 	OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
+
+	if (ThrowingWeaponSoundData->PinPullSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->PinPullSound, GetActorLocation());
 }
 
 void AC_ThrowingWeapon::OnThrowReadyLoop()
@@ -900,6 +943,9 @@ void AC_ThrowingWeapon::StartCooking()
 	UC_Util::Print("Throwable Starts cooking", FColor::Red, 10.f);
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);
+	
+	if (ThrowingWeaponSoundData->CookingSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->CookingSound, GetActorLocation());
+
 }
 
 bool AC_ThrowingWeapon::ReleaseOnGround()
@@ -930,14 +976,17 @@ void AC_ThrowingWeapon::Explode()
 
 	bool Exploded = ExplodeStrategy->UseStrategy(this);
 
+
+
 	if (GetAttachParentActor()) ReleaseOnGround(); // 손에서 아직 떠나지 않았을 때
 		
 	//if (Exploded) this->Destroy();
 	if (Exploded)
 	{
 		this->SetActorHiddenInGame(true);
+		if (ThrowingWeaponSoundData->ExprosionSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->ExprosionSound, GetActorLocation());
 
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()	
 			{
 				this->Destroy();
 			}, 10.f, false);

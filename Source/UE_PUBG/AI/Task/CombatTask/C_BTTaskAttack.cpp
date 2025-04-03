@@ -25,35 +25,39 @@ void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
+	AC_EnemyAIController* EnemyAIController = Cast<AC_EnemyAIController>(OwnerComp.GetAIOwner());
+	if (!IsValid(EnemyAIController)) FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	
+	AC_Enemy* Enemy = Cast<AC_Enemy>(EnemyAIController->GetPawn());
+	if (!IsValid(Enemy)) FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+
+	AC_Weapon* CurrentAttackingWeapon = Enemy->GetEquippedComponent()->GetCurWeapon();
+	if (!IsValid(CurrentAttackingWeapon)) FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+
 	// 지속적으로 몇 초간 현재 무기로 공격한다고 하면 TickTask 사용
-	if (!CurrentAttackingWeapon->ExecuteAIAttackTickTask(OwnerBehaviorComponent->GetTargetCharacter(), DeltaSeconds))
+	if (!CurrentAttackingWeapon->ExecuteAIAttackTickTask(EnemyAIController->GetBehaviorComponent()->GetTargetCharacter(), DeltaSeconds))
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 }
 
 EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
-
-	// First initialization
-	if (!IsValid(OwnerEnemy))
+	
+	AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
+	if (!IsValid(Controller))
 	{
-		AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
-		if (!IsValid(Controller))
-		{
-			UC_Util::Print("From BTTaskAttack::ExecuteTask : Controller Casting failed!", FColor::Red, 10.f);
-			return EBTNodeResult::Failed;
-		}
-
-		OwnerEnemy = Cast<AC_Enemy>(Controller->GetPawn());
-		if (!OwnerEnemy)
-		{
-			UC_Util::Print("From BTTaskAttack::ExecuteTask : Enemy Actor Casting failed!", FColor::Red, 10.f);
-			return EBTNodeResult::Failed;
-		}
-
-		OwnerBehaviorComponent = Controller->GetBehaviorComponent();
+		UC_Util::Print("From BTTaskAttack::ExecuteTask : Controller Casting failed!", FColor::Red, 10.f);
+		return EBTNodeResult::Failed;
 	}
-
+	
+	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(Controller->GetPawn());
+	if (!OwnerEnemy)
+	{
+		UC_Util::Print("From BTTaskAttack::ExecuteTask : Enemy Actor Casting failed!", FColor::Red, 10.f);
+		return EBTNodeResult::Failed;
+	}
+	
+	UC_BehaviorComponent* OwnerBehaviorComponent = Controller->GetBehaviorComponent();
 	UC_EquippedComponent* EnemyEquippedComponent = OwnerEnemy->GetEquippedComponent(); 
 
 	// 무기를 들고 있지 않은 상황
@@ -71,9 +75,7 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 		return EBTNodeResult::Failed;
 	}
 
-	// CurrentAttackingWeapon 초기화
-	CurrentAttackingWeapon = EnemyEquippedComponent->GetCurWeapon();
-
+	AC_Weapon* CurrentAttackingWeapon = EnemyEquippedComponent->GetCurWeapon();
 	bool AttackSucceeded = CurrentAttackingWeapon->ExecuteAIAttack(TargetCharacter);
 
 	if (AttackSucceeded)	UC_Util::Print("Attack Succeeded", FColor::Red, 10.f);	

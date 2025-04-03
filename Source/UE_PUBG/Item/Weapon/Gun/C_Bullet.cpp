@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Weapon/Gun/C_Bullet.h"
@@ -29,7 +29,6 @@ AC_Bullet::AC_Bullet()
 	BulletProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("BulletProjectileMovement");
 	BulletProjectileMovement->MaxSpeed = 620 * 100.0f;
 	BulletProjectileMovement->ProjectileGravityScale = 1.0;
-
 	BulletProjectileMovement->OnProjectileStop.AddDynamic(this, &AC_Bullet::OnProjectileStop);
 }
 
@@ -55,6 +54,7 @@ void AC_Bullet::BeginPlay()
 		//UC_Util::Print("Found Mesh");
 		
 	}
+	InitializeItem(ItemCode);
 	//DeactivateInstance();
 		
 }
@@ -64,7 +64,23 @@ void AC_Bullet::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	CalculateTravelDistanceAndDeactivate(DeltaTime);
 
+	///adsdasdsadsadsadw
+}
 
+void AC_Bullet::InitializeItem(FName NewItemCode)
+{
+	static const FString ContextString(TEXT("Sound Lookup"));
+	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 BulletImpactSoundData 정의해 주기. -> FiredBullet(실제 총알)은 ItemManager에서 안 할 수도.
+	UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_Bullet_Impact_Sound_Data.DT_Bullet_Impact_Sound_Data"));
+
+	if (ItemDataTable)
+	{
+		const FBulletImpactSoundData* ItemData = ItemDataTable->FindRow<FBulletImpactSoundData>(ItemCode, ContextString);
+		if (ItemData)
+		{
+			BulletImpactSoundData = ItemData;  // 원본 참조 저장
+		}
+	}
 }
 
 void AC_Bullet::DeactivateInstance()
@@ -265,6 +281,9 @@ void AC_Bullet::OnProjectileStop(const FHitResult& ImpactResult)
 {
 	AC_BasicCharacter* HittedCharacter = Cast<AC_BasicCharacter>(ImpactResult.GetActor());
 	// 피격판정된 Actor가 캐릭터가 아닐 때
+
+	PlaySound(ImpactResult);
+
 	if (!HittedCharacter) return;
 
 	FName HittedBoneName = ImpactResult.BoneName;
@@ -275,4 +294,122 @@ void AC_Bullet::OnProjectileStop(const FHitResult& ImpactResult)
 
 	HittedCharacter->GetStatComponent()->TakeDamage(TotalDamage, HittedBoneName, OwnerCharacter);
 	HittedCharacter->ActivateBloodParticle(ImpactResult.Location);
+}
+
+void AC_Bullet::PlaySound(const FHitResult& ImpactResult)
+{
+
+	UC_Util::Print(ImpactResult.GetActor());
+
+	//if (!ImpactResult.PhysMaterial.IsValid())
+	//{
+	//	UC_Util::Print("PhysMaterial is NULL!");
+	//	return;
+	//}
+
+	// 충돌이 실제로 발생했는지 확인
+	if (!ImpactResult.bBlockingHit)
+	{
+		UC_Util::Print("ImpactResult is not a blocking hit!");
+		return;
+	}
+
+	EPhysicalSurface SurfaceType = SurfaceType_Default;
+
+	// ImpactResult.PhysMaterial이 있는지 확인
+	if (!ImpactResult.PhysMaterial.IsValid())
+	{
+		UC_Util::Print("PhysMaterial is NULL! Trying to fetch manually...");
+
+		UPhysicalMaterial* PhysMaterial = nullptr;
+		if (ImpactResult.Component.IsValid())
+		{
+			UMaterialInterface* Material = ImpactResult.Component->GetMaterial(0);
+			if (Material)
+			{
+				PhysMaterial = Material->GetPhysicalMaterial();
+			}
+		}
+
+		SurfaceType = (PhysMaterial) ? static_cast<EPhysicalSurface>(PhysMaterial->SurfaceType) : SurfaceType_Default;
+		UC_Util::Print("SurfaceType (Manual Fetch): " + FString::FromInt(SurfaceType));
+	}
+	else
+	{
+		SurfaceType = UGameplayStatics::GetSurfaceType(ImpactResult);
+		UC_Util::Print("SurfaceType: " + FString::FromInt(SurfaceType));
+	}
+
+	//EPhysicalSurface SurfaceType = UGameplayStatics::GetSurfaceType(ImpactResult);
+	//EPhysicalSurface SurfaceType = ImpactResult.GetComponent()->GetMaterial(0)->GetPhysicalMaterial()->SurfaceType;
+
+	if (!BulletImpactSoundData) 
+	{
+		UC_Util::Print("BulletImpactSoundData Is Nullptr!");
+		return; 
+	}
+
+	int32 RandomIndex = 0;
+
+	UC_Util::Print("PlaySound");
+	UC_Util::Print(SurfaceType);
+
+	switch (SurfaceType)
+	{
+	case SurfaceType_Default:
+		UC_Util::Print("PlaySound_Default, Play Sound Ground");
+
+		UGameplayStatics::PlaySoundAtLocation(this, BulletImpactSoundData->ImpactGround_01, ImpactResult.ImpactPoint);
+
+		break;
+	case SurfaceType1: // Body
+		UC_Util::Print("PlaySound_Body");
+
+		UGameplayStatics::PlaySoundAtLocation(this, BulletImpactSoundData->ImpactBody_01, ImpactResult.ImpactPoint);
+		break;
+	case SurfaceType2: //Helmet
+		UC_Util::Print("PlaySound_Helmet");
+
+		UGameplayStatics::PlaySoundAtLocation(this, BulletImpactSoundData->ImpactBody_01, ImpactResult.ImpactPoint);
+		break;
+	case SurfaceType3: // Vest
+		UC_Util::Print("PlaySound_Vest");
+
+		UGameplayStatics::PlaySoundAtLocation(this, BulletImpactSoundData->ImpactBody_01, ImpactResult.ImpactPoint);
+		break;
+	case SurfaceType4: // Wood
+		UC_Util::Print("PlaySound_Wood");
+
+		UGameplayStatics::PlaySoundAtLocation(this, BulletImpactSoundData->ImpactWood_01, ImpactResult.ImpactPoint);
+		break;
+	case SurfaceType5: // Concrete
+		UC_Util::Print("PlaySound_Concrete");
+
+		UGameplayStatics::PlaySoundAtLocation(this, BulletImpactSoundData->ImpactConcrete_01, ImpactResult.ImpactPoint);
+		break;
+	case SurfaceType6: // Metal
+		UC_Util::Print("PlaySound_Metal");
+
+		UGameplayStatics::PlaySoundAtLocation(this, BulletImpactSoundData->ImpactMetal_01, ImpactResult.ImpactPoint);
+		break;
+	case SurfaceType7: // Ground
+		UC_Util::Print("PlaySound_Ground");
+
+		UGameplayStatics::PlaySoundAtLocation(this, BulletImpactSoundData->ImpactGround_01, ImpactResult.ImpactPoint);
+		break;
+	case SurfaceType8: // Fly
+		UC_Util::Print("PlaySound_Fly");
+
+		UGameplayStatics::PlaySoundAtLocation(this, BulletImpactSoundData->ImpactFly_01, ImpactResult.ImpactPoint);
+		break;
+	case SurfaceType9: // NONE
+		break;
+	case SurfaceType10:
+		break;
+	case SurfaceType11:
+		break;
+
+	default:
+		break;
+	}
 }

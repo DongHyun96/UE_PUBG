@@ -22,5 +22,20 @@ public:
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+private:
+	
+	/// <summary>
+	/// 현재 OwnerEnemy가 NavMesh 위에 있는지 조사 
+	/// </summary>
+	bool IsAgentOnNavMesh(AActor* Agent);
+
+private:
+
+	// NavMesh를 벗어나서 새로이 근처의 Nav Mesh로 이동중인지 파악
+	// bool bHasMoveToNearestNavMeshStarted{};
+
+private:
+	
+	class UNavigationSystemV1* NavSystem{};
 	
 };

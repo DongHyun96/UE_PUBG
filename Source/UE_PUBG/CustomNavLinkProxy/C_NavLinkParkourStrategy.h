@@ -16,5 +16,5 @@ class UE_PUBG_API UC_NavLinkParkourStrategy : public UObject, public II_NavLinkP
 	GENERATED_BODY()
 	
 private:
-	bool ExecuteStartPointAction(AC_CustomNavLinkProxy* CustomNavLinkProxy, AC_Enemy* EnemyAgent, const FVector& StartPoint) override;
+	bool ExecuteStartPointAction(AC_CustomNavLinkProxy* CustomNavLinkProxy, AC_Enemy* EnemyAgent, const FVector& StartPoint, const EDirection& Direction) override;
 };

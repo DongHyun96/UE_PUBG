@@ -187,7 +187,7 @@ void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVect
 		// 정확한 처리를 위해서 Enemy StartPoint로 위치 지정 -> TODO : StartPoint 위치말고 더 정확한 Strategy 위치 지정을 두어야 할 수도 있음
 		Enemy->SetActorBottomLocation(StartLocation, ETeleportType::ResetPhysics);
 		
-		LinkActionStrategies[DirectionActionStrategies[CurDirection]]->ExecuteStartPointAction(this, Enemy, StartLocation);
+		LinkActionStrategies[DirectionActionStrategies[CurDirection]]->ExecuteStartPointAction(this, Enemy, StartLocation, CurDirection);
 	}
 }
 

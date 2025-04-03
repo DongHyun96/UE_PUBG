@@ -135,11 +135,6 @@ float AC_BasicCharacter::PlayAnimMontage(UAnimMontage* AnimMontage, float InPlay
 /// <param name="SweepResult"></param>
 void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
-
-	FString TheFloatStr = FString::SanitizeFloat(this->InvenComponent->GetCurVolume());
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
-
 	HandleOverlapBegin(OtherActor);
 }
 
@@ -199,6 +194,9 @@ void AC_BasicCharacter::CharacterDead()
 	//GetMesh()->UpdateComponentToWorld();
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_BasicCharacter::EnableRagdoll, 0.1f, false);
+
+	// 이 캐릭터가 TargetCharacter로 잡혀있는 Enemy에 대해 Delegate 호출 처리를 해줌
+	if (Delegate_OnCharacterDead.IsBound()) Delegate_OnCharacterDead.Broadcast(this);
 }
 
 void AC_BasicCharacter::EnableRagdoll()

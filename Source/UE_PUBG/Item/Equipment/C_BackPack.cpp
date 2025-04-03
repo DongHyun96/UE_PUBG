@@ -4,10 +4,12 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_InvenSystem.h"
+#include "InvenUI/C_InventoryUIWidget.h"
 #include "Components/SphereComponent.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Utility/C_Util.h"
-#include "Character/Component/C_InvenComponent.h"
 #include "HUD/C_ArmorInfoWidget.h"
 #include "HUD/C_HUDWidget.h"
 
@@ -234,7 +236,7 @@ bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character,int32 InStack)
 	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
 
 	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f;// +InvenComp->CheckBackPackVolume(this->GetLevel());//TODO : 갑빠가 더해주는 Volume 추가해야함.
+	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel()) + InvenComp->GetVestVolume();
 
 	if (curVolume > preMaxVolume) return false;
 
@@ -270,7 +272,7 @@ bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
 
 	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel()) + InvenComp->GetVestVolume();//갑빠가 더해주는 Volume 추가해야함.
+	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel()) + InvenComp->GetVestVolume();
 
 	if (curVolume >= preMaxVolume) return false;
 

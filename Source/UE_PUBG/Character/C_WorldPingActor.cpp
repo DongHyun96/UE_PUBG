@@ -3,6 +3,9 @@
 
 #include "Character/C_WorldPingActor.h"
 
+#include "C_Enemy.h"
+#include "AI/C_BehaviorComponent.h"
+#include "AI/C_EnemyAIController.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Components/WidgetComponent.h"
 #include "Character/C_Player.h"
@@ -32,11 +35,20 @@ void AC_WorldPingActor::Tick(float DeltaTime)
 	HandleUpdateWorldPingScale();
 }
 
-bool AC_WorldPingActor::SpawnPingActorToWorld(FVector SpawnPos)
+bool AC_WorldPingActor::SpawnPingActorToWorld(FVector SpawnLocation)
 {
 	PingWidgetComponent->SetVisibility(true);
 
-	this->SetActorLocation(SpawnPos);
+	this->SetActorLocation(SpawnLocation);
+
+	// TODO : 이 라인 지우기 (For Testing)
+	if (!GAMESCENE_MANAGER->GetEnemies().IsEmpty())
+	{
+		UC_BehaviorComponent* FirstEnemyBehaviorComponent = GAMESCENE_MANAGER->GetEnemies()[0]->GetEnemyAIController()->GetBehaviorComponent(); 
+		FirstEnemyBehaviorComponent->SetBasicTargetLocation(SpawnLocation);
+		FirstEnemyBehaviorComponent->SetServiceType(EServiceType::IDLE);
+		FirstEnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
+	}
 
 	return true;
 }

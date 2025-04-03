@@ -15,23 +15,36 @@ class UE_PUBG_API UC_InventoryUIWidget : public UC_CustomUserWidget
 	GENERATED_BODY()
 public:
 
-
 	void SetVisibility(ESlateVisibility InVisibility) override;
 
 	void SetOwnerPlayer(AC_Player* InOwnerPlayer) override;
 
-	//void SetWidgetsOwner(AC_BasicCharacter* Character);
-
+	/// <summary>
+	/// 힐템 사용시 Left to Right Progress Bar로 사용 진행도를 시각화.
+	/// </summary>
+	/// <param name="Character"></param>
 	UFUNCTION(BlueprintCallable)
 	void UpdateVolumeBar(AC_BasicCharacter* Character);
 
+	/// <summary>
+	/// InvenUI를 전체적으로 Update.
+	/// </summary>
 	void UpdateWidget();
 
+	/// <summary>
+	/// AroundPanel을 Update
+	/// </summary>
 	void UpdateAroundItemPanelWidget();
 
+	/// <summary>
+	/// InventoryPanel을 Update
+	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void UpdateInventroyItemPanelWidget();
 
+	/// <summary>
+	/// EquipmentPanel을 update
+	/// </summary>
 	void UpdateEquipmentItemPanelWidget();
 
 	/// <summary>
@@ -46,6 +59,10 @@ public:
 	/// </summary>
 	void CloseDivideItemWidget();
 
+	/// <summary>
+	/// 플레이어가 근처의 아이템과 멀어져서 더 이상 줍는게 안되는 상태가 되면 AroundItemList에서 더 이상 안보이도록 제거하는 함수.
+	/// </summary>
+	/// <param name="InItem"></param>
 	void RemoveItemInList(AC_Item* InItem);
 public:
 	bool GetIsDragging() { return bIsDragging; }
@@ -76,22 +93,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UC_EquipmentPanelWdiget* EquipmentPanel = nullptr;
 
-	//EquipWidget
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	//class UC_GunSlotWidget* MainGunSlot = nullptr;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	//UC_GunSlotWidget* SubGunSlot = nullptr;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	//class UC_MeleeWeaponSlotWidget* MeleeSlot = nullptr;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	//class UC_ThrowableWeaponSlotWidget* ThrowableSlot = nullptr;
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	//class UC_EquipmentSlotWidget* BackPackSlot = nullptr;
-
 	/// <summary>
 	/// 현재 사용중인 용량(아이템의 Volume의 합)
 	/// </summary>
@@ -106,16 +107,17 @@ protected:
 
 	bool bIsDragging = false;
 
+	/// <summary>
+	/// 사용중인 힐템.
+	/// </summary>
 	AC_Item* UsingItem = nullptr;
+
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UC_BasicDivideItemPanelWidget* DivideItemAroundDropWidget = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UC_BasicDivideItemPanelWidget* DivideItemInventoryDropWidget = nullptr;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	//class UC_BasicDivideItemPanelWidget* DivideItemPickUpWidget = nullptr;
 };
 
 

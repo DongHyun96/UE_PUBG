@@ -354,19 +354,19 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 			CollisionParams
 		);
 
-	FVector WorldPingPos = (HasHit) ? HitResult.ImpactPoint :
+	FVector WorldPingLocation = (HasHit) ? HitResult.ImpactPoint :
 		FVector(-WorldPingPos2D.Y, WorldPingPos2D.X, FIXED_LANDSCAPE_HEIGHT);
 
 	// UC_Util::Print("Picked world ping pos : " + WorldPingPos.ToString(), FColor::MakeRandomColor(), 10.f);
 	
 	// Spawn World ping
-	OwnerPlayer->GetPingSystemComponent()->SpawnWorldPingActor(WorldPingPos);
+	OwnerPlayer->GetPingSystemComponent()->SpawnWorldPingActor(WorldPingLocation);
 
 	// Spawn MiniMap ping
-	OwnerPlayer->GetHUDWidget()->GetMiniMapWidget()->SpawnPingImage(WorldPingPos);
+	OwnerPlayer->GetHUDWidget()->GetMiniMapWidget()->SpawnPingImage(WorldPingLocation);
 
 	// Spawn Compass bar ping
-	OwnerPlayer->GetHUDWidget()->SpawnCompassBarPingMarker(WorldPingPos);
+	OwnerPlayer->GetHUDWidget()->SpawnCompassBarPingMarker(WorldPingLocation);
 
 	return true;
 }

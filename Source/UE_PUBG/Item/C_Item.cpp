@@ -44,9 +44,8 @@ void AC_Item::Tick(float DeltaTime)
 void AC_Item::InitializeItem(FName NewItemCode)
 {
 	static const FString ContextString(TEXT("Item Lookup"));
-
 	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 ItemDataRef 정의해 주기.
-	UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/DB_Item.DB_Item"));
+	UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_Item.DT_Item"));
 
 	if (ItemDataTable)
 	{
@@ -65,7 +64,10 @@ void AC_Item::DetachItem()
 	
 
 	//후에 라인 트레이스를 사용해서 바꿔주기.
-	SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
+	//SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
+	DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+	this->SetActorLocation(GetGroundLocation(OwnerCharacter) + RootComponent->Bounds.BoxExtent.Z);
+
 	SetOwnerCharacter(nullptr);
 	SetActorRotation(FRotator(0.f, 0.f, -90.f));
 
@@ -74,7 +76,6 @@ void AC_Item::DetachItem()
 	SetActorEnableCollision(true);
 	
 	
-	DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 
 	UC_Util::Print("Check");
 }

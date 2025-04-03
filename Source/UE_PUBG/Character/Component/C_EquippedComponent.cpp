@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_BasicCharacter.h"
@@ -15,6 +15,7 @@
 
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_AmmoWidget.h"
+#include "InvenUI/BasicItemSlot/WeaponSlot/C_ThrowableWeaponSlotWidget.h"
 
 #include "Utility/C_Util.h"
 
@@ -87,7 +88,7 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
 
     Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
-
+    Weapons[InSlot]->SetActorHiddenInGame(true);
     //충돌체 켜주기, 1117 상연, 근접무기는 장착만 해도 보이는 상태.
     if (InSlot == EWeaponSlot::MELEE_WEAPON)
         Weapons[InSlot]->SetActorHiddenInGame(false);
@@ -173,9 +174,9 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
             EThrowableType ThrowableTypeTemp = ThrowingWeapon->GetThrowableType();
             while (++ThrowableTypeTemp != ThrowingWeapon->GetThrowableType())
             {
-                FName NextWeaponName = AC_ThrowingWeapon::GetThrowableItemNameMap()[ThrowableTypeTemp];
-                AC_Item* NextThrowableItem = OwnerCharacter->GetInvenComponent()->FindMyItemByName(NextWeaponName);
-                AC_ThrowingWeapon* NextThrowableWeapon = Cast<AC_ThrowingWeapon>(NextThrowableItem);
+                FName               NextWeaponName      = AC_ThrowingWeapon::GetThrowableItemNameMap()[ThrowableTypeTemp];
+                AC_Item*            NextThrowableItem   = OwnerCharacter->GetInvenComponent()->FindMyItemByName(NextWeaponName);
+                AC_ThrowingWeapon*  NextThrowableWeapon = Cast<AC_ThrowingWeapon>(NextThrowableItem);
 
                 if (!NextThrowableWeapon) continue; // NextThrowable이 Inven에 없는 경우
 
@@ -191,7 +192,32 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
     }
 
     // NextWeaponType이 None이 아니고, 바꾸려는 무기 슬롯에 무기가 없을 때
-    if (NextWeaponType != EWeaponSlot::NONE && !IsValid(Weapons[NextWeaponType])) return false;
+    if (NextWeaponType != EWeaponSlot::NONE && !IsValid(Weapons[NextWeaponType]))
+    {
+        if (NextWeaponType != EWeaponSlot::THROWABLE_WEAPON) return false;
+        
+        // Throwable의 경우, 가방 확인해서 있으면 장착해서 Throwable로 바꾸기
+
+        // 새로운 투척류(가방에 있던)가 해당 슬롯에 장착되었는지 체크
+        bool bThrowableSetToTargetSlot{};  
+        
+        for (int i = 0; i < static_cast<int>(EThrowableType::MAX); ++i)
+        {
+            EThrowableType      ThrowableType  = static_cast<EThrowableType>(i);
+            FName               WeaponName     = AC_ThrowingWeapon::GetThrowableItemNameMap()[ThrowableType];
+            AC_Item*            ThrowableItem  = OwnerCharacter->GetInvenComponent()->FindMyItemByName(WeaponName);
+            AC_ThrowingWeapon*  ThrowingWeapon = Cast<AC_ThrowingWeapon>(ThrowableItem);
+
+            if (!ThrowingWeapon) continue;
+
+            ThrowingWeapon->MoveToSlot(OwnerCharacter, ThrowingWeapon->GetItemCurStack());
+            if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter)) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+
+            bThrowableSetToTargetSlot = true;
+            break;
+        }
+        if (!bThrowableSetToTargetSlot) return false;
+    }
 
     // 현재 무기를 착용중이지 않을 때 (UnArmed 상태), 또는 현재 슬롯에 장착된 무기가 없을 때 다음 무기 Draw만 재생
     if (CurWeaponType == EWeaponSlot::NONE || !IsValid(GetCurWeapon()))
@@ -280,8 +306,9 @@ bool UC_EquippedComponent::TryAttachCurWeaponToHolsterWithoutSheathMotion()
     GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
     OwnerCharacter->SetHandState(EHandState::UNARMED);
 
-    // 총기류 예외처리
-    if (AC_Gun* Gun = Cast<AC_Gun>(GetCurWeapon())) Gun->BackToMainCamera();
+    // Player 총기류 예외처리
+    if (IsValid(Cast<AC_Player>(OwnerCharacter))) if (AC_Gun* Gun = Cast<AC_Gun>(GetCurWeapon()))
+        Gun->BackToMainCamera();
 
     return true;
 }

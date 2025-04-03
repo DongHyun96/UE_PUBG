@@ -399,26 +399,28 @@ bool UC_ParkourComponent::CheckParkourFramework(FParkourDescriptor& CurParkourDe
 {
 	if ((bCheckLowAction) ? !CheckLowParkourTarget(CurParkourDesc) : !CheckHighParkourTarget(CurParkourDesc))
 	{
-		//UC_Util::Print("Failed Checking Parkour Target!", DebugMsgColor, 10.f);
+		/*FString str = "Failed Checking Parkour Target!";
+		str += bCheckLowAction ? " : LowAction" : " : HighAction";
+		UC_Util::Print(str, DebugMsgColor, 10.f);*/
 		return false;
 	}
 	if (!InitVerticalHitPositionsAndLandPos(CurParkourDesc))
 	{
-		//UC_Util::Print("Failed Initing VerticalHitPositions and landPos!", DebugMsgColor, 10.f);
+		// UC_Util::Print("Failed Initing VerticalHitPositions and landPos!", DebugMsgColor, 10.f);
 		return false;
 	}
 	if (!InitMustVaultOrMustMantle(CurParkourDesc))
 	{
-		//UC_Util::Print("Failed Initing Must Vault Or Must Mantle!", DebugMsgColor, 10.f);
+		// UC_Util::Print("Failed Initing Must Vault Or Must Mantle!", DebugMsgColor, 10.f);
 		return false;
 	}
 	if (!CheckSpaceForParkourAction(CurParkourDesc))
 	{
-		//UC_Util::Print("Failed Checking Space for Parkour Action!", DebugMsgColor, 10.f);
+		// UC_Util::Print("Failed Checking Space for Parkour Action!", DebugMsgColor, 10.f);
 		return false;
 	}
 
-	//UC_Util::Print("Parkour Framework checking succeeded!", DebugMsgColor, 10.f);
+	// UC_Util::Print("Parkour Framework checking succeeded!", DebugMsgColor, 10.f);
 
 	return true;
 }
@@ -572,14 +574,14 @@ bool UC_ParkourComponent::CheckSpaceForParkourAction(FParkourDescriptor& CurPark
 	// 무조건 Vaulting 처리해야 하는 경우 
 	if (CurParkourDesc.bMustVault) return CheckSpaceForVaulting(CurParkourDesc);
 
-	// TODO : Vaulting & Mantling 모두 가능한 상황 -> MustVaulting MustMantle 여기서도 체크할 것
+	// Vaulting & Mantling 모두 가능한 상황 -> MustVaulting MustMantle 여기서도 체크할 것
 	
 	bool CanMantle = CheckSpaceForMantling(CurParkourDesc);
 	bool CanVault = CheckSpaceForVaulting(CurParkourDesc);
 	
-	if (CanMantle && CanVault)			return true;
-	else if (!CanMantle && !CanVault)	return false;
-	else if (CanMantle) // Mantle 처리밖에 못할 때
+	if (CanMantle && CanVault)		return true;
+	if (!CanMantle && !CanVault)	return false;
+	if (CanMantle) // Mantle 처리밖에 못할 때
 	{
 		CurParkourDesc.bMustMantle = true;
 		CurParkourDesc.bMustVault  = false;
@@ -644,10 +646,14 @@ bool UC_ParkourComponent::CheckSpaceForMantling(const FParkourDescriptor& CurPar
 		CurParkourDesc.CollisionParams
 	);
 
-	DrawDebugBox(GetWorld(), StartLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Blue, true);
-	DrawDebugBox(GetWorld(), DestLocation,  BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Blue, true);
+	DrawDebugBox(GetWorld(), StartLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Cyan, true);
+	DrawDebugBox(GetWorld(), DestLocation,  BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Cyan, true);
 
-	if (HasHit) return false;
+	if (HasHit)
+	{
+		// UC_Util::Print("From CheckSpaceForMantling : Obstacle detected along the mantle path.", DebugMsgColor, 10.f);
+		return false;
+	}
 
 	// 도착 지점 위로 충분한 공간이 나오는지 검사
 	FVector BoxLocation	= CurParkourDesc.VerticalHitPositions[1] + FVector::UnitZ() * 100.f;

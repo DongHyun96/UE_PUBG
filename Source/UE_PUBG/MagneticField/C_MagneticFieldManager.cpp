@@ -28,6 +28,7 @@ AC_MagneticFieldManager::AC_MagneticFieldManager()
 void AC_MagneticFieldManager::BeginPlay()
 {
 	Super::BeginPlay();
+	SetIsHandleUpdateStateStarted(true); // TODO : 이 라인 지우기
 }
 
 void AC_MagneticFieldManager::Tick(float DeltaTime)
@@ -42,6 +43,13 @@ void AC_MagneticFieldManager::Tick(float DeltaTime)
 	HandleUpdateState(DeltaTime);
 
 	HandleDamagingCharacters(DeltaTime);
+}
+
+bool AC_MagneticFieldManager::IsInMainCircle(AC_BasicCharacter* Character) const
+{
+	FVector2D CharacterPos  = UC_Util::GetXY(Character->GetActorLocation());
+	FVector2D MainCirclePos = UC_Util::GetXY(MainCircle.MidLocation);
+	return FVector2D::Distance(CharacterPos, MainCirclePos) < MainCircle.Radius;
 }
 
 void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
@@ -59,7 +67,7 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 
 		// Enemy들 NextCircle random TargetLocation 잡아주기
 		for (AC_Enemy* Enemy : GAMESCENE_MANAGER->GetEnemies())
-			Enemy->GetTargetLocationSettingHelper()->TrySetRandomTargetLocationAtMagneticCircle(NextCircle);
+			Enemy->GetTargetLocationSettingHelper()->TrySetRandomInCircleTargetLocationAtMagneticCircle(NextCircle);
 
 		return;
 	case EMagneticFieldState::SHRINK:
@@ -135,11 +143,7 @@ void AC_MagneticFieldManager::HandleDamagingCharacters(const float& DeltaTime)
 
 		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
 		{
-			// FVector2D::Distan
-			FVector2D CharacterLocation  = FVector2D(Character->GetActorLocation().X, Character->GetActorLocation().Y);
-			FVector2D MainCircleLocation = FVector2D(MainCircle.MidLocation.X, MainCircle.MidLocation.Y);
-
-			if (FVector2D::Distance(CharacterLocation, MainCircleLocation) > MainCircle.Radius)
+			if (!IsInMainCircle(Character))
 			{
 				float DamageAmount = PhaseInfos[CurrentPhase].DamagePerSecond;
 				Character->GetStatComponent()->TakeDamage(DamageAmount, nullptr);

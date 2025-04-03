@@ -17,20 +17,37 @@
 #include "Item/Weapon/Gun/C_Gun.h"
 //#include "Item/ConsumableItem/C_ConsumableItem.h"
 #include "InvenUI/ItemBar/C_BasicItemBarWidget.h"
-#include "InvenUserInterface/C_ItemBarWidget.h"
+//#include "InvenUserInterface/C_ItemBarWidget.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 #include "Utility/C_Util.h"
 
 #include "HUD/C_InstructionWidget.h"
 
+const TMap<EConsumableItemType, FName> AC_ConsumableItem::ConsumableItemNameMap =
+{
+	{EConsumableItemType::MEDKIT,			"Item_Heal_MedKit_C"},
+	{EConsumableItemType::FIRST_AID_KIT,	"Item_Heal_FirstAid_C"},
+	{EConsumableItemType::BANDAGE,			"Item_Heal_Bandage_C"},
+	{EConsumableItemType::PAIN_KILLER,		"Item_Boost_PainKiller_C"},
+	{EConsumableItemType::ENERGY_DRINK,		"Item_Boost_EnergyDrink_C"},
+};
+
 AC_ConsumableItem::AC_ConsumableItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+
+	AudioComponent->bAutoActivate = false; //자동 실행 방지
 }
 
 void AC_ConsumableItem::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 }
 
 void AC_ConsumableItem::Tick(float DeltaTime)
@@ -62,19 +79,15 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 			for (auto& Pair : UsingMontageMap)
 			{
-				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) // 방해 받지 않았을 때
+				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) // 방해 받지 않았을 때 (즉, 활성화 Animation이 진행 중일 때)
 				{
-					
-					//LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
-					LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
-
+					if (Cast<AC_Player>(ItemUser)) LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
 					return;
 				}
 			}
 
 			// 방해를 받음
 			CancelActivating();
-
 			return;
 		}
 
@@ -104,22 +117,20 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		return;
 	case EConsumableItemState::USED:
 	{
-		if (AC_Player* Player = Cast<AC_Player>(ItemUser)) Player->GetHUDWidget()->OnConsumableUsed();
-
-		//LinkedItemBarWidget->SetPercent(0.f, UsageTime);
-		LinkedItemBarWidget->SetPercent(0.f, UsageTime);
-
 		ConsumableItemState = EConsumableItemState::IDLE;
 		
-		if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+		if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		{
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
-			if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
-				OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
+			LinkedItemBarWidget->SetPercent(0.f, UsageTime);
+			
+			Player->GetHUDWidget()->OnConsumableUsed();
+			Player->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
+			
+			Player->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
+			if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && Player->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
+				Player->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
 
-			//OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
-			OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
+			Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 		}
 		
 		if (ItemCurStack == 0)
@@ -136,22 +147,34 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 	}
 }
 
-//void AC_ConsumableItem::SetLinkedItemBarWidget(UC_ItemBarWidget* InItemBarWidget)
-//{
-//	LinkedItemBarWidget = InItemBarWidget;
-//
-//	//if (LinkedItemBarWidget)
-//	//{
-//	//	// 현재 진행 상태 동기화
-//	//	LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
-//	//}
-//}
-
 void AC_ConsumableItem::SetLinkedItemBarWidget(UC_BasicItemBarWidget* InItemBarWidget)
 {
 	LinkedItemBarWidget = InItemBarWidget;
 }
 
+void AC_ConsumableItem::InitializeItem(FName NewItemCode)
+{
+	Super::InitializeItem(NewItemCode);
+	static const FString ContextString(TEXT("HealItem Lookup"));
+
+	UDataTable* HealSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_HealingItemUsingSound.DT_HealingItemUsingSound"));
+
+	if (HealSoundDataTable)
+	{
+		const FHealItemSoundData* ItemData = HealSoundDataTable->FindRow<FHealItemSoundData>(ItemCode, ContextString);
+		if (ItemData)
+		{
+			UsingSoundData = ItemData;  // 원본 참조 저장
+			AudioComponent->SetSound(UsingSoundData->UsingSound);
+		}
+	}
+}
+
+FName AC_ConsumableItem::GetConsumableItemName(EConsumableItemType InConsumableItemType)
+{
+	if (InConsumableItemType == EConsumableItemType::MAX) return "";
+	return ConsumableItemNameMap[InConsumableItemType];
+}
 
 
 bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
@@ -174,6 +197,9 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 	// 사용 시작하기
 	ConsumableItemState = EConsumableItemState::ACTIVATING;
 
+	//사용 효과음 재생.
+	PlayUsingSound();
+	
 	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
 	{
 		//InvenUI에 현재 사용중인 아이템 설정. InvenUI UsingItem이 있을 때 Tick에서 visibility 조정하는 중
@@ -200,6 +226,9 @@ bool AC_ConsumableItem::CancelActivating()
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->OnCancelActivatingConsumableItem();
 
+	//사운드 중지.
+	StopUsingSound();
+
 	UAnimInstance* UserAnimInstance = ItemUser->GetMesh()->GetAnimInstance();
 
 	for (auto& Pair : UsingMontageMap)
@@ -218,22 +247,22 @@ bool AC_ConsumableItem::CancelActivating()
 
 	ItemUser->SetIsActivatingConsumableItem(false, nullptr);
 	
-	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
 	{
-		OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
-		if (OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
-		//OwnerPlayer->GetInvenSystem()->GetInvenUI()->InitWidget();
-		OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+		Player->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
+		if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && Player->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
+			Player->GetInvenSystem()->GetInvenUI()->SetVisibility(ESlateVisibility::Visible);
+		//Player->GetInvenSystem()->GetInvenUI()->InitWidget();
+		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 
-		OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
+		Player->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
+		
+		LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 	}
 
 	OnCancelActivating();
 
 	ConsumableItemState = EConsumableItemState::IDLE;
-	//LinkedItemBarWidget->SetPercent(0.f, UsageTime);
-	LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 
 	UsingTimer			= 0.f;
 	//ItemUser			= nullptr;
@@ -478,4 +507,25 @@ bool AC_ConsumableItem::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InS
 	return MoveToInven(Character, InStack);
 }
 
+void AC_ConsumableItem::PlayUsingSound()
+{
+	if (UsingSoundData->UsingSound && AudioComponent)
+	{
+		AudioComponent->Play();
+	}
+}
 
+void AC_ConsumableItem::StopUsingSound()
+{
+	if (UsingSoundData->UsingSound && AudioComponent)
+	{
+		AudioComponent->Stop();
+	}
+}
+
+bool AC_ConsumableItem::GetActivationProgressTimeRatio(float& OutRatio) const
+{
+	if (ConsumableItemState != EConsumableItemState::ACTIVATING) return false;
+	OutRatio = UsingTimer / UsageTime;
+	return true;
+}

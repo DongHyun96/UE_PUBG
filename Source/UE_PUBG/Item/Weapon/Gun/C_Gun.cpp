@@ -22,10 +22,6 @@
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
 
-//#include "Components/Image.h"
-//#include "Components/Widget.h"
-//#include "Components/CanvasPanelSlot.h"
-//#include "Components/PanelWidget.h"
 #include "Components/NamedSlotInterface.h"
 #include "Components/ShapeComponent.h"
 #include "Components/SceneComponent.h"
@@ -40,7 +36,6 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 
-//#include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 #include "Character/C_Enemy.h"
 
@@ -101,8 +96,8 @@ void AC_Gun::BeginPlay()
 		);
 	}
 	SetSightCameraSpringArmLocation(ScopeCameraLocations[EAttachmentNames::MAX]);
-
 }
+
 
 void AC_Gun::Tick(float DeltaTime)
 {
@@ -156,7 +151,7 @@ void AC_Gun::InitializeItem(FName NewItemCode)
 	Super::InitializeItem(NewItemCode);
 	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunDataRef 정의해 주기.
 	static const FString ContextString(TEXT("GunItem Lookup"));
-	UDataTable* GunDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/DT_GunData.DT_GunData"));
+	UDataTable* GunDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunData.DT_GunData"));
 
 	if (GunDataTable)
 	{
@@ -164,6 +159,18 @@ void AC_Gun::InitializeItem(FName NewItemCode)
 		if (GunData)
 		{
 			GunDataRef = GunData;  // 원본 참조 저장
+		}
+	}
+
+	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunSoundData 정의해 주기.
+	UDataTable* GunSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunSoundData.DT_GunSoundData"));
+
+	if (GunSoundDataTable)
+	{
+		const FGunSoundData* ItemData = GunSoundDataTable->FindRow<FGunSoundData>(ItemCode, ContextString);
+		if (ItemData)
+		{
+			GunSoundData = ItemData;  // 원본 참조 저장
 		}
 	}
 }
@@ -201,7 +208,7 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 			break;
 		default:
 			return false;
-			break;
+			break;	
 		}
 	}
 	else
@@ -333,7 +340,9 @@ bool AC_Gun::SetAimingPress()
 
 bool AC_Gun::BackToMainCamera()
 {
-
+	AC_Player* Player = Cast<AC_Player>(OwnerCharacter);
+	if (!IsValid(Player)) return false;
+	
 	AimSightCamera->SetActive(false);
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() != OwnerCharacter)
 	{
@@ -342,7 +351,7 @@ bool AC_Gun::BackToMainCamera()
 	OwnerCharacter->GetMesh()->UnHideBoneByName(FName("Head"));
 	OwnerCharacter->bUseControllerRotationYaw = false;
 	bIsAimDown = false;
-	Cast<AC_Player>(OwnerCharacter)->BackToMainCamera();
+	Player->BackToMainCamera();
 	if (IsValid(AttachedItem[EPartsName::SCOPE]))
 		AttachedItem[EPartsName::SCOPE]->UseMrbStrategy();
 	return true;
@@ -561,11 +570,12 @@ void AC_Gun::CheckBackPackLevelChange()
 {
 	AC_EquipableItem* curBackPack = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK];
 
-	if (curBackPack)
-	{
-		if(OwnerCharacter->GetEquippedComponent()->GetCurWeapon() != this)
-			AttachToHolster(OwnerCharacter->GetMesh());
-	}
+	//if (curBackPack)
+	//{
+	if(OwnerCharacter->GetEquippedComponent()->GetCurWeapon() != this)
+		AttachToHolster(OwnerCharacter->GetMesh());
+	
+
 	PrevBackPackLevel = OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel();
 
 }
@@ -763,6 +773,7 @@ bool AC_Gun::FireBullet()
 		if (HasHit)
 		{
 			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity, HitLocation);
+			if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
 			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
 			if (IsValid(MuzzleFlameEffectParticle))
 			{
@@ -785,6 +796,8 @@ bool AC_Gun::FireBullet()
 		else
 		{
 			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+			if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
+
 			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
 			if (IsValid(MuzzleFlameEffectParticle))
 			{
@@ -813,6 +826,7 @@ bool AC_Gun::FireBullet()
 		//	return true;
 	}
 	UC_Util::Print("No More Bullets in Pool");
+
 	return false;
 }
 
@@ -821,18 +835,23 @@ bool AC_Gun::ReloadBullet()
 	if (CurBulletCount == MaxBulletCount) return false;
 	int LeftAmmoCount = 0;
 	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
+	UC_InvenComponent* InvenComp = OwnerCharacter->GetInvenComponent();
 	if (IsValid(CurBullet))
 	{
-		LeftAmmoCount = CurBullet->GetItemCurStack();
+		//LeftAmmoCount = CurBullet->GetItemCurStack();
+		LeftAmmoCount = InvenComp->GetTotalStackByItemName(CurBullet->GetItemCode());
 	}
 
 	OwnerCharacter->SetIsReloadingBullet(false);
 	int BeforeChangeAmmo = CurBulletCount;
+
 	UC_Util::Print(BeforeChangeAmmo);
+
 	int RemainAmmo;
 	int ChangedStack;
 	//AC_Item_Bullet* CarryingBullet;
 	AC_SR* CurrentSR = Cast<AC_SR>(this);
+
 	if (IsValid(CurrentSR))
 		CurrentSR->SetIsReloadingSR(false);
 	if (LeftAmmoCount == 0) return false;
@@ -841,10 +860,10 @@ bool AC_Gun::ReloadBullet()
 
 	RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
 
-	
 	ChangedStack = LeftAmmoCount - RemainAmmo;
 		
-	CurBullet->SetItemStack(ChangedStack);
+	InvenComp->DecreaseItemStack(CurBullet->GetItemCode(), RemainAmmo);
+	//CurBullet->SetItemStack(ChangedStack); //TODO : InvenComponent에서 한번에 조절하는 기능 만들기.
 	UC_Util::Print("Reload Bullet");
 	//장전한 총알 갯수만큼 curVolume 조절
 	OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CurBullet->GetItemDatas()->ItemVolume));
@@ -935,8 +954,8 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 			FVector2D ImageSize = ImageSlot->GetSize();
 			
 			RandomPoint = FMath::RandPointInCircle(ImageSize.X * 0.5f * 0.373f);
-			UC_Util::Print(ImageSize.X);
-			UC_Util::Print(ImageSize.Y);
+			//UC_Util::Print(ImageSize.X);
+			//UC_Util::Print(ImageSize.Y);
 
 		}
 		else
@@ -1219,6 +1238,7 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid InTargetCharacter", FColor::MakeRandomColor(), 10.f);
 		return false;
 	}
+	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false;
 
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
 	if (!OnScreen)
@@ -1237,14 +1257,14 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 
 	//UC_Util::Print(FireLocation);
 	//UC_Util::Print(FireDirection);
-	AC_Enemy* OwnerPlayer = Cast<AC_Enemy>(OwnerCharacter); // TODO : OwnerPlayer -> Enemy도 총을 쏠 수 있으니 예외처리 시켜야 함
-	if (!IsValid(OwnerPlayer))
+	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter); 
+	if (!IsValid(OwnerEnemy))
 	{
 		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid OwnerEnemy", FColor::MakeRandomColor(), 10.f);
 		return false;
 	}
 	bool ApplyGravity = true;
-	for (auto& Bullet : OwnerPlayer->GetBullets())
+	for (auto& Bullet : OwnerEnemy->GetBullets())
 	{
 		if (Bullet->GetIsActive())
 		{

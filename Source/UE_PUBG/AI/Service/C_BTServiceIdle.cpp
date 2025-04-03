@@ -20,7 +20,7 @@ void UC_BTServiceIdle::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
+	/*AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
 
 	if (!IsValid(Controller))
 	{
@@ -35,6 +35,7 @@ void UC_BTServiceIdle::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 		UC_Util::Print("From BTService Idle TickNode : BehaviorComponent casting failed!", FColor::Red, 10.f);
 		return;
 	}
+	*/
 
 	// TODO : Idle Service 관련 처리
 }

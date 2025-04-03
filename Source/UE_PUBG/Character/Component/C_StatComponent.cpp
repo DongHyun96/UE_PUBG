@@ -92,12 +92,14 @@ void UC_StatComponent::SetCurHP(const float& InCurHP)
 	CurHP = InCurHP;
 
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
+	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetHPBar()->SetPercent(CurHP / MAX_HP);
 }
 
 void UC_StatComponent::SetCurBoosting(const float& InCurBoosting)
 {
 	CurBoosting = InCurBoosting;
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
+	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetBoostBar()->SetPercent(CurBoosting / MAX_BOOSTING);
 }
 
 bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* DamageCauser)
@@ -194,7 +196,7 @@ bool UC_StatComponent::ApplyHeal(const float& HealAmount)
 	CurHP = FMath::Min(CurHP + HealAmount, MAX_HP);
 	
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
-
+	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetHPBar()->SetPercent(CurHP / MAX_HP);
 	return true;
 }
 
@@ -206,7 +208,7 @@ bool UC_StatComponent::AddBoost(const float& BoostAmount)
 	CurBoosting = FMath::Min(CurBoosting + BoostAmount, MAX_BOOSTING);
 
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
-
+	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetBoostBar()->SetPercent(CurBoosting / MAX_BOOSTING);
 	return true;
 }
 
@@ -240,8 +242,9 @@ void UC_StatComponent::UpdateBoostEffect(const float& DeltaTime)
 	
 	CurBoosting -= BOOST_ONE_BLOCK_AMOUNT;
 	if (CurBoosting <= 0.5f) CurBoosting = 0.f;
-
+	
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
+	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetBoostBar()->SetPercent(CurBoosting / MAX_BOOSTING);	
 }
 
 void UC_StatComponent::HandleOxygenExhausted(const float& DeltaTime)

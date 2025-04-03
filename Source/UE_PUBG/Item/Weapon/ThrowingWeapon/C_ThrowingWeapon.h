@@ -30,6 +30,20 @@ enum class EThrowableType : uint8
 	MAX
 };
 
+USTRUCT(BlueprintType)
+struct FThrowingWeaponSoundData : public FTableRowBase
+{
+	GENERATED_BODY()
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* PinPullSound = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* CookingSound = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ExprosionSound = nullptr;
+};
+
 /// <summary>
 /// ThrowableType에 대한 Iterator 구현을 위한 연산자 오버로딩 (Prefix (++Type))
 /// </summary>
@@ -77,6 +91,9 @@ public:
 	bool AttachToHolster(class USceneComponent* InParent) override;
 
 	bool AttachToHand(class USceneComponent* InParent) override;
+
+	void InitializeItem(FName NewItemCode) override;
+
 
 public:
 
@@ -190,6 +207,8 @@ public: // Getters & Setters
 	float GetSpeed() const { return Speed; }
 	static float GetProjectileRadius() { return PROJECTILE_RADIUS; }
 	//EThrowableType GetThrowableType() const { return ThrowableType; }
+
+	const FThrowingWeaponSoundData* GetThrowingWeaponSoundData() { return ThrowingWeaponSoundData; }
 
 public:
 
@@ -383,6 +402,8 @@ private:
 	// 현 Throwable 종류에 따른 AI Attack 전략
 	class II_AIThrowableAttackStrategy* AIAttackStrategy{};
 
+protected:
+	const FThrowingWeaponSoundData* ThrowingWeaponSoundData = nullptr;
 };
 
 

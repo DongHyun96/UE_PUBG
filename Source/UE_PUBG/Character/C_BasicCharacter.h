@@ -12,6 +12,8 @@
 
 DECLARE_MULTICAST_DELEGATE(FDele_PoseTransitionFin);
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FDele_CharacterDead, AC_BasicCharacter*);
+
 UENUM(BlueprintType)
 enum class EMainState : uint8
 {
@@ -354,6 +356,9 @@ protected: // Sprint walk state
 public:
 	// OnTransitionFinish에서 호출될 Multicast Delegate
 	FDele_PoseTransitionFin Delegate_OnPoseTransitionFin;
+
+	// CharacterDead에서 호출될 Multicast Delegate
+	FDele_CharacterDead Delegate_OnCharacterDead;
 
 protected:
 

@@ -509,7 +509,11 @@ void UC_InputComponent::OnXKey()
 	// For testing
 	//Player->GetParkourComponent()->Vault();
 	
-	Player->GetStatComponent()->TakeDamage(10.f, Player);
+	Player->GetStatComponent()->TakeDamage(10.f, nullptr);
+	
+	if (!GAMESCENE_MANAGER->GetEnemies().IsEmpty())
+		GAMESCENE_MANAGER->GetEnemies()[0]->GetStatComponent()->TakeDamage(10.f, nullptr);
+	
 	Player->GetEquippedComponent()->ToggleArmed();
 }
 
@@ -628,7 +632,7 @@ void UC_InputComponent::OnFKey()
 	if (Player->GetCurOutLinedItem())
 	{
 		Player->GetCurOutLinedItem()->Interaction(Player);
-		Player->GetInvenSystem()->GetInvenUI()->UpdateInventroyItemPanelWidget();
+		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 	}
 		
 	// TODO : Consumable Item 사용 중이라면 취소 시키기

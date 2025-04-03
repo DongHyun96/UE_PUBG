@@ -14,8 +14,9 @@
 #include "Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
+#include "Utility/C_Util.h"
 
-
+const float AC_Enemy::JUMP_VELOCITYZ_ORIGIN = 420.f;
 
 AC_Enemy::AC_Enemy()
 {
@@ -61,6 +62,14 @@ void AC_Enemy::Tick(float DeltaSeconds)
 	//float DistanceToPlayer = FVector::Distance(GAMESCENE_MANAGER->GetPlayer()->GetActorLocation(), this->GetActorLocation());
 	//UC_Util::Print(DistanceToPlayer * 0.01f);
 	// UC_Util::Print(GetVelocity().Size2D());
+}
+
+void AC_Enemy::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	// Jump Velocity 초기화
+	GetCharacterMovement()->JumpZVelocity = JUMP_VELOCITYZ_ORIGIN; 
 }
 
 bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
@@ -154,14 +163,6 @@ AC_EnemyAIController* AC_Enemy::GetEnemyAIController() const
 void AC_Enemy::SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType)
 {
 	// 실제 CapsuleComponent의 HalfHeight는 88 -> but PIE에서 ActorLocation Z는 90이 나와서 90 상수값 적용
-	static const float ACTOR_HALF_Z = 90.f; 
+	static const float ACTOR_HALF_Z = 90.f;
 	SetActorLocation(BottomLocation + FVector::UnitZ() * ACTOR_HALF_Z, false, nullptr, TeleportType);	
 }
-
-void AC_Enemy::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
-{
-	Super::UpdateMaxWalkSpeed(MovementVector);
-}
-
-
-

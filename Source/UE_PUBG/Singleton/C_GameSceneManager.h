@@ -48,6 +48,8 @@ private:
 	
 public: // Getters and setters
 
+	static UC_GameSceneManager* GetInstance(UWorld* World) { return World->GetSubsystem<UC_GameSceneManager>(); }
+
 	class AC_Player* GetPlayer() const { return Player; }
 	
 	TArray<class AC_Enemy*>& GetEnemies() { return Enemies; }

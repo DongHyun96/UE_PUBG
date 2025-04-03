@@ -3,25 +3,32 @@
 
 #include "CustomNavLinkProxy/C_NavLinkJumpStrategy.h"
 
+#include "C_CustomNavLinkProxy.h"
 #include "Character/C_Enemy.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Utility/C_Util.h"
 
 bool UC_NavLinkJumpStrategy::ExecuteStartPointAction(AC_CustomNavLinkProxy* CustomNavLinkProxy, AC_Enemy* EnemyAgent,
-                                                     const FVector& StartPoint)
+                                                     const FVector& StartPoint, const EDirection& Direction)
 {
 	UC_Util::Print("Execute Jump", FColor::Red, 10.f);
 
-	// TODO : 점프하기 전 Enemy 회전 및 위치 잡아야하는지 확인
-
 	FTimerHandle TimerHandle{};
-
-	GetWorld()->GetTimerManager().SetTimer
+	EnemyAgent->GetWorld()->GetTimerManager().SetTimer
 	(
 		TimerHandle,
-		[EnemyAgent]() { EnemyAgent->Jump(); },
+		[CustomNavLinkProxy, EnemyAgent, Direction]()
+		{
+			float JumpVelocityZ = (CustomNavLinkProxy->IsUsingJumpDescriptorSettings()) ?
+									CustomNavLinkProxy->GetJumpVelocityZ(Direction) :
+									AC_Enemy::GetJumpVelocityZOrigin();
+			
+			EnemyAgent->GetCharacterMovement()->JumpZVelocity = JumpVelocityZ;
+			EnemyAgent->Jump();
+		},
 		0.1f,
 		false
 	);
-	// Enemy->Jump();
+	// EnemyAgent->Jump();
 	return true;
 }

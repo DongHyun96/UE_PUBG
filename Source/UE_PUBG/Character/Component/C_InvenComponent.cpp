@@ -3,11 +3,14 @@
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
+#include "Character/Component/C_InvenSystem.h"
+#include "Character/Component/C_EquippedComponent.h"
+
 #include "Item/C_Item.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Equipment/C_EquipableItem.h"
-#include "Character/Component/C_EquippedComponent.h"
+#include "InvenUI/C_InventoryUIWidget.h"
 #include "HUD/C_ArmorInfoWidget.h"
 #include "HUD/C_HUDWidget.h"
 
@@ -181,9 +184,9 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 	if (PrevSlotEquipItem)
 	{
 		PrevSlotEquipItem->DetachItem(); //장착 해제.
-
+		//PrevSlotEquipItem->DropItem(PrevSlotEquipItem->GetOwnerCharacter());
 		if (PrevSlotEquipItem->GetItemDatas()->ItemType == EItemTypes::BACKPACK)
-			MaxVolume -= CheckBackPackVolume(Cast<AC_BackPack>(PrevSlotEquipItem)->GetLevel()); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기.
+			MaxVolume -= CheckBackPackVolume(Cast<AC_BackPack>(PrevSlotEquipItem)->GetLevel());//TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기.
 		else if (PrevSlotEquipItem->GetItemDatas()->ItemType == EItemTypes::VEST)
 			MaxVolume -= 50.f;
 		//AddItemToAroundList(PrevSlotEquipItem);// TODO : Collision을 키고 끄는 방식으로 할 지 아니면 강제로 넣고 빼줄지 생각
@@ -292,15 +295,15 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 	if (MyItems.Contains(item->GetItemCode()))
 	{
 		// HandleItemStackOverflow가 정상적으로 처리되었는지 확인
-		if (!HandleItemStackOverflow(item)) return;
+		if (!HandleItemStackOverflow(item))
+		{
+			UC_Util::Print("HandleItemStackOverflow Is False!");
+			return;
+		}
 
-		CurVolume += item->GetAllVolume();
+		CurVolume += item->GetItemAllVolume();
 
-		// UI 업데이트
-		//if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
-		//	Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
-
-		// 원본 아이템 삭제
+		// 원본 아이템 삭제 TODO : 혹시 중복 삭제가 되는 경우가 생기는지 확인하기.
 		item->Destroy();
 	}
 	else
@@ -317,7 +320,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 		item->SetActorHiddenInGame(true);
 		item->SetActorEnableCollision(false);
 
-		CurVolume += item->GetAllVolume();
+		CurVolume += item->GetItemAllVolume();
 
 	}
 	// UI 업데이트
@@ -332,11 +335,12 @@ void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 		TArray<AC_Item*>& ItemArray = MyItems[item->GetItemCode()]; // 해당 아이템 코드의 아이템 배열 가져오기
 
 		// 배열에서 아이템 찾기
-		for (int32 i = 0; i < ItemArray.Num(); ++i)
+		//int32 i = ItemArray->Num() - 1; i >= 0; i--
+		for (int32 i = ItemArray.Num() - 1; i >= 0; --i)
 		{
 			if (ItemArray[i] == item) // 배열 내에서 일치하는 아이템 찾음
 			{
-				CurVolume -= item->GetAllVolume(); // 아이템 볼륨 감소
+				CurVolume -= item->GetItemAllVolume(); // 아이템 볼륨 감소
 				ItemArray.RemoveAt(i); // 배열에서 아이템 제거
 
 				// 배열이 비어 있으면 MyItems에서 해당 키 삭제
@@ -446,9 +450,35 @@ int32 UC_InvenComponent::GetTotalStackByItemName(const FName& ItemName)
 	return AllStack;
 }
 
-void UC_InvenComponent::InitMyitems()
+void UC_InvenComponent::DecreaseItemStack(const FName& ItemName, int32 Amount)
 {
+	TArray<AC_Item*>* ItemArray = MyItems.Find(ItemName);
+	if (!ItemArray || ItemArray->Num() == 0) return;
 
+	int32 RemainingAmount = Amount;
+
+	// 뒤에서부터 차감
+	for (int32 i = ItemArray->Num() - 1; i >= 0; i--)
+	{
+		AC_Item* Item = (*ItemArray)[i];
+		if (!Item) continue;
+
+		int32 CurrentStack = Item->GetItemCurStack(); // 현재 아이템 개수
+		if (RemainingAmount >= CurrentStack)
+		{
+			// 현재 아이템을 전부 삭제해야 하는 경우
+			RemainingAmount -= CurrentStack;
+			//ItemArray->RemoveAt(i);
+			Item->SetItemStack(0);
+		}
+		else
+		{
+			// 일부만 차감하는 경우
+			Item->SetItemStack(CurrentStack - RemainingAmount);
+			RemainingAmount = 0;
+			break;
+		}
+	}
 }
 
 

@@ -11,7 +11,9 @@ enum class EIdleTaskType : uint8
 {
 	WAIT,
 	BASIC_MOVETO,
+	INCIRCLE_MOVETO,
 	CHANGE_POSE,
+	STAT_CARE,
 	MAX
 };
 

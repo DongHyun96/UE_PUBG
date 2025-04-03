@@ -19,16 +19,11 @@ public:
 	UC_BTServiceStateMachine();
 
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-	
-private:
-
-	class AC_Enemy*				OwnerEnemy{};
-	class AC_EnemyAIController* OwnerController{};
-	class UC_BehaviorComponent* OwnerBehaviorComponent{};
 
 private:
 
-	float Timer{};
+	TMap<class UC_BehaviorComponent*, float> EnemyTimers{};
+
 };
 
 
