@@ -158,6 +158,13 @@ public: // getters and setters
 
 	const FHealItemSoundData* GetUsingSoundData() const { return UsingSoundData; }
 
+	/// <summary>
+	/// Activating 단계에서 (활성화한 시간 / 총 활성화 시간) 비율 구하기
+	/// </summary>
+	/// <param name="OutRatio"> : 구한 비율 </param>
+	/// <returns> : 만약 ACTIVATING State가 아니라면 return false </returns>
+	bool GetActivationProgressTimeRatio(float& OutRatio) const;
+
 protected:
 	
 	EConsumableItemState ConsumableItemState{};
@@ -186,10 +193,7 @@ protected:
 	TMap<EPoseState, FPriorityAnimMontage> UsingMontageMap{};
 
 
-protected:
-
-	// 이 Consumable Item과 연결된 ItemBarWidget 객체
-	//UC_ItemBarWidget* LinkedItemBarWidget{};
+private:
 
 	//// 이 Consumable Item과 연결된 ItemBarWidget 객체
 	//UI리팩토링중에 사용중인 ItemBar

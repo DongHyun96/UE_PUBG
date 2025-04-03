@@ -15,8 +15,6 @@ enum class EServiceType : uint8
 	IDLE,
 	SKYDIVE,
 	COMBAT,
-	FARMING,
-	STAT_CARE,
 	MAX
 };
 

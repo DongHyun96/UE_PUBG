@@ -509,7 +509,11 @@ void UC_InputComponent::OnXKey()
 	// For testing
 	//Player->GetParkourComponent()->Vault();
 	
-	Player->GetStatComponent()->TakeDamage(10.f, Player);
+	Player->GetStatComponent()->TakeDamage(10.f, nullptr);
+	
+	if (!GAMESCENE_MANAGER->GetEnemies().IsEmpty())
+		GAMESCENE_MANAGER->GetEnemies()[0]->GetStatComponent()->TakeDamage(10.f, nullptr);
+	
 	Player->GetEquippedComponent()->ToggleArmed();
 }
 

@@ -13,6 +13,7 @@ enum class EIdleTaskType : uint8
 	BASIC_MOVETO,
 	INCIRCLE_MOVETO,
 	CHANGE_POSE,
+	STAT_CARE,
 	MAX
 };
 

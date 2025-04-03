@@ -70,8 +70,13 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		return;
 	}
 
-	// TODO : 피 또는 부스트 량이 너무 없을 때 처리(STAT_CARE) and return
-	
+	// 피 또는 부스트 량이 너무 없을 때 처리(STAT_CARE)
+	if (Enemy->GetStatComponent()->GetCurHP() < 50.f || Enemy->GetStatComponent()->GetCurBoosting() < 50.f)
+	{
+		EnemyBehaviorComponent->SetServiceType(EServiceType::IDLE);
+		EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::STAT_CARE);
+		return;
+	}
 
 	EnemyTimers[EnemyBehaviorComponent] += DeltaSeconds;
 
