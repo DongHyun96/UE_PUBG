@@ -76,8 +76,8 @@ void UC_DefaultItemSpawnerComponent::SpawnWeapons(const FActorSpawnParameters& P
 
 	// "FlashBang"
 	// "Grenade"
-	// TODO : Grenade 제대로 spawn 안되고 있는 중
-	AC_ThrowingWeapon* Grenade = Cast<AC_ThrowingWeapon>(OwnerEnemy->GetInvenComponent()->FindMyItemByName("Grenade"));
+	FName GrenadeItemName = AC_ThrowingWeapon::GetThrowableItemNameMap()[EThrowableType::GRENADE];
+	AC_ThrowingWeapon* Grenade = Cast<AC_ThrowingWeapon>(OwnerEnemy->GetInvenComponent()->FindMyItemByName(GrenadeItemName));
 	if (!IsValid(Grenade))
 		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade nullptr", FColor::Red, 10.f);
 		

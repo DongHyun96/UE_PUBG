@@ -42,6 +42,7 @@ public:
 	bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) override;
 
 	class UProgressBar* GetHPBar() const { return HPBar; }
+	class UProgressBar* GetBoostBar() const { return BoostBar; }
 
 	class AC_EnemyAIController* GetEnemyAIController() const;
 
@@ -77,6 +78,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UProgressBar* HPBar{};
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UProgressBar* BoostBar{};
+	
 protected:
 
 	// Default 아이템 스폰 처리 Component
