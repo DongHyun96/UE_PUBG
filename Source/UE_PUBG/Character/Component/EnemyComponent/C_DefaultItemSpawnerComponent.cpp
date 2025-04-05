@@ -41,9 +41,6 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 	SpawnEquipableItems(Param);
 	SpawnConsumableItems(Param);
 	SpawnBullets(Param);
-	// TODO : 다른 Item들 (탄, Consumable item 등등 inven에 넣어두기)
-	
-	
 }
 
 void UC_DefaultItemSpawnerComponent::SpawnWeapons(const FActorSpawnParameters& Param)
@@ -68,21 +65,21 @@ void UC_DefaultItemSpawnerComponent::SpawnWeapons(const FActorSpawnParameters& P
 	//EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, SubGun);
 
 	// Throwable Weapon setting 하기
-	for (auto& pair : ThrowableClasses)
-	{
-		AC_ThrowingWeapon* ThrowWeapon = GetWorld()->SpawnActor<AC_ThrowingWeapon>(pair.Value, Param);
-		ThrowWeapon->MoveToSlot(OwnerEnemy, ThrowWeapon->GetItemCurStack());
-	}
 
-	// "FlashBang"
-	// "Grenade"
-	FName GrenadeItemName = AC_ThrowingWeapon::GetThrowableItemNameMap()[EThrowableType::GRENADE];
-	AC_ThrowingWeapon* Grenade = Cast<AC_ThrowingWeapon>(OwnerEnemy->GetInvenComponent()->FindMyItemByName(GrenadeItemName));
-	if (!IsValid(Grenade))
-		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade nullptr", FColor::Red, 10.f);
-		
-	if (Grenade) if (!Grenade->MoveToSlot(OwnerEnemy, Grenade->GetItemCurStack()))
-		UC_Util::Print("From SpawnDefaultWeaponForEnemy : Grenade MoveToSlot Failed!", FColor::Red, 10.f);
+	// Grenade 1~3개
+	AC_ThrowingWeapon* Grenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::GRENADE], Param);
+	Grenade->SetItemStack(FMath::RandRange(1, 3));
+	Grenade->MoveToSlot(OwnerEnemy, Grenade->GetItemCurStack());
+
+	// Smoke Grenade 1~2개
+	AC_ThrowingWeapon* SmokeGrenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::SMOKE], Param);
+	SmokeGrenade->SetItemStack(FMath::RandRange(1, 2));
+	SmokeGrenade->MoveToInven(OwnerEnemy, SmokeGrenade->GetItemCurStack());
+
+	// FlashBang 1~2개
+	AC_ThrowingWeapon* FlashBang = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::FLASH_BANG], Param);
+	FlashBang->SetItemStack(FMath::RandRange(1, 2));
+	FlashBang->MoveToInven(OwnerEnemy, FlashBang->GetItemCurStack());
 }
 
 void UC_DefaultItemSpawnerComponent::SpawnEquipableItems(const FActorSpawnParameters& Param)
@@ -171,5 +168,13 @@ void UC_DefaultItemSpawnerComponent::SpawnConsumableItems(const FActorSpawnParam
 
 void UC_DefaultItemSpawnerComponent::SpawnBullets(const FActorSpawnParameters& Param)
 {
-	// TODO : 5.56 7.62 탄 spawn 시켜주기
+	// 5.56mm 탄 200발, 7.62mm 탄 30발
+	for (int i = 0; i < 2; ++i)
+	{
+		AC_Item_Bullet* FiveMMBullet = GetWorld()->SpawnActor<AC_Item_Bullet>(BulletClasses[EBulletType::FIVEMM], Param);
+		FiveMMBullet->MoveToInven(OwnerEnemy, FiveMMBullet->GetItemCurStack());		
+	}
+	
+	AC_Item_Bullet* SevenMMBullet = GetWorld()->SpawnActor<AC_Item_Bullet>(BulletClasses[EBulletType::SEVENMM], Param);
+	SevenMMBullet->MoveToInven(OwnerEnemy, SevenMMBullet->GetItemCurStack());
 }

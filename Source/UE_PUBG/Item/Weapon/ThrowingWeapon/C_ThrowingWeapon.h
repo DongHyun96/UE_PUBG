@@ -96,9 +96,9 @@ public:
 
 
 public:
-
-	static TMap<EThrowableType, FName> GetThrowableItemNameMap() { return THROWABLETYPE_ITEMNAME_MAP; }
-
+	
+	static FName GetThrowableItemName(EThrowableType TargetType);	
+	
 	EThrowableType GetThrowableType() const { return ThrowableType; }
 
 private:

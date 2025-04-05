@@ -99,7 +99,7 @@ private:
 	
 	void DrawSightRange();
 
-private:
+public:
 	
 	/// <summary>
 	/// 현재 Sight에 직접적으로 잡히는 Character인지 조사 (DetectedCharacters에 들어 있어도 엄폐물에 가려져 있으면 return false) 

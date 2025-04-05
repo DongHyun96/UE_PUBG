@@ -15,6 +15,13 @@
 #include "HUD/C_AmmoWidget.h"
 
 #include "Utility/C_Util.h"
+
+const TMap<EBulletType, FName> AC_Item_Bullet::BulletTypeNameMap =
+{
+	{EBulletType::FIVEMM,  "Item_Ammo_556mm_C"},
+	{EBulletType::SEVENMM, "Item_Ammo_762mm_C"}
+};
+
 AC_Item_Bullet::AC_Item_Bullet()
 {
 	PrimaryActorTick.bCanEverTick = true;

@@ -49,6 +49,11 @@ protected:
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 
 	EBulletType CurBulletType;
+
+private:
+
+	static const TMap<EBulletType, FName> BulletTypeNameMap;
+	
 };
 
 
