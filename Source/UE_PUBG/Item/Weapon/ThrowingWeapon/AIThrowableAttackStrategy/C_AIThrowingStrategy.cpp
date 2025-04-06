@@ -29,6 +29,9 @@ bool UC_AIThrowingStrategy::ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingW
 		return false;
 	}
 
+	// 이미 TargetCharacter가 사망 처리 되었을 때
+	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false;
+
 	if (ThrowTimer < TIME_TO_THROW)
 	{
 		ThrowingWeapon->ExecuteMlb_OnGoing();
@@ -91,7 +94,7 @@ bool UC_AIThrowingStrategy::UpdateProjectileLaunchValues(AC_ThrowingWeapon* Thro
 	if (!HasVelocityInited) return false;
 
 	ThrowingWeapon->SetProjectileLaunchVelocity(LaunchVelocity);
-	return true;	
+	return true;
 }
 
 bool UC_AIThrowingStrategy::IsPossibleDistanceToThrow(const FVector& ThrowingWeaponLocation, const FVector& TargetCharacterLocation)

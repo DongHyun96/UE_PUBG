@@ -52,7 +52,7 @@ const TMap<FName, EDamagingPartType> UC_StatComponent::DAMAGINGPARTS_MAP =
 	{"Spine1",		EDamagingPartType::UPPER_STOMACH},
 	{"Spine2",		EDamagingPartType::SHOULDER},
 
-	{"LeftArm",	EDamagingPartType::LEFT_ARM},
+	{"LeftArm",		EDamagingPartType::LEFT_ARM},
 	{"LeftHand",	EDamagingPartType::LEFT_HAND},
 
 	{"RightArm",	EDamagingPartType::RIGHT_ARM},

@@ -15,6 +15,13 @@
 #include "HUD/C_AmmoWidget.h"
 
 #include "Utility/C_Util.h"
+
+const TMap<EBulletType, FName> AC_Item_Bullet::BulletTypeNameMap =
+{
+	{EBulletType::FIVEMM,  "Item_Ammo_556mm_C"},
+	{EBulletType::SEVENMM, "Item_Ammo_762mm_C"}
+};
+
 AC_Item_Bullet::AC_Item_Bullet()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -62,8 +69,8 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InSta
 			// 인벤에 동일한 이름의 아이템이 존재 한다면 실행.
 
 			invenComp->AddItemToMyList(this);
-			UC_Util::Print(int(CurBulletType));
-			UC_Util::Print("Item Stack Add!!!!!!!!!!!!!!!!");
+			/*UC_Util::Print(int(CurBulletType));
+			UC_Util::Print("Item Stack Add!!!!!!!!!!!!!!!!");*/
 			//this->Destroy(); // Inven에 존재하던 동일한 아이템과 합쳐졌으므로 삭제.
 		}
 		else

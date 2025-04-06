@@ -2,6 +2,7 @@
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
 
 #include "Item/Weapon/C_Weapon.h"
@@ -16,6 +17,7 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_AmmoWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/C_ThrowableWeaponSlotWidget.h"
+#include "Singleton/C_GameSceneManager.h"
 
 #include "Utility/C_Util.h"
 
@@ -42,7 +44,30 @@ void UC_EquippedComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    // ...
+    /*if (Cast<AC_Enemy>(OwnerCharacter))
+    {
+        FString Str{};
+        
+        switch (GetCurWeaponType())
+        {
+        case EWeaponSlot::NONE: Str = "None"; break;
+        case EWeaponSlot::MAIN_GUN: Str = "MainGun"; break;
+        case EWeaponSlot::SUB_GUN: Str = "SubGun"; break;
+        case EWeaponSlot::MELEE_WEAPON: Str = "MeleeWeapon"; break;
+        case EWeaponSlot::THROWABLE_WEAPON: Str = "ThrowableWeapon"; break;
+        }
+
+        switch (NextWeaponType)
+        {
+        case EWeaponSlot::NONE: Str += " None"; break;
+        case EWeaponSlot::MAIN_GUN: Str += " MainGun"; break;
+        case EWeaponSlot::SUB_GUN: Str += " SubGun"; break;
+        case EWeaponSlot::MELEE_WEAPON: Str += " MeleeWeapon"; break;
+        case EWeaponSlot::THROWABLE_WEAPON: Str += " ThrowableWeapon"; break;
+        }
+        UC_Util::Print(Str);
+    }*/
+
 }
 
 AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* Weapon)
@@ -162,39 +187,53 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
     NextWeaponType = InChangeTo;
 
-    if (CurWeaponType == NextWeaponType)
+    if (CurWeaponType == NextWeaponType) // 현재 무기와 다음 무기가 같을 때
     {
-        // 현재 투척류를 들고 있을 경우, 다른 종류의 투척류로 전환 시도
-        if (AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(GetCurWeapon()))
+        AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(GetCurWeapon());
+
+        // 현재 투척류 종류를 제외한 다른 무기를 들고 있는 경우, 현재 무기와 다음 바꾸려 하는 무기 Type이 같다면 종료
+        if (!ThrowingWeapon)
         {
-            // 전환 시도하려는 기존 투척류의 쿠킹이 이미 시작되었고, 아직 손에서 떠나지 않은 투척류라면 전환 시도 x
-            if (ThrowingWeapon->GetIsCooked() && ThrowingWeapon->GetAttachParentActor()) return false;
-
-            // 다음 종류의 투척류로 전환 시도
-            EThrowableType ThrowableTypeTemp = ThrowingWeapon->GetThrowableType();
-            while (++ThrowableTypeTemp != ThrowingWeapon->GetThrowableType())
-            {
-                FName               NextWeaponName      = AC_ThrowingWeapon::GetThrowableItemNameMap()[ThrowableTypeTemp];
-                AC_Item*            NextThrowableItem   = OwnerCharacter->GetInvenComponent()->FindMyItemByName(NextWeaponName);
-                AC_ThrowingWeapon*  NextThrowableWeapon = Cast<AC_ThrowingWeapon>(NextThrowableItem);
-
-                if (!NextThrowableWeapon) continue; // NextThrowable이 Inven에 없는 경우
-
-                NextThrowableWeapon->MoveToSlot(OwnerCharacter, NextThrowableWeapon->GetItemCurStack());
-                if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter)) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
-
-                // 바로 다음 투척류 꺼내기
-                OwnerCharacter->PlayAnimMontage(NextThrowableWeapon->GetCurDrawMontage());
-                return true;
-            }
+            NextWeaponType = EWeaponSlot::NONE;
+            return false;
         }
-        return false; // 현재 무기와 다음 무기가 같을 때 무기를 굳이 다시 꺼내지 않음
+        
+        // 현재 투척류를 들고 있을 경우, 다른 종류의 투척류로 전환 시도
+       
+        // 전환 시도하려는 기존 투척류의 쿠킹이 이미 시작되었고, 아직 손에서 떠나지 않은 투척류라면 전환 시도 x
+        if (ThrowingWeapon->GetIsCooked() && ThrowingWeapon->GetAttachParentActor())
+        {
+            NextWeaponType = EWeaponSlot::NONE;
+            return false;
+        }
+
+        // 다음 종류의 투척류로 전환 시도
+        EThrowableType ThrowableTypeTemp = ThrowingWeapon->GetThrowableType();
+        while (++ThrowableTypeTemp != ThrowingWeapon->GetThrowableType())
+        {
+            FName               NextWeaponName      = AC_ThrowingWeapon::GetThrowableItemName(ThrowableTypeTemp);
+            AC_Item*            NextThrowableItem   = OwnerCharacter->GetInvenComponent()->FindMyItemByName(NextWeaponName);
+            AC_ThrowingWeapon*  NextThrowableWeapon = Cast<AC_ThrowingWeapon>(NextThrowableItem);
+
+            if (!NextThrowableWeapon) continue; // NextThrowable이 Inven에 없는 경우
+
+            NextThrowableWeapon->MoveToSlot(OwnerCharacter, NextThrowableWeapon->GetItemCurStack());
+            if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter)) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+
+            // 바로 다음 투척류 꺼내기
+            OwnerCharacter->PlayAnimMontage(NextThrowableWeapon->GetCurDrawMontage());
+            return true;
+        }
     }
 
     // NextWeaponType이 None이 아니고, 바꾸려는 무기 슬롯에 무기가 없을 때
     if (NextWeaponType != EWeaponSlot::NONE && !IsValid(Weapons[NextWeaponType]))
     {
-        if (NextWeaponType != EWeaponSlot::THROWABLE_WEAPON) return false;
+        if (NextWeaponType != EWeaponSlot::THROWABLE_WEAPON)
+        {
+            NextWeaponType = EWeaponSlot::NONE;
+            return false;
+        }
         
         // Throwable의 경우, 가방 확인해서 있으면 장착해서 Throwable로 바꾸기
 
@@ -204,7 +243,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
         for (int i = 0; i < static_cast<int>(EThrowableType::MAX); ++i)
         {
             EThrowableType      ThrowableType  = static_cast<EThrowableType>(i);
-            FName               WeaponName     = AC_ThrowingWeapon::GetThrowableItemNameMap()[ThrowableType];
+            FName               WeaponName     = AC_ThrowingWeapon::GetThrowableItemName(ThrowableType);
             AC_Item*            ThrowableItem  = OwnerCharacter->GetInvenComponent()->FindMyItemByName(WeaponName);
             AC_ThrowingWeapon*  ThrowingWeapon = Cast<AC_ThrowingWeapon>(ThrowableItem);
 
@@ -216,7 +255,11 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
             bThrowableSetToTargetSlot = true;
             break;
         }
-        if (!bThrowableSetToTargetSlot) return false;
+        if (!bThrowableSetToTargetSlot)
+        {
+            NextWeaponType = EWeaponSlot::NONE;
+            return false;
+        }
     }
 
     // 현재 무기를 착용중이지 않을 때 (UnArmed 상태), 또는 현재 슬롯에 장착된 무기가 없을 때 다음 무기 Draw만 재생
@@ -230,6 +273,8 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
             OwnerCharacter->SetHandState(EHandState::UNARMED);
             return false;
         }
+
+        UC_Util::Print("From ChangeCurWeapon : Playing Draw Montage and return true!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 
         // 다음 무기가 있을 때
         OwnerCharacter->PlayAnimMontage(Weapons[NextWeaponType]->GetCurDrawMontage());
@@ -260,7 +305,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
                 TempWeapon->BackToMainCamera();
         }
     }
-
+    UC_Util::Print("From ChangeCurWeapon : Playing Sheath Montage and return true!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
     OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
     return true;
 }

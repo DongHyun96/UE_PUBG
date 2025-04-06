@@ -149,9 +149,14 @@ void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor
 {
 	HandleOverlapEnd(OtherActor);
 }
+
 float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate, FName StartSectionName)
 {
-	if (!IsValid(PAnimMontage.AnimMontage)) return 0.f;
+	if (!IsValid(PAnimMontage.AnimMontage))
+	{
+		UC_Util::Print("From AC_BasicCharacter::PlayAnimMontage : Invalid Montage received!", FColor::Red, 10.f);
+		return 0.f;
+	}
 
 	FName TargetGroup = PAnimMontage.AnimMontage->GetGroupName();
 
