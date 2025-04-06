@@ -340,9 +340,6 @@ void AC_Bullet::PlaySound(const FHitResult& ImpactResult)
 		UC_Util::Print("SurfaceType: " + FString::FromInt(SurfaceType));
 	}
 
-	//EPhysicalSurface SurfaceType = UGameplayStatics::GetSurfaceType(ImpactResult);
-	//EPhysicalSurface SurfaceType = ImpactResult.GetComponent()->GetMaterial(0)->GetPhysicalMaterial()->SurfaceType;
-
 	if (!BulletImpactSoundData) 
 	{
 		UC_Util::Print("BulletImpactSoundData Is Nullptr!");
