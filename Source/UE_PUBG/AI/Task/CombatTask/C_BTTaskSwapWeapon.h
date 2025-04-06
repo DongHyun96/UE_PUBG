@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
+#include "Character/Component/C_EquippedComponent.h"
 #include "C_BTTaskSwapWeapon.generated.h"
 
 enum class EThrowableType : uint8;
@@ -51,6 +52,14 @@ private:
 
 	EBTNodeResult::Type ExecuteThrowableSwapRoutine(const FThrowableSwapExecutionDescriptor& Desc);
 
+	/// <summary>
+	/// <para> ExecuteTask 내에서 return 처리하는 BoilerPlate 코드 정리 </para>
+	/// <para> 주의 : InProgress일 경우, Enemy와 InChangeTo Type parameter도 같이 보낼 것 </para>
+	/// </summary>
+	/// <param name="ReturnType"> : ExecuteTask 내에서 return하려는 type </param>
+	/// <param name="BehaviorComponent"> : Enemy BehaviorComponent </param>
+	EBTNodeResult::Type ExecuteTaskReturnRoutine(const EBTNodeResult::Type& ReturnType, UC_BehaviorComponent* BehaviorComponent, AC_Enemy* Enemy = nullptr, EWeaponSlot InChangeTo = EWeaponSlot::NONE);
+
 private:
 
 	// class AC_Enemy* OwnerEnemy{};
@@ -63,5 +72,3 @@ private:
 	
 	// EWeaponSlot SwapTargetWeaponSlot{};
 };
-
-

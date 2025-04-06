@@ -2,6 +2,7 @@
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
 
 #include "Item/Weapon/C_Weapon.h"
@@ -16,6 +17,7 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_AmmoWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/C_ThrowableWeaponSlotWidget.h"
+#include "Singleton/C_GameSceneManager.h"
 
 #include "Utility/C_Util.h"
 
@@ -42,7 +44,7 @@ void UC_EquippedComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    /*if (Cast<AC_Player>(OwnerCharacter))
+    /*if (Cast<AC_Enemy>(OwnerCharacter))
     {
         FString Str{};
         
@@ -60,8 +62,8 @@ void UC_EquippedComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
         case EWeaponSlot::NONE: Str += " None"; break;
         case EWeaponSlot::MAIN_GUN: Str += " MainGun"; break;
         case EWeaponSlot::SUB_GUN: Str += " SubGun"; break;
-        case EWeaponSlot::MELEE_WEAPON: Str += "MeleeWeapon"; break;
-        case EWeaponSlot::THROWABLE_WEAPON: Str += "ThrowableWeapon"; break;
+        case EWeaponSlot::MELEE_WEAPON: Str += " MeleeWeapon"; break;
+        case EWeaponSlot::THROWABLE_WEAPON: Str += " ThrowableWeapon"; break;
         }
         UC_Util::Print(Str);
     }*/
@@ -272,6 +274,8 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
             return false;
         }
 
+        UC_Util::Print("From ChangeCurWeapon : Playing Draw Montage and return true!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+
         // 다음 무기가 있을 때
         OwnerCharacter->PlayAnimMontage(Weapons[NextWeaponType]->GetCurDrawMontage());
         
@@ -301,7 +305,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
                 TempWeapon->BackToMainCamera();
         }
     }
-
+    UC_Util::Print("From ChangeCurWeapon : Playing Sheath Montage and return true!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
     OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
     return true;
 }
