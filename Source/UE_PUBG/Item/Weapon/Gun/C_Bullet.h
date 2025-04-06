@@ -16,52 +16,22 @@ struct FBulletImpactSoundData : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactBody_01 = nullptr;
+	TArray<USoundBase*> ImpactBody{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactBody_02 = nullptr;
+	TArray<USoundBase*> ImpactConcrete{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactConcrete_01 = nullptr;
+	TArray<USoundBase*> ImpactMetal{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactConcrete_02 = nullptr;
+	TArray<USoundBase*> ImpactFly{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactMetal_01 = nullptr;
+	TArray<USoundBase*> ImpactGround{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactMetal_02 = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactFly_01 = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactFly_02 = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactGround_01 = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactGround_02 = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactGround_03 = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactGround_04 = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactWood_01 = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactWood_02 = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactWood_03 = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImpactWood_04 = nullptr;
+	TArray<USoundBase*> ImpactWood{};
 
 };
 
@@ -84,6 +54,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PlaySound(const FHitResult& ImpactResult);
+
+protected:
+	void PlayRandomSoundFromArray(const TArray<USoundBase*>& Sounds);
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))

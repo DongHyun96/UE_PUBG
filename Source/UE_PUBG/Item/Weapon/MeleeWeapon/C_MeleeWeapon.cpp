@@ -15,7 +15,9 @@
 
 #include "UObject/ConstructorHelpers.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+
 #include "Utility/C_Util.h"
 
 const FName AC_MeleeWeapon::HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
@@ -229,6 +231,11 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 	OverlappedCharacter->GetStatComponent()->TakeDamage(DAMAGE * DamageReduceFactor, this->OwnerCharacter);
 	OverlappedCharacter->ActivateBloodParticle(OverlappedCharacter->GetMesh()->GetBoneLocation("Spine1"));
 	AttackedCharacters.Add(OverlappedCharacter);
+
+	if (!ImapctSound) return;
+
+	UGameplayStatics::PlaySoundAtLocation(this, ImapctSound, GetActorLocation());
+
 }
 
 void AC_MeleeWeapon::OnOwnerCharacterPoseTransitionFin()
