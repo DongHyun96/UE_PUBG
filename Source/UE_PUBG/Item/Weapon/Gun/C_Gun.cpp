@@ -1293,7 +1293,9 @@ bool AC_Gun::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter,
 	//UC_Util::Print("Change Rotation");
 	float InterpSpeed = 10.0f;
 	FRotator CurrentRotation = OwnerCharacter->GetActorRotation();
-	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, LookRotation, DeltaTime, InterpSpeed);
+	FRotator NewRotation	= FMath::RInterpTo(CurrentRotation, LookRotation, DeltaTime, InterpSpeed);
+	NewRotation.Pitch		= 0.f;
+	NewRotation.Roll		= 0.f;
 	OwnerEnemy->SetActorRotation(NewRotation);
 	AIFireTimer += DeltaTime;
 	if (AIFireTimer > GetBulletRPM())
