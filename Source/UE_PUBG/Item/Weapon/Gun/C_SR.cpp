@@ -2,6 +2,8 @@
 
 
 #include "Item/Weapon/Gun/C_SR.h"
+
+#include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
 #include "Utility/C_Util.h"
 
@@ -63,8 +65,17 @@ bool AC_SR::ExecuteReloadMontage()
 	//if (CurBulletCount == MaxBulletCount) return false;
 
 	AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
+	AC_Enemy* CurEnemy = Cast<AC_Enemy>(OwnerCharacter);
+	if (!IsValid(CurPlayer) && !IsValid(CurEnemy)) return false;
+	if (IsValid(CurPlayer))
+	{
+		if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
+	}
 
-	if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
+	if (IsValid(CurEnemy))
+	{
+		if (CurEnemy->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
+	}
 
 	if (CurBulletCount >= 1 && CurrentShootingMode == EShootingMode::SINGLE_SHOT &&!IsReloadingSR)
 	{
@@ -72,8 +83,6 @@ bool AC_SR::ExecuteReloadMontage()
 		OwnerCharacter->PlayAnimMontage(SniperReloadMontages[OwnerCharacter->GetPoseState()]);
 		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 		OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
-		AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-		//OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
 		bIsSniperReload = true;
 		OwnerCharacter->SetIsReloadingBullet(true);
 		BackToMainCamera();
@@ -141,6 +150,11 @@ bool AC_SR::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 	return Super::ExecuteAIAttack(InTargetCharacter);
 }
 
+bool AC_SR::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
+{
+	return Super::ExecuteAIAttackTickTask(InTargetCharacter, DeltaTime);
+}
+
 float AC_SR::GetDamageRateByBodyPart(const FName& BodyPart)
 {
 	if (!BODYPARTS_DAMAGERATE.Contains(BodyPart))
@@ -151,12 +165,4 @@ float AC_SR::GetDamageRateByBodyPart(const FName& BodyPart)
 	
 	return BODYPARTS_DAMAGERATE[BodyPart];
 }
-
-//bool AC_SR::ReloadBullet()
-//{
-//	Super::ReloadBullet();
-//	IsReloadingSR = false;
-//	return false;
-//}
-
 

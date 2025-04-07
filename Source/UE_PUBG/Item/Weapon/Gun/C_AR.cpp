@@ -2,6 +2,8 @@
 
 
 #include "Item/Weapon/Gun/C_AR.h"
+
+#include "Character/C_Enemy.h"
 #include "Item/Attachment/C_AttachableItem.h"
 #include "Character/C_Player.h"
 #include "Utility/C_Util.h"
@@ -65,9 +67,21 @@ bool AC_AR::ExecuteReloadMontage()
 		return false;
 	}
 	AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
+	AC_Enemy* CurEnemy = Cast<AC_Enemy>(OwnerCharacter);
+	if (!IsValid(CurPlayer) && !IsValid(CurEnemy)) return false;
+	
 	if (CurBulletCount == MaxBulletCount) return false;
-	if (!CurPlayer->GetCanMove()) return false;
-	if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
+	if (IsValid(CurPlayer))
+	{
+		if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
+		if (!CurPlayer->GetCanMove()) return false;
+	}
+
+	if (IsValid(CurEnemy))
+	{
+		if (CurEnemy->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
+		if (!CurEnemy->GetCanMove()) return false;
+	}
 	SetMagazineVisibility(false);
 	OwnerCharacter->SetIsReloadingBullet(true);
 	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
@@ -78,6 +92,11 @@ bool AC_AR::ExecuteReloadMontage()
 bool AC_AR::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
 	return Super::ExecuteAIAttack(InTargetCharacter);
+}
+
+bool AC_AR::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
+{
+	return Super::ExecuteAIAttackTickTask(InTargetCharacter, DeltaTime);
 }
 
 float AC_AR::GetDamageRateByBodyPart(const FName& BodyPart)

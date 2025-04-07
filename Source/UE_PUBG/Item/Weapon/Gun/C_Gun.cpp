@@ -15,6 +15,7 @@
 #include "Item/Weapon/Gun/C_SR.h"
 
 #include "UMG.h"
+#include "AI/C_EnemyAIController.h"
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
@@ -47,6 +48,7 @@
 #include "Character/C_Enemy.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_AmmoWidget.h"
+#include "Kismet/KismetMathLibrary.h"
 
 //UCameraComponent* AC_Gun::AimSightCamera;
 // Sets default values
@@ -1228,6 +1230,83 @@ void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
 
 bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
+	if (!CanAIAttack(InTargetCharacter))
+	{
+		return false;
+	}
+	
+	//ExecuteReloadMontage();
+	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
+	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+
+	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
+
+	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
+
+	//UC_Util::Print(FireLocation);
+	//UC_Util::Print(FireDirection);
+
+	return true;
+	// bool ApplyGravity = true;
+	// for (auto& Bullet : OwnerEnemy->GetBullets())
+	// {
+	// 	if (Bullet->GetIsActive())
+	// 	{
+	// 		//UC_Util::Print("Can't fire");
+	// 		continue;
+	// 	}
+	// 	//UC_Util::Print("FIRE!!!!!!!");
+	// 	CurBulletCount--;
+	// 	bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+	// 	if (!Succeeded) UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
+	// 	return Succeeded;
+	//
+	// 	//Bullet->Fire(this, FireLocation, FireDirection);
+	// 	//if (BulletCount > 100)
+	// 	//	return true;
+	// }
+	// UC_Util::Print("No More Bullets in Pool", FColor::MakeRandomColor(), 10.f);
+	//return false;
+
+}
+
+bool AC_Gun::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
+{
+	if (!CanAIAttack(InTargetCharacter))
+	{
+		return false;
+	}
+	//ExecuteReloadMontage();
+	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter); 
+	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
+	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+
+	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
+
+	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
+
+	//UC_Util::Print(FireLocation);
+	//UC_Util::Print(FireDirection);
+	FVector Direction = (EnemyLocation - GetActorLocation()).GetSafeNormal();
+	FRotator LookRotation = Direction.Rotation();
+	//float DeltaTime = GetWorld()->GetDeltaSeconds();
+	//UC_Util::Print("Change Rotation");
+	float InterpSpeed = 10.0f;
+	FRotator CurrentRotation = OwnerCharacter->GetActorRotation();
+	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, LookRotation, DeltaTime, InterpSpeed);
+	OwnerEnemy->SetActorRotation(NewRotation);
+	AIFireTimer += DeltaTime;
+	if (AIFireTimer > GetBulletRPM())
+	{
+		return AIFireBullet(InTargetCharacter);
+	}
+	return true;
+	//return Super::ExecuteAIAttackTickTask(InTargetCharacter, DeltaTime);
+	
+}
+
+bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)
+{
 	if (!IsValid(OwnerCharacter))
 	{
 		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid OwnerCharacter", FColor::MakeRandomColor(), 10.f);
@@ -1238,34 +1317,56 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid InTargetCharacter", FColor::MakeRandomColor(), 10.f);
 		return false;
 	}
-	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false;
+	if (InTargetCharacter->GetMainState() == EMainState::DEAD)
+	{
+		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid InTargetCharacter", FColor::MakeRandomColor(), 10.f);
 
+		return false;
+	}
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
 	if (!OnScreen)
 	{
 		UC_Util::Print("From AC_Gun::ExecuteAIAttack : OnScreen Failed", FColor::MakeRandomColor(), 10.f);
 		return false;
 	}
-	//ExecuteReloadMontage();
-
-	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
-	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
-
-	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
-
-	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
-
-	//UC_Util::Print(FireLocation);
-	//UC_Util::Print(FireDirection);
 	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter); 
 	if (!IsValid(OwnerEnemy))
 	{
 		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid OwnerEnemy", FColor::MakeRandomColor(), 10.f);
 		return false;
 	}
+	if (!OwnerEnemy->GetEnemyAIController()->IsCurrentlyOnSight(InTargetCharacter))
+		return false;
+	return true;
+}
+
+bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
+{
+	FVector BulletSpreadRadius = FVector(100,100,100);
+	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
+	FVector SpreadLocation = UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation,BulletSpreadRadius);
+	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+
+	FVector FireDirection = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
+	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter);
+	if (GetIsPlayingMontagesOfAny())
+	{
+		UC_Util::Print("AI Cant Fire Gun",FColor::MakeRandomColor(), 1000);
+		return false;
+	}
+
+
+	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
+
+	//UC_Util::Print(FireLocation);
+	//UC_Util::Print(FireDirection);
+
+	//return true;
 	bool ApplyGravity = true;
 	for (auto& Bullet : OwnerEnemy->GetBullets())
 	{
+		if (CurBulletCount == 0)
+			break;
 		if (Bullet->GetIsActive())
 		{
 			//UC_Util::Print("Can't fire");
@@ -1275,15 +1376,25 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 		CurBulletCount--;
 		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
 		if (!Succeeded) UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
-		return Succeeded;
+		if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
 
+		if (CurrentShootingMode == EShootingMode::SINGLE_SHOT)
+		{
+			UC_Util::Print("SR Reloading Start!!!!!!!!!!", FColor::MakeRandomColor(), 10.f);
+			ExecuteReloadMontage();
+			return false;
+		}
+		AIFireTimer = 0.0f;
+		return Succeeded;
+	
 		//Bullet->Fire(this, FireLocation, FireDirection);
 		//if (BulletCount > 100)
 		//	return true;
 	}
+	ExecuteReloadMontage();
+
 	UC_Util::Print("No More Bullets in Pool", FColor::MakeRandomColor(), 10.f);
 	return false;
-
 }
 
 FName AC_Gun::GetCurrentBulletTypeName()

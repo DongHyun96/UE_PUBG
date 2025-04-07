@@ -389,6 +389,7 @@ protected:
 public:
 	//AI 총알 발사 관련 함수
 	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+	virtual bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime);
 
 public: 
 	/// <summary>
@@ -399,7 +400,10 @@ public:
 	virtual float GetDamageRateByBodyPart(const FName& BodyPart) PURE_VIRTUAL(AC_Gun::GetDamageRateByBodyPart, return 0.f;);
 
 	float GetDamageBase() const { return GunDataRef->DamageBase; }
-
+protected:
+	bool CanAIAttack(AC_BasicCharacter* InTargetCharacter);
+	bool AIFireBullet(class AC_BasicCharacter* InTargetCharacter);
+	float AIFireTimer = 0.0f;
 protected:
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	// UCapsuleComponent* CapsuleComponent{};
