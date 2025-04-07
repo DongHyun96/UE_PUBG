@@ -189,16 +189,21 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AC_ThrowingWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-			
-	if (!IsValid(OwnerCharacter))
-		return;
+	UpdateCurMontagesToOwnerCharacterPoseState();
+}
+
+bool AC_ThrowingWeapon::UpdateCurMontagesToOwnerCharacterPoseState()
+{
+	if (!IsValid(OwnerCharacter)) return false;
 
 	CurDrawMontage			= DrawMontages[OwnerCharacter->GetPoseState()];
 	CurSheathMontage		= SheathMontages[OwnerCharacter->GetPoseState()];
 	CurThrowProcessMontages = ThrowProcessMontages[OwnerCharacter->GetPoseState()];
+
+	return true;
 }
 
-bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
+  bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
 {
 	// 투척류를 핀까지만 뽑았고 쿠킹을 안했을 시 다시 집어넣음
 	// 투척류를 안전손잡이까지 뽑았다면 현재 위치에 현재 투척류 그냥 바닥에 떨굼

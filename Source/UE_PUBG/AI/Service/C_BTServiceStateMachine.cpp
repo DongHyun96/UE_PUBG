@@ -49,7 +49,7 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	
 	// WAIT 중인 상황
 
-	/*// Wait 상황에 자기장 밖이라면 안전지대로 이동
+	// Wait 상황에 자기장 밖이라면 안전지대로 이동
 	AC_MagneticFieldManager* MagneticFieldManager = GAMESCENE_MANAGER->GetMagneticFieldManager();
 	if (IsValid(MagneticFieldManager))
 	{
@@ -68,7 +68,7 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
 		EnemyBehaviorComponent->SetCombatTaskType(ECombatTaskType::SWAP_WEAPON);
 		return;
-	}*/
+	}
 
 	// 피 또는 부스트 량이 너무 없을 때 처리(STAT_CARE) TODO : 주석 풀기
 	/*if (Enemy->GetStatComponent()->GetCurHP() < 50.f || Enemy->GetStatComponent()->GetCurBoosting() < 50.f)
@@ -90,7 +90,7 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 
 	// TODO : 다시 확률로 조정하는 식으로 해놓기 (테스트 용으로 무조건 공격하는 쪽으로 잡음)
 	// SetTargetCharacter & AttackTrial
-	// EnemyAIController->TrySetTargetCharacterBasedOnPriority(); // TODO : 주석 풀기
+	EnemyAIController->TrySetTargetCharacterBasedOnPriority();
 	if (IsValid(EnemyBehaviorComponent->GetTargetCharacter()))
 	{
 		UC_Util::Print("WaitTask Time's up : Try Attack TargetCharacter!", FColor::Red, 10.f);
