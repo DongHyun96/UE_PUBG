@@ -81,20 +81,24 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	float DistanceToTargetCharacter = FVector::Distance(Enemy->GetActorLocation(), TargetCharacter->GetActorLocation());
 
 	// 거리가 50m를 넘어가면 SR들기
-	if (DistanceToTargetCharacter > 1000.f)
+	if (DistanceToTargetCharacter > 1000.f) // TODO : 50m로 수정
 	{
 		UC_Util::Print("Executing Swap to SR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 		return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent);
 	}
 
 	// 거리 50m 이내 / 현재 시야에 보이는 중이라면 MainGun으로 교체 / 시야에 보이지 않는 중이라면 ThrowableWeapon 중 택 1
-	if (Controller->IsCurrentlyOnSight(TargetCharacter))
+	/*if (Controller->IsCurrentlyOnSight(TargetCharacter))
 	{
 		UC_Util::Print("Executing Swap to AR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 		return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
-	}
+	}*/
 
-	// 시야에 보이지 않는 중, Inven에 있는 Throwable이랑 Slot에 있는 Throwable 모두 조사해야 함
+	// TODO : 위의 줄 주석을 사용하고, 밑에 전체 주석 친 줄 풀기
+	UC_Util::Print("Executing Swap to AR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+	return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
+
+	/*// 시야에 보이지 않는 중, Inven에 있는 Throwable이랑 Slot에 있는 Throwable 모두 조사해야 함
 
 	// Init Throwable Swap Descriptor
 	FThrowableSwapExecutionDescriptor Descriptor{};
@@ -158,7 +162,7 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 
 	// 아무 공격 투척류 종류가 없을 때
 	UC_Util::Print("Tried Swap to throwable, but no attacking throwable available!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-	return ExecuteTaskReturnRoutine(EBTNodeResult::Failed, BehaviorComponent);
+	return ExecuteTaskReturnRoutine(EBTNodeResult::Failed, BehaviorComponent);*/
 }
 
 
