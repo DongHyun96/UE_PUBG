@@ -68,6 +68,24 @@ void UC_EquippedComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
         UC_Util::Print(Str);
     }*/
 
+    /*if (Cast<AC_Enemy>(OwnerCharacter))
+    {
+        if (!Weapons[EWeaponSlot::THROWABLE_WEAPON])
+        {
+            UC_Util::Print("NONE");
+            return;
+        }
+
+        AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(Weapons[EWeaponSlot::THROWABLE_WEAPON]);
+        switch (ThrowingWeapon->GetThrowableType())
+        {
+        case EThrowableType::GRENADE: UC_Util::Print("GRENADE"); break;
+        case EThrowableType::FLASH_BANG: UC_Util::Print("FLASH_BANG"); break;
+        case EThrowableType::SMOKE: UC_Util::Print("SMOKE"); break;
+        case EThrowableType::MAX: UC_Util::Print("MAX"); break;
+        }
+    }*/
+
 }
 
 AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* Weapon)

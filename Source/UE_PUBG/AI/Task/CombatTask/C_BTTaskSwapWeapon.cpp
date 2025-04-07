@@ -169,16 +169,16 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteWeaponSwapRoutine(EWeaponSlot In
 	 * 2. ChangeCurWeapon 시도 Failed -> Failed 처리
 	 * 3. 무기를 바꾸는 Anim Montage 재생 -> InProgress 처리
 	 */
-	return	(Enemy->GetEquippedComponent()->GetCurWeaponType() == InChangeTo)	? ExecuteTaskReturnRoutine(EBTNodeResult::Succeeded, BehaviorComponent) :
-			(!Enemy->GetEquippedComponent()->ChangeCurWeapon(InChangeTo))		? ExecuteTaskReturnRoutine(EBTNodeResult::Failed, BehaviorComponent) :
-																				  ExecuteTaskReturnRoutine(EBTNodeResult::InProgress, BehaviorComponent, Enemy, InChangeTo);  
+	return	Enemy->GetEquippedComponent()->GetCurWeaponType() == InChangeTo	? 	ExecuteTaskReturnRoutine(EBTNodeResult::Succeeded, BehaviorComponent) :
+			!Enemy->GetEquippedComponent()->ChangeCurWeapon(InChangeTo)		? 	ExecuteTaskReturnRoutine(EBTNodeResult::Failed, BehaviorComponent) :
+																				ExecuteTaskReturnRoutine(EBTNodeResult::InProgress, BehaviorComponent, Enemy, InChangeTo);  
 }
 
 EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteThrowableSwapRoutine(const FThrowableSwapExecutionDescriptor& Desc)
 {
 	if (Desc.CurrentThrowableSlotType == Desc.InChangeTo) // Slot에 이미 해당무기가 장착되어있는 상황
 	{
-		UC_Util::Print("Throwable Type already on slot!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+		UC_Util::Print("Target Throwable Type already on slot!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 		return ExecuteWeaponSwapRoutine(EWeaponSlot::THROWABLE_WEAPON, Desc.Enemy, Desc.BehaviorComponent);
 	}
 
