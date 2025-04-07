@@ -292,7 +292,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
             return false;
         }
 
-        UC_Util::Print("From ChangeCurWeapon : Playing Draw Montage and return true!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+        UC_Util::Print("From ChangeCurWeapon : 1. Playing Draw Montage and return true!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 
         // 다음 무기가 있을 때
         OwnerCharacter->PlayAnimMontage(Weapons[NextWeaponType]->GetCurDrawMontage());
@@ -323,7 +323,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
                 TempWeapon->BackToMainCamera();
         }
     }
-    UC_Util::Print("From ChangeCurWeapon : Playing Sheath Montage and return true!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+    UC_Util::Print("From ChangeCurWeapon : 2. Playing Sheath Montage and return true!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
     OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
     return true;
 }

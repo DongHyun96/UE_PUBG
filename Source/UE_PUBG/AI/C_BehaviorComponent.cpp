@@ -32,9 +32,7 @@ void UC_BehaviorComponent::BeginPlay()
 	// SetServiceType(EServiceType::COMBAT);
 	SetIdleTaskType(EIdleTaskType::WAIT);
 	// SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
-
-	// Test용
-	SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer());
+	
 }
 
 void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

@@ -88,17 +88,13 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	}
 
 	// 거리 50m 이내 / 현재 시야에 보이는 중이라면 MainGun으로 교체 / 시야에 보이지 않는 중이라면 ThrowableWeapon 중 택 1
-	/*if (Controller->IsCurrentlyOnSight(TargetCharacter))
+	if (Controller->IsCurrentlyOnSight(TargetCharacter))
 	{
 		UC_Util::Print("Executing Swap to AR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 		return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
-	}*/
+	}
 
-	// TODO : 위의 줄 주석을 사용하고, 밑에 전체 주석 친 줄 풀기
-	UC_Util::Print("Executing Swap to AR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-	return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
-
-	/*// 시야에 보이지 않는 중, Inven에 있는 Throwable이랑 Slot에 있는 Throwable 모두 조사해야 함
+	// 시야에 보이지 않는 중, Inven에 있는 Throwable이랑 Slot에 있는 Throwable 모두 조사해야 함
 
 	// Init Throwable Swap Descriptor
 	FThrowableSwapExecutionDescriptor Descriptor{};
@@ -162,7 +158,7 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 
 	// 아무 공격 투척류 종류가 없을 때
 	UC_Util::Print("Tried Swap to throwable, but no attacking throwable available!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-	return ExecuteTaskReturnRoutine(EBTNodeResult::Failed, BehaviorComponent);*/
+	return ExecuteTaskReturnRoutine(EBTNodeResult::Failed, BehaviorComponent);
 }
 
 
@@ -194,10 +190,24 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteThrowableSwapRoutine(const FThro
 	if (!InvenThrowableWeapon->MoveToSlot(Desc.Enemy, InvenThrowableWeapon->GetItemCurStack()))
 	{
 		UC_Util::Print("MoveToSlot Failed!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		ExecuteTaskReturnRoutine(EBTNodeResult::Failed, Desc.BehaviorComponent);
+		return ExecuteTaskReturnRoutine(EBTNodeResult::Failed, Desc.BehaviorComponent);
 	}
 
 	EWeaponSlot CurrentWeaponType = Desc.Enemy->GetEquippedComponent()->GetCurWeaponType();
+
+	// Slot에 새로 들어온 무기 CurMontage 업데이트 시키기(MoveToSlot으로 새로 만들어진 투척류는 Tick이 한번도 호출되지 않아서 CurMontages가 제대로 초기화되어 있지 않음)
+	AC_ThrowingWeapon* SlotThrowableWeapon =  Cast<AC_ThrowingWeapon>(Desc.Enemy->GetEquippedComponent()->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]);
+	if (!SlotThrowableWeapon)
+	{
+		UC_Util::Print("After Throwable MoveToSlot -> But Throwable Slot Weapon casting failed!", FColor::Red, 10.f);
+		return ExecuteTaskReturnRoutine(EBTNodeResult::Failed, Desc.BehaviorComponent);
+	}
+
+	if (!SlotThrowableWeapon->UpdateCurMontagesToOwnerCharacterPoseState())
+	{
+		UC_Util::Print("New SlotWeapon update current Montages failed!", FColor::Red, 10.f);
+		return ExecuteTaskReturnRoutine(EBTNodeResult::Failed, Desc.BehaviorComponent);
+	}
 
 	// 현재 Throwable 무기를 들고 있지 않을 때에 ChangeCurWeapon 시도
 	if (CurrentWeaponType != EWeaponSlot::THROWABLE_WEAPON)

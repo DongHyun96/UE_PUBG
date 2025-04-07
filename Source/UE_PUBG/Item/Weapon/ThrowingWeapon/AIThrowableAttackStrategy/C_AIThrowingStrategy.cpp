@@ -57,7 +57,7 @@ bool UC_AIThrowingStrategy::ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingW
 	if (!UpdateProjectileLaunchValues(ThrowingWeapon, InTargetCharacter->GetActorLocation()))
 	{
 		// LaunchValues를 초기화 할 수 없을 때(ex) 던지는 위로 향하는 궤적에 물체가 있을 때)
-		ThrowingWeapon->GetOwnerCharacter()->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::NONE);
+		// ThrowingWeapon->GetOwnerCharacter()->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::NONE);
 		return false;
 	}
 
