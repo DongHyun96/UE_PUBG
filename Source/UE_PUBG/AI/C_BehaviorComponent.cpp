@@ -32,12 +32,14 @@ void UC_BehaviorComponent::BeginPlay()
 	// SetServiceType(EServiceType::COMBAT);
 	SetIdleTaskType(EIdleTaskType::WAIT);
 	// SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
-	
+	SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer());
 }
 
 void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	DrawDebugSphere(GetWorld(), GetBasicTargetLocation(), 15.f, 10, FColor::Red);
 
 	/*switch (static_cast<EIdleTaskType>(Blackboard->GetValueAsEnum(IdleTaskKey))) {
 	case EIdleTaskType::WAIT: UC_Util::Print("Wait"); break;
