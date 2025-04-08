@@ -4,6 +4,7 @@
 
 #include "Item/Weapon/Gun/C_Gun.h"
 
+#include "AudioMixerBlueprintLibrary.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Item/Weapon/C_Weapon.h"
@@ -1236,10 +1237,13 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 	}
 	
 	//ExecuteReloadMontage();
-	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
-	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
-
-	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
+	int BackpackBulletStack = 0;
+	if (IsValid(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())))
+		BackpackBulletStack = OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())->GetItemCurStack();
+	if (CurBulletCount == 0 &&  BackpackBulletStack== 0)
+	{
+		return false;
+	}
 
 	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
 
@@ -1247,26 +1251,6 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 	//UC_Util::Print(FireDirection);
 
 	return true;
-	// bool ApplyGravity = true;
-	// for (auto& Bullet : OwnerEnemy->GetBullets())
-	// {
-	// 	if (Bullet->GetIsActive())
-	// 	{
-	// 		//UC_Util::Print("Can't fire");
-	// 		continue;
-	// 	}
-	// 	//UC_Util::Print("FIRE!!!!!!!");
-	// 	CurBulletCount--;
-	// 	bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
-	// 	if (!Succeeded) UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
-	// 	return Succeeded;
-	//
-	// 	//Bullet->Fire(this, FireLocation, FireDirection);
-	// 	//if (BulletCount > 100)
-	// 	//	return true;
-	// }
-	// UC_Util::Print("No More Bullets in Pool", FColor::MakeRandomColor(), 10.f);
-	//return false;
 
 }
 
@@ -1292,13 +1276,13 @@ bool AC_Gun::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter,
 	//float DeltaTime = GetWorld()->GetDeltaSeconds();
 	//UC_Util::Print("Change Rotation");
 	float InterpSpeed = 10.0f;
-	FRotator CurrentRotation = OwnerCharacter->GetActorRotation();
+	FRotator CurrentRotation =  OwnerCharacter->GetActorRotation();
 	FRotator NewRotation	= FMath::RInterpTo(CurrentRotation, LookRotation, DeltaTime, InterpSpeed);
 	NewRotation.Pitch		= 0.f;
 	NewRotation.Roll		= 0.f;
 	OwnerEnemy->SetActorRotation(NewRotation);
 	AIFireTimer += DeltaTime;
-	if (AIFireTimer > GetBulletRPM())
+	if (AIFireTimer > GetBulletRPM() && abs(NewRotation.Yaw - LookRotation.Yaw) < 10.0f)
 	{
 		return AIFireBullet(InTargetCharacter);
 	}
