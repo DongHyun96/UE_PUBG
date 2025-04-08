@@ -2,7 +2,7 @@
 
 
 #include "Loot/C_BasicLoot.h"
-
+#include "Item/C_Item.h"
 // Sets default values
 AC_BasicLoot::AC_BasicLoot()
 {
@@ -15,7 +15,6 @@ AC_BasicLoot::AC_BasicLoot()
 void AC_BasicLoot::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -24,4 +23,3 @@ void AC_BasicLoot::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
