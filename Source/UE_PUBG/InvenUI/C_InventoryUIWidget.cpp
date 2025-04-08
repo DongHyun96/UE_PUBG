@@ -151,7 +151,7 @@ void UC_InventoryUIWidget::UpdateAroundItemPanelWidget()
     {
         //TMap<FString, AC_Item*> AroundItems; // 실제 아이템 리스트를 가져오는 로직 필요
         TArray<AC_Item*> TestAroundItemList;
-        TestAroundItemList = OwnerPlayer->GetInvenComponent()->GetTestAroundItems();
+        TestAroundItemList = OwnerPlayer->GetInvenComponent()->GetAroundItems();
         AroundItemPanel->SetVisibility(ESlateVisibility::Visible);
 
         AroundItemPanel->UpdateAroundItemList(TestAroundItemList);

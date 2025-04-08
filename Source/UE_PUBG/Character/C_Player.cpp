@@ -44,6 +44,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Curves/CurveFloat.h"
 
+#include "Loot/C_BasicLoot.h"
+
 #include "Engine/PostProcessVolume.h"
 //#include "Engine/TextureRenderTarget2D.h"
 
@@ -485,18 +487,21 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 		if (OverlappedItem->GetOwnerCharacter() == nullptr)
 		{
 			if (!IsValid(InvenComponent)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
-			if (InvenComponent->GetTestAroundItems().Contains(OverlappedItem)) return;
+			if (InvenComponent->GetAroundItems().Contains(OverlappedItem)) return;
 			InvenComponent->AddItemToAroundList(OverlappedItem);
 			//Inventory->InitInvenUI();
 			//if (!IsValid(InvenSystem)) return;
 		}
 		InvenSystem->InitializeList();
-	}
-	else
-	{
-		// UC_Util::Print("No item");
-
 		return;
+	}
+	AC_BasicLoot* OverlappedLootBox = Cast<AC_BasicLoot>(OtherActor);
+	
+	if (IsValid(OverlappedLootBox))
+	{
+		InvenComponent->GetAroundItems().Append(OverlappedLootBox->GetLootItems());
+
+		InvenSystem->GetInvenUI()->UpdateAroundItemPanelWidget();
 	}
 }
 
@@ -515,11 +520,23 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 		//InvenSystem->InitializeList();
 		InvenSystem->GetInvenUI()->RemoveItemInList(OverlappedItem);
 	}
+
+	AC_BasicLoot* OverlappedLootBox = Cast<AC_BasicLoot>(OtherActor);
+
+	if (IsValid(OverlappedLootBox))
+	{
+		TArray<AC_Item*> LootItemList = OverlappedLootBox->GetLootItems();
+		for (AC_Item* LootItem : LootItemList)
+		{
+			InvenComponent->RemoveItemToAroundList(LootItem);
+			InvenSystem->GetInvenUI()->RemoveItemInList(LootItem);
+		}
+	}
 }
 
 AC_Item* AC_Player::FindBestInteractable()
 {
-	if (InvenComponent->GetTestAroundItems().IsEmpty()) return nullptr;
+	if (InvenComponent->GetAroundItems().IsEmpty()) return nullptr;
 
 	AC_Item* TargetInteractableItem = nullptr;
 
@@ -528,7 +545,7 @@ AC_Item* AC_Player::FindBestInteractable()
 	//UGameplayStatics::controller
 
 	APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
-	for (auto& AroundItem : InvenComponent->GetTestAroundItems())
+	for (auto& AroundItem : InvenComponent->GetAroundItems())
 	{
 		AC_Item* CachedInteractableItem = AroundItem;
 		
