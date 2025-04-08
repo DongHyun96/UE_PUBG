@@ -75,6 +75,8 @@ public:
 	/// <param name="InTargetCharacter"> : 공격 대상, 회피 대상 등이 될 TargetCharacter </param>
 	/// <returns> nullptr나 valid하지 않은 Actor로 setting되었다면 return false </returns>
 	bool SetTargetCharacter(class AC_BasicCharacter* InTargetCharacter);
+
+	UFUNCTION(BlueprintCallable)
 	class AC_BasicCharacter* GetTargetCharacter() const;
 
 	bool SetBasicTargetLocation(const FVector& InTargetLocation);
