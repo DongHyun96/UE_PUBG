@@ -17,6 +17,8 @@
 #include "Component/C_PoseColliderHandlerComponent.h"
 #include "Component/C_SwimmingComponent.h"
 #include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
+#include "Character/Component/C_AttachableItemMeshComponent.h"
+#include "Character/Component/C_FeetComponent.h"
 #include "C_Player.h"   
 
 #include "Component/C_ParkourComponent.h"
@@ -28,7 +30,6 @@
 #include "Components/SphereComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Bullet.h"
-#include "Character/Component/C_AttachableItemMeshComponent.h"
 
 #include "MotionWarpingComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -82,6 +83,7 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>("MotionWarping");
 
+	FeetComponent = CreateDefaultSubobject<UC_FeetComponent>("FeetComponent");
 }
 
 // Called when the game starts or when spawned

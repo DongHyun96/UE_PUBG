@@ -77,6 +77,9 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InSta
 		{
 			invenComp->AddItemToMyList(this);
 		}
+		if (invenComp->FindMyItem(this))
+			invenComp->RemoveItemToAroundList(this);
+
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 			UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 

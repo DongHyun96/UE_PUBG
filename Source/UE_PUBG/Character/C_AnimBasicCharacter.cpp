@@ -17,6 +17,7 @@
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
+#include "Character/Component/C_FeetComponent.h"
 
 void UC_AnimBasicCharacter::NativeBeginPlay()
 {
@@ -93,6 +94,13 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	else
 		CurGunType = EGunType::MAX;
 	SetAimingTurnInPlaceRotation();
+
+	UC_FeetComponent* FeetComponent = Cast<UC_FeetComponent>(OwnerCharacter->GetComponentByClass(UC_FeetComponent::StaticClass()));
+
+	if (FeetComponent)
+	{
+		FeetData = FeetComponent->GetData();
+	}
 }
 
 void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_Stand_To_Falling()

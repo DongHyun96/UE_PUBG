@@ -440,7 +440,10 @@ protected:
 
 public:
 	TArray<AC_Bullet*>& GetBullets() { return PooledBullets; }
-
+	
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UC_FeetComponent* FeetComponent{};
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -467,10 +470,10 @@ protected: // AI 피아 식별 관련
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TEnumAsByte<ETeamAttitude::Type> TeamID = ETeamAttitude::Hostile;
-///
-///캐릭터 피 파티클시스템
-///
 public:
+	///
+	///캐릭터 피 파티클시스템
+	///
 	TArray<class UParticleSystemComponent*> GetBloodParticles() { return BloodParticleComponents; }
 	void ActivateBloodParticle(FVector InLocation);
 protected:

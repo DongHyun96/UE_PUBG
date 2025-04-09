@@ -3,11 +3,12 @@
 
 #include "Loot/C_BasicLoot.h"
 #include "Item/C_Item.h"
+#include "Utility/C_Util.h"
 // Sets default values
 AC_BasicLoot::AC_BasicLoot()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -21,5 +22,14 @@ void AC_BasicLoot::BeginPlay()
 void AC_BasicLoot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	CheckLootItems();
+}
 
+void AC_BasicLoot::CheckLootItems()
+{
+	for (AC_Item* Item : LootItems)
+	{
+		if (Item->GetOwnerCharacter())
+			LootItems.Remove(Item);
+	}
 }

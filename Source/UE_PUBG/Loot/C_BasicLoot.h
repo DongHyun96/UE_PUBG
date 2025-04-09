@@ -46,6 +46,9 @@ public:
 	void SetLootItems(AC_Item* InItem) { LootItems.Emplace(InItem); }
 
 protected:
+	void CheckLootItems();
+
+protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<AC_Item*> LootItems{};
 };

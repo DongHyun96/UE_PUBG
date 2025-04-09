@@ -499,6 +499,10 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 	
 	if (IsValid(OverlappedLootBox))
 	{
+		if (OverlappedLootBox->GetLootItems().Num() == 0) return;
+			
+		OverlappedLootBox->SetActorTickEnabled(true);
+
 		InvenComponent->GetAroundItems().Append(OverlappedLootBox->GetLootItems());
 
 		InvenSystem->GetInvenUI()->UpdateAroundItemPanelWidget();
@@ -526,6 +530,7 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 	if (IsValid(OverlappedLootBox))
 	{
 		TArray<AC_Item*> LootItemList = OverlappedLootBox->GetLootItems();
+		OverlappedLootBox->SetActorTickEnabled(false);
 		for (AC_Item* LootItem : LootItemList)
 		{
 			InvenComponent->RemoveItemToAroundList(LootItem);

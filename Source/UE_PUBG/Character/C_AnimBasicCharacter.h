@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "Item/Weapon/Gun/C_Gun.h"
-
+//#include "Character/C_BasicCharacter.h"
+#include "Character/Component/C_FeetComponent.h"
 #include "C_AnimBasicCharacter.generated.h"
 
 enum class EMainState : uint8;
@@ -149,6 +150,8 @@ protected:
 
 	float AimOffsetLerpDelayTime = 0.0f;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FFeetData FeetData{};
 
 protected:
 
