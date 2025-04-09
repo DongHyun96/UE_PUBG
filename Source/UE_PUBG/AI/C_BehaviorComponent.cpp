@@ -33,6 +33,7 @@ void UC_BehaviorComponent::BeginPlay()
 	SetIdleTaskType(EIdleTaskType::WAIT);
 	// SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
 	SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer());
+	// OwnerEnemy->GetEnemyAIController()->SetFocus(GAMESCENE_MANAGER->GetPlayer());
 }
 
 void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

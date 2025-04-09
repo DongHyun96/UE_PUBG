@@ -14,6 +14,7 @@ enum class EIdleTaskType : uint8
 	INCIRCLE_MOVETO,
 	CHANGE_POSE,
 	STAT_CARE,
+	TAKE_COVER,
 	MAX
 };
 
