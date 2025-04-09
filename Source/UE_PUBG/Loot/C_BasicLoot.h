@@ -40,14 +40,21 @@ public:
 	void SetLootItems(TArray<AC_Item*> ItemList) { LootItems.Append(ItemList); }
 
 	/// <summary>
-	/// 하나의 아이템을 추가
+	/// 하나의 아이템을 추가.
 	/// </summary>
 	/// <param name="InItem"></param>
 	void SetLootItems(AC_Item* InItem) { LootItems.Emplace(InItem); }
 
+	/// <summary>
+	/// 하나의 아이템을 삭제.
+	/// </summary>
+	/// <param name="InItem"></param>
+	void RemoveLootItem(AC_Item* InItem) { LootItems.Remove(InItem); }
+
 protected:
 	void CheckLootItems();
 
+	void InitializeLootItems();
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<AC_Item*> LootItems{};

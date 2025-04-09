@@ -10,6 +10,8 @@
 #include "InvenUI/C_InventoryUIWidget.h"
 #include "Engine/World.h"
 
+#include "Loot/C_BasicLoot.h"
+
 //#include "GameFramework/Actor.h"
 //#include "Components/StaticMeshComponent.h"
 
@@ -135,19 +137,29 @@ AC_Item* AC_Item::SpawnItem(AC_BasicCharacter* Character)
 
 bool AC_Item::MoveToInven(AC_BasicCharacter* Character, int32 InStack)
 {
-	
+	bool bIsMoveItem = false;
+
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		return MoveAroundToInven(Character, InStack);
+		bIsMoveItem = MoveAroundToInven(Character, InStack);
+		break;
 	case EItemPlace::INVEN:
-		return MoveInvenToInven(Character, InStack);
+		bIsMoveItem = MoveInvenToInven(Character, InStack);
+		break;
 	case EItemPlace::SLOT:
-		return MoveSlotToInven(Character, InStack);
+		bIsMoveItem = MoveSlotToInven(Character, InStack);
+		break;
 	default:
 		break;
 	}
-	return false;
+
+	AC_BasicLoot* OwnerLootBox = Cast<AC_BasicLoot>(this->GetOwner());
+
+	if (OwnerLootBox)
+		OwnerLootBox->RemoveLootItem(this);
+
+	return bIsMoveItem;
 }
 
 bool AC_Item::MoveToAround(AC_BasicCharacter* Character, int32 InStack)
@@ -183,6 +195,11 @@ bool AC_Item::MoveToSlot(AC_BasicCharacter* Character, int32 InStack)
 	default:
 		break;
 	}
+
+	AC_BasicLoot* OwnerLootBox = Cast<AC_BasicLoot>(this->GetOwner());
+
+	if (OwnerLootBox)
+		OwnerLootBox->RemoveLootItem(this);
 
 	if (AC_Player* Player = Cast<AC_Player>(Character))
 		Player->GetInvenSystem()->GetInvenUI()->UpdateEquipmentItemPanelWidget();

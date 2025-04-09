@@ -131,10 +131,10 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
 
     Weapons[InSlot]->SetOwnerCharacter(OwnerCharacter); // 새로운 OwnerCharacter 지정
-    Weapons[InSlot]->SetActorHiddenInGame(true);
+    Weapons[InSlot]->SetActorHiddenInGame(false);
     //충돌체 켜주기, 1117 상연, 근접무기는 장착만 해도 보이는 상태.
-    if (InSlot == EWeaponSlot::MELEE_WEAPON)
-        Weapons[InSlot]->SetActorHiddenInGame(false);
+    if (InSlot == EWeaponSlot::THROWABLE_WEAPON)
+        Weapons[InSlot]->SetActorHiddenInGame(true);
 
     //꺼주면 제자리 파쿠르 방지.
     // Weapons[InSlot]->SetActorEnableCollision(false); 
