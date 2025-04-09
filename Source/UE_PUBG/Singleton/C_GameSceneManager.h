@@ -58,7 +58,7 @@ public: // Getters and setters
 	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
 
 	TArray<class AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
-	TArray<class AActor*>& GetAllCharacterActors() { return AllCharacterActors; }
+	TArray<AActor*>& GetAllCharacterActors() { return AllCharacterActors; }
 
 	/// <summary>
 	/// GameScene에서 GC로부터 보호된 Object들 추가 -> GameScene 끝날 때 일괄 삭제처리 예정
