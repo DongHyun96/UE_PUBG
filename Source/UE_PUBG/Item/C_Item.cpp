@@ -156,8 +156,13 @@ bool AC_Item::MoveToInven(AC_BasicCharacter* Character, int32 InStack)
 
 	AC_BasicLoot* OwnerLootBox = Cast<AC_BasicLoot>(this->GetOwner());
 
-	if (OwnerLootBox)
+	//이 부분에 분명히 아이템 나눠지면서 생기는 문제가 생길 것 같음.
+	if (OwnerLootBox && bIsMoveItem == true)
+	{
 		OwnerLootBox->RemoveLootItem(this);
+		if (Character->GetInvenComponent()->GetAroundItems().Contains(this))
+			Character->GetInvenComponent()->RemoveItemToAroundList(this);
+	}
 
 	return bIsMoveItem;
 }
@@ -198,11 +203,20 @@ bool AC_Item::MoveToSlot(AC_BasicCharacter* Character, int32 InStack)
 
 	AC_BasicLoot* OwnerLootBox = Cast<AC_BasicLoot>(this->GetOwner());
 
-	if (OwnerLootBox)
+	//이 부분에 분명히 아이템 나눠지면서 생기는 문제가 생길 것 같음.
+	if (OwnerLootBox && bIsMoveItem == true)
+	{
 		OwnerLootBox->RemoveLootItem(this);
+		if (Character->GetInvenComponent()->GetAroundItems().Contains(this))
+			Character->GetInvenComponent()->RemoveItemToAroundList(this);
+
+	}
 
 	if (AC_Player* Player = Cast<AC_Player>(Character))
+	{
 		Player->GetInvenSystem()->GetInvenUI()->UpdateEquipmentItemPanelWidget();
+		Player->GetInvenSystem()->GetInvenUI()->UpdateAroundItemPanelWidget();
+	}
 
 	return bIsMoveItem;
 }

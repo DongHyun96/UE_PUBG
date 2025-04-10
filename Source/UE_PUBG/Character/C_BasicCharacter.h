@@ -240,6 +240,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
 
+
 	void SetIsHoldDirection(bool InIsHoldDirection) { bIsHoldDirection = InIsHoldDirection; }
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
 
@@ -393,6 +394,10 @@ protected:
 	// Stat관련 Component (ex HP)
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_StatComponent* StatComponent{};
+
+	// LootCrate class
+	//UPROPERTY(EditDefaultsOnly)
+	//TSubclassOf<class AC_LootCrate> LootCrateClass;
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

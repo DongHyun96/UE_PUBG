@@ -29,12 +29,12 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, TArray<AC_Item
             }
         }
     }
-
     //아이템 타입(EItemType) 기준 정렬
-    ItemsToAdd.Sort([](const AC_Item& A, const AC_Item& B) 
+    ItemsToAdd.Sort([](const AC_Item& A, const AC_Item& B)
         {
             return A.GetItemDatas()->ItemType < B.GetItemDatas()->ItemType;
         });
+
 
     //ListView에 아이템 추가
     if (ItemsToAdd.Num() > 0)
@@ -75,10 +75,13 @@ void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& Aroun
     TArray<AC_Item*> SortedItems = AroundItemList;
 
     //오름차순 정렬
-    SortedItems.Sort([](const AC_Item& A, const AC_Item& B) 
-        {
-            return A.GetItemName() < B.GetItemName();
-        });
+    //SortedItems.Sort([](AC_Item* A, AC_Item* B) 
+    //    {
+    //        if (!A && !B) return false;
+    //        if (!A) return false;
+    //        if (!B) return true;
+    //        return A->GetItemDatas()->ItemType < B->GetItemDatas()->ItemType;
+    //    });
 
 
     // 한 번에 아이템을 추가
@@ -93,5 +96,6 @@ void UC_BasicItemPanelWidget::RemoveItemInList(AC_Item* InItem)
 {
     ItemListView1->RemoveItem(InItem);
 }
+
 
 

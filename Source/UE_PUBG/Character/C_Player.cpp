@@ -507,6 +507,18 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 
 		InvenSystem->GetInvenUI()->UpdateAroundItemPanelWidget();
 	}
+
+	//TArray<AC_Item*> SortedItems = this->GetInvenComponent()->GetAroundItems();
+	//
+	////오름차순 정렬
+	//SortedItems.Sort([](AC_Item* A, AC_Item* B) 
+	//    {
+	//        if (!A && !B) return false;
+	//        if (!A) return false;
+	//        if (!B) return true;
+	//        return A->GetItemDatas()->ItemType < B->GetItemDatas()->ItemType;
+	//    });
+	//GetInvenComponent()->SetAroundItems(SortedItems);
 }
 
 void AC_Player::HandleOverlapEnd(AActor* OtherActor)
@@ -537,6 +549,18 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 			InvenSystem->GetInvenUI()->RemoveItemInList(LootItem);
 		}
 	}
+
+	//TArray<AC_Item*> SortedItems = this->GetInvenComponent()->GetAroundItems();
+	//
+	////오름차순 정렬
+	//SortedItems.Sort([](AC_Item* A, AC_Item* B)
+	//	{
+	//		if (!A && !B) return false;
+	//		if (!A) return false;
+	//		if (!B) return true;
+	//		return A->GetItemDatas()->ItemType < B->GetItemDatas()->ItemType;
+	//	});
+	//GetInvenComponent()->SetAroundItems(SortedItems);
 }
 
 AC_Item* AC_Player::FindBestInteractable()

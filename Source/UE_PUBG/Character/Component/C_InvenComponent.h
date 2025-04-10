@@ -145,6 +145,8 @@ public: //Getter and Seter
 
 	TArray<AC_Item*>& GetAroundItems() { return AroundItems; }
 
+	void SetAroundItems(TArray<AC_Item*> InAroundItemList) { AroundItems = InAroundItemList; }
+
 	UFUNCTION(BlueprintCallable)
 	int32 GetTotalStackByItemName(const FName& ItemName);
 

@@ -35,6 +35,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 
+#include "Loot/C_LootCrate.h"
+
+#include "Singleton/C_GameSceneManager.h"
+
 #include "Utility/C_Util.h"
 
 
@@ -195,7 +199,11 @@ void AC_BasicCharacter::CharacterDead()
 {
 	if (GetMesh()->GetSkeletalMeshAsset() == ParkourComponent->GetRootedSkeletalMesh())
 		ParkourComponent->SwapMeshToMainSkeletalMesh();
-	
+
+	FVector SpawnLocation = GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+
+	GAMESCENE_MANAGER->SpawnLootCrateAt(SpawnLocation, this);
+
 	// 본 변형 업데이트
 	//GetMesh()->RefreshBoneTransforms();
 	//GetMesh()->UpdateComponentToWorld();
@@ -239,6 +247,12 @@ void AC_BasicCharacter::EnableRagdoll()
 		SetActorTickEnabled(false);
 		DisableInput(PlayerController);
 	}
+
+	SetActorEnableCollision(false);
+
+	//FTimerHandle TimerHandle;
+
+	//GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_BasicCharacter::EnableRagdoll, 2.f, false);
 }
 
 float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

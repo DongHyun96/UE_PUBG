@@ -28,6 +28,9 @@ class UE_PUBG_API UC_GameSceneManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
+public:
+	UC_GameSceneManager();
+
 private:
 	/// <summary>
 	/// Level에 배치된 모든 Actor들의 BeginPlay보다 먼저 호출됨
@@ -41,6 +44,14 @@ private:
 
 	void Initialize(FSubsystemCollectionBase& Collection) override;
 	void Deinitialize() override;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	class AC_LootCrate* SpawnLootCrateAt(FVector SpawnLocation, AC_BasicCharacter* DeadCharacter);
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AC_LootCrate> LootCrateClass;
 
 private:
 
@@ -57,6 +68,7 @@ public: // Getters and setters
 	class AC_MagneticFieldManager* GetMagneticFieldManager() const { return MagneticFieldManager; }
 	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
 
+	UFUNCTION(BlueprintCallable)
 	TArray<class AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
 	TArray<AActor*>& GetAllCharacterActors() { return AllCharacterActors; }
 
