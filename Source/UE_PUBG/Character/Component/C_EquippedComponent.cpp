@@ -43,49 +43,6 @@ void UC_EquippedComponent::BeginPlay()
 void UC_EquippedComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-    /*if (Cast<AC_Enemy>(OwnerCharacter))
-    {
-        FString Str{};
-        
-        switch (GetCurWeaponType())
-        {
-        case EWeaponSlot::NONE: Str = "None"; break;
-        case EWeaponSlot::MAIN_GUN: Str = "MainGun"; break;
-        case EWeaponSlot::SUB_GUN: Str = "SubGun"; break;
-        case EWeaponSlot::MELEE_WEAPON: Str = "MeleeWeapon"; break;
-        case EWeaponSlot::THROWABLE_WEAPON: Str = "ThrowableWeapon"; break;
-        }
-
-        switch (NextWeaponType)
-        {
-        case EWeaponSlot::NONE: Str += " None"; break;
-        case EWeaponSlot::MAIN_GUN: Str += " MainGun"; break;
-        case EWeaponSlot::SUB_GUN: Str += " SubGun"; break;
-        case EWeaponSlot::MELEE_WEAPON: Str += " MeleeWeapon"; break;
-        case EWeaponSlot::THROWABLE_WEAPON: Str += " ThrowableWeapon"; break;
-        }
-        UC_Util::Print(Str);
-    }*/
-
-    /*if (Cast<AC_Enemy>(OwnerCharacter))
-    {
-        if (!Weapons[EWeaponSlot::THROWABLE_WEAPON])
-        {
-            UC_Util::Print("NONE");
-            return;
-        }
-
-        AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(Weapons[EWeaponSlot::THROWABLE_WEAPON]);
-        switch (ThrowingWeapon->GetThrowableType())
-        {
-        case EThrowableType::GRENADE: UC_Util::Print("GRENADE"); break;
-        case EThrowableType::FLASH_BANG: UC_Util::Print("FLASH_BANG"); break;
-        case EThrowableType::SMOKE: UC_Util::Print("SMOKE"); break;
-        case EThrowableType::MAX: UC_Util::Print("MAX"); break;
-        }
-    }*/
-
 }
 
 AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* Weapon)
@@ -240,6 +197,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
             // 바로 다음 투척류 꺼내기
             OwnerCharacter->PlayAnimMontage(NextThrowableWeapon->GetCurDrawMontage());
+            bIsCurrentlyChangingWeapon = true;
             return true;
         }
     }
@@ -296,7 +254,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
         // 다음 무기가 있을 때
         OwnerCharacter->PlayAnimMontage(Weapons[NextWeaponType]->GetCurDrawMontage());
-        
+        bIsCurrentlyChangingWeapon = true;
         return true;
     }
 
@@ -309,6 +267,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
         if (IsValid(ThrowingWeapon))
         {
             // 이미 쿠킹이 시작되었고, 아직 손에서 떠나지 않은 투척류라면 땅에 떨굼
+            // 여기서의 ChangingWeapon은 DrawStart에서 true로 start를 끊기(ReleaseOnGround 한 뒤, 남은 Throwable이 없을 수도 있기 때문)
             if (ThrowingWeapon->GetIsCooked() && ThrowingWeapon->GetAttachParentActor())
                 return ThrowingWeapon->ReleaseOnGround();
         }
@@ -323,8 +282,9 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
                 TempWeapon->BackToMainCamera();
         }
     }
-    UC_Util::Print("From ChangeCurWeapon : 2. Playing Sheath Montage and return true!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+    
     OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
+    bIsCurrentlyChangingWeapon = true;
     return true;
 }
 
@@ -383,7 +343,7 @@ bool UC_EquippedComponent::TryReAttachCurWeaponToHand()
     SetNextWeaponType(CurWeaponType);
     FPriorityAnimMontage DrawMontage = GetCurWeapon()->GetCurDrawMontage();
     OwnerCharacter->PlayAnimMontage(DrawMontage);
-
+    bIsCurrentlyChangingWeapon = true;
     return true;
 }
 
@@ -406,6 +366,9 @@ void UC_EquippedComponent::OnSheathEnd()
             OwnerCharacter->SetHandState(EHandState::UNARMED);
             CurWeaponType   = EWeaponSlot::NONE;
             NextWeaponType  = EWeaponSlot::NONE;
+            
+            bIsCurrentlyChangingWeapon = false;
+            
             return;
         }
 
@@ -429,6 +392,7 @@ void UC_EquippedComponent::OnSheathEnd()
     if (!IsValid(GetCurWeapon()))
     {
         OwnerCharacter->SetHandState(EHandState::UNARMED);
+        bIsCurrentlyChangingWeapon = false;
         return;
     }
 
@@ -441,18 +405,22 @@ void UC_EquippedComponent::OnDrawStart()
     if (!Weapons[NextWeaponType])
     {
         //OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, GetCurWeapon()->GetCurDrawMontage().AnimMontage);
+        bIsCurrentlyChangingWeapon = false;
         NextWeaponType  = EWeaponSlot::NONE;
         CurWeaponType   = EWeaponSlot::NONE;
         OwnerCharacter->SetHandState(EHandState::UNARMED);
         return;
     }
 
+    bIsCurrentlyChangingWeapon = true;
     Weapons[NextWeaponType]->AttachToHand(OwnerCharacter->GetMesh());
     //GetCurWeapon()->AttachToHand(OwnerCharacter->GetMesh());
 }   
 
 void UC_EquippedComponent::OnDrawEnd()
 {
+    bIsCurrentlyChangingWeapon = false;
+    
     if (NextWeaponType == EWeaponSlot::NONE) return;
 
     // 무기를 바꾸는 도중에 SlotWeapon 장착 해제 예외 처리 -> 바꿔들 무기가 사라졌을 때

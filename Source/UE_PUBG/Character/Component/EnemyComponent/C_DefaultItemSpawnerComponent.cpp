@@ -176,9 +176,13 @@ void UC_DefaultItemSpawnerComponent::SpawnBullets(const FActorSpawnParameters& P
 	for (int i = 0; i < 2; ++i)
 	{
 		AC_Item_Bullet* FiveMMBullet = GetWorld()->SpawnActor<AC_Item_Bullet>(BulletClasses[EBulletType::FIVEMM], Param);
-		FiveMMBullet->MoveToInven(OwnerEnemy, FiveMMBullet->GetItemCurStack());		
+		FiveMMBullet->MoveToInven(OwnerEnemy, FiveMMBullet->GetItemCurStack());
 	}
 	
 	AC_Item_Bullet* SevenMMBullet = GetWorld()->SpawnActor<AC_Item_Bullet>(BulletClasses[EBulletType::SEVENMM], Param);
 	SevenMMBullet->MoveToInven(OwnerEnemy, SevenMMBullet->GetItemCurStack());
+
+	// FName
+	
+	// OwnerEnemy->InvenComponent()
 }

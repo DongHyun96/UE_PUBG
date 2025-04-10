@@ -64,6 +64,9 @@ public:
 	EWeaponSlot GetCurWeaponType() const { return CurWeaponType; }
 
 	TMap<EWeaponSlot, AC_Weapon*> GetWeapons() { return Weapons; }
+
+	bool GetIsCurrentlyChangingWeapon() const { return bIsCurrentlyChangingWeapon; }
+	void SetIsCurrentlyChangingWeapon(bool InIsCurrentlyChangingWeapon) { bIsCurrentlyChangingWeapon = InIsCurrentlyChangingWeapon; }
 	
 public:
 	/// <summary>
@@ -148,6 +151,11 @@ protected:
 
 protected:
 	void SetMainGunOrSubGun(EWeaponSlot InSlot);
+
+private:
+
+	// 현재 Weapon을 바꾸는 중인지 check
+	bool bIsCurrentlyChangingWeapon{};
 
 };
 

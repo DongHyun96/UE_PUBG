@@ -79,22 +79,35 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 
 	FVector End = FVector(Socket.X, Socket.Y, PosZ);
 
-	FHitResult HitResult;
-	TArray<AActor*> IgnoreActors;
-	IgnoreActors.Add(OwnerCharacter);
+	// FHitResult HitResult;
+	// TArray<AActor*> IgnoreActors;
+	// IgnoreActors.Add(OwnerCharacter);
 
-	bool IsHit = UKismetSystemLibrary::LineTraceSingle
+	// bool IsHit = UKismetSystemLibrary::LineTraceSingle
+	// (
+	// 	GetWorld(),
+	// 	Start, End,
+	// 	ETraceTypeQuery::TraceTypeQuery1,
+	// 	true,
+	// 	IgnoreActors,
+	// 	DrawDebugType,
+	// 	HitResult,
+	// 	true,
+	// 	FLinearColor::Green,
+	// 	FLinearColor::Red
+	// );
+	
+	FHitResult HitResult{};
+	FCollisionQueryParams CollisionParams{};
+	CollisionParams.AddIgnoredActor(OwnerCharacter);
+	
+	bool IsHit = GetWorld()->LineTraceSingleByChannel
 	(
-		GetWorld(),
-		Start, End,
-		ETraceTypeQuery::TraceTypeQuery1,
-		true,
-		IgnoreActors,
-		DrawDebugType,
 		HitResult,
-		true,
-		FLinearColor::Green,
-		FLinearColor::Red
+		Start,
+		End,
+		ECC_Visibility,
+		CollisionParams
 	);
 
 	OutDistance = 0;

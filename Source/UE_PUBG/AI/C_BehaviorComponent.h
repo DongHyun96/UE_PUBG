@@ -85,11 +85,6 @@ public:
 	bool SetInCircleTargetLocation(const FVector& InTargetLocation);
 	FVector GetInCircleTargetLocation() const;
 
-public:
-
-	void SetNextPoseState(EPoseState InNextPoseState);
-	EPoseState GetNextPoseState() const { return NextPoseState; }
-	bool SetIdleTaskTypeToPrevType();
 
 private:
 
@@ -120,13 +115,6 @@ protected:
 	
 private:
 	class UBlackboardComponent* Blackboard{};
-
-private: // ChangePoseState 관련
-
-	EIdleTaskType PrevIdleTaskType = EIdleTaskType::MAX;
-	
-	// BTTask ChangePoseState에 활용될 값
-	EPoseState NextPoseState{};
 
 private: // WAIT_TASK 시간
 
