@@ -48,8 +48,6 @@ void UC_PingSystemComponent::OnMMBStarted()
 	FVector DestLocation = CamPos + WorldPingActor->GetWorldPingDistanceLimit() * CamForward;
 
 	FCollisionQueryParams CollisionParams{};
-	CollisionParams.AddIgnoredActor(OwnerPlayer);
-
 	CollisionParams.AddIgnoredActors(GAMESCENE_MANAGER->GetAllCharacterActors());
 	
 	FHitResult HitResult{};

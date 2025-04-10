@@ -389,7 +389,7 @@ protected:
 public:
 	//AI 총알 발사 관련 함수
 	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
-	virtual bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime);
+	virtual bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
 
 public: 
 	/// <summary>

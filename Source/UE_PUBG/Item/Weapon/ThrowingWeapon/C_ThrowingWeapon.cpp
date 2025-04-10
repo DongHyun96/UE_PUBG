@@ -914,6 +914,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 		// 바로 다음 투척류 꺼내기
 		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
 		PrevOwnerCharacter->PlayAnimMontage(TargetThrowWeapon->GetCurDrawMontage());
+		OwnerEquippedComponent->SetIsCurrentlyChangingWeapon(true);
 		return;
 	}
 
@@ -940,6 +941,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 		// 바로 다음 투척류 꺼내기
 		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
 		PrevOwnerCharacter->PlayAnimMontage(TargetThrowWeapon->GetCurDrawMontage());
+		OwnerEquippedComponent->SetIsCurrentlyChangingWeapon(true);
 		return;
 	}
 

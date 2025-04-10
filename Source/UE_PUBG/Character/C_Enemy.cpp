@@ -18,6 +18,13 @@
 
 const float AC_Enemy::JUMP_VELOCITYZ_ORIGIN = 420.f;
 
+const TMap<EPoseState, float> AC_Enemy::ActorZLocationOffsetFromBottom =
+{
+	{EPoseState::STAND,		90.f},
+	{EPoseState::CROUCH,	69.212f},
+	{EPoseState::CRAWL,		22.4f},
+};
+
 AC_Enemy::AC_Enemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -102,7 +109,7 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 				Super::SetPoseState(EPoseState::STAND);
 				return true;
 			}
-
+			UpdateMaxWalkSpeed({0.f, 0.f}); // PoseTransitioning 처리하는 동안 MaxWalkSpeed 0으로 만들기
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToStand, EPoseState::STAND);
 			return true;
 
@@ -119,9 +126,9 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CRAWL: // Crawl To Crouch
 
-			if (bIsActivatingConsumableItem) return false; // TODO : 일어설 수 없습니다 UI 띄우기
+			if (bIsActivatingConsumableItem) return false;
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
-			
+			UpdateMaxWalkSpeed({0.f, 0.f});
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToCrouch, EPoseState::CROUCH);
 
 			return true;
@@ -133,18 +140,18 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		{
 		case EPoseState::STAND: // Stand to Crawl
 
-			if (bIsActivatingConsumableItem) return false; // TODO : 없드릴 수 없습니다 UI 띄우기
+			if (bIsActivatingConsumableItem) return false;
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
-
+			UpdateMaxWalkSpeed({0.f, 0.f});
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).StandToCrawl, EPoseState::CRAWL);
 
 			return true;
 
 		case EPoseState::CROUCH: // Crouch to Crawl
 
-			if (bIsActivatingConsumableItem) return false; // TODO : 없드릴 수 없습니다 UI 띄우기
+			if (bIsActivatingConsumableItem) return false;
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
-
+			UpdateMaxWalkSpeed({0.f, 0.f});
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrouchToCrawl, EPoseState::CRAWL);
 			return true;
 
@@ -152,7 +159,6 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		}
 	case EPoseState::POSE_MAX: default: return false;
 	}
-
 }
 
 AC_EnemyAIController* AC_Enemy::GetEnemyAIController() const
@@ -162,7 +168,11 @@ AC_EnemyAIController* AC_Enemy::GetEnemyAIController() const
 
 void AC_Enemy::SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType)
 {
-	// 실제 CapsuleComponent의 HalfHeight는 88 -> but PIE에서 ActorLocation Z는 90이 나와서 90 상수값 적용
-	static const float ACTOR_HALF_Z = 90.f;
-	SetActorLocation(BottomLocation + FVector::UnitZ() * ACTOR_HALF_Z, false, nullptr, TeleportType);	
+	SetActorLocation(BottomLocation + FVector::UnitZ() * ActorZLocationOffsetFromBottom[this->PoseState], false, nullptr, TeleportType);	
+}
+
+void AC_Enemy::OnPoseTransitionFinish()
+{
+	UpdateMaxWalkSpeed({1.f, 0.f}); // Forward 방면 기준으로 MaxWalkSpeed 재설정
+	Super::OnPoseTransitionFinish();
 }

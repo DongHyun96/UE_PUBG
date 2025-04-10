@@ -91,8 +91,8 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	AC_Weapon* CurrentAttackingWeapon = EquippedComponent->GetCurWeapon();
 	bool AttackSucceeded = CurrentAttackingWeapon->ExecuteAIAttack(TargetCharacter);
 
-	if (AttackSucceeded)	UC_Util::Print("Attack Succeeded", FColor::Red, 10.f);
-	else					UC_Util::Print("Attack Failed",    FColor::Red, 10.f);
+	//if (AttackSucceeded)	UC_Util::Print("Attack Succeeded", FColor::Red, 10.f);
+	//else					UC_Util::Print("Attack Failed",    FColor::Red, 10.f);
 
 	// BehaviorComponent->SetServiceType(EServiceType::IDLE);
 

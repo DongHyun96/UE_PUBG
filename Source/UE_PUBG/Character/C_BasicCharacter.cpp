@@ -275,6 +275,13 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 	//GetCharacterMovement()->MaxWalkSpeed =	(PoseState == EPoseState::STAND)  ? 370.f :
 	//										(PoseState == EPoseState::CROUCH) ? 200.f :
 	//										(PoseState == EPoseState::CRAWL)  ? 100.f : 600.f;
+
+	if (MovementVector.X == 0.f && MovementVector.Y == 0.f) // No input
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		return;
+	}
+	
 	if (SwimmingComponent->IsSwimming())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;

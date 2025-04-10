@@ -296,7 +296,7 @@ public:
 	/// Pose Transition Montage가 끝나고 Callback되는 함수
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	void OnPoseTransitionFinish();
+	virtual void OnPoseTransitionFinish();
 
 public:
 

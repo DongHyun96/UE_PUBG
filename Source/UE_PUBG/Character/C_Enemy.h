@@ -57,7 +57,13 @@ public:
 	/// <param name="TeleportType"></param>
 	void SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType = ETeleportType::None);
 
+	FVector GetActorBottomLocation() const { return GetActorLocation() - FVector::UnitZ() * ActorZLocationOffsetFromBottom[GetPoseState()]; }
+
 	static float GetJumpVelocityZOrigin() { return JUMP_VELOCITYZ_ORIGIN; }
+
+protected:
+
+	void OnPoseTransitionFinish() override;
 
 public: // For Testing
 	
@@ -98,6 +104,9 @@ private:
 private:
 
 	static const float JUMP_VELOCITYZ_ORIGIN;
+
+	// 바닥의 Z값이 0일 때, 각 자세별 ActorLocation Z 위치(또는 바닥으로부터 ActorLocation Z의 offset 값이라고 보면 됨)
+	static const TMap<EPoseState, float> ActorZLocationOffsetFromBottom;
 
 };
 

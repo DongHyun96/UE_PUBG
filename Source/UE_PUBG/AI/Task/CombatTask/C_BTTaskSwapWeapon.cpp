@@ -48,11 +48,12 @@ void UC_BTTaskSwapWeapon::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	}*/
 	
 	if (EquippedComponent->GetCurWeaponType() != SwapTargetWeaponSlotMap[Enemy]) return;
+	if (EquippedComponent->GetIsCurrentlyChangingWeapon()) return;
 
 	// 여기서부터 초 세기
 	TotalTimeMap[Enemy] += DeltaSeconds;
 	
-	if (TotalTimeMap[Enemy] > 2.f) // Task 끝났다고 간주
+	if (TotalTimeMap[Enemy] > 0.5f) // Task 끝났다고 간주
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		TotalTimeMap.Remove(Enemy);
