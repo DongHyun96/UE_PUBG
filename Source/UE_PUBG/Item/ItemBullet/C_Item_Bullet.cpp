@@ -156,6 +156,16 @@ void AC_Item_Bullet::UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer)
 	}
 }
 
+FName AC_Item_Bullet::GetBulletTypeName(EBulletType InBulletType)
+{
+	if (InBulletType == EBulletType::NONE)
+	{
+		UC_Util::Print("From AC_Item_Bullet::GetBulletTypeName : Received NONE type!", FColor::Red, 10.f);
+		return "";
+	}
+	return BulletTypeNameMap[InBulletType];
+}
+
 
 
 

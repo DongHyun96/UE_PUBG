@@ -182,7 +182,27 @@ void UC_DefaultItemSpawnerComponent::SpawnBullets(const FActorSpawnParameters& P
 	AC_Item_Bullet* SevenMMBullet = GetWorld()->SpawnActor<AC_Item_Bullet>(BulletClasses[EBulletType::SEVENMM], Param);
 	SevenMMBullet->MoveToInven(OwnerEnemy, SevenMMBullet->GetItemCurStack());
 
-	// FName
+	FName FiveBulletName = AC_Item_Bullet::GetBulletTypeName(EBulletType::FIVEMM);
+	FName SevenBulletName = AC_Item_Bullet::GetBulletTypeName(EBulletType::SEVENMM);
+
+	AC_Item* FiveBulletItem		= OwnerEnemy->GetInvenComponent()->FindMyItemByName(FiveBulletName);
+	AC_Item* SevenBulletItem	= OwnerEnemy->GetInvenComponent()->FindMyItemByName(SevenBulletName);
+
+	if (!IsValid(FiveBulletItem))
+	{
+		UC_Util::Print("No FiveBullet in Inven!", FColor::Red, 20.f);
+		return;
+	}
 	
-	// OwnerEnemy->InvenComponent()
+	FString Str = "Five Bullet Spawned Count : " + FString::FromInt(FiveBulletItem->GetItemCurStack());
+	UC_Util::Print(Str, FColor::Red, 10.f);
+
+	if (!IsValid(SevenBulletItem))
+	{
+		UC_Util::Print("No SevenBullet in Inven!", FColor::Red, 20.f);
+		return;
+	}
+
+	Str = "Seven Bullet Spawned Count : " + FString::FromInt(SevenBulletItem->GetItemCurStack());
+	UC_Util::Print(Str, FColor::Red, 10.f);
 }

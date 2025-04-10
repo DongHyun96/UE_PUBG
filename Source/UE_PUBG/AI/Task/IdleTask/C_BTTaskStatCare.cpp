@@ -7,6 +7,7 @@
 #include "AI/C_EnemyAIController.h"
 #include "Character/C_Enemy.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
 UC_BTTaskStatCare::UC_BTTaskStatCare()
@@ -21,7 +22,7 @@ void UC_BTTaskStatCare::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetAIOwner());
 	if (!IsValid(Controller))
 	{
-		UC_Util::Print("From UC_BTTaskStatCare TickTask : Controller Casting failed!", FColor::Red, 10.f);
+		UC_Util::Print("From UC_BTTaskStatCare TickTask : Controller Casting failed!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
@@ -31,7 +32,7 @@ void UC_BTTaskStatCare::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 	if (!ExecutedConsumableItemMap.Contains(Enemy))
 	{
-		UC_Util::Print("From UC_BTTaskStatCare TickTask : ExecutedItem Map does not contains Enemy key!", FColor::Red, 10.f);
+		UC_Util::Print("From UC_BTTaskStatCare TickTask : ExecutedItem Map does not contains Enemy key!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
@@ -52,7 +53,7 @@ void UC_BTTaskStatCare::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	
 	ExecutedConsumableItemMap.Remove(Enemy);
 
-	if (ExecutedItemState == EConsumableItemState::USED) UC_Util::Print("Consumable Used check in BTTASK", FColor::MakeRandomColor(), 10.f);
+	if (ExecutedItemState == EConsumableItemState::USED) UC_Util::Print("Consumable Used checked in BTTASK", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 
 	FinishLatentTask(OwnerComp, (ExecutedItemState == EConsumableItemState::USED) ? EBTNodeResult::Succeeded : EBTNodeResult::Failed);
 
@@ -66,7 +67,7 @@ EBTNodeResult::Type UC_BTTaskStatCare::ExecuteTask(UBehaviorTreeComponent& Owner
 	AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
 	if (!IsValid(Controller))
 	{
-		UC_Util::Print("From UC_BTTaskStatCare ExecuteTask : Controller Casting failed!", FColor::Red, 10.f);
+		UC_Util::Print("From UC_BTTaskStatCare ExecuteTask : Controller Casting failed!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 		return EBTNodeResult::Failed;
 	}
 
@@ -80,6 +81,7 @@ EBTNodeResult::Type UC_BTTaskStatCare::ExecuteTask(UBehaviorTreeComponent& Owner
 		TryUsingHealItem(Enemy, EnemyInvenComponent)) return EBTNodeResult::InProgress;
 
 	if (TryUsingBoostItem(Enemy, EnemyInvenComponent)) return EBTNodeResult::InProgress;
+	
 	return EBTNodeResult::Failed;
 }
 
@@ -122,7 +124,11 @@ bool UC_BTTaskStatCare::TryUsingHealItem(AC_Enemy* Enemy, UC_InvenComponent* Ene
 bool UC_BTTaskStatCare::TryUsingBoostItem(AC_Enemy* Enemy, UC_InvenComponent* EnemyInvenComponent)
 {
 	// 이미 충분히 Boosting 되어있다고 판단
-	if (Enemy->GetStatComponent()->GetCurBoosting() > 50.f) return false;
+	if (Enemy->GetStatComponent()->GetCurBoosting() > 50.f)
+	{
+		UC_Util::Print("From Stat Care Task : Try using boost item failed due to insufficient boost amount", GAMESCENE_MANAGER->GetTickRandomColor());
+		return false;
+	}
 	
 	FName DrinkItemName      = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::ENERGY_DRINK);
 	FName PainKillerItemName = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::PAIN_KILLER);

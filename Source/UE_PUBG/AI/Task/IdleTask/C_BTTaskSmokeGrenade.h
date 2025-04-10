@@ -24,6 +24,8 @@ public:
 
 private:
 
+private:
+
 	// 특정 Enemy의 Smoke Grenade Execute AIAttackStrategy 시작되었는지 체크하는 용도
 	TSet<class AC_Enemy*> SmokeGrenadeAIAttackExecutedEnemies{};
 
