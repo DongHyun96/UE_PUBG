@@ -61,6 +61,15 @@ public:
 
 	static float GetJumpVelocityZOrigin() { return JUMP_VELOCITYZ_ORIGIN; }
 
+public:
+	
+	/// <summary>
+	/// <para> StatComponent에서 Damage를 정상적으로 입었을 때 호출될 함수 </para>
+	/// <para> Behavior Tree FSM 처리 </para>
+	/// </summary>
+	/// <param name="DamageCauser"> : Damage를 준 캐릭터 </param>
+	void OnTakeDamage(class AC_BasicCharacter* DamageCauser);
+
 protected:
 
 	void OnPoseTransitionFinish() override;

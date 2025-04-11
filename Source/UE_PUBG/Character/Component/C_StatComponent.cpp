@@ -126,9 +126,12 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 		}
 	}
 
-	// TODO : 이 라인 지우기
+	
 	if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
-		OwnerEnemy->GetHPBar()->SetPercent(CurHP / MAX_HP);
+	{
+		OwnerEnemy->GetHPBar()->SetPercent(CurHP / MAX_HP);// TODO : 이 라인 지우기
+		OwnerEnemy->OnTakeDamage(DamageCauser);
+	}
 
 	// 사망
 	if (CurHP <= 0.f)

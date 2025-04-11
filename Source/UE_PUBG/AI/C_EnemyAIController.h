@@ -52,8 +52,6 @@ public:
 
 	class UC_BehaviorComponent* GetBehaviorComponent() const { return BehaviorComponent; }
 
-	bool HasAnyCharacterEnteredLevel1SightRange() const { return !DetectedCharacters[ESightRangeLevel::Level1].IsEmpty(); }
-
 private:
 	/// <summary>
 	/// 이동 완료되었을 떄 호출될 함수
@@ -61,6 +59,16 @@ private:
 	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
 public:
+
+	static float GetLv1SightRangeDistance();
+
+	// TSet<AC_BasicCharacter*>& GetLevel1SightRangeCharacters() { return DetectedCharacters[ESightRangeLevel::Level1]; }
+	
+	/// <summary>
+	/// DetectedCharacters 중에 Lv1 Range 안에 있는 캐릭터가 하나라도 있는지 조사
+	/// </summary>
+	/// <returns> : 한 명이라도 Lv1에 있다면 return true </returns>
+	bool HasAnyCharacterEnteredLevel1SightRange() const { return !DetectedCharacters[ESightRangeLevel::Level1].IsEmpty(); }
 	
 	/// <summary>
 	/// Level 1 Sight Range Level에 들어온 Character들을 체크해서, 있다면 해당 캐릭터들 중 가장 적합한 대상으로 TargetCharacter 세팅 시도 

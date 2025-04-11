@@ -144,6 +144,13 @@ void AC_EnemyAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFo
 	BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
 }
 
+float AC_EnemyAIController::GetLv1SightRangeDistance()
+{
+	// TODO : 밑 줄 주석으로 사용 / 현재는 Testing용 값 return 중
+	return 2000.f;
+	// return SIGHT_RANGE_DISTANCE[ESightRangeLevel::Level1];
+}
+
 bool AC_EnemyAIController::TrySetTargetCharacterToLevel1EnteredCharacter()
 {
 	if (DetectedCharacters[ESightRangeLevel::Level1].IsEmpty()) return false;
