@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "MagneticField/C_MagneticFieldManager.h"
@@ -42,7 +42,7 @@ void AC_MagneticFieldManager::Tick(float DeltaTime)
 	
 	HandleUpdateState(DeltaTime);
 
-	HandleDamagingCharacters(DeltaTime);
+	//HandleDamagingCharacters(DeltaTime);
 }
 
 bool AC_MagneticFieldManager::IsInMainCircle(AC_BasicCharacter* Character) const
