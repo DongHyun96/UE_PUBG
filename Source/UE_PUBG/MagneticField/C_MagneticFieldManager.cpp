@@ -67,7 +67,12 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 
 		// Enemy들 NextCircle random TargetLocation 잡아주기
 		for (AC_Enemy* Enemy : GAMESCENE_MANAGER->GetEnemies())
+		{
+			if (!IsValid(Enemy)) continue;
+			if (Enemy->GetMainState() == EMainState::DEAD) continue;
+			
 			Enemy->GetTargetLocationSettingHelper()->TrySetRandomInCircleTargetLocationAtMagneticCircle(NextCircle);
+		}
 
 		return;
 	case EMagneticFieldState::SHRINK:
