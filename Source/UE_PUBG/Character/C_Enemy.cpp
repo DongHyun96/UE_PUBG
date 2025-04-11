@@ -4,8 +4,10 @@
 #include "Character/C_Enemy.h"
 
 #include "C_Player.h"
+#include "AI/C_BehaviorComponent.h"
 
 #include "AI/C_EnemyAIController.h"
+#include "AI/Service/C_BTServiceCombat.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -169,6 +171,48 @@ AC_EnemyAIController* AC_Enemy::GetEnemyAIController() const
 void AC_Enemy::SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType)
 {
 	SetActorLocation(BottomLocation + FVector::UnitZ() * ActorZLocationOffsetFromBottom[this->PoseState], false, nullptr, TeleportType);	
+}
+
+void AC_Enemy::OnTakeDamage(AC_BasicCharacter* DamageCauser)
+{
+	UC_BehaviorComponent* BehaviorComponent = GetEnemyAIController()->GetBehaviorComponent();
+	AC_BasicCharacter* TargetCharacter = BehaviorComponent->GetTargetCharacter();
+
+	UC_Util::Print("OnTakeDamage", FColor::Red, 10.f);
+
+	// Damage를 입힌 사람이 나 자신(자기가 던진 수류탄 등)이거나 nullptr(자기장 등)
+	if (DamageCauser == this || DamageCauser == nullptr) return;
+
+	// 이미 누군가를 공격 중이라면
+	if (BehaviorComponent->GetServiceType() == EServiceType::COMBAT &&
+		BehaviorComponent->GetCombatTaskType() == ECombatTaskType::ATTACK)
+		return;
+
+	// Try Update TargetCharacter
+	{
+		// 현재 TargetCharacter가 존재하지 않다면
+		if (!TargetCharacter)
+		{
+			BehaviorComponent->SetTargetCharacter(DamageCauser);
+		}
+		
+		// Detected Characters 중 Lv1 캐릭터가 한 명도 없을 때
+		if (!GetEnemyAIController()->HasAnyCharacterEnteredLevel1SightRange())
+		{
+			// 바로 TargetCharacter로 지정
+			BehaviorComponent->SetTargetCharacter(DamageCauser);
+		}
+
+		// Lv1 캐릭터가 있는 상황 -> Damage Causer도 Lv1에 들어오는지 체크
+		float DamageCauserDistance = FVector::Distance(DamageCauser->GetActorLocation(), this->GetActorLocation());
+		if (DamageCauserDistance < AC_EnemyAIController::GetLv1SightRangeDistance())
+		{
+			BehaviorComponent->SetTargetCharacter(DamageCauser);
+		}
+
+		
+	}
+	
 }
 
 void AC_Enemy::OnPoseTransitionFinish()

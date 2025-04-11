@@ -33,6 +33,7 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 
 	if (!EnemyTimers.Contains(EnemyBehaviorComponent)) EnemyTimers.Add(EnemyBehaviorComponent, 0.f);
 
+	// Update Detected Characters' Sight Range Level
 	if (Enemy->GetMainState() != EMainState::SKYDIVING)
 		EnemyAIController->UpdateDetectedCharactersRangeLevel();
 	

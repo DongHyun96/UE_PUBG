@@ -7,7 +7,8 @@
 #include "C_EQSCustomTraceTest.generated.h"
 
 /**
- * 
+ * 기존의 QueryTest_Trace에 Ignore Actor 수정이 불가능해서 RunTest 부분의 Ignore Actor 추가 부분만 수정
+ * 기본적인 Test 구현은 모두 같음
  */
 UCLASS()
 class UE_PUBG_API UC_EQSCustomTraceTest : public UEnvQueryTest_Trace
