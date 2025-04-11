@@ -864,7 +864,7 @@ bool AC_Gun::ReloadBullet()
 	RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
 
 	ChangedStack = LeftAmmoCount - RemainAmmo;
-		
+	
 	InvenComp->DecreaseItemStack(CurBullet->GetItemCode(), RemainAmmo);
 	//CurBullet->SetItemStack(ChangedStack); //TODO : InvenComponent에서 한번에 조절하는 기능 만들기.
 	UC_Util::Print("Reload Bullet");
