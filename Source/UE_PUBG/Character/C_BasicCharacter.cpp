@@ -104,6 +104,15 @@ void AC_BasicCharacter::BeginPlay()
 	//InvenSystem->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
 }
 
+void AC_BasicCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GAMESCENE_MANAGER->GetAllCharacters().Remove(this);
+	GAMESCENE_MANAGER->GetAllCharacters().Remove(this);
+	// Enemy와 Player remove는 각 자식 단계에서 처리
+}
+
 // Called every frame
 void AC_BasicCharacter::Tick(float DeltaTime)
 {

@@ -8,7 +8,7 @@
 
 enum class EPoseState : uint8;
 /**
- * 
+ * Take Cover sequence 목표 지점 도착 이후 실행될 task
  */
 UCLASS()
 class UE_PUBG_API UC_BTTaskAfterTakeCoverMoveTo : public UBTTaskNode

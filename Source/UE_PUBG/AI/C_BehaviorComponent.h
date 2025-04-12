@@ -19,7 +19,6 @@ enum class EServiceType : uint8
 };
 
 enum class EIdleTaskType   	: uint8;
-enum class ECombatTaskType 	: uint8;
 enum class EPoseState		: uint8;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -47,9 +46,6 @@ public:
 	
 	bool SetIdleTaskType(EIdleTaskType Type);
 	EIdleTaskType GetIdleTaskType() const;
-	
-	bool SetCombatTaskType(ECombatTaskType Type);
-	ECombatTaskType GetCombatTaskType() const;
 
 public: // TODO : Player에 관련한 내용 지우기 (For Testing)
 

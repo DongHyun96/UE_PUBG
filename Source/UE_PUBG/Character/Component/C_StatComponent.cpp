@@ -118,11 +118,11 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 		if (HittingBlood)
 		{ 
 			HittingBlood->ShowHitEffect(); 
-			UC_Util::Print("HittingBlood!");
+			// UC_Util::Print("HittingBlood!");
 		}
 		else
 		{
-			UC_Util::Print("HitingBlood is Nullptr!");
+			// UC_Util::Print("HitingBlood is Nullptr!");
 		}
 	}
 
@@ -138,7 +138,7 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 	{
 		// TODO : 주석 풀기 (지금은 Test중)
 		// 사망 처리 
-		OwnerCharacter->CharacterDead();
+		// OwnerCharacter->CharacterDead();
 	}
 	
 	return true;
@@ -184,7 +184,7 @@ float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhysicsAsse
 {
 	if (!DAMAGINGPARTS_MAP.Contains(DamagingPhysicsAssetBoneName))
 	{
-		UC_Util::Print("From UC_StatComponent::TakeDamage : No Such PhysicsAsset Bone Name exists!");
+		// UC_Util::Print("From UC_StatComponent::TakeDamage : No Such PhysicsAsset Bone Name exists!");
 		return 0.f;
 	}
 

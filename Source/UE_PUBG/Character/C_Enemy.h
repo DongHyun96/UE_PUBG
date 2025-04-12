@@ -25,7 +25,9 @@ public:
 
 	void BeginPlay() override;
 
-	void Tick(float DeltaSeconds) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	virtual void Tick(float DeltaSeconds) override;
 
 
 	class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
@@ -69,6 +71,13 @@ public:
 	/// </summary>
 	/// <param name="DamageCauser"> : Damage를 준 캐릭터 </param>
 	void OnTakeDamage(class AC_BasicCharacter* DamageCauser);
+
+private:
+	/// <summary>
+	/// DamageCauser로 TargetCharacter 업데이트 시도 
+	/// </summary>
+	/// <returns> : 해당 Character로 Update 되지 않았다면 return false </returns>
+	bool TryUpdateTargetCharacterToDamageCauser(AC_BasicCharacter* DamageCauser);
 
 protected:
 

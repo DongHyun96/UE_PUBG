@@ -138,7 +138,7 @@ bool AC_Bullet::Fire(AC_Gun* InOwnerGun, FVector InLocation, FVector InDirection
 	UNiagaraComponent* BulletParticle = FindComponentByClass<UNiagaraComponent>();
 	if (BulletParticle)
 	{
-		UC_Util::Print("Found Effect");
+		// UC_Util::Print("Found Effect");
 		BulletParticle->Deactivate();
 	}
 	if (EnableGravity)
@@ -178,7 +178,7 @@ bool AC_Bullet::Fire(AC_Gun* InOwnerGun, FVector InLocation, FVector InDirection
 		
 		if (BulletParticle)
 		{
-			UC_Util::Print("Found Effect");
+			// UC_Util::Print("Found Effect");
 			BulletParticle->Activate();
 		}
 		return true;
@@ -299,7 +299,7 @@ void AC_Bullet::OnProjectileStop(const FHitResult& ImpactResult)
 void AC_Bullet::PlaySound(const FHitResult& ImpactResult)
 {
 
-	UC_Util::Print(ImpactResult.GetActor());
+	// UC_Util::Print(ImpactResult.GetActor());
 
 	//if (!ImpactResult.PhysMaterial.IsValid())
 	//{
@@ -310,7 +310,7 @@ void AC_Bullet::PlaySound(const FHitResult& ImpactResult)
 	// 충돌이 실제로 발생했는지 확인
 	if (!ImpactResult.bBlockingHit)
 	{
-		UC_Util::Print("ImpactResult is not a blocking hit!");
+		// UC_Util::Print("ImpactResult is not a blocking hit!");
 		return;
 	}
 
@@ -319,7 +319,7 @@ void AC_Bullet::PlaySound(const FHitResult& ImpactResult)
 	// ImpactResult.PhysMaterial이 있는지 확인
 	if (!ImpactResult.PhysMaterial.IsValid())
 	{
-		UC_Util::Print("PhysMaterial is NULL! Trying to fetch manually...");
+		// UC_Util::Print("PhysMaterial is NULL! Trying to fetch manually...");
 
 		UPhysicalMaterial* PhysMaterial = nullptr;
 		if (ImpactResult.Component.IsValid())
@@ -332,61 +332,61 @@ void AC_Bullet::PlaySound(const FHitResult& ImpactResult)
 		}
 
 		SurfaceType = (PhysMaterial) ? static_cast<EPhysicalSurface>(PhysMaterial->SurfaceType) : SurfaceType_Default;
-		UC_Util::Print("SurfaceType (Manual Fetch): " + FString::FromInt(SurfaceType));
+		// UC_Util::Print("SurfaceType (Manual Fetch): " + FString::FromInt(SurfaceType));
 	}
 	else
 	{
 		SurfaceType = UGameplayStatics::GetSurfaceType(ImpactResult);
-		UC_Util::Print("SurfaceType: " + FString::FromInt(SurfaceType));
+		// UC_Util::Print("SurfaceType: " + FString::FromInt(SurfaceType));
 	}
 
 	if (!BulletImpactSoundData) 
 	{
-		UC_Util::Print("BulletImpactSoundData Is Nullptr!");
+		// UC_Util::Print("BulletImpactSoundData Is Nullptr!");
 		return; 
 	}
 
 	int32 RandomIndex = 0;
 
-	UC_Util::Print("PlaySound");
-	UC_Util::Print(SurfaceType);
+	//UC_Util::Print("PlaySound");
+	//UC_Util::Print(SurfaceType);
 
 	switch (SurfaceType)
 	{
 	case SurfaceType_Default:
-		UC_Util::Print("PlaySound_Default, Play Sound Ground");
+		// UC_Util::Print("PlaySound_Default, Play Sound Ground");
 		PlayRandomSoundFromArray(BulletImpactSoundData->ImpactGround);
 		break;
 	case SurfaceType1: // Body
-		UC_Util::Print("PlaySound_Body");
+		// UC_Util::Print("PlaySound_Body");
 		PlayRandomSoundFromArray(BulletImpactSoundData->ImpactBody);
 		break;
 	case SurfaceType2: //Helmet
-		UC_Util::Print("PlaySound_Helmet");
+		// UC_Util::Print("PlaySound_Helmet");
 		PlayRandomSoundFromArray(BulletImpactSoundData->ImpactBody);
 		break;
 	case SurfaceType3: // Vest
-		UC_Util::Print("PlaySound_Vest");
+		// UC_Util::Print("PlaySound_Vest");
 		PlayRandomSoundFromArray(BulletImpactSoundData->ImpactBody);
 		break;
 	case SurfaceType4: // Wood
-		UC_Util::Print("PlaySound_Wood");
+		// UC_Util::Print("PlaySound_Wood");
 		PlayRandomSoundFromArray(BulletImpactSoundData->ImpactWood);
 		break;
 	case SurfaceType5: // Concrete
-		UC_Util::Print("PlaySound_Concrete");
+		// UC_Util::Print("PlaySound_Concrete");
 		PlayRandomSoundFromArray(BulletImpactSoundData->ImpactConcrete);
 		break;
 	case SurfaceType6: // Metal
-		UC_Util::Print("PlaySound_Metal");
+		// UC_Util::Print("PlaySound_Metal");
 		PlayRandomSoundFromArray(BulletImpactSoundData->ImpactMetal);
 		break;
 	case SurfaceType7: // Ground
-		UC_Util::Print("PlaySound_Ground");
+		// UC_Util::Print("PlaySound_Ground");
 		PlayRandomSoundFromArray(BulletImpactSoundData->ImpactGround);
 		break;
 	case SurfaceType8: // Fly
-		UC_Util::Print("PlaySound_Fly");
+		// UC_Util::Print("PlaySound_Fly");
 		PlayRandomSoundFromArray(BulletImpactSoundData->ImpactFly);
 		break;
 	default:

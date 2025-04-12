@@ -78,18 +78,6 @@ EIdleTaskType UC_BehaviorComponent::GetIdleTaskType() const
 	return static_cast<EIdleTaskType>(Blackboard->GetValueAsEnum(IdleTaskKey));
 }
 
-bool UC_BehaviorComponent::SetCombatTaskType(ECombatTaskType Type)
-{
-	if (Type == ECombatTaskType::MAX) return false;
-	Blackboard->SetValueAsEnum(CombatTaskKey, static_cast<uint8>(Type));
-	return false;
-}
-
-ECombatTaskType UC_BehaviorComponent::GetCombatTaskType() const
-{
-	return static_cast<ECombatTaskType>(Blackboard->GetValueAsEnum(CombatTaskKey));
-}
-
 bool UC_BehaviorComponent::SetPlayer(class AC_Player* Player)
 {
 	if (!IsValid(Player)) return false;
@@ -126,7 +114,7 @@ bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharact
 	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false;
 
 	// 현재 공격중인 때에는 TargetCharacter를 새로 바꾸지 않음
-	if (GetServiceType() == EServiceType::COMBAT && GetCombatTaskType() == ECombatTaskType::ATTACK) return false;
+	if (GetServiceType() == EServiceType::COMBAT) return false;
 	
 	
 	Blackboard->SetValueAsObject(TargetCharacterKey, InTargetCharacter);

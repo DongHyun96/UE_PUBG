@@ -11,6 +11,7 @@
 #include "AI/C_BehaviorComponent.h"
 #include "AI/Service/C_BTServiceCombat.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Item/ItemBullet/C_Item_Bullet.h"
 
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Singleton/C_GameSceneManager.h"
@@ -58,7 +59,6 @@ void UC_BTTaskSwapWeapon::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		TotalTimeMap.Remove(Enemy);
 		SwapTargetWeaponSlotMap.Remove(Enemy);
-		BehaviorComponent->SetCombatTaskType(ECombatTaskType::ATTACK);
 	}
 }
 
@@ -79,20 +79,54 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	
 	if (!IsValid(TargetCharacter)) return ExecuteTaskReturnRoutine(EBTNodeResult::Failed, BehaviorComponent);
 
+	// 도중에 상태가 바뀌었다면 Failed 처리하고 돌아가기
+	if (BehaviorComponent->GetServiceType() != EServiceType::COMBAT) return EBTNodeResult::Failed;
+
+	// 총기류 먼저 바꾸기 시도
+	FName SevenBulletItemName	= AC_Item_Bullet::GetBulletTypeName(EBulletType::SEVENMM);
+	FName FiveBulletItemName	= AC_Item_Bullet::GetBulletTypeName(EBulletType::FIVEMM);
+	int TotalSevenBulletCount	= Enemy->GetInvenComponent()->GetTotalStackByItemName(SevenBulletItemName);
+	int TotalFiveBulletCount	= Enemy->GetInvenComponent()->GetTotalStackByItemName(FiveBulletItemName);
+
 	float DistanceToTargetCharacter = FVector::Distance(Enemy->GetActorLocation(), TargetCharacter->GetActorLocation());
-
-	// 거리가 50m를 넘어가면 SR들기
-	if (DistanceToTargetCharacter > 1000.f) // TODO : 50m로 수정
+	
+	// 남은 5탄과 7탄이 모두 있을 때
+	if (TotalSevenBulletCount > 0 && TotalFiveBulletCount > 0)
 	{
-		UC_Util::Print("Executing Swap to SR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent);
-	}
 
-	// 거리 50m 이내 / 현재 시야에 보이는 중이라면 MainGun으로 교체 / 시야에 보이지 않는 중이라면 ThrowableWeapon 중 택 1
-	if (Controller->IsCurrentlyOnSight(TargetCharacter))
+		// 거리가 50m를 넘어가면 SubGun으로 교체 시도
+		if (DistanceToTargetCharacter > 1000.f) // TODO : 50m로 수정
+		{
+			UC_Util::Print("Executing Swap to SR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+			return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent); 
+		}
+
+		// 거리 50m 이내 / 현재 시야에 보이는 중이라면 MainGun으로 교체 / 시야에 보이지 않는 중이라면 ThrowableWeapon 중 택 1 (역시 남은 장탄수 확인해서)
+		if (Controller->IsCurrentlyOnSight(TargetCharacter))
+		{
+			UC_Util::Print("Executing Swap to AR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+			return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
+		}
+	}
+	else if (TotalSevenBulletCount > 0) // 7탄만 남았을 때
+	{
+		// 거리가 50m를 넘어가면 SubGun으로 교체 시도
+		if (DistanceToTargetCharacter > 1000.f) // TODO : 50m로 수정
+		{
+			UC_Util::Print("Executing Swap to SR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+			return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent);
+		}
+	}
+	else if (TotalFiveBulletCount > 0) // 5탄만 남았을 때
 	{
 		UC_Util::Print("Executing Swap to AR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
+		
+		// 시야에 보이는지만 체크해서 AR 사용하기
+		if (Controller->IsCurrentlyOnSight(TargetCharacter))
+		{
+			UC_Util::Print("Executing Swap to AR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+			return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
+		}
 	}
 
 	// 시야에 보이지 않는 중, Inven에 있는 Throwable이랑 Slot에 있는 Throwable 모두 조사해야 함
@@ -227,9 +261,6 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTaskReturnRoutine(const EBTNodeR
 {
 	switch (ReturnType)
 	{
-	case EBTNodeResult::Succeeded:
-		BehaviorComponent->SetCombatTaskType(ECombatTaskType::ATTACK);
-		break;
 	case EBTNodeResult::Failed:
 		BehaviorComponent->SetServiceType(EServiceType::IDLE);
 		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
@@ -245,12 +276,10 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTaskReturnRoutine(const EBTNodeR
 			);
 			break;
 		}
-		
 		SwapTargetWeaponSlotMap.Add(Enemy, InChangeTo);
 		TotalTimeMap.Add(Enemy, 0.f);
 		break;
-	case EBTNodeResult::Aborted: default: break;
+	case EBTNodeResult::Succeeded: case EBTNodeResult::Aborted: default: break;
 	}
-	
 	return ReturnType;
 }

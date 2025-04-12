@@ -67,7 +67,6 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	if (EnemyAIController->TrySetTargetCharacterToLevel1EnteredCharacter())
 	{
 		EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
-		EnemyBehaviorComponent->SetCombatTaskType(ECombatTaskType::SWAP_WEAPON);
 		return;
 	}
 
@@ -96,7 +95,6 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	{
 		UC_Util::Print("WaitTask Time's up : Try Attack TargetCharacter!", FColor::Red, 10.f);
 		EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
-		EnemyBehaviorComponent->SetCombatTaskType(ECombatTaskType::SWAP_WEAPON);
 		// return;
 	}
 

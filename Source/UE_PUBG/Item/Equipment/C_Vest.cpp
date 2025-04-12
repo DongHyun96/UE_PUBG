@@ -102,7 +102,7 @@ bool AC_Vest::MoveAroundToSlot(AC_BasicCharacter* Character,int32 InStack)
 
 bool AC_Vest::TakeDamage(float DamageAmount)
 {
-	UC_Util::Print("AC_Vest::TakeDamage : " + FString::SanitizeFloat(DamageAmount), FColor::MakeRandomColor(), 10.f);
+	// UC_Util::Print("AC_Vest::TakeDamage : " + FString::SanitizeFloat(DamageAmount), FColor::MakeRandomColor(), 10.f);
 	
 	// Level에 따른 Vest에 적용되는 Damage량 조절
 	float DamageReduceRate =	(ItemLevel == EEquipableItemLevel::LV1) ? 0.5f  :

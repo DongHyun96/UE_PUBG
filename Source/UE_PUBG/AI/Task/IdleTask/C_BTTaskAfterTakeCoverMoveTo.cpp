@@ -42,6 +42,8 @@ EBTNodeResult::Type UC_BTTaskAfterTakeCoverMoveTo::ExecuteTask(UBehaviorTreeComp
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
+	UC_Util::Print("After TakeCover MoveTo", FColor::MakeRandomColor(), 20.f);
+
 	AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
 	if (!IsValid(Controller))
 	{
@@ -53,20 +55,11 @@ EBTNodeResult::Type UC_BTTaskAfterTakeCoverMoveTo::ExecuteTask(UBehaviorTreeComp
 	UC_BehaviorComponent* BehaviorComponent = Controller->GetBehaviorComponent();
 	AC_BasicCharacter*	  TargetCharacter	= BehaviorComponent->GetTargetCharacter();
 	
-	if (!TargetCharacter)
-	{
-		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
-		return EBTNodeResult::Failed;
-	}
-	if (TargetCharacter->GetMainState() == EMainState::DEAD)
-	{
-		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
-		return EBTNodeResult::Failed;
-	}
+	if (!TargetCharacter) return EBTNodeResult::Succeeded; // TargetCharacter가 사라졌다 해도 TakeCover sequence 이어나가기
+	if (TargetCharacter->GetMainState() == EMainState::DEAD) return EBTNodeResult::Succeeded;
 
 	// ChangePose 할지 결정
 	// 도달한 지점에서 Sight 검사를 해서 현재 Sight에 들어오는 곳이라면, 다른 자세를 취하기
-	
 
 	if (!Controller->IsCurrentlyOnSight(TargetCharacter)) return EBTNodeResult::Succeeded; // 제대로 Hide 처리되었다고 판단
 
@@ -112,6 +105,7 @@ EBTNodeResult::Type UC_BTTaskAfterTakeCoverMoveTo::ExecuteTask(UBehaviorTreeComp
 	// 만약에 불가피하게 도착지점에 아무 엄폐물도 없다하면(높이로 판단하기) TakeCover sequence 종료
 	if (CrouchTraceHitted && CrawlTraceHitted)
 	{
+		UC_Util::Print("From AfterTakeCover : TakeCover sequence failed!, Returning to wait task", FColor::Red, 20.f);
 		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
 		return EBTNodeResult::Failed;
 	}
