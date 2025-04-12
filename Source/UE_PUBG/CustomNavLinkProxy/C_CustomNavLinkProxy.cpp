@@ -108,9 +108,8 @@ void AC_CustomNavLinkProxy::HandleEnteredEnemiesDestArrival()
 			// Reach End Point
 			UC_Util::Print("End Point Reached!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 
-			UC_BehaviorComponent* BehaviorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent();
-			BehaviorComponent->SetNextPoseState(DirectionPoseStates[Direction].DestPointPoseState);
-			BehaviorComponent->SetIdleTaskType(EIdleTaskType::CHANGE_POSE);
+			// Set to Dest pose State
+			Enemy->SetPoseState(Enemy->GetPoseState(), DirectionPoseStates[Direction].DestPointPoseState);
 			
 			It.RemoveCurrent(); // Destination 처리 완료한 인원 제거
 		}
@@ -143,12 +142,7 @@ void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVect
 	// UC_Util::Print((CurDirection == EDirection::RIGHT_TO_LEFT) ? "Right_To_Left" : "Left_To_Right", FColor::MakeRandomColor(), 10.f);
 
 	// 시작 지점 자세 변환 적용, 이미 같은 자세라면 전환 x
-	if (Enemy->GetPoseState() != DirectionPoseStates[CurDirection].StartPointPoseState)
-	{
-		UC_BehaviorComponent* BehaviorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent();
-		BehaviorComponent->SetNextPoseState(DirectionPoseStates[CurDirection].StartPointPoseState);
-		BehaviorComponent->SetIdleTaskType(EIdleTaskType::CHANGE_POSE); // Service는 현재 MoveToTask 진행 중이였기 때문에 바꿀 필요 x	
-	}
+	Enemy->SetPoseState(Enemy->GetPoseState(), DirectionPoseStates[CurDirection].StartPointPoseState);
 	
 	FTimerHandle TimerHandle{};
 	

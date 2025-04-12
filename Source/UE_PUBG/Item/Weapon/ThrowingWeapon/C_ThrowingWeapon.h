@@ -84,6 +84,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	
+	/// <summary>
+	/// OwnerCharacter의 PoseState에 맞추어 CurMontage 맞추기 
+	/// </summary>
+	/// <return> : OwnerCharcter가 nullptr이면, return false </return>
+	bool UpdateCurMontagesToOwnerCharacterPoseState();
+
+public:
 
 	/// <summary>
 	/// Throwable의 Holster에 부착 시, visible을 끔
@@ -96,9 +104,9 @@ public:
 
 
 public:
-
-	static TMap<EThrowableType, FName> GetThrowableItemNameMap() { return THROWABLETYPE_ITEMNAME_MAP; }
-
+	
+	static FName GetThrowableItemName(EThrowableType TargetType);	
+	
 	EThrowableType GetThrowableType() const { return ThrowableType; }
 
 private:

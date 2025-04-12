@@ -112,6 +112,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -185,6 +187,7 @@ protected:
 	//자식 단계에서 OverlapBegin에서 사용할 함수 Template method
 	virtual void HandleOverlapEnd(AActor* OtherActor);
 
+	void DestroyCharacter();
 public:
 
 	/// <summary>
@@ -239,6 +242,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
+
 
 	void SetIsHoldDirection(bool InIsHoldDirection) { bIsHoldDirection = InIsHoldDirection; }
 	bool GetIsHoldDirection() const { return bIsHoldDirection; }
@@ -296,7 +300,7 @@ public:
 	/// Pose Transition Montage가 끝나고 Callback되는 함수
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	void OnPoseTransitionFinish();
+	virtual void OnPoseTransitionFinish();
 
 public:
 
@@ -394,6 +398,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_StatComponent* StatComponent{};
 
+	// LootCrate class
+	//UPROPERTY(EditDefaultsOnly)
+	//TSubclassOf<class AC_LootCrate> LootCrateClass;
+
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UC_InvenComponent* InvenComponent{};
@@ -440,7 +448,10 @@ protected:
 
 public:
 	TArray<AC_Bullet*>& GetBullets() { return PooledBullets; }
-
+	
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UC_FeetComponent* FeetComponent{};
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -467,10 +478,10 @@ protected: // AI 피아 식별 관련
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TEnumAsByte<ETeamAttitude::Type> TeamID = ETeamAttitude::Hostile;
-///
-///캐릭터 피 파티클시스템
-///
 public:
+	///
+	///캐릭터 피 파티클시스템
+	///
 	TArray<class UParticleSystemComponent*> GetBloodParticles() { return BloodParticleComponents; }
 	void ActivateBloodParticle(FVector InLocation);
 protected:

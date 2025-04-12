@@ -52,7 +52,7 @@ const TMap<FName, EDamagingPartType> UC_StatComponent::DAMAGINGPARTS_MAP =
 	{"Spine1",		EDamagingPartType::UPPER_STOMACH},
 	{"Spine2",		EDamagingPartType::SHOULDER},
 
-	{"LeftArm",	EDamagingPartType::LEFT_ARM},
+	{"LeftArm",		EDamagingPartType::LEFT_ARM},
 	{"LeftHand",	EDamagingPartType::LEFT_HAND},
 
 	{"RightArm",	EDamagingPartType::RIGHT_ARM},
@@ -118,24 +118,27 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 		if (HittingBlood)
 		{ 
 			HittingBlood->ShowHitEffect(); 
-			UC_Util::Print("HittingBlood!");
+			// UC_Util::Print("HittingBlood!");
 		}
 		else
 		{
-			UC_Util::Print("HitingBlood is Nullptr!");
+			// UC_Util::Print("HitingBlood is Nullptr!");
 		}
 	}
 
-	// TODO : 이 라인 지우기
+	
 	if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
-		OwnerEnemy->GetHPBar()->SetPercent(CurHP / MAX_HP);
+	{
+		OwnerEnemy->GetHPBar()->SetPercent(CurHP / MAX_HP);// TODO : 이 라인 지우기
+		OwnerEnemy->OnTakeDamage(DamageCauser);
+	}
 
 	// 사망
 	if (CurHP <= 0.f)
 	{
 		// TODO : 주석 풀기 (지금은 Test중)
 		// 사망 처리 
-		// OwnerCharacter->CharacterDead();
+		OwnerCharacter->CharacterDead();
 	}
 	
 	return true;
@@ -181,7 +184,7 @@ float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhysicsAsse
 {
 	if (!DAMAGINGPARTS_MAP.Contains(DamagingPhysicsAssetBoneName))
 	{
-		UC_Util::Print("From UC_StatComponent::TakeDamage : No Such PhysicsAsset Bone Name exists!");
+		// UC_Util::Print("From UC_StatComponent::TakeDamage : No Such PhysicsAsset Bone Name exists!");
 		return 0.f;
 	}
 

@@ -19,7 +19,6 @@ enum class EServiceType : uint8
 };
 
 enum class EIdleTaskType   	: uint8;
-enum class ECombatTaskType 	: uint8;
 enum class EPoseState		: uint8;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -47,9 +46,6 @@ public:
 	
 	bool SetIdleTaskType(EIdleTaskType Type);
 	EIdleTaskType GetIdleTaskType() const;
-	
-	bool SetCombatTaskType(ECombatTaskType Type);
-	ECombatTaskType GetCombatTaskType() const;
 
 public: // TODO : Player에 관련한 내용 지우기 (For Testing)
 
@@ -75,6 +71,8 @@ public:
 	/// <param name="InTargetCharacter"> : 공격 대상, 회피 대상 등이 될 TargetCharacter </param>
 	/// <returns> nullptr나 valid하지 않은 Actor로 setting되었다면 return false </returns>
 	bool SetTargetCharacter(class AC_BasicCharacter* InTargetCharacter);
+
+	UFUNCTION(BlueprintCallable)
 	class AC_BasicCharacter* GetTargetCharacter() const;
 
 	bool SetBasicTargetLocation(const FVector& InTargetLocation);
@@ -83,11 +81,6 @@ public:
 	bool SetInCircleTargetLocation(const FVector& InTargetLocation);
 	FVector GetInCircleTargetLocation() const;
 
-public:
-
-	void SetNextPoseState(EPoseState InNextPoseState);
-	EPoseState GetNextPoseState() const { return NextPoseState; }
-	bool SetIdleTaskTypeToPrevType();
 
 private:
 
@@ -118,13 +111,6 @@ protected:
 	
 private:
 	class UBlackboardComponent* Blackboard{};
-
-private: // ChangePoseState 관련
-
-	EIdleTaskType PrevIdleTaskType = EIdleTaskType::MAX;
-	
-	// BTTask ChangePoseState에 활용될 값
-	EPoseState NextPoseState{};
 
 private: // WAIT_TASK 시간
 

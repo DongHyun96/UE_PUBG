@@ -15,6 +15,13 @@
 #include "HUD/C_AmmoWidget.h"
 
 #include "Utility/C_Util.h"
+
+const TMap<EBulletType, FName> AC_Item_Bullet::BulletTypeNameMap =
+{
+	{EBulletType::FIVEMM,  "Item_Ammo_556mm_C"},
+	{EBulletType::SEVENMM, "Item_Ammo_762mm_C"}
+};
+
 AC_Item_Bullet::AC_Item_Bullet()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -35,7 +42,7 @@ bool AC_Item_Bullet::Interaction(AC_BasicCharacter* Character)
 {
 	if (ItemPlace == EItemPlace::AROUND)
 	{
-		return MoveAroundToInven(Character, this->GetItemCurStack());
+		return MoveToInven(Character, this->GetItemCurStack());
 	}
 	else return false;
 }
@@ -62,14 +69,17 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InSta
 			// 인벤에 동일한 이름의 아이템이 존재 한다면 실행.
 
 			invenComp->AddItemToMyList(this);
-			UC_Util::Print(int(CurBulletType));
-			UC_Util::Print("Item Stack Add!!!!!!!!!!!!!!!!");
+			/*UC_Util::Print(int(CurBulletType));
+			UC_Util::Print("Item Stack Add!!!!!!!!!!!!!!!!");*/
 			//this->Destroy(); // Inven에 존재하던 동일한 아이템과 합쳐졌으므로 삭제.
 		}
 		else
 		{
 			invenComp->AddItemToMyList(this);
 		}
+		if (invenComp->FindMyItem(this))
+			invenComp->RemoveItemToAroundList(this);
+
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 			UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
 
@@ -144,6 +154,16 @@ void AC_Item_Bullet::UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer)
 			//InOwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(LeftAmmoStack);
 		}
 	}
+}
+
+FName AC_Item_Bullet::GetBulletTypeName(EBulletType InBulletType)
+{
+	if (InBulletType == EBulletType::NONE)
+	{
+		UC_Util::Print("From AC_Item_Bullet::GetBulletTypeName : Received NONE type!", FColor::Red, 10.f);
+		return "";
+	}
+	return BulletTypeNameMap[InBulletType];
 }
 
 

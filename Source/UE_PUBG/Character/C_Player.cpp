@@ -44,6 +44,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Curves/CurveFloat.h"
 
+#include "Loot/C_BasicLoot.h"
+
 #include "Engine/PostProcessVolume.h"
 //#include "Engine/TextureRenderTarget2D.h"
 
@@ -194,6 +196,12 @@ void AC_Player::BeginPlay()
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &AC_Player::OnPostWorldBeginPlay);
 }
 
+void AC_Player::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	GAMESCENE_MANAGER->SetPlayer(nullptr);	
+}
+
 void AC_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -213,6 +221,12 @@ void AC_Player::Tick(float DeltaTime)
 	SetCanFireWhileCrawl();
 
 	AC_Item* NewInteractableItem = FindBestInteractable();
+
+	//if (!NewInteractableItem)
+	//{
+	//	CurOutLinedItem = nullptr;
+	//	return;
+	//}
 
 	// 아이템이 변경되었을 때만 업데이트 수행
 	if (NewInteractableItem != CurOutLinedItem)
@@ -485,19 +499,38 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 		if (OverlappedItem->GetOwnerCharacter() == nullptr)
 		{
 			if (!IsValid(InvenComponent)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
-			if (InvenComponent->GetTestAroundItems().Contains(OverlappedItem)) return;
+			if (InvenComponent->GetAroundItems().Contains(OverlappedItem)) return;
 			InvenComponent->AddItemToAroundList(OverlappedItem);
 			//Inventory->InitInvenUI();
 			//if (!IsValid(InvenSystem)) return;
 		}
 		InvenSystem->InitializeList();
-	}
-	else
-	{
-		// UC_Util::Print("No item");
-
 		return;
 	}
+	AC_BasicLoot* OverlappedLootBox = Cast<AC_BasicLoot>(OtherActor);
+	
+	if (IsValid(OverlappedLootBox))
+	{
+		if (OverlappedLootBox->GetLootItems().Num() == 0) return;
+			
+		OverlappedLootBox->SetActorTickEnabled(true);
+
+		InvenComponent->GetAroundItems().Append(OverlappedLootBox->GetLootItems());
+
+		InvenSystem->GetInvenUI()->UpdateAroundItemPanelWidget();
+	}
+
+	//TArray<AC_Item*> SortedItems = this->GetInvenComponent()->GetAroundItems();
+	//
+	////오름차순 정렬
+	//SortedItems.Sort([](AC_Item* A, AC_Item* B) 
+	//    {
+	//        if (!A && !B) return false;
+	//        if (!A) return false;
+	//        if (!B) return true;
+	//        return A->GetItemDatas()->ItemType < B->GetItemDatas()->ItemType;
+	//    });
+	//GetInvenComponent()->SetAroundItems(SortedItems);
 }
 
 void AC_Player::HandleOverlapEnd(AActor* OtherActor)
@@ -515,11 +548,36 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 		//InvenSystem->InitializeList();
 		InvenSystem->GetInvenUI()->RemoveItemInList(OverlappedItem);
 	}
+
+	AC_BasicLoot* OverlappedLootBox = Cast<AC_BasicLoot>(OtherActor);
+
+	if (IsValid(OverlappedLootBox))
+	{
+		TArray<AC_Item*> LootItemList = OverlappedLootBox->GetLootItems();
+		OverlappedLootBox->SetActorTickEnabled(false);
+		for (AC_Item* LootItem : LootItemList)
+		{
+			InvenComponent->RemoveItemToAroundList(LootItem);
+			InvenSystem->GetInvenUI()->RemoveItemInList(LootItem);
+		}
+	}
+
+	//TArray<AC_Item*> SortedItems = this->GetInvenComponent()->GetAroundItems();
+	//
+	////오름차순 정렬
+	//SortedItems.Sort([](AC_Item* A, AC_Item* B)
+	//	{
+	//		if (!A && !B) return false;
+	//		if (!A) return false;
+	//		if (!B) return true;
+	//		return A->GetItemDatas()->ItemType < B->GetItemDatas()->ItemType;
+	//	});
+	//GetInvenComponent()->SetAroundItems(SortedItems);
 }
 
 AC_Item* AC_Player::FindBestInteractable()
 {
-	if (InvenComponent->GetTestAroundItems().IsEmpty()) return nullptr;
+	if (InvenComponent->GetAroundItems().IsEmpty()) return nullptr;
 
 	AC_Item* TargetInteractableItem = nullptr;
 
@@ -528,7 +586,7 @@ AC_Item* AC_Player::FindBestInteractable()
 	//UGameplayStatics::controller
 
 	APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
-	for (auto& AroundItem : InvenComponent->GetTestAroundItems())
+	for (auto& AroundItem : InvenComponent->GetAroundItems())
 	{
 		AC_Item* CachedInteractableItem = AroundItem;
 		
@@ -1172,7 +1230,7 @@ void AC_Player::SetRecoilTimeLineComponent()
 
 void AC_Player::RecoilController()
 {
-	UC_Util::Print("Start Recoil");
+	// UC_Util::Print("Start Recoil");
 	AC_Gun* CurGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
 	if (!IsValid(CurGun)) return;
 	RecoilTimeline->PlayFromStart();

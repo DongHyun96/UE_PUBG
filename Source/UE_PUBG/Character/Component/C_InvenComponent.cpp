@@ -208,6 +208,8 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 	EquipmentItems[InSlot]->AttachToSocket(OwnerCharacter);
 
 	EquipmentItems[InSlot]->SetActorEnableCollision(false);
+
+	EquipmentItems[InSlot]->SetActorHiddenInGame(false);
 	//RemoveItemToAroundList(EquipItem); // TODO : Collision을 키고 끄는 방식으로 할 지 아니면 강제로 넣고 빼줄지 생각
 
 	return PrevSlotEquipItem;

@@ -211,7 +211,7 @@ void UC_InvenUiWidget::InitListView()
         //AroundItems = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
 
         TArray<AC_Item*> TestAroundItemList;
-        TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetTestAroundItems();
+        TestAroundItemList = OwnerCharacter->GetInvenComponent()->GetAroundItems();
         AroundItemListWidget->SetVisibility(ESlateVisibility::Visible);
         //AroundItemListWidget->AddTMapItem(TestAroundItemList);
         testAroundItemList(AroundItemListWidget->ItemListView, TestAroundItemList);

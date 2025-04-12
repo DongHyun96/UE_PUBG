@@ -139,13 +139,7 @@ public:
 	EShootingMode GetCurrentShootingMode() { return CurrentShootingMode; }
 	class UCameraComponent* GetGunCamera() { return AimSightCamera; }
 
-	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
-
-	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
-
-	//AC_Item* SpawnItem(AC_BasicCharacter* Character) override;
-
-	void PickUpItem(AC_BasicCharacter* Character) override;
+	bool Interaction(AC_BasicCharacter* Character) override;
 
 	void CheckBackPackLevelChange();
 
@@ -165,6 +159,7 @@ protected:
 	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
 	bool MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack) override;
 
 protected:
 	/// <summary>
@@ -227,6 +222,8 @@ public:
 	class USpringArmComponent* AimSightSpringArm{};
 	int GetCurBulletCount() { return CurBulletCount; }
 	int GetMaxBulletCount() { return MaxBulletCount; }
+
+	void SetCurBulletCount(int InCount) { CurBulletCount = InCount; }
 
 	UFUNCTION(BlueprintCallable)
 	EBulletType GetCurBulletType() const { return GunDataRef->CurGunBulletType; }
@@ -389,6 +386,7 @@ protected:
 public:
 	//AI 총알 발사 관련 함수
 	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+	virtual bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
 
 public: 
 	/// <summary>
@@ -399,7 +397,10 @@ public:
 	virtual float GetDamageRateByBodyPart(const FName& BodyPart) PURE_VIRTUAL(AC_Gun::GetDamageRateByBodyPart, return 0.f;);
 
 	float GetDamageBase() const { return GunDataRef->DamageBase; }
-
+protected:
+	bool CanAIAttack(AC_BasicCharacter* InTargetCharacter);
+	bool AIFireBullet(class AC_BasicCharacter* InTargetCharacter);
+	float AIFireTimer = 0.0f;
 protected:
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	// UCapsuleComponent* CapsuleComponent{};

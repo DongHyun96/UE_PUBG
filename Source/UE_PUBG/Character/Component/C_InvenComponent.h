@@ -143,7 +143,9 @@ public: //Getter and Seter
 
 	const TMap<FName, TArray<class AC_Item*>>& GetMyItems() { return MyItems; }
 
-	TArray<AC_Item*>& GetTestAroundItems() { return AroundItems; }
+	TArray<AC_Item*>& GetAroundItems() { return AroundItems; }
+
+	void SetAroundItems(TArray<AC_Item*> InAroundItemList) { AroundItems = InAroundItemList; }
 
 	UFUNCTION(BlueprintCallable)
 	int32 GetTotalStackByItemName(const FName& ItemName);

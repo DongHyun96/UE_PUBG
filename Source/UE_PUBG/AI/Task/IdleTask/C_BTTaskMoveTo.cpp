@@ -30,6 +30,8 @@ EBTNodeResult::Type UC_BTTaskMoveTo::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 			return EBTNodeResult::Failed;
 		}
 	}
+
+	UC_Util::Print("MoveTo", FColor::Red, 20.f);
 	
 	// 만약 피치 못해 NavMesh가 깔려 있지 않은 지역에 도달했다면 가장 근처의 NavMesh로 귀환 -> 어쩔 수 없다고 칠까 그냥...
 	/*if (!IsAgentOnNavMesh() && !bHasMoveToNearestNavMeshStarted)
@@ -59,7 +61,19 @@ EBTNodeResult::Type UC_BTTaskMoveTo::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	else bHasMoveToNearestNavMeshStarted = false;
 
 	UC_Util::Print("MoveExecute", FColor::Red);*/
-	
+
+
+	AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
+	if (!IsValid(Controller))
+	{
+		UC_Util::Print("From UC_BTTaskMoveTo::ExecuteTask : Controller Casting failed!", FColor::Red, 10.f);
+		return EBTNodeResult::Failed;
+	}
+
+	AC_Enemy* Enemy = Cast<AC_Enemy>(Controller->GetPawn());
+
+	// MoveTo 시작 시, 일어난 자세로 전환 시도(이미 일어나 있으면 상관 x)
+	Enemy->SetPoseState(Enemy->GetPoseState(), EPoseState::STAND);
 	return Super::ExecuteTask(OwnerComp, NodeMemory);
 }
 

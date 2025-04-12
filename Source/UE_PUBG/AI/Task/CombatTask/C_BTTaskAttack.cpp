@@ -3,7 +3,6 @@
 
 #include "AI/Task/CombatTask/C_BTTaskAttack.h"
 
-#include "EdGraphSchema_K2_Actions.h"
 #include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
@@ -13,8 +12,6 @@
 #include "AI/C_EnemyAIController.h"
 #include "Utility/C_Util.h"
 
-
-#include "Singleton/C_GameSceneManager.h"
 
 UC_BTTaskAttack::UC_BTTaskAttack()
 {
@@ -32,11 +29,20 @@ void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	if (!IsValid(Enemy)) FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 
 	AC_Weapon* CurrentAttackingWeapon = Enemy->GetEquippedComponent()->GetCurWeapon();
-	if (!IsValid(CurrentAttackingWeapon)) FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	if (!IsValid(CurrentAttackingWeapon))
+	{
+		EnemyAIController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
+		EnemyAIController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	}
 
 	// 지속적으로 몇 초간 현재 무기로 공격한다고 하면 TickTask 사용
 	if (!CurrentAttackingWeapon->ExecuteAIAttackTickTask(EnemyAIController->GetBehaviorComponent()->GetTargetCharacter(), DeltaSeconds))
+	{
+		EnemyAIController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
+		EnemyAIController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 }
 
 EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -50,38 +56,42 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 		return EBTNodeResult::Failed;
 	}
 	
-	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(Controller->GetPawn());
-	if (!OwnerEnemy)
+	AC_Enemy* Enemy = Cast<AC_Enemy>(Controller->GetPawn());
+	if (!Enemy)
 	{
 		UC_Util::Print("From BTTaskAttack::ExecuteTask : Enemy Actor Casting failed!", FColor::Red, 10.f);
 		return EBTNodeResult::Failed;
 	}
 	
-	UC_BehaviorComponent* OwnerBehaviorComponent = Controller->GetBehaviorComponent();
-	UC_EquippedComponent* EnemyEquippedComponent = OwnerEnemy->GetEquippedComponent(); 
+	UC_BehaviorComponent* BehaviorComponent = Controller->GetBehaviorComponent();
+	UC_EquippedComponent* EquippedComponent = Enemy->GetEquippedComponent(); 
 
 	// 무기를 들고 있지 않은 상황
-	if (!EnemyEquippedComponent->GetCurWeapon() || OwnerEnemy->GetHandState() == EHandState::UNARMED)
+	if (!EquippedComponent->GetCurWeapon() || Enemy->GetHandState() == EHandState::UNARMED)
 	{
 		UC_Util::Print("From UC_BTTaskAttack::ExecuteTask : Not holding any weapons", FColor::Red, 10.f);
+		BehaviorComponent->SetServiceType(EServiceType::IDLE);
+		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
 		return EBTNodeResult::Failed;
 	}
 
 	// TargetCharacter가 없는 상황
-	AC_BasicCharacter* TargetCharacter = Cast<AC_BasicCharacter>(OwnerBehaviorComponent->GetTargetCharacter());
+	AC_BasicCharacter* TargetCharacter = Cast<AC_BasicCharacter>(BehaviorComponent->GetTargetCharacter());
 	if (!IsValid(TargetCharacter))
 	{
 		UC_Util::Print("From UC_BTTaskAttack::ExecuteTask : Invalid TargetCharacter", FColor::Red, 10.f);
+		BehaviorComponent->SetServiceType(EServiceType::IDLE);
+		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
 		return EBTNodeResult::Failed;
 	}
 
-	AC_Weapon* CurrentAttackingWeapon = EnemyEquippedComponent->GetCurWeapon();
+	AC_Weapon* CurrentAttackingWeapon = EquippedComponent->GetCurWeapon();
 	bool AttackSucceeded = CurrentAttackingWeapon->ExecuteAIAttack(TargetCharacter);
 
-	if (AttackSucceeded)	UC_Util::Print("Attack Succeeded", FColor::Red, 10.f);	
-	else					UC_Util::Print("Attack Failed",    FColor::Red, 10.f);
+	//if (AttackSucceeded)	UC_Util::Print("Attack Succeeded", FColor::Red, 10.f);
+	//else					UC_Util::Print("Attack Failed",    FColor::Red, 10.f);
 
-	OwnerBehaviorComponent->SetServiceType(EServiceType::IDLE);
+	// BehaviorComponent->SetServiceType(EServiceType::IDLE);
 
 	// TickTask가 필요한 무기의 경우, TickTask에서 Continue / 필요 없는 무기의 경우 TickTask에서 바로 Succeeded로 처리
 	return AttackSucceeded ? EBTNodeResult::InProgress : EBTNodeResult::Failed;

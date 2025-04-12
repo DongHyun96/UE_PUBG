@@ -10,6 +10,8 @@
 #include "InvenUI/C_InventoryUIWidget.h"
 #include "Engine/World.h"
 
+#include "Loot/C_BasicLoot.h"
+
 //#include "GameFramework/Actor.h"
 //#include "Components/StaticMeshComponent.h"
 
@@ -135,19 +137,33 @@ AC_Item* AC_Item::SpawnItem(AC_BasicCharacter* Character)
 
 bool AC_Item::MoveToInven(AC_BasicCharacter* Character, int32 InStack)
 {
-	
+	bool bIsMoveItem = false;
+
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		return MoveAroundToInven(Character, InStack);
+		bIsMoveItem = MoveAroundToInven(Character, InStack);
+		break;
 	case EItemPlace::INVEN:
-		return MoveInvenToInven(Character, InStack);
+		bIsMoveItem = MoveInvenToInven(Character, InStack);
+		break;
 	case EItemPlace::SLOT:
-		return MoveSlotToInven(Character, InStack);
+		bIsMoveItem = MoveSlotToInven(Character, InStack);
+		break;
 	default:
 		break;
 	}
-	return false;
+
+	AC_BasicLoot* OwnerLootBox = Cast<AC_BasicLoot>(this->GetOwner());
+
+	//이 부분에 분명히 아이템 나눠지면서 생기는 문제가 생길 것 같음.
+	if (OwnerLootBox && bIsMoveItem == true)
+	{
+		OwnerLootBox->RemoveLootItem(this);
+		if (Character->GetInvenComponent()->GetAroundItems().Contains(this))
+			Character->GetInvenComponent()->RemoveItemToAroundList(this);
+	}
+	return bIsMoveItem;
 }
 
 bool AC_Item::MoveToAround(AC_BasicCharacter* Character, int32 InStack)
@@ -184,8 +200,22 @@ bool AC_Item::MoveToSlot(AC_BasicCharacter* Character, int32 InStack)
 		break;
 	}
 
+	AC_BasicLoot* OwnerLootBox = Cast<AC_BasicLoot>(this->GetOwner());
+
+	//이 부분에 분명히 아이템 나눠지면서 생기는 문제가 생길 것 같음.
+	if (OwnerLootBox && bIsMoveItem == true)
+	{
+		OwnerLootBox->RemoveLootItem(this);
+		if (Character->GetInvenComponent()->GetAroundItems().Contains(this))
+			Character->GetInvenComponent()->RemoveItemToAroundList(this);
+
+	}
+
 	if (AC_Player* Player = Cast<AC_Player>(Character))
+	{
 		Player->GetInvenSystem()->GetInvenUI()->UpdateEquipmentItemPanelWidget();
+		Player->GetInvenSystem()->GetInvenUI()->UpdateAroundItemPanelWidget();
+	}
 
 	return bIsMoveItem;
 }
@@ -260,6 +290,14 @@ void AC_Item::SetItemStack(int32 inItemStack)
 	{
 		OwnerCharacter->GetInvenComponent()->DestroyMyItem(this);
 	}
+
+	//int32 ItemMaxStack = GetItemDatas()->ItemMaxStack;
+	//
+	//if (ItemCurStack > ItemMaxStack)
+	//{
+	//	int32 SpritStack = ItemCurStack - ItemMaxStack;
+	//	SpawnItem(OwnerCharacter)
+	//}
 }
 
 void AC_Item::SetOutlineEffect(bool bEnable)

@@ -141,7 +141,20 @@ void AC_EnemyAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFo
 	Super::OnMoveCompleted(RequestID, Result);
 
 	if (Result.Code != EPathFollowingResult::Success) return;
+
+	// Take Cover sequence 처리 중인 상황
+	if (BehaviorComponent->GetServiceType() == EServiceType::IDLE && BehaviorComponent->GetIdleTaskType() == EIdleTaskType::TAKE_COVER)
+		return;
+
+	// Success 처리 되었고, TakeCover sequence 중이 아니라면 Wait 상태로 돌아가기
 	BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
+}
+
+float AC_EnemyAIController::GetLv1SightRangeDistance()
+{
+	// TODO : 밑 줄 주석으로 사용 / 현재는 Testing용 값 return 중
+	return 2000.f;
+	// return SIGHT_RANGE_DISTANCE[ESightRangeLevel::Level1];
 }
 
 bool AC_EnemyAIController::TrySetTargetCharacterToLevel1EnteredCharacter()
@@ -172,9 +185,7 @@ bool AC_EnemyAIController::TrySetTargetCharacterToLevel1EnteredCharacter()
 bool AC_EnemyAIController::TrySetTargetCharacterBasedOnPriority()
 {
 	// 이미 누군가를 공격 중이라면
-	if (BehaviorComponent->GetServiceType() == EServiceType::COMBAT &&
-		BehaviorComponent->GetCombatTaskType() == ECombatTaskType::ATTACK)
-		return false;
+	if (BehaviorComponent->GetServiceType() == EServiceType::COMBAT) return false;
 
 	// Level 1부터 4까지 차례로 우선순위대로 TargetCharacter setting 시도
 	for (int i = 0; i < static_cast<int>(ESightRangeLevel::Max); ++i)

@@ -456,8 +456,9 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 			this->SetActorEnableCollision(false);
 			this->SetActorHiddenInGame(true);
 
+
+
 			this->Destroy();
-			return true;
 		}
 		else
 		{
@@ -469,8 +470,10 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 			this->SetActorEnableCollision(false);
 			//던질 때 켜짐. 이걸로 만약 아이템의 오버랩이 안끝난다면 다른 방법 고민->ToInven에서 SetActorEnableCollision를 꺼주고 던질때 혹은 ToAround에서 켜주기.
 			//Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			return true;
 		}
+		if (InvenComp->FindMyItem(this))
+			InvenComp->RemoveItemToAroundList(this);
+		return true;
 	}
 	else
 	{

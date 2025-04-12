@@ -10,14 +10,6 @@
  * 
  */
 
-UENUM(BlueprintType)
-enum class ECombatTaskType : uint8
-{
-	SWAP_WEAPON,
-	ATTACK,
-	MAX
-};
-
 UCLASS()
 class UE_PUBG_API UC_BTServiceCombat : public UBTService
 {

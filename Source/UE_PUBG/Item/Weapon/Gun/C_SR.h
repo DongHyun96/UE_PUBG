@@ -43,6 +43,7 @@ protected:
 	//bool ReloadBullet() override;
 public:
 	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+	virtual bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime);
 
 	float GetDamageRateByBodyPart(const FName& BodyPart) override;
 

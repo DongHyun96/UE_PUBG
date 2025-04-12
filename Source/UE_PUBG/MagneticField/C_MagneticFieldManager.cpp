@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "MagneticField/C_MagneticFieldManager.h"
@@ -42,7 +42,7 @@ void AC_MagneticFieldManager::Tick(float DeltaTime)
 	
 	HandleUpdateState(DeltaTime);
 
-	HandleDamagingCharacters(DeltaTime);
+	//HandleDamagingCharacters(DeltaTime);
 }
 
 bool AC_MagneticFieldManager::IsInMainCircle(AC_BasicCharacter* Character) const
@@ -67,7 +67,12 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 
 		// Enemy들 NextCircle random TargetLocation 잡아주기
 		for (AC_Enemy* Enemy : GAMESCENE_MANAGER->GetEnemies())
+		{
+			if (!IsValid(Enemy)) continue;
+			if (Enemy->GetMainState() == EMainState::DEAD) continue;
+			
 			Enemy->GetTargetLocationSettingHelper()->TrySetRandomInCircleTargetLocationAtMagneticCircle(NextCircle);
+		}
 
 		return;
 	case EMagneticFieldState::SHRINK:

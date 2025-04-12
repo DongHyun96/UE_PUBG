@@ -189,16 +189,21 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AC_ThrowingWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-			
-	if (!IsValid(OwnerCharacter))
-		return;
+	UpdateCurMontagesToOwnerCharacterPoseState();
+}
+
+bool AC_ThrowingWeapon::UpdateCurMontagesToOwnerCharacterPoseState()
+{
+	if (!IsValid(OwnerCharacter)) return false;
 
 	CurDrawMontage			= DrawMontages[OwnerCharacter->GetPoseState()];
 	CurSheathMontage		= SheathMontages[OwnerCharacter->GetPoseState()];
 	CurThrowProcessMontages = ThrowProcessMontages[OwnerCharacter->GetPoseState()];
+
+	return true;
 }
 
-bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
+  bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
 {
 	// 투척류를 핀까지만 뽑았고 쿠킹을 안했을 시 다시 집어넣음
 	// 투척류를 안전손잡이까지 뽑았다면 현재 위치에 현재 투척류 그냥 바닥에 떨굼
@@ -271,7 +276,18 @@ void AC_ThrowingWeapon::InitializeItem(FName NewItemCode)
 	}
 }
 
-void AC_ThrowingWeapon::PickUpItem(AC_BasicCharacter* Character)
+  FName AC_ThrowingWeapon::GetThrowableItemName(EThrowableType TargetType)
+  {
+	if (TargetType == EThrowableType::MAX)
+	{
+		UC_Util::Print("From AC_ThrowingWeapon::GetThrowableItemName : Type Max received!", FColor::Red, 10.f);
+		return "";
+	}
+	
+	return THROWABLETYPE_ITEMNAME_MAP[TargetType];
+  }
+
+  void AC_ThrowingWeapon::PickUpItem(AC_BasicCharacter* Character)
 {
 	//여기서하는 용량체크는 인벤에서 이미 한번 처리 되었지만 혹시몰라 넣어 놓은것으로 확인후 제거할 것.
 	//인벤에서 체크하지 않고 아이템에서 체크하는 방식으로 가야 할듯.
@@ -898,6 +914,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 		// 바로 다음 투척류 꺼내기
 		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
 		PrevOwnerCharacter->PlayAnimMontage(TargetThrowWeapon->GetCurDrawMontage());
+		OwnerEquippedComponent->SetIsCurrentlyChangingWeapon(true);
 		return;
 	}
 
@@ -924,6 +941,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 		// 바로 다음 투척류 꺼내기
 		OwnerEquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
 		PrevOwnerCharacter->PlayAnimMontage(TargetThrowWeapon->GetCurDrawMontage());
+		OwnerEquippedComponent->SetIsCurrentlyChangingWeapon(true);
 		return;
 	}
 

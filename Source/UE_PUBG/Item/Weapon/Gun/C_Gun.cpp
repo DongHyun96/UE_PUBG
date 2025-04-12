@@ -4,6 +4,7 @@
 
 #include "Item/Weapon/Gun/C_Gun.h"
 
+#include "AudioMixerBlueprintLibrary.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Item/Weapon/C_Weapon.h"
@@ -15,6 +16,7 @@
 #include "Item/Weapon/Gun/C_SR.h"
 
 #include "UMG.h"
+#include "AI/C_EnemyAIController.h"
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
@@ -47,6 +49,9 @@
 #include "Character/C_Enemy.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_AmmoWidget.h"
+
+#include "Singleton/C_GameSceneManager.h"
+#include "Kismet/KismetMathLibrary.h"
 
 //UCameraComponent* AC_Gun::AimSightCamera;
 // Sets default values
@@ -395,160 +400,6 @@ void AC_Gun::SetOwnerCharacter(AC_BasicCharacter * InOwnerCharacter)
 	SetAimSightWidget();
 }
 
-bool AC_Gun::LegacyMoveToAround(AC_BasicCharacter* Character)
-{
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
-
-	//equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
-
-	//SpawnItem(Character);
-
-	this->SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
-
-	ItemPlace = EItemPlace::AROUND;
-	DetachItem();
-	SetActorHiddenInGame(false);
-	SetActorEnableCollision(true);
-
-	return true;
-}
-
-bool AC_Gun::LegacyMoveToSlot(AC_BasicCharacter* Character)
-{
-	//TODO : PickUpItem 내용으로 우선 만든거라 다시 만들어야함. 그리고 MainGun과 SubGun slot의 이동을 고민해야 함.
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
-	EWeaponSlot Slot = EWeaponSlot::MAIN_GUN;
-
-	switch (Slot)
-	{
-	case EWeaponSlot::NONE:
-		break;
-	case EWeaponSlot::MAIN_GUN:
-		//Main Gun Slot에 총이 없다면 실행
-		if (!equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN])
-		{
-			equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
-
-			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
-			SetActorHiddenInGame(true);
-			SetActorEnableCollision(false);
-
-			SetActorHiddenInGame(false);
-			SetActorEnableCollision(true);
-			return true;
-		}
-		//Slot = EWeaponSlot::SUB_GUN;
-	case EWeaponSlot::SUB_GUN:
-		//Sub Gun Slot에 총이 없다면 실행
-		if (!equipComp->GetWeapons()[EWeaponSlot::SUB_GUN])
-		{
-			equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
-
-			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
-			SetActorHiddenInGame(true);
-			SetActorEnableCollision(false);
-
-			SetActorHiddenInGame(false);
-			SetActorEnableCollision(true);
-
-			return true;
-		}
-		break;
-	case EWeaponSlot::MELEE_WEAPON:
-		break;
-	case EWeaponSlot::THROWABLE_WEAPON:
-		break;
-	default:
-		break;
-	}
-
-	//Main, Sub 모두 총이 있는 경우.
-	EHandState HandState = Character->GetHandState();
-	AC_Weapon* DropGun = nullptr;
-	if (HandState == EHandState::WEAPON_GUN)
-	{
-		EWeaponSlot curSlot = equipComp->GetCurWeaponType();
-
-		//제대로 총을 바꾸는지 확인해야함, SetSlotWeapon과 DetachmentItem의 순서를 바꿔야 할 수 도 있음.
-		DropGun = equipComp->SetSlotWeapon(curSlot, this);
-		DropGun->DetachItem();
-		return true;
-	}
-	else
-	{
-		DropGun = equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
-		DropGun->DetachItem();
-		return true;
-	}
-}
-
-void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
-{
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
-	EWeaponSlot Slot = EWeaponSlot::MAIN_GUN;
-
-	switch (Slot)
-	{
-	case EWeaponSlot::NONE:
-		break;
-	case EWeaponSlot::MAIN_GUN:
-		//Main Gun Slot에 총이 없다면 실행
-		if (!equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN])
-		{
-			equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
-			
-			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
-			SetActorHiddenInGame(true);
-			SetActorEnableCollision(false);
-
-			SetActorHiddenInGame(false);
-			SetActorEnableCollision(true);
-			return;
-		}
-		//Slot = EWeaponSlot::SUB_GUN;
-	case EWeaponSlot::SUB_GUN:
-		//Sub Gun Slot에 총이 없다면 실행
-		if (!equipComp->GetWeapons()[EWeaponSlot::SUB_GUN])
-		{
-			equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
-
-			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
-			SetActorHiddenInGame(true);
-			SetActorEnableCollision(false);
-
-			SetActorHiddenInGame(false);
-			SetActorEnableCollision(true);
-
-			return;
-		}
-		break;
-	case EWeaponSlot::MELEE_WEAPON:
-		break;
-	case EWeaponSlot::THROWABLE_WEAPON:
-		break;
-	default:
-		break;
-	}
-
-	//Main, Sub 모두 총이 있는 경우.
-	EHandState HandState = Character->GetHandState();
-	AC_Weapon* DropGun = nullptr;
-	if (HandState == EHandState::WEAPON_GUN)
-	{
-		EWeaponSlot curSlot = equipComp->GetCurWeaponType();
-		
-		//제대로 총을 바꾸는지 확인해야함, SetSlotWeapon과 DetachmentItem의 순서를 바꿔야 할 수 도 있음.
-		DropGun = equipComp->SetSlotWeapon(curSlot, this);
-		DropGun->DetachItem();
-	}
-	else
-	{
-		DropGun = equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
-		DropGun->DetachItem();
-	}
-
-}
-
 void AC_Gun::OnOwnerCharacterPoseTransitionFin()
 {
 }
@@ -564,6 +415,22 @@ void AC_Gun::CheckPlayerIsRunning()
 	}
 
 
+}
+
+bool AC_Gun::Interaction(AC_BasicCharacter* Character)
+{
+	switch (ItemPlace)
+	{
+	case EItemPlace::SLOT:
+		return MoveToAround(Character, GetItemCurStack());
+	case EItemPlace::AROUND:
+		return MoveToSlot(Character, GetItemCurStack());
+	case EItemPlace::INVEN:
+		break;
+	default:
+		break;
+	}
+	return false;
 }
 
 void AC_Gun::CheckBackPackLevelChange()
@@ -732,6 +599,37 @@ bool AC_Gun::MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack)
 	return false;
 }
 
+bool AC_Gun::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
+{
+	if (Super::MoveSlotToAround(Character, InStack))
+	{
+		UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
+		UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+		//equipComp->SetSlotWeapon(GetWeaponSlot(), nullptr);
+		//invenComp->AddItemToAroundList(this);
+		int32 LeftBulletCount = GetCurBulletCount();
+		
+		if (LeftBulletCount == 0) return true;
+		
+		AC_Item* LeftBulletItem = 
+			GAMESCENE_MANAGER->GetItemManager()->SpawnItem(GetCurrentBulletTypeName(), GetGroundLocation(Character), LeftBulletCount);
+		if (!LeftBulletItem)
+		{
+			UC_Util::Print("LeftBulletItem is nullptr");
+			return false;
+		}
+		
+		LeftBulletItem->SetActorEnableCollision(false);
+		LeftBulletItem->MoveToInven(Character, LeftBulletCount);
+		LeftBulletItem->SetActorEnableCollision(true);
+		
+		SetCurBulletCount(0);
+
+		return true;
+	}
+	return false;
+}
+
 FVector2D AC_Gun::GetRecoilFactors()
 {
 	float VerticalFactor   = GunDataRef->RecoilFactorVertical * RecoilMultiplierByGripVert * RecoilMultiplierMuzzleVert;
@@ -861,7 +759,7 @@ bool AC_Gun::ReloadBullet()
 	RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
 
 	ChangedStack = LeftAmmoCount - RemainAmmo;
-		
+	
 	InvenComp->DecreaseItemStack(CurBullet->GetItemCode(), RemainAmmo);
 	//CurBullet->SetItemStack(ChangedStack); //TODO : InvenComponent에서 한번에 조절하는 기능 만들기.
 	UC_Util::Print("Reload Bullet");
@@ -1041,7 +939,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 
 	// 벡터를 다시 정규화하여 크기를 유지
 	FireDirection = FireDirection.GetSafeNormal();
-	UC_Util::Print(FireDirection, FColor::Blue);
+	// UC_Util::Print(FireDirection, FColor::Blue);
 
 	FireDirection *= 100;
 	FireDirection *= GunDataRef->BulletSpeed;
@@ -1228,6 +1126,68 @@ void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
 
 bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
+	if (!CanAIAttack(InTargetCharacter))
+	{
+		return false;
+	}
+	
+	//ExecuteReloadMontage();
+	int BackpackBulletStack = 0;
+	if (IsValid(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())))
+		BackpackBulletStack = OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())->GetItemCurStack();
+	if (CurBulletCount == 0 &&  BackpackBulletStack== 0)
+	{
+		return false;
+	}
+
+	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
+
+	//UC_Util::Print(FireLocation);
+	//UC_Util::Print(FireDirection);
+
+	return true;
+
+}
+
+bool AC_Gun::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
+{
+	if (!CanAIAttack(InTargetCharacter))
+	{
+		return false;
+	}
+	//ExecuteReloadMontage();
+	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter); 
+	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
+	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+
+	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
+
+	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
+
+	//UC_Util::Print(FireLocation);
+	//UC_Util::Print(FireDirection);
+	FVector Direction = (EnemyLocation - GetActorLocation()).GetSafeNormal();
+	FRotator LookRotation = Direction.Rotation();
+	//float DeltaTime = GetWorld()->GetDeltaSeconds();
+	//UC_Util::Print("Change Rotation");
+	float InterpSpeed = 10.0f;
+	FRotator CurrentRotation =  OwnerCharacter->GetActorRotation();
+	FRotator NewRotation	= FMath::RInterpTo(CurrentRotation, LookRotation, DeltaTime, InterpSpeed);
+	NewRotation.Pitch		= 0.f;
+	NewRotation.Roll		= 0.f;
+	OwnerEnemy->SetActorRotation(NewRotation);
+	AIFireTimer += DeltaTime;
+	if (AIFireTimer > GetBulletRPM() && abs(NewRotation.Yaw - LookRotation.Yaw) < 10.0f)
+	{
+		return AIFireBullet(InTargetCharacter);
+	}
+	return true;
+	//return Super::ExecuteAIAttackTickTask(InTargetCharacter, DeltaTime);
+	
+}
+
+bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)
+{
 	if (!IsValid(OwnerCharacter))
 	{
 		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid OwnerCharacter", FColor::MakeRandomColor(), 10.f);
@@ -1238,34 +1198,56 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid InTargetCharacter", FColor::MakeRandomColor(), 10.f);
 		return false;
 	}
-	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false;
+	if (InTargetCharacter->GetMainState() == EMainState::DEAD)
+	{
+		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid InTargetCharacter", FColor::MakeRandomColor(), 10.f);
 
+		return false;
+	}
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
 	if (!OnScreen)
 	{
 		UC_Util::Print("From AC_Gun::ExecuteAIAttack : OnScreen Failed", FColor::MakeRandomColor(), 10.f);
 		return false;
 	}
-	//ExecuteReloadMontage();
-
-	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
-	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
-
-	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
-
-	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
-
-	//UC_Util::Print(FireLocation);
-	//UC_Util::Print(FireDirection);
 	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter); 
 	if (!IsValid(OwnerEnemy))
 	{
 		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid OwnerEnemy", FColor::MakeRandomColor(), 10.f);
 		return false;
 	}
+	if (!OwnerEnemy->GetEnemyAIController()->IsCurrentlyOnSight(InTargetCharacter))
+		return false;
+	return true;
+}
+
+bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
+{
+	FVector BulletSpreadRadius = FVector(100,100,100);
+	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
+	FVector SpreadLocation = UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation,BulletSpreadRadius);
+	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+
+	FVector FireDirection = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
+	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter);
+	if (GetIsPlayingMontagesOfAny())
+	{
+		UC_Util::Print("AI Cant Fire Gun",FColor::MakeRandomColor(), 1000);
+		return false;
+	}
+
+
+	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
+
+	//UC_Util::Print(FireLocation);
+	//UC_Util::Print(FireDirection);
+
+	//return true;
 	bool ApplyGravity = true;
 	for (auto& Bullet : OwnerEnemy->GetBullets())
 	{
+		if (CurBulletCount == 0)
+			break;
 		if (Bullet->GetIsActive())
 		{
 			//UC_Util::Print("Can't fire");
@@ -1275,15 +1257,25 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 		CurBulletCount--;
 		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
 		if (!Succeeded) UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
-		return Succeeded;
+		if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
 
+		if (CurrentShootingMode == EShootingMode::SINGLE_SHOT)
+		{
+			UC_Util::Print("SR Reloading Start!!!!!!!!!!", FColor::MakeRandomColor(), 10.f);
+			ExecuteReloadMontage();
+			return false;
+		}
+		AIFireTimer = 0.0f;
+		return Succeeded;
+	
 		//Bullet->Fire(this, FireLocation, FireDirection);
 		//if (BulletCount > 100)
 		//	return true;
 	}
+	ExecuteReloadMontage();
+
 	UC_Util::Print("No More Bullets in Pool", FColor::MakeRandomColor(), 10.f);
 	return false;
-
 }
 
 FName AC_Gun::GetCurrentBulletTypeName()

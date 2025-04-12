@@ -19,13 +19,35 @@
 
 #include "Blueprint/UserWidget.h"
 #include "NavMesh/NavMeshBoundsVolume.h"
+
+#include "Loot/C_LootCrate.h"
+//#include "Item/ItemManager/C_ItemManager.h"
+
 #include "Utility/C_TickRandomColorGenerator.h"
+
+UC_GameSceneManager::UC_GameSceneManager()
+{
+	static ConstructorHelpers::FClassFinder<AC_LootCrate> BPC_LootCrate(TEXT("/Game/Project_PUBG/Common/Loot/BPC_LootCrate.BPC_LootCrate_C"));
+	if (BPC_LootCrate.Succeeded())
+	{
+		LootCrateClass = BPC_LootCrate.Class;
+	}
+}
 
 void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 
 	int DoorCount{};
+
+	if (!ItemManager)
+	{
+		ItemManager = NewObject<UC_ItemManager>(this, UC_ItemManager::StaticClass());
+		if (ItemManager)
+		{
+			ItemManager->InitializeItemManager(); // 필요하면 초기화 함수 호출
+		}
+	}
 
 	// Level에 배치된 Actor들의 BeginPlay 호출되기 이전에 객체 초기화
 	for (FActorIterator Actor(&InWorld); Actor; ++Actor)
@@ -51,7 +73,10 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;
 		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor)) AirplaneManager = AP_Manager;
 		if (AC_TickRandomColorGenerator* RandomColorGenerator = Cast<AC_TickRandomColorGenerator>(*Actor)) TickRandomColorGenerator = RandomColorGenerator;
+
+
 	}
+
 }
 
 void UC_GameSceneManager::Initialize(FSubsystemCollectionBase& Collection)
@@ -59,6 +84,7 @@ void UC_GameSceneManager::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	// 월드 파괴 전 호출되는 델리게이트 등록
 	//FWorldDelegates::OnPreWorldFinishDestroy.AddUObject(this, &UC_GameSceneManager::OnWorldEndPlay);
+
 }
 
 void UC_GameSceneManager::Deinitialize()
@@ -72,6 +98,25 @@ void UC_GameSceneManager::Deinitialize()
 
 	HUDWidgets.Empty();
 	MiniMapWidget = nullptr;
+}
+
+AC_LootCrate* UC_GameSceneManager::SpawnLootCrateAt(FVector SpawnLocation, AC_BasicCharacter* DeadCharacter)
+{
+	if (!LootCrateClass || !DeadCharacter)
+		return nullptr;
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	AC_LootCrate* LootCrate = GetWorld()->SpawnActor<AC_LootCrate>(LootCrateClass, SpawnLocation, FRotator::ZeroRotator, Params);
+
+	if (LootCrate)
+	{
+		LootCrate->SetCharacterLootCrate(DeadCharacter);
+		LootCrate->SetActorHiddenInGame(false);
+	}
+
+	return LootCrate;
 }
 
 void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)

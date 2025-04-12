@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
+#include "Item/ItemManager/C_ItemManager.h"
 #include "C_GameSceneManager.generated.h"
 
 #define GAMESCENE_MANAGER GetWorld()->GetSubsystem<UC_GameSceneManager>()
@@ -28,6 +29,9 @@ class UE_PUBG_API UC_GameSceneManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
+public:
+	UC_GameSceneManager();
+
 private:
 	/// <summary>
 	/// Level에 배치된 모든 Actor들의 BeginPlay보다 먼저 호출됨
@@ -42,6 +46,14 @@ private:
 	void Initialize(FSubsystemCollectionBase& Collection) override;
 	void Deinitialize() override;
 
+public:
+	UFUNCTION(BlueprintCallable)
+	class AC_LootCrate* SpawnLootCrateAt(FVector SpawnLocation, AC_BasicCharacter* DeadCharacter);
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AC_LootCrate> LootCrateClass;
+
 private:
 
 	//void OnWorldEndPlay(UWorld* InWorld);
@@ -51,14 +63,18 @@ public: // Getters and setters
 	static UC_GameSceneManager* GetInstance(UWorld* World) { return World->GetSubsystem<UC_GameSceneManager>(); }
 
 	class AC_Player* GetPlayer() const { return Player; }
+	void SetPlayer(AC_Player* InPlayer) { Player = InPlayer; }
 	
 	TArray<class AC_Enemy*>& GetEnemies() { return Enemies; }
 
 	class AC_MagneticFieldManager* GetMagneticFieldManager() const { return MagneticFieldManager; }
 	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
 
+	class UC_ItemManager* GetItemManager() const { return ItemManager; }
+
+	UFUNCTION(BlueprintCallable)
 	TArray<class AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
-	TArray<class AActor*>& GetAllCharacterActors() { return AllCharacterActors; }
+	TArray<AActor*>& GetAllCharacterActors() { return AllCharacterActors; }
 
 	/// <summary>
 	/// GameScene에서 GC로부터 보호된 Object들 추가 -> GameScene 끝날 때 일괄 삭제처리 예정
@@ -93,7 +109,7 @@ private:
 	class AC_Player*				Player{};
 	class AC_MagneticFieldManager*	MagneticFieldManager{};
 	class AC_AirplaneManager*		AirplaneManager{};
-
+	class UC_ItemManager*			ItemManager{};
 private:
 
 	// 인게임 모든 캐릭터들(Player + Enemies)

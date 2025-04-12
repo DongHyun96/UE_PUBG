@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -124,7 +124,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> SheathMontages{};
 
-
+	/// <summary>
+	/// Pan 피격음, 에디터에서 설정.
+	/// </summary>
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImapctSound = nullptr;
 protected:
 	
 	class UShapeComponent* AttackCollider{};

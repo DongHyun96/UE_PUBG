@@ -42,7 +42,7 @@ FReply UC_ThrowableWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 			}
 			else
 			{
-				CachedItem->LegacyMoveToAround(OwnerCharacter);
+			//	CachedItem->LegacyMoveToAround(OwnerCharacter);
 				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(WeaponSlotType, nullptr);
 				CachedItem = nullptr;
 			}

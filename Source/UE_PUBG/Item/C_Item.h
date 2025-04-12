@@ -109,6 +109,9 @@ struct FItemData : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	float ItemVolume = 0;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	TSubclassOf<class AC_Item> ItemClass;
 };	
 
 
@@ -232,7 +235,7 @@ public:
 	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
 	virtual AC_Item* SpawnItem(AC_BasicCharacter* Character);
-
+	
 	/// <summary>
 	/// 아이템을 
 	/// </summary>

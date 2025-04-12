@@ -25,7 +25,9 @@ public:
 
 	void BeginPlay() override;
 
-	void Tick(float DeltaSeconds) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	virtual void Tick(float DeltaSeconds) override;
 
 
 	class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
@@ -57,7 +59,29 @@ public:
 	/// <param name="TeleportType"></param>
 	void SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType = ETeleportType::None);
 
+	FVector GetActorBottomLocation() const { return GetActorLocation() - FVector::UnitZ() * ActorZLocationOffsetFromBottom[GetPoseState()]; }
+
 	static float GetJumpVelocityZOrigin() { return JUMP_VELOCITYZ_ORIGIN; }
+
+public:
+	
+	/// <summary>
+	/// <para> StatComponent에서 Damage를 정상적으로 입었을 때 호출될 함수 </para>
+	/// <para> Behavior Tree FSM 처리 </para>
+	/// </summary>
+	/// <param name="DamageCauser"> : Damage를 준 캐릭터 </param>
+	void OnTakeDamage(class AC_BasicCharacter* DamageCauser);
+
+private:
+	/// <summary>
+	/// DamageCauser로 TargetCharacter 업데이트 시도 
+	/// </summary>
+	/// <returns> : 해당 Character로 Update 되지 않았다면 return false </returns>
+	bool TryUpdateTargetCharacterToDamageCauser(AC_BasicCharacter* DamageCauser);
+
+protected:
+
+	void OnPoseTransitionFinish() override;
 
 public: // For Testing
 	
@@ -98,6 +122,9 @@ private:
 private:
 
 	static const float JUMP_VELOCITYZ_ORIGIN;
+
+	// 바닥의 Z값이 0일 때, 각 자세별 ActorLocation Z 위치(또는 바닥으로부터 ActorLocation Z의 offset 값이라고 보면 됨)
+	static const TMap<EPoseState, float> ActorZLocationOffsetFromBottom;
 
 };
 

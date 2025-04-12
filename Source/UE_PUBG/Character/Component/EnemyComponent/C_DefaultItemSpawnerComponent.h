@@ -7,6 +7,7 @@
 #include "C_DefaultItemSpawnerComponent.generated.h"
 
 
+enum class EBulletType : uint8;
 enum class EWeaponSlot : uint8;
 enum class EThrowableType : uint8;
 enum class EEquipableItemLevel : uint8;
@@ -65,8 +66,9 @@ protected: // Equipable 관련 Classes
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EEquipableItemLevel, TSubclassOf<class AC_BackPack>> BackPackClasses{};
 
-protected: // TODO : 탄, 총기 부착물, 회복 아이템 등등 스폰
-
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EConsumableItemType, TSubclassOf<class AC_ConsumableItem>> ConsumableItemClasses{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EBulletType, TSubclassOf<class AC_Item_Bullet>> BulletClasses{};
 };

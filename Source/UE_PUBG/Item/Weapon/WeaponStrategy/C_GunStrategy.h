@@ -30,6 +30,8 @@ public:
 	bool UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)	override;
 	bool UseMrb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)	override;
 
+	
+
 private:
 	float MrbPressTimeCount = 0;
 	float MlbPressTimeCount = 0;

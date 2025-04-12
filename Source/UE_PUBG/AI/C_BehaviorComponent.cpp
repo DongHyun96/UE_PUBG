@@ -32,11 +32,15 @@ void UC_BehaviorComponent::BeginPlay()
 	// SetServiceType(EServiceType::COMBAT);
 	SetIdleTaskType(EIdleTaskType::WAIT);
 	// SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
+	SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer());
+	// OwnerEnemy->GetEnemyAIController()->SetFocus(GAMESCENE_MANAGER->GetPlayer());
 }
 
 void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	DrawDebugSphere(GetWorld(), GetBasicTargetLocation(), 15.f, 10, FColor::Red);
 
 	/*switch (static_cast<EIdleTaskType>(Blackboard->GetValueAsEnum(IdleTaskKey))) {
 	case EIdleTaskType::WAIT: UC_Util::Print("Wait"); break;
@@ -62,12 +66,6 @@ bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 {
 	if (Type == EIdleTaskType::MAX) return false;
 
-	if (Type == EIdleTaskType::CHANGE_POSE)
-	{
-		// 이전 Type 저장하고 ChangePose 끝날 때 다시 돌아가기
-		PrevIdleTaskType = static_cast<EIdleTaskType>(Blackboard->GetValueAsEnum(IdleTaskKey));
-	}
-
 	// Random wait time 지정
 	if (Type == EIdleTaskType::WAIT) WaitTime = FMath::RandRange(5.f, 10.f);
 	
@@ -78,18 +76,6 @@ bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 EIdleTaskType UC_BehaviorComponent::GetIdleTaskType() const
 {
 	return static_cast<EIdleTaskType>(Blackboard->GetValueAsEnum(IdleTaskKey));
-}
-
-bool UC_BehaviorComponent::SetCombatTaskType(ECombatTaskType Type)
-{
-	if (Type == ECombatTaskType::MAX) return false;
-	Blackboard->SetValueAsEnum(CombatTaskKey, static_cast<uint8>(Type));
-	return false;
-}
-
-ECombatTaskType UC_BehaviorComponent::GetCombatTaskType() const
-{
-	return static_cast<ECombatTaskType>(Blackboard->GetValueAsEnum(CombatTaskKey));
 }
 
 bool UC_BehaviorComponent::SetPlayer(class AC_Player* Player)
@@ -128,7 +114,7 @@ bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharact
 	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false;
 
 	// 현재 공격중인 때에는 TargetCharacter를 새로 바꾸지 않음
-	if (GetServiceType() == EServiceType::COMBAT && GetCombatTaskType() == ECombatTaskType::ATTACK) return false;
+	if (GetServiceType() == EServiceType::COMBAT) return false;
 	
 	
 	Blackboard->SetValueAsObject(TargetCharacterKey, InTargetCharacter);
@@ -168,26 +154,6 @@ bool UC_BehaviorComponent::SetInCircleTargetLocation(const FVector& InTargetLoca
 FVector UC_BehaviorComponent::GetInCircleTargetLocation() const
 {
 	return Blackboard->GetValueAsVector(InCircleTargetLocationKey);
-}
-
-void UC_BehaviorComponent::SetNextPoseState(EPoseState InNextPoseState)
-{
-	UC_Util::Print("SetNextPoseState", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-	NextPoseState = InNextPoseState;
-}
-
-bool UC_BehaviorComponent::SetIdleTaskTypeToPrevType()
-{
-	if (PrevIdleTaskType == EIdleTaskType::MAX) return false;
-	EIdleTaskType CurrentType = static_cast<EIdleTaskType>(Blackboard->GetValueAsEnum(IdleTaskKey));
-	if (CurrentType == PrevIdleTaskType)
-	{
-		UC_Util::Print("From UC_BehaviorComponent::SetIdleTaskTypeToPrevType : Prev Type is same with current type!", FColor::Red, 10.f);
-		return false;
-	}
-	Blackboard->SetValueAsEnum(IdleTaskKey, static_cast<uint8>(PrevIdleTaskType));
-	PrevIdleTaskType = EIdleTaskType::MAX;
-	return true;
 }
 
 class AC_BasicCharacter* UC_BehaviorComponent::GetTargetCharacter() const

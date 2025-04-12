@@ -43,12 +43,19 @@ public:
 	/// <param name="InOwnerPlayer">이 아이템의 주인</param>
 	void UpdateLeftAmmoWidget(class AC_Player* InOwnerPlayer);
 
+public:
 
+	static FName GetBulletTypeName(EBulletType InBulletType);
 
 protected:
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 
 	EBulletType CurBulletType;
+
+private:
+
+	static const TMap<EBulletType, FName> BulletTypeNameMap;
+	
 };
 
 
