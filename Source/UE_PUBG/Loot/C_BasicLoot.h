@@ -41,9 +41,16 @@ public:
 
 	/// <summary>
 	/// 하나의 아이템을 추가.
+	/// LootItems에 동일한 아이템들을 찾아서 ItemCurStack이 가장 적은 객체에
+	/// 접근해서 갯수를 합침.
+	/// MaxStack을 넘으면 가장 적은 객체의 ItemCurStack을 MaxStack으로 만들고
+	/// 나머지를 InItem의 ItemCurStack으로 Set해주고 LootItems에 Emplace해준다.
+	/// 만약 두 아이템을 모두 합쳐도 MaxStack을 넘지 않는다면
+	/// LootItems에 있는 아이템에 Stack을 모두 합치고
+	/// InItem을 destroy해준다.
 	/// </summary>
 	/// <param name="InItem"></param>
-	void SetLootItems(AC_Item* InItem) { LootItems.Emplace(InItem); }
+	void AddItemInLootItems(AC_Item* InItem); //{ LootItems.Emplace(InItem); }
 
 	/// <summary>
 	/// 하나의 아이템을 삭제.

@@ -139,13 +139,7 @@ public:
 	EShootingMode GetCurrentShootingMode() { return CurrentShootingMode; }
 	class UCameraComponent* GetGunCamera() { return AimSightCamera; }
 
-	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
-
-	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
-
-	//AC_Item* SpawnItem(AC_BasicCharacter* Character) override;
-
-	void PickUpItem(AC_BasicCharacter* Character) override;
+	bool Interaction(AC_BasicCharacter* Character) override;
 
 	void CheckBackPackLevelChange();
 
@@ -165,6 +159,7 @@ protected:
 	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
 	bool MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack) override;
 
 protected:
 	/// <summary>
@@ -227,6 +222,8 @@ public:
 	class USpringArmComponent* AimSightSpringArm{};
 	int GetCurBulletCount() { return CurBulletCount; }
 	int GetMaxBulletCount() { return MaxBulletCount; }
+
+	void SetCurBulletCount(int InCount) { CurBulletCount = InCount; }
 
 	UFUNCTION(BlueprintCallable)
 	EBulletType GetCurBulletType() const { return GunDataRef->CurGunBulletType; }

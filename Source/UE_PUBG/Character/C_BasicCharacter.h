@@ -185,6 +185,7 @@ protected:
 	//자식 단계에서 OverlapBegin에서 사용할 함수 Template method
 	virtual void HandleOverlapEnd(AActor* OtherActor);
 
+	void DestroyCharacter();
 public:
 
 	/// <summary>

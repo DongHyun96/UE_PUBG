@@ -120,11 +120,12 @@ bool AC_Helmet::TakeDamage(float DamageAmount)
 		// Item의 DropItem은 OwnerCharacter가 nullptr일 경우, 처리를 안함 -> DropItem 내에서 위치 조정하는 부분을 넘기면서 SlotEquipment 세팅
 		AC_BasicCharacter* PrevOwnerCharacter = OwnerCharacter;
 		SetOwnerCharacter(nullptr);
-
-		PrevOwnerCharacter->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, nullptr);
-		if (AC_Player* Player = Cast<AC_Player>(PrevOwnerCharacter))
-			Player->GetInvenSystem()->InitializeList();
-		
+		if (PrevOwnerCharacter)
+		{
+			PrevOwnerCharacter->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, nullptr);
+			if (AC_Player* Player = Cast<AC_Player>(PrevOwnerCharacter))
+				Player->GetInvenSystem()->InitializeList();
+		}
 		this->SetItemPlace(EItemPlace::NONE);
 		return true;
 	}

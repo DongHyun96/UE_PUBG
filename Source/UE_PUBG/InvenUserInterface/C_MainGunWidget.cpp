@@ -91,11 +91,11 @@ FReply UC_MainGunWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 	{
 		if (CachedItem)
 		{   // 우클릭 이벤트 실행
-			if (CachedItem->LegacyMoveToAround(OwnerCharacter))
-			{
-				OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
-				CachedItem = nullptr;
-			}
+			//if (CachedItem->LegacyMoveToAround(OwnerCharacter))
+			//{
+			//	OwnerCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
+			//	CachedItem = nullptr;
+			//}
 
 
 

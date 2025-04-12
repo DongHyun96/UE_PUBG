@@ -197,46 +197,66 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 void AC_BasicCharacter::CharacterDead()
 {
+	// 기존 처리 유지
 	if (GetMesh()->GetSkeletalMeshAsset() == ParkourComponent->GetRootedSkeletalMesh())
 		ParkourComponent->SwapMeshToMainSkeletalMesh();
 
-	FVector SpawnLocation = GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+	MainState = EMainState::DEAD;
 
+	FVector SpawnLocation = GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 	GAMESCENE_MANAGER->SpawnLootCrateAt(SpawnLocation, this);
 
-	// 본 변형 업데이트
-	//GetMesh()->RefreshBoneTransforms();
-	//GetMesh()->UpdateComponentToWorld();
-	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_BasicCharacter::EnableRagdoll, 0.1f, false);
+	// 죽기 직전, 힘 제거 및 블렌딩 제거
+	//GetMesh()->bApplyImpulseOnDamage = false;
+	//GetMesh()->SetAllBodiesPhysicsBlendWeight(0.0f);
+
+	// 💡 본별 물리 속도 제거
+	TArray<FName> BoneNames;
+	GetMesh()->GetBoneNames(BoneNames);
+	for (const FName& BoneName : BoneNames)
+	{
+		GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector, false, BoneName);
+		GetMesh()->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector, false, BoneName);
+	}
+
+	// 바로 래그돌 적용
+	EnableRagdoll();
 
 	// 이 캐릭터가 TargetCharacter로 잡혀있는 Enemy에 대해 Delegate 호출 처리를 해줌
 	if (Delegate_OnCharacterDead.IsBound()) Delegate_OnCharacterDead.Broadcast(this);
 
-
+	// 아직 문제가 있는 듯.
+	// 분명 destroy 이전에 GameSceneManager의 AllCharacter, AllCharacterActors에서 뺏는데
+	FTimerHandle TimerHandle;
+	
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_BasicCharacter::DestroyCharacter, 5.f, false);
 }
 
 void AC_BasicCharacter::EnableRagdoll()
 {
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	
-	// 💡 캡슐 충돌 제거 (바닥을 통과하는 주요 원인)
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	// 이동 중지
+	GetCharacterMovement()->DisableMovement();
 
-	// 💡 루트 컴포넌트를 스켈레탈 메쉬로 변경
+	// 캡슐 비활성화
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// 메쉬만 루트로 설정
 	GetMesh()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	RootComponent = GetMesh();
 
-	// 💡 충돌 프로필과 물리 활성화
+	// 💡 충돌 프로필 설정 → 지형과만 충돌
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	// 📌 충돌 채널을 손수 설정 (필요시)
+	GetMesh()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block); // 지형과만 충돌
+	
+	// 💡 물리 활성화
 	GetMesh()->SetSimulatePhysics(true);
+	//GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("Hips"), true, true);
 
-	// 💡 특정 본 이하로 래그돌 활성화
-	GetMesh()->SetAllBodiesBelowSimulatePhysics(TEXT("pelvis"), true, true);
-
-	// 💡 물리 속도 초기화
+	// 💡 속도 제거
 	GetMesh()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
 	GetMesh()->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 
@@ -249,8 +269,7 @@ void AC_BasicCharacter::EnableRagdoll()
 		SetActorTickEnabled(false);
 		DisableInput(PlayerController);
 	}
-
-	SetActorEnableCollision(false);
+	//SetActorEnableCollision(false);
 
 	//FTimerHandle TimerHandle;
 
@@ -284,6 +303,17 @@ void AC_BasicCharacter::HandleOverlapBegin(AActor* OtherActor)
 
 void AC_BasicCharacter::HandleOverlapEnd(AActor* OtherActor)
 {
+}
+
+void AC_BasicCharacter::DestroyCharacter()
+{
+	//GAMESCENE_MANAGER->GetAllCharacters().Remove(this);
+	//GAMESCENE_MANAGER->GetAllCharacterActors().Remove(this);
+	//
+	//this->Destroy();
+	
+	//this->SetActorEnableCollision(false);
+	this->SetActorHiddenInGame(true);
 }
 
 void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)

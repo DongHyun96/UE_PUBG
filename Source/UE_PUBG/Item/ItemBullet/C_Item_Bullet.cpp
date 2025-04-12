@@ -42,7 +42,7 @@ bool AC_Item_Bullet::Interaction(AC_BasicCharacter* Character)
 {
 	if (ItemPlace == EItemPlace::AROUND)
 	{
-		return MoveAroundToInven(Character, this->GetItemCurStack());
+		return MoveToInven(Character, this->GetItemCurStack());
 	}
 	else return false;
 }

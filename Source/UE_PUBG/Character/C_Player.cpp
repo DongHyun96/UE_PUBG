@@ -216,6 +216,12 @@ void AC_Player::Tick(float DeltaTime)
 
 	AC_Item* NewInteractableItem = FindBestInteractable();
 
+	//if (!NewInteractableItem)
+	//{
+	//	CurOutLinedItem = nullptr;
+	//	return;
+	//}
+
 	// 아이템이 변경되었을 때만 업데이트 수행
 	if (NewInteractableItem != CurOutLinedItem)
 	{

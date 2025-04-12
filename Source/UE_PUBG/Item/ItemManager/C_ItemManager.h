@@ -65,6 +65,15 @@ public:
     // 아이템을 데이터 테이블에서 불러오고 캐싱
     void LoadItemDataTable();
 
+    /// <summary>
+    /// 아이템 매니저에서 아이템을 스폰하는 함수.
+    /// </summary>
+    /// <param name="ItemCode">스폰하고자 하는 아이템의 code</param>
+    /// <param name="Location">아이템의 위치</param>
+    /// <param name="Stack">아이템의 CurStack</param>
+    /// <returns>스폰한 아이템, nullptr이면 없는 코드</returns>
+    AC_Item* SpawnItem(FName ItemCode, FVector Location, int32 Stack = 0);
+
 public:
     // 아이템을 이름으로 조회
     FItemData* GetItemData(FName ItemCode);

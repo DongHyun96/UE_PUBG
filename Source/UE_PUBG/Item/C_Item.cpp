@@ -163,7 +163,6 @@ bool AC_Item::MoveToInven(AC_BasicCharacter* Character, int32 InStack)
 		if (Character->GetInvenComponent()->GetAroundItems().Contains(this))
 			Character->GetInvenComponent()->RemoveItemToAroundList(this);
 	}
-
 	return bIsMoveItem;
 }
 
@@ -291,6 +290,14 @@ void AC_Item::SetItemStack(int32 inItemStack)
 	{
 		OwnerCharacter->GetInvenComponent()->DestroyMyItem(this);
 	}
+
+	//int32 ItemMaxStack = GetItemDatas()->ItemMaxStack;
+	//
+	//if (ItemCurStack > ItemMaxStack)
+	//{
+	//	int32 SpritStack = ItemCurStack - ItemMaxStack;
+	//	SpawnItem(OwnerCharacter)
+	//}
 }
 
 void AC_Item::SetOutlineEffect(bool bEnable)

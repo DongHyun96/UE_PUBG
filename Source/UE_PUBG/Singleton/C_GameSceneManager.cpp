@@ -21,6 +21,7 @@
 #include "NavMesh/NavMeshBoundsVolume.h"
 
 #include "Loot/C_LootCrate.h"
+//#include "Item/ItemManager/C_ItemManager.h"
 
 #include "Utility/C_TickRandomColorGenerator.h"
 
@@ -38,6 +39,15 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 	Super::OnWorldBeginPlay(InWorld);
 
 	int DoorCount{};
+
+	if (!ItemManager)
+	{
+		ItemManager = NewObject<UC_ItemManager>(this, UC_ItemManager::StaticClass());
+		if (ItemManager)
+		{
+			ItemManager->InitializeItemManager(); // 필요하면 초기화 함수 호출
+		}
+	}
 
 	// Level에 배치된 Actor들의 BeginPlay 호출되기 이전에 객체 초기화
 	for (FActorIterator Actor(&InWorld); Actor; ++Actor)

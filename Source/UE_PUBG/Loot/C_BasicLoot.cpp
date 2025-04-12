@@ -3,6 +3,7 @@
 
 #include "Loot/C_BasicLoot.h"
 #include "Item/C_Item.h"
+#include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 // Sets default values
 AC_BasicLoot::AC_BasicLoot()
@@ -32,6 +33,45 @@ void AC_BasicLoot::InitializeLootItems()
 	{
 		Item->SetOwner(this);
 	}
+}
+
+void AC_BasicLoot::AddItemInLootItems(AC_Item* InItem)
+{
+	FName InItemCode = InItem->GetItemCode();
+	AC_Item* CachedItem = nullptr;
+	for (AC_Item* Item : LootItems)
+	{
+		FName CurItemCode = Item->GetItemCode();
+
+		if (InItemCode == CurItemCode)
+		{
+			if (!CachedItem)
+				CachedItem = Item;
+			if (CachedItem->GetItemCurStack() > Item->GetItemCurStack())
+				CachedItem = Item;
+			//int32 ItemMaxStack = Item->GetItemDatas()->ItemMaxStack;
+			//if (Item->GetItemCurStack() == ItemMaxStack) continue;
+
+		}
+	}
+
+	if (CachedItem) 
+	{
+		int32 PrevItemStack = CachedItem->GetItemCurStack() + InItem->GetItemCurStack();
+		int32 CachedItemMaxStack = CachedItem->GetItemDatas()->ItemMaxStack;
+
+		if (PrevItemStack > CachedItemMaxStack)
+		{
+			PrevItemStack -= CachedItemMaxStack;
+			CachedItem->SetItemStack(CachedItemMaxStack);
+			InItem->SetItemStack(PrevItemStack);
+		}
+
+		CachedItem->SetItemStack(PrevItemStack);
+		InItem->Destroy();
+	}
+	else
+		LootItems.Emplace(InItem);
 }
 
 void AC_BasicLoot::CheckLootItems()

@@ -49,6 +49,8 @@
 #include "Character/C_Enemy.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_AmmoWidget.h"
+
+#include "Singleton/C_GameSceneManager.h"
 #include "Kismet/KismetMathLibrary.h"
 
 //UCameraComponent* AC_Gun::AimSightCamera;
@@ -398,160 +400,6 @@ void AC_Gun::SetOwnerCharacter(AC_BasicCharacter * InOwnerCharacter)
 	SetAimSightWidget();
 }
 
-bool AC_Gun::LegacyMoveToAround(AC_BasicCharacter* Character)
-{
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
-
-	//equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
-
-	//SpawnItem(Character);
-
-	this->SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
-
-	ItemPlace = EItemPlace::AROUND;
-	DetachItem();
-	SetActorHiddenInGame(false);
-	SetActorEnableCollision(true);
-
-	return true;
-}
-
-bool AC_Gun::LegacyMoveToSlot(AC_BasicCharacter* Character)
-{
-	//TODO : PickUpItem 내용으로 우선 만든거라 다시 만들어야함. 그리고 MainGun과 SubGun slot의 이동을 고민해야 함.
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
-	EWeaponSlot Slot = EWeaponSlot::MAIN_GUN;
-
-	switch (Slot)
-	{
-	case EWeaponSlot::NONE:
-		break;
-	case EWeaponSlot::MAIN_GUN:
-		//Main Gun Slot에 총이 없다면 실행
-		if (!equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN])
-		{
-			equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
-
-			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
-			SetActorHiddenInGame(true);
-			SetActorEnableCollision(false);
-
-			SetActorHiddenInGame(false);
-			SetActorEnableCollision(true);
-			return true;
-		}
-		//Slot = EWeaponSlot::SUB_GUN;
-	case EWeaponSlot::SUB_GUN:
-		//Sub Gun Slot에 총이 없다면 실행
-		if (!equipComp->GetWeapons()[EWeaponSlot::SUB_GUN])
-		{
-			equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
-
-			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
-			SetActorHiddenInGame(true);
-			SetActorEnableCollision(false);
-
-			SetActorHiddenInGame(false);
-			SetActorEnableCollision(true);
-
-			return true;
-		}
-		break;
-	case EWeaponSlot::MELEE_WEAPON:
-		break;
-	case EWeaponSlot::THROWABLE_WEAPON:
-		break;
-	default:
-		break;
-	}
-
-	//Main, Sub 모두 총이 있는 경우.
-	EHandState HandState = Character->GetHandState();
-	AC_Weapon* DropGun = nullptr;
-	if (HandState == EHandState::WEAPON_GUN)
-	{
-		EWeaponSlot curSlot = equipComp->GetCurWeaponType();
-
-		//제대로 총을 바꾸는지 확인해야함, SetSlotWeapon과 DetachmentItem의 순서를 바꿔야 할 수 도 있음.
-		DropGun = equipComp->SetSlotWeapon(curSlot, this);
-		DropGun->DetachItem();
-		return true;
-	}
-	else
-	{
-		DropGun = equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
-		DropGun->DetachItem();
-		return true;
-	}
-}
-
-void AC_Gun::PickUpItem(AC_BasicCharacter* Character)
-{
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
-	EWeaponSlot Slot = EWeaponSlot::MAIN_GUN;
-
-	switch (Slot)
-	{
-	case EWeaponSlot::NONE:
-		break;
-	case EWeaponSlot::MAIN_GUN:
-		//Main Gun Slot에 총이 없다면 실행
-		if (!equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN])
-		{
-			equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
-			
-			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
-			SetActorHiddenInGame(true);
-			SetActorEnableCollision(false);
-
-			SetActorHiddenInGame(false);
-			SetActorEnableCollision(true);
-			return;
-		}
-		//Slot = EWeaponSlot::SUB_GUN;
-	case EWeaponSlot::SUB_GUN:
-		//Sub Gun Slot에 총이 없다면 실행
-		if (!equipComp->GetWeapons()[EWeaponSlot::SUB_GUN])
-		{
-			equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
-
-			//켰다 끄는 이유는 OwnerCharacter에서 인벤컴포넌트에서 RemoveItemAroundList를 써도 안되서 사용함.
-			SetActorHiddenInGame(true);
-			SetActorEnableCollision(false);
-
-			SetActorHiddenInGame(false);
-			SetActorEnableCollision(true);
-
-			return;
-		}
-		break;
-	case EWeaponSlot::MELEE_WEAPON:
-		break;
-	case EWeaponSlot::THROWABLE_WEAPON:
-		break;
-	default:
-		break;
-	}
-
-	//Main, Sub 모두 총이 있는 경우.
-	EHandState HandState = Character->GetHandState();
-	AC_Weapon* DropGun = nullptr;
-	if (HandState == EHandState::WEAPON_GUN)
-	{
-		EWeaponSlot curSlot = equipComp->GetCurWeaponType();
-		
-		//제대로 총을 바꾸는지 확인해야함, SetSlotWeapon과 DetachmentItem의 순서를 바꿔야 할 수 도 있음.
-		DropGun = equipComp->SetSlotWeapon(curSlot, this);
-		DropGun->DetachItem();
-	}
-	else
-	{
-		DropGun = equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
-		DropGun->DetachItem();
-	}
-
-}
-
 void AC_Gun::OnOwnerCharacterPoseTransitionFin()
 {
 }
@@ -567,6 +415,22 @@ void AC_Gun::CheckPlayerIsRunning()
 	}
 
 
+}
+
+bool AC_Gun::Interaction(AC_BasicCharacter* Character)
+{
+	switch (ItemPlace)
+	{
+	case EItemPlace::SLOT:
+		return MoveToAround(Character, GetItemCurStack());
+	case EItemPlace::AROUND:
+		return MoveToSlot(Character, GetItemCurStack());
+	case EItemPlace::INVEN:
+		break;
+	default:
+		break;
+	}
+	return false;
 }
 
 void AC_Gun::CheckBackPackLevelChange()
@@ -732,6 +596,37 @@ bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 
 bool AC_Gun::MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack)
 {
+	return false;
+}
+
+bool AC_Gun::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
+{
+	if (Super::MoveSlotToAround(Character, InStack))
+	{
+		UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
+		UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+		//equipComp->SetSlotWeapon(GetWeaponSlot(), nullptr);
+		//invenComp->AddItemToAroundList(this);
+		int32 LeftBulletCount = GetCurBulletCount();
+		
+		if (LeftBulletCount == 0) return true;
+		
+		AC_Item* LeftBulletItem = 
+			GAMESCENE_MANAGER->GetItemManager()->SpawnItem(GetCurrentBulletTypeName(), GetGroundLocation(Character), LeftBulletCount);
+		if (!LeftBulletItem)
+		{
+			UC_Util::Print("LeftBulletItem is nullptr");
+			return false;
+		}
+		
+		LeftBulletItem->SetActorEnableCollision(false);
+		LeftBulletItem->MoveToInven(Character, LeftBulletCount);
+		LeftBulletItem->SetActorEnableCollision(true);
+		
+		SetCurBulletCount(0);
+
+		return true;
+	}
 	return false;
 }
 
