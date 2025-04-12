@@ -138,7 +138,7 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 	{
 		// TODO : 주석 풀기 (지금은 Test중)
 		// 사망 처리 
-		// OwnerCharacter->CharacterDead();
+		OwnerCharacter->CharacterDead();
 	}
 	
 	return true;
