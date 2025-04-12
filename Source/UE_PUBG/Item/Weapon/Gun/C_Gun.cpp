@@ -939,7 +939,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 
 	// 벡터를 다시 정규화하여 크기를 유지
 	FireDirection = FireDirection.GetSafeNormal();
-	UC_Util::Print(FireDirection, FColor::Blue);
+	// UC_Util::Print(FireDirection, FColor::Blue);
 
 	FireDirection *= 100;
 	FireDirection *= GunDataRef->BulletSpeed;

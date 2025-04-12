@@ -196,6 +196,12 @@ void AC_Player::BeginPlay()
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &AC_Player::OnPostWorldBeginPlay);
 }
 
+void AC_Player::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	GAMESCENE_MANAGER->SetPlayer(nullptr);	
+}
+
 void AC_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -1224,7 +1230,7 @@ void AC_Player::SetRecoilTimeLineComponent()
 
 void AC_Player::RecoilController()
 {
-	UC_Util::Print("Start Recoil");
+	// UC_Util::Print("Start Recoil");
 	AC_Gun* CurGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
 	if (!IsValid(CurGun)) return;
 	RecoilTimeline->PlayFromStart();

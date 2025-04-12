@@ -3,7 +3,6 @@
 
 #include "AI/Task/CombatTask/C_BTTaskAttack.h"
 
-#include "EdGraphSchema_K2_Actions.h"
 #include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
@@ -13,8 +12,6 @@
 #include "AI/C_EnemyAIController.h"
 #include "Utility/C_Util.h"
 
-
-#include "Singleton/C_GameSceneManager.h"
 
 UC_BTTaskAttack::UC_BTTaskAttack()
 {

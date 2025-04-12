@@ -103,7 +103,7 @@ float AC_AR::GetDamageRateByBodyPart(const FName& BodyPart)
 {
 	if (!BODYPARTS_DAMAGERATE.Contains(BodyPart))
 	{
-		UC_Util::Print("From AC_SR::GetDamageRateByBodyPart : No Body part found!", FColor::Red, 10.f);
+		// UC_Util::Print("From AC_AR::GetDamageRateByBodyPart : No Body part found!", FColor::Red, 10.f);
 		return 0.f;
 	}
 	
