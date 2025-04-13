@@ -10,6 +10,7 @@
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Item/Equipment/C_EquipableItem.h"
 #include "Singleton/C_GameSceneManager.h"
+#include "Item/ItemManager/C_ItemManager.h"
 #include "Utility/C_Util.h"
 
 // Sets default values

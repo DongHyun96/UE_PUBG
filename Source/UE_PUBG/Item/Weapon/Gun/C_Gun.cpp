@@ -51,6 +51,7 @@
 #include "HUD/C_AmmoWidget.h"
 
 #include "Singleton/C_GameSceneManager.h"
+#include "Item/ItemManager/C_ItemManager.h"
 #include "Kismet/KismetMathLibrary.h"
 
 //UCameraComponent* AC_Gun::AimSightCamera;

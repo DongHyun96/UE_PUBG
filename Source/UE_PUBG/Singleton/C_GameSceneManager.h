@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
-#include "Item/ItemManager/C_ItemManager.h"
+//#include "Item/ItemManager/C_ItemManager.h"
 #include "C_GameSceneManager.generated.h"
 
 #define GAMESCENE_MANAGER GetWorld()->GetSubsystem<UC_GameSceneManager>()
@@ -70,7 +70,7 @@ public: // Getters and setters
 	class AC_MagneticFieldManager* GetMagneticFieldManager() const { return MagneticFieldManager; }
 	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
 
-	class UC_ItemManager* GetItemManager() const { return ItemManager; }
+	class AC_ItemManager* GetItemManager() const { return ItemManager; }
 
 	UFUNCTION(BlueprintCallable)
 	TArray<class AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
@@ -109,7 +109,7 @@ private:
 	class AC_Player*				Player{};
 	class AC_MagneticFieldManager*	MagneticFieldManager{};
 	class AC_AirplaneManager*		AirplaneManager{};
-	class UC_ItemManager*			ItemManager{};
+	class AC_ItemManager*			ItemManager{};
 private:
 
 	// 인게임 모든 캐릭터들(Player + Enemies)

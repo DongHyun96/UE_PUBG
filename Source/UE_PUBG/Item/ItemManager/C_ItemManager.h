@@ -3,61 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "GameFramework/Actor.h"
 #include "Item/C_Item.h"
-#include "item/Weapon/Gun/C_Gun.h"
+#include "Item/Weapon/Gun/C_Gun.h"
 #include "C_ItemManager.generated.h"
 
-
-/// <summary>
-/// 아이템의 타입을 정해줘서 인벤토리에서 장착할때 알맞는 UI에 찾아가도록 하고자함.
-/// NONE은 돌발상황을 대비해서 만들어둠.
-/// 하위클래스에서는 생성자에서 정의하고 있음.
-/// </summary>
-//UENUM(BlueprintType)
-//enum class EItemTypes : uint8
-//{
-//    NONE,
-//    HELMET,
-//    VEST,
-//    BACKPACK,
-//    MAINGUN,
-//    MELEEWEAPON,
-//    THROWABLE,
-//    ATTACHMENT,
-//    CONSUMPTIONITEM,
-//    BULLET
-//};
-
-
-//USTRUCT(BlueprintType)
-//struct FWeaponData : public FBasicItemData
-//{
-//    GENERATED_BODY()
-//
-//public:
-//    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//    USoundBase* FireSound;  // 총기 발사 사운드
-//
-//    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//    int32 Damage;  // 총기 공격력
-//
-//    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//    int32 AmmoCapacity;  // 탄창 크기
-//
-//    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-//    UTexture2D* WeaponSlotImage;  // 아이템 UI 아이콘
-//};
-/**
- * 
- */
 UCLASS()
-class UE_PUBG_API UC_ItemManager : public UObject
+class UE_PUBG_API AC_ItemManager : public AActor
 {
 	GENERATED_BODY()
+	
+public:	
+	// Sets default values for this actor's properties
+	AC_ItemManager();
 
-public:
-    UC_ItemManager();
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
     // 아이템 매니저 초기화
     void InitializeItemManager();

@@ -68,7 +68,7 @@ void AC_Item::DetachItem()
 	//후에 라인 트레이스를 사용해서 바꿔주기.
 	//SetActorLocation(OwnerCharacter->GetActorLocation() + FVector(0.f, 0.f, -75.f));
 	DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-	this->SetActorLocation(GetGroundLocation(OwnerCharacter) + RootComponent->Bounds.BoxExtent.Z);
+	this->SetActorLocation(GetGroundLocation(OwnerCharacter) + FVector(0,0,5));// +RootComponent->Bounds.BoxExtent.Z);
 
 	SetOwnerCharacter(nullptr);
 	SetActorRotation(FRotator(0.f, 0.f, -90.f));
