@@ -31,8 +31,6 @@ EBTNodeResult::Type UC_BTTaskMoveTo::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 		}
 	}
 
-	UC_Util::Print("MoveTo", FColor::Red, 20.f);
-	
 	// 만약 피치 못해 NavMesh가 깔려 있지 않은 지역에 도달했다면 가장 근처의 NavMesh로 귀환 -> 어쩔 수 없다고 칠까 그냥...
 	/*if (!IsAgentOnNavMesh() && !bHasMoveToNearestNavMeshStarted)
 	{

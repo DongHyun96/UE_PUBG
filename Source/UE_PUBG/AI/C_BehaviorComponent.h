@@ -43,7 +43,8 @@ public:
 public:
 
 	void SetOwnerEnemy(class AC_Enemy* InOwnerEnemy) { OwnerEnemy = InOwnerEnemy; }
-	
+	void SetOwnerEnemyAIController(class AC_EnemyAIController* InEnemyAIController) { OwnerEnemyAIController = InEnemyAIController; }
+
 	bool SetIdleTaskType(EIdleTaskType Type);
 	EIdleTaskType GetIdleTaskType() const;
 
@@ -84,7 +85,8 @@ public:
 
 private:
 
-	class AC_Enemy* OwnerEnemy{};
+	AC_Enemy* OwnerEnemy{};
+	class AC_EnemyAIController* OwnerEnemyAIController{};
 	
 protected:
 
@@ -116,7 +118,10 @@ private: // WAIT_TASK 시간
 
 	float WaitTime{};
 
+private:
 	
+	// FlashBang Effect Duration
+	float FlashBangEffectDuration{};
 };
 
 

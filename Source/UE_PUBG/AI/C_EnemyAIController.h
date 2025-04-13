@@ -52,6 +52,16 @@ public:
 
 	class UC_BehaviorComponent* GetBehaviorComponent() const { return BehaviorComponent; }
 
+public: // Behavior Tree execution pausing 관련
+	
+	/// <summary>
+	///	Behavior Tree execution 일시정지 / 해제 Toggle 함수 
+	/// </summary>
+	/// <param name="bSetBehaviorTreePause"> : true - Resume | false - Pause </param>
+	void ToggleBehaviorTreeExecution(bool bSetBehaviorTreePause);
+
+	bool GetIsBehaviorTreePaused() const { return bIsBehaviorTreePaused;}
+
 private:
 	/// <summary>
 	/// 이동 완료되었을 떄 호출될 함수
@@ -126,6 +136,14 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UC_BehaviorComponent* BehaviorComponent{};
+
+private:
+
+	// Behavior Tree Execution이 잠깐 멈춰있는 상황인지 체크
+	// 섬광탄 피격 시에 Behavior Tree execution을 잠깐 hold할 예정
+	// Behavior Tree Node의 Observer는 Behavior Tree가 멈춰있든, 실행 중이든 Observing 중임 ->
+	//  상태가 바뀌면 Task가 실행되는 문제를 방지하기 위함
+	bool bIsBehaviorTreePaused{}; 
 
 private:
 

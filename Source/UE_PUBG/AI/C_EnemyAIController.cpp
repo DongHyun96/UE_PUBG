@@ -76,6 +76,7 @@ void AC_EnemyAIController::OnPossess(APawn* InPawn)
 
 	OwnerCharacter = Cast<AC_Enemy>(InPawn);
 	BehaviorComponent->SetOwnerEnemy(OwnerCharacter);
+	BehaviorComponent->SetOwnerEnemyAIController(this);
 	
 	SetGenericTeamId(OwnerCharacter->GetGenericTeamId());
 
@@ -134,6 +135,20 @@ void AC_EnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, struct FAISt
 
 		RemoveCharacterFromDetectedCharacters(PerceptionUpdatedCharacter);	
 	}
+}
+
+void AC_EnemyAIController::ToggleBehaviorTreeExecution(bool bSetBehaviorTreePause)
+{
+	bIsBehaviorTreePaused = bSetBehaviorTreePause;
+
+	if (bIsBehaviorTreePaused)
+		UC_Util::Print("Pausing Behavior Tree", FColor::MakeRandomColor(), 10.f);
+	else
+		UC_Util::Print("Resuming Behavior Tree", FColor::MakeRandomColor(), 10.f);
+		
+	
+	if (bSetBehaviorTreePause) BrainComponent->PauseLogic("Paused By AC_EnemyAIController::ToggleBehaviorTreeExecution");
+	else					BrainComponent->RestartLogic();
 }
 
 void AC_EnemyAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
