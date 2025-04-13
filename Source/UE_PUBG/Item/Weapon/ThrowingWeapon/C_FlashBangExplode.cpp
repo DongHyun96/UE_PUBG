@@ -3,6 +3,7 @@
 
 #include "Item/Weapon/ThrowingWeapon/C_FlashBangExplode.h"
 
+#include "Character/C_Enemy.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -147,14 +148,15 @@ void AC_FlashBangExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* C
 	// 캐릭터가 현재 바라보고 있는 방향과 거리 등을 따져서 섬광탄 effect 남기기
 	AC_Player* Player = Cast<AC_Player>(Character);
 
+	float EffectDuration = EFFECT_DURATION_MAX;
+
+	// 일정거리에서 멀어져야 Duration감소를 시키고, 섬광탄을 바라보는 방향에 따른 감소까지 적용시킴
+	if (DistanceRateFactor < 0.7f) EffectDuration *= (Degree <= 110.f) ? DistanceRateFactor : DistanceRateFactor * 0.5f;
+	
 	if (IsValid(Player))
 	{
 		//PostProcessVolume->Settings.BloomIntensity = 250.f;
 
-		float EffectDuration = EFFECT_DURATION_MAX;
-
-		// 일정거리에서 멀어져야 Duration감소를 시키고, 섬광탄을 바라보는 방향에 따른 감소까지 적용시킴
-		if (DistanceRateFactor < 0.7f) EffectDuration *= (Degree <= 110.f) ? DistanceRateFactor : DistanceRateFactor * 0.5f;
 		
 		UC_Util::Print("EffectDuration : " + FString::SanitizeFloat(EffectDuration), FColor::Green, 5.f);
 		UC_Util::Print("DistanceRateFactor : " + FString::SanitizeFloat(DistanceRateFactor), FColor::Green, 5.f);
@@ -164,6 +166,14 @@ void AC_FlashBangExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* C
 	}
 
 	// TODO : Enemy의 경우 적절한 방해 주기
+	AC_Enemy* Enemy = Cast<AC_Enemy>(Character);
+
+	if (IsValid(Enemy))
+	{
+		if (Enemy->GetMainState() == EMainState::DEAD) return;
+		
+		
+	}
 
 }
 

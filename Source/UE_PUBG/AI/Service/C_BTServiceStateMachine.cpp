@@ -27,6 +27,8 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
+	// UC_Util::Print("State Machine");
+
 	AC_EnemyAIController*	EnemyAIController		= Cast<AC_EnemyAIController>(OwnerComp.GetAIOwner());
 	AC_Enemy*				Enemy					= Cast<AC_Enemy>(EnemyAIController->GetPawn());
 	UC_BehaviorComponent*	EnemyBehaviorComponent	= EnemyAIController->GetBehaviorComponent();

@@ -512,15 +512,29 @@ void UC_InputComponent::OnXKey()
 	Player->GetStatComponent()->TakeDamage(10.f, nullptr);
 	
 	if (!GAMESCENE_MANAGER->GetEnemies().IsEmpty())
-		GAMESCENE_MANAGER->GetEnemies()[0]->GetStatComponent()->TakeDamage(10.f, nullptr);
+	{
+		AC_Enemy* Enemy = GAMESCENE_MANAGER->GetEnemies()[0]; 
+		// Enemy->GetStatComponent()->TakeDamage(10.f, nullptr);
+		// Enemy->GetEnemyAIController()->GetBrainComponent()->PauseLogic("Testing");
+		// Enemy->GetEnemyAIController()->GetBrainComponent()->StopLogic("Testing");
+		Enemy->GetEnemyAIController()->ToggleBehaviorTreeExecution(true);
+	}
 	
 	Player->GetEquippedComponent()->ToggleArmed();
 }
 
 void UC_InputComponent::OnBKey()
 {
+	if (!GAMESCENE_MANAGER->GetEnemies().IsEmpty())
+	{
+		AC_Enemy* Enemy = GAMESCENE_MANAGER->GetEnemies()[0]; 
+		// Enemy->GetEnemyAIController()->GetBrainComponent()->RestartLogic();
+		Enemy->GetEnemyAIController()->ToggleBehaviorTreeExecution(false);
+	}
+	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteBKey();
+
 }
 
 void UC_InputComponent::OnRKey()

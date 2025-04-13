@@ -33,7 +33,7 @@ void UC_BehaviorComponent::BeginPlay()
 	SetIdleTaskType(EIdleTaskType::WAIT);
 	// SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
 	SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer());
-	// OwnerEnemy->GetEnemyAIController()->SetFocus(GAMESCENE_MANAGER->GetPlayer());
+	// OwnerEnemyAIController->SetFocus(GAMESCENE_MANAGER->GetPlayer());
 }
 
 void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -53,6 +53,10 @@ void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 bool UC_BehaviorComponent::SetServiceType(EServiceType Type)
 {
 	if (Type == EServiceType::MAX) return false;
+
+	// 현재 Behavior Tree의 Execution을 잠깐 멈춘 상황이라면 return false (e.g. 섬광탄 피격으로 인한 BrainComponent Execution 잠깐 멈췄을 때)
+	if (OwnerEnemyAIController->GetIsBehaviorTreePaused()) return false;
+	
 	Blackboard->SetValueAsEnum(ServiceKey, static_cast<uint8>(Type));
 	return true;
 }
@@ -65,6 +69,7 @@ EServiceType UC_BehaviorComponent::GetServiceType() const
 bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 {
 	if (Type == EIdleTaskType::MAX) return false;
+	if (OwnerEnemyAIController->GetIsBehaviorTreePaused()) return false;
 
 	// Random wait time 지정
 	if (Type == EIdleTaskType::WAIT) WaitTime = FMath::RandRange(5.f, 10.f);
@@ -130,7 +135,7 @@ bool UC_BehaviorComponent::SetBasicTargetLocation(const FVector& InTargetLocatio
 
 	// 만약에 현재 이동 중이라면, 새로운 이동 목표지점 바로 setting
 	if (GetServiceType() == EServiceType::IDLE && GetIdleTaskType() == EIdleTaskType::BASIC_MOVETO)
-		OwnerEnemy->GetEnemyAIController()->MoveToLocation(InTargetLocation);
+		OwnerEnemyAIController->MoveToLocation(InTargetLocation);
 	
 	return true;
 }
@@ -146,7 +151,7 @@ bool UC_BehaviorComponent::SetInCircleTargetLocation(const FVector& InTargetLoca
 
 	// 만약에 현재 이동 중이라면, 새로운 이동 목표지점 바로 setting
 	if (GetServiceType() == EServiceType::IDLE && GetIdleTaskType() == EIdleTaskType::INCIRCLE_MOVETO)
-		OwnerEnemy->GetEnemyAIController()->MoveToLocation(InTargetLocation);
+		OwnerEnemyAIController->MoveToLocation(InTargetLocation);
 	
 	return true;
 }
