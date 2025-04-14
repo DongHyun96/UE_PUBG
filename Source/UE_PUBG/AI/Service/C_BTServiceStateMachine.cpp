@@ -33,6 +33,9 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	AC_Enemy*				Enemy					= Cast<AC_Enemy>(EnemyAIController->GetPawn());
 	UC_BehaviorComponent*	EnemyBehaviorComponent	= EnemyAIController->GetBehaviorComponent();
 
+	// 현재 FlashBang 피격 중인 상황(현상 유지)
+	if (EnemyAIController->IsFlashBangEffectTimeLeft()) return;
+
 	if (!EnemyTimers.Contains(EnemyBehaviorComponent)) EnemyTimers.Add(EnemyBehaviorComponent, 0.f);
 
 	// Update Detected Characters' Sight Range Level

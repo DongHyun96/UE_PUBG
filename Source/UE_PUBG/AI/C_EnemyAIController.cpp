@@ -66,6 +66,9 @@ void AC_EnemyAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	DrawSightRange();
+
+	// Update FlashBangEffectLeftTime
+	FlashBangEffectLeftTime = FMath::Max(FlashBangEffectLeftTime - DeltaTime, 0.f);
 }
 
 void AC_EnemyAIController::OnPossess(APawn* InPawn)
@@ -135,20 +138,6 @@ void AC_EnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, struct FAISt
 
 		RemoveCharacterFromDetectedCharacters(PerceptionUpdatedCharacter);	
 	}
-}
-
-void AC_EnemyAIController::ToggleBehaviorTreeExecution(bool bSetBehaviorTreePause)
-{
-	bIsBehaviorTreePaused = bSetBehaviorTreePause;
-
-	if (bIsBehaviorTreePaused)
-		UC_Util::Print("Pausing Behavior Tree", FColor::MakeRandomColor(), 10.f);
-	else
-		UC_Util::Print("Resuming Behavior Tree", FColor::MakeRandomColor(), 10.f);
-		
-	
-	if (bSetBehaviorTreePause) BrainComponent->PauseLogic("Paused By AC_EnemyAIController::ToggleBehaviorTreeExecution");
-	else					BrainComponent->RestartLogic();
 }
 
 void AC_EnemyAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
@@ -243,7 +232,10 @@ void AC_EnemyAIController::UpdateDetectedCharactersRangeLevel()
 
 			// 새로운 거리로 갱신 시키기
 			It.RemoveCurrent();
-			if (CurrentCharacter->GetMainState() == EMainState::DEAD) continue; // 이미 죽은 Character라면 빼버리고 진행
+			
+			// 이미 죽은 Character이거나 삭제된 캐릭터라면 빼버리고 진행
+			if (!IsValid(CurrentCharacter))								continue;
+			if (CurrentCharacter->GetMainState() == EMainState::DEAD)	continue; 
 				
 			AddCharacterToDetectedCharacters(CurrentCharacter);
 		}

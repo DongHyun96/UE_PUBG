@@ -35,6 +35,9 @@ void UC_BTTaskSwapWeapon::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		return;
 	}
 
+	// 현재 FlashBang 피격 중인 상황(현상 유지)
+	if (Controller->IsFlashBangEffectTimeLeft()) return;
+
 	AC_Enemy* Enemy = Cast<AC_Enemy>(Controller->GetPawn());
 	UC_BehaviorComponent* BehaviorComponent = Controller->GetBehaviorComponent();
 	UC_EquippedComponent* EquippedComponent = Enemy->GetEquippedComponent();
@@ -96,37 +99,27 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 
 		// 거리가 50m를 넘어가면 SubGun으로 교체 시도
 		if (DistanceToTargetCharacter > 1000.f) // TODO : 50m로 수정
-		{
-			UC_Util::Print("Executing Swap to SR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 			return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent); 
-		}
 
 		// 거리 50m 이내 / 현재 시야에 보이는 중이라면 MainGun으로 교체 / 시야에 보이지 않는 중이라면 ThrowableWeapon 중 택 1 (역시 남은 장탄수 확인해서)
 		if (Controller->IsCurrentlyOnSight(TargetCharacter))
-		{
-			UC_Util::Print("Executing Swap to AR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 			return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
-		}
 	}
 	else if (TotalSevenBulletCount > 0) // 7탄만 남았을 때
 	{
 		// 거리가 50m를 넘어가면 SubGun으로 교체 시도
 		if (DistanceToTargetCharacter > 1000.f) // TODO : 50m로 수정
-		{
-			UC_Util::Print("Executing Swap to SR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 			return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent);
-		}
+
+		// 50m 이내일 때, 시야에 보이면 SubGun 교체 시도
+		if (Controller->IsCurrentlyOnSight(TargetCharacter))
+			return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent);
 	}
 	else if (TotalFiveBulletCount > 0) // 5탄만 남았을 때
 	{
-		UC_Util::Print("Executing Swap to AR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		
 		// 시야에 보이는지만 체크해서 AR 사용하기
 		if (Controller->IsCurrentlyOnSight(TargetCharacter))
-		{
-			UC_Util::Print("Executing Swap to AR", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 			return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
-		}
 	}
 
 	// 시야에 보이지 않는 중, Inven에 있는 Throwable이랑 Slot에 있는 Throwable 모두 조사해야 함

@@ -28,6 +28,9 @@ void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	AC_Enemy* Enemy = Cast<AC_Enemy>(EnemyAIController->GetPawn());
 	if (!IsValid(Enemy)) FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 
+	// 현재 FlashBang 피격 중인 상황(현상 유지)
+	if (EnemyAIController->IsFlashBangEffectTimeLeft()) return;
+
 	AC_Weapon* CurrentAttackingWeapon = Enemy->GetEquippedComponent()->GetCurWeapon();
 	if (!IsValid(CurrentAttackingWeapon))
 	{

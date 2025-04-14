@@ -30,6 +30,9 @@ void UC_BTTaskSmokeGrenade::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* N
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
+
+	// 현재 FlashBang 피격 중인 상황(현상 유지)
+	if (Controller->IsFlashBangEffectTimeLeft()) return;
 	
 	AC_Enemy* Enemy = Cast<AC_Enemy>(Controller->GetPawn());
 	UC_BehaviorComponent* BehaviorComponent = Controller->GetBehaviorComponent();

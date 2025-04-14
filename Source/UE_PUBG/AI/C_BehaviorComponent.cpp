@@ -54,9 +54,6 @@ bool UC_BehaviorComponent::SetServiceType(EServiceType Type)
 {
 	if (Type == EServiceType::MAX) return false;
 
-	// 현재 Behavior Tree의 Execution을 잠깐 멈춘 상황이라면 return false (e.g. 섬광탄 피격으로 인한 BrainComponent Execution 잠깐 멈췄을 때)
-	if (OwnerEnemyAIController->GetIsBehaviorTreePaused()) return false;
-	
 	Blackboard->SetValueAsEnum(ServiceKey, static_cast<uint8>(Type));
 	return true;
 }
@@ -69,7 +66,6 @@ EServiceType UC_BehaviorComponent::GetServiceType() const
 bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 {
 	if (Type == EIdleTaskType::MAX) return false;
-	if (OwnerEnemyAIController->GetIsBehaviorTreePaused()) return false;
 
 	// Random wait time 지정
 	if (Type == EIdleTaskType::WAIT) WaitTime = FMath::RandRange(5.f, 10.f);
@@ -98,11 +94,8 @@ void UC_BehaviorComponent::OnTargetCharacterDead(class AC_BasicCharacter* DeadCh
 				 "Received Dead delegate callback, but TargetCharacter mismatched with dead character!", FColor::Red, 10.f);
 		return;
 	}
-
-	// TODO : Sight에 이미 들어와 있는 캐릭터 중 Random한 캐릭터 지정해서 새로운 TargetCharacter 지정
-	// 만약에 없다면 nullptr로 지정해주기
-
 	SetTargetCharacter(nullptr);
+	OwnerEnemyAIController->UpdateDetectedCharactersRangeLevel();
 }
 
 bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharacter)
@@ -121,10 +114,16 @@ bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharact
 	// 현재 공격중인 때에는 TargetCharacter를 새로 바꾸지 않음
 	if (GetServiceType() == EServiceType::COMBAT) return false;
 	
+	// 새로운 TargetCharacter로 세팅 이전, 이전 TargetCharacter OnDead delegate 구독 끊기
+	if (AC_BasicCharacter* PrevTargetCharacter = GetTargetCharacter())
+		PrevTargetCharacter->Delegate_OnCharacterDead.RemoveAll(this);
 	
 	Blackboard->SetValueAsObject(TargetCharacterKey, InTargetCharacter);
-
+	
+	InTargetCharacter->Delegate_OnCharacterDead.AddUObject(this, &UC_BehaviorComponent::OnTargetCharacterDead);
+	
 	OwnerEnemy->SetTargetCharacterWidgetName(InTargetCharacter->GetName()); // TODO : 이 라인 지우기(For Testing)
+
 	
 	return true;
 }

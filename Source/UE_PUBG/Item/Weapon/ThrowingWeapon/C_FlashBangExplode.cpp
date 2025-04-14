@@ -3,6 +3,7 @@
 
 #include "Item/Weapon/ThrowingWeapon/C_FlashBangExplode.h"
 
+#include "AI/C_EnemyAIController.h"
 #include "Character/C_Enemy.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Kismet/GameplayStatics.h"
@@ -165,14 +166,11 @@ void AC_FlashBangExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* C
 		Player->GetCameraEffectComponent()->ExecuteFlashBangEffect(EffectDuration);
 	}
 
-	// TODO : Enemy의 경우 적절한 방해 주기
 	AC_Enemy* Enemy = Cast<AC_Enemy>(Character);
-
 	if (IsValid(Enemy))
 	{
 		if (Enemy->GetMainState() == EMainState::DEAD) return;
-		
-		
+		Enemy->GetEnemyAIController()->SetFlashBangEffectLeftTime(EffectDuration);
 	}
 
 }

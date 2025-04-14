@@ -233,6 +233,7 @@ void AC_BasicCharacter::CharacterDead()
 
 	// 이 캐릭터가 TargetCharacter로 잡혀있는 Enemy에 대해 Delegate 호출 처리를 해줌
 	if (Delegate_OnCharacterDead.IsBound()) Delegate_OnCharacterDead.Broadcast(this);
+	Delegate_OnCharacterDead.Clear();
 
 	// 아직 문제가 있는 듯.
 	// 분명 destroy 이전에 GameSceneManager의 AllCharacter, AllCharacterActors에서 뺏는데

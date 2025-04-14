@@ -16,6 +16,11 @@ UC_BTTaskMoveTo::UC_BTTaskMoveTo()
 
 void UC_BTTaskMoveTo::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
+	AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetAIOwner());
+
+	// 현재 FlashBang 피격 중인 상황(현상 유지)
+	if (Controller->IsFlashBangEffectTimeLeft()) return;
+	
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 }
 

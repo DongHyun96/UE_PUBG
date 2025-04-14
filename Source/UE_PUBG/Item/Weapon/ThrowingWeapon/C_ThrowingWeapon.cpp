@@ -1002,7 +1002,7 @@ void AC_ThrowingWeapon::Explode()
 	if (Exploded)
 	{
 		this->SetActorHiddenInGame(true);
-		if (ThrowingWeaponSoundData->ExprosionSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->ExprosionSound, GetActorLocation());
+		if (ThrowingWeaponSoundData->ExplosionSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->ExplosionSound, GetActorLocation());
 
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()	
 			{
