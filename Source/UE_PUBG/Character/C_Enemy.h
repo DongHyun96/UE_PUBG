@@ -90,6 +90,9 @@ public: // For Testing
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetSightRangeCharactersName(ESightRangeLevel SightRangeLevel, const FString& SightRangeCharactersName);	
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetStunnedTime(float Time);
 	
 protected:
 

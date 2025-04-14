@@ -69,6 +69,7 @@ void AC_EnemyAIController::Tick(float DeltaTime)
 
 	// Update FlashBangEffectLeftTime
 	FlashBangEffectLeftTime = FMath::Max(FlashBangEffectLeftTime - DeltaTime, 0.f);
+	OwnerCharacter->SetStunnedTime(FlashBangEffectLeftTime);
 }
 
 void AC_EnemyAIController::OnPossess(APawn* InPawn)

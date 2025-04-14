@@ -51,6 +51,9 @@ void AC_CustomNavLinkProxy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		}
 		return;
 	}
+
+	CustomNavLinkProxyCount = 0;
+	
 	if (!LinkActionStrategies.IsEmpty()) LinkActionStrategies.Empty(); // GC는 GameSceneManager에서 처리 예정
 }
 

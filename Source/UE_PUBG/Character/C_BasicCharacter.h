@@ -143,9 +143,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* DetectionSphere;
 
+	/// <summary>
+	/// 아이템이 캐릭터의 근처에 있을 때.
+	/// </summary>
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	/// <summary>
+	/// 아이템이 캐릭터의 감지범위를 벗어났을 때.
+	/// </summary>
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 public:
@@ -168,11 +174,6 @@ protected:
 	/// <para> UGameplayStatics::ApplyDamage를 통해 Damage를 받는 함수 </para>
 	/// <para> 부위별 피격 처리 시도를 하려면 StatComponent의 TakeDamage함수 참고 </para>
 	/// </summary>
-	/// <param name="DamageAmount"> : Damage 양 </param>
-	/// <param name="DamageEvent"></param>
-	/// <param name="EventInstigator"></param>
-	/// <param name="DamageCauser"></param>
-	/// <returns> : The amount of damage actually applied. </returns>
 	float TakeDamage
 	(
 		float				DamageAmount,
@@ -287,6 +288,8 @@ public:
 	class UC_ParkourComponent* GetParkourComponent() const { return ParkourComponent; }
 
 	class UMotionWarpingComponent* GetMotionWarpingComponent() const { return MotionWarpingComponent; }
+
+	class UC_SmokeEnteredChecker* GetSmokeEnteredChecker() const { return SmokeEnteredChecker; }
 
 public:
 
@@ -478,6 +481,12 @@ protected: // AI 피아 식별 관련
 	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TEnumAsByte<ETeamAttitude::Type> TeamID = ETeamAttitude::Hostile;
+	
+protected:
+	
+	// 연막 안에 들어가 있는지 체크하는 Component
+	class UC_SmokeEnteredChecker* SmokeEnteredChecker{};
+	
 public:
 	///
 	///캐릭터 피 파티클시스템

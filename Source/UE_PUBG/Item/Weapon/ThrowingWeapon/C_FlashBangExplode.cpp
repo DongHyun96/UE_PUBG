@@ -99,6 +99,12 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 	// 모든 캐릭터의 Physics Asset 다시 켜두기
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
 		SetPhysicsAssetCollidersEnabled(Character, true);
+	
+	ThrowingWeapon->SetActorHiddenInGame(true);
+	ThrowingWeapon->GetWorld()->GetTimerManager().SetTimer(ThrowingWeapon->GetDestroyTimerHandle(), [ThrowingWeapon]()
+	{
+		ThrowingWeapon->Destroy();
+	}, 10.f, false);
 
 	return true;
 }
