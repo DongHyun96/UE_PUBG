@@ -41,7 +41,7 @@ struct FThrowingWeaponSoundData : public FTableRowBase
 	USoundBase* CookingSound = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ExprosionSound = nullptr;
+	USoundBase* ExplosionSound = nullptr;
 };
 
 /// <summary>
