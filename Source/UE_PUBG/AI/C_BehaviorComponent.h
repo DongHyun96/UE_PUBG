@@ -76,6 +76,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	class AC_BasicCharacter* GetTargetCharacter() const;
 
+public:
+
 	bool SetBasicTargetLocation(const FVector& InTargetLocation);
 	FVector GetBasicTargetLocation() const;
 

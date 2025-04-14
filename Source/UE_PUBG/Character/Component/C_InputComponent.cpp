@@ -517,7 +517,6 @@ void UC_InputComponent::OnXKey()
 		// Enemy->GetStatComponent()->TakeDamage(10.f, nullptr);
 		// Enemy->GetEnemyAIController()->GetBrainComponent()->PauseLogic("Testing");
 		// Enemy->GetEnemyAIController()->GetBrainComponent()->StopLogic("Testing");
-		Enemy->GetEnemyAIController()->ToggleBehaviorTreeExecution(true);
 	}
 	
 	Player->GetEquippedComponent()->ToggleArmed();
@@ -529,7 +528,6 @@ void UC_InputComponent::OnBKey()
 	{
 		AC_Enemy* Enemy = GAMESCENE_MANAGER->GetEnemies()[0]; 
 		// Enemy->GetEnemyAIController()->GetBrainComponent()->RestartLogic();
-		Enemy->GetEnemyAIController()->ToggleBehaviorTreeExecution(false);
 	}
 	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;

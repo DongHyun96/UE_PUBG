@@ -27,6 +27,9 @@ void UC_BTTaskStatCare::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		return;
 	}
 
+	// 현재 FlashBang 피격 중인 상황(현상 유지)
+	if (Controller->IsFlashBangEffectTimeLeft()) return;
+
 	AC_Enemy* Enemy = Cast<AC_Enemy>(Controller->GetPawn());
 	if (Enemy->GetIsActivatingConsumableItem()) return; // 현재 ExecuteTask에서 발동한 ConsumableItem 활성화 중
 
