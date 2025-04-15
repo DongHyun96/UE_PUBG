@@ -136,7 +136,8 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 	// 사망
 	if (CurHP <= 0.f)
 	{
-		// TODO : 주석 풀기 (지금은 Test중)
+		if (Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠
+		
 		// 사망 처리 
 		OwnerCharacter->CharacterDead();
 	}

@@ -690,54 +690,18 @@ void AC_Player::DrawingItemOutLine()
 
 }
 
-/// <summary>
-/// 아이템이 캐릭터의 근처에 있을 때.
-/// </summary>
-/// <param name="OverlappedComp"></param>
-/// <param name="OtherActor"></param>
-/// <param name="OtherComp"></param>
-/// <param name="OtherBodyIndex"></param>
-/// <param name="bFromSweep"></param>
-/// <param name="SweepResult"></param>
-//void AC_Player::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-//{
-//
-//	FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetCurVolume());
-//	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
-//
-//	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
-//	
-//	
-//	if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
-//	{
-//		UC_Util::Print("OverlappedItem");
-//		//UC_Util::Print(*OverlappedItem->GetName());
-//	
-//		Inventory->GetNearItems().Add(OverlappedItem);
-//	}
-//	else
-//	{
-//		UC_Util::Print("No item");
-//
-//		return;
-//	}
-//}
-///// <summary>
-///// 아이템이 캐릭터의 감지범위를 벗어났을 때.
-///// </summary>
-///// <param name="OverlappedComp"></param>
-///// <param name="OtherActor"></param>
-///// <param name="OtherComp"></param>
-///// <param name="OtherBodyIndex"></param>
-//void AC_Player::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-//{
-//	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
-//
-//	if (OverlappedItem)
-//	{
-//		Inventory->GetNearItems().Remove(OverlappedItem);
-//	}
-//}
+void AC_Player::EnableRagdoll()
+{
+	Super::EnableRagdoll();
+	
+	// 💡 컨트롤러 제거
+	//DetachFromControllerPendingDestroy();//이걸로 해도 계속 인풋이 발생하는 것 같음.
+	if (AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetController()))
+		DisableInput(PlayerController);
+		
+	HUDWidget->SetVisibility(ESlateVisibility::Collapsed);
+	SetActorTickEnabled(false);
+}
 
 void AC_Player::SetAimPressCameraLocation()
 {

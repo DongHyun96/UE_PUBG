@@ -111,7 +111,10 @@ struct FItemData : public FTableRowBase
 	float ItemVolume = 0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	TSubclassOf<class AC_Item> ItemClass;
+	TSubclassOf<class AC_Item> ItemClass{};
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	//USoundClass* SoundClass = nullptr;
 };	
 
 

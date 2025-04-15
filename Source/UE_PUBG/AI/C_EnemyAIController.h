@@ -52,6 +52,11 @@ public:
 
 	class UC_BehaviorComponent* GetBehaviorComponent() const { return BehaviorComponent; }
 
+public: // FlashBang 관련
+
+	void SetFlashBangEffectLeftTime(float InFlashBangEffectLeftTime) { FlashBangEffectLeftTime = InFlashBangEffectLeftTime; }
+	bool IsFlashBangEffectTimeLeft() const { return FlashBangEffectLeftTime > 0.f; }
+	
 private:
 	/// <summary>
 	/// 이동 완료되었을 떄 호출될 함수
@@ -126,6 +131,10 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	class UC_BehaviorComponent* BehaviorComponent{};
+
+private:
+
+	float FlashBangEffectLeftTime{};
 
 private:
 

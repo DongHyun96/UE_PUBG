@@ -4,17 +4,34 @@
 #include "Item/ItemManager/C_ItemManager.h"
 #include "Utility/C_Util.h"
 
-UC_ItemManager::UC_ItemManager()
+// Sets default values
+AC_ItemManager::AC_ItemManager()
 {
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
     InitializeItemManager();
+
 }
 
-void UC_ItemManager::InitializeItemManager()
+// Called when the game starts or when spawned
+void AC_ItemManager::BeginPlay()
 {
-    LoadItemDataTable();
+	Super::BeginPlay();
 }
 
-void UC_ItemManager::LoadItemDataTable()
+// Called every frame
+void AC_ItemManager::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+void AC_ItemManager::InitializeItemManager()
+{
+	LoadItemDataTable();
+}
+
+void AC_ItemManager::LoadItemDataTable()
 {
     static ConstructorHelpers::FObjectFinder<UDataTable> GeneralItemDataTableObject(TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_Item.DT_Item"));
     static ConstructorHelpers::FObjectFinder<UDataTable>     GunItemDataTableObject(TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunData.DT_GunData"));
@@ -53,10 +70,12 @@ void UC_ItemManager::LoadItemDataTable()
             }
         }
     }
+
 }
 
-AC_Item* UC_ItemManager::SpawnItem(FName ItemCode, FVector Location, int32 Stack)
+AC_Item* AC_ItemManager::SpawnItem(FName ItemCode, FVector Location, int32 Stack)
 {
+
     UC_Util::Print(GeneralItemDataCache.Num());
     if (GeneralItemDataCache.Num() == 0) return nullptr;
 
@@ -64,7 +83,7 @@ AC_Item* UC_ItemManager::SpawnItem(FName ItemCode, FVector Location, int32 Stack
 
     //const FItemData* FoundData = ItemDataTable->FindRow<FItemData>(ItemCode, TEXT("SpawnItem"));
     //if (!FoundData || !FoundData->ItemClass) return nullptr;
-
+        
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
@@ -79,9 +98,10 @@ AC_Item* UC_ItemManager::SpawnItem(FName ItemCode, FVector Location, int32 Stack
     }
 
     return NewItem;
+
 }
 
-FItemData* UC_ItemManager::GetItemData(FName ItemCode)
+FItemData* AC_ItemManager::GetItemData(FName ItemCode)
 {
     if (GeneralItemDataCache.Contains(ItemCode))
     {
@@ -90,7 +110,7 @@ FItemData* UC_ItemManager::GetItemData(FName ItemCode)
     return nullptr;
 }
 
-FGunData* UC_ItemManager::GetGunData(FName ItemCode)
+FGunData* AC_ItemManager::GetGunData(FName ItemCode)
 {
     if (GunItemDataCache.Contains(ItemCode))
     {
@@ -98,3 +118,4 @@ FGunData* UC_ItemManager::GetGunData(FName ItemCode)
     }
     return nullptr;
 }
+

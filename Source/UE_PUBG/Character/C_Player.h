@@ -147,6 +147,10 @@ protected:
 	/// </summary>
 	void DrawingItemOutLine();
 
+private:
+	
+	void EnableRagdoll() override;
+
 protected:
 	AC_Item* CurOutLinedItem = nullptr;
 

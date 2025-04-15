@@ -31,6 +31,9 @@ void UC_BTTaskAfterTakeCoverMoveTo::TickTask(UBehaviorTreeComponent& OwnerComp, 
 		return;
 	}
 
+	// 현재 FlashBang 피격 중인 상황(현상 유지)
+	if (Controller->IsFlashBangEffectTimeLeft()) return;
+
 	AC_Enemy* Enemy = Cast<AC_Enemy>(Controller->GetPawn());
 	if (Enemy->GetIsPoseTransitioning()) return;
 
@@ -50,7 +53,7 @@ EBTNodeResult::Type UC_BTTaskAfterTakeCoverMoveTo::ExecuteTask(UBehaviorTreeComp
 		UC_Util::Print("From UC_BTTaskAfterTakeCoverMoveTo ExecuteTask : Controller Casting failed!", FColor::Red, 10.f);
 		return EBTNodeResult::Failed;
 	}
-
+	
 	AC_Enemy*			  Enemy				= Cast<AC_Enemy>(Controller->GetPawn());
 	UC_BehaviorComponent* BehaviorComponent = Controller->GetBehaviorComponent();
 	AC_BasicCharacter*	  TargetCharacter	= BehaviorComponent->GetTargetCharacter();

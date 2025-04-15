@@ -130,6 +130,13 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		SetPhysicsAssetCollidersEnabled(Character, true);
 	//SetPhysicsAssetCollidersEnabled(Character->GetMesh()->GetPhysicsAsset(), true);
 
+	ThrowingWeapon->SetActorHiddenInGame(true);
+	
+	ThrowingWeapon->GetWorld()->GetTimerManager().SetTimer(ThrowingWeapon->GetDestroyTimerHandle(), [ThrowingWeapon]()
+	{
+		ThrowingWeapon->Destroy();
+	}, 10.f, false);
+	
 	return true;
 }
 

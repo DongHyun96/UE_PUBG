@@ -41,7 +41,8 @@ struct FThrowingWeaponSoundData : public FTableRowBase
 	USoundBase* CookingSound = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ExprosionSound = nullptr;
+	USoundBase* ExplosionSound = nullptr;
+
 };
 
 /// <summary>
@@ -218,6 +219,8 @@ public: // Getters & Setters
 
 	const FThrowingWeaponSoundData* GetThrowingWeaponSoundData() { return ThrowingWeaponSoundData; }
 
+	FTimerHandle& GetDestroyTimerHandle() { return DestroyTimerHandle; }
+
 public:
 
 	/// <summary>
@@ -365,7 +368,9 @@ private:
 
 	bool bIsCooked{};
 
-	struct FTimerHandle TimerHandle {};
+	FTimerHandle CookingTimerHandle{};
+
+	FTimerHandle DestroyTimerHandle{};
 
 protected:
 

@@ -51,6 +51,7 @@
 #include "HUD/C_AmmoWidget.h"
 
 #include "Singleton/C_GameSceneManager.h"
+#include "Item/ItemManager/C_ItemManager.h"
 #include "Kismet/KismetMathLibrary.h"
 
 //UCameraComponent* AC_Gun::AimSightCamera;
@@ -723,7 +724,7 @@ bool AC_Gun::FireBullet()
 		//if (BulletCount > 100)
 		//	return true;
 	}
-	UC_Util::Print("No More Bullets in Pool");
+	// UC_Util::Print("No More Bullets in Pool");
 
 	return false;
 }
@@ -762,7 +763,7 @@ bool AC_Gun::ReloadBullet()
 	
 	InvenComp->DecreaseItemStack(CurBullet->GetItemCode(), RemainAmmo);
 	//CurBullet->SetItemStack(ChangedStack); //TODO : InvenComponent에서 한번에 조절하는 기능 만들기.
-	UC_Util::Print("Reload Bullet");
+	// UC_Util::Print("Reload Bullet");
 	//장전한 총알 갯수만큼 curVolume 조절
 	OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CurBullet->GetItemDatas()->ItemVolume));
 
@@ -787,7 +788,7 @@ void AC_Gun::SetBulletSpeed()
 	{
 		if (IsValid(Bullet))
 		{
-			UC_Util::Print("FindBullet");
+			// UC_Util::Print("FindBullet");
 
 			UProjectileMovementComponent* ProjectileMovement = Bullet->FindComponentByClass<UProjectileMovementComponent>();
 			if (ProjectileMovement)

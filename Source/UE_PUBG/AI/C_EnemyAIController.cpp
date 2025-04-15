@@ -59,13 +59,16 @@ AC_EnemyAIController::AC_EnemyAIController()
 void AC_EnemyAIController::BeginPlay()
 {
 	Super::BeginPlay();
-	BehaviorComponent->SetPlayer(GAMESCENE_MANAGER->GetPlayer()); // TODO : 이 라인 지우기
 }
 
 void AC_EnemyAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	DrawSightRange();
+
+	// Update FlashBangEffectLeftTime
+	FlashBangEffectLeftTime = FMath::Max(FlashBangEffectLeftTime - DeltaTime, 0.f);
+	OwnerCharacter->SetStunnedTime(FlashBangEffectLeftTime);
 }
 
 void AC_EnemyAIController::OnPossess(APawn* InPawn)
@@ -76,6 +79,7 @@ void AC_EnemyAIController::OnPossess(APawn* InPawn)
 
 	OwnerCharacter = Cast<AC_Enemy>(InPawn);
 	BehaviorComponent->SetOwnerEnemy(OwnerCharacter);
+	BehaviorComponent->SetOwnerEnemyAIController(this);
 	
 	SetGenericTeamId(OwnerCharacter->GetGenericTeamId());
 
@@ -228,7 +232,10 @@ void AC_EnemyAIController::UpdateDetectedCharactersRangeLevel()
 
 			// 새로운 거리로 갱신 시키기
 			It.RemoveCurrent();
-			if (CurrentCharacter->GetMainState() == EMainState::DEAD) continue; // 이미 죽은 Character라면 빼버리고 진행
+			
+			// 이미 죽은 Character이거나 삭제된 캐릭터라면 빼버리고 진행
+			if (!IsValid(CurrentCharacter))								continue;
+			if (CurrentCharacter->GetMainState() == EMainState::DEAD)	continue; 
 				
 			AddCharacterToDetectedCharacters(CurrentCharacter);
 		}

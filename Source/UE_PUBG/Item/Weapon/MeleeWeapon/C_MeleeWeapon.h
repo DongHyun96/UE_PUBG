@@ -7,6 +7,19 @@
 #include "UE_PUBG/Character/C_BasicCharacter.h"
 #include "C_MeleeWeapon.generated.h"
 
+USTRUCT(BlueprintType)
+struct FMeleeWeaponSoundDatas : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	/// <summary>
+	/// Pan 피격음, 에디터에서 설정.
+	/// </summary>
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ImapctSound = nullptr;
+
+};
+
 /**
  * 
  */
@@ -29,6 +42,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	void InitializeItem(FName NewItemCode) override;
+
 	bool AttachToHolster(class USceneComponent* InParent) override;
 
 	bool AttachToHand(class USceneComponent* InParent) override;
@@ -73,6 +88,8 @@ protected:
 public:
 
 	struct FPriorityAnimMontage GetAttackMontage() const { return AttackMontage; }
+
+	const FMeleeWeaponSoundDatas* GetPanSoundData() const { return MeleeWeaponSoundData; }
 
 	/// <summary>
 	/// Enable Attack Collider collision
@@ -124,15 +141,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> SheathMontages{};
 
-	/// <summary>
-	/// Pan 피격음, 에디터에서 설정.
-	/// </summary>
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImapctSound = nullptr;
+
 protected:
 	
 	class UShapeComponent* AttackCollider{};
 
+	const FMeleeWeaponSoundDatas* MeleeWeaponSoundData = nullptr;
 private:
 
 	// 한 번 휘둘렀을 때 이미 Damage를 주었던 Character들
