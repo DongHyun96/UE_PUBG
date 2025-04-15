@@ -275,3 +275,12 @@ void AC_Enemy::OnPoseTransitionFinish()
 	UpdateMaxWalkSpeed({1.f, 0.f}); // Forward 방면 기준으로 MaxWalkSpeed 재설정
 	Super::OnPoseTransitionFinish();
 }
+
+void AC_Enemy::CharacterDead()
+{
+	Super::CharacterDead();
+	GetEnemyAIController()->GetBehaviorComponent()->Dead();
+
+	// 속도 조절
+	
+}

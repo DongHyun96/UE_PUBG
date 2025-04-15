@@ -30,17 +30,17 @@ private:
 	/// 투척류의 ProjectileLaunchValues 세팅하기
 	/// </summary>
 	/// <param name="ThrowingWeapon"></param>
-	/// <param name="TargetCharacterLocation"></param>
+	/// <param name="TargetThrowLocation"></param>
+	/// <param name="bUseRandomNearByThrowTargetLocation"> : TargetThrowLocation 근방의 Random한 지점을 이용할지 setting</param>
 	/// <returns> : Setting 될 수 없는 환경이라면 return false </returns>
-	bool UpdateProjectileLaunchValues(class AC_ThrowingWeapon* ThrowingWeapon, const FVector& TargetCharacterLocation);
-
+	bool UpdateProjectileLaunchValues(AC_ThrowingWeapon* ThrowingWeapon, const FVector& TargetThrowLocation, const bool& bUseRandomNearByThrowTargetLocation);
 
 	/// <summary>
 	/// TargetCharacter위치로부터 적정 Random Position Get
 	/// </summary>
-	/// <param name="TargetCharacterLocation"></param>
+	/// <param name="TargetThrowLocation"></param>
 	/// <returns></returns>
-	FVector GetRandomNearByPositionFromTargetCharacter(const FVector& TargetCharacterLocation);
+	FVector GetRandomNearByPositionFromTargetCharacter(const FVector& TargetThrowLocation);
 	
 
 private:

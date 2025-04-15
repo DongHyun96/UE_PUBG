@@ -59,7 +59,6 @@ AC_EnemyAIController::AC_EnemyAIController()
 void AC_EnemyAIController::BeginPlay()
 {
 	Super::BeginPlay();
-	BehaviorComponent->SetPlayer(GAMESCENE_MANAGER->GetPlayer()); // TODO : 이 라인 지우기
 }
 
 void AC_EnemyAIController::Tick(float DeltaTime)

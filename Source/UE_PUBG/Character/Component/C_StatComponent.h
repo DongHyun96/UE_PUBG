@@ -37,9 +37,7 @@ struct FBoostingEffectFactor
 	float MoveSpeedIncreaseFactor = 1.f;
 };
 
-/// <summary>
-/// TODO : 여기에서는 UI 건들지 않고 오로지 Stat 관련한 수치만 건드리기
-/// </summary>
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_StatComponent : public UActorComponent
 {
@@ -57,7 +55,6 @@ public:
 public: // Getters and setters
 
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
-	//void SetOwnerPlayer(class AC_Player* InOwnerPlayer) { OwnerPlayer = InOwnerPlayer; }
 	void SetOwnerHUDWidget(class UC_HUDWidget* InHUDWidget) { OwnerHUDWidget = InHUDWidget; }
 
 	UFUNCTION(BlueprintCallable)

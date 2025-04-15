@@ -164,9 +164,9 @@ public:
 	float PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
 
 	UFUNCTION(BlueprintCallable)
-	void CharacterDead();
+	virtual void CharacterDead();
 
-	void EnableRagdoll();
+	virtual void EnableRagdoll();
 
 protected:
 

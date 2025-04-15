@@ -258,16 +258,7 @@ void AC_BasicCharacter::EnableRagdoll()
 	// 💡 속도 제거
 	GetMesh()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
 	GetMesh()->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-
-	// 💡 컨트롤러 제거
-	//DetachFromControllerPendingDestroy();//이걸로 해도 계속 인풋이 발생하는 것 같음.
-	if (AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetController()))
-	{
-		if (AC_Player* Player = Cast<AC_Player>(this))
-			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Collapsed);
-		SetActorTickEnabled(false);
-		DisableInput(PlayerController);
-	}
+	
 	//SetActorEnableCollision(false);
 
 	//FTimerHandle TimerHandle;

@@ -66,6 +66,11 @@ EServiceType UC_BehaviorComponent::GetServiceType() const
 	return static_cast<EServiceType>(Blackboard->GetValueAsEnum(ServiceKey));
 }
 
+void UC_BehaviorComponent::Dead()
+{
+	Blackboard->SetValueAsBool(IsDeadKey, true);
+}
+
 bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 {
 	if (Type == EIdleTaskType::MAX) return false;
@@ -81,13 +86,6 @@ bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 EIdleTaskType UC_BehaviorComponent::GetIdleTaskType() const
 {
 	return static_cast<EIdleTaskType>(Blackboard->GetValueAsEnum(IdleTaskKey));
-}
-
-bool UC_BehaviorComponent::SetPlayer(class AC_Player* Player)
-{
-	if (!IsValid(Player)) return false;
-	Blackboard->SetValueAsObject(PlayerKey, Player);
-	return true;
 }
 
 void UC_BehaviorComponent::OnTargetCharacterDead(class AC_BasicCharacter* DeadCharacter)

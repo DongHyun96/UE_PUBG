@@ -93,6 +93,10 @@ public: // For Testing
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetStunnedTime(float Time);
+
+private:
+
+	void CharacterDead() override;
 	
 protected:
 

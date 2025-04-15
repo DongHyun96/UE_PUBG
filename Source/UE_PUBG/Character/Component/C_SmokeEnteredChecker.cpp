@@ -22,11 +22,11 @@ void UC_SmokeEnteredChecker::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (Cast<AC_Player>(OwnerCharacter))
+	/*if (Cast<AC_Player>(OwnerCharacter))
 	{
 		FString Str = "Entered Smoke count : " + FString::FromInt(EnteredSmokes.Num());
 		UC_Util::Print(Str);
-	}
+	}*/
 }
 
 bool UC_SmokeEnteredChecker::GetRandomLocationInSmokeArea(FVector& OutLocation)
