@@ -54,6 +54,9 @@ bool UC_BehaviorComponent::SetServiceType(EServiceType Type)
 {
 	if (Type == EServiceType::MAX) return false;
 
+	// FlashBang 피격 상태 중이라면
+	if (OwnerEnemyAIController->IsFlashBangEffectTimeLeft()) return false;
+
 	Blackboard->SetValueAsEnum(ServiceKey, static_cast<uint8>(Type));
 	return true;
 }
@@ -63,9 +66,15 @@ EServiceType UC_BehaviorComponent::GetServiceType() const
 	return static_cast<EServiceType>(Blackboard->GetValueAsEnum(ServiceKey));
 }
 
+void UC_BehaviorComponent::Dead()
+{
+	Blackboard->SetValueAsBool(IsDeadKey, true);
+}
+
 bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 {
 	if (Type == EIdleTaskType::MAX) return false;
+	if (OwnerEnemyAIController->IsFlashBangEffectTimeLeft()) return false;
 
 	// Random wait time 지정
 	if (Type == EIdleTaskType::WAIT) WaitTime = FMath::RandRange(5.f, 10.f);
@@ -77,13 +86,6 @@ bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 EIdleTaskType UC_BehaviorComponent::GetIdleTaskType() const
 {
 	return static_cast<EIdleTaskType>(Blackboard->GetValueAsEnum(IdleTaskKey));
-}
-
-bool UC_BehaviorComponent::SetPlayer(class AC_Player* Player)
-{
-	if (!IsValid(Player)) return false;
-	Blackboard->SetValueAsObject(PlayerKey, Player);
-	return true;
 }
 
 void UC_BehaviorComponent::OnTargetCharacterDead(class AC_BasicCharacter* DeadCharacter)

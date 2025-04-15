@@ -32,6 +32,7 @@
 #include "Item/Weapon/Gun/C_Bullet.h"
 
 #include "MotionWarpingComponent.h"
+#include "Component/C_SmokeEnteredChecker.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 
@@ -88,6 +89,9 @@ AC_BasicCharacter::AC_BasicCharacter()
 	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>("MotionWarping");
 
 	FeetComponent = CreateDefaultSubobject<UC_FeetComponent>("FeetComponent");
+
+	SmokeEnteredChecker = CreateDefaultSubobject<UC_SmokeEnteredChecker>("SmokeEnteredChecker");
+	SmokeEnteredChecker->SetOwnerCharacter(this);
 }
 
 // Called when the game starts or when spawned
@@ -139,27 +143,12 @@ float AC_BasicCharacter::PlayAnimMontage(UAnimMontage* AnimMontage, float InPlay
 
 	return 0.0f;
 }
-/// <summary>
-/// 아이템이 캐릭터의 근처에 있을 때.
-/// </summary>
-/// <param name="OverlappedComp"></param>
-/// <param name="OtherActor"></param>
-/// <param name="OtherComp"></param>
-/// <param name="OtherBodyIndex"></param>
-/// <param name="bFromSweep"></param>
-/// <param name="SweepResult"></param>
+
 void AC_BasicCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	HandleOverlapBegin(OtherActor);
 }
 
-/// <summary>
-/// 아이템이 캐릭터의 감지범위를 벗어났을 때.
-/// </summary>
-/// <param name="OverlappedComp"></param>
-/// <param name="OtherActor"></param
-/// <param name="OtherComp"></param>
-/// <param name="OtherBodyIndex"></param>
 void AC_BasicCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	HandleOverlapEnd(OtherActor);
@@ -269,16 +258,7 @@ void AC_BasicCharacter::EnableRagdoll()
 	// 💡 속도 제거
 	GetMesh()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
 	GetMesh()->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-
-	// 💡 컨트롤러 제거
-	//DetachFromControllerPendingDestroy();//이걸로 해도 계속 인풋이 발생하는 것 같음.
-	if (AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetController()))
-	{
-		if (AC_Player* Player = Cast<AC_Player>(this))
-			Player->GetHUDWidget()->SetVisibility(ESlateVisibility::Collapsed);
-		SetActorTickEnabled(false);
-		DisableInput(PlayerController);
-	}
+	
 	//SetActorEnableCollision(false);
 
 	//FTimerHandle TimerHandle;

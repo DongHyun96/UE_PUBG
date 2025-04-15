@@ -149,7 +149,7 @@ void AC_ThrowingWeapon::BeginPlay()
 
 		AIAttackStrategies.Add(EThrowableType::GRENADE,		GrenadeAttackStrategy);
 		AIAttackStrategies.Add(EThrowableType::FLASH_BANG,	FlashBangAttackStrategy);
-		AIAttackStrategies.Add(EThrowableType::SMOKE,			SmokeGrenadeAttackStrategy);
+		AIAttackStrategies.Add(EThrowableType::SMOKE,		SmokeGrenadeAttackStrategy);
 	}
 
 	// 자기 자신의 AIAttack 전략 init
@@ -158,7 +158,6 @@ void AC_ThrowingWeapon::BeginPlay()
 
 void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-
 	if (EndPlayReason == EEndPlayReason::Destroyed)
 	{
 		if (--ThrowingWeaponCount <= 0) // World에 배치된 마지막 ThrowingWeapon이 Destroy되었을 때
@@ -174,6 +173,8 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		}
 		return;
 	}
+
+	ThrowingWeaponCount = 0;
 
 	if (OwnerMeshTemp)
 	{
@@ -960,7 +961,7 @@ void AC_ThrowingWeapon::StartCooking()
 	// TODO : Ready 상태에서 Cooking 시작하면 남은 시간 HUD 띄우기
 	UC_Util::Print("Throwable Starts cooking", FColor::Red, 10.f);
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);
+	GetWorld()->GetTimerManager().SetTimer(CookingTimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);
 	
 	if (ThrowingWeaponSoundData->CookingSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->CookingSound, GetActorLocation());
 
@@ -993,29 +994,10 @@ void AC_ThrowingWeapon::Explode()
 	}
 
 	bool Exploded = ExplodeStrategy->UseStrategy(this);
-
-
-
 	if (GetAttachParentActor()) ReleaseOnGround(); // 손에서 아직 떠나지 않았을 때
-		
-	//if (Exploded) this->Destroy();
-	if (Exploded)
-	{
-		this->SetActorHiddenInGame(true);
-		if (ThrowingWeaponSoundData->ExplosionSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->ExplosionSound, GetActorLocation());
-
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()	
-			{
-				this->Destroy();
-			}, 10.f, false);
-	}
-	else UC_Util::Print("Not Exploded!", FColor::Red, 10.f);
-
-	FString str = (IsValid(OwnerCharacter)) ? "Exploded : OwnerCharacter -> " + OwnerCharacter->GetName() : "Exploded : No Owner Character"; 
-	UC_Util::Print(str, FColor::Red, 10.f);
-
-	//FString DistanceStr = "Distance to Player: " + FString::SanitizeFloat(FVector::Distance(OwnerCharacter->GetActorLocation(), GetActorLocation()) * 0.01f);
-	//UC_Util::Print(DistanceStr, FColor::MakeRandomColor(), 10.f);
+	
+	if (Exploded && ThrowingWeaponSoundData->ExplosionSound)
+		UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->ExplosionSound, GetActorLocation());
 }
 
 FVector AC_ThrowingWeapon::GetPredictedThrowStartLocation()

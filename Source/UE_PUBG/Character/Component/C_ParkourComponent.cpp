@@ -86,6 +86,9 @@ void UC_ParkourComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		}
 		return;
 	}
+
+	ParkourComponentCount = 0;
+	
 	if (!ParkourActionStrategies.IsEmpty()) ParkourActionStrategies.Empty(); // GC는 GameSceneManager에서 처리 예정
 }
 
