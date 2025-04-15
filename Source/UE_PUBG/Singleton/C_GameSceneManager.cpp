@@ -22,6 +22,7 @@
 
 #include "Loot/C_LootCrate.h"
 #include "Item/ItemManager/C_ItemManager.h"
+#include "Sound/C_SoundManager.h"
 
 #include "Utility/C_TickRandomColorGenerator.h"
 

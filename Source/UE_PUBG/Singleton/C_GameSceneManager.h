@@ -71,6 +71,7 @@ public: // Getters and setters
 	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
 
 	class AC_ItemManager* GetItemManager() const { return ItemManager; }
+	class AC_SoundManager* GetSoundManager() const { return SoundManager; }
 
 	UFUNCTION(BlueprintCallable)
 	TArray<class AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
@@ -110,6 +111,7 @@ private:
 	class AC_MagneticFieldManager*	MagneticFieldManager{};
 	class AC_AirplaneManager*		AirplaneManager{};
 	class AC_ItemManager*			ItemManager{};
+	class AC_SoundManager*			SoundManager{}; 
 private:
 
 	// 인게임 모든 캐릭터들(Player + Enemies)
