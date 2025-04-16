@@ -9,6 +9,7 @@
 #include "AI/Service/C_BTServiceIdle.h"
 
 #include "Character/C_Enemy.h"
+#include "Character/Component/C_SmokeEnteredChecker.h"
 #include "Character/Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
@@ -33,6 +34,8 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	AC_Enemy*				Enemy					= Cast<AC_Enemy>(EnemyAIController->GetPawn());
 	UC_BehaviorComponent*	EnemyBehaviorComponent	= EnemyAIController->GetBehaviorComponent();
 
+	bool bIsInSmokeArea = Enemy->GetSmokeEnteredChecker()->IsCurrentlyInSmokeArea();
+	
 	// 현재 FlashBang 피격 중인 상황(현상 유지)
 	if (EnemyAIController->IsFlashBangEffectTimeLeft()) return;
 
@@ -67,9 +70,9 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 			return;
 		}
 	}
-
+	
 	// Lv1 영역으로 다른 캐릭터가 들어왔다면 TargetCharacter로 set해서 공격 시도
-	if (EnemyAIController->TrySetTargetCharacterToLevel1EnteredCharacter())
+	if (EnemyAIController->TrySetTargetCharacterToLevel1EnteredCharacter() && !bIsInSmokeArea)
 	{
 		EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
 		return;
@@ -94,16 +97,20 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	// Attack Trial 40% | MoveToRandomPos 30% | Wait 30%
 
 	// TODO : 다시 확률로 조정하는 식으로 해놓기 (테스트 용으로 무조건 공격하는 쪽으로 잡음)
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// SetTargetCharacter & AttackTrial
 	EnemyAIController->TrySetTargetCharacterBasedOnPriority();
-	if (IsValid(EnemyBehaviorComponent->GetTargetCharacter()))
+	if (IsValid(EnemyBehaviorComponent->GetTargetCharacter()) && !bIsInSmokeArea)
 	{
 		UC_Util::Print("WaitTask Time's up : Try Attack TargetCharacter!", FColor::Red, 10.f);
 		EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
 		// return;
 	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	/*if (FMath::RandRange(0.f, 1.f) < 0.4f)
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/*if (FMath::RandRange(0.f, 1.f) < 0.4f && !bIsInSmokeArea)
 	{
 		// SetTargetCharacter & AttackTrial
 		EnemyAIController->TrySetTargetCharacterBasedOnPriority();
@@ -111,11 +118,12 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		{
 			UC_Util::Print("WaitTask Time's up : Try Attack TargetCharacter!", FColor::Red, 10.f);
 			EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
-			EnemyBehaviorComponent->SetCombatTaskType(ECombatTaskType::SWAP_WEAPON);
 			return;
 		}
 	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	if (FMath::RandRange(0, 1))
 	{
 		// MoveToRandomPos
@@ -124,7 +132,10 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO); // Testing
 		return;
 	}
-	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	UC_Util::Print("WaitTask Time's up : Keep waiting...", FColor::Red, 10.f);
 	EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT); // 다시금 기다리기 처리(이 호출로 기다리는 총 시간 랜덤하게 다시 setting 됨)*/
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

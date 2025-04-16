@@ -897,6 +897,8 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 
 	OwnerEquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr);
 
+	if (OwnerCharacter->GetMainState() == EMainState::DEAD) return;
+
 	// 동일한 종류의 투척류 있는지 조사
 	AC_Item* ThrowWeapon = OwnerCharacter->GetInvenComponent()->FindMyItem(this);
 	if (ThrowWeapon)
@@ -958,13 +960,10 @@ void AC_ThrowingWeapon::StartCooking()
 {
 	bIsCooked = true;
 
-	// TODO : Ready 상태에서 Cooking 시작하면 남은 시간 HUD 띄우기
-	UC_Util::Print("Throwable Starts cooking", FColor::Red, 10.f);
-
+	// TODO : Player -> Ready 상태에서 Cooking 시작하면 남은 시간 HUD 띄우기
 	GetWorld()->GetTimerManager().SetTimer(CookingTimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);
 	
 	if (ThrowingWeaponSoundData->CookingSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->CookingSound, GetActorLocation());
-
 }
 
 bool AC_ThrowingWeapon::ReleaseOnGround()

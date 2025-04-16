@@ -45,10 +45,7 @@ public:
 	void SetOwnerEnemy(class AC_Enemy* InOwnerEnemy) { OwnerEnemy = InOwnerEnemy; }
 	void SetOwnerEnemyAIController(class AC_EnemyAIController* InEnemyAIController) { OwnerEnemyAIController = InEnemyAIController; }
 
-	/// <summary>
-	/// 죽었을 때 처리
-	/// </summary>
-	void Dead();
+public:
 
 	bool SetIdleTaskType(EIdleTaskType Type);
 	EIdleTaskType GetIdleTaskType() const;
@@ -114,11 +111,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName CombatTaskKey = "CombatTask";
 
-protected:
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName IsDeadKey = "IsDead";	
-	
 private:
 	class UBlackboardComponent* Blackboard{};
 
