@@ -51,7 +51,7 @@ AC_EnemyAIController::AC_EnemyAIController()
 
 	PerceptionComponent->ConfigureSense(*Sight);
 	PerceptionComponent->SetDominantSense(Sight->GetSenseImplementation()); 
-
+	
 	// Behavior Component
 	BehaviorComponent = CreateDefaultSubobject<UC_BehaviorComponent>("BehaviorComponent");
 }
@@ -64,6 +64,7 @@ void AC_EnemyAIController::BeginPlay()
 void AC_EnemyAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	DrawSightRange();
 
 	// Update FlashBangEffectLeftTime
@@ -291,6 +292,8 @@ bool AC_EnemyAIController::AddCharacterToDetectedCharacters(class AC_BasicCharac
 
 void AC_EnemyAIController::DrawSightRange()
 {
+	if (OwnerCharacter->GetMainState() == EMainState::DEAD) return;
+	
 	FVector Center = OwnerCharacter->GetActorLocation();
 
 	for (int i = 0; i < static_cast<int>(ESightRangeLevel::Max); ++i)

@@ -33,6 +33,7 @@
 
 #include "MotionWarpingComponent.h"
 #include "Component/C_SmokeEnteredChecker.h"
+#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 
@@ -201,12 +202,21 @@ void AC_BasicCharacter::CharacterDead()
 
 	MainState = EMainState::DEAD;
 
+	// 투척류 투척 Process 중이었을 때, 손에 든 투척류 놓치고 죽기
+	if (AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(EquippedComponent->GetCurWeapon()))
+		if (ThrowingWeapon->GetIsOnThrowProcess())
+		{
+			ThrowingWeapon->StartCooking();
+			ThrowingWeapon->ReleaseOnGround();
+		}
+	
 	FVector SpawnLocation = GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 	GAMESCENE_MANAGER->SpawnLootCrateAt(SpawnLocation, this);
 
 	// 죽기 직전, 힘 제거 및 블렌딩 제거
 	//GetMesh()->bApplyImpulseOnDamage = false;
 	//GetMesh()->SetAllBodiesPhysicsBlendWeight(0.0f);
+
 
 	// 💡 본별 물리 속도 제거
 	TArray<FName> BoneNames;

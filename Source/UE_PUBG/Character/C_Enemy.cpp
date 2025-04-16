@@ -13,9 +13,13 @@
 
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
+#include "Component/C_EquippedComponent.h"
+#include "Component/C_SmokeEnteredChecker.h"
 #include "Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
+#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Perception/AIPerceptionComponent.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
@@ -220,6 +224,8 @@ void AC_Enemy::OnTakeDamage(AC_BasicCharacter* DamageCauser)
 		return;
 	}
 
+	if (SmokeEnteredChecker->IsCurrentlyInSmokeArea()) return;
+
 	// Damage Causer 공격 시도
 	BehaviorComponent->SetServiceType(EServiceType::COMBAT);
 }
@@ -279,8 +285,13 @@ void AC_Enemy::OnPoseTransitionFinish()
 void AC_Enemy::CharacterDead()
 {
 	Super::CharacterDead();
-	GetEnemyAIController()->GetBehaviorComponent()->Dead();
 
-	// 속도 조절
+	// 속도 0으로 setting
+	UpdateMaxWalkSpeed({0.f, 0.f});
 	
+	AC_EnemyAIController* EnemyAIController = GetEnemyAIController();
+	EnemyAIController->GetPerceptionComponent()->Deactivate();
+	EnemyAIController->GetPerceptionComponent()->SetComponentTickEnabled(false);
+
+	EnemyAIController->GetBrainComponent()->StopLogic("Died");
 }
