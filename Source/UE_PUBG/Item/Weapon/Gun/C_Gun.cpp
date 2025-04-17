@@ -4,6 +4,8 @@
 
 #include "Item/Weapon/Gun/C_Gun.h"
 
+#include <Character/Component/C_SmokeEnteredChecker.h>
+
 #include "AudioMixerBlueprintLibrary.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
@@ -1228,7 +1230,11 @@ bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
 	FVector SpreadLocation = UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation,BulletSpreadRadius);
 	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
-
+	
+	FVector SmokeEnemyLocation;
+	if (InTargetCharacter->GetSmokeEnteredChecker()->GetRandomLocationInSmokeArea(SmokeEnemyLocation))
+		SpreadLocation = SmokeEnemyLocation;
+	
 	FVector FireDirection = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
 	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter);
 	if (GetIsPlayingMontagesOfAny())

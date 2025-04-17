@@ -30,7 +30,7 @@ void UC_AnimPlayer::SetAimOffsetRotation()
 
 	if (OwnerPlayer->GetIsWatchingSight() && OwnerPlayer->GetPoseState() == EPoseState::CRAWL)
 	{
-		if (CCurrentAimOffsetRotation.Pitch < 0)
+		if (CCurrentAimOffsetRotation.Pitch < -13)
 		{
 
 			OwnerCharacter->GetMesh()->HideBoneByName(FName("LeftArm"), EPhysBodyOp::PBO_None);
