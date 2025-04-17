@@ -38,6 +38,7 @@ public:
     /// <param name="Location">아이템의 위치</param>
     /// <param name="Stack">아이템의 CurStack</param>
     /// <returns>스폰한 아이템, nullptr이면 없는 코드</returns>
+	UFUNCTION(BlueprintCallable)
     AC_Item* SpawnItem(FName ItemCode, FVector Location, int32 Stack = 0);
 
 public:
