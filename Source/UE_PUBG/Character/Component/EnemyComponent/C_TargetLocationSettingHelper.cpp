@@ -32,6 +32,21 @@ void UC_TargetLocationSettingHelper::TickComponent(float DeltaTime, ELevelTick T
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+bool UC_TargetLocationSettingHelper::SetRandomTargetLocation(const float& MaxRadius)
+{
+	const FVector2D OwnerPos		= UC_Util::GetXY(OwnerEnemy->GetActorLocation());
+	const FVector2D RandomDirection = FVector2D(FMath::RandRange(-1.f, 1.f), FMath::RandRange(-1.f, 1.f)).GetSafeNormal();
+	const float RandomScalar		= FMath::RandRange(0.f, MaxRadius);
+	const FVector2D RandomPosition	= OwnerPos + RandomDirection * RandomScalar;
+
+	// 상공에서 RayCasting하여 걸린 NavMesh 중 Random한 위치 뽑기
+	FVector PickedNavMeshLocation{};
+	if (!PickRandomNavMeshLocationAtXYPos(RandomPosition, PickedNavMeshLocation)) return false;
+
+	OwnerBehaviorComponent->SetBasicTargetLocation(PickedNavMeshLocation);
+	return true;
+}
+
 bool UC_TargetLocationSettingHelper::TrySetRandomInCircleTargetLocationAtMagneticCircle(const FMagneticCircle& Circle)
 {
 	if (Circle.Radius <= 0.f) return false;
@@ -51,8 +66,6 @@ bool UC_TargetLocationSettingHelper::TrySetRandomInCircleTargetLocationAtMagneti
 	{
 		if (!bSetToNearCurrentLocation) 
 		{
-			UC_Util::Print("20 % ", FColor::MakeRandomColor(), 10.f);
-			
 			float XDir = FMath::RandRange(-1.f, 1.f);
 			float YDir = FMath::RandRange(-1.f, 1.f);
 
@@ -65,8 +78,6 @@ bool UC_TargetLocationSettingHelper::TrySetRandomInCircleTargetLocationAtMagneti
 		}
 		else
 		{
-			UC_Util::Print("80 % ", FColor::MakeRandomColor(), 10.f);
-			
 			FVector2D Direction = OwnerPos - CirclePos;
 			Direction.Normalize();
 
@@ -80,7 +91,7 @@ bool UC_TargetLocationSettingHelper::TrySetRandomInCircleTargetLocationAtMagneti
 		
 	} while (UC_WaterTileCheckerComponent::IsWaterTileCoord(PickedPositionTile) || ++AvoidingWaterTryCount > 100);
 
-	UC_Util::Print("Try avoiding water count : " + FString::FromInt(AvoidingWaterTryCount), FColor::Red, 10.f);
+	// UC_Util::Print("Try avoiding water count : " + FString::FromInt(AvoidingWaterTryCount), FColor::Red, 10.f);
 
 	FVector PickedNavMeshLocation{};
 	bool Picked = PickRandomNavMeshLocationAtXYPos(RandomPosition, PickedNavMeshLocation);

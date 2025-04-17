@@ -78,13 +78,13 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		return;
 	}
 
-	// 피 또는 부스트 량이 너무 없을 때 처리(STAT_CARE) TODO : 주석 풀기
-	/*if (Enemy->GetStatComponent()->GetCurHP() < 50.f || Enemy->GetStatComponent()->GetCurBoosting() < 50.f)
+	// 피 또는 부스트 량이 너무 없을 때 처리(STAT_CARE)
+	if (Enemy->GetStatComponent()->GetCurHP() < 50.f || Enemy->GetStatComponent()->GetCurBoosting() < 50.f)
 	{
 		EnemyBehaviorComponent->SetServiceType(EServiceType::IDLE);
 		EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::STAT_CARE);
 		return;
-	}*/
+	}
 
 	EnemyTimers[EnemyBehaviorComponent] += DeltaSeconds;
 	if (EnemyTimers[EnemyBehaviorComponent] < EnemyBehaviorComponent->GetWaitTime()) return;
@@ -96,23 +96,20 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	// MoveToRandomPos or Attack trial or 다시 Wait 중 택 1
 	// Attack Trial 40% | MoveToRandomPos 30% | Wait 30%
 
-	// TODO : 다시 확률로 조정하는 식으로 해놓기 (테스트 용으로 무조건 공격하는 쪽으로 잡음)
-
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// SetTargetCharacter & AttackTrial
-	EnemyAIController->TrySetTargetCharacterBasedOnPriority();
+	// SetTargetCharacter & AttackTrial -> 무조건 공격 testing 했을 때 사용했었던 코드
+	/*EnemyAIController->TrySetTargetCharacterBasedOnPriority();
 	if (IsValid(EnemyBehaviorComponent->GetTargetCharacter()) && !bIsInSmokeArea)
 	{
 		UC_Util::Print("WaitTask Time's up : Try Attack TargetCharacter!", FColor::Red, 10.f);
 		EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
 		// return;
-	}
+	}*/
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/*if (FMath::RandRange(0.f, 1.f) < 0.4f && !bIsInSmokeArea)
+	if (FMath::RandRange(0.f, 1.f) < 0.4f && !bIsInSmokeArea) // SetTargetCharacter & AttackTrial
 	{
-		// SetTargetCharacter & AttackTrial
 		EnemyAIController->TrySetTargetCharacterBasedOnPriority();
 		if (IsValid(EnemyBehaviorComponent->GetTargetCharacter()))
 		{
@@ -124,9 +121,8 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	if (FMath::RandRange(0, 1))
+	if (FMath::RandRange(0, 1)) // MoveToRandomPos
 	{
-		// MoveToRandomPos
 		UC_Util::Print("WaitTask Time's up : Try MoveToRandomPosition", FColor::Red, 10.f);
 		Enemy->GetTargetLocationSettingHelper()->SetRandomBasicTargetLocationInsideMainCircle(1000.f);
 		EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO); // Testing
@@ -136,6 +132,6 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	UC_Util::Print("WaitTask Time's up : Keep waiting...", FColor::Red, 10.f);
-	EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT); // 다시금 기다리기 처리(이 호출로 기다리는 총 시간 랜덤하게 다시 setting 됨)*/
+	EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT); // 다시금 기다리기 처리(이 호출로 기다리는 총 시간 랜덤하게 다시 setting 됨)
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

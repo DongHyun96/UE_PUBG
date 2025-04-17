@@ -72,7 +72,12 @@ bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 	if (OwnerEnemyAIController->IsFlashBangEffectTimeLeft()) return false;
 
 	// Random wait time 지정
-	if (Type == EIdleTaskType::WAIT) WaitTime = FMath::RandRange(5.f, 10.f);
+	if (Type == EIdleTaskType::WAIT)
+	{
+		float RandBias = FMath::Pow(FMath::FRand(), 2.0f); // 0 ~ 1 -> 0에 더 가까운 값으로 조정 
+		WaitTime = FMath::Lerp(5.f, 30.f, RandBias); // 5 ~ 30 사이로 매핑
+		// WaitTime = FMath::RandRange(5.f, 30.f);
+	}
 	
 	Blackboard->SetValueAsEnum(IdleTaskKey, static_cast<uint8>(Type));
 	return false;
