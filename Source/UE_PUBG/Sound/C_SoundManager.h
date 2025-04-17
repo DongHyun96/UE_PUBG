@@ -81,9 +81,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LoadVolumeSettings();
 
-	FSoundClassTable* GetSoundClassData() { return SoundClassData; }
+
+	UFUNCTION(BlueprintCallable)
+	FSoundClassTable GetSoundClassData() const { return SoundClassData; }
 protected:
-	FSoundClassTable* SoundClassData = nullptr;
 
+	FSoundClassTable SoundClassData{};
 
+	UPROPERTY(EditAnywhere)
+	UDataTable* SoundClassDataTable = nullptr;
 };

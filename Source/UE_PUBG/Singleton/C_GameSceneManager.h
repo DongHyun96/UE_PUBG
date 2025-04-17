@@ -70,7 +70,9 @@ public: // Getters and setters
 	class AC_MagneticFieldManager* GetMagneticFieldManager() const { return MagneticFieldManager; }
 	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
 
+	UFUNCTION(BlueprintCallable)
 	class AC_ItemManager* GetItemManager() const { return ItemManager; }
+	UFUNCTION(BlueprintCallable)
 	class AC_SoundManager* GetSoundManager() const { return SoundManager; }
 
 	UFUNCTION(BlueprintCallable)

@@ -8,6 +8,7 @@
 AC_SoundManager::AC_SoundManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	InitializeSoundClassData();
 
 }
 
@@ -20,15 +21,15 @@ void AC_SoundManager::BeginPlay()
 void AC_SoundManager::InitializeSoundClassData()
 {
 	static const FString ContextString(TEXT("SoundManager : SoundClass Lookup"));
-	UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Sounds/Sound_Class/DT_SoundClassTable.DT_SoundClassTable"));
+	SoundClassDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Sounds/Sound_Class/DT_SoundClassTable.DT_SoundClassTable"));
 
-	if (ItemDataTable)
+	if (SoundClassDataTable)
 	{
 		//SoundClasstable의 rowName을 SoundManager로 했기 떄문에 매개변수에 SoundManager를 넣어주었음.
-		FSoundClassTable* ItemData = ItemDataTable->FindRow<FSoundClassTable>(TEXT("SoundManager"), ContextString);
+		FSoundClassTable* ItemData = SoundClassDataTable->FindRow<FSoundClassTable>(TEXT("SoundManager"), ContextString);
 		if (ItemData)
 		{
-			SoundClassData = ItemData; 
+			SoundClassData = *ItemData; 
 		}
 	}
 }
@@ -54,7 +55,7 @@ float AC_SoundManager::GetVolumeByClass(USoundClass* SoundClass) const
 
 void AC_SoundManager::SaveVolumeSettings()
 {
-
+	
 }
 
 void AC_SoundManager::LoadVolumeSettings()
