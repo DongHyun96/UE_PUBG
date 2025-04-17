@@ -44,7 +44,6 @@ AC_AR::AC_AR()
 void AC_AR::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void AC_AR::Tick(float DeltaTime)

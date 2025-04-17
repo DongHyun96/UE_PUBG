@@ -356,7 +356,7 @@ void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(const float& Delta
 void AC_Player::SetCanFireWhileCrawl()
 {
 	float ControllerPitchAngle = 360 - GetControlRotation().Pitch;
-	if (ControllerPitchAngle >= 0 && ControllerPitchAngle <= 10 && PoseState == EPoseState::CRAWL)
+	if (ControllerPitchAngle >= 10 && ControllerPitchAngle <= 20 && PoseState == EPoseState::CRAWL)
 		bCanFireBullet = false;
 	else
 		bCanFireBullet = true;
@@ -947,7 +947,7 @@ void AC_Player::SetControllerPitchLimits(EPoseState InCurrentState)
 		return;
 	case EPoseState::CRAWL:
 		Camera->ViewPitchMax = 30;
-		Camera->ViewPitchMin = -10;
+		Camera->ViewPitchMin = -15;
 		return;
 	case EPoseState::POSE_MAX: default: return;
 	}
