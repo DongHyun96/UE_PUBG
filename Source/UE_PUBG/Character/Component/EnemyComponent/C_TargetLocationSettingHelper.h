@@ -33,6 +33,13 @@ public:
 	void SetOwnerEnemy(class AC_Enemy* InOwnerEnemy) { OwnerEnemy = InOwnerEnemy; }
 
 	/// <summary>
+	/// Random한 TargetLocation setting
+	/// </summary>
+	/// <param name="MaxRadius"> : OwnerEnemy의 위치에서 Random한 위치를 뽑되, 최대 허용 Random 거리 </param>
+	/// <returns> : 지정할 수 없는 상황이라면 return false </returns>
+	bool SetRandomTargetLocation(const float& MaxRadius);
+
+	/// <summary>
 	/// <para> MagneticCircle(NextCircle) 안쪽의 Random한 위치로 InCircle TargetLocation 지정 시도 </para>
 	/// <para> 외곽 쪽 setting될 확률 비중을 더 높게 잡음 </para>
 	/// </summary>

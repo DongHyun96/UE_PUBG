@@ -60,29 +60,27 @@ void AC_AirplaneManager::Tick(float DeltaTime)
 
 void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 {
-	if (!TakeOffTimerStarted) return;
-	if (HasAirplaneTakeOff) return;
+	if (!TakeOffTimerStarted || HasAirplaneTakeOff) return;
 
 	TakeOffTimer -= DeltaTime;
+	if (TakeOffTimer > 0.f) return;
 
-	if (TakeOffTimer <= 0.f) // 이륙 시작
+	// 이륙 시작
+	
+	Airplane->StartFlight();
+	HasAirplaneTakeOff = true;
+	
+	for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
 	{
-		Airplane->StartFlight();
-		HasAirplaneTakeOff = true;
-		
-		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
-		{
-			Character->SetMainState(EMainState::SKYDIVING);
-			Character->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::READY);
+		Character->SetMainState(EMainState::SKYDIVING);
+		Character->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::READY);
 
-			if (AC_Enemy* Enemy = Cast<AC_Enemy>(Character))
-			{
-				Enemy->GetItemSpawnerHelper()->SpawnDefaultWeaponsAndItems(); // 기본으로 가지고 있을 무기와 Item 스폰 시키기
-				
-				UC_BehaviorComponent* EnemyBehvaiorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent(); 
-				EnemyBehvaiorComponent->SetServiceType(EServiceType::SKYDIVE);
-				// EnemyBehvaiorComponent->SetIdleTaskType;
-			}
+		if (AC_Enemy* Enemy = Cast<AC_Enemy>(Character))
+		{
+			Enemy->GetItemSpawnerHelper()->SpawnDefaultWeaponsAndItems(); // 기본으로 가지고 있을 무기와 Item 스폰 시키기
+			
+			UC_BehaviorComponent* EnemyBehvaiorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent(); 
+			EnemyBehvaiorComponent->SetServiceType(EServiceType::SKYDIVE);
 		}
 	}
 }

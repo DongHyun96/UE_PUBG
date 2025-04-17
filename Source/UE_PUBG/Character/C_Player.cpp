@@ -2,10 +2,8 @@
 
 
 #include "Character/C_Player.h"
-#include "Components/TimelineComponent.h"
+
 #include "EnhancedInputSubsystems.h"
-#include "InputActionValue.h"
-#include "EnhancedInputComponent.h"
 
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
@@ -27,17 +25,12 @@
 #include "Character/Component/C_PlayerController.h"
 
 #include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
-//#include "Components/SceneCaptureComponent2D.h"
-#include "Components/Image.h"
+
 
 #include "Item/C_Item.h"
-#include "Item/Equipment/C_EquipableItem.h"
-#include "Item/Equipment/C_BackPack.h"
+
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
-#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
-#include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
 
 #include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -47,7 +40,6 @@
 #include "Loot/C_BasicLoot.h"
 
 #include "Engine/PostProcessVolume.h"
-//#include "Engine/TextureRenderTarget2D.h"
 
 #include "Blueprint/UserWidget.h"
 
@@ -149,7 +141,9 @@ void AC_Player::BeginPlay()
 
 	CrosshairWidgetComponent->AddToViewport();
 	CrosshairWidgetComponent->SetOwnerCharacter(this);
+
 	AimCamera->SetActive(false);
+	// AimCamera->bUsePawnControlRotation = false;
 
 
 	SetPlayerMappingContext();

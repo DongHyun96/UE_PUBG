@@ -251,6 +251,7 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 	OverlappedCharacter->ActivateBloodParticle(OverlappedCharacter->GetMesh()->GetBoneLocation("Spine1"));
 	AttackedCharacters.Add(OverlappedCharacter);
 
+	if (!MeleeWeaponSoundData)				return;
 	if (!MeleeWeaponSoundData->ImapctSound) return;
 
 	UGameplayStatics::PlaySoundAtLocation(this, MeleeWeaponSoundData->ImapctSound, GetActorLocation());

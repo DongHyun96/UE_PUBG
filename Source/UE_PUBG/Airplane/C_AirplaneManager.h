@@ -38,6 +38,11 @@ public:
 
 	bool GetCanDive() const { return CanDive; }
 
+	/// <summary>
+	/// 비행 시작 전까지 몇 초 남았는지(TakeOffTimer) get 
+	/// </summary>
+	float GetTakeOffTimer() const { return TakeOffTimer; }
+
 
 public:
 	/// <summary>
@@ -104,7 +109,6 @@ private:
 	// 비행기 출발 시작했는지
 	bool HasAirplaneTakeOff{};
 
-	//const float TAKEOFF_TIME_TOTAL = 30.f;
 	const float TAKEOFF_TIME_TOTAL = 1.f;
 	float		TakeOffTimer = TAKEOFF_TIME_TOTAL;
 

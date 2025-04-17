@@ -20,10 +20,10 @@
 
 const TMap<ESightRangeLevel, float> AC_EnemyAIController::SIGHT_RANGE_DISTANCE =
 {
-	{ESightRangeLevel::Level1, 200.f},
-	{ESightRangeLevel::Level2, 500.f},
-	{ESightRangeLevel::Level3, 1500.f},
-	{ESightRangeLevel::Level4, 2500.f},
+	{ESightRangeLevel::Level1, 2000.f},
+	{ESightRangeLevel::Level2, 5000.f},
+	{ESightRangeLevel::Level3, 15000.f},
+	{ESightRangeLevel::Level4, 25000.f},
 };
 
 
