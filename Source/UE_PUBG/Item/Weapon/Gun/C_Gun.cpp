@@ -526,9 +526,11 @@ bool AC_Gun::GetCanGunAction()
 
 void AC_Gun::ChangeCurShootingMode()
 {
-	int CurMode = int(CurrentShootingMode);
+	// Single_Shot 이전까지 단발, 연사, 점사를 모두 포함한 ShootingMode switching 기본 implementation
+	
+	int CurMode = static_cast<int>(CurrentShootingMode);
 	++CurMode %= 3;
-	CurrentShootingMode = EShootingMode(CurMode);
+	CurrentShootingMode = static_cast<EShootingMode>(CurMode);
 
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 	{

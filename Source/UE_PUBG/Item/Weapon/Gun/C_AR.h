@@ -34,6 +34,10 @@ public:
 
 private:
 
+	void ChangeCurShootingMode() override;
+
+private:
+
 	// 각 피격 부위별 Damage Rate
 	static const TMap<FName, float> BODYPARTS_DAMAGERATE;
 };
