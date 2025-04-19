@@ -6,6 +6,30 @@
 #include "GameFramework/Actor.h"
 #include "C_SoundManager.generated.h"
 
+UENUM(BlueprintType)
+enum class EPreferences : uint8
+{
+	GRAPHIC,
+	AUDIO,
+	CONTROL,
+	KEY,
+	GAMEPLAY,
+	MAX
+};
+
+UENUM(BlueprintType)
+enum class ESoundClassName : uint8
+{
+	NONE,
+	MASTER,
+	BULLET_IMPACT,
+	GUN,
+	USING_HEAL_ITEM,
+	MELEE_WEAPON,
+	THROWING_WEAPON,
+	MAX
+};
+
 USTRUCT(BlueprintType)
 struct FSoundClassTable : public FTableRowBase
 {

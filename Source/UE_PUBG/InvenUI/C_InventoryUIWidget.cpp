@@ -79,6 +79,16 @@ void UC_InventoryUIWidget::SetVisibility(ESlateVisibility InVisibility)
         PlayerController->bShowMouseCursor = false;
         PlayerController->SetIgnoreLookInput(false);
     }
+
+    if (InVisibility == ESlateVisibility::Collapsed)
+    {
+        //PlayerController->GetPawn()->bUseControllerRotationYaw = true;
+        PlayerController->SetInputMode(FInputModeGameOnly());
+        //PlayerController->SetInputMode(FInputModeGameAndUI());
+
+        PlayerController->bShowMouseCursor = false;
+        PlayerController->SetIgnoreLookInput(false);
+    }
 }
 
 void UC_InventoryUIWidget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
