@@ -188,6 +188,8 @@ void AC_Player::BeginPlay()
 	SetControllerPitchLimits(PoseState);
 
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &AC_Player::OnPostWorldBeginPlay);
+
+	CharacterName = "Dongman";
 }
 
 void AC_Player::EndPlay(const EEndPlayReason::Type EndPlayReason)

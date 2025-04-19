@@ -43,6 +43,7 @@ public:
 	/// </summary>
 	float GetTakeOffTimer() const { return TakeOffTimer; }
 
+	bool GetHasAirplaneTakeOff() const { return HasAirplaneTakeOff; }
 
 public:
 	/// <summary>
@@ -109,8 +110,7 @@ private:
 	// 비행기 출발 시작했는지
 	bool HasAirplaneTakeOff{};
 
-	const float TAKEOFF_TIME_TOTAL = 1.f;
-	float		TakeOffTimer = TAKEOFF_TIME_TOTAL;
+	float TakeOffTimer = 10.f; // 게임 시작까지 총 30초 (TakeOff 까지)
 
 private:
 

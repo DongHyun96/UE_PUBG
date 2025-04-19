@@ -55,8 +55,17 @@ void AC_Enemy::BeginPlay()
 
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
-    // 비행기 타기 이전에 spawn하는 것으로 수정되었음
-    // ItemSpawnerHelper->SpawnDefaultWeaponsAndItems();
+	/* UDataTable* RandomNameDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/DongHyun/Character/DataTable/DT_RandomNameTable"));
+
+	if (!RandomNameDataTable)
+	{
+		UC_Util::Print("RandomNameTable not inited!", FColor::Red, 20.f);
+		return;
+	}
+
+	TArray<FName> RowNames = RandomNameDataTable->GetRowNames();
+	int RandomIndex = FMath::RandRange(0, RowNames.Num() - 1); */
+
 }
 
 void AC_Enemy::EndPlay(const EEndPlayReason::Type EndPlayReason)

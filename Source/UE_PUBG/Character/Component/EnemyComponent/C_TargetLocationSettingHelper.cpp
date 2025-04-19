@@ -114,9 +114,6 @@ bool UC_TargetLocationSettingHelper::TrySetRandomInCircleTargetLocationAtMagneti
 	OwnerBehaviorComponent->SetServiceType(EServiceType::IDLE);
 	OwnerBehaviorComponent->SetIdleTaskType(EIdleTaskType::INCIRCLE_MOVETO);
 	
-	// TODO : For Testing : 이 라인 지우기
-	DrawDebugSphere(GetWorld(), PickedNavMeshLocation, 20, 20, FColor::Green, true);
-	GAMESCENE_MANAGER->GetPlayer()->GetMainMapWidget()->SpawnSkyDivingStateDestinationImage(PickedNavMeshLocation);
 	return true;
 }
 

@@ -138,6 +138,10 @@ private:
 	UUserWidget*					   MiniMapWidget{};
 
 private:
+
+	class UDataTable* RandomNameDataTable{};
+
+private:
 	
 	const float CELL_WORLDSIZE = 10000.f;
 

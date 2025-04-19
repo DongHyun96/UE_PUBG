@@ -98,6 +98,7 @@ void UC_BehaviorComponent::OnTargetCharacterDead(class AC_BasicCharacter* DeadCh
 	}
 	SetTargetCharacter(nullptr);
 	OwnerEnemyAIController->UpdateDetectedCharactersRangeLevel();
+	OwnerEnemyAIController->TrySetTargetCharacterBasedOnPriority();
 }
 
 bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharacter)
@@ -107,11 +108,11 @@ bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharact
 		// Valid하지 않은 TargetCharacter의 경우, TargetCharacter를 놓쳤다고 판단(TargetCharacter의 사망 등)
 
 		// 이전 TargetCharacter가 존재한다면, OnDead delegate 구독 끊기
-		if (AC_BasicCharacter* TargetCharacter = GetTargetCharacter())
-			TargetCharacter->Delegate_OnCharacterDead.RemoveAll(this);
+		AC_BasicCharacter* TargetCharacter = GetTargetCharacter();
+		if (IsValid(TargetCharacter)) TargetCharacter->Delegate_OnCharacterDead.RemoveAll(this);
 		
 		Blackboard->SetValueAsObject(TargetCharacterKey, nullptr);
-		OwnerEnemy->SetTargetCharacterWidgetName("NONE");
+		OwnerEnemy->SetTargetCharacterWidgetName("NONE"); // TODO : 이 라인 지우기 (For Testing)
 		return false;
 	}
 
@@ -131,7 +132,7 @@ bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharact
 	
 	InTargetCharacter->Delegate_OnCharacterDead.AddUObject(this, &UC_BehaviorComponent::OnTargetCharacterDead);
 	
-	OwnerEnemy->SetTargetCharacterWidgetName(InTargetCharacter->GetName()); // TODO : 이 라인 지우기(For Testing)
+	OwnerEnemy->SetTargetCharacterWidgetName(InTargetCharacter->GetCharacterName()); // TODO : 이 라인 지우기(For Testing)
 	
 	return true;
 }
