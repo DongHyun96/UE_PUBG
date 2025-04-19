@@ -39,6 +39,8 @@ void UC_MainMapWidget::NativeConstruct()
 	//bIsFocusable = true;
 	SetIsEnabled(true);
 
+	GAMESCENE_MANAGER->SetHUDWidgetByHUDMode(EHUDMode::MAINMAP, this);
+
 }
 
 void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)

@@ -15,7 +15,7 @@ class UE_PUBG_API UC_MainMapWidget : public UC_MapWidget
 	GENERATED_BODY()
 
 public:
-	void NativeConstruct() override;
+	virtual void NativeConstruct() override;
 
 	void SetVisibility(ESlateVisibility InVisibility) override;
 

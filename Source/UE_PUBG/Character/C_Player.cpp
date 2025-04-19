@@ -125,12 +125,14 @@ void AC_Player::BeginPlay()
 		HUDWidget->GetSkyDiveWidget()->SetOwnerPlayer(this);
 		HUDWidget->GetMiniMapWidget()->SetOwnerPlayer(this);
 	}
+	else UC_Util::Print("No HUD Widget", FColor::MakeRandomColor(), 10.f);
+		
 
 	if (MainMapWidget)
 	{
 		// MainMapWidget->AddToViewport(9);
 		MainMapWidget->SetOwnerPlayer(this);
-	}
+	} else UC_Util::Print("No MainMapWidget", FColor::MakeRandomColor(), 10.f);
 	
 
 	if (InvenSystem)
@@ -189,6 +191,7 @@ void AC_Player::BeginPlay()
 
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &AC_Player::OnPostWorldBeginPlay);
 
+	// TODO : Player name의 경우, 맨 처음 입력 받아 Name 세팅하기
 	CharacterName = "Dongman";
 }
 

@@ -62,52 +62,54 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		if (AC_Player* P = Cast<AC_Player>(*Actor))
 		{
 			Player = P;
-
-			HUDWidgets.Add(EHUDMode::IDLE,    Player->GetHUDWidget());
-			HUDWidgets.Add(EHUDMode::INVEN,   Player->GetInvenSystem()->GetInvenUI());
-			HUDWidgets.Add(EHUDMode::MAINMAP, Player->GetMainMapWidget());
-			MiniMapWidget = Player->GetHUDWidget()->GetMiniMapWidget();
+			
+			// /*HUDWidgets.Add(EHUDMode::IDLE,    Player->GetHUDWidget()); -> DONE
+			// HUDWidgets.Add(EHUDMode::INVEN,   Player->GetInvenSystem()->GetInvenUI()); -> DONE
+			// HUDWidgets.Add(EHUDMode::MAINMAP, Player->GetMainMapWidget()); -> DONE
+			// MiniMapWidget = Player->GetHUDWidget()->GetMiniMapWidget();*/ ->
+			continue;
 		}
 
 		if (AC_Enemy* E = Cast<AC_Enemy>(*Actor))
 		{
 			FNameStruct* Row = RandomNameDataTable->FindRow<FNameStruct>(RowNames[++EnemyCount], TEXT(""));
 
-			if (Row) E->SetCharacterName(Row->Name);
+			if (Row)
+			{
+				E->SetCharacterName(Row->Name);
+				UC_Util::Print("Enemy Name : " + Row->Name, FColor::Red, 20.f);
+			}
 			else UC_Util::Print("From GameSceneManager : RandomName Row missing!", FColor::Red, 10.f);
 				
 			Enemies.Add(E);
+			continue;
 		}
 
 		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor))
 		{
 			MagneticFieldManager = MGF_Manager;
-			return;
+			continue;
 		}
 		
 		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor))
 		{
 			AirplaneManager = AP_Manager;
-			return;
+			continue;
 		}
 		
 		if (AC_TickRandomColorGenerator* RandomColorGenerator = Cast<AC_TickRandomColorGenerator>(*Actor))
 		{
 			TickRandomColorGenerator = RandomColorGenerator;
-			return;
+			continue;
 		}
 			
 		if (AC_ItemManager* Item_Manager = Cast<AC_ItemManager>(*Actor))
 		{
 			ItemManager = Item_Manager;
-			return;
+			continue;
 		}
 		
-		if (AC_SoundManager* Sound_Manager = Cast<AC_SoundManager>(*Actor))
-		{
-			SoundManager = Sound_Manager;
-			return;
-		}
+		if (AC_SoundManager* Sound_Manager = Cast<AC_SoundManager>(*Actor)) SoundManager = Sound_Manager;
 	}
 }
 
