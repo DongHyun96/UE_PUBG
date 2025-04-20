@@ -131,6 +131,7 @@ public:
 	virtual void GetPlayerIsAimDownOrNot();
 	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter);
 
+	
 	USkeletalMeshComponent* GetGunMesh() { return GunMesh; }
 	EGunState GetCurrentWeaponState() { return CurState; }
 	TMap<EPoseState, FAnimationMontages> GetSheathMontages() { return SheathMontages; };

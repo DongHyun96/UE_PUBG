@@ -1221,6 +1221,8 @@ bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)
 	}
 	if (!OwnerEnemy->GetEnemyAIController()->IsCurrentlyOnSight(InTargetCharacter))
 		return false;
+
+	
 	return true;
 }
 
@@ -1265,13 +1267,13 @@ bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
 		if (!Succeeded) UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
 		if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
-
 		if (CurrentShootingMode == EShootingMode::SINGLE_SHOT)
 		{
 			UC_Util::Print("SR Reloading Start!!!!!!!!!!", FColor::MakeRandomColor(), 10.f);
 			ExecuteReloadMontage();
 			return false;
 		}
+
 		AIFireTimer = 0.0f;
 		return Succeeded;
 	
