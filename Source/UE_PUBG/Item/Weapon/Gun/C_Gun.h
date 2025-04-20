@@ -184,7 +184,7 @@ public:
 
 	virtual bool GetIsPlayingMontagesOfAny();
 	bool GetCanGunAction();
-	void ChangeCurShootingMode();
+	virtual void ChangeCurShootingMode();
 	virtual bool ExecuteReloadMontage();
 	bool bIsSniperReload = false;
 	void SetIsSniperReload(bool InIsSniperReload) { bIsSniperReload = InIsSniperReload; }

@@ -17,7 +17,7 @@ class UE_PUBG_API UC_SkyDiveWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void NativeConstruct() override;
+	virtual void NativeConstruct() override;
 
 protected:
 

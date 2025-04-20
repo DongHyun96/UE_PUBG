@@ -33,17 +33,14 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	AC_EnemyAIController*	EnemyAIController		= Cast<AC_EnemyAIController>(OwnerComp.GetAIOwner());
 	AC_Enemy*				Enemy					= Cast<AC_Enemy>(EnemyAIController->GetPawn());
 	UC_BehaviorComponent*	EnemyBehaviorComponent	= EnemyAIController->GetBehaviorComponent();
-
-	bool bIsInSmokeArea = Enemy->GetSmokeEnteredChecker()->IsCurrentlyInSmokeArea();
 	
-	// 현재 FlashBang 피격 중인 상황(현상 유지)
-	if (EnemyAIController->IsFlashBangEffectTimeLeft()) return;
-
+	if (Enemy->GetMainState() == EMainState::SKYDIVING || Enemy->GetMainState() == EMainState::DEAD) return;
+	if (EnemyAIController->IsFlashBangEffectTimeLeft())	return; // 현재 FlashBang 피격 중인 상황(현상 유지)
+	
 	if (!EnemyTimers.Contains(EnemyBehaviorComponent)) EnemyTimers.Add(EnemyBehaviorComponent, 0.f);
 
 	// Update Detected Characters' Sight Range Level
-	if (Enemy->GetMainState() != EMainState::SKYDIVING)
-		EnemyAIController->UpdateDetectedCharactersRangeLevel();
+	EnemyAIController->UpdateDetectedCharactersRangeLevel();
 	
 	// Wait 상황의 FSM transition 처리하기
 	
@@ -70,6 +67,8 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 			return;
 		}
 	}
+
+	bool bIsInSmokeArea = Enemy->GetSmokeEnteredChecker()->IsCurrentlyInSmokeArea();
 	
 	// Lv1 영역으로 다른 캐릭터가 들어왔다면 TargetCharacter로 set해서 공격 시도
 	if (EnemyAIController->TrySetTargetCharacterToLevel1EnteredCharacter() && !bIsInSmokeArea)
@@ -113,7 +112,7 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		EnemyAIController->TrySetTargetCharacterBasedOnPriority();
 		if (IsValid(EnemyBehaviorComponent->GetTargetCharacter()))
 		{
-			UC_Util::Print("WaitTask Time's up : Try Attack TargetCharacter!", FColor::Red, 10.f);
+			// UC_Util::Print("WaitTask Time's up : Try Attack TargetCharacter!", FColor::Red, 10.f);
 			EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
 			return;
 		}
@@ -123,15 +122,21 @@ void UC_BTServiceStateMachine::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	if (FMath::RandRange(0, 1)) // MoveToRandomPos
 	{
-		UC_Util::Print("WaitTask Time's up : Try MoveToRandomPosition", FColor::Red, 10.f);
-		Enemy->GetTargetLocationSettingHelper()->SetRandomBasicTargetLocationInsideMainCircle(1000.f);
-		EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO); // Testing
+		ExecuteMoveToRandomLocation(Enemy, EnemyBehaviorComponent, true);
 		return;
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	UC_Util::Print("WaitTask Time's up : Keep waiting...", FColor::Red, 10.f);
+	// UC_Util::Print("WaitTask Time's up : Keep waiting...", FColor::Red, 10.f);
 	EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT); // 다시금 기다리기 처리(이 호출로 기다리는 총 시간 랜덤하게 다시 setting 됨)
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+
+void UC_BTServiceStateMachine::ExecuteMoveToRandomLocation(AC_Enemy* Enemy, UC_BehaviorComponent* EnemyBehaviorComponent, bool bMoveRandomlyInsideMainCircle)
+{
+	if (bMoveRandomlyInsideMainCircle)	Enemy->GetTargetLocationSettingHelper()->SetRandomBasicTargetLocationInsideMainCircle(1000.f);
+	else								Enemy->GetTargetLocationSettingHelper()->SetRandomTargetLocation(1000.f);
+	
+	EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
 }

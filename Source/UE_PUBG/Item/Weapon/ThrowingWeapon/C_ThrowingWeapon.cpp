@@ -962,8 +962,11 @@ void AC_ThrowingWeapon::StartCooking()
 
 	// TODO : Player -> Ready 상태에서 Cooking 시작하면 남은 시간 HUD 띄우기
 	GetWorld()->GetTimerManager().SetTimer(CookingTimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);
+
+	if (!ThrowingWeaponSoundData) return;
+	if (!ThrowingWeaponSoundData->CookingSound) return;
 	
-	if (ThrowingWeaponSoundData->CookingSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->CookingSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->CookingSound, GetActorLocation());
 }
 
 bool AC_ThrowingWeapon::ReleaseOnGround()

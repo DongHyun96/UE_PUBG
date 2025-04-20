@@ -26,6 +26,14 @@ public:
 
 	virtual void SetVisibility(ESlateVisibility InVisibility) override;
 
+protected:
+	
+	/// <summary>
+	/// GameSceneManager HUDMode MiniMap 부분 객체 Initialize 처리 
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void InitGameSceneManagerMiniMap();
+
 public:
 	
 	/// <summary>

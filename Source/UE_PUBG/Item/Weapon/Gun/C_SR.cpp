@@ -166,3 +166,8 @@ float AC_SR::GetDamageRateByBodyPart(const FName& BodyPart)
 	return BODYPARTS_DAMAGERATE[BodyPart];
 }
 
+void AC_SR::ChangeCurShootingMode()
+{
+	// Blank (SR의 경우 Shooting Mode를 바꿀 수 없게끔 처리)
+}
+

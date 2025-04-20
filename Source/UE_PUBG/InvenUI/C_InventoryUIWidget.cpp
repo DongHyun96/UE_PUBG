@@ -19,6 +19,13 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Character/Component/C_PlayerController.h"
+#include "Singleton/C_GameSceneManager.h"
+
+void UC_InventoryUIWidget::NativeConstruct()
+{
+    Super::NativeConstruct();
+    GAMESCENE_MANAGER->SetHUDWidgetByHUDMode(EHUDMode::INVEN, this);
+}
 
 void UC_InventoryUIWidget::SetVisibility(ESlateVisibility InVisibility)
 {

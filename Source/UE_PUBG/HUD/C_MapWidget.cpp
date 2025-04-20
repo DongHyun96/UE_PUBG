@@ -14,6 +14,7 @@
 #include "HUD/C_HUDWidget.h"
 
 #include "Components/Border.h"
+#include "Singleton/C_GameSceneManager.h"
 
 const float UC_MapWidget::BACKGROUND_SIZE		  = 2500.f;
 const float UC_MapWidget::WORLD_TO_BG_SIZE_FACTOR = 0.025f;
@@ -35,6 +36,11 @@ void UC_MapWidget::SetVisibility(ESlateVisibility InVisibility)
 {
 	Super::SetVisibility(InVisibility);
 	OwnerPlayer->GetHUDWidget()->GetMiniMapBorder()->SetVisibility(InVisibility);
+}
+
+void UC_MapWidget::InitGameSceneManagerMiniMap()
+{
+	GAMESCENE_MANAGER->SetMiniMapWidget(this);
 }
 
 bool UC_MapWidget::SpawnPingImage(FVector WorldPingLocation)

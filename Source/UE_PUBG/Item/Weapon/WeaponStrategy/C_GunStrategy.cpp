@@ -28,16 +28,15 @@
 
 bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	// Shooting Mode 바꾸기
+	
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	if (CurWeapon->GetCurrentShootingMode() == EShootingMode::SINGLE_SHOT) return false;
-	//UC_Util::Print("Change Weapon Mode");
-	
 	CurWeapon->ChangeCurShootingMode();	
-	return false;
+	return true;
 }
 
 bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)

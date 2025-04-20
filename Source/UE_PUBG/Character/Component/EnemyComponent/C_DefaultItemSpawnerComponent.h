@@ -27,8 +27,10 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+private:
+	
 	/// <summary>
-	/// 기본 무기 및 기본 아이템 비행기 탑승 시 가지고 시작
+	/// 기본 무기 및 기본 아이템 스폰해서 Inven 및 EquippedComponent에 setting
 	/// </summary>
 	void SpawnDefaultWeaponsAndItems();
 

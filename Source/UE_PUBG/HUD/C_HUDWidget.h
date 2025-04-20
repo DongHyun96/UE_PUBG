@@ -16,6 +16,9 @@ UCLASS()
 class UE_PUBG_API UC_HUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
+	
+public:
+	virtual void NativeConstruct() override;
 
 public:
 

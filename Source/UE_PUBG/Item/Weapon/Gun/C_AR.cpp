@@ -6,6 +6,8 @@
 #include "Character/C_Enemy.h"
 #include "Item/Attachment/C_AttachableItem.h"
 #include "Character/C_Player.h"
+#include "HUD/C_AmmoWidget.h"
+#include "HUD/C_HUDWidget.h"
 #include "Utility/C_Util.h"
 
 const TMap<FName, float> AC_AR::BODYPARTS_DAMAGERATE =
@@ -107,6 +109,18 @@ float AC_AR::GetDamageRateByBodyPart(const FName& BodyPart)
 	}
 	
 	return BODYPARTS_DAMAGERATE[BodyPart];
+}
+
+void AC_AR::ChangeCurShootingMode()
+{
+	// 단발, 연사만을 포함한 ShootingMode Switching
+	// 추후, AR 종류에 따른 점사까지 포함한 처리를 한다하면, 전략 객체로 블루프린트에서 넣는 구조로 가져갈 것
+	int CurMode = static_cast<int>(CurrentShootingMode);
+	++CurMode %= 2;
+	CurrentShootingMode = static_cast<EShootingMode>(CurMode);
+
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetShootingMode(CurrentShootingMode);
 }
 
 

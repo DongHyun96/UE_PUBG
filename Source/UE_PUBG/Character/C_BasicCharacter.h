@@ -98,6 +98,15 @@ public:
 	FPriorityAnimMontage CrawlToCrouch{};
 };
 
+USTRUCT(BlueprintType)
+struct FNameStruct : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name{};
+};
+
 
 UCLASS()
 class UE_PUBG_API AC_BasicCharacter : public ACharacter, public IGenericTeamAgentInterface
@@ -199,6 +208,9 @@ public:
 
 
 public: // Getters and setters
+
+	void SetCharacterName(FString InCharacterName) { CharacterName = InCharacterName; }
+	FString GetCharacterName() const { return CharacterName; }
 
 	void SetMainState(EMainState InMainState) { MainState = InMainState; }
 	EMainState GetMainState() const { return MainState; }
@@ -322,6 +334,10 @@ public:
 public:
 
 	void Jump() override;
+
+protected:
+
+	FString CharacterName = "John Doe";
 
 protected:
 

@@ -8,6 +8,7 @@
 #include "Character/C_Enemy.h"
 #include "MagneticField/C_MagneticFieldManager.h"
 #include "Airplane/C_AirplaneManager.h"
+#include "Algo/RandomShuffle.h"
 #include "Utility/C_Util.h"
 
 #include "Character/Component/C_InvenSystem.h"
@@ -22,6 +23,8 @@
 
 #include "Loot/C_LootCrate.h"
 #include "Item/ItemManager/C_ItemManager.h"
+#include "Kismet/KismetArrayLibrary.h"
+#include "Runtime/Core/Tests/Containers/TestUtils.h"
 #include "Sound/C_SoundManager.h"
 
 #include "Utility/C_TickRandomColorGenerator.h"
@@ -39,8 +42,14 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 
-	int DoorCount{};
+	RandomNameDataTable = LoadObject<UDataTable>(this, TEXT("/Game/Project_PUBG/DongHyun/Character/DataTable/DT_RandomNameTable"));
+	if (!RandomNameDataTable) UC_Util::Print("RandomNameDataTable not Loaded properly!", FColor::Red, 20.f);
 
+	TArray<FName> RowNames = RandomNameDataTable->GetRowNames();
+	Algo::RandomShuffle(RowNames);
+
+	int EnemyCount{};
+	
 	// Level에 배치된 Actor들의 BeginPlay 호출되기 이전에 객체 초기화
 	for (FActorIterator Actor(&InWorld); Actor; ++Actor)
 	{
@@ -53,24 +62,55 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		if (AC_Player* P = Cast<AC_Player>(*Actor))
 		{
 			Player = P;
-
-			HUDWidgets.Add(EHUDMode::IDLE,    Player->GetHUDWidget());
-			HUDWidgets.Add(EHUDMode::INVEN,   Player->GetInvenSystem()->GetInvenUI());
-			HUDWidgets.Add(EHUDMode::MAINMAP, Player->GetMainMapWidget());
-			MiniMapWidget = Player->GetHUDWidget()->GetMiniMapWidget();
+			
+			// /*HUDWidgets.Add(EHUDMode::IDLE,    Player->GetHUDWidget()); -> DONE
+			// HUDWidgets.Add(EHUDMode::INVEN,   Player->GetInvenSystem()->GetInvenUI()); -> DONE
+			// HUDWidgets.Add(EHUDMode::MAINMAP, Player->GetMainMapWidget()); -> DONE
+			// MiniMapWidget = Player->GetHUDWidget()->GetMiniMapWidget();*/ ->
+			continue;
 		}
 
-		if (AC_Enemy* E = Cast<AC_Enemy>(*Actor)) Enemies.Add(E);
+		if (AC_Enemy* E = Cast<AC_Enemy>(*Actor))
+		{
+			FNameStruct* Row = RandomNameDataTable->FindRow<FNameStruct>(RowNames[++EnemyCount], TEXT(""));
 
-		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor)) MagneticFieldManager = MGF_Manager;
-		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor)) AirplaneManager = AP_Manager;
-		if (AC_TickRandomColorGenerator* RandomColorGenerator = Cast<AC_TickRandomColorGenerator>(*Actor)) TickRandomColorGenerator = RandomColorGenerator;
-		if (AC_ItemManager* Item_Manager = Cast<AC_ItemManager>(*Actor)) ItemManager = Item_Manager;
+			if (Row)
+			{
+				E->SetCharacterName(Row->Name);
+				UC_Util::Print("Enemy Name : " + Row->Name, FColor::Red, 20.f);
+			}
+			else UC_Util::Print("From GameSceneManager : RandomName Row missing!", FColor::Red, 10.f);
+				
+			Enemies.Add(E);
+			continue;
+		}
+
+		if (AC_MagneticFieldManager* MGF_Manager = Cast<AC_MagneticFieldManager>(*Actor))
+		{
+			MagneticFieldManager = MGF_Manager;
+			continue;
+		}
+		
+		if (AC_AirplaneManager* AP_Manager = Cast<AC_AirplaneManager>(*Actor))
+		{
+			AirplaneManager = AP_Manager;
+			continue;
+		}
+		
+		if (AC_TickRandomColorGenerator* RandomColorGenerator = Cast<AC_TickRandomColorGenerator>(*Actor))
+		{
+			TickRandomColorGenerator = RandomColorGenerator;
+			continue;
+		}
+			
+		if (AC_ItemManager* Item_Manager = Cast<AC_ItemManager>(*Actor))
+		{
+			ItemManager = Item_Manager;
+			continue;
+		}
+		
 		if (AC_SoundManager* Sound_Manager = Cast<AC_SoundManager>(*Actor)) SoundManager = Sound_Manager;
-
-
 	}
-
 }
 
 void UC_GameSceneManager::Initialize(FSubsystemCollectionBase& Collection)

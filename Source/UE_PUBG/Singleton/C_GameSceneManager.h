@@ -57,6 +57,10 @@ protected:
 private:
 
 	//void OnWorldEndPlay(UWorld* InWorld);
+
+public:
+
+	
 	
 public: // Getters and setters
 
@@ -64,6 +68,13 @@ public: // Getters and setters
 
 	class AC_Player* GetPlayer() const { return Player; }
 	void SetPlayer(AC_Player* InPlayer) { Player = InPlayer; }
+
+public: // Widget 초기화 관련 처리
+
+	void SetHUDWidgetByHUDMode(EHUDMode Mode, UUserWidget* InUserWidget) { HUDWidgets.Add(Mode, InUserWidget); }
+	void SetMiniMapWidget(UUserWidget* InMiniMapWidget) { MiniMapWidget = InMiniMapWidget; }
+
+public:
 	
 	TArray<class AC_Enemy*>& GetEnemies() { return Enemies; }
 
@@ -134,8 +145,12 @@ private:
 	// Main Player의 Widget들, 현재 어떤 WidgetMode인지에 따른 Visibility setting 처리
 	EHUDMode CurrentHUDMode{};
 
-	TMap<EHUDMode, class UUserWidget*> HUDWidgets{};
-	UUserWidget*					   MiniMapWidget{};
+	TMap<EHUDMode, UUserWidget*> HUDWidgets{};
+	UUserWidget*			     MiniMapWidget{};
+
+private:
+
+	class UDataTable* RandomNameDataTable{};
 
 private:
 	

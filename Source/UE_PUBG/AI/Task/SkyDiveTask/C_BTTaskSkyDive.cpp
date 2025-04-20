@@ -134,11 +134,6 @@ bool UC_BTTaskSkyDive::SetRandomLandingTargetLocationAndJumpPosXY(AC_Enemy* Enem
 
 	AirplaneJumpPosXYMap.Add(Enemy, AirplaneJumpPosXY);
 
-	// TODO : 밑 라인 단락 지우기 For Testing
-	FVector JumpLocationTemp = { AirplaneJumpPosXY.X, AirplaneJumpPosXY.Y, 0.f };
-	FVector LandingLocationTemp = {LandingTargetPos.X, LandingTargetPos.Y, 0.f };
-	GAMESCENE_MANAGER->GetPlayer()->GetMainMapWidget()->SpawnJumpPosAndTargetPosImage(JumpLocationTemp, LandingLocationTemp);
-
 	FVector LineTraceStartLocation = {LandingTargetPos.X, LandingTargetPos.Y, 40000.f}; // Random한 XY지점을 잡아 400m 상공에서 아래로 RayCasting할 예정 
 	FVector LineTraceDestLocation  = LineTraceStartLocation - FVector::UnitZ() * 40000.f;
 	
@@ -197,8 +192,6 @@ void UC_BTTaskSkyDive::SetSkyDivingStateDestination(AC_Enemy* Enemy)
 	FVector2D DestinationXY = AirplaneJumpPosXY + Direction * JumpPosToLandingPosDistance * 0.8f;
 	SkyDivingComponent->SetSkyDivingStateDestination({DestinationXY.X, DestinationXY.Y, ParachuteDeployLimitHeight});
 
-	// TODO : 밑에 라인 지우기 (For testing)
-	GAMESCENE_MANAGER->GetPlayer()->GetMainMapWidget()->SpawnSkyDivingStateDestinationImage({DestinationXY.X, DestinationXY.Y, ParachuteDeployLimitHeight});
 }
 
 FVector2D UC_BTTaskSkyDive::GetClosestPointOnLine(const FVector2D& TargetPoint, const FVector2D& LineStart, const FVector2D& LineEnd) const

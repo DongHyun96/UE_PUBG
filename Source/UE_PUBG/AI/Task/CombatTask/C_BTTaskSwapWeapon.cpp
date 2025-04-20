@@ -12,6 +12,7 @@
 #include "AI/Service/C_BTServiceCombat.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Item/ItemBullet/C_Item_Bullet.h"
+#include "Item/Weapon/Gun/C_Gun.h"
 
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Singleton/C_GameSceneManager.h"
@@ -88,8 +89,15 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	// 총기류 먼저 바꾸기 시도
 	FName SevenBulletItemName	= AC_Item_Bullet::GetBulletTypeName(EBulletType::SEVENMM);
 	FName FiveBulletItemName	= AC_Item_Bullet::GetBulletTypeName(EBulletType::FIVEMM);
+	
 	int TotalSevenBulletCount	= Enemy->GetInvenComponent()->GetTotalStackByItemName(SevenBulletItemName);
 	int TotalFiveBulletCount	= Enemy->GetInvenComponent()->GetTotalStackByItemName(FiveBulletItemName);
+
+	AC_Gun* MainGun = Cast<AC_Gun>(Enemy->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN]);
+	TotalFiveBulletCount += MainGun->GetCurBulletCount();
+
+	AC_Gun* SubGun = Cast<AC_Gun>(Enemy->GetEquippedComponent()->GetWeapons()[EWeaponSlot::SUB_GUN]);
+	TotalSevenBulletCount += SubGun->GetCurBulletCount();
 
 	float DistanceToTargetCharacter = FVector::Distance(Enemy->GetActorLocation(), TargetCharacter->GetActorLocation());
 	
