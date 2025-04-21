@@ -39,7 +39,7 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 
 	SpawnEquipableItems(Param);
 	SpawnWeapons(Param);
-	//SpawnConsumableItems(Param);
+	SpawnConsumableItems(Param);
 	SpawnBullets(Param);
 }
 
@@ -66,20 +66,20 @@ void UC_DefaultItemSpawnerComponent::SpawnWeapons(const FActorSpawnParameters& P
 
 	// Throwable Weapon setting 하기
 
-	//// Grenade 1~3개
-	//AC_ThrowingWeapon* Grenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::GRENADE], Param);
-	//Grenade->SetItemStack(FMath::RandRange(1, 2));
-	//Grenade->MoveToInven(OwnerEnemy, Grenade->GetItemCurStack());
+	// Grenade 1~3개
+	AC_ThrowingWeapon* Grenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::GRENADE], Param);
+	Grenade->SetItemStack(FMath::RandRange(1, 2));
+	Grenade->MoveToInven(OwnerEnemy, Grenade->GetItemCurStack());
 
-	//// Smoke Grenade 1~2개
-	//AC_ThrowingWeapon* SmokeGrenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::SMOKE], Param);
-	//SmokeGrenade->SetItemStack(FMath::RandRange(1, 2));
-	//SmokeGrenade->MoveToInven(OwnerEnemy, SmokeGrenade->GetItemCurStack());
+	// Smoke Grenade 1~2개
+	AC_ThrowingWeapon* SmokeGrenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::SMOKE], Param);
+	SmokeGrenade->SetItemStack(FMath::RandRange(1, 2));
+	SmokeGrenade->MoveToInven(OwnerEnemy, SmokeGrenade->GetItemCurStack());
 
-	//// FlashBang 1~2개
-	//AC_ThrowingWeapon* FlashBang = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::FLASH_BANG], Param);
-	//FlashBang->SetItemStack(FMath::RandRange(1, 2));
-	//FlashBang->MoveToInven(OwnerEnemy, FlashBang->GetItemCurStack());
+	// FlashBang 1~2개
+	AC_ThrowingWeapon* FlashBang = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::FLASH_BANG], Param);
+	FlashBang->SetItemStack(FMath::RandRange(1, 2));
+	FlashBang->MoveToInven(OwnerEnemy, FlashBang->GetItemCurStack());
 
 }
 

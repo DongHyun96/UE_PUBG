@@ -877,8 +877,27 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	//TODO: 캐릭터 상태에 따라 탄퍼짐 or 직선
 	if (OwnerCharacter->GetIsWatchingSight())
 	{
-		RandomPointOnScreen.X = (IronSightWindowLocation.X * ViewportSize.X );
-		RandomPointOnScreen.Y = (IronSightWindowLocation.Y * ViewportSize.Y );
+		if (GetIsPartAttached(EPartsName::SCOPE))
+		{
+			
+			if (AttachedItemName[EPartsName::SCOPE] == EAttachmentNames::REDDOT)
+			{
+				RandomPointOnScreen.X = (IronSightWindowLocation.X * ViewportSize.X );
+				RandomPointOnScreen.Y = (0.5f * ViewportSize.Y );
+				UC_Util::Print("RandomPointOnScreen");
+			}
+			else
+			{
+				RandomPointOnScreen.X = (IronSightWindowLocation.X * ViewportSize.X );
+				RandomPointOnScreen.Y = (IronSightWindowLocation.Y * ViewportSize.Y );
+			}
+		}
+		else
+		{
+			RandomPointOnScreen.X = (IronSightWindowLocation.X * ViewportSize.X );
+			RandomPointOnScreen.Y = (IronSightWindowLocation.Y * ViewportSize.Y );
+			
+		}
 	}
 	else
 	{
@@ -1105,9 +1124,9 @@ void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
 	{
 	case EAttachmentNames::MAX:
 	case EAttachmentNames::REDDOT:
-		AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = 0.f;
-		AimSightCamera->PostProcessSettings.DepthOfFieldSensorWidth   = 0.f;
-		AimSightCamera->PostProcessSettings.DepthOfFieldFstop         = 0.f;
+		AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = 0.0f;
+		AimSightCamera->PostProcessSettings.DepthOfFieldSensorWidth   = 0.0f;
+		AimSightCamera->PostProcessSettings.DepthOfFieldFstop         = 0.0f;
 		break;
 	case EAttachmentNames::SCOPE4:
 		AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = 6.5f;
@@ -1142,8 +1161,11 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 		BackpackBulletStack = OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())->GetItemCurStack();
 	if (CurBulletCount == 0 &&  BackpackBulletStack== 0)
 	{
+		UC_Util::Print("Back To Wait Condition");
 		return false;
 	}
+	UC_Util::Print(CurBulletCount);
+	UC_Util::Print(BackpackBulletStack);
 
 	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
 
@@ -1156,37 +1178,7 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 
 bool AC_Gun::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
 {
-	if (!CanAIAttack(InTargetCharacter))
-	{
-		return false;
-	}
-	//ExecuteReloadMontage();
-	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter); 
-	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
-	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
-
-	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
-
-	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
-
-	//UC_Util::Print(FireLocation);
-	//UC_Util::Print(FireDirection);
-	FVector Direction = (EnemyLocation - GetActorLocation()).GetSafeNormal();
-	FRotator LookRotation = Direction.Rotation();
-	//float DeltaTime = GetWorld()->GetDeltaSeconds();
-	//UC_Util::Print("Change Rotation");
-	float InterpSpeed = 10.0f;
-	FRotator CurrentRotation =  OwnerCharacter->GetActorRotation();
-	FRotator NewRotation	= FMath::RInterpTo(CurrentRotation, LookRotation, DeltaTime, InterpSpeed);
-	NewRotation.Pitch		= 0.f;
-	NewRotation.Roll		= 0.f;
-	OwnerEnemy->SetActorRotation(NewRotation);
-	AIFireTimer += DeltaTime;
-	if (AIFireTimer > GetBulletRPM() && abs(NewRotation.Yaw - LookRotation.Yaw) < 10.0f)
-	{
-		return AIFireBullet(InTargetCharacter);
-	}
-	return true;
+	return false;
 	//return Super::ExecuteAIAttackTickTask(InTargetCharacter, DeltaTime);
 	
 }
@@ -1230,62 +1222,6 @@ bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)
 
 bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 {
-	FVector BulletSpreadRadius = FVector(100,100,100);
-	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
-	FVector SpreadLocation = UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation,BulletSpreadRadius);
-	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
-	
-	FVector SmokeEnemyLocation;
-	if (InTargetCharacter->GetSmokeEnteredChecker()->GetRandomLocationInSmokeArea(SmokeEnemyLocation))
-		SpreadLocation = SmokeEnemyLocation;
-	
-	FVector FireDirection = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
-	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter);
-	if (GetIsPlayingMontagesOfAny())
-	{
-		UC_Util::Print("AI Cant Fire Gun",FColor::MakeRandomColor(), 1000);
-		return false;
-	}
-
-
-	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
-
-	//UC_Util::Print(FireLocation);
-	//UC_Util::Print(FireDirection);
-
-	//return true;
-	bool ApplyGravity = true;
-	for (auto& Bullet : OwnerEnemy->GetBullets())
-	{
-		if (CurBulletCount == 0)
-			break;
-		if (Bullet->GetIsActive())
-		{
-			//UC_Util::Print("Can't fire");
-			continue;
-		}
-		//UC_Util::Print("FIRE!!!!!!!");
-		CurBulletCount--;
-		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
-		if (!Succeeded) UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
-		if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
-		if (CurrentShootingMode == EShootingMode::SINGLE_SHOT)
-		{
-			UC_Util::Print("SR Reloading Start!!!!!!!!!!", FColor::MakeRandomColor(), 10.f);
-			ExecuteReloadMontage();
-			return false;
-		}
-
-		AIFireTimer = 0.0f;
-		return Succeeded;
-	
-		//Bullet->Fire(this, FireLocation, FireDirection);
-		//if (BulletCount > 100)
-		//	return true;
-	}
-	ExecuteReloadMontage();
-
-	UC_Util::Print("No More Bullets in Pool", FColor::MakeRandomColor(), 10.f);
 	return false;
 }
 

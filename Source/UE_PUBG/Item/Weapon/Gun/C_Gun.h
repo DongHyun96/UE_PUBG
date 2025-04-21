@@ -400,7 +400,7 @@ public:
 	float GetDamageBase() const { return GunDataRef->DamageBase; }
 protected:
 	bool CanAIAttack(AC_BasicCharacter* InTargetCharacter);
-	bool AIFireBullet(class AC_BasicCharacter* InTargetCharacter);
+	virtual bool AIFireBullet(class AC_BasicCharacter* InTargetCharacter);
 	float AIFireTimer = 0.0f;
 protected:
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)

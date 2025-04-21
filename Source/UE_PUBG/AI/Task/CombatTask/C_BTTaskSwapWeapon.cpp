@@ -106,7 +106,7 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	{
 
 		// 거리가 50m를 넘어가면 SubGun으로 교체 시도
-		if (DistanceToTargetCharacter > 5000.f) 
+		if (DistanceToTargetCharacter > 500.f) 
 			return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent); 
 
 		// 거리 50m 이내 / 현재 시야에 보이는 중이라면 MainGun으로 교체 / 시야에 보이지 않는 중이라면 ThrowableWeapon 중 택 1 (역시 남은 장탄수 확인해서)
@@ -116,7 +116,7 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	else if (TotalSevenBulletCount > 0) // 7탄만 남았을 때
 	{
 		// 거리가 50m를 넘어가면 SubGun으로 교체 시도
-		if (DistanceToTargetCharacter > 5000.f) // TODO : 50m로 수정
+		if (DistanceToTargetCharacter > 500.f) // TODO : 50m로 수정
 			return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent);
 
 		// 50m 이내일 때, 시야에 보이면 SubGun 교체 시도
