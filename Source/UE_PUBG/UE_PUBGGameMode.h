@@ -13,6 +13,8 @@ class AUE_PUBGGameMode : public AGameModeBase
 
 public:
 	AUE_PUBGGameMode();
+
+	// virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 };
 
 

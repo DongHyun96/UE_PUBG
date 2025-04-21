@@ -70,6 +70,8 @@ void AC_MedKit::OnStartUsing()
 void AC_MedKit::OnActivatingFinish()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, false);
+	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
+		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED MED KIT");
 }
 
 void AC_MedKit::OnCancelActivating()

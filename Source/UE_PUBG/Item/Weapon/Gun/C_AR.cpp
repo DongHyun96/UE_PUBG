@@ -8,6 +8,7 @@
 #include "Character/C_Player.h"
 #include "HUD/C_AmmoWidget.h"
 #include "HUD/C_HUDWidget.h"
+#include "HUD/C_InstructionWidget.h"
 #include "Utility/C_Util.h"
 
 const TMap<FName, float> AC_AR::BODYPARTS_DAMAGERATE =
@@ -119,8 +120,22 @@ void AC_AR::ChangeCurShootingMode()
 	++CurMode %= 2;
 	CurrentShootingMode = static_cast<EShootingMode>(CurMode);
 
+
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	{
 		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetShootingMode(CurrentShootingMode);
+		
+		FString PlayerLog = "CHANGED FIRING MODE : ";
+		
+		switch (CurrentShootingMode)
+		{
+		case EShootingMode::SEMI_AUTO: 	PlayerLog += "SEMI AUTO"; break;
+		case EShootingMode::FULL_AUTO: 	PlayerLog += "FULL AUTO"; break;
+		case EShootingMode::MAX: break;
+		}
+
+		OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog(PlayerLog);
+	}
 }
 
 

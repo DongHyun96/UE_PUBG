@@ -67,6 +67,9 @@ void AC_Bandage::OnActivatingFinish()
 	
 	// 10초 뒤 팔에 감은 붕대 감추기
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_Bandage::HideUsageMesh, USAGE_MESH_SHOWN_TIME, false);
+	
+	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
+		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED BANDAGE");
 }
 
 void AC_Bandage::OnCancelActivating()
