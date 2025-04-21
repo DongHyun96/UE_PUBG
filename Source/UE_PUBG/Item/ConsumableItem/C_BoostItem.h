@@ -23,7 +23,6 @@ protected:
 
 public:
 	virtual void Tick(float DeltaTime) override;
-
 private:
 
 	bool IsAvailableToStartUsing(class AC_BasicCharacter* InItemUser) override;

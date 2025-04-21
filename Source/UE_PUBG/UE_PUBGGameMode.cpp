@@ -17,7 +17,7 @@ AUE_PUBGGameMode::AUE_PUBGGameMode()
 	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Project_PUBG/DongHyun/Copy/DH_BPC_Player"));
 	if (GetWorld())
 	{
-		if ( GetWorld()->GetMapName().Contains(TEXT("LobbyMap")))
+		if (GetWorld()->GetMapName().Contains(TEXT("LobbyMap")))
 		{
 			if (LobbyPawnClass.Class != NULL)
 				DefaultPawnClass = LobbyPawnClass.Class;
@@ -38,5 +38,31 @@ AUE_PUBGGameMode::AUE_PUBGGameMode()
 	}
 
 }
+
+/*
+void AUE_PUBGGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+	
+	if (MapName.Contains(TEXT("LobbyMap")))
+	{
+		static ConstructorHelpers::FClassFinder<APawn> LobbyPawnClass(TEXT("/Game/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyScenePawn"));
+		if (LobbyPawnClass.Class)
+		{
+			DefaultPawnClass = LobbyPawnClass.Class;
+		}
+	}
+	else
+	{
+		static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Project_PUBG/Common/Character/BPC_Player"));
+		if (PlayerPawnBPClass.Class)
+		{
+			DefaultPawnClass = PlayerPawnBPClass.Class;
+		}
+	}
+
+	PlayerControllerClass = AC_PlayerController::StaticClass();
+}
+*/
 
 
