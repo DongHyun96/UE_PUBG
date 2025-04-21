@@ -50,11 +50,14 @@ void AC_PainKiller::OnStartUsing()
 void AC_PainKiller::OnActivatingFinish()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::PAIN_KILLER, false);
+	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
+		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED PAINKILLER");
 }
 
 void AC_PainKiller::OnCancelActivating()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::PAIN_KILLER, false);
 }
+
 
 

@@ -56,6 +56,7 @@
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 #include "Component/SkyDivingComponent/C_PlayerSkyDivingComponent.h"
 #include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
+#include "HUD/C_InstructionWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 
 AC_Player::AC_Player()
@@ -394,7 +395,11 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		{
 		case EPoseState::CROUCH: // Crouch To Stand (Pose transition 없이 바로 처리)
 
-			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND))
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("STANDING BLOCKED!");
+				return false;
+			}
 
 			SetSpringArmRelativeLocationDest(EPoseState::STAND);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::STAND);
@@ -404,8 +409,16 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CRAWL: // Crawl To Stand
 
-			if (bIsActivatingConsumableItem) return false; // TODO : 일어설 수 없습니다 UI 띄우기
-			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
+			if (bIsActivatingConsumableItem)
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("STANDING BLOCKED!");
+				return false;
+			}
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND))
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("STANDING BLOCKED!");
+				return false;
+			}
 			SetControllerPitchLimits(EPoseState::STAND);
 			SetSpringArmRelativeLocationDest(EPoseState::STAND);
 
@@ -428,7 +441,11 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		{
 		case EPoseState::STAND: // Stand To Crouch
 
-			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH))
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CROUCH BLOCKED!");
+				return false;
+			}
 
 			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CROUCH);
@@ -438,8 +455,16 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CRAWL: // Crawl To Crouch
 
-			if (bIsActivatingConsumableItem) return false; // TODO : 일어설 수 없습니다 UI 띄우기
-			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
+			if (bIsActivatingConsumableItem)
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CROUCH BLOCKED!");
+				return false;
+			}
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH))
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CROUCH BLOCKED!");
+				return false;
+			}
 			SetControllerPitchLimits(EPoseState::CROUCH);
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToCrouch, EPoseState::CROUCH);
 			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
@@ -454,8 +479,16 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		{
 		case EPoseState::STAND: // Stand to Crawl
 
-			if (bIsActivatingConsumableItem) return false; // TODO : 없드릴 수 없습니다 UI 띄우기
-			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
+			if (bIsActivatingConsumableItem)
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+				return false;
+			}
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL))
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+				return false;
+			}
 			SetControllerPitchLimits(EPoseState::CRAWL);
 
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).StandToCrawl, EPoseState::CRAWL);
@@ -466,8 +499,16 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CROUCH: // Crouch to Crawl
 
-			if (bIsActivatingConsumableItem) return false; // TODO : 없드릴 수 없습니다 UI 띄우기
-			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
+			if (bIsActivatingConsumableItem)
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+				return false;
+			}
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL))
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+				return false;
+			}
 			SetControllerPitchLimits(EPoseState::CRAWL);
 			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CRAWL);

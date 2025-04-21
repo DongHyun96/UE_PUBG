@@ -32,7 +32,6 @@ private:
 	void OnStartUsing()		  override;
 	void OnActivatingFinish() override;
 	void OnCancelActivating() override;
-
 };
 
 

@@ -23,7 +23,7 @@ protected:
 
 public:
 	virtual void Tick(float DeltaTime) override;
-
+	
 private:
 
 	void HandleActivateCompletedState() override; // Hook Method
