@@ -292,7 +292,20 @@ void AC_Bullet::OnProjectileStop(const FHitResult& ImpactResult)
 	float DamageBase 	= FiredGun->GetDamageBase();
 	float TotalDamage	= DamageRate * DamageBase;
 
-	if (HittedCharacter->GetStatComponent()->TakeDamage(TotalDamage, HittedBoneName, OwnerCharacter) != 0.f)
+	float DamageDistance = FVector::Distance(HittedCharacter->GetActorLocation(), OwnerCharacter->GetActorLocation()); 
+	DamageDistance *= 0.01f;
+	
+	FKillFeedDescriptor KillFeedDesc =
+	{
+		EDamageType::Weapon,
+		OwnerCharacter,
+		HittedCharacter,
+		FiredGun,
+		false, // HeadShot 여부는 TakeDamage 내에서 검사해서 조정
+		static_cast<int>(DamageDistance)
+	};
+
+	if (HittedCharacter->GetStatComponent()->TakeDamage(TotalDamage, HittedBoneName, KillFeedDesc) != 0.f)
 		HittedCharacter->ActivateBloodParticle(ImpactResult.Location);
 }
 

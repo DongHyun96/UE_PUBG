@@ -38,6 +38,7 @@
 #include "Utility/C_Util.h"
 
 #include "GameFramework/PhysicsVolume.h"
+#include "HUD/C_InstructionWidget.h"
 
 #include "Singleton/C_GameSceneManager.h"
 #include "SkyDivingComponent/C_PlayerSkyDivingComponent.h"
@@ -425,106 +426,41 @@ void UC_InputComponent::SetToNonAimCamera()
 
 void UC_InputComponent::OnNum1()
 {
-	// 해당 슬롯에 무기가 존재하고 Consumable 활성화 중일 때
-	if (Player->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN] && Player->GetIsActivatingConsumableItem())
-	{
-		// 이전에 무기를 들고 있었던 상황이었을 경우(== 잠시 Holster에 붙인 경우) 현재 무기로 바꾸기 위한 처리 필요
-		if (Player->GetEquippedComponent()->GetCurWeaponType() != EWeaponSlot::NONE)
-			Player->GetEquippedComponent()->SetCurWeaponTypeToNone();
-
-		Player->GetCurActivatingConsumableItem()->CancelActivating();
-	}
-		
-	Player->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::MAIN_GUN);
+	OnNumKey(EWeaponSlot::MAIN_GUN);
 }
 
 void UC_InputComponent::OnNum2()
 {
-	if (Player->GetEquippedComponent()->GetWeapons()[EWeaponSlot::SUB_GUN] && Player->GetIsActivatingConsumableItem())
-	{
-		// 이전에 무기를 들고 있었던 상황이었을 경우(== 잠시 Holster에 붙인 경우) 현재 무기로 바꾸기 위한 처리 필요
-		if (Player->GetEquippedComponent()->GetCurWeaponType() != EWeaponSlot::NONE)
-			Player->GetEquippedComponent()->SetCurWeaponTypeToNone();
-
-		Player->GetCurActivatingConsumableItem()->CancelActivating();
-	}
-
-	// Testing 용 Boosting TODO : 이 라인 지우기
-	//Player->GetStatComponent()->AddBoost(40.f);
-	if (Player->GetIsActivatingConsumableItem())
-		Player->GetCurActivatingConsumableItem()->CancelActivating();
-
-	Player->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::SUB_GUN);
-
+	OnNumKey(EWeaponSlot::SUB_GUN);
 }
 
 void UC_InputComponent::OnNum4()
 {
-	if (Player->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MELEE_WEAPON] && Player->GetIsActivatingConsumableItem())
-	{
-		// 이전에 무기를 들고 있었던 상황이었을 경우(== 잠시 Holster에 붙인 경우) 현재 무기로 바꾸기 위한 처리 필요
-		if (Player->GetEquippedComponent()->GetCurWeaponType() != EWeaponSlot::NONE)
-			Player->GetEquippedComponent()->SetCurWeaponTypeToNone();
-
-		Player->GetCurActivatingConsumableItem()->CancelActivating();
-	}
-
-	Player->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::MELEE_WEAPON);
+	OnNumKey(EWeaponSlot::MELEE_WEAPON);
 }
 
 void UC_InputComponent::OnNum5()
 {
-	if (Player->GetEquippedComponent()->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON] && Player->GetIsActivatingConsumableItem())
+	OnNumKey(EWeaponSlot::THROWABLE_WEAPON);
+}
+
+void UC_InputComponent::OnNumKey(EWeaponSlot ChangeTo)
+{
+	if (Player->GetEquippedComponent()->GetWeapons()[ChangeTo] && Player->GetIsActivatingConsumableItem())
 	{
 		// 이전에 무기를 들고 있었던 상황이었을 경우(== 잠시 Holster에 붙인 경우) 현재 무기로 바꾸기 위한 처리 필요
 		if (Player->GetEquippedComponent()->GetCurWeaponType() != EWeaponSlot::NONE)
 			Player->GetEquippedComponent()->SetCurWeaponTypeToNone();
 
 		Player->GetCurActivatingConsumableItem()->CancelActivating();
+		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("ITEM USE INTERRUPTED");
 	}
 
-	Player->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::THROWABLE_WEAPON);
+	Player->GetEquippedComponent()->ChangeCurWeapon(ChangeTo);
 }
 
 void UC_InputComponent::OnXKey()
 {
-	// Testing 용 Damage 주기 TODO : 이 라인 지우기
-	//TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AActor * DamageCauser);
-	//static bool SwimFlag = false;
-
-	/*
-	OwnerCharacter->GetPhysicsVolume()->bWaterVolume = true;
-
-	bIsSwimming = true;
-
-	OwnerCharacter->LaunchCharacter(OwnerCharacter->GetActorUpVector() * 0.005f, false, false);
-	*/
-
-	//if (!SwimFlag)
-	//{
-	//	Player->GetPhysicsVolume()->bWaterVolume = true;
-	//	Player->LaunchCharacter(Player->GetActorUpVector() * 0.005f, false, false);
-	//}
-	//else
-	//{
-	//	Player->GetPhysicsVolume()->bWaterVolume = false;
-	//}
-	//
-	//SwimFlag = !SwimFlag;
-
-	// For testing
-	//Player->GetParkourComponent()->Vault();
-	
-	Player->GetStatComponent()->TakeDamage(10.f, nullptr);
-	
-	if (!GAMESCENE_MANAGER->GetEnemies().IsEmpty())
-	{
-		AC_Enemy* Enemy = GAMESCENE_MANAGER->GetEnemies()[0]; 
-		// Enemy->GetStatComponent()->TakeDamage(10.f, nullptr);
-		// Enemy->GetEnemyAIController()->GetBrainComponent()->PauseLogic("Testing");
-		// Enemy->GetEnemyAIController()->GetBrainComponent()->StopLogic("Testing");
-	}
-	
 	Player->GetEquippedComponent()->ToggleArmed();
 }
 

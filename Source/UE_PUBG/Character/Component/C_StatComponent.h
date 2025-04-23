@@ -31,6 +31,34 @@ enum class EDamagingPartType : uint8
 	LOWER_STOMACH	// Phyiscs Asset spine
 };
 
+UENUM(BlueprintType)
+enum class EDamageType : uint8
+{
+	Default,
+	Weapon, // AR, SR, Throwable Weapon, MeleeWeapon 종류들로 인한 Damage
+
+	BlueZone,
+	Drown,
+	Fall,
+	VehicleHit
+};
+
+/// <summary>
+/// KillFeed 로그에 필요한 관련 정보를 담은 Descriptor
+/// </summary>
+USTRUCT(BlueprintType)
+struct FKillFeedDescriptor
+{
+	GENERATED_BODY()
+	
+	EDamageType					DamageType{};
+	class AC_BasicCharacter* 	DamageCauser{};
+	class AC_BasicCharacter* 	DamageTaker{};
+	class AC_Weapon*			DamageCausedWeapon{};
+	bool						bDamagedByHeadShot{};
+	int							Distance{};
+};
+
 struct FBoostingEffectFactor
 {
 	float OneBlockHPGainedAmount{};
@@ -74,10 +102,10 @@ public:
 	/// <summary>
 	/// 실질적인 CurHP 수치 조정
 	/// </summary>
-	/// <param name="Damage"> : Damage 량 </param>
-	/// <param name="DamageCauser"> : Damage를 주는 BasicCharacter </param>
+	/// <param name="DamageAmount"> : Damage 량 </param>
+	/// <param name="KillFeedDescriptor"></param>
 	/// <returns> : Damage를 추가적으로 입을 수 없는 상황이라면(CurHP <= 0.f) return false </returns>
-	bool TakeDamage(const float& Damage, AC_BasicCharacter* DamageCauser);
+	bool TakeDamage(const float& DamageAmount, const FKillFeedDescriptor& KillFeedDescriptor);
 
 	/// <summary>
 	/// <para> 자체로 만든 TakeDamage 함수, 부위별 Damage를 줄 때 사용 </para>
@@ -85,20 +113,20 @@ public:
 	/// </summary>
 	/// <param name="DamageAmount">		: Damage 양 </param>
 	/// <param name="DamagingPartType"> : Damage를 줄 부위 </param>
-	/// <param name="DamageCauser">		: Damage를 주는 BasicCharacter </param>
+	/// <param name="KillFeedDescriptor"></param>
 	/// <param name="bVestTakeDamage"> : Vest또한 해당 Damage를 줄 것인지(수류탄 예외 처리 때문에 넣어둠) </param>
 	/// <returns> : The amount of damage actually applied. </returns>
-	float TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AC_BasicCharacter* DamageCauser, const bool& bVestTakeDamage = true);
+	float TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, FKillFeedDescriptor& KillFeedDescriptor, const bool& bVestTakeDamage = true);
 
 	/// <summary>
 	/// Bone Name(부위)쪽으로 Damage 주기 시도, 해당 Bone에 Armor가 적용되어 있으면 적절히 Damage량 및 Armor 체력 조절
 	/// </summary>
 	/// <param name="DamageAmount"> : Damage 량 </param>
 	/// <param name="DamagingPhysicsAssetBoneName"> : Damage를 줄 Bone 쪽 Name </param>
-	/// <param name="DamageCauser"> : Damage를 주는 BasicCharacter </param>
+	/// <param name="KillFeedDescriptor"></param>
 	/// <param name="bVestTakeDamage"> Vest또한 해당 Damage를 줄 것인지(수류탄 예외 처리 때문에 넣어둠) </param>
 	/// <returns> : The amount of damage actually applied. </returns>
-	float TakeDamage(float DamageAmount, FName DamagingPhysicsAssetBoneName, AC_BasicCharacter* DamageCauser, const bool& bVestTakeDamage = true);
+	float TakeDamage(float DamageAmount, FName DamagingPhysicsAssetBoneName, FKillFeedDescriptor& KillFeedDescriptor, const bool& bVestTakeDamage = true);
 
 public:
 

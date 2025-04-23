@@ -79,6 +79,22 @@ public: /* 각 Key에 따른 무기 작동 */
 	bool ExecuteMrb_Completed();
 
 public:
+	/// <summary>
+	/// AI 공격 순수 가상함수 (AttackTask의 ExecuteTask 부분에서 사용 예정)
+	/// </summary>
+	/// <param name="InTargetCharacter"> : 공격 대상 BasicCharacter </param>
+	/// <returns> 공격을 할 수 없는 상황이라면 return false </returns>
+	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) PURE_VIRTUAL(AC_Weapon::ExecuteAIAttack, return false;);
+
+	/// <summary>
+	/// 현재 무기로 AI 공격을 하는 중이고 TickTask처리로 필요하다면 해당 함수 사용
+	/// </summary>
+	/// <param name="InTargetCharacter"> : 공격 대상 BasicCharacter </param>
+	/// <param name="DeltaTime"> : DeltaTime </param>
+	/// <returns> : TickTask처리가 끝났다면 return false (or TickTask처리가 필요하지 않다면 return false) </returns>
+	virtual bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime);
+
+public:
 
 	/// <summary>
 	/// 무기집에 무기 붙이기
@@ -113,6 +129,9 @@ public:
 	FPriorityAnimMontage GetCurDrawMontage() const { return CurDrawMontage; }
 	FPriorityAnimMontage GetCurSheathMontage() const { return CurSheathMontage; }
 
+	FString GetKillLogWeaponName() const { return KillLogWeaponName; }
+
+	UTexture2D* GetKillLogTexture() const { return KillLogTexture; }
 
 public:
 
@@ -158,21 +177,14 @@ private:
 	
 	FTransform InitialRelativeTransform{};
 
-public:
-	/// <summary>
-	/// AI 공격 순수 가상함수 (AttackTask의 ExecuteTask 부분에서 사용 예정)
-	/// </summary>
-	/// <param name="InTargetCharacter"> : 공격 대상 BasicCharacter </param>
-	/// <returns> 공격을 할 수 없는 상황이라면 return false </returns>
-	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) PURE_VIRTUAL(AC_Weapon::ExecuteAIAttack, return false;);
+protected:
 
-	/// <summary>
-	/// 현재 무기로 AI 공격을 하는 중이고 TickTask처리로 필요하다면 해당 함수 사용
-	/// </summary>
-	/// <param name="InTargetCharacter"> : 공격 대상 BasicCharacter </param>
-	/// <param name="DeltaTime"> : DeltaTime </param>
-	/// <returns> : TickTask처리가 끝났다면 return false (or TickTask처리가 필요하지 않다면 return false) </returns>
-	virtual bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime);
+	// 킬로그에 표시될 Weapon 이름
+	UPROPERTY(BlueprintReadWRite, EditDefaultsOnly)
+	FString KillLogWeaponName{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UTexture2D* KillLogTexture{};
 };
 
 

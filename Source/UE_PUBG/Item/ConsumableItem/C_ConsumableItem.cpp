@@ -63,6 +63,8 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		return;
 	case EConsumableItemState::ACTIVATING:
 	{
+		AC_Player* Player = Cast<AC_Player>(ItemUser);
+		
 		if (UsingTimer < UsageTime)
 		{
 			HandleActivatingState(); // Pure virtual Template method
@@ -71,6 +73,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 			if (ItemUser->GetCharacterMovement()->IsFalling() || ItemUser->GetSwimmingComponent()->IsSwimming())
 			{
+				if (Player) Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("ITEM USE INTERRUPTED");
 				CancelActivating();
 				return;
 			}
@@ -81,12 +84,13 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			{
 				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) // 방해 받지 않았을 때 (즉, 활성화 Animation이 진행 중일 때)
 				{
-					if (Cast<AC_Player>(ItemUser)) LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
+					if (Player) LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
 					return;
 				}
 			}
 
 			// 방해를 받음
+			if (Player) Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("ITEM USE INTERRUPTED");
 			CancelActivating();
 			return;
 		}
@@ -97,8 +101,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		FString Left = "Item Used: ItemStack -> " + FString::FromInt(ItemCurStack);
 		UC_Util::Print(Left, FColor::Red, 5.f);
 
-		if (AC_Player* Player = Cast<AC_Player>(ItemUser))
-			Player->GetHUDWidget()->OnConsumableItemActivatingEnd();
+		if (Player) Player->GetHUDWidget()->OnConsumableItemActivatingEnd();
 
 		ConsumableItemState = EConsumableItemState::ACTIVATE_COMPLETED;
 

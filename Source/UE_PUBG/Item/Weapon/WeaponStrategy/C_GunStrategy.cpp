@@ -22,6 +22,8 @@
 #include "Character/Component/C_InvenSystem.h"
 
 #include "Character/Component/C_AttachableItemMeshComponent.h"
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_InstructionWidget.h"
 #include "Item/Weapon/Gun/C_SR.h"
 
 
@@ -88,7 +90,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (CurWeapon->GetCurBulletCount() == 0)
 	{
 		if (CurWeapon->GetGunSoundData()->NullBulletSound) UGameplayStatics::PlaySoundAtLocation(this, CurWeapon->GetGunSoundData()->NullBulletSound, CurWeapon->GetActorLocation());
-
+		if (AC_Player* Player = Cast<AC_Player>(WeaponUser)) Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("THERE IS NO AMMUNITION");
 		CurWeapon->ExecuteReloadMontage();
 		return false;
 	}

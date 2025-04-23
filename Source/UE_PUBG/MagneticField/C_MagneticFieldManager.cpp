@@ -13,6 +13,7 @@
 #include "Character/C_Player.h"
 #include "Character/Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "HUD/C_HUDWidget.h"
+#include "HUD/C_InstructionWidget.h"
 #include "HUD/C_MapWidget.h"
 #include "HUD/C_MainMapWidget.h"
 
@@ -28,7 +29,9 @@ AC_MagneticFieldManager::AC_MagneticFieldManager()
 void AC_MagneticFieldManager::BeginPlay()
 {
 	Super::BeginPlay();
-	SetIsHandleUpdateStateStarted(true); // TODO : 이 라인 지우기
+	// TODO : 밑 라인 지우기
+	FTimerHandle TimerHandle{};
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_MagneticFieldManager::ActivateMagneticField, 5.f);
 }
 
 void AC_MagneticFieldManager::Tick(float DeltaTime)
@@ -42,7 +45,28 @@ void AC_MagneticFieldManager::Tick(float DeltaTime)
 	
 	HandleUpdateState(DeltaTime);
 
+	// TODO : 주석 풀기
 	//HandleDamagingCharacters(DeltaTime);
+}
+
+void AC_MagneticFieldManager::ActivateMagneticField()
+{
+	bIsHandleUpdateStateStarted = true;
+	
+	const int Minutes = PhaseInfos[CurrentPhase].ShrinkDelayTime / 60;
+	const int Seconds = PhaseInfos[CurrentPhase].ShrinkDelayTime - 60 * Minutes;
+
+	FString MagneticFieldInfoString = "PROCEED TO PLAY AREA MARKED ON THE MAP IN ";
+		
+	if (Minutes > 1)		MagneticFieldInfoString += FString::FromInt(Minutes) + " MINUTES ";
+	else if (Minutes == 1)	MagneticFieldInfoString += FString::FromInt(Minutes) + " MINUTE ";
+	if (Seconds != 0)		MagneticFieldInfoString += FString::FromInt(Seconds) + " SECONDS ";
+
+	MagneticFieldInfoString += "!";
+		
+	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->ActivateMagneticFieldInstructionText(MagneticFieldInfoString);
+
+	InitDelayTimeLeftNotifiedChecker();
 }
 
 bool AC_MagneticFieldManager::IsInMainCircle(AC_BasicCharacter* Character) const
@@ -58,7 +82,11 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 	{
 	case EMagneticFieldState::IDLE:
 
-		if (Timer < PhaseInfos[CurrentPhase].ShrinkDelayTime) return; // 보류시간이 아직 남았음
+		if (Timer < PhaseInfos[CurrentPhase].ShrinkDelayTime)
+		{
+			HandleDelayTimeHUDNotification();
+			return; // 보류시간이 아직 남았음
+		}
 
 		/* 보류시간이 다 지났을 때 */
 		Timer = 0.f;
@@ -73,7 +101,7 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 			
 			Enemy->GetTargetLocationSettingHelper()->TrySetRandomInCircleTargetLocationAtMagneticCircle(NextCircle);
 		}
-
+		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->ActivateMagneticFieldInstructionText("RESTRICTING PLAY AREA!");
 		return;
 	case EMagneticFieldState::SHRINK:
 
@@ -123,15 +151,28 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 		else SetRandomNextCircleAndSpeedDirection(); // Random한 Next Circle 뽑기
 		
 		UpdateNextCircleInfoOnMapUI();
-			
+
+		const int Minutes = PhaseInfos[CurrentPhase].ShrinkDelayTime / 60;
+		const int Seconds = PhaseInfos[CurrentPhase].ShrinkDelayTime - 60 * Minutes;
+
+		FString MagneticFieldInfoString = "PROCEED TO PLAY AREA MARKED ON THE MAP IN ";
+		
+		if (Minutes > 1)		MagneticFieldInfoString += FString::FromInt(Minutes) + " MINUTES";
+		else if (Minutes == 1)	MagneticFieldInfoString += FString::FromInt(Minutes) + " MINUTE";
+		if (Seconds != 0)		MagneticFieldInfoString += FString::FromInt(Seconds) + " SECONDS";
+
+		MagneticFieldInfoString += "!";
+		
+		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->ActivateMagneticFieldInstructionText(MagneticFieldInfoString);
+		
 		MagneticFieldState = EMagneticFieldState::IDLE;
 
 		Timer = 0.f;
 
+		InitDelayTimeLeftNotifiedChecker();
 	}
 		return;
-	default: 
-		return;
+	default: return; 
 	}
 }
 
@@ -151,7 +192,18 @@ void AC_MagneticFieldManager::HandleDamagingCharacters(const float& DeltaTime)
 			if (!IsInMainCircle(Character))
 			{
 				float DamageAmount = PhaseInfos[CurrentPhase].DamagePerSecond;
-				Character->GetStatComponent()->TakeDamage(DamageAmount, nullptr);
+				
+				FKillFeedDescriptor KillFeedDescriptor =
+				{
+					EDamageType::BlueZone,
+					nullptr,
+					nullptr,
+					nullptr,
+					false,
+					0.f
+				};
+				
+				Character->GetStatComponent()->TakeDamage(DamageAmount, KillFeedDescriptor);
 			}
 		}
 	}
@@ -293,6 +345,29 @@ void AC_MagneticFieldManager::UpdateNextCircleInfoOnMapUI()
 	MainMapWidget->SetNextCircleInfo(U, V, Rad);
 }
 
+void AC_MagneticFieldManager::HandleDelayTimeHUDNotification()
+{
+	for (TPair<float, bool>& Checker : DelayTimeLeftNotifiedChecker)
+	{
+		if (Checker.Value) continue;
 
+		// float LeftTime = PhaseInfos[CurrentPhase + 1].ShrinkTotalTime;
+		float Difference = FMath::Abs(Checker.Key - (PhaseInfos[CurrentPhase].ShrinkDelayTime - Timer));
 
+		if (Difference < 0.1f)
+		{
+			FString NotifyLog = "RESTRICTING THE PLAY AREA IN ";
+			NotifyLog += (Checker.Key == 60.f) ? "1 MINUTE" : FString::FromInt(static_cast<int>(Checker.Key)) + " SECONDS"; 
+			
+			GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->ActivateMagneticFieldInstructionText(NotifyLog);
+			Checker.Value = true;
+		}
+	}
+}
+
+void AC_MagneticFieldManager::InitDelayTimeLeftNotifiedChecker()
+{
+	for (TPair<float, bool>& NotifiedChecker : DelayTimeLeftNotifiedChecker)
+		NotifiedChecker.Value = (PhaseInfos[CurrentPhase].ShrinkDelayTime < NotifiedChecker.Key); // 총 지연시간보다 넘어가는 Notify 지점은 굳이 체크하지 않도록 설정
+}
 

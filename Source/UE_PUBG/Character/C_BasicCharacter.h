@@ -173,7 +173,7 @@ public:
 	float PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void CharacterDead();
+	virtual void CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor);
 
 	virtual void EnableRagdoll();
 
@@ -212,6 +212,9 @@ public: // Getters and setters
 	void SetCharacterName(FString InCharacterName) { CharacterName = InCharacterName; }
 	FString GetCharacterName() const { return CharacterName; }
 
+	void SetCharacterNumber(int InCharacterNumber) { CharacterNumber = InCharacterNumber; }
+	int GetCharacterNumber() const { return CharacterNumber; }
+
 	void SetMainState(EMainState InMainState) { MainState = InMainState; }
 	EMainState GetMainState() const { return MainState; }
 
@@ -220,6 +223,10 @@ public: // Getters and setters
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }
 
 	void SetIsHitting(bool bHit) { bIsHitting = bHit; }
+
+	void AddKillCount() { ++KillCount; }
+	void SetKillCount(int InKillCount) { KillCount = InKillCount; }
+	int GetKillCount() const { return KillCount; }
 
 protected:
 	void SetPoseState(EPoseState InPoseState);
@@ -338,6 +345,10 @@ public:
 protected:
 
 	FString CharacterName = "John Doe";
+	int CharacterNumber{};
+
+	// 총 Kill 수
+	int KillCount{};
 
 protected:
 

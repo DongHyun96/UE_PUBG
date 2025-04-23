@@ -4,9 +4,6 @@
 
 #include "Item/Weapon/Gun/C_Gun.h"
 
-#include <Character/Component/C_SmokeEnteredChecker.h>
-
-#include "AudioMixerBlueprintLibrary.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Item/Weapon/C_Weapon.h"
@@ -26,8 +23,6 @@
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
 
-#include "Components/NamedSlotInterface.h"
-#include "Components/ShapeComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/ChildActorComponent.h"
@@ -47,17 +42,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
-
-#include "Character/C_Enemy.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_AmmoWidget.h"
 
 #include "Singleton/C_GameSceneManager.h"
 #include "Item/ItemManager/C_ItemManager.h"
-#include "Kismet/KismetMathLibrary.h"
 
-//UCameraComponent* AC_Gun::AimSightCamera;
-// Sets default values
 AC_Gun::AC_Gun()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -405,6 +395,7 @@ void AC_Gun::SetOwnerCharacter(AC_BasicCharacter * InOwnerCharacter)
 
 void AC_Gun::OnOwnerCharacterPoseTransitionFin()
 {
+	// TODO : 장전 모션 중이었다면 -> 여기서 continue
 }
 
 void AC_Gun::CheckPlayerIsRunning()

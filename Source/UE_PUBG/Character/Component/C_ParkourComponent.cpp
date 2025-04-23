@@ -1,4 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_ParkourComponent.h"
@@ -71,9 +72,6 @@ void UC_ParkourComponent::BeginPlay()
 		ParkourActionStrategies.Add(EParkourActionType::MANTLING_LOW,  MantleLowStrategy);
 		ParkourActionStrategies.Add(EParkourActionType::MANTLING_HIGH, MantleHighStrategy);
 	}
-
-	FString Str = "ParkourComponent Count : " + FString::FromInt(ParkourComponentCount);
-	UC_Util::Print(Str, FColor::MakeRandomColor(), 10.f);
 }
 
 
