@@ -646,7 +646,7 @@ void UC_InputComponent::OnFKey()
 		Player->GetCurOutLinedItem()->Interaction(Player);
 		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 	}
-		
+	
 	// TODO : Consumable Item 사용 중이라면 취소 시키기
 	// Testing용 ConsumableItem 작동 취소 TODO : 이 라인 지우기
 	//if (IsValid(Player->ConsumableItems[Player->ConsumableIterator]))

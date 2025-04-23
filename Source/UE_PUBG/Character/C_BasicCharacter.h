@@ -512,6 +512,16 @@ public:
 protected:
 	TArray<class UParticleSystemComponent*> BloodParticleComponents;
 	void InitializeBloodParticleComponents();
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	float BumpTimer = 0;
+public:
+	UFUNCTION(BlueprintCallable)
+	void SetBumpTimer(float InTimer) { BumpTimer = InTimer; }
+	UFUNCTION(BlueprintCallable)
+	float GetBumpTimer() {return BumpTimer; }
+protected:
+	void CountBumpTimer(float DeltaTime);
 };
 
 

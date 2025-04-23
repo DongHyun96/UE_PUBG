@@ -122,6 +122,7 @@ void AC_BasicCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AC_BasicCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	CountBumpTimer(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -530,6 +531,12 @@ void AC_BasicCharacter::InitializeBloodParticleComponents()
 			//UC_Util::Print("Spawned Blood");
 		}
 	}
+}
+
+void AC_BasicCharacter::CountBumpTimer(float DeltaTime)
+{
+	BumpTimer -= DeltaTime;
+	if (BumpTimer < 0) BumpTimer = 0.f;
 }
 
 
