@@ -161,6 +161,7 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 	if (!IsValid(HUDWidgets[EHUDMode::MAINMAP]))	HUDWidgets[EHUDMode::MAINMAP] = Player->GetMainMapWidget();
 	if (!IsValid(HUDWidgets[EHUDMode::INVEN]))		HUDWidgets[EHUDMode::INVEN]   = Player->GetInvenSystem()->GetInvenUI();
 	if (!IsValid(MiniMapWidget))					MiniMapWidget                 = Player->GetHUDWidget()->GetMiniMapWidget();
+	//if (!IsValid(HUDWidgets[EHUDMode::MAINMENU]))	HUDWidgets[EHUDMode::MAINMENU] = Player->GetController()->
 
 	switch (InHUDMode)
 	{
@@ -184,6 +185,9 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Hidden);
 		MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
 		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Visible);
+
+	//case EHUDMode::MAINMENU:
+
 		return;
 	case EHUDMode::MAX: default: return;
 	}
