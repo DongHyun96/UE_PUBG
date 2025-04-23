@@ -236,8 +236,11 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 	if (Delegate_OnCharacterDead.IsBound()) Delegate_OnCharacterDead.Broadcast(this);
 	Delegate_OnCharacterDead.Clear();
 
-	// CONTINUE
-	KillFeedDescriptor.DamageCauser->AddKillCount();
+	if (KillFeedDescriptor.DamageCauser)
+	{
+		if (KillFeedDescriptor.DamageCauser != KillFeedDescriptor.DamageTaker)
+			KillFeedDescriptor.DamageCauser->AddKillCount();
+	}
 
 	// 만약 이 캐릭터를 사망에 이르게 한 캐릭터가 Player라면, Player 중간 KillFeed 정보 넣기
 	if (AC_Player* PlayerDamageCauser = Cast<AC_Player>(KillFeedDescriptor.DamageCauser))
