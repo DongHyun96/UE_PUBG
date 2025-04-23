@@ -148,7 +148,7 @@ protected:
 	void DrawingItemOutLine();
 
 private:
-	
+	void CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor) override;
 	void EnableRagdoll() override;
 
 protected:

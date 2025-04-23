@@ -98,6 +98,15 @@ public:
 	FPriorityAnimMontage CrawlToCrouch{};
 };
 
+USTRUCT(BlueprintType)
+struct FNameStruct : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name{};
+};
+
 
 UCLASS()
 class UE_PUBG_API AC_BasicCharacter : public ACharacter, public IGenericTeamAgentInterface
@@ -164,7 +173,7 @@ public:
 	float PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void CharacterDead();
+	virtual void CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor);
 
 	virtual void EnableRagdoll();
 
@@ -200,6 +209,12 @@ public:
 
 public: // Getters and setters
 
+	void SetCharacterName(FString InCharacterName) { CharacterName = InCharacterName; }
+	FString GetCharacterName() const { return CharacterName; }
+
+	void SetCharacterNumber(int InCharacterNumber) { CharacterNumber = InCharacterNumber; }
+	int GetCharacterNumber() const { return CharacterNumber; }
+
 	void SetMainState(EMainState InMainState) { MainState = InMainState; }
 	EMainState GetMainState() const { return MainState; }
 
@@ -208,6 +223,10 @@ public: // Getters and setters
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }
 
 	void SetIsHitting(bool bHit) { bIsHitting = bHit; }
+
+	void AddKillCount() { ++KillCount; }
+	void SetKillCount(int InKillCount) { KillCount = InKillCount; }
+	int GetKillCount() const { return KillCount; }
 
 protected:
 	void SetPoseState(EPoseState InPoseState);
@@ -322,6 +341,14 @@ public:
 public:
 
 	void Jump() override;
+
+protected:
+
+	FString CharacterName = "John Doe";
+	int CharacterNumber{};
+
+	// 총 Kill 수
+	int KillCount{};
 
 protected:
 
@@ -496,6 +523,16 @@ public:
 protected:
 	TArray<class UParticleSystemComponent*> BloodParticleComponents;
 	void InitializeBloodParticleComponents();
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	float BumpTimer = 0;
+public:
+	UFUNCTION(BlueprintCallable)
+	void SetBumpTimer(float InTimer) { BumpTimer = InTimer; }
+	UFUNCTION(BlueprintCallable)
+	float GetBumpTimer() {return BumpTimer; }
+protected:
+	void CountBumpTimer(float DeltaTime);
 };
 
 

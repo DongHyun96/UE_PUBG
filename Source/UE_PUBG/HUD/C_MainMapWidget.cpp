@@ -39,17 +39,8 @@ void UC_MainMapWidget::NativeConstruct()
 	//bIsFocusable = true;
 	SetIsEnabled(true);
 
-	// TODO : 밑에 중괄호 지우기
-	{
-		UWidget* JumpPosImage = GetWidgetFromName(TEXT("JumpPosImage"));
-		JumpPosImg = Cast<UImage>(JumpPosImage);
+	GAMESCENE_MANAGER->SetHUDWidgetByHUDMode(EHUDMode::MAINMAP, this);
 
-		UWidget* TargetPosImage = GetWidgetFromName(TEXT("TargetPosImage"));
-		TargetPosImg = Cast<UImage>(TargetPosImage);
-
-		UWidget* SkyDivingStateDestinationImage = GetWidgetFromName(TEXT("SkyDivingStateDestinationImage"));
-		SkyDivingStateDestinationImg = Cast<UImage>(SkyDivingStateDestinationImage);
-	}
 }
 
 void UC_MainMapWidget::SetVisibility(ESlateVisibility InVisibility)
@@ -170,29 +161,6 @@ void UC_MainMapWidget::HandleUpdateMarkers()
 	PingMarkerToMainMapPos += MainMapImg->GetRenderTransform().Translation;
 
 	PingMarkerBorder->SetRenderTranslation(PingMarkerToMainMapPos);
-
-	// TODO : 이 밑줄 중괄호 싹 지우기
-	{
-		FVector2D TargetPosToMainMapPos = TargetLocationPos * MainMapScale;
-		TargetPosToMainMapPos += MainMapImg->GetRenderTransform().Translation;
-		TargetPosImg->SetRenderTranslation(TargetPosToMainMapPos);
-
-		FVector2D JumpPosToMainMapPos = JumpPos * MainMapScale;
-		JumpPosToMainMapPos += MainMapImg->GetRenderTransform().Translation;
-		JumpPosImg->SetRenderTranslation(JumpPosToMainMapPos);
-
-		FVector2D SkyDivingStateDestinationToMainMapPos = SkyDivingStateDestinationPos * MainMapScale;
-		SkyDivingStateDestinationToMainMapPos += MainMapImg->GetRenderTransform().Translation;
-		SkyDivingStateDestinationImg->SetRenderTranslation(SkyDivingStateDestinationToMainMapPos);
-
-		if (GAMESCENE_MANAGER->GetEnemies().IsEmpty()) return;
-		
-		AC_Enemy* Enemy = GAMESCENE_MANAGER->GetEnemies()[0];
-		FVector2D EnemyPos = {Enemy->GetActorLocation().Y, -Enemy->GetActorLocation().X };
-		FVector2D EnemyMarkerPos = EnemyPos * (CANVAS_SIZE / WORLD_MAP_SIZE) * MainMapScale;
-		EnemyMarkerPos += MainMapImg->GetRenderTransform().Translation;
-		EnemyLocationImg->SetRenderTranslation(EnemyMarkerPos);
-	}
 	
 }
 
@@ -368,27 +336,6 @@ bool UC_MainMapWidget::SpawnPingImage(FVector2D MousePos)
 	// Spawn Compass bar ping
 	OwnerPlayer->GetHUDWidget()->SpawnCompassBarPingMarker(WorldPingLocation);
 
-	return true;
-}
-
-bool UC_MainMapWidget::SpawnJumpPosAndTargetPosImage(FVector JumpLocation, FVector TargetLocation)
-{
-	if (!JumpPosImg || !TargetPosImg) return false;
-
-	JumpPos				= GetWorldToMapSizePos(JumpLocation);
-	TargetLocationPos	= GetWorldToMapSizePos(TargetLocation);
-
-	JumpPosImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	TargetPosImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	
-	return true;
-}
-
-bool UC_MainMapWidget::SpawnSkyDivingStateDestinationImage(FVector Location)
-{
-	if (!SkyDivingStateDestinationImg) return false;
-	SkyDivingStateDestinationPos = GetWorldToMapSizePos(Location);
-	SkyDivingStateDestinationImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	return true;
 }
 

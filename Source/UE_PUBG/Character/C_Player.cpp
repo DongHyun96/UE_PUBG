@@ -2,10 +2,8 @@
 
 
 #include "Character/C_Player.h"
-#include "Components/TimelineComponent.h"
+
 #include "EnhancedInputSubsystems.h"
-#include "InputActionValue.h"
-#include "EnhancedInputComponent.h"
 
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
@@ -27,17 +25,10 @@
 #include "Character/Component/C_PlayerController.h"
 
 #include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
-//#include "Components/SceneCaptureComponent2D.h"
-#include "Components/Image.h"
 
 #include "Item/C_Item.h"
-#include "Item/Equipment/C_EquipableItem.h"
-#include "Item/Equipment/C_BackPack.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
-#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
-#include "Item/Weapon/ThrowingWeapon/C_ScreenShotWidget.h"
 
 #include "Camera/CameraComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -47,7 +38,6 @@
 #include "Loot/C_BasicLoot.h"
 
 #include "Engine/PostProcessVolume.h"
-//#include "Engine/TextureRenderTarget2D.h"
 
 #include "Blueprint/UserWidget.h"
 
@@ -64,6 +54,7 @@
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 #include "Component/SkyDivingComponent/C_PlayerSkyDivingComponent.h"
 #include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
+#include "HUD/C_InstructionWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 
 AC_Player::AC_Player()
@@ -133,12 +124,14 @@ void AC_Player::BeginPlay()
 		HUDWidget->GetSkyDiveWidget()->SetOwnerPlayer(this);
 		HUDWidget->GetMiniMapWidget()->SetOwnerPlayer(this);
 	}
+	else UC_Util::Print("No HUD Widget", FColor::MakeRandomColor(), 10.f);
+		
 
 	if (MainMapWidget)
 	{
 		// MainMapWidget->AddToViewport(9);
 		MainMapWidget->SetOwnerPlayer(this);
-	}
+	} else UC_Util::Print("No MainMapWidget", FColor::MakeRandomColor(), 10.f);
 	
 
 	if (InvenSystem)
@@ -149,7 +142,9 @@ void AC_Player::BeginPlay()
 
 	CrosshairWidgetComponent->AddToViewport();
 	CrosshairWidgetComponent->SetOwnerCharacter(this);
+
 	AimCamera->SetActive(false);
+	// AimCamera->bUsePawnControlRotation = false;
 
 
 	SetPlayerMappingContext();
@@ -194,6 +189,9 @@ void AC_Player::BeginPlay()
 	SetControllerPitchLimits(PoseState);
 
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &AC_Player::OnPostWorldBeginPlay);
+
+	// TODO : Player name의 경우, 맨 처음 입력 받아 Name 세팅하기
+	CharacterName = "Dongman";
 }
 
 void AC_Player::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -356,7 +354,7 @@ void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(const float& Delta
 void AC_Player::SetCanFireWhileCrawl()
 {
 	float ControllerPitchAngle = 360 - GetControlRotation().Pitch;
-	if (ControllerPitchAngle >= 0 && ControllerPitchAngle <= 10 && PoseState == EPoseState::CRAWL)
+	if (ControllerPitchAngle >= 10 && ControllerPitchAngle <= 20 && PoseState == EPoseState::CRAWL)
 		bCanFireBullet = false;
 	else
 		bCanFireBullet = true;
@@ -395,7 +393,11 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		{
 		case EPoseState::CROUCH: // Crouch To Stand (Pose transition 없이 바로 처리)
 
-			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND))
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("STANDING BLOCKED!");
+				return false;
+			}
 
 			SetSpringArmRelativeLocationDest(EPoseState::STAND);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::STAND);
@@ -405,8 +407,16 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CRAWL: // Crawl To Stand
 
-			if (bIsActivatingConsumableItem) return false; // TODO : 일어설 수 없습니다 UI 띄우기
-			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
+			if (bIsActivatingConsumableItem)
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("STANDING BLOCKED!");
+				return false;
+			}
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND))
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("STANDING BLOCKED!");
+				return false;
+			}
 			SetControllerPitchLimits(EPoseState::STAND);
 			SetSpringArmRelativeLocationDest(EPoseState::STAND);
 
@@ -429,7 +439,11 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		{
 		case EPoseState::STAND: // Stand To Crouch
 
-			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH))
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CROUCH BLOCKED!");
+				return false;
+			}
 
 			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CROUCH);
@@ -439,8 +453,16 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CRAWL: // Crawl To Crouch
 
-			if (bIsActivatingConsumableItem) return false; // TODO : 일어설 수 없습니다 UI 띄우기
-			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
+			if (bIsActivatingConsumableItem)
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CROUCH BLOCKED!");
+				return false;
+			}
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH))
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CROUCH BLOCKED!");
+				return false;
+			}
 			SetControllerPitchLimits(EPoseState::CROUCH);
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToCrouch, EPoseState::CROUCH);
 			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
@@ -455,8 +477,16 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 		{
 		case EPoseState::STAND: // Stand to Crawl
 
-			if (bIsActivatingConsumableItem) return false; // TODO : 없드릴 수 없습니다 UI 띄우기
-			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
+			if (bIsActivatingConsumableItem)
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+				return false;
+			}
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL))
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+				return false;
+			}
 			SetControllerPitchLimits(EPoseState::CRAWL);
 
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).StandToCrawl, EPoseState::CRAWL);
@@ -467,8 +497,16 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::CROUCH: // Crouch to Crawl
 
-			if (bIsActivatingConsumableItem) return false; // TODO : 없드릴 수 없습니다 UI 띄우기
-			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL)) return false;
+			if (bIsActivatingConsumableItem)
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+				return false;
+			}
+			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL))
+			{
+				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+				return false;
+			}
 			SetControllerPitchLimits(EPoseState::CRAWL);
 			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CRAWL);
@@ -688,6 +726,12 @@ void AC_Player::DrawingItemOutLine()
 		2.0f   // 선 두께
 	);
 
+}
+
+void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
+{
+	Super::CharacterDead(KillFeedDescriptor);
+	HUDWidget->GetInstructionWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
 }
 
 void AC_Player::EnableRagdoll()
@@ -947,7 +991,7 @@ void AC_Player::SetControllerPitchLimits(EPoseState InCurrentState)
 		return;
 	case EPoseState::CRAWL:
 		Camera->ViewPitchMax = 30;
-		Camera->ViewPitchMin = -10;
+		Camera->ViewPitchMin = -15;
 		return;
 	case EPoseState::POSE_MAX: default: return;
 	}

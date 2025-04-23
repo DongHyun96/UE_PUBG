@@ -8,15 +8,17 @@
 #include "C_GameSceneManager.generated.h"
 
 #define GAMESCENE_MANAGER GetWorld()->GetSubsystem<UC_GameSceneManager>()
-
+//
 /// <summary>
 /// GameScene 현 HUD Mode
 /// </summary>
+UENUM(BlueprintType)
 enum class EHUDMode : uint8
 {
 	IDLE,
 	INVEN,
 	MAINMAP,
+	MAINMENU,
 	MAX
 };
 
@@ -57,6 +59,10 @@ protected:
 private:
 
 	//void OnWorldEndPlay(UWorld* InWorld);
+
+public:
+
+	
 	
 public: // Getters and setters
 
@@ -64,13 +70,22 @@ public: // Getters and setters
 
 	class AC_Player* GetPlayer() const { return Player; }
 	void SetPlayer(AC_Player* InPlayer) { Player = InPlayer; }
+
+public: // Widget 초기화 관련 처리
+
+	void SetHUDWidgetByHUDMode(EHUDMode Mode, UUserWidget* InUserWidget) { HUDWidgets.Add(Mode, InUserWidget); }
+	void SetMiniMapWidget(UUserWidget* InMiniMapWidget) { MiniMapWidget = InMiniMapWidget; }
+
+public:
 	
 	TArray<class AC_Enemy*>& GetEnemies() { return Enemies; }
 
 	class AC_MagneticFieldManager* GetMagneticFieldManager() const { return MagneticFieldManager; }
 	class AC_AirplaneManager* GetAirplaneManager() const { return AirplaneManager; }
 
+	UFUNCTION(BlueprintCallable)
 	class AC_ItemManager* GetItemManager() const { return ItemManager; }
+	UFUNCTION(BlueprintCallable)
 	class AC_SoundManager* GetSoundManager() const { return SoundManager; }
 
 	UFUNCTION(BlueprintCallable)
@@ -82,7 +97,10 @@ public: // Getters and setters
 	/// </summary>
 	void AddGCProtectedObject(UObject* Object) { GCProtectedObjects.Add(Object); }
 
+	UFUNCTION(BlueprintCallable)
 	EHUDMode GetCurrentHUDMode() const { return CurrentHUDMode; }
+
+	UFUNCTION(BlueprintCallable)
 	void SetCurrentHUDMode(EHUDMode InHUDMode);
 
 	float GetCellWorldSize() const { return CELL_WORLDSIZE; }
@@ -132,8 +150,12 @@ private:
 	// Main Player의 Widget들, 현재 어떤 WidgetMode인지에 따른 Visibility setting 처리
 	EHUDMode CurrentHUDMode{};
 
-	TMap<EHUDMode, class UUserWidget*> HUDWidgets{};
-	UUserWidget*					   MiniMapWidget{};
+	TMap<EHUDMode, UUserWidget*> HUDWidgets{};
+	UUserWidget*			     MiniMapWidget{};
+
+private:
+
+	class UDataTable* RandomNameDataTable{};
 
 private:
 	

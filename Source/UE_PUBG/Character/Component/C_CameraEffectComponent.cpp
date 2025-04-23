@@ -44,6 +44,14 @@ void UC_CameraEffectComponent::BeginPlay()
 	if (!PPVolumes.IsEmpty()) PostProcessVolume = Cast<APostProcessVolume>(PPVolumes[0]);
 	PostProcessInitialIntensity = PostProcessVolume->Settings.BloomIntensity;
 
+	/*PrimaryComponentTick.SetTickFunctionEnable(false);
+
+	FTimerHandle TimerHandle{};
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this] ()
+	{
+		PrimaryComponentTick.SetTickFunctionEnable(true);
+	}, 3.f, false);*/
+	
 	//ScreenShotWidget->AddToViewport();
 }
 
@@ -58,12 +66,12 @@ void UC_CameraEffectComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void UC_CameraEffectComponent::HandleCameraAimPunching(const float& DeltaTime)
 {
-	if (!IsValid(MainCamera) || !IsValid(AimCamera)) return;
+	if (!IsValid(MainCamera) || !IsValid(AimCamera) || !bEverPunched) return;
 
 	FVector		MainCamPos = MainCamera->GetRelativeLocation();
-	FVector		AimCamPos = AimCamera->GetRelativeLocation();
+	FVector		AimCamPos  = AimCamera->GetRelativeLocation();
 	FRotator	MainCamRot = MainCamera->GetRelativeRotation();
-	FRotator	AimCamRot = AimCamera->GetRelativeRotation();
+	FRotator	AimCamRot  = AimCamera->GetRelativeRotation();
 
 	if (FVector::Dist(MainCamPos, MainCamPunchingDestLocation) < 0.1f) // Destination으로 도달했다고 판단
 	{
@@ -82,10 +90,10 @@ void UC_CameraEffectComponent::HandleCameraAimPunching(const float& DeltaTime)
 	//if (FMath::Abs(AimCamRot.Roll - AimCamPunchingDestRotation.Roll) < 0.1f)
 
 	MainCamPos = FMath::Lerp(MainCamPos, MainCamPunchingDestLocation, PunchingLerpFactor * DeltaTime);
-	AimCamPos = FMath::Lerp(AimCamPos, AimCamPunchingDestLocation, PunchingLerpFactor * DeltaTime);
+	AimCamPos  = FMath::Lerp(AimCamPos,  AimCamPunchingDestLocation,  PunchingLerpFactor * DeltaTime);
 
 	MainCamRot.Roll = FMath::Lerp(MainCamRot.Roll, MainCamPunchingDestRotation.Roll, PunchingLerpFactor * DeltaTime);
-	AimCamRot.Roll = FMath::Lerp(AimCamRot.Roll, AimCamPunchingDestRotation.Roll, PunchingLerpFactor * DeltaTime);
+	AimCamRot.Roll  = FMath::Lerp(AimCamRot.Roll,  AimCamPunchingDestRotation.Roll,  PunchingLerpFactor * DeltaTime);
 
 	MainCamera->SetRelativeLocation(MainCamPos);
 	AimCamera->SetRelativeLocation(AimCamPos);
@@ -105,9 +113,8 @@ void UC_CameraEffectComponent::ExecuteCameraAimPunching
 	float InPunchingLerpFactor
 )
 {
-	// TODO : 현재 AimDownSight이면 다르게 처리 (Character Animation으로 처리해야 할 듯)
-	// TODO : Aim Down일 때와 Main Camera는 동일하게 모두 일괄 처리 (자세 바뀔 때도 다음 카메라 또한 에임 펀칭이 일어나는 중으로 해줘야 함)
-
+	bEverPunched = true;
+	
 	CamPunchingDirection.Normalize();
 
 	MainCamPunchingDestLocation = MainCamOriginLocalLocation + CamPunchingDirection * CamPunchIntensity;

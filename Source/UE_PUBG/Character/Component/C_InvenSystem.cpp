@@ -81,17 +81,10 @@ void UC_InvenSystem::InitializeList()
 
 		if (!InvenUI->IsInViewport())
 		{
-			//InvenUI->AddToViewport();
-
 			UC_Util::Print("Adding to viewport", FColor::Red, 10.f);
 		}
-
-		//InvenUI->SetVisibility(ESlateVisibility::Hidden);
-
 	}
 	
-	//InvenUI->InitListView();
-	//InvenUI->InitWidget();
 	InvenUI->UpdateWidget();
 }
 
@@ -99,12 +92,6 @@ void UC_InvenSystem::OpenInvenUI()
 {
 
 	if (!IsValid(InvenUI)) return;	
-	//if (!IsValid(InvenUI))
-	//{
-	//	PlayerController = GetWorld()->GetFirstPlayerController();
-	//	InvenUI = CreateWidget<UC_InvenUiWidget>(PlayerController, InvenUiClass);
-	//	InvenUI->SetOwnerCharacter(OwnerCharacter);
-	//}
 
 	if (InvenUI->GetIsPanelOpened())
 	{
@@ -112,10 +99,7 @@ void UC_InvenSystem::OpenInvenUI()
 	}
 	else
 	{
-		//InitializeList();
 		ShowInvenUI();
-
-
 	}
 
 	if (!IsValid(OwnerCharacter)) return;

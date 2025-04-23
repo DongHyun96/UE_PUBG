@@ -102,12 +102,12 @@ void UC_StatComponent::SetCurBoosting(const float& InCurBoosting)
 	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetBoostBar()->SetPercent(CurBoosting / MAX_BOOSTING);
 }
 
-bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* DamageCauser)
+bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDescriptor& KillFeedDescriptor)
 {
 	if (CurHP <= 0.f) return false;
-	if (Damage < 0.f) return false;
+	if (DamageAmount < 0.f) return false;
 
-	CurHP -= Damage;
+	CurHP -= DamageAmount;
 
 
 	if (CurHP < 0.f) CurHP = 0.f;
@@ -130,22 +130,22 @@ bool UC_StatComponent::TakeDamage(const float& Damage, AC_BasicCharacter* Damage
 	if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
 	{
 		OwnerEnemy->GetHPBar()->SetPercent(CurHP / MAX_HP);// TODO : 이 라인 지우기
-		OwnerEnemy->OnTakeDamage(DamageCauser);
+		OwnerEnemy->OnTakeDamage(KillFeedDescriptor.DamageCauser);
 	}
 
 	// 사망
 	if (CurHP <= 0.f)
 	{
-		if (Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠
+		// if (Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠 ((현재 Enemy만 처리))
 		
 		// 사망 처리 
-		OwnerCharacter->CharacterDead();
+		OwnerCharacter->CharacterDead(KillFeedDescriptor);
 	}
 	
 	return true;
 }
 
-float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, AC_BasicCharacter* DamageCauser, const bool& bVestTakeDamage)
+float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType DamagingPartType, FKillFeedDescriptor& KillFeedDescriptor, const bool& bVestTakeDamage)
 {
 	//FString Str = "Character Damaged on certain damaging part! Damaged Amount : " + FString::SanitizeFloat(DamageAmount);
 	//UC_Util::Print(Str, FColor::Cyan, 3.f);
@@ -158,6 +158,7 @@ float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType Damagin
 	switch (DamagingPartType)
 	{
 	case EDamagingPartType::HEAD:
+		KillFeedDescriptor.bDamagedByHeadShot = true;
 		if (AC_EquipableItem* Helmet = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::HELMET])
 		{
 			DamageAmount *= Helmet->GetDamageReduceFactor();
@@ -177,11 +178,11 @@ float UC_StatComponent::TakeDamage(float DamageAmount, EDamagingPartType Damagin
 		break;
 	}
 
-	TakeDamage(DamageAmount, DamageCauser);
+	TakeDamage(DamageAmount, KillFeedDescriptor);
 	return DamageAmount;
 }
 
-float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhysicsAssetBoneName, AC_BasicCharacter* DamageCauser, const bool& bVestTakeDamage)
+float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhysicsAssetBoneName, FKillFeedDescriptor& KillFeedDescriptor, const bool& bVestTakeDamage)
 {
 	if (!DAMAGINGPARTS_MAP.Contains(DamagingPhysicsAssetBoneName))
 	{
@@ -189,7 +190,7 @@ float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhysicsAsse
 		return 0.f;
 	}
 
-	return TakeDamage(DamageAmount, DAMAGINGPARTS_MAP[DamagingPhysicsAssetBoneName], DamageCauser, bVestTakeDamage);
+	return TakeDamage(DamageAmount, DAMAGINGPARTS_MAP[DamagingPhysicsAssetBoneName], KillFeedDescriptor, bVestTakeDamage);
 }
 
 bool UC_StatComponent::ApplyHeal(const float& HealAmount)
@@ -261,7 +262,18 @@ void UC_StatComponent::HandleOxygenExhausted(const float& DeltaTime)
 	if (OxygenExhaustedTimer >= 1.f)
 	{
 		OxygenExhaustedTimer -= 1.f;
-		TakeDamage(OXYGEN_EXHAUSTED_DAMAGE_PER_SEC, OwnerCharacter);
+
+		FKillFeedDescriptor DrownKillFeedDescriptor =
+		{
+			EDamageType::Drown,
+			nullptr,
+			OwnerCharacter,
+			nullptr,
+			false,
+			0
+		};
+		
+		TakeDamage(OXYGEN_EXHAUSTED_DAMAGE_PER_SEC, DrownKillFeedDescriptor);
 		return;
 	}
 	OxygenExhaustedTimer += DeltaTime;
@@ -303,7 +315,17 @@ void UC_StatComponent::HandleFallingDamage()
 			return;
 		}
 
-		TakeDamage(FallDamageAmount, OwnerCharacter); // 낙하 데미지 적용
+		FKillFeedDescriptor FallKillFeedDescriptor =
+		{
+			EDamageType::Fall,
+			nullptr,
+			OwnerCharacter,
+			nullptr,
+			false,
+			0
+		};
+		
+		TakeDamage(FallDamageAmount, FallKillFeedDescriptor); // 낙하 데미지 적용
 		FallDamageAmount = 0.f;
 	}
 	

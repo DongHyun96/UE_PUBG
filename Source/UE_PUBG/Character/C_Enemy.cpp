@@ -13,9 +13,13 @@
 
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
+#include "Component/C_EquippedComponent.h"
+#include "Component/C_SmokeEnteredChecker.h"
 #include "Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
+#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Perception/AIPerceptionComponent.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
@@ -51,8 +55,17 @@ void AC_Enemy::BeginPlay()
 
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
-    // 비행기 타기 이전에 spawn하는 것으로 수정되었음
-    // ItemSpawnerHelper->SpawnDefaultWeaponsAndItems();
+	/* UDataTable* RandomNameDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/DongHyun/Character/DataTable/DT_RandomNameTable"));
+
+	if (!RandomNameDataTable)
+	{
+		UC_Util::Print("RandomNameTable not inited!", FColor::Red, 20.f);
+		return;
+	}
+
+	TArray<FName> RowNames = RandomNameDataTable->GetRowNames();
+	int RandomIndex = FMath::RandRange(0, RowNames.Num() - 1); */
+
 }
 
 void AC_Enemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -220,6 +233,8 @@ void AC_Enemy::OnTakeDamage(AC_BasicCharacter* DamageCauser)
 		return;
 	}
 
+	if (SmokeEnteredChecker->IsCurrentlyInSmokeArea()) return;
+
 	// Damage Causer 공격 시도
 	BehaviorComponent->SetServiceType(EServiceType::COMBAT);
 }
@@ -276,11 +291,16 @@ void AC_Enemy::OnPoseTransitionFinish()
 	Super::OnPoseTransitionFinish();
 }
 
-void AC_Enemy::CharacterDead()
+void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 {
-	Super::CharacterDead();
-	GetEnemyAIController()->GetBehaviorComponent()->Dead();
+	Super::CharacterDead(KillFeedDescriptor);
 
-	// 속도 조절
+	// 속도 0으로 setting
+	UpdateMaxWalkSpeed({0.f, 0.f});
 	
+	AC_EnemyAIController* EnemyAIController = GetEnemyAIController();
+	EnemyAIController->GetPerceptionComponent()->Deactivate();
+	EnemyAIController->GetPerceptionComponent()->SetComponentTickEnabled(false);
+
+	EnemyAIController->GetBrainComponent()->StopLogic("Died");
 }

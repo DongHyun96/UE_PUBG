@@ -12,10 +12,10 @@
 UENUM(BlueprintType)
 enum class ESightRangeLevel : uint8
 {
-	Level1, // 20m 이내
-	Level2, // 50m 이내
-	Level3, // 150m 이내
-	Level4, // 250m 이내
+	Level1, // 10m 이내
+	Level2, // 25m 이내
+	Level3, // 70m 이내
+	Level4, // 150m 이내
 	Max
 };
 

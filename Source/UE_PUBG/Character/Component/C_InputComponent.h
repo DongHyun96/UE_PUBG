@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "C_InputComponent.generated.h"
 
+enum class EWeaponSlot : uint8;
 
 //UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -59,6 +60,11 @@ private:
 	void OnNum2();
 	void OnNum4();
 	void OnNum5();
+	
+	/// <summary>
+	/// OnNumKey 종합 Boiler plate 코드 정리 
+	/// </summary>
+	void OnNumKey(EWeaponSlot ChangeTo);
 
 	void OnXKey();
 	void OnBKey();
@@ -92,6 +98,8 @@ private:
 	void OnIKey();
 
 	void OnTabKey();
+
+	void OnMainMenuKey();
 private:
 
 	class AC_Player* Player{};
@@ -176,6 +184,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputAction* TabKeyAction{};
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UInputAction* MainMenuAction{};
 };
 
 

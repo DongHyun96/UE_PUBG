@@ -23,7 +23,7 @@ UC_DefaultItemSpawnerComponent::UC_DefaultItemSpawnerComponent()
 void UC_DefaultItemSpawnerComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnDefaultWeaponsAndItems(); // TODO : 이 라인 지우기
+	SpawnDefaultWeaponsAndItems();
 }
 
 
@@ -68,23 +68,19 @@ void UC_DefaultItemSpawnerComponent::SpawnWeapons(const FActorSpawnParameters& P
 
 	// Grenade 1~3개
 	AC_ThrowingWeapon* Grenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::GRENADE], Param);
-	// Grenade->SetItemStack(FMath::RandRange(1, 3));
-	Grenade->SetItemStack(3);
-	UC_Util::Print("Grenade Count : " + FString::FromInt(Grenade->GetItemCurStack()), FColor::Red, 10.f);
+	Grenade->SetItemStack(FMath::RandRange(1, 2));
 	Grenade->MoveToInven(OwnerEnemy, Grenade->GetItemCurStack());
 
 	// Smoke Grenade 1~2개
 	AC_ThrowingWeapon* SmokeGrenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::SMOKE], Param);
 	SmokeGrenade->SetItemStack(FMath::RandRange(1, 2));
-	UC_Util::Print("SmokeGrenade Count : " + FString::FromInt(SmokeGrenade->GetItemCurStack()), FColor::Red, 10.f);
 	SmokeGrenade->MoveToInven(OwnerEnemy, SmokeGrenade->GetItemCurStack());
 
 	// FlashBang 1~2개
 	AC_ThrowingWeapon* FlashBang = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::FLASH_BANG], Param);
-	// FlashBang->SetItemStack(FMath::RandRange(1, 2));
-	FlashBang->SetItemStack(3);
-	UC_Util::Print("FlashBang Count : " + FString::FromInt(FlashBang->GetItemCurStack()), FColor::Red, 10.f);
+	FlashBang->SetItemStack(FMath::RandRange(1, 2));
 	FlashBang->MoveToInven(OwnerEnemy, FlashBang->GetItemCurStack());
+
 }
 
 void UC_DefaultItemSpawnerComponent::SpawnEquipableItems(const FActorSpawnParameters& Param)
@@ -188,11 +184,7 @@ void UC_DefaultItemSpawnerComponent::SpawnBullets(const FActorSpawnParameters& P
 	AC_Item* FiveBulletItem		= OwnerEnemy->GetInvenComponent()->FindMyItemByName(FiveBulletName);
 	AC_Item* SevenBulletItem	= OwnerEnemy->GetInvenComponent()->FindMyItemByName(SevenBulletName);
 
-	if (!IsValid(FiveBulletItem))
-	{
-		UC_Util::Print("No FiveBullet in Inven!", FColor::Red, 20.f);
-		return;
-	}
+	if (!IsValid(FiveBulletItem)) return;
 	
 	FString Str = "Five Bullet Spawned Count : " + FString::FromInt(FiveBulletItem->GetItemCurStack());
 	UC_Util::Print(Str, FColor::Red, 10.f);

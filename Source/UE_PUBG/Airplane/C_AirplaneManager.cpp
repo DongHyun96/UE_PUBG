@@ -13,7 +13,6 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
-#include "Character/Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 
 #include "HUD/C_HUDWidget.h"
@@ -32,10 +31,6 @@ void AC_AirplaneManager::BeginPlay()
 	Super::BeginPlay();
 	
 	InitRandomStartDestPosition();
-	
-	// Airplane TakeOff Timer Setting
-	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
-	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 0.5f, false);
 
 	if (!IsValid(Airplane))
 	{
@@ -44,6 +39,7 @@ void AC_AirplaneManager::BeginPlay()
 	}
 
 	InitAirplaneStartPosAndFlightDirection();
+	StartTakeOffTimer();
 }
 
 // Called every frame
@@ -60,29 +56,27 @@ void AC_AirplaneManager::Tick(float DeltaTime)
 
 void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 {
-	if (!TakeOffTimerStarted) return;
-	if (HasAirplaneTakeOff) return;
+	if (!TakeOffTimerStarted || HasAirplaneTakeOff) return;
 
 	TakeOffTimer -= DeltaTime;
+	if (TakeOffTimer > 0.f) return;
 
-	if (TakeOffTimer <= 0.f) // 이륙 시작
+	// 이륙 시작
+	
+	Airplane->StartFlight();
+	HasAirplaneTakeOff = true;
+	
+	for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
 	{
-		Airplane->StartFlight();
-		HasAirplaneTakeOff = true;
-		
-		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
-		{
-			Character->SetMainState(EMainState::SKYDIVING);
-			Character->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::READY);
+		Character->SetMainState(EMainState::SKYDIVING);
+		Character->GetSkyDivingComponent()->SetSkyDivingState(ESkyDivingState::READY);
 
-			if (AC_Enemy* Enemy = Cast<AC_Enemy>(Character))
-			{
-				Enemy->GetItemSpawnerHelper()->SpawnDefaultWeaponsAndItems(); // 기본으로 가지고 있을 무기와 Item 스폰 시키기
-				
-				UC_BehaviorComponent* EnemyBehvaiorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent(); 
-				EnemyBehvaiorComponent->SetServiceType(EServiceType::SKYDIVE);
-				// EnemyBehvaiorComponent->SetIdleTaskType;
-			}
+		if (AC_Enemy* Enemy = Cast<AC_Enemy>(Character))
+		{
+			// Enemy->GetItemSpawnerHelper()->SpawnDefaultWeaponsAndItems(); // 기본으로 가지고 있을 무기와 Item 스폰 시키기 -> 이거 그냥 Hidden 처리로 바꾸기
+			
+			UC_BehaviorComponent* EnemyBehvaiorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent(); 
+			EnemyBehvaiorComponent->SetServiceType(EServiceType::SKYDIVE);
 		}
 	}
 }
@@ -104,7 +98,7 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 	float RandomScalar			= FMath::RandRange(0.f, CIRCLE_RADIUS);
 	FVector RandomPos			= RandomDirection * RandomScalar; // 원 안의 임의의 지점
 
-	// Random한 기울기 잡기 -> 맵 가장자리 임의의 다른 점을 시작점으로 잡는 것으로 대체
+	// Random한 기울기 잡기 -> 맵 가장자리 임의의 다른 점을 시작점으로 잡는 것으로 대체dw
 	float StartX{}, StartY{}, DestX{}, DestY{};
 	float Slope{};
 
@@ -235,7 +229,7 @@ void AC_AirplaneManager::CheckAirplaneArrivedToRouteDestLimit()
 		RouteDestLimitReached = true;
 
 		// 자기장 Phase 시작
-		GAMESCENE_MANAGER->GetMagneticFieldManager()->SetIsHandleUpdateStateStarted(true);
+		GAMESCENE_MANAGER->GetMagneticFieldManager()->ActivateMagneticField();
 
 		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
 		{

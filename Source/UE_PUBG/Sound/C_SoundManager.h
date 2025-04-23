@@ -6,28 +6,66 @@
 #include "GameFramework/Actor.h"
 #include "C_SoundManager.generated.h"
 
+UENUM(BlueprintType)
+enum class EPreferences : uint8
+{
+	GRAPHIC,
+	AUDIO,
+	CONTROL,
+	KEY,
+	GAMEPLAY,
+	MAX
+};
+
+
+UENUM(BlueprintType)
+enum class ESoundClassName : uint8
+{
+	NONE,
+	MASTER,
+	BULLET_IMPACT,
+	GUN,
+	USING_HEAL_ITEM,
+	MELEE_WEAPON,
+	THROWING_WEAPON,
+	MAX
+};
+
+USTRUCT()
+struct FSoundClassVolumeData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString SoundClassName{};  // enum이 아닌 string으로 저장 (ex. "BGM", "GUN")
+
+	UPROPERTY()
+	float Volume{};  // 볼륨 값 (0.0f ~ 1.0f)
+
+	// 생성자
+	FSoundClassVolumeData() : SoundClassName(TEXT("")), Volume(1.f) {}
+	FSoundClassVolumeData(FString InName, float InVolume) : SoundClassName(InName), Volume(InVolume) {}
+};
+
+USTRUCT(BlueprintType)
+struct FSoundClassEntry
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ESoundClassName SoundClassName = ESoundClassName::NONE;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundClass* SoundClass = nullptr;
+};
+
 USTRUCT(BlueprintType)
 struct FSoundClassTable : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundClass* MasterSoundClass = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundClass* BulletImpactSoundClass = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundClass* GunSoundClass = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundClass* UsingHealItemSoundClass = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundClass* MeleeWeaponSoundClass = nullptr;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundClass* ThrowingWeaponSoundClass = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FSoundClassEntry> SoundClasses;
 };
 
 UCLASS()
@@ -42,6 +80,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
 private:
 	/// <summary>
@@ -49,41 +90,33 @@ private:
 	/// </summary>
 	void InitializeSoundClassData();
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	void BuildSoundClassMap();
 
-	/// <summary>
-	/// SoundClassData내의 Soundclass의 볼륨을 설정해주는 함수.
-	/// </summary>
-	/// <param name="SoundClass">조정하고자 하는 Sound</param>
-	/// <param name="Volume">사운드 조정값</param>
+
+
+public:
 	UFUNCTION(BlueprintCallable)
-	void SetVolumeByClass(USoundClass* SoundClass, float Volume);
+	void SetVolumeByName(ESoundClassName SoundClassName, float Volume);
 
-	/// <summary>
-	/// SoundClassData내의 Soundclass의 볼륨 크기를 가져오는 함수
-	/// </summary>
-	/// <param name="SoundClass">가져오고자 하는 사운드</param>
-	/// <returns>볼륨 크기</returns>
 	UFUNCTION(BlueprintCallable)
-	float GetVolumeByClass(USoundClass* SoundClass) const;
+	float GetVolumeByName(ESoundClassName SoundClassName) const;
 
-	/// <summary>
-	/// 사운드 조정값을 저장하는 함수.
-	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void SaveVolumeSettings();
 
-	/// <summary>
-	/// 저장된 사운드 조정값을 불러오는 함수.
-	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void LoadVolumeSettings();
 
-	FSoundClassTable* GetSoundClassData() { return SoundClassData; }
+	UFUNCTION(BlueprintCallable)
+	USoundClass* GetSoundClassByName(ESoundClassName SoundClassName) { return SoundClassMap[SoundClassName]; }
+
 protected:
-	FSoundClassTable* SoundClassData = nullptr;
+	UPROPERTY(EditAnywhere)
+	UDataTable* SoundClassDataTable = nullptr;
 
+	UPROPERTY()
+	FSoundClassTable SoundClassData;
 
+	UPROPERTY()
+	TMap<ESoundClassName, USoundClass*> SoundClassMap;
 };

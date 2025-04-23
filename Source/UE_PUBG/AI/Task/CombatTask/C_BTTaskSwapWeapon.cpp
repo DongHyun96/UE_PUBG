@@ -12,6 +12,7 @@
 #include "AI/Service/C_BTServiceCombat.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Item/ItemBullet/C_Item_Bullet.h"
+#include "Item/Weapon/Gun/C_Gun.h"
 
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Singleton/C_GameSceneManager.h"
@@ -88,8 +89,15 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	// 총기류 먼저 바꾸기 시도
 	FName SevenBulletItemName	= AC_Item_Bullet::GetBulletTypeName(EBulletType::SEVENMM);
 	FName FiveBulletItemName	= AC_Item_Bullet::GetBulletTypeName(EBulletType::FIVEMM);
+	
 	int TotalSevenBulletCount	= Enemy->GetInvenComponent()->GetTotalStackByItemName(SevenBulletItemName);
 	int TotalFiveBulletCount	= Enemy->GetInvenComponent()->GetTotalStackByItemName(FiveBulletItemName);
+
+	AC_Gun* MainGun = Cast<AC_Gun>(Enemy->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN]);
+	TotalFiveBulletCount += MainGun->GetCurBulletCount();
+
+	AC_Gun* SubGun = Cast<AC_Gun>(Enemy->GetEquippedComponent()->GetWeapons()[EWeaponSlot::SUB_GUN]);
+	TotalSevenBulletCount += SubGun->GetCurBulletCount();
 
 	float DistanceToTargetCharacter = FVector::Distance(Enemy->GetActorLocation(), TargetCharacter->GetActorLocation());
 	
@@ -98,7 +106,7 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	{
 
 		// 거리가 50m를 넘어가면 SubGun으로 교체 시도
-		if (DistanceToTargetCharacter > 1000.f) // TODO : 50m로 수정
+		if (DistanceToTargetCharacter > 500.f) 
 			return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent); 
 
 		// 거리 50m 이내 / 현재 시야에 보이는 중이라면 MainGun으로 교체 / 시야에 보이지 않는 중이라면 ThrowableWeapon 중 택 1 (역시 남은 장탄수 확인해서)
@@ -108,7 +116,7 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	else if (TotalSevenBulletCount > 0) // 7탄만 남았을 때
 	{
 		// 거리가 50m를 넘어가면 SubGun으로 교체 시도
-		if (DistanceToTargetCharacter > 1000.f) // TODO : 50m로 수정
+		if (DistanceToTargetCharacter > 500.f) // TODO : 50m로 수정
 			return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent);
 
 		// 50m 이내일 때, 시야에 보이면 SubGun 교체 시도

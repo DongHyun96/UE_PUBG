@@ -15,6 +15,8 @@ class UE_PUBG_API UC_InventoryUIWidget : public UC_CustomUserWidget
 	GENERATED_BODY()
 public:
 
+	virtual void NativeConstruct() override;
+
 	void SetVisibility(ESlateVisibility InVisibility) override;
 
 	void SetOwnerPlayer(AC_Player* InOwnerPlayer) override;

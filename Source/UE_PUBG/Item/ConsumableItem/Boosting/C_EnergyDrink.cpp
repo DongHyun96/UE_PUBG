@@ -49,11 +49,12 @@ void AC_EnergyDrink::OnStartUsing()
 void AC_EnergyDrink::OnActivatingFinish()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::DRINK, false);
+	
+	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
+		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED ENERGY DRINK");
 }
 
 void AC_EnergyDrink::OnCancelActivating()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::DRINK, false);
 }
-
-

@@ -19,6 +19,13 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Character/Component/C_PlayerController.h"
+#include "Singleton/C_GameSceneManager.h"
+
+void UC_InventoryUIWidget::NativeConstruct()
+{
+    Super::NativeConstruct();
+    GAMESCENE_MANAGER->SetHUDWidgetByHUDMode(EHUDMode::INVEN, this);
+}
 
 void UC_InventoryUIWidget::SetVisibility(ESlateVisibility InVisibility)
 {
@@ -71,6 +78,16 @@ void UC_InventoryUIWidget::SetVisibility(ESlateVisibility InVisibility)
     }
 
     if (InVisibility == ESlateVisibility::Hidden)
+    {
+        //PlayerController->GetPawn()->bUseControllerRotationYaw = true;
+        PlayerController->SetInputMode(FInputModeGameOnly());
+        //PlayerController->SetInputMode(FInputModeGameAndUI());
+
+        PlayerController->bShowMouseCursor = false;
+        PlayerController->SetIgnoreLookInput(false);
+    }
+
+    if (InVisibility == ESlateVisibility::Collapsed)
     {
         //PlayerController->GetPawn()->bUseControllerRotationYaw = true;
         PlayerController->SetInputMode(FInputModeGameOnly());

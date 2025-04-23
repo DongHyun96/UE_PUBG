@@ -24,6 +24,8 @@ public class UE_PUBG : ModuleRules
             "Niagara",
             "Slate",
             "SlateCore",
+            "Json",
+            "JsonUtilities",
             "MotionWarping",
             "AIModule",
             "Water",

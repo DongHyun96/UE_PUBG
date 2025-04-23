@@ -66,18 +66,18 @@ EServiceType UC_BehaviorComponent::GetServiceType() const
 	return static_cast<EServiceType>(Blackboard->GetValueAsEnum(ServiceKey));
 }
 
-void UC_BehaviorComponent::Dead()
-{
-	Blackboard->SetValueAsBool(IsDeadKey, true);
-}
-
 bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 {
 	if (Type == EIdleTaskType::MAX) return false;
 	if (OwnerEnemyAIController->IsFlashBangEffectTimeLeft()) return false;
 
 	// Random wait time 지정
-	if (Type == EIdleTaskType::WAIT) WaitTime = FMath::RandRange(5.f, 10.f);
+	if (Type == EIdleTaskType::WAIT)
+	{
+		float RandBias = FMath::Pow(FMath::FRand(), 2.0f); // 0 ~ 1 -> 0에 더 가까운 값으로 조정 
+		WaitTime = FMath::Lerp(5.f, 30.f, RandBias); // 5 ~ 30 사이로 매핑
+		// WaitTime = FMath::RandRange(5.f, 30.f);
+	}
 	
 	Blackboard->SetValueAsEnum(IdleTaskKey, static_cast<uint8>(Type));
 	return false;
@@ -98,6 +98,7 @@ void UC_BehaviorComponent::OnTargetCharacterDead(class AC_BasicCharacter* DeadCh
 	}
 	SetTargetCharacter(nullptr);
 	OwnerEnemyAIController->UpdateDetectedCharactersRangeLevel();
+	OwnerEnemyAIController->TrySetTargetCharacterBasedOnPriority();
 }
 
 bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharacter)
@@ -105,13 +106,18 @@ bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharact
 	if (!IsValid(InTargetCharacter))
 	{
 		// Valid하지 않은 TargetCharacter의 경우, TargetCharacter를 놓쳤다고 판단(TargetCharacter의 사망 등)
+
+		// 이전 TargetCharacter가 존재한다면, OnDead delegate 구독 끊기
+		AC_BasicCharacter* TargetCharacter = GetTargetCharacter();
+		if (IsValid(TargetCharacter)) TargetCharacter->Delegate_OnCharacterDead.RemoveAll(this);
+		
 		Blackboard->SetValueAsObject(TargetCharacterKey, nullptr);
-		OwnerEnemy->SetTargetCharacterWidgetName("NONE");
+		OwnerEnemy->SetTargetCharacterWidgetName("NONE"); // TODO : 이 라인 지우기 (For Testing)
 		return false;
 	}
 
 	// TargetCharacter가 이미 죽었을 때
-	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false;
+	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false; 
 
 	// 현재 공격중인 때에는 TargetCharacter를 새로 바꾸지 않음
 	if (GetServiceType() == EServiceType::COMBAT) return false;
@@ -119,13 +125,14 @@ bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharact
 	// 새로운 TargetCharacter로 세팅 이전, 이전 TargetCharacter OnDead delegate 구독 끊기
 	if (AC_BasicCharacter* PrevTargetCharacter = GetTargetCharacter())
 		PrevTargetCharacter->Delegate_OnCharacterDead.RemoveAll(this);
+
+	// 새로운 TargetCharacter로 새로 setting 처리
 	
 	Blackboard->SetValueAsObject(TargetCharacterKey, InTargetCharacter);
 	
 	InTargetCharacter->Delegate_OnCharacterDead.AddUObject(this, &UC_BehaviorComponent::OnTargetCharacterDead);
 	
-	OwnerEnemy->SetTargetCharacterWidgetName(InTargetCharacter->GetName()); // TODO : 이 라인 지우기(For Testing)
-
+	OwnerEnemy->SetTargetCharacterWidgetName(InTargetCharacter->GetCharacterName()); // TODO : 이 라인 지우기(For Testing)
 	
 	return true;
 }

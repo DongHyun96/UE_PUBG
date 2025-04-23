@@ -44,6 +44,8 @@ void AC_MeleeWeapon::BeginPlay()
 	AttackCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	AttackCollider->OnComponentBeginOverlap.AddDynamic(this, &AC_MeleeWeapon::OnBodyColliderBeginOverlap);
+
+	KillLogWeaponName = "Frying Pan";
 }
 
 void AC_MeleeWeapon::Tick(float DeltaTime)
@@ -246,11 +248,22 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 
 	AC_EquipableItem* EquippedVest = OverlappedCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::VEST];
 	float DamageReduceFactor = (!IsValid(EquippedVest)) ? 1.f : EquippedVest->GetDamageReduceFactor();
+
+	FKillFeedDescriptor KillFeedDesc =
+	{
+		EDamageType::Weapon,
+		this->OwnerCharacter,
+		OverlappedCharacter,
+		this,
+		false,
+		0.f
+	};
 	
-	OverlappedCharacter->GetStatComponent()->TakeDamage(DAMAGE * DamageReduceFactor, this->OwnerCharacter);
+	OverlappedCharacter->GetStatComponent()->TakeDamage(DAMAGE * DamageReduceFactor, KillFeedDesc);
 	OverlappedCharacter->ActivateBloodParticle(OverlappedCharacter->GetMesh()->GetBoneLocation("Spine1"));
 	AttackedCharacters.Add(OverlappedCharacter);
 
+	if (!MeleeWeaponSoundData)				return;
 	if (!MeleeWeaponSoundData->ImapctSound) return;
 
 	UGameplayStatics::PlaySoundAtLocation(this, MeleeWeaponSoundData->ImapctSound, GetActorLocation());

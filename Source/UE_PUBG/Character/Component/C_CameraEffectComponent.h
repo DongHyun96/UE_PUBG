@@ -121,6 +121,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_ScreenShotWidget* ScreenShotWidget{};
 
+private:
+
+	// 한 번이라도 Punched 되었는지 조사
+	bool bEverPunched{};
 		
 };
 

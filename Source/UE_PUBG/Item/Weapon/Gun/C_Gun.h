@@ -131,6 +131,7 @@ public:
 	virtual void GetPlayerIsAimDownOrNot();
 	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter);
 
+	
 	USkeletalMeshComponent* GetGunMesh() { return GunMesh; }
 	EGunState GetCurrentWeaponState() { return CurState; }
 	TMap<EPoseState, FAnimationMontages> GetSheathMontages() { return SheathMontages; };
@@ -183,7 +184,7 @@ public:
 
 	virtual bool GetIsPlayingMontagesOfAny();
 	bool GetCanGunAction();
-	void ChangeCurShootingMode();
+	virtual void ChangeCurShootingMode();
 	virtual bool ExecuteReloadMontage();
 	bool bIsSniperReload = false;
 	void SetIsSniperReload(bool InIsSniperReload) { bIsSniperReload = InIsSniperReload; }
@@ -399,7 +400,7 @@ public:
 	float GetDamageBase() const { return GunDataRef->DamageBase; }
 protected:
 	bool CanAIAttack(AC_BasicCharacter* InTargetCharacter);
-	bool AIFireBullet(class AC_BasicCharacter* InTargetCharacter);
+	virtual bool AIFireBullet(class AC_BasicCharacter* InTargetCharacter);
 	float AIFireTimer = 0.0f;
 protected:
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
