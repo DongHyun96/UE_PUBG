@@ -14,6 +14,7 @@
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_ParkourComponent.h"
+#include "Character/Component/C_PlayerController.h"
 
 #include "Components/ActorComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -31,6 +32,8 @@
 #include "AI/C_BehaviorComponent.h"
 #include "AI/C_EnemyAIController.h"
 #include "AI/Service/C_BTServiceIdle.h"
+
+#include "UMG.h"
 
 #include "Utility/C_Util.h"
 
@@ -128,6 +131,9 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 
 		EnhancedInputComponent->BindAction(IKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnIKey);
 		EnhancedInputComponent->BindAction(TabKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnTabKey);	
+
+		//EnhancedInputComponent->BindAction(MainMenuAction, ETriggerEvent::Started, this, &UC_InputComponent::OnMainMenuKey);
+
 
 	}
 }	
@@ -674,6 +680,8 @@ void UC_InputComponent::OnTabKey()
 {
 	// Inven 켜기 / 끄기 기능
 
+	if (GAMESCENE_MANAGER->GetCurrentHUDMode() == EHUDMode::MAINMENU) return;
+
 	if (GAMESCENE_MANAGER->GetCurrentHUDMode() == EHUDMode::INVEN)
 		GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
 	else
@@ -686,6 +694,22 @@ void UC_InputComponent::OnTabKey()
 			CurGun->BackToMainCamera();
 		}
 	}
+}
+
+void UC_InputComponent::OnMainMenuKey()
+{
+	//AC_PlayerController PlayerController  = Player->GetController()
+	//UC_Util::Print("Down OnMainMenuKey");
+	//UC_Util::Print(GAMESCENE_MANAGER->GetCurrentHUDMode());
+
+	//if (GAMESCENE_MANAGER->GetCurrentHUDMode() != EHUDMode::IDLE) return;
+
+	//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(Player->GetController());
+	//if (IsValid(PlayerController))
+	//{
+	//	PlayerController->ToggleMainMenu();
+	//}
+
 }
 
 

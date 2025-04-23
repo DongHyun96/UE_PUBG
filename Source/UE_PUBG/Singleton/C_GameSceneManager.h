@@ -8,15 +8,17 @@
 #include "C_GameSceneManager.generated.h"
 
 #define GAMESCENE_MANAGER GetWorld()->GetSubsystem<UC_GameSceneManager>()
-
+//
 /// <summary>
 /// GameScene 현 HUD Mode
 /// </summary>
+UENUM(BlueprintType)
 enum class EHUDMode : uint8
 {
 	IDLE,
 	INVEN,
 	MAINMAP,
+	MAINMENU,
 	MAX
 };
 
@@ -95,7 +97,10 @@ public:
 	/// </summary>
 	void AddGCProtectedObject(UObject* Object) { GCProtectedObjects.Add(Object); }
 
+	UFUNCTION(BlueprintCallable)
 	EHUDMode GetCurrentHUDMode() const { return CurrentHUDMode; }
+
+	UFUNCTION(BlueprintCallable)
 	void SetCurrentHUDMode(EHUDMode InHUDMode);
 
 	float GetCellWorldSize() const { return CELL_WORLDSIZE; }
