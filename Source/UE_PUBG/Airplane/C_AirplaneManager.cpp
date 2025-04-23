@@ -229,7 +229,7 @@ void AC_AirplaneManager::CheckAirplaneArrivedToRouteDestLimit()
 		RouteDestLimitReached = true;
 
 		// 자기장 Phase 시작
-		GAMESCENE_MANAGER->GetMagneticFieldManager()->SetIsHandleUpdateStateStarted(true);
+		GAMESCENE_MANAGER->GetMagneticFieldManager()->ActivateMagneticField();
 
 		for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
 		{

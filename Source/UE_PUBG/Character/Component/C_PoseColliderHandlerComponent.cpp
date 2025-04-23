@@ -3,8 +3,11 @@
 
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 
+#include "Character/C_Player.h"
 #include "Components/CapsuleComponent.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_InstructionWidget.h"
 #include "Utility/C_Util.h"
 
 const TMap<EPoseState, TPair<float, float>> UC_PoseColliderHandlerComponent::POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS =
@@ -152,8 +155,6 @@ bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(
 			CollisionParams
 		);
 
-		if (HasHit) UC_Util::Print(HitResult.GetActor()->GetName());
-
 		//DrawDebugSphere(GetWorld(), StartLocation, SWEEP_SPHERE_RAD, 10, FColor::Red, true);
 		//DrawDebugSphere(GetWorld(), DestLocation,  SWEEP_SPHERE_RAD, 10, FColor::Red, true);
 		
@@ -234,6 +235,7 @@ void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& D
 	//UC_Util::Print(SlopeDegree);
 	if (!CanCrawlOnSlope(SlopeDegree, ImpactDistances))
 	{
+		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter)) Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
 		// 자세 전환 시도하기
 		if (OwnerCharacter->SetPoseState(EPoseState::CRAWL, EPoseState::STAND))		return;
 		if (OwnerCharacter->SetPoseState(EPoseState::CRAWL, EPoseState::CROUCH))	return;

@@ -219,8 +219,21 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 		float DamageAmount = DAMAGE_BASE * (ExplosionRad - HitResult.Distance) / ExplosionRad; // 거리 비례 Damage base
 		DamageAmount *= BodyPartsDamageRate[HitResult.BoneName]; // 신체부위별 데미지 감소 적용
 
+		float DamageDistance = FVector::Distance(ThrowingWeapon->GetOwnerCharacter()->GetActorLocation(), Character->GetActorLocation());
+		DamageDistance *= 0.01f;
+		
 		// Vest의 Damage는 예외적으로 Damage 총량을 모두 더하여 주기
-		TotalDamage += Character->GetStatComponent()->TakeDamage(DamageAmount, HitResult.BoneName, ThrowingWeapon->GetOwnerCharacter(), false);
+		FKillFeedDescriptor KillFeedDescriptor =
+		{
+			EDamageType::Weapon,
+			ThrowingWeapon->GetOwnerCharacter(),
+			Character,
+			ThrowingWeapon,
+			false,
+			static_cast<int>(DamageDistance)
+		};
+		
+		TotalDamage += Character->GetStatComponent()->TakeDamage(DamageAmount, HitResult.BoneName, KillFeedDescriptor, false);
 
 		//UC_Util::Print("Hitted Bone : " + HitResult.BoneName.ToString(), FColor::Red, 5.f);
 		//UC_Util::Print("Bone Damaged : " + FString::SanitizeFloat(DamageAmount), FColor::Red, 5.f);

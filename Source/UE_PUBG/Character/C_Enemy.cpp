@@ -291,9 +291,9 @@ void AC_Enemy::OnPoseTransitionFinish()
 	Super::OnPoseTransitionFinish();
 }
 
-void AC_Enemy::CharacterDead()
+void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 {
-	Super::CharacterDead();
+	Super::CharacterDead(KillFeedDescriptor);
 
 	// 속도 0으로 setting
 	UpdateMaxWalkSpeed({0.f, 0.f});

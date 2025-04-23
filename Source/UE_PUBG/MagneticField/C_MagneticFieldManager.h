@@ -82,7 +82,10 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	void SetIsHandleUpdateStateStarted(bool InIsHandleUpdateStateStarted) { bIsHandleUpdateStateStarted = InIsHandleUpdateStateStarted; }
+	/// <summary>
+	/// MagneticField 페이즈 첫 시작 개시
+	/// </summary>
+	void ActivateMagneticField();
 
 	/// <summary>
 	/// 해당 캐릭터가 자기장 영역 안에 있는지 조사 
@@ -143,6 +146,15 @@ private:
 	/// </summary>
 	void UpdateNextCircleInfoOnMapUI();
 
+private:
+	
+	/// <summary>
+	/// 지연시간 1분, 30초, 10초, 5초별 HUD Notification 처리 
+	/// </summary>
+	void HandleDelayTimeHUDNotification();
+
+	void InitDelayTimeLeftNotifiedChecker();
+	
 protected:
 
 	// MainCircle을 In game 내에서 보여줄 오브젝트들
@@ -196,8 +208,17 @@ private:
 	// 자기장이 줄어들고 다음 자기장 설정 등의 Managing이 실질적으로 시작되었는지 체크
 	bool bIsHandleUpdateStateStarted{};
 
+	class UC_WaterTileCheckerComponent* WaterTileCheckerComponent{};
+
 private:
 
-	class UC_WaterTileCheckerComponent* WaterTileCheckerComponent{};
+	// 남은 지연시간 별 Notify 처리해야할 지점 UI 띄워줬는지 체크하는 TMap 
+	TMap<float, bool> DelayTimeLeftNotifiedChecker =
+	{
+		{60.f, false},
+		{30.f, false},
+		{10.f, false},
+		{5.f,  false}
+	};
 	
 };

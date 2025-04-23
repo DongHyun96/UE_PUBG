@@ -96,7 +96,7 @@ public: // For Testing
 
 private:
 
-	void CharacterDead() override;
+	void CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor) override;
 	
 protected:
 

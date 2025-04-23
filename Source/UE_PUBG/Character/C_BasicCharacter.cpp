@@ -33,6 +33,7 @@
 
 #include "MotionWarpingComponent.h"
 #include "Component/C_SmokeEnteredChecker.h"
+#include "HUD/C_InstructionWidget.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -194,7 +195,7 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 	return 0.0f;
 }
 
-void AC_BasicCharacter::CharacterDead()
+void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 {
 	// 기존 처리 유지
 	if (GetMesh()->GetSkeletalMeshAsset() == ParkourComponent->GetRootedSkeletalMesh())
@@ -234,10 +235,16 @@ void AC_BasicCharacter::CharacterDead()
 	if (Delegate_OnCharacterDead.IsBound()) Delegate_OnCharacterDead.Broadcast(this);
 	Delegate_OnCharacterDead.Clear();
 
-	// 아직 문제가 있는 듯.
-	// 분명 destroy 이전에 GameSceneManager의 AllCharacter, AllCharacterActors에서 뺏는데
+	// CONTINUE
+	KillFeedDescriptor.DamageCauser->AddKillCount();
+
+	// 만약 이 캐릭터를 사망에 이르게 한 캐릭터가 Player라면, Player 중간 KillFeed 정보 넣기
+	if (AC_Player* PlayerDamageCauser = Cast<AC_Player>(KillFeedDescriptor.DamageCauser))
+		PlayerDamageCauser->GetHUDWidget()->GetInstructionWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
+
+	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->AddTopKillFeedLog(KillFeedDescriptor);
+
 	FTimerHandle TimerHandle;
-	
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_BasicCharacter::DestroyCharacter, 5.f, false);
 }
 
@@ -285,7 +292,24 @@ float AC_BasicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	UC_Util::Print(Str, FColor::Cyan, 3.f);
 	UC_Util::Print("TakeDamage!!", FColor::Blue, 10);
 
-	StatComponent->TakeDamage(DamageAmount, Cast<AC_BasicCharacter>(DamageCauser));
+	AC_BasicCharacter* BasicCharacterDamageCauser = Cast<AC_BasicCharacter>(DamageCauser);
+	if (!BasicCharacterDamageCauser)
+	{
+		UC_Util::Print("From AC_BasicCharacter::TakeDamage : DamageCauser casting to BasicCharacter failed!", FColor::Red, 10.f);
+		return 0.f;
+	}
+
+	FKillFeedDescriptor KillFeedDescriptor =
+	{
+		EDamageType::Default,
+		BasicCharacterDamageCauser,
+		this,
+		nullptr,
+		false,
+		0
+	};
+
+	StatComponent->TakeDamage(DamageAmount, KillFeedDescriptor);
 
 	if (bIsHitting) return DamageAmount; //hitting Motion이 출력중인지 체크.
 

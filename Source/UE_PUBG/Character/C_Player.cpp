@@ -730,6 +730,12 @@ void AC_Player::DrawingItemOutLine()
 
 }
 
+void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
+{
+	Super::CharacterDead(KillFeedDescriptor);
+	HUDWidget->GetInstructionWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
+}
+
 void AC_Player::EnableRagdoll()
 {
 	Super::EnableRagdoll();

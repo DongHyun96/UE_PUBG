@@ -49,6 +49,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 	Algo::RandomShuffle(RowNames);
 
 	int EnemyCount{};
+	int CharacterNumber{};
 	
 	// Level에 배치된 Actor들의 BeginPlay 호출되기 이전에 객체 초기화
 	for (FActorIterator Actor(&InWorld); Actor; ++Actor)
@@ -62,7 +63,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		if (AC_Player* P = Cast<AC_Player>(*Actor))
 		{
 			Player = P;
-			
+			Player->SetCharacterNumber(++CharacterNumber);
 			// /*HUDWidgets.Add(EHUDMode::IDLE,    Player->GetHUDWidget()); -> DONE
 			// HUDWidgets.Add(EHUDMode::INVEN,   Player->GetInvenSystem()->GetInvenUI()); -> DONE
 			// HUDWidgets.Add(EHUDMode::MAINMAP, Player->GetMainMapWidget()); -> DONE
@@ -80,7 +81,9 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 				UC_Util::Print("Enemy Name : " + Row->Name, FColor::Red, 20.f);
 			}
 			else UC_Util::Print("From GameSceneManager : RandomName Row missing!", FColor::Red, 10.f);
-				
+
+			E->SetCharacterNumber(++CharacterNumber);
+			
 			Enemies.Add(E);
 			continue;
 		}
