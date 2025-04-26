@@ -21,6 +21,25 @@ void UC_InstructionWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
+    // F Key Instruction 관련
+    FKeyInstructionPanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("FKeyInstruction")));
+    FKeyInstructionText = Cast<UTextBlock>(GetWidgetFromName(TEXT("FKeyInstructionBaseText")));
+    
+    UCanvasPanel* InstructionInsidePanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("Instruction_4"))); 
+    FKeyInstructionPanelSlot             = Cast<UCanvasPanelSlot>(InstructionInsidePanel->Slot);
+
+    // Init Game Start Timer 관련
+    GameStartTimerPanel = Cast<UCanvasPanel>(GetWidgetFromName(TEXT("MatchStartsTimerPanel")));
+    GameStartTimerText  = Cast<UTextBlock>(GetWidgetFromName(TEXT("GameStartTimerText")));
+
+    if (!GameStartTimerPanel || !GameStartTimerText)
+        UC_Util::Print("From UC_InstructionWidget::NativeConstruct : GameStartTimer Panel init failed!", FColor::Red, 10.f);
+    /*else
+    {
+        FTimerHandle TimerHandle{};
+        GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this](){ ToggleGameStartTimerVisibility(true); }, 3.f, false);        
+    }*/
+    
     // Init PlayerWarningLog 관련
     for (int i = 0; i < 4; ++i)
     {
@@ -114,9 +133,21 @@ void UC_InstructionWidget::NativeTick(const FGeometry& MyGeometry, float InDelta
 
     HandleLogLifeTimers(InDeltaTime);
     
-    // HandlePlayerWarningLogPositionsAndDefaultAlpha(InDeltaTime);
     HandleLogQueuePositionsAndDefaultAlpha(InDeltaTime, EQueueLogType::PlayerWarningLog);
     HandleLogQueuePositionsAndDefaultAlpha(InDeltaTime, EQueueLogType::TopKillFeedLog);
+
+    HandleGameStartTimerPanelDefaultAlpha(InDeltaTime);
+    HandleFKeyInstructionPanelDefaultAlpha(InDeltaTime);
+
+    // For Testing : TODO : 아래 라인들 지우기
+    // StartTimer not triggered
+    /*if (GameStartTimerRenderOpacityLerpDestination < 1.f) return;
+    
+    Timer -= InDeltaTime;
+    if (Timer < 0.f) return;
+    
+    int TimerNumber = static_cast<int>(Timer) + 1;
+    SetGameStartTimerText(TimerNumber);*/
 }
 
 void UC_InstructionWidget::HandleConsumableInstructionFlicker(const float& DeltaTime)
@@ -201,53 +232,34 @@ void UC_InstructionWidget::HandleLogQueuePositionsAndDefaultAlpha(const float& D
     }
 }
 
-void UC_InstructionWidget::HandlePlayerWarningLogPositionsAndDefaultAlpha(const float& DeltaTime)
+void UC_InstructionWidget::HandleGameStartTimerPanelDefaultAlpha(const float& DeltaTime)
 {
-    for (int i = 1; i < PlayerWarningLogSequence.Num(); ++i)
-    {
-        int Index = PlayerWarningLogSequence[i];
-        FVector2D CurrentPosition = PlayerWarningLogTextPanels[Index]->GetPosition();
-        FVector2D DestPosition = FMath::Lerp(CurrentPosition, PlayerWarningLogEachPositions[i], 20.f * DeltaTime);
-        PlayerWarningLogTextPanels[Index]->SetPosition(DestPosition);
-    }
-
-    // 3번째 로그는 보이는데, FadeOut중이 아니라면 FadeOut 처리
-    int LastPrevIndex = PlayerWarningLogSequence[2];
-    UWidget* LastPrevLogWidget = PlayerWarningLogTexts[LastPrevIndex]; 
-    if (LastPrevLogWidget->GetRenderOpacity() > 0.f) // 아직 보이는 중이고,
-    {
-        if (!FadeOutLogs.Contains(LastPrevLogWidget)) // Start Fade 처리가 안된 상황
-        {
-            LogLifeTimers.Remove(LastPrevLogWidget);
-            StartFadeOut(LastPrevLogWidget);
-        }
-    }
+    float Opacity = GameStartTimerPanel->GetRenderOpacity();
+    Opacity = FMath::Lerp(Opacity, GameStartTimerRenderOpacityLerpDestination, DeltaTime * 10.f);
+    GameStartTimerPanel->SetRenderOpacity(Opacity);
 }
 
-void UC_InstructionWidget::HandleTopKillFeedBlockPositionsAndDefaultAlpha(const float& DeltaTime)
+void UC_InstructionWidget::HandleFKeyInstructionPanelDefaultAlpha(const float& InDeltaTime)
 {
-    for (int i = 1; i < TopKillFeedLogSequence.Num(); ++i)
-    {
-        int Index = TopKillFeedLogSequence[i];
+    float Opacity = FKeyInstructionPanel->GetRenderOpacity();
+    Opacity = FMath::Lerp(Opacity, FKeyInstructionOpacityLerpDestination, InDeltaTime * 15.f);
+    FKeyInstructionPanel->SetRenderOpacity(Opacity);
+}
 
-        UCanvasPanelSlot* KillFeedBlockPanelSlot = TopKillFeedBlocks[Index].PanelSlot; 
-        
-        FVector2D CurrentPosition = KillFeedBlockPanelSlot->GetPosition();
-        FVector2D DestPosition = FMath::Lerp(CurrentPosition, TopKillFeedLogEachPositions[i], 20.f * DeltaTime);
-        KillFeedBlockPanelSlot->SetPosition(DestPosition);
-    }
+void UC_InstructionWidget::ActivateFKeyInstruction(const FString& Instruction)
+{
+    FKeyInstructionOpacityLerpDestination = 1.f;
+    FKeyInstructionText->SetText(FText::FromString(Instruction));
 
-    int LastPrevIndex = TopKillFeedLogSequence[TopKillFeedLogSequence.Num() - 2];
-    UWidget* KillFeedBlockPanel = TopKillFeedBlocks[LastPrevIndex].Panel;
     
-    if (KillFeedBlockPanel->GetRenderOpacity() > 0.f) // 아직 보이는 중이고,
-    {
-        if (!FadeOutLogs.Contains(KillFeedBlockPanel)) // Start Fade 처리가 안된 상황
-        {
-            LogLifeTimers.Remove(PlayerWarningLogTexts[LastPrevIndex]);
-            StartFadeOut(PlayerWarningLogTexts[LastPrevIndex]);
-        }
-    }
+    // 14까지는 봐줄만함 -> 14 넘어가면 늘려주기
+    float RightOffset = (Instruction.Len() > 14) ? -100.f : 0.f;
+    FKeyInstructionPanelSlot->SetOffsets(FMargin(0.f, 0.f, RightOffset, 0.f));
+}
+
+void UC_InstructionWidget::DeActivateFKeyInstruction()
+{
+    FKeyInstructionOpacityLerpDestination = 0.f;
 }
 
 bool UC_InstructionWidget::ActivateConsumableInstruction(FString UsingTextContent)
@@ -261,6 +273,16 @@ bool UC_InstructionWidget::ActivateConsumableInstruction(FString UsingTextConten
     // Set instruction alpha color to default
     ConsumableCurrentUsingTextBlock->SetRenderOpacity(1.f);
     return true;
+}
+
+void UC_InstructionWidget::ToggleGameStartTimerVisibility(bool Visible)
+{
+    GameStartTimerRenderOpacityLerpDestination = Visible ? 1.f : 0.f;
+}
+
+void UC_InstructionWidget::SetGameStartTimerText(int Second)
+{
+    GameStartTimerText->SetText(FText::FromString(FString::FromInt(Second)));
 }
 
 bool UC_InstructionWidget::ActivateMagneticFieldInstructionText(FString InstructionString)
@@ -299,13 +321,13 @@ bool UC_InstructionWidget::ActivateMiddleKillFeedLog(const FKillFeedDescriptor& 
             
             if (KillFeedDescriptor.DamageCauser == GAMESCENE_MANAGER->GetPlayer())
             {
-                FString Str = "yourself by " + KillFeedDescriptor.DamageCausedWeapon->GetKillLogWeaponName();
+                FString Str = "yourself by " + KillFeedDescriptor.DamageCausedWeapon->GetItemName();
                 MiddleVictimInfoText->SetText(FText::FromString(Str));
             }
             else // 다른 Character의 무기에 의해 Player가 죽었을 때
             {
                 FString Str = "by " + KillFeedDescriptor.DamageCauser->GetCharacterName() +
-                    " with " + KillFeedDescriptor.DamageCausedWeapon->GetKillLogWeaponName() +
+                    " with " + KillFeedDescriptor.DamageCausedWeapon->GetItemName() +
                         " ("+ FString::FromInt(KillFeedDescriptor.Distance) + "m)";
                 MiddleVictimInfoText->SetText(FText::FromString(Str));
             }
@@ -345,7 +367,7 @@ bool UC_InstructionWidget::ActivateMiddleKillFeedLog(const FKillFeedDescriptor& 
     
     FString Str = KillFeedDescriptor.DamageTaker->GetCharacterName();
     if (KillFeedDescriptor.bDamagedByHeadShot) Str += " by HeadShot";
-    Str += " with " + KillFeedDescriptor.DamageCausedWeapon->GetKillLogWeaponName();
+    Str += " with " + KillFeedDescriptor.DamageCausedWeapon->GetItemName();
     Str += " (" + FString::FromInt(KillFeedDescriptor.Distance) + "m)";
     MiddleVictimInfoText->SetText(FText::FromString(Str));
     return true;

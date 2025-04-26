@@ -24,6 +24,9 @@ public:
 
 	void SetVisibility(ESlateVisibility InVisibility) override { OtherPanel->SetVisibility(InVisibility); }
 
+protected:
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 public:
 
 	/// <summary>
@@ -98,13 +101,14 @@ public:
 
 public:
 
-	class UC_MapWidget*			GetMiniMapWidget()		const { return MiniMapWidget; }
-	class UBorder*				GetMiniMapBorder() 		const { return MiniMapBorder; }
-	class UC_OxygenWidget*		GetOxygenWidget()		const { return OxygenWidget; }
-	class UC_SkyDiveWidget*		GetSkyDiveWidget()		const { return SkyDiveWidget; }
-	class UC_InstructionWidget* GetInstructionWidget()	const { return InstructionWidget; }
-	class UC_AmmoWidget*		GetAmmoWidget()			const { return AmmoWidget; }
-	class  UC_ArmorInfoWidget*	GetArmorInfoWidget()	const { return ArmorInfoWidget; }
+	class UC_MapWidget*						GetMiniMapWidget()					const { return MiniMapWidget; }
+	class UBorder*							GetMiniMapBorder() 					const { return MiniMapBorder; }
+	class UC_OxygenWidget*					GetOxygenWidget()					const { return OxygenWidget; }
+	class UC_SkyDiveWidget*					GetSkyDiveWidget()					const { return SkyDiveWidget; }
+	class UC_InstructionWidget* 			GetInstructionWidget()				const { return InstructionWidget; }
+	class UC_AmmoWidget*					GetAmmoWidget()						const { return AmmoWidget; }
+	class UC_ArmorInfoWidget*				GetArmorInfoWidget()				const { return ArmorInfoWidget; }
+	class UC_MagneticFieldIndicatorWidget*	GetMagneticFieldIndicatorWidget()	const { return MagneticFieldIndicatorWidget; }
 
 protected:
 
@@ -165,7 +169,14 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UCanvasPanel* OtherPanel{};
 
+private:
 
+	class UC_MagneticFieldIndicatorWidget* MagneticFieldIndicatorWidget{};
+	class UCanvasPanelSlot* MagneticFieldIndicatorPanelSlot{};
+
+	const FVector2D MINIMAP_ENLARGED_INDICATOR_POS	= FVector2D(783.304077f, -120.f);
+	const FVector2D MINIMAP_MINIMIZED_INDICATOR_POS = FVector2D(783.304077f, 185.387939f);
+	FVector2D		MagneticFieldIndicatorPosLerpDestination = MINIMAP_MINIMIZED_INDICATOR_POS; 
 
 };
 

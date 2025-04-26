@@ -39,7 +39,9 @@ void AC_AirplaneManager::BeginPlay()
 	}
 
 	InitAirplaneStartPosAndFlightDirection();
-	StartTakeOffTimer();
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
+	
 }
 
 // Called every frame
@@ -59,12 +61,20 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 	if (!TakeOffTimerStarted || HasAirplaneTakeOff) return;
 
 	TakeOffTimer -= DeltaTime;
+
+	// 게임 시작까지 남은 시간 UI로 띄우기
+	UC_InstructionWidget* InstructionWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget(); 
+	int TakeOffLeftSec = static_cast<int>(TakeOffTimer) + 1; 
+	InstructionWidget->SetGameStartTimerText(TakeOffLeftSec);
+	
 	if (TakeOffTimer > 0.f) return;
 
 	// 이륙 시작
 	
 	Airplane->StartFlight();
 	HasAirplaneTakeOff = true;
+	
+	InstructionWidget->ToggleGameStartTimerVisibility(false);
 	
 	for (AC_BasicCharacter* Character : GAMESCENE_MANAGER->GetAllCharacters())
 	{
@@ -241,6 +251,7 @@ void AC_AirplaneManager::CheckAirplaneArrivedToRouteDestLimit()
 
 void AC_AirplaneManager::CheckFlightFinished()
 {
+
 	if (!HasAirplaneTakeOff || !Airplane->GetIsFlying()) return;
 	if (!RouteDestLimitReached) return;
 
@@ -249,7 +260,6 @@ void AC_AirplaneManager::CheckFlightFinished()
 	FVector AirplaneLocation = Airplane->GetActorLocation();
 
 	const float ACTUAL_START_DEST_BORDER_VALUE = 50000.f;
-
 	if (FMath::Abs(AirplaneLocation.X) > ACTUAL_START_DEST_BORDER_VALUE ||
 		FMath::Abs(AirplaneLocation.Y) > ACTUAL_START_DEST_BORDER_VALUE)
 	{
@@ -315,5 +325,10 @@ void AC_AirplaneManager::InitAirplaneStartPosAndFlightDirection()
 
 }
 
-
-
+void AC_AirplaneManager::StartTakeOffTimer()
+{
+	TakeOffTimerStarted = true;
+	UC_InstructionWidget* InstructionWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget(); 
+	InstructionWidget->ToggleGameStartTimerVisibility(true);
+	InstructionWidget->SetGameStartTimerText(static_cast<int>(TakeOffTimer) + 1);
+}

@@ -3,6 +3,8 @@
 
 #include "HUD/C_HUDWidget.h"
 
+#include "C_MagneticFieldIndicatorWidget.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
@@ -18,6 +20,19 @@ void UC_HUDWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	GAMESCENE_MANAGER->SetHUDWidgetByHUDMode(EHUDMode::IDLE, this);
+
+	MagneticFieldIndicatorWidget = Cast<UC_MagneticFieldIndicatorWidget>(GetWidgetFromName(TEXT("WBPC_MagneticFieldIndicator")));
+	if (!MagneticFieldIndicatorWidget) UC_Util::Print("From HUDWidget::NativeConstruct : MagneticFieldIndicatorWidget not inted!", FColor::Red, 10.f);
+	MagneticFieldIndicatorPanelSlot = Cast<UCanvasPanelSlot>(MagneticFieldIndicatorWidget->Slot);
+}
+
+void UC_HUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	// Handle Lerp MagneticFieldIndicator Pos
+	FVector2D MagneticFieldIndicatorPos = FMath::Lerp(MagneticFieldIndicatorPanelSlot->GetPosition(), MagneticFieldIndicatorPosLerpDestination, InDeltaTime * 10.f);
+	MagneticFieldIndicatorPanelSlot->SetPosition(MagneticFieldIndicatorPos);
 }
 
 void UC_HUDWidget::ToggleMiniMapEnlarged()
@@ -26,6 +41,7 @@ void UC_HUDWidget::ToggleMiniMapEnlarged()
 
 	MiniMapLerpSizeDest = (bIsMiniMapEnlarged) ? MINIMAP_ENLARGED_SIZE : MINIMAP_MINIMIZED_SIZE;
 	MiniMapLerpPosDest	= (bIsMiniMapEnlarged) ? MINIMAP_ENLARGED_POS  : MINIMAP_MINIMIZED_POS;
+	MagneticFieldIndicatorPosLerpDestination = (bIsMiniMapEnlarged) ? MINIMAP_ENLARGED_INDICATOR_POS : MINIMAP_MINIMIZED_INDICATOR_POS;
 }
 
 

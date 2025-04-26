@@ -16,7 +16,7 @@ struct FMeleeWeaponSoundDatas : public FTableRowBase
 	/// Pan 피격음, 에디터에서 설정.
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ImapctSound = nullptr;
+	USoundBase* ImpactSound = nullptr;
 
 };
 

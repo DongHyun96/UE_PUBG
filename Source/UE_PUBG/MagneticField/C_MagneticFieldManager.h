@@ -191,6 +191,9 @@ protected:
 		{6, FPhaseInfo(0.f, 0.f, 0.f, 9.f)}			// 제일 마지막 도착 지점 (전체 Phase보다 하나 더 많게끔 만들어놔야 정상 작동함)
 	};
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<int, FPhaseInfo> TestPhaseInfos{};
+
 
 	// 시간 재기용
 	float Timer{};

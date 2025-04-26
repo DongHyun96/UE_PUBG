@@ -50,7 +50,6 @@ public:
 	virtual void NativeConstruct() override;
 
 protected:
-	
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
@@ -75,10 +74,13 @@ private:
 	/// <param name="QueueLogType"></param>
 	void HandleLogQueuePositionsAndDefaultAlpha(const float& DeltaTime, EQueueLogType QueueLogType);
 	
-	void HandlePlayerWarningLogPositionsAndDefaultAlpha(const float& DeltaTime);
-	void HandleTopKillFeedBlockPositionsAndDefaultAlpha(const float& DeltaTime);
+	void HandleGameStartTimerPanelDefaultAlpha(const float& DeltaTime);
+	void HandleFKeyInstructionPanelDefaultAlpha(const float& InDeltaTime);
 	
 public:
+
+	void ActivateFKeyInstruction(const FString& Instruction);
+	void DeActivateFKeyInstruction();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ToggleEjectInstructionVisibility(bool Visible);
@@ -89,6 +91,11 @@ public:
 	bool ActivateConsumableInstruction(FString UsingTextContent);
 	void DeActivateConsumableInstruction() { ConsumableInstruction->SetVisibility(ESlateVisibility::Hidden); }
 
+public:
+
+	void ToggleGameStartTimerVisibility(bool Visible);
+	void SetGameStartTimerText(int Second);
+	
 public:
 	/// <summary>
 	/// 자기장 페이즈 및 자기장 관련 정보 Text 활성화하기
@@ -144,6 +151,19 @@ private:
 	
 	UTextBlock* MagneticFieldStatusInstructionText{};
 
+private: // F Key instruction baaic 관련
+
+	UCanvasPanel*		FKeyInstructionPanel{};
+	UTextBlock*			FKeyInstructionText{};
+	UCanvasPanelSlot*	FKeyInstructionPanelSlot{};
+	float				FKeyInstructionOpacityLerpDestination{};
+
+private: // Game Start Timer 관련
+
+	UCanvasPanel*	GameStartTimerPanel{};
+	UTextBlock*		GameStartTimerText{};
+	float			GameStartTimerRenderOpacityLerpDestination{};
+
 private: // Player Warning Log 관련
 
 	TArray<UTextBlock*>			PlayerWarningLogTexts{};
@@ -164,7 +184,6 @@ protected:
 private: // Middle KillFeed Log 관련
 
 	UCanvasPanel*	MiddleKillFeedPanel{};
-	// UTextBlock* 	MiddleKillerNameText{};
 	UTextBlock* 	MiddleVictimInfoText{};
 	UTextBlock*		MiddleKillCountText{};
 	
@@ -183,6 +202,9 @@ private:
 private:
 	TMap<UWidget*, float>	LogLifeTimers{}; // Log Spawn된 이 후, FadeOut처리되기 이전까지의 수명처리 담당
 	TSet<UWidget*>			FadeOutLogs{}; // FadeOut 처리시킬 Widget들
+
+private:
+
+	float Timer = 30.f; // Test 용 : TODO : 지울 것
+	
 };
-
-
