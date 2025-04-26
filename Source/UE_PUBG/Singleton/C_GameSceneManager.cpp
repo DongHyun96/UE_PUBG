@@ -75,12 +75,8 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		{
 			FNameStruct* Row = RandomNameDataTable->FindRow<FNameStruct>(RowNames[++EnemyCount], TEXT(""));
 
-			if (Row)
-			{
-				E->SetCharacterName(Row->Name);
-				UC_Util::Print("Enemy Name : " + Row->Name, FColor::Red, 20.f);
-			}
-			else UC_Util::Print("From GameSceneManager : RandomName Row missing!", FColor::Red, 10.f);
+			if (Row)	E->SetCharacterName(Row->Name);
+			else		UC_Util::Print("From GameSceneManager : RandomName Row missing!", FColor::Red, 10.f);
 
 			E->SetCharacterNumber(++CharacterNumber);
 			

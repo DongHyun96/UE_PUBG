@@ -539,6 +539,7 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 			if (!IsValid(InvenComponent)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
 			if (InvenComponent->GetAroundItems().Contains(OverlappedItem)) return;
 			InvenComponent->AddItemToAroundList(OverlappedItem);
+			
 			//Inventory->InitInvenUI();
 			//if (!IsValid(InvenSystem)) return;
 		}
@@ -616,7 +617,7 @@ void AC_Player::HandleOverlapEnd(AActor* OtherActor)
 AC_Item* AC_Player::FindBestInteractable()
 {
 	if (InvenComponent->GetAroundItems().IsEmpty()) return nullptr;
-
+	if (bIsActivatingConsumableItem) return nullptr; // ConsumableItem을 사용중이라면 nullptr 처리
 	AC_Item* TargetInteractableItem = nullptr;
 
 	float ItemDotProduct = 0.0f;
@@ -660,6 +661,7 @@ void AC_Player::UpdateInteractable(AC_Item* InteractableItem)
 	// 이전 아웃라인 제거
 	if (CurOutLinedItem)
 	{
+		HUDWidget->GetInstructionWidget()->DeActivateFKeyInstruction();
 		CurOutLinedItem->SetOutlineEffect(false);
 	}
 
@@ -667,6 +669,8 @@ void AC_Player::UpdateInteractable(AC_Item* InteractableItem)
 	CurOutLinedItem = InteractableItem;
 	if (CurOutLinedItem)
 	{
+		FString Instruction = "PICK " + CurOutLinedItem->GetItemName(); 
+		HUDWidget->GetInstructionWidget()->ActivateFKeyInstruction(Instruction);
 		CurOutLinedItem->SetOutlineEffect(true);
 	}
 }

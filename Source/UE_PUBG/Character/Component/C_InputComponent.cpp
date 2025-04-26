@@ -39,6 +39,7 @@
 
 #include "GameFramework/PhysicsVolume.h"
 #include "HUD/C_InstructionWidget.h"
+#include "HUD/C_MagneticFieldIndicatorWidget.h"
 
 #include "Singleton/C_GameSceneManager.h"
 #include "SkyDivingComponent/C_PlayerSkyDivingComponent.h"

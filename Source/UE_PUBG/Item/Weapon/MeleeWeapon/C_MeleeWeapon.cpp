@@ -45,7 +45,6 @@ void AC_MeleeWeapon::BeginPlay()
 
 	AttackCollider->OnComponentBeginOverlap.AddDynamic(this, &AC_MeleeWeapon::OnBodyColliderBeginOverlap);
 
-	KillLogWeaponName = "Frying Pan";
 }
 
 void AC_MeleeWeapon::Tick(float DeltaTime)
@@ -239,9 +238,9 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 	
 	// 피격체에 데미지 주기
 	AC_BasicCharacter* OverlappedCharacter = Cast<AC_BasicCharacter>(OtherActor);
-	if (!OverlappedCharacter) return;
-	if (OverlappedCharacter == OwnerCharacter) return;
-	if (AttackedCharacters.Contains(OverlappedCharacter)) return; // 이미 현재 Attack wave에서 Damage를 준 Character일 때
+	if (!OverlappedCharacter)								return;
+	if (OverlappedCharacter == OwnerCharacter)				return;
+	if (AttackedCharacters.Contains(OverlappedCharacter))	return; // 이미 현재 Attack wave에서 Damage를 준 Character일 때
 
 	// MeleeWeapon의 경우, 조끼 착용 여부에 따른 Damage량 조정을 여기서 처리
 	// 조끼피를 안닳게 일부러 처리할 예정
@@ -256,17 +255,25 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 		OverlappedCharacter,
 		this,
 		false,
-		0.f
+		0
 	};
 	
 	OverlappedCharacter->GetStatComponent()->TakeDamage(DAMAGE * DamageReduceFactor, KillFeedDesc);
 	OverlappedCharacter->ActivateBloodParticle(OverlappedCharacter->GetMesh()->GetBoneLocation("Spine1"));
 	AttackedCharacters.Add(OverlappedCharacter);
 
-	if (!MeleeWeaponSoundData)				return;
-	if (!MeleeWeaponSoundData->ImapctSound) return;
+	if (!MeleeWeaponSoundData)
+	{
+		UC_Util::Print("MeleeWeaponSoundData nullptr", FColor::Red, 10.f);
+		return;
+	}
+	if (!MeleeWeaponSoundData->ImpactSound)
+	{
+		UC_Util::Print("ImpactSound nullptr", FColor::Red, 10.f);
+		return;
+	}
 
-	UGameplayStatics::PlaySoundAtLocation(this, MeleeWeaponSoundData->ImapctSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(this, MeleeWeaponSoundData->ImpactSound, GetActorLocation());
 
 }
 

@@ -122,7 +122,7 @@ void AC_ThrowingWeapon::BeginPlay()
 		GAMESCENE_MANAGER->AddGCProtectedObject(FlashBangExplode->_getUObject());
 		GAMESCENE_MANAGER->AddGCProtectedObject(SmokeExplode->_getUObject());
 
-		ExplodeStrategies.Add(EThrowableType::GRENADE,	GrenadeExplode);
+		ExplodeStrategies.Add(EThrowableType::GRENADE,		GrenadeExplode);
 		ExplodeStrategies.Add(EThrowableType::FLASH_BANG,	FlashBangExplode);
 		ExplodeStrategies.Add(EThrowableType::SMOKE,		SmokeExplode);
 	}
@@ -154,10 +154,7 @@ void AC_ThrowingWeapon::BeginPlay()
 
 	// 자기 자신의 AIAttack 전략 init
 	AIAttackStrategy = AIAttackStrategies[ThrowableType];
-
-	// Grenade 이외에는 비살상무기이지만, 초기화는 해둠
-	KillLogWeaponName = (ThrowableType == EThrowableType::GRENADE) ? "Hand Grenade" :
-						(ThrowableType == EThrowableType::FLASH_BANG) ? "Flash Bang" : "Smoke Grenade";
+	
 }
 
 void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)

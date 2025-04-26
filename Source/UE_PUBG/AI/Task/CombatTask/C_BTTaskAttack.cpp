@@ -10,6 +10,7 @@
 #include "Item/Weapon/C_Weapon.h"
 
 #include "AI/C_EnemyAIController.h"
+#include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
 
@@ -72,7 +73,9 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	// 무기를 들고 있지 않은 상황
 	if (!EquippedComponent->GetCurWeapon() || Enemy->GetHandState() == EHandState::UNARMED)
 	{
-		UC_Util::Print("From UC_BTTaskAttack::ExecuteTask : Not holding any weapons", FColor::Red, 10.f);
+		if (GAMESCENE_MANAGER->GetEnemies().Num() <= 1)
+			UC_Util::Print("From UC_BTTaskAttack::ExecuteTask : Not holding any weapons", FColor::Red, 10.f);
+		
 		BehaviorComponent->SetServiceType(EServiceType::IDLE);
 		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
 		return EBTNodeResult::Failed;
@@ -82,7 +85,9 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	AC_BasicCharacter* TargetCharacter = Cast<AC_BasicCharacter>(BehaviorComponent->GetTargetCharacter());
 	if (!IsValid(TargetCharacter))
 	{
-		UC_Util::Print("From UC_BTTaskAttack::ExecuteTask : Invalid TargetCharacter", FColor::Red, 10.f);
+		if (GAMESCENE_MANAGER->GetEnemies().Num() <= 1)
+			UC_Util::Print("From UC_BTTaskAttack::ExecuteTask : Invalid TargetCharacter", FColor::Red, 10.f);
+		
 		BehaviorComponent->SetServiceType(EServiceType::IDLE);
 		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
 		return EBTNodeResult::Failed;
