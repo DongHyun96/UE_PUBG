@@ -48,6 +48,9 @@ public:
 
 	FFeetData GetData() { return Data; }
 
+	UFUNCTION(BlueprintCallable)
+	EPhysicalSurface GetSurfaceType() { return CurrentSurfaceType; }
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TEnumAsByte<EDrawDebugTrace::Type> DrawDebugType;
@@ -70,5 +73,7 @@ protected:
 private:
 	class AC_BasicCharacter* OwnerCharacter;
 
-	FFeetData Data;
+	FFeetData Data{};
+
+	EPhysicalSurface CurrentSurfaceType = EPhysicalSurface::SurfaceType_Default;
 };

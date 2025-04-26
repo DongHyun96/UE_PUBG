@@ -29,7 +29,8 @@ public class UE_PUBG : ModuleRules
             "MotionWarping",
             "AIModule",
             "Water",
-            "NavigationSystem"
+            "NavigationSystem",
+            "PhysicsCore"
         });
 
         /*

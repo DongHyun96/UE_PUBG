@@ -128,5 +128,6 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 
 	OutRotation = FRotator(Pitch, 0, Roll);
 
+	CurrentSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
 }
 
