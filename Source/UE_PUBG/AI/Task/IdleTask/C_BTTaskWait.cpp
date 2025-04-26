@@ -116,17 +116,16 @@ void UC_BTTaskWait::OnWaitTimeFinished(UBehaviorTreeComponent& OwnerComp, AC_Ene
 	// MoveToRandomPos or Attack trial or 다시 Wait 중 택 1
 	// Attack Trial 60% | MoveToRandomPos 20% | Wait 20%
 
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// SetTargetCharacter & AttackTrial -> 무조건 공격 testing 했을 때 사용했었던 코드
-	/*EnemyAIController->TrySetTargetCharacterBasedOnPriority();
-	if (IsValid(EnemyBehaviorComponent->GetTargetCharacter()) && !bIsInSmokeArea)
+	// 무조건 Attack Trial 시도 (ForTesting) TODO : 다시 돌려놓기
+	EnemyAIController->TrySetTargetCharacterBasedOnPriority();
+	if (IsValid(EnemyBehaviorComponent->GetTargetCharacter()))
 	{
-		UC_Util::Print("WaitTask Time's up : Try Attack TargetCharacter!", FColor::Red, 10.f);
+		// UC_Util::Print("WaitTask Time's up : Try Attack TargetCharacter!", FColor::Red, 10.f);
 		EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
-		// return;
-	}*/
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	}
 
+	/*
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	bool bIsInSmokeArea = Enemy->GetSmokeEnteredChecker()->IsCurrentlyInSmokeArea();
 	if (FMath::RandRange(0.f, 1.f) < 0.6f && !bIsInSmokeArea) // SetTargetCharacter & AttackTrial
@@ -154,7 +153,7 @@ void UC_BTTaskWait::OnWaitTimeFinished(UBehaviorTreeComponent& OwnerComp, AC_Ene
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// UC_Util::Print("WaitTask Time's up : Keep waiting...", FColor::Red, 10.f);
 	EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT); // 다시금 기다리기 처리(이 호출로 기다리는 총 시간 랜덤하게 다시 setting 됨)
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 }
 
 void UC_BTTaskWait::ExecuteMoveToRandomLocation(AC_Enemy* Enemy, UC_BehaviorComponent* EnemyBehaviorComponent, bool bHasToMoveInsideMainCircle)

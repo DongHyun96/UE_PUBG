@@ -86,7 +86,9 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	// 도중에 상태가 바뀌었다면 Failed 처리하고 돌아가기
 	if (BehaviorComponent->GetServiceType() != EServiceType::COMBAT) return EBTNodeResult::Failed;
 
-	// 총기류 먼저 바꾸기 시도
+	// TODO : /**/ --> 이 부분 주석 풀기
+	
+	/*// 총기류 먼저 바꾸기 시도
 	FName SevenBulletItemName	= AC_Item_Bullet::GetBulletTypeName(EBulletType::SEVENMM);
 	FName FiveBulletItemName	= AC_Item_Bullet::GetBulletTypeName(EBulletType::FIVEMM);
 	
@@ -128,7 +130,7 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 		// 시야에 보이는지만 체크해서 AR 사용하기
 		if (Controller->IsCurrentlyOnSight(TargetCharacter))
 			return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
-	}
+	}*/
 
 	// 시야에 보이지 않는 중, Inven에 있는 Throwable이랑 Slot에 있는 Throwable 모두 조사해야 함
 
@@ -193,7 +195,7 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	}
 
 	// 아무 공격 투척류 종류가 없을 때
-	UC_Util::Print("Tried Swap to throwable, but no attacking throwable available!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+	// UC_Util::Print("Tried Swap to throwable, but no attacking throwable available!", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 	return ExecuteTaskReturnRoutine(EBTNodeResult::Failed, BehaviorComponent);
 }
 
