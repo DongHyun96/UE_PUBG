@@ -50,12 +50,23 @@ USTRUCT(BlueprintType)
 struct FKillFeedDescriptor
 {
 	GENERATED_BODY()
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	EDamageType					DamageType{};
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	class AC_BasicCharacter* 	DamageCauser{};
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	class AC_BasicCharacter* 	DamageTaker{};
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	class AC_Weapon*			DamageCausedWeapon{};
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool						bDamagedByHeadShot{};
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int							Distance{};
 };
 
@@ -105,6 +116,7 @@ public:
 	/// <param name="DamageAmount"> : Damage 량 </param>
 	/// <param name="KillFeedDescriptor"></param>
 	/// <returns> : Damage를 추가적으로 입을 수 없는 상황이라면(CurHP <= 0.f) return false </returns>
+	UFUNCTION(BlueprintCallable)
 	bool TakeDamage(const float& DamageAmount, const FKillFeedDescriptor& KillFeedDescriptor);
 
 	/// <summary>
