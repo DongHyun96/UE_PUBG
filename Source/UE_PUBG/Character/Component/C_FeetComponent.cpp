@@ -2,13 +2,16 @@
 
 
 #include "Character/Component/C_FeetComponent.h"
+#include "Character/C_BasicCharacter.h"
 #include "Kismet/kismetSystemLibrary.h"
 #include "Kismet/kismetMathLibrary.h"
-#include "Character/C_BasicCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Utility/C_Util.h"
 
+//#include "DrawDebugHelpers.h"
 #include "Engine/SkeletalMeshSocket.h"
 // Sets default values for this component's properties
 UC_FeetComponent::UC_FeetComponent()
@@ -62,6 +65,7 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	Data.RightRotation =
 		UKismetMathLibrary::RInterpTo(Data.RightRotation, RightRotation, DeltaTime, InterpSpeed);
+
 }
 
 void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRotation)
@@ -100,7 +104,8 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 	FHitResult HitResult{};
 	FCollisionQueryParams CollisionParams{};
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
-	
+	CollisionParams.bReturnPhysicalMaterial = true;
+
 	bool IsHit = GetWorld()->LineTraceSingleByChannel
 	(
 		HitResult,
@@ -113,8 +118,12 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 	OutDistance = 0;
 	OutRotation = FRotator::ZeroRotator;
 
+
 	if (!HitResult.bBlockingHit)
+	{
+		CurrentSurfaceType = SurfaceType_Default; // 허공이면 SurfaceType_Default로
 		return;
+	}
 
 	float Length = (HitResult.ImpactPoint - HitResult.TraceEnd).Size();
 
@@ -123,11 +132,49 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 	float Roll = UKismetMathLibrary::DegAtan2(HitResult.Normal.Y, HitResult.Normal.Z);
 	float Pitch = -UKismetMathLibrary::DegAtan2(HitResult.Normal.X, HitResult.Normal.Z);
 
-	FMath::Clamp(Pitch, -15, 15);
-	FMath::Clamp(Roll, -15, 15);
+	Pitch = FMath::Clamp(Pitch, -15.0f, 15.0f);
+	Roll  = FMath::Clamp(Roll, -15.0f, 15.0f);
 
 	OutRotation = FRotator(Pitch, 0, Roll);
 
 	CurrentSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
+
+	//if (bIsNowOnGround && !bWasOnGroundLastFrame)
+	//{
+	//	PlaySoundCue(CurrentSurfaceType, HitResult.ImpactPoint);
+	//}
+
+	//if (bIsNowOnGround && !bWasOnGroundLastFrame)
+	//{
+	//	if (SurfaceTypeToSoundCueMap.Contains(CurrentSurfaceType))
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("발소리 재생: SurfaceType %d, Location (%s)"), (int32)CurrentSurfaceType, *HitResult.ImpactPoint.ToString());
+	//	}
+	//	else
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("SurfaceTypeToSoundCueMap에 매칭 없음: %d"), (int32)CurrentSurfaceType);
+	//	}
+	//
+	//	PlaySoundCue(CurrentSurfaceType, GetOwner()->GetActorLocation());
+	//}
+	//
+	//bWasOnGroundLastFrame = bIsNowOnGround;
+
 }
 
+void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceTpye, FVector InLocation)
+{
+	if (SurfaceTypeToSoundCueMap.Contains(InCurSurFaceTpye))
+	{
+		USoundCue* SoundCue = SurfaceTypeToSoundCueMap[InCurSurFaceTpye];
+		if (SoundCue)
+		{
+			FVector Velocity = OwnerCharacter->GetVelocity();
+			float Speed = Velocity.Size();
+
+			float VolumeMultiplier = FMath::Clamp(Speed / 650, 0.5f, 1.2f);
+
+			UGameplayStatics::PlaySoundAtLocation(this, SoundCue, InLocation, VolumeMultiplier);
+		}
+	}
+}

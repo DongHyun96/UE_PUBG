@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Kismet/kismetSystemLibrary.h"
+#include "Sound/SoundCue.h"
 #include "C_FeetComponent.generated.h"
+//#include "C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/PhysicsCore/Public/Chaos/ChaosEngineInterface.h"
 
 USTRUCT(BlueprintType)
 struct FFeetData
@@ -51,6 +53,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EPhysicalSurface GetSurfaceType() { return CurrentSurfaceType; }
 
+	/// <summary>
+	/// FeetComponent내부에서 발소리를 재생하려고 했는데 쉽지 않아서
+	/// 애니메이션에 Notify를 사용하는 것으로 선회.
+	/// </summary>
+	/// <param name="InCurSurFaceTpye"></param>
+	/// <param name="InLocation"></param>
+	void PlaySoundCue(EPhysicalSurface InCurSurFaceTpye, FVector InLocation);
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TEnumAsByte<EDrawDebugTrace::Type> DrawDebugType;
@@ -70,10 +80,22 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FName RightSocket = "RightFoot";
 
+protected:
+	/// <summary>
+	/// EPhysicalSurface를 바로 Key로 사용할 수 없음.
+	/// EPhysicalSurface는 UEnum값이 아니라 #define으로 정의된 C++ Enum값임.
+	/// 그래서 TEnumAsByte로 감싸서(캐스팅)해서 사용해야함.
+	/// </summary>
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<TEnumAsByte<EPhysicalSurface>, USoundCue*> SurfaceTypeToSoundCueMap{};
 private:
-	class AC_BasicCharacter* OwnerCharacter;
+	class AC_BasicCharacter* OwnerCharacter = nullptr;
 
 	FFeetData Data{};
 
 	EPhysicalSurface CurrentSurfaceType = EPhysicalSurface::SurfaceType_Default;
+
+	float LastFootstepTime = 0.0f;
+
+	bool bWasOnGroundLastFrame = false;
 };
