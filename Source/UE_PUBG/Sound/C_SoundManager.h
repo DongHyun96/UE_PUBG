@@ -28,6 +28,7 @@ enum class ESoundClassName : uint8
 	USING_HEAL_ITEM,
 	MELEE_WEAPON,
 	THROWING_WEAPON,
+	FOOT_STEP,
 	MAX
 };
 
