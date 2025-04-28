@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -38,7 +38,29 @@ public:
 	/// </summary>
 	void StartFlight();
 
+	/// <summary>
+	/// 비행기 엔진음 시작.
+	/// </summary>
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartEngineSound();
+
+
+	/// <summary>
+	/// 비행기 엔진음 중지.
+	/// </summary>
+	UFUNCTION(BlueprintImplementableEvent)
+	void StopEngineSound();
+
+protected:
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//class UAudioComponent* EngineAudioComponent{};
+	//
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//class UBasceSound* 
+
 private:
+
+	void OnEngineSound(bool bIsPlaySound);
 
 	/// <summary>
 	/// Player의 Map에 비행기 표시 Update
