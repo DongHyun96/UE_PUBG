@@ -29,6 +29,9 @@ enum class ESoundClassName : uint8
 	MELEE_WEAPON,
 	THROWING_WEAPON,
 	FOOT_STEP,
+	AIRPLANE,
+	LANDING,
+	PARACHUTE,
 	MAX
 };
 
