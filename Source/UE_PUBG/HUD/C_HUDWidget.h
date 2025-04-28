@@ -179,5 +179,3 @@ private:
 	FVector2D		MagneticFieldIndicatorPosLerpDestination = MINIMAP_MINIMIZED_INDICATOR_POS; 
 
 };
-
-

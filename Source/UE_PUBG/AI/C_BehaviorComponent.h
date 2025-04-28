@@ -50,6 +50,11 @@ public:
 	bool SetIdleTaskType(EIdleTaskType Type);
 	EIdleTaskType GetIdleTaskType() const;
 
+public: // Attack이 끝나고 기다릴 시간 Add 처리
+
+	
+	
+
 private:
 	/// <summary>
 	/// TargetCharacter가 죽었을 때 Callback을 받는 함수
@@ -63,6 +68,9 @@ protected:
 public:
 
 	float GetWaitTime() const { return WaitTime; }
+
+	float GetAfterAttackTaskWaitTime() const { return AfterAttackTaskWaitTime; }
+	void  SetAfterAttackTaskWaitTime(float InTime) { AfterAttackTaskWaitTime = InTime;}
 	
 	/// <summary>
 	/// TargetCharacter 세팅하기 
@@ -112,16 +120,16 @@ protected:
 	FName CombatTaskKey = "CombatTask";
 
 private:
-	class UBlackboardComponent* Blackboard{};
-
-private: // WAIT_TASK 시간
-
-	float WaitTime{};
+	UBlackboardComponent* Blackboard{};
 
 private:
+
+	float WaitTime{}; // 기본 WAIT_TASK 시간
+
+	float FlashBangEffectDuration{}; // FlashBang Effect Duration
+
+	float AfterAttackTaskWaitTime{}; // AttackTask가 끝난 이후 Wait처리될 WaitTime
 	
-	// FlashBang Effect Duration
-	float FlashBangEffectDuration{};
 };
 
 

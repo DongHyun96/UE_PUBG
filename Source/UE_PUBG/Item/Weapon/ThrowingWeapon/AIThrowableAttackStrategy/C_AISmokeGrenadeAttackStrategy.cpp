@@ -16,16 +16,17 @@ bool UC_AISmokeGrenadeAttackStrategy::ExecuteAIAttack(AC_ThrowingWeapon* Throwin
 	//ThrowingWeapon->StartCooking();
 	//ThrowingWeapon->ReleaseOnGround();
 
-	CookingStartTimer = 0.f;
+	CookingStartTimers.Add(ThrowingWeapon, 0.f);
+	// Cook = 0.f;
 	
 	return true;
 }
 
 bool UC_AISmokeGrenadeAttackStrategy::ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingWeapon, AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
 {
-	CookingStartTimer += DeltaTime;
+	CookingStartTimers[ThrowingWeapon] += DeltaTime;
 
-	if (CookingStartTimer < TIME_TO_COOK_AND_RELEASE)
+	if (CookingStartTimers[ThrowingWeapon] < TIME_TO_COOK_AND_RELEASE)
 	{
 		ThrowingWeapon->ExecuteMlb_OnGoing();
 		return true;
@@ -33,5 +34,6 @@ bool UC_AISmokeGrenadeAttackStrategy::ExecuteAIAttackTickTask(AC_ThrowingWeapon*
 	
 	ThrowingWeapon->StartCooking();
 	ThrowingWeapon->ReleaseOnGround();
+	CookingStartTimers[ThrowingWeapon] = 0.f;
 	return false;
 }

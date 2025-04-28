@@ -19,7 +19,7 @@ public:
 	bool ExecuteAIAttack(AC_ThrowingWeapon* ThrowingWeapon, AC_BasicCharacter* InTargetCharacter) override;
 	bool ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingWeapon, AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
 
-public:
+private:
 	/// <summary>
 	/// 던질 수 있는 제한 거리 이내에 있는지 check
 	/// </summary>
@@ -45,7 +45,8 @@ private:
 
 private:
 	static const float TIME_TO_THROW;
-	static const float WAIT_TIME_AFTER_THROW;
-	float ThrowTimer{};
+	
+	// float ThrowTimer{};
+	TMap<AC_ThrowingWeapon*, float> ThrowTimers{};
 	
 };

@@ -3,6 +3,9 @@
 
 #include "Item/Weapon/ThrowingWeapon/AIThrowableAttackStrategy/C_AIThrowingStrategy.h"
 
+#include "AI/C_BehaviorComponent.h"
+#include "AI/C_EnemyAIController.h"
+#include "Character/C_Enemy.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_SmokeEnteredChecker.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
@@ -12,31 +15,45 @@
 #include "Utility/C_Util.h"
 
 const float UC_AIThrowingStrategy::TIME_TO_THROW = 1.5f;
-const float UC_AIThrowingStrategy::WAIT_TIME_AFTER_THROW = 3.5f;
 
 bool UC_AIThrowingStrategy::ExecuteAIAttack(AC_ThrowingWeapon* ThrowingWeapon, AC_BasicCharacter* InTargetCharacter)
 {
 	if (!ThrowingWeapon->ExecuteMlb_Started()) return false;
-	ThrowTimer = 0.f;
+	ThrowTimers.Add(ThrowingWeapon, 0.f);
 	return true;
 }
 
 bool UC_AIThrowingStrategy::ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingWeapon, AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
 {
-	ThrowTimer += DeltaTime;
+	ThrowTimers[ThrowingWeapon] += DeltaTime;
 
 	// TargetCharacter가 사라졌거나, Target까지의 거리가 너무 멀어졌을 때
 	if (!IsValid(InTargetCharacter) || !IsPossibleDistanceToThrow(ThrowingWeapon->GetActorLocation(), InTargetCharacter->GetActorLocation()))
 	{
 		// 던지기 취소(HandState None으로 돌아가기)
-		ThrowingWeapon->GetOwnerCharacter()->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::NONE);
+		ThrowingWeapon->GetOwnerCharacter()->GetEquippedComponent()->ToggleArmed();
+		
+		if (AC_Enemy* WeaponOwnerEnemy = Cast<AC_Enemy>(ThrowingWeapon->GetOwnerCharacter()))
+			WeaponOwnerEnemy->GetEnemyAIController()->GetBehaviorComponent()->SetAfterAttackTaskWaitTime(3.f);			
+		else UC_Util::Print("From AIThrowingStrategy::ExecuteAIAttackTickTask : WeaponOwnerEnemy casting failed!", FColor::Red, 10.f);
+		
 		return false;
 	}
 	
 	// 이미 TargetCharacter가 사망 처리 되었을 때
-	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false;
+	if (InTargetCharacter->GetMainState() == EMainState::DEAD)
+	{
+		// 던지기 취소(HandState None으로 돌아가기)
+		ThrowingWeapon->GetOwnerCharacter()->GetEquippedComponent()->ToggleArmed();
 
-	if (ThrowTimer < TIME_TO_THROW)
+		if (AC_Enemy* WeaponOwnerEnemy = Cast<AC_Enemy>(ThrowingWeapon->GetOwnerCharacter()))
+			WeaponOwnerEnemy->GetEnemyAIController()->GetBehaviorComponent()->SetAfterAttackTaskWaitTime(3.f);			
+		else UC_Util::Print("From AIThrowingStrategy::ExecuteAIAttackTickTask : WeaponOwnerEnemy casting failed!", FColor::Red, 10.f);
+		
+		return false;
+	}
+
+	if (ThrowTimers[ThrowingWeapon] < TIME_TO_THROW)
 	{
 		ThrowingWeapon->ExecuteMlb_OnGoing();
 
@@ -71,23 +88,30 @@ bool UC_AIThrowingStrategy::ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingW
 		TargetThrowLocation = InTargetCharacter->GetActorLocation();
 		bUseRandomNearByThrowTargetLocation = true;
 	}
-	
-	// LaunchValues를 초기화 할 수 없을 때(ex) 던지는 위로 향하는 궤적에 물체가 있을 때)
-	if (!UpdateProjectileLaunchValues(ThrowingWeapon, TargetThrowLocation, bUseRandomNearByThrowTargetLocation))
+
+	ThrowTimers[ThrowingWeapon] = 0.f;
+
+	// 던지기 실패 또는 던지기 성공 모두 AttackTask 이 후, 2초 기다리기(무기 집어넣는 시간 및 무기 던지는 모션 기다리기 시간 기다려주기)
+	if (AC_Enemy* WeaponOwnerEnemy = Cast<AC_Enemy>(ThrowingWeapon->GetOwnerCharacter()))
+		WeaponOwnerEnemy->GetEnemyAIController()->GetBehaviorComponent()->SetAfterAttackTaskWaitTime(4.f);			
+	else UC_Util::Print("From AIThrowingStrategy::ExecuteAIAttackTickTask : WeaponOwnerEnemy casting failed!", FColor::Red, 10.f);
+
+	if (UpdateProjectileLaunchValues(ThrowingWeapon, TargetThrowLocation, bUseRandomNearByThrowTargetLocation))
 	{
-		UWorld* World = ThrowingWeapon->GetWorld();
-		UC_Util::Print("On AI ThrowingStrategy : Cannot init LaunchValues! terminating TickTask strategy!", UC_GameSceneManager::GetInstance(World)->GetTickRandomColor(), 10.f);
-		ThrowTimer = 0.f;
+		// 던지기
+		ThrowingWeapon->ExecuteMlb_Completed();
 		return false;
 	}
-
-	// 던지기
-	ThrowingWeapon->ExecuteMlb_Completed();
-
-	// 던진 이후로도 조금은 기다려줘야 할 듯
-	if (ThrowTimer < WAIT_TIME_AFTER_THROW) return true;
-
-	ThrowTimer = 0.f;
+	
+	// LaunchValues를 초기화 할 수 없을 때(ex) 던지는 위로 향하는 궤적에 물체가 있을 때)
+	UWorld* World = ThrowingWeapon->GetWorld();
+	UC_Util::Print("On AI ThrowingStrategy : Cannot init LaunchValues! terminating TickTask strategy!", UC_GameSceneManager::GetInstance(World)->GetTickRandomColor(), 10.f);
+	
+	bool bToggleArmedSucceeded = ThrowingWeapon->GetOwnerCharacter()->GetEquippedComponent()->ToggleArmed();
+	
+	FString Str = (bToggleArmedSucceeded) ? "Toggle Armed Succeeded!" : "Toggle Armed Failed!";
+	UC_Util::Print(Str, UC_GameSceneManager::GetInstance(World)->GetTickRandomColor(), 10.f);
+	
 	return false;
 }
 

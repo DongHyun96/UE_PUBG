@@ -6,6 +6,7 @@
 #include "UE_PUBG/Item/C_Item.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Enemy.h"
 #include "Gun/C_Gun.h"
 #include "MeleeWeapon/C_MeleeWeapon.h"
 #include "ThrowingWeapon/C_ThrowingWeapon.h"
