@@ -51,15 +51,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void StopEngineSound();
 
-protected:
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//class UAudioComponent* EngineAudioComponent{};
-	//
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//class UBasceSound* 
-
 private:
 
+	/// <summary>
+	/// True  : 엔진음 play
+	/// False : 엔진음 Stop
+	/// </summary>
 	void OnEngineSound(bool bIsPlaySound);
 
 	/// <summary>
