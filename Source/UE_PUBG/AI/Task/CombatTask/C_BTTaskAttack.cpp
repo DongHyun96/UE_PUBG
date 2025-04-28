@@ -38,6 +38,7 @@ void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 		EnemyAIController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
 		EnemyAIController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
 	}
 
 	// 지속적으로 몇 초간 현재 무기로 공격한다고 하면 TickTask 사용
