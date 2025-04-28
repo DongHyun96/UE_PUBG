@@ -66,7 +66,7 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Data.RightRotation =
 		UKismetMathLibrary::RInterpTo(Data.RightRotation, RightRotation, DeltaTime, InterpSpeed);
 
-	//PlaySoundInTick(DeltaTime);
+	PlaySoundInTick(DeltaTime);
 
 }
 
@@ -183,14 +183,14 @@ void UC_FeetComponent::PlaySoundInTick(float DeltaTime)
 	float FootstepInterval = 1.25f - Speed / 670.f;
 
 	AccumulatedFootstepTime += DeltaTime; // 매 프레임 델타타임만큼 누적
-	UC_Util::Print(Speed);
-	UC_Util::Print(FootstepInterval);
-	UC_Util::Print(AccumulatedFootstepTime);
+	//UC_Util::Print(Speed);
+	//UC_Util::Print(FootstepInterval);
+	//UC_Util::Print(AccumulatedFootstepTime);
 
 	if (AccumulatedFootstepTime >= FootstepInterval)
 	{
-		FVector Velocity = OwnerCharacter->GetVelocity();
-		float Speed = Velocity.Size();
+		//FVector Velocity = OwnerCharacter->GetVelocity();
+		//float Speed = Velocity.Size();
 
 		float VolumeMultiplier = FMath::Clamp(Speed / 670.f, 0.5f, 1.2f);
 
