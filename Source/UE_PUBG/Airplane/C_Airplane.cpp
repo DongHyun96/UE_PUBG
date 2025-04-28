@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Airplane/C_Airplane.h"
@@ -10,8 +10,10 @@
 #include "HUD/C_MainMapWidget.h"
 
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
-
 #include "Components/SceneComponent.h"
+#include "Components/AudioComponent.h"
+
+#include "Kismet/GameplayStatics.h"
 
 #include "Utility/C_Util.h"
 
@@ -41,6 +43,7 @@ void AC_Airplane::BeginPlay()
 		UStaticMeshComponent* Prop	= Cast<UStaticMeshComponent>(GetDefaultSubobjectByName(PropName));
 		if (Prop) Props.Add(Prop);
 	}
+
 }
 
 // Called every frame
@@ -71,12 +74,17 @@ void AC_Airplane::SetFlightDirection(FVector InDirection)
 void AC_Airplane::SetIsFlying(bool InIsFlying)
 {
 	IsFlying = InIsFlying;
+
+	OnEngineSound(InIsFlying);
+
 	this->SetActorHiddenInGame(!InIsFlying);
 }
 
 void AC_Airplane::StartFlight()
 {
 	IsFlying = true;
+
+	OnEngineSound(true);
 
 	this->SetActorHiddenInGame(false);
 	this->SetActorLocation(StartPosition);
@@ -88,6 +96,14 @@ void AC_Airplane::StartFlight()
 	if (!Player) Player = GAMESCENE_MANAGER->GetPlayer();
 	Player->GetMainMapWidget()->ToggleAirplaneImageVisibility(true);
 	Player->GetHUDWidget()->GetMiniMapWidget()->ToggleAirplaneImageVisibility(true);
+}
+
+void AC_Airplane::OnEngineSound(bool bIsPlaySound)
+{
+	if (bIsPlaySound)
+		StartEngineSound();
+	else
+		StopEngineSound();	
 }
 
 void AC_Airplane::UpdatePlayerMapHUD()

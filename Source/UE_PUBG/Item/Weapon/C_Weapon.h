@@ -129,8 +129,6 @@ public:
 	FPriorityAnimMontage GetCurDrawMontage() const { return CurDrawMontage; }
 	FPriorityAnimMontage GetCurSheathMontage() const { return CurSheathMontage; }
 
-	FString GetKillLogWeaponName() const { return KillLogWeaponName; }
-
 	UTexture2D* GetKillLogTexture() const { return KillLogTexture; }
 
 public:
@@ -178,10 +176,6 @@ private:
 	FTransform InitialRelativeTransform{};
 
 protected:
-
-	// 킬로그에 표시될 Weapon 이름
-	UPROPERTY(BlueprintReadWRite, EditDefaultsOnly)
-	FString KillLogWeaponName{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UTexture2D* KillLogTexture{};

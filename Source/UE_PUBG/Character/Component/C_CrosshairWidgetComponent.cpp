@@ -171,6 +171,7 @@ void UC_CrosshairWidgetComponent::ManageAimWidgetImages()
 	// 현재 HUDMode에 따른 OnScreen 체크
 	OnScreen = (GAMESCENE_MANAGER->GetCurrentHUDMode() != EHUDMode::IDLE) ? false : OnScreen;
 
+	OnScreen = (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() != OwnerCharacter) ? false : OnScreen;
 	if (!IsValid(CurGun))
 		SetCrosshairState(ECrosshairState::NORIFLE);
 	ToggleWidgetVisibility(OnScreen);

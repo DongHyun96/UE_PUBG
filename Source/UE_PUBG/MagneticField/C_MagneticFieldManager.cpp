@@ -14,6 +14,7 @@
 #include "Character/Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_InstructionWidget.h"
+#include "HUD/C_MagneticFieldIndicatorWidget.h"
 #include "HUD/C_MapWidget.h"
 #include "HUD/C_MainMapWidget.h"
 
@@ -29,7 +30,10 @@ AC_MagneticFieldManager::AC_MagneticFieldManager()
 void AC_MagneticFieldManager::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	// TODO : 밑 라인 지우기
+	// PhaseInfos = TestPhaseInfos;
+	
 	FTimerHandle TimerHandle{};
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_MagneticFieldManager::ActivateMagneticField, 5.f);
 }
@@ -52,6 +56,8 @@ void AC_MagneticFieldManager::Tick(float DeltaTime)
 void AC_MagneticFieldManager::ActivateMagneticField()
 {
 	bIsHandleUpdateStateStarted = true;
+
+	Timer = 0.f;
 	
 	const int Minutes = PhaseInfos[CurrentPhase].ShrinkDelayTime / 60;
 	const int Seconds = PhaseInfos[CurrentPhase].ShrinkDelayTime - 60 * Minutes;
@@ -63,8 +69,12 @@ void AC_MagneticFieldManager::ActivateMagneticField()
 	if (Seconds != 0)		MagneticFieldInfoString += FString::FromInt(Seconds) + " SECONDS ";
 
 	MagneticFieldInfoString += "!";
-		
-	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->ActivateMagneticFieldInstructionText(MagneticFieldInfoString);
+
+	UC_HUDWidget* HUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget();
+	
+	HUDWidget->GetInstructionWidget()->ActivateMagneticFieldInstructionText(MagneticFieldInfoString);
+	HUDWidget->GetMagneticFieldIndicatorWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	HUDWidget->GetMagneticFieldIndicatorWidget()->SetPhaseText("PHASE  1");
 
 	InitDelayTimeLeftNotifiedChecker();
 }
@@ -85,6 +95,9 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 		if (Timer < PhaseInfos[CurrentPhase].ShrinkDelayTime)
 		{
 			HandleDelayTimeHUDNotification();
+			float Time = PhaseInfos[CurrentPhase].ShrinkDelayTime - Timer;
+			GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMagneticFieldIndicatorWidget()->SetTimerText(Time);
+			
 			return; // 보류시간이 아직 남았음
 		}
 
@@ -101,7 +114,13 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 			
 			Enemy->GetTargetLocationSettingHelper()->TrySetRandomInCircleTargetLocationAtMagneticCircle(NextCircle);
 		}
-		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->ActivateMagneticFieldInstructionText("RESTRICTING PLAY AREA!");
+
+		{
+			UC_HUDWidget* HUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget(); 
+			HUDWidget->GetInstructionWidget()->ActivateMagneticFieldInstructionText("RESTRICTING PLAY AREA!");
+			HUDWidget->GetMagneticFieldIndicatorWidget()->ToggleWarningTriangleVisibility(true);
+		}
+		
 		return;
 	case EMagneticFieldState::SHRINK:
 
@@ -125,6 +144,13 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 
 		UpdateWalls(MainCircle.MidLocation, MainCircle.Radius);
 		UpdateMainCircleInfoOnMapUI();
+
+		// UI Update
+		{
+			UC_MagneticFieldIndicatorWidget* IndicatorWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMagneticFieldIndicatorWidget();
+			IndicatorWidget->SetTimerText(PhaseInfos[CurrentPhase].ShrinkTotalTime - Timer);
+			IndicatorWidget->SetProgressBarPercent(Timer / PhaseInfos[CurrentPhase].ShrinkTotalTime);
+		}
 
 		return;
 	case EMagneticFieldState::SHRINK_COMPLETED:
@@ -151,19 +177,25 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 		else SetRandomNextCircleAndSpeedDirection(); // Random한 Next Circle 뽑기
 		
 		UpdateNextCircleInfoOnMapUI();
-
-		const int Minutes = PhaseInfos[CurrentPhase].ShrinkDelayTime / 60;
-		const int Seconds = PhaseInfos[CurrentPhase].ShrinkDelayTime - 60 * Minutes;
-
-		FString MagneticFieldInfoString = "PROCEED TO PLAY AREA MARKED ON THE MAP IN ";
 		
-		if (Minutes > 1)		MagneticFieldInfoString += FString::FromInt(Minutes) + " MINUTES";
-		else if (Minutes == 1)	MagneticFieldInfoString += FString::FromInt(Minutes) + " MINUTE";
-		if (Seconds != 0)		MagneticFieldInfoString += FString::FromInt(Seconds) + " SECONDS";
+		{
+			const int Minutes = PhaseInfos[CurrentPhase].ShrinkDelayTime / 60;
+			const int Seconds = PhaseInfos[CurrentPhase].ShrinkDelayTime - 60 * Minutes;
+			
+			FString MagneticFieldInfoString = "PROCEED TO PLAY AREA MARKED ON THE MAP IN ";
+			
+			if (Minutes > 1)		MagneticFieldInfoString += FString::FromInt(Minutes) + " MINUTES";
+			else if (Minutes == 1)	MagneticFieldInfoString += FString::FromInt(Minutes) + " MINUTE";
+			if (Seconds != 0)		MagneticFieldInfoString += FString::FromInt(Seconds) + " SECONDS";
 
-		MagneticFieldInfoString += "!";
-		
-		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->ActivateMagneticFieldInstructionText(MagneticFieldInfoString);
+			MagneticFieldInfoString += "!";
+
+			UC_HUDWidget* HUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget(); 
+			HUDWidget->GetInstructionWidget()->ActivateMagneticFieldInstructionText(MagneticFieldInfoString);
+			HUDWidget->GetMagneticFieldIndicatorWidget()->ToggleWarningTriangleVisibility(false);
+			HUDWidget->GetMagneticFieldIndicatorWidget()->SetProgressBarPercent(0.f);
+			HUDWidget->GetMagneticFieldIndicatorWidget()->SetPhaseText("PHASE  " + FString::FromInt(CurrentPhase));
+		}
 		
 		MagneticFieldState = EMagneticFieldState::IDLE;
 
@@ -200,7 +232,7 @@ void AC_MagneticFieldManager::HandleDamagingCharacters(const float& DeltaTime)
 					nullptr,
 					nullptr,
 					false,
-					0.f
+					0
 				};
 				
 				Character->GetStatComponent()->TakeDamage(DamageAmount, KillFeedDescriptor);

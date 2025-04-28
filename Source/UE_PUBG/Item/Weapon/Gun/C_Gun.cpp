@@ -342,7 +342,7 @@ bool AC_Gun::BackToMainCamera()
 	if (!IsValid(Player)) return false;
 	
 	AimSightCamera->SetActive(false);
-	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() != OwnerCharacter)
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() == this)
 	{
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(OwnerCharacter, 0.2);
 	}
@@ -926,7 +926,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	WolrdContorller->DeprojectScreenPositionToWorld(0.5 * ViewportSize.X, 0.5 * ViewportSize.Y, CenterLocation,CenterDirection);
 	if (HitResult.Distance <= 1000 && HitResult.Distance >0)
 	{
-		FireLocation.Z += 20;
+		//FireLocation.Z += 20;
 		
 		FireDirection = DestLocation - WorldLocation;
 		FireDirection = FireDirection.GetSafeNormal();
@@ -942,9 +942,10 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 		//UC_Util::Print(FireDirection, FColor::Blue);
 
 	}
-	//FRotator LocalRotation(0, 0, 5.6);  
-
-	float RadianValue = FMath::DegreesToRadians(0.06f);
+	//FRotator LocalRotation(0, 0, 5.6);
+	float RadianValue = 0;
+	if (HitResult.Distance >= 200)
+		 RadianValue= FMath::DegreesToRadians(0.06f);
 
 	// 기존 벡터의 크기를 저장
 	float OriginalLength = FireDirection.Size();
@@ -1167,7 +1168,7 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 
 }
 
-bool AC_Gun::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
+bool AC_Gun::ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
 {
 	return false;
 	//return Super::ExecuteAIAttackTickTask(InTargetCharacter, DeltaTime);

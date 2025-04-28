@@ -21,4 +21,10 @@ public:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+private:
+
+	// 세팅된 Attack weapons
+	TMap<class AC_Enemy*, class AC_Weapon*> AttackingWeapons{};
+	
 };

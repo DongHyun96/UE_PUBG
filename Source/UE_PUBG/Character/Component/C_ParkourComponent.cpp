@@ -303,7 +303,7 @@ bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor&
 		CurParkourDesc.CollisionParams
 	);
 
-	DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRad, 10, FColor::Magenta, true);
+	// DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRad, 10, FColor::Magenta, true);
 
 	if (!HasHit)
 	{
@@ -338,7 +338,7 @@ bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor&
 		if (HasHit)
 		{
 			CurParkourDesc.VerticalHitPositions.Add(HitResult.Location);
-			DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRad, 10, FColor::Red, true);
+			// DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRad, 10, FColor::Red, true);
 			continue; // 다음 DistanceLevel 조사
 		}
 
@@ -476,7 +476,7 @@ bool UC_ParkourComponent::CheckLowParkourTarget(FParkourDescriptor& CurParkourDe
 			CurParkourDesc.CollisionParams
 		);
 
-		DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRadius, 20, FColor::Red, true);
+		// DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRadius, 20, FColor::Red, true);
 
 		if (HasHit)
 		{
@@ -518,7 +518,7 @@ bool UC_ParkourComponent::CheckHighParkourTarget(FParkourDescriptor& CurParkourD
 	const FVector CheckSpaceAboveStart = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * 60.f;
 	const FVector CheckSpaceAboveDest = OwnerCharacter->GetActorLocation()  + FVector::UnitZ() * 180.f;
 	const float CheckSpaceAboveRad = OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() * 0.65f;
-	DrawDebugCylinder(GetWorld(), CheckSpaceAboveStart, CheckSpaceAboveDest, CheckSpaceAboveRad, 20, FColor::Red, true);
+	// DrawDebugCylinder(GetWorld(), CheckSpaceAboveStart, CheckSpaceAboveDest, CheckSpaceAboveRad, 20, FColor::Red, true);
 	HitResult = {};
 
 	bool HasSomethingAboveHead = GetWorld()->SweepSingleByChannel
@@ -555,7 +555,7 @@ bool UC_ParkourComponent::CheckHighParkourTarget(FParkourDescriptor& CurParkourD
 			CurParkourDesc.CollisionParams
 		);
 
-		DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRadius, 20, FColor::Red, true);
+		// DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRadius, 20, FColor::Red, true);
 
 		if (HasHit)
 		{
@@ -622,8 +622,8 @@ bool UC_ParkourComponent::CheckSpaceForVaulting(const FParkourDescriptor& CurPar
 		CurParkourDesc.CollisionParams
 	);
 
-	DrawDebugBox(GetWorld(), StartLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Blue, true);
-	DrawDebugBox(GetWorld(), DestLocation,  BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Blue, true);
+	//DrawDebugBox(GetWorld(), StartLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Blue, true);
+	//DrawDebugBox(GetWorld(), DestLocation,  BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Blue, true);
 
 	return !HasHit;
 }
@@ -650,8 +650,8 @@ bool UC_ParkourComponent::CheckSpaceForMantling(const FParkourDescriptor& CurPar
 		CurParkourDesc.CollisionParams
 	);
 
-	DrawDebugBox(GetWorld(), StartLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Cyan, true);
-	DrawDebugBox(GetWorld(), DestLocation,  BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Cyan, true);
+	// DrawDebugBox(GetWorld(), StartLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Cyan, true);
+	// DrawDebugBox(GetWorld(), DestLocation,  BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Cyan, true);
 
 	if (HasHit)
 	{
@@ -672,7 +672,7 @@ bool UC_ParkourComponent::CheckSpaceForMantling(const FParkourDescriptor& CurPar
 		CurParkourDesc.CollisionParams
 	);
 
-	DrawDebugBox(GetWorld(), BoxLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Yellow, true);
+	// DrawDebugBox(GetWorld(), BoxLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Yellow, true);
 	return !HasOverlapped;
 
 	/*StartLocation	  = CurParkourDesc.VerticalHitPositions[0] + FVector::UnitZ() * 100.f;

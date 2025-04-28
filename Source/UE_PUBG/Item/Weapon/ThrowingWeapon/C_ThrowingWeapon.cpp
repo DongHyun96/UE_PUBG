@@ -25,7 +25,6 @@
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_EquippedComponent.h"
-#include "Character/Component/C_InvenSystem.h"	
 #include "Character/C_AnimBasicCharacter.h"
 
 #include "HUD/C_HUDWidget.h"
@@ -40,7 +39,6 @@
 #include "AIThrowableAttackStrategy/C_AIGrenadeAttackStrategy.h"
 #include "AIThrowableAttackStrategy/C_AISmokeGrenadeAttackStrategy.h"
 #include "AIThrowableAttackStrategy/I_AIThrowableAttackStrategy.h"
-#include "Character/C_Enemy.h"
 
 #include "Utility/C_Util.h"
 
@@ -122,7 +120,7 @@ void AC_ThrowingWeapon::BeginPlay()
 		GAMESCENE_MANAGER->AddGCProtectedObject(FlashBangExplode->_getUObject());
 		GAMESCENE_MANAGER->AddGCProtectedObject(SmokeExplode->_getUObject());
 
-		ExplodeStrategies.Add(EThrowableType::GRENADE,	GrenadeExplode);
+		ExplodeStrategies.Add(EThrowableType::GRENADE,		GrenadeExplode);
 		ExplodeStrategies.Add(EThrowableType::FLASH_BANG,	FlashBangExplode);
 		ExplodeStrategies.Add(EThrowableType::SMOKE,		SmokeExplode);
 	}
@@ -154,10 +152,7 @@ void AC_ThrowingWeapon::BeginPlay()
 
 	// 자기 자신의 AIAttack 전략 init
 	AIAttackStrategy = AIAttackStrategies[ThrowableType];
-
-	// Grenade 이외에는 비살상무기이지만, 초기화는 해둠
-	KillLogWeaponName = (ThrowableType == EThrowableType::GRENADE) ? "Hand Grenade" :
-						(ThrowableType == EThrowableType::FLASH_BANG) ? "Flash Bang" : "Smoke Grenade";
+	
 }
 
 void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -172,8 +167,8 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 				OwnerMeshTemp = nullptr;
 			}
 
-			if (!ExplodeStrategies.IsEmpty()) ExplodeStrategies.Empty(); // GC는 GameSceneManager에서 처리
-			if (!AIAttackStrategies.IsEmpty()) AIAttackStrategies.Empty(); // GC는 GSMgr에서 처리
+			if (!ExplodeStrategies.IsEmpty())	ExplodeStrategies.Empty(); // GC는 GameSceneManager에서 처리
+			if (!AIAttackStrategies.IsEmpty())	AIAttackStrategies.Empty(); // GC는 GSMgr에서 처리
 		}
 		return;
 	}

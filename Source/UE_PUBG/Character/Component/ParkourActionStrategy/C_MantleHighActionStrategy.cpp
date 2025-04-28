@@ -33,9 +33,9 @@ void UC_MantleHighActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter*
 
 	UWorld* TargetWorld = TargetCharacter->GetWorld();
 
-	DrawDebugSphere(TargetWorld, WarpStartPos, 5.f, 4, FColor::Red, true);
-	DrawDebugSphere(TargetWorld, WarpMiddlePos, 5.f, 4, FColor::Red, true);
-	DrawDebugSphere(TargetWorld, WarpLandPos, 5.f, 4, FColor::Red, true);
+	//DrawDebugSphere(TargetWorld, WarpStartPos, 5.f, 4, FColor::Red, true);
+	//DrawDebugSphere(TargetWorld, WarpMiddlePos, 5.f, 4, FColor::Red, true);
+	//DrawDebugSphere(TargetWorld, WarpLandPos, 5.f, 4, FColor::Red, true);
 
 	UMotionWarpingComponent* MotionWarping = TargetCharacter->GetMotionWarpingComponent();
 

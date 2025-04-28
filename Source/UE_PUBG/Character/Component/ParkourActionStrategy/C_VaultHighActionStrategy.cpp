@@ -34,9 +34,9 @@ void UC_VaultHighActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* 
 
 	UWorld* TargetWorld = TargetCharacter->GetWorld();
 
-	DrawDebugSphere(TargetWorld, WarpStartPos, 5.f, 4, FColor::Red, true);
-	DrawDebugSphere(TargetWorld, WarpMiddlePos, 5.f, 4, FColor::Yellow, true);
-	DrawDebugSphere(TargetWorld, WarpLandPos, 5.f, 4, FColor::Blue, true);
+	//DrawDebugSphere(TargetWorld, WarpStartPos, 5.f, 4, FColor::Red, true);
+	//DrawDebugSphere(TargetWorld, WarpMiddlePos, 5.f, 4, FColor::Yellow, true);
+	//DrawDebugSphere(TargetWorld, WarpLandPos, 5.f, 4, FColor::Blue, true);
 
 	UMotionWarpingComponent* MotionWarping = TargetCharacter->GetMotionWarpingComponent();
 

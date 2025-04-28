@@ -30,7 +30,7 @@ const TArray<float> UC_StatComponent::EACH_BOOST_PHASE_BORDER = { 20.f, 60.f, 90
 const TArray<FBoostingEffectFactor> UC_StatComponent::BOOSTING_EFFECT_FACTORS =
 {
 	{1.f, 1.f},		// 1페이즈 8초당 체력 회복량 & 이동 속도 증가(factor)
-	{2.f, 1.01f},		// 2페이즈
+	{2.f, 1.01f},	// 2페이즈
 	{3.f, 1.025f},	// 3페이즈
 	{4.f, 1.0625f}	// 4페이즈
 };
@@ -136,7 +136,7 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 	// 사망
 	if (CurHP <= 0.f)
 	{
-		// if (Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠 ((현재 Enemy만 처리))
+		if (Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠 ((현재 Enemy만 처리))
 		
 		// 사망 처리 
 		OwnerCharacter->CharacterDead(KillFeedDescriptor);

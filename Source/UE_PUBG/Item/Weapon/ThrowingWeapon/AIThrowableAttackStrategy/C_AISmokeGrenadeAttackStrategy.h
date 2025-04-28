@@ -24,7 +24,9 @@ public:
 
 private:
 
-	float CookingStartTimer{};
+	TMap<AC_ThrowingWeapon*, float> CookingStartTimers{};
+	// float CookingStartTimer{};
+	
 	static const float TIME_TO_COOK_AND_RELEASE;
 	
 };

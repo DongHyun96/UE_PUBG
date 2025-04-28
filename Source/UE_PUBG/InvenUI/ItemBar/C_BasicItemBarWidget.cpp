@@ -70,7 +70,7 @@ FReply UC_BasicItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& In
 			//드래그를 시작하고 반응함
 			FEventReply RePlyResult =
 				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-			AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+			AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)); //TODO : 게임 신 매니저에서 플레이어 가져오기
 			//UC_Util::Print("LeftMouseButton");
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 

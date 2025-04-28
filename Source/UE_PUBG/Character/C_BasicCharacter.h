@@ -228,6 +228,8 @@ public: // Getters and setters
 	void SetKillCount(int InKillCount) { KillCount = InKillCount; }
 	int GetKillCount() const { return KillCount; }
 
+	UFUNCTION(BlueprintCallable)
+	UC_FeetComponent* GetFeetComponent() { return FeetComponent; }
 protected:
 	void SetPoseState(EPoseState InPoseState);
 

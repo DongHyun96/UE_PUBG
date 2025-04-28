@@ -12,19 +12,15 @@
 #include "Utility/C_Util.h"
 
 #include "Character/Component/C_InvenSystem.h"
-#include "InvenUserInterface/C_InvenUiWidget.h"
 
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
 #include "HUD/C_MapWidget.h"
 
 #include "Blueprint/UserWidget.h"
-#include "NavMesh/NavMeshBoundsVolume.h"
 
 #include "Loot/C_LootCrate.h"
 #include "Item/ItemManager/C_ItemManager.h"
-#include "Kismet/KismetArrayLibrary.h"
-#include "Runtime/Core/Tests/Containers/TestUtils.h"
 #include "Sound/C_SoundManager.h"
 
 #include "Utility/C_TickRandomColorGenerator.h"
@@ -75,12 +71,8 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		{
 			FNameStruct* Row = RandomNameDataTable->FindRow<FNameStruct>(RowNames[++EnemyCount], TEXT(""));
 
-			if (Row)
-			{
-				E->SetCharacterName(Row->Name);
-				UC_Util::Print("Enemy Name : " + Row->Name, FColor::Red, 20.f);
-			}
-			else UC_Util::Print("From GameSceneManager : RandomName Row missing!", FColor::Red, 10.f);
+			if (Row)	E->SetCharacterName(Row->Name);
+			else		UC_Util::Print("From GameSceneManager : RandomName Row missing!", FColor::Red, 10.f);
 
 			E->SetCharacterNumber(++CharacterNumber);
 			
