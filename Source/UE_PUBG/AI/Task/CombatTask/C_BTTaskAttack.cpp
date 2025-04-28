@@ -32,12 +32,22 @@ void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	// 현재 FlashBang 피격 중인 상황(현상 유지)
 	if (EnemyAIController->IsFlashBangEffectTimeLeft()) return;
 
-	AC_Weapon* CurrentAttackingWeapon = Enemy->GetEquippedComponent()->GetCurWeapon();
+	if (!AttackingWeapons.Contains(Enemy))
+	{
+		EnemyAIController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
+		EnemyAIController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
+	
+	AC_Weapon* CurrentAttackingWeapon = AttackingWeapons[Enemy];
 	if (!IsValid(CurrentAttackingWeapon))
 	{
 		EnemyAIController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
 		EnemyAIController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+
+		AttackingWeapons.Remove(Enemy);
 		return;
 	}
 
@@ -47,6 +57,7 @@ void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 		EnemyAIController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
 		EnemyAIController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		AttackingWeapons.Remove(Enemy);
 	}
 }
 
@@ -95,15 +106,12 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	}
 
 	AC_Weapon* CurrentAttackingWeapon = EquippedComponent->GetCurWeapon();
-	bool AttackSucceeded = CurrentAttackingWeapon->ExecuteAIAttack(TargetCharacter);
-
-	//if (AttackSucceeded)	UC_Util::Print("Attack Succeeded", FColor::Red, 10.f);
-	//else					UC_Util::Print("Attack Failed",    FColor::Red, 10.f);
-
-	// BehaviorComponent->SetServiceType(EServiceType::IDLE);
-
+	
 	// TickTask가 필요한 무기의 경우, TickTask에서 Continue / 필요 없는 무기의 경우 TickTask에서 바로 Succeeded로 처리
-	return AttackSucceeded ? EBTNodeResult::InProgress : EBTNodeResult::Failed;
+	if (!CurrentAttackingWeapon->ExecuteAIAttack(TargetCharacter)) return EBTNodeResult::Failed;
+	
+	AttackingWeapons.Add(Enemy, CurrentAttackingWeapon);
+	return EBTNodeResult::InProgress;
 }
 
 

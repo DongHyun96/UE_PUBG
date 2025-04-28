@@ -45,6 +45,7 @@ private:
 
 private:
 	static const float TIME_TO_THROW;
+	static const float WAIT_TIME_AFTER_THROW;
 	float ThrowTimer{};
 	
 };

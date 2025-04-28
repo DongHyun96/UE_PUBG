@@ -8,12 +8,16 @@
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Singleton/C_GameSceneManager.h"
+#include "Utility/C_Util.h"
 
 const float UC_AIThrowingStrategy::TIME_TO_THROW = 1.5f;
+const float UC_AIThrowingStrategy::WAIT_TIME_AFTER_THROW = 3.5f;
 
 bool UC_AIThrowingStrategy::ExecuteAIAttack(AC_ThrowingWeapon* ThrowingWeapon, AC_BasicCharacter* InTargetCharacter)
 {
 	if (!ThrowingWeapon->ExecuteMlb_Started()) return false;
+	ThrowTimer = 0.f;
 	return true;
 }
 
@@ -22,14 +26,13 @@ bool UC_AIThrowingStrategy::ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingW
 	ThrowTimer += DeltaTime;
 
 	// TargetCharacter가 사라졌거나, Target까지의 거리가 너무 멀어졌을 때
-	if (!IsValid(InTargetCharacter) ||
-		!IsPossibleDistanceToThrow(ThrowingWeapon->GetActorLocation(), InTargetCharacter->GetActorLocation()))
+	if (!IsValid(InTargetCharacter) || !IsPossibleDistanceToThrow(ThrowingWeapon->GetActorLocation(), InTargetCharacter->GetActorLocation()))
 	{
 		// 던지기 취소(HandState None으로 돌아가기)
 		ThrowingWeapon->GetOwnerCharacter()->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::NONE);
 		return false;
 	}
-
+	
 	// 이미 TargetCharacter가 사망 처리 되었을 때
 	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false;
 
@@ -52,9 +55,8 @@ bool UC_AIThrowingStrategy::ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingW
 		return true;
 	}
 
-	// 쿠킹 없이 바로 던지기
 	
-	// 던질 시간
+	// 던질 시간, 쿠킹 없이 바로 던지기
 
 	FVector TargetThrowLocation{};
 	bool bUseRandomNearByThrowTargetLocation{};
@@ -72,12 +74,20 @@ bool UC_AIThrowingStrategy::ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingW
 	
 	// LaunchValues를 초기화 할 수 없을 때(ex) 던지는 위로 향하는 궤적에 물체가 있을 때)
 	if (!UpdateProjectileLaunchValues(ThrowingWeapon, TargetThrowLocation, bUseRandomNearByThrowTargetLocation))
+	{
+		UWorld* World = ThrowingWeapon->GetWorld();
+		UC_Util::Print("On AI ThrowingStrategy : Cannot init LaunchValues! terminating TickTask strategy!", UC_GameSceneManager::GetInstance(World)->GetTickRandomColor(), 10.f);
+		ThrowTimer = 0.f;
 		return false;
+	}
 
-	DrawDebugSphere(ThrowingWeapon->GetWorld(), TargetThrowLocation, 50.f, 20, FColor::Red, true);
-	
 	// 던지기
 	ThrowingWeapon->ExecuteMlb_Completed();
+
+	// 던진 이후로도 조금은 기다려줘야 할 듯
+	if (ThrowTimer < WAIT_TIME_AFTER_THROW) return true;
+
+	ThrowTimer = 0.f;
 	return false;
 }
 

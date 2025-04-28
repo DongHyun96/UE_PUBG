@@ -30,8 +30,10 @@ AC_MagneticFieldManager::AC_MagneticFieldManager()
 void AC_MagneticFieldManager::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	// TODO : 밑 라인 지우기
-	PhaseInfos = TestPhaseInfos;
+	// PhaseInfos = TestPhaseInfos;
+	
 	FTimerHandle TimerHandle{};
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_MagneticFieldManager::ActivateMagneticField, 5.f);
 }

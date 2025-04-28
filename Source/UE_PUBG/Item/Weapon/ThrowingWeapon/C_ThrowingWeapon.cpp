@@ -25,7 +25,6 @@
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_EquippedComponent.h"
-#include "Character/Component/C_InvenSystem.h"	
 #include "Character/C_AnimBasicCharacter.h"
 
 #include "HUD/C_HUDWidget.h"
@@ -40,7 +39,6 @@
 #include "AIThrowableAttackStrategy/C_AIGrenadeAttackStrategy.h"
 #include "AIThrowableAttackStrategy/C_AISmokeGrenadeAttackStrategy.h"
 #include "AIThrowableAttackStrategy/I_AIThrowableAttackStrategy.h"
-#include "Character/C_Enemy.h"
 
 #include "Utility/C_Util.h"
 
@@ -169,8 +167,8 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 				OwnerMeshTemp = nullptr;
 			}
 
-			if (!ExplodeStrategies.IsEmpty()) ExplodeStrategies.Empty(); // GC는 GameSceneManager에서 처리
-			if (!AIAttackStrategies.IsEmpty()) AIAttackStrategies.Empty(); // GC는 GSMgr에서 처리
+			if (!ExplodeStrategies.IsEmpty())	ExplodeStrategies.Empty(); // GC는 GameSceneManager에서 처리
+			if (!AIAttackStrategies.IsEmpty())	AIAttackStrategies.Empty(); // GC는 GSMgr에서 처리
 		}
 		return;
 	}
