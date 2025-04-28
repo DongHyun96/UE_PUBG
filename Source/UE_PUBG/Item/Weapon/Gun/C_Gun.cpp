@@ -1167,7 +1167,7 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 
 }
 
-bool AC_Gun::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
+bool AC_Gun::ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
 {
 	return false;
 	//return Super::ExecuteAIAttackTickTask(InTargetCharacter, DeltaTime);

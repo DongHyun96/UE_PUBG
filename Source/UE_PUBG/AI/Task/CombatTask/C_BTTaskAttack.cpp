@@ -45,8 +45,7 @@ void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	{
 		EnemyAIController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
 		EnemyAIController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		AttackingWeapons.Remove(Enemy);
 		return;
 	}
@@ -109,6 +108,8 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	
 	// TickTask가 필요한 무기의 경우, TickTask에서 Continue / 필요 없는 무기의 경우 TickTask에서 바로 Succeeded로 처리
 	if (!CurrentAttackingWeapon->ExecuteAIAttack(TargetCharacter)) return EBTNodeResult::Failed;
+
+	BehaviorComponent->SetAfterAttackTaskWaitTime(0.f);
 	
 	AttackingWeapons.Add(Enemy, CurrentAttackingWeapon);
 	return EBTNodeResult::InProgress;
