@@ -74,6 +74,7 @@ public:
 	/// </summary>
 	/// <param name=""> : 바꿔서 들려고 하는 무기 슬롯 종류 </param>
 	/// <returns> 바꾸기 성공했다면 return true </returns>
+	UFUNCTION(BlueprintCallable)
 	bool ChangeCurWeapon(EWeaponSlot InChangeTo);
 
 	/// <summary>
@@ -88,6 +89,7 @@ public: // 특정 동작 처리에서의 들고 있는 무기 임시 처리 관�
 	/// 현재 들고 있는 무기가 있다면 Sheath motion 없이 임시로 바로 Holster에 붙이기 (주의 : return true일 경우, 
 	/// </summary>
 	/// <returns> : 현재 들고 있는 무기(CurWeapon)가 없다면 return false</returns>
+	UFUNCTION(BlueprintCallable)
 	bool TryAttachCurWeaponToHolsterWithoutSheathMotion();
 
 	/// <summary>
@@ -95,6 +97,7 @@ public: // 특정 동작 처리에서의 들고 있는 무기 임시 처리 관�
 	/// <para> 주의 : AttachCurWeaponToHolsterWithoutSheathMotion과 쌍으로 사용할 것 </para>
 	/// </summary>
 	/// <returns> : 현재 들고 있는 무기(CurWeapon)가 없다면 return false</returns>
+	UFUNCTION(BlueprintCallable)
 	bool TryReAttachCurWeaponToHand();
 
 public:
