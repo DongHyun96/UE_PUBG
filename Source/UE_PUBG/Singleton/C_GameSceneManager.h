@@ -7,6 +7,7 @@
 //#include "Item/ItemManager/C_ItemManager.h"
 #include "C_GameSceneManager.generated.h"
 
+// 주의 : GetWorld() 부분 (World가 맞지 않다면 GetInstance로 GameSceneManager 객체 불러오기 처리하기)
 #define GAMESCENE_MANAGER GetWorld()->GetSubsystem<UC_GameSceneManager>()
 //
 /// <summary>

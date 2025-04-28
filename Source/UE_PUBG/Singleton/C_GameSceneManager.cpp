@@ -12,19 +12,15 @@
 #include "Utility/C_Util.h"
 
 #include "Character/Component/C_InvenSystem.h"
-#include "InvenUserInterface/C_InvenUiWidget.h"
 
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
 #include "HUD/C_MapWidget.h"
 
 #include "Blueprint/UserWidget.h"
-#include "NavMesh/NavMeshBoundsVolume.h"
 
 #include "Loot/C_LootCrate.h"
 #include "Item/ItemManager/C_ItemManager.h"
-#include "Kismet/KismetArrayLibrary.h"
-#include "Runtime/Core/Tests/Containers/TestUtils.h"
 #include "Sound/C_SoundManager.h"
 
 #include "Utility/C_TickRandomColorGenerator.h"
