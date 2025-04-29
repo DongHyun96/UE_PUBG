@@ -55,7 +55,15 @@ public:
 	/// 레벨의 모든 Actor의 BeginPlay 이 후 호출될 함수
 	/// </summary>
 	void OnPostWorldBeginPlay();
-	
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlaySkyDivingSound();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StopSkyDivingSound();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateSkyDivingSound();
 private:
 
 	/// <summary>

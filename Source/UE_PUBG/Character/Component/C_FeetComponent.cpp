@@ -3,6 +3,7 @@
 
 #include "Character/Component/C_FeetComponent.h"
 #include "Character/C_BasicCharacter.h"
+//#include 
 #include "Kismet/kismetSystemLibrary.h"
 #include "Kismet/kismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -38,6 +39,8 @@ void UC_FeetComponent::BeginPlay()
 void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (IsValid(OwnerCharacter) && OwnerCharacter->GetPoseState() == EPoseState::CRAWL) return;
 
 	float LeftDistance, RightDistance;
 
