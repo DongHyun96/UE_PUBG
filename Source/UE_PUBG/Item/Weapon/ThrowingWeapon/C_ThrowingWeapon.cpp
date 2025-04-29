@@ -242,10 +242,8 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 	{
 		UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
 		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, false);
-		
-		AC_Item* InvenThrowable = OwnerCharacter->GetInvenComponent()->FindMyItemByName(ItemCode);
-		int MagazineCount = !InvenThrowable ? 1 : InvenThrowable->GetItemCurStack() + 1;
-		AmmoWidget->SetMagazineText(MagazineCount);
+
+		UpdateAmmoWidgetMagazineText(OwnerPlayer);
 	}
 
 	return AttachToComponent
@@ -335,12 +333,11 @@ bool AC_ThrowingWeapon::LegacyMoveToInven(AC_BasicCharacter* Character)
 	// 현재 손에 들고있는 투척류가 this라면 HandState NONE으로 전환
 	if (equipComp->GetCurWeapon() == this) equipComp->ChangeCurWeapon(EWeaponSlot::NONE);
 
-	if (ItemCurStack == ItemStackCount)
+	if (ItemCurStack == ItemStackCount) //아이템 전부를 인벤에 넣을 수 있을 때.
 	{
-		//아이템 전부를 인벤에 넣을 수 있을 때.
-		if (IsValid(FoundItem))
+		if (IsValid(FoundItem)) //인벤에 해당 아이템이 존재할 때.
 		{
-			//인벤에 해당 아이템이 존재 할 때.
+			
 			FoundItem->SetItemStack(FoundItem->GetItemCurStack() + ItemStackCount);
 			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
 			//TODO : destroy를 해도 잔상이 남는것을 대비해서 해놓음 만약 없이도 잔상이 안남는다면 지울 것.
@@ -350,46 +347,52 @@ bool AC_ThrowingWeapon::LegacyMoveToInven(AC_BasicCharacter* Character)
 			this->SetActorHiddenInGame(true);
 
 			this->Destroy();
+
+			TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
+			
 			return true;
 		}
-		else
-		{
-			//인벤에 해당 아이템이 존재하지 않을 때.
-			invenComp->AddItemToMyList(this);
-			//인게임에서 보이는 것과 collision문제 때문에 임시로 꺼둠.
-			//this->SetActorEnableCollision(false);
-			this->SetActorHiddenInGame(true);
-			//던질 때 켜짐. 이걸로 만약 아이템의 오버랩이 안끝난다면 다른 방법 고민->ToInven에서 SetActorEnableCollision를 꺼주고 던질때 혹은 ToAround에서 켜주기.
-			Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			return true;
-		}
+		
+		//인벤에 해당 아이템이 존재하지 않을 때.
+		
+		invenComp->AddItemToMyList(this);
+		//인게임에서 보이는 것과 collision문제 때문에 임시로 꺼둠.
+		//this->SetActorEnableCollision(false);
+		this->SetActorHiddenInGame(true);
+		//던질 때 켜짐. 이걸로 만약 아이템의 오버랩이 안끝난다면 다른 방법 고민->ToInven에서 SetActorEnableCollision를 꺼주고 던질때 혹은 ToAround에서 켜주기.
+		Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		
+		TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
+		
+		return true;
 	}
-	else
+	
+	/* 아이템의 일부만 인벤에 넣을 수 있을 때. */
+	
+	if (IsValid(FoundItem)) // Inven에 해당 아이템이 존재할 때
 	{
-		//아이템의 일부만 인벤에 넣을 수 있을 때.
-		if (IsValid(FoundItem))
-		{
-			     this->SetItemStack(ItemCurStack - ItemStackCount);
-			FoundItem->SetItemStack(FoundItem->GetItemCurStack() + ItemStackCount);
+		this->SetItemStack(ItemCurStack - ItemStackCount);
+		FoundItem->SetItemStack(FoundItem->GetItemCurStack() + ItemStackCount);
 
-			invenComp->AddInvenCurVolume(this->ItemDataRef->ItemVolume * ItemStackCount);
-
-			return true;
-		}
-		else
-		{
-			AC_Weapon* NewItem = Cast<AC_Weapon>(SpawnItem(Character));//아이템 복제 생성
-			NewItem->SetItemStack(ItemStackCount);
-			   this->SetItemStack(ItemCurStack - ItemStackCount);
-
-			invenComp->AddItemToMyList(NewItem);
-
-			NewItem->SetActorHiddenInGame(true);
-			//collider 관련 설정 추가해야 할 수 있음.
-			//만약 추가해야 된다면 MoveToInven에서 SetActorEnableCollision을 꺼주고 던질 때 켜주는 방식으로.
-			return true;
-		}
+		invenComp->AddInvenCurVolume(this->ItemDataRef->ItemVolume * ItemStackCount);
+		TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
+		return true;
 	}
+
+	// Inven에 해당 아이템이 존재하지 않을 때
+	
+	AC_Weapon* NewItem = Cast<AC_Weapon>(SpawnItem(Character)); //아이템 복제 생성
+	NewItem->SetItemStack(ItemStackCount);
+	   this->SetItemStack(ItemCurStack - ItemStackCount);
+
+	invenComp->AddItemToMyList(NewItem);
+
+	NewItem->SetActorHiddenInGame(true);
+	//collider 관련 설정 추가해야 할 수 있음.
+	//만약 추가해야 된다면 MoveToInven에서 SetActorEnableCollision을 꺼주고 던질 때 켜주는 방식으로.
+	
+	TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
+	return true;
 }
 
 bool AC_ThrowingWeapon::LegacyMoveToAround(AC_BasicCharacter* Character)
@@ -429,7 +432,7 @@ bool AC_ThrowingWeapon::LegacyMoveToAround(AC_BasicCharacter* Character)
 	SetActorLocation(GetGroundLocation(Character) + RootComponent->Bounds.BoxExtent.Z);
 	
 	//SetActorRotation(FQuat(0,0,0));
-
+	TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
 	return true;
 }
 
@@ -612,11 +615,10 @@ AC_Item* AC_ThrowingWeapon::SpawnItem(AC_BasicCharacter* Character)
 
 bool AC_ThrowingWeapon::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_EquippedComponent* EquippedComponent = Character->GetEquippedComponent();
 
 	//Slot에 있다는건 장착된 상태라는 것. Around로 간다는건 장착을 해제하고 아이템을 땅에 떨군다는 뜻.
-	AC_Weapon* curWeapon = equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
+	AC_Weapon* curWeapon = EquippedComponent->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
 	
 	if (curWeapon != this) return false; //장착된 아이템이 자신이 아니라면 return.
 
@@ -631,7 +633,7 @@ bool AC_ThrowingWeapon::MoveSlotToAround(AC_BasicCharacter* Character, int32 InS
 		return false; 
 	}
 	
-	equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr); //장착된 아이템이 자신이면, 장착해제를 진행.
+	EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr); //장착된 아이템이 자신이면, 장착해제를 진행.
 
 	DropItem(Character);
 	return true;
@@ -639,28 +641,27 @@ bool AC_ThrowingWeapon::MoveSlotToAround(AC_BasicCharacter* Character, int32 InS
 
 bool AC_ThrowingWeapon::MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_EquippedComponent* EquippedComponent = Character->GetEquippedComponent();
+	UC_InvenComponent*    InvenComponent = Character->GetInvenComponent();		
 	//if (invenComp->GetMaxVolume() > invenComp->GetCurVolume() + GetOnceVolume())
-	if (!invenComp->CheckVolume(this)) return false; //인벤에 this가 들어가서 curVolume > MaxVolume이 된다면 return.
+	if (!InvenComponent->CheckVolume(this)) return false; //인벤에 this가 들어가서 curVolume > MaxVolume이 된다면 return.
 
-	AC_Weapon* curWeapon = equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
+	AC_Weapon* curWeapon = EquippedComponent->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
 
 	if (curWeapon != this) return false; //장착된 아이템이 자신이 아니라면 return.
 
-	equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr); //장착된 아이템이 자신이면, 장착해제를 진행.
+	EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, nullptr); //장착된 아이템이 자신이면, 장착해제를 진행.
 
-	invenComp->AddItemToMyList(this);//장착 해제된 아이템을 내 아이템 리스트에 추가.
+	InvenComponent->AddItemToMyList(this);//장착 해제된 아이템을 내 아이템 리스트에 추가.
 	
 	return true;
 }
 
 bool AC_ThrowingWeapon::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_InvenComponent* InvenComponent = Character->GetInvenComponent();
 
-	if (!invenComp->FindMyItem(this)) return false;
+	if (!InvenComponent->FindMyItem(this)) return false;
 
 	// Inven에서 Around로 버리려 할 때, Sheath Montage나 DrawMontage가 재생중이라면 return false
 	UAnimInstance* CharacterAnimInstance = Character->GetMesh()->GetAnimInstance();
@@ -673,40 +674,40 @@ bool AC_ThrowingWeapon::MoveInvenToAround(AC_BasicCharacter* Character, int32 In
 		return false; 
 	}
 
-	invenComp->RemoveItemToMyList(this);				 //내 아이템 리스트에서 아이템 제거.
+	InvenComponent->RemoveItemToMyList(this);				 //내 아이템 리스트에서 아이템 제거.
 														 
 	//invenComp->AddInvenCurVolume(-this->GetAllVolume()); //버리는 아이템만큼 curVolume 조절하기. TODO : Inven에서 아이템 버릴 때 문제 생기면 체크하기.
 
 	DropItem(Character);
-
+	TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
 	return true;
 }
 
 bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_EquippedComponent*	EquippedComponent = Character->GetEquippedComponent();
+	UC_InvenComponent*		InvenComponent = Character->GetInvenComponent();		
 
-	AC_Weapon* curWeapon = equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
+	AC_Weapon* curWeapon = EquippedComponent->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
 
 	if (curWeapon)
 	{
-		float prevVolume = invenComp->GetCurVolume() + curWeapon->GetOnceVolume() - this->GetOnceVolume();
-		if (prevVolume > invenComp->GetMaxVolume()) return false; //교체하는 아이템이 인벤에 들어오면서 MaxVolume을 넘으면 return.
+		float prevVolume = InvenComponent->GetCurVolume() + curWeapon->GetOnceVolume() - this->GetOnceVolume();
+		if (prevVolume > InvenComponent->GetMaxVolume()) return false; //교체하는 아이템이 인벤에 들어오면서 MaxVolume을 넘으면 return.
 	}
 
 	if (ItemCurStack == 1)
 	{
-		curWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
-		invenComp->RemoveItemToMyList(this);
+		curWeapon = EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
+		InvenComponent->RemoveItemToMyList(this);
 	}
 	else
 	{
 		this->DeductItemStack();
 		AC_ThrowingWeapon* SwapItem = Cast<AC_ThrowingWeapon>(SpawnItem(Character));
 		SwapItem->SetItemStack(1);
-		invenComp->AddInvenCurVolume(-SwapItem->GetItemDatas()->ItemVolume);
-		curWeapon = equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
+		InvenComponent->AddInvenCurVolume(-SwapItem->GetItemDatas()->ItemVolume);
+		curWeapon = EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
 	}
 
 	// 손에 Throwable이 들려있는 상황에서 새로운 투척류로 slot을 교체했을 때
@@ -723,13 +724,14 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InSt
 		{
 			// 이전과 같은 종류의 무기가 아닐 때에는 무기 전환 animation 처리
 			curWeapon->AttachToHolster(Character->GetMesh());
-			equipComp->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
+			EquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
 			Character->PlayAnimMontage(this->GetCurDrawMontage());
 		}
 	}
 
 	//Character->PlayAnimMontage(this->GetCurDrawMontage());
-	invenComp->AddItemToMyList(curWeapon);//내부에서 매개변수 nullptr가 들어오면 return시켜버림. TODO : curWeapon을 정의한 뒤에 equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]의 값이 바뀌었으므로 역참조를 하면 문제가 생김. 확인 할 것.
+	InvenComponent->AddItemToMyList(curWeapon);//내부에서 매개변수 nullptr가 들어오면 return시켜버림.
+	// TODO : curWeapon을 정의한 뒤에 equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]의 값이 바뀌었으므로 역참조를 하면 문제가 생김. 확인 할 것.
 	//if (curWeapon) //TODO : InvenComp->AddItemToMyList(nullptr)이 문제 생기면 활성화 
 	
 	return true;
@@ -737,10 +739,9 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InSt
 
 bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_InvenComponent* InvenComponent = Character->GetInvenComponent();	
 
-	uint8 ItemStackCount = invenComp->LoopCheckVolume(this); //아이템Stack을 몇개까지 인벤에 넣을 수 있는가?
+	uint8 ItemStackCount = InvenComponent->LoopCheckVolume(this); //아이템Stack을 몇개까지 인벤에 넣을 수 있는가?
 
 	if (ItemStackCount == 0)
 	{
@@ -751,45 +752,46 @@ bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 	if (ItemStackCount == ItemCurStack)
 	{
 		//아이템을 전부 인벤에 넣을 수 있는 경우.
-		invenComp->AddItemToMyList(this);
+		InvenComponent->AddItemToMyList(this);
+		TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
 		return true;
 	}
-	else 
-	{
-		//아이템을 전부 넣을 수 없는 경우.
-		this->SetItemStack(ItemCurStack - ItemStackCount);//현재 객체의 stack을 조절
-		AC_Weapon* SpawnedItem = Cast<AC_Weapon>(SpawnItem(Character));  //동일한 아이템 객체를 생성
-		SpawnedItem->SetItemStack(ItemStackCount);						 //생성한 아이템 stack을 설정
-		invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가.
-		return true;
-	}
+	
+	//아이템을 전부 넣을 수 없는 경우.
+	this->SetItemStack(ItemCurStack - ItemStackCount);//현재 객체의 stack을 조절
+	AC_Weapon* SpawnedItem = Cast<AC_Weapon>(SpawnItem(Character));  //동일한 아이템 객체를 생성
+	SpawnedItem->SetItemStack(ItemStackCount);						 //생성한 아이템 stack을 설정
+	InvenComponent->AddItemToMyList(SpawnedItem);						 //inven에 추가.
+	TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
+	return true;
 }
 
 bool AC_ThrowingWeapon::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_EquippedComponent*	EquippedComponent = Character->GetEquippedComponent();
+	UC_InvenComponent*		InvenComponent = Character->GetInvenComponent();		
 
-	AC_ThrowingWeapon* curWeapon = Cast<AC_ThrowingWeapon>(equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]);
+	AC_ThrowingWeapon* CurWeapon = Cast<AC_ThrowingWeapon>(EquippedComponent->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]);
 
-	if (curWeapon)
+	if (CurWeapon)
 	{
-		if (!curWeapon->MoveSlotToInven(Character,InStack)) //이곳에서 curWeapon의 장착을 해제함.
-			curWeapon->MoveSlotToAround(Character, InStack);
+		if (!CurWeapon->MoveSlotToInven(Character,InStack)) //이곳에서 curWeapon의 장착을 해제함.
+			CurWeapon->MoveSlotToAround(Character, InStack);
 	}
 
 	if (ItemCurStack == 1)
 	{
-		equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
-		invenComp->RemoveItemToAroundList(this);
+		EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
+		InvenComponent->RemoveItemToAroundList(this);
 	}
 	else
 	{
 		this->DeductItemStack();
 		AC_ThrowingWeapon* SwapItem = Cast<AC_ThrowingWeapon>(SpawnItem(Character));
 		SwapItem->SetItemStack(1);
-		equipComp->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
+		EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
 	}
+	TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
 	return true;
 }
 
@@ -1211,5 +1213,27 @@ bool AC_ThrowingWeapon::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTarge
 {
 	return AIAttackStrategy->ExecuteAIAttackTickTask(this, InTargetCharacter, DeltaTime);
 }
+
+ void AC_ThrowingWeapon::TryUpdateAmmoWidgetMagazineTextIfNecessary(AC_Player* Player)
+ {
+	if (!Player) return;
+	// 손에 쥐고 있는 무기가 ThrowingWeapon인지 체크
+	if (AC_ThrowingWeapon* CurHandThrowingWeapon = Cast<AC_ThrowingWeapon>(Player->GetEquippedComponent()->GetCurWeapon()))
+	{
+		// 손에 쥐고 있는 무기가 같은 Throwable 종류이면, Ammo Magazine 개수 업데이트 시키기
+		if (CurHandThrowingWeapon->GetThrowableType() == this->ThrowableType)
+			UpdateAmmoWidgetMagazineText(Player);
+	}
+ }
+
+ void AC_ThrowingWeapon::UpdateAmmoWidgetMagazineText(AC_Player* Player)
+ {
+	if (!Player) return;
+	UC_Util::Print("UpdateAmmoWidgetMagazineText", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+
+	AC_Item* InvenThrowable = Player->GetInvenComponent()->FindMyItemByName(ItemCode);
+	int MagazineCount = !InvenThrowable ? 1 : InvenThrowable->GetItemCurStack() + 1;
+	Player->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(MagazineCount);
+ }
 
 

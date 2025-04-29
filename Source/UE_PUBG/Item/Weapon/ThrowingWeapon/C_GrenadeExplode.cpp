@@ -218,6 +218,7 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 		// Apply Damage to character
 		float DamageAmount = DAMAGE_BASE * (ExplosionRad - HitResult.Distance) / ExplosionRad; // 거리 비례 Damage base
 		DamageAmount *= BodyPartsDamageRate[HitResult.BoneName]; // 신체부위별 데미지 감소 적용
+		DamageAmount = FMath::Max(DamageAmount, 0.f); // Overlapped된 캐릭터라도 신체의 일부는 폭발 반경 범위를 벗어나, 음수의 Damage를 얻을 수 있음(이 case를 방지)
 
 		float DamageDistance = FVector::Distance(ThrowingWeapon->GetOwnerCharacter()->GetActorLocation(), Character->GetActorLocation());
 		DamageDistance *= 0.01f;

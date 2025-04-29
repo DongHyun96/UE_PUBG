@@ -480,9 +480,6 @@ void UC_InputComponent::OnBKey()
 
 void UC_InputComponent::OnRKey()
 {
-	// Testing용 Heal 주기 TODO : Test라인 지우기
-	Player->GetStatComponent()->ApplyHeal(100.f);
-
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteRKey();
 }

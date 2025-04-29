@@ -40,11 +40,16 @@ void AC_MeleeWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AttackCollider = Cast<UShapeComponent>(GetComponentByClass(UShapeComponent::StaticClass()));
+	AttackCollider = Cast<UShapeComponent>(GetDefaultSubobjectByName("AttackCollider"));
+	if (!AttackCollider)
+	{
+		UC_Util::Print("From MeleeWeapon : GetDefaultSubobjectByName(AttackCollider) failed!", FColor::Red, 10.f);
+		return;
+	}
 	AttackCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 	AttackCollider->OnComponentBeginOverlap.AddDynamic(this, &AC_MeleeWeapon::OnBodyColliderBeginOverlap);
-
+	
+	
 }
 
 void AC_MeleeWeapon::Tick(float DeltaTime)
@@ -56,6 +61,11 @@ void AC_MeleeWeapon::Tick(float DeltaTime)
 		CurDrawMontage   = DrawMontages[OwnerCharacter->GetPoseState()];
 		CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()];
 	}
+
+	//for (auto Element : OverlappedChara)
+	//{
+	//	
+	//}
 }
 
 void AC_MeleeWeapon::InitializeItem(FName NewItemCode)
@@ -211,9 +221,8 @@ bool AC_MeleeWeapon::LegacyMoveToSlot(AC_BasicCharacter* Character)
 
 void AC_MeleeWeapon::OnAttackBegin()
 {
-	// AttackCollider QueryAndPhysics로 바꾸기 이전에 BeginOverlap 이벤트 콜이 발생함
-	// 이유는 잘 모르겠지만(진짜 외않되?)...AttackedCharacters Clear를 AttackEnd에 두면 해결되긴 함
 	AttackCollider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	AttackedCharacters.Empty();
 }
 
 void AC_MeleeWeapon::OnAttackEnd()
@@ -234,13 +243,15 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 {
 	static const float DAMAGE = 80.f;
 
-	UC_Util::Print("FryPan Attack Collider BeginOverlap", FColor::Red, 10.f);
-	
 	// 피격체에 데미지 주기
 	AC_BasicCharacter* OverlappedCharacter = Cast<AC_BasicCharacter>(OtherActor);
-	if (!OverlappedCharacter)								return;
-	if (OverlappedCharacter == OwnerCharacter)				return;
-	if (AttackedCharacters.Contains(OverlappedCharacter))	return; // 이미 현재 Attack wave에서 Damage를 준 Character일 때
+	
+	if (!OverlappedCharacter) return;
+	if (OverlappedCharacter == OwnerCharacter) return;
+	
+	UC_Util::Print("Pan BeginOverlap with : " + OverlappedCharacter->GetCharacterName(), FColor::Red, 10.f);
+	
+	if (AttackedCharacters.Contains(OverlappedCharacter)) return; // 이미 현재 Attack wave에서 Damage를 준 Character일 때
 
 	// MeleeWeapon의 경우, 조끼 착용 여부에 따른 Damage량 조정을 여기서 처리
 	// 조끼피를 안닳게 일부러 처리할 예정

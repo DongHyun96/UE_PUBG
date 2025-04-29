@@ -34,8 +34,6 @@ void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 
 	if (!AttackingWeapons.Contains(Enemy))
 	{
-		EnemyAIController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
-		EnemyAIController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;
 	}
@@ -43,8 +41,6 @@ void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	AC_Weapon* CurrentAttackingWeapon = AttackingWeapons[Enemy];
 	if (!IsValid(CurrentAttackingWeapon))
 	{
-		EnemyAIController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
-		EnemyAIController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		AttackingWeapons.Remove(Enemy);
 		return;
@@ -53,8 +49,6 @@ void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	// 지속적으로 몇 초간 현재 무기로 공격한다고 하면 TickTask 사용
 	if (!CurrentAttackingWeapon->ExecuteAIAttackTickTask(EnemyAIController->GetBehaviorComponent()->GetTargetCharacter(), DeltaSeconds))
 	{
-		EnemyAIController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
-		EnemyAIController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		AttackingWeapons.Remove(Enemy);
 	}
@@ -87,8 +81,6 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 		if (GAMESCENE_MANAGER->GetEnemies().Num() <= 1)
 			UC_Util::Print("From UC_BTTaskAttack::ExecuteTask : Not holding any weapons", FColor::Red, 10.f);
 		
-		BehaviorComponent->SetServiceType(EServiceType::IDLE);
-		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
 		return EBTNodeResult::Failed;
 	}
 
@@ -99,8 +91,7 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 		if (GAMESCENE_MANAGER->GetEnemies().Num() <= 1)
 			UC_Util::Print("From UC_BTTaskAttack::ExecuteTask : Invalid TargetCharacter", FColor::Red, 10.f);
 		
-		BehaviorComponent->SetServiceType(EServiceType::IDLE);
-		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
+		
 		return EBTNodeResult::Failed;
 	}
 

@@ -286,6 +286,18 @@ public:
 	bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
 	
 	bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
+
+private:
+	
+	/// <summary>
+	/// 현재 손에 쥐고 있는 무기가 Inven에 추가 또는 삭제한 투척류 종류일 때, MagazineText 업데이트 처리 (Boiler-plate code 정리)
+	/// </summary>
+	void TryUpdateAmmoWidgetMagazineTextIfNecessary(class AC_Player* Player);
+
+	/// <summary>
+	/// OwnerPlayer의 Magazine Text(개수) 업데이트하기 (주의 : OwnerPlayer가 Valid할 때에만 사용)
+	/// </summary>
+	void UpdateAmmoWidgetMagazineText(AC_Player* Player);
 	
 protected:
 
