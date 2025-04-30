@@ -364,12 +364,13 @@ void AC_Bullet::PlaySound(const FHitResult& ImpactResult)
 	//UC_Util::Print("PlaySound");
 	//UC_Util::Print(SurfaceType);
 
+
 	switch (SurfaceType)
 	{
-	case SurfaceType_Default:
-		// UC_Util::Print("PlaySound_Default, Play Sound Ground");
-		PlayRandomSoundFromArray(BulletImpactSoundData->ImpactGround);
-		break;
+	//case SurfaceType_Default:
+	//	// UC_Util::Print("PlaySound_Default, Play Sound Ground");
+	//	PlayRandomSoundFromArray(BulletImpactSoundData->ImpactGround);
+	//	break;
 	case SurfaceType1: // Body
 		// UC_Util::Print("PlaySound_Body");
 		PlayRandomSoundFromArray(BulletImpactSoundData->ImpactBody);
