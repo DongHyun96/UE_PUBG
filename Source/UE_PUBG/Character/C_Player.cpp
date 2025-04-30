@@ -54,6 +54,7 @@
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 #include "Component/SkyDivingComponent/C_PlayerSkyDivingComponent.h"
 #include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
+#include "HUD/C_GameOverWidget.h"
 #include "HUD/C_InstructionWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 
@@ -132,7 +133,13 @@ void AC_Player::BeginPlay()
 		// MainMapWidget->AddToViewport(9);
 		MainMapWidget->SetOwnerPlayer(this);
 	} else UC_Util::Print("No MainMapWidget", FColor::MakeRandomColor(), 10.f);
-	
+
+	if (GameOverWidget)
+	{
+		GameOverWidget->AddToViewport();
+		GameOverWidget->SetOwnerPlayer(this);
+	}
+	else UC_Util::Print("No GameOver Widget", FColor::MakeRandomColor(), 10.f);
 
 	if (InvenSystem)
 	{
@@ -237,6 +244,15 @@ void AC_Player::Tick(float DeltaTime)
 	{
 		UpdateSkyDivingSound();
 	}
+
+	/*switch (HandState)
+	{
+	case EHandState::UNARMED: UC_Util::Print("UnArmed"); break;
+	case EHandState::WEAPON_GUN: UC_Util::Print("Weapon_Gun"); break;
+	case EHandState::WEAPON_MELEE: UC_Util::Print("WEAPON_MELEE"); break;
+	case EHandState::WEAPON_THROWABLE: UC_Util::Print("WEAPON_THROWABLE"); break;
+	case EHandState::HANDSTATE_MAX: UC_Util::Print("HANDSTATE_MAX"); break;
+	}*/
 
 	//DrawingItemOutLine();
 	//UpdateInteractable(FindBestInteractable());

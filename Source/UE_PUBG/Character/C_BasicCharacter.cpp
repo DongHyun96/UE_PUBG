@@ -203,6 +203,7 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 		ParkourComponent->SwapMeshToMainSkeletalMesh();
 
 	MainState = EMainState::DEAD;
+	Ranking = GAMESCENE_MANAGER->GetCurrentRankingAndUpdateCurrentRanking();
 
 	// 투척류 투척 Process 중이었을 때, 손에 든 투척류 놓치고 죽기
 	if (AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(EquippedComponent->GetCurWeapon()))

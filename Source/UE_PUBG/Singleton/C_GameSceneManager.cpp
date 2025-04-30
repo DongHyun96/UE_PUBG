@@ -106,6 +106,8 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		
 		if (AC_SoundManager* Sound_Manager = Cast<AC_SoundManager>(*Actor)) SoundManager = Sound_Manager;
 	}
+
+	CurrentRanking = AllCharacters.Num();
 }
 
 void UC_GameSceneManager::Initialize(FSubsystemCollectionBase& Collection)

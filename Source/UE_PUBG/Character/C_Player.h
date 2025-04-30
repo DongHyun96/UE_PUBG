@@ -90,6 +90,7 @@ public: // Getters and setters
 
 	class UC_HUDWidget*		GetHUDWidget()		const { return HUDWidget; }
 	class UC_MainMapWidget* GetMainMapWidget()	const { return MainMapWidget; }
+	class UC_GameOverWidget* GetGameOverWidget() const { return GameOverWidget; }
 	 
 	class UC_PingSystemComponent* GetPingSystemComponent() const { return PingSystemComponent; }
 
@@ -314,7 +315,10 @@ protected:
 	class UC_HUDWidget* HUDWidget{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_MainMapWidget* MainMapWidget{};	
+	class UC_MainMapWidget* MainMapWidget{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_GameOverWidget* GameOverWidget{};	
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UC_InvenSystem* InvenSystem{};

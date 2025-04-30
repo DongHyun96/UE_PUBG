@@ -17,7 +17,7 @@ enum class EQueueLogType : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FTopKillFeedBlock // 킲피드 한 block에 대한 struct
+struct FTopKillFeedBlock // 킬피드 한 block에 대한 struct
 {
 	GENERATED_BODY()
 	
@@ -50,7 +50,7 @@ public:
 	virtual void NativeConstruct() override;
 
 protected:
-	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 
@@ -203,8 +203,4 @@ private:
 	TMap<UWidget*, float>	LogLifeTimers{}; // Log Spawn된 이 후, FadeOut처리되기 이전까지의 수명처리 담당
 	TSet<UWidget*>			FadeOutLogs{}; // FadeOut 처리시킬 Widget들
 
-private:
-
-	float Timer = 30.f; // Test 용 : TODO : 지울 것
-	
 };

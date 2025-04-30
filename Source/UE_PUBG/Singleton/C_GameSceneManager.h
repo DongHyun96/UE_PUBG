@@ -124,6 +124,12 @@ public:
 	/// </summary>
 	TPair<uint8, uint8> GetContainingTileCoordinate(const FVector2D& WorldPositionXY) const;
 
+	/// <summary>
+	/// CurrentRanking을 받음과 동시에 CurrentRanking 업데이트 처리
+	/// </summary>
+	/// <returns></returns>
+	int GetCurrentRankingAndUpdateCurrentRanking() { return CurrentRanking--; }
+
 private:
 
 	class AC_Player*				Player{};
@@ -165,6 +171,11 @@ private:
 private:
 
 	class AC_TickRandomColorGenerator* TickRandomColorGenerator{};
+
+private:
+
+	// 죽었을 때 부여받을 Ranking
+	int CurrentRanking{};
 
 };
 

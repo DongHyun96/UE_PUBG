@@ -535,6 +535,12 @@ public:
 	float GetBumpTimer() {return BumpTimer; }
 protected:
 	void CountBumpTimer(float DeltaTime);
+
+private:
+
+	int Ranking{};
+	void SetRanking(int InRanking) { Ranking = InRanking; }
+	int GetRanking() const { return Ranking; }
 };
 
 
