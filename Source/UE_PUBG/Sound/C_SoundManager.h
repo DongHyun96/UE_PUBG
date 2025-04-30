@@ -112,7 +112,16 @@ public:
 	void LoadVolumeSettings();
 
 	UFUNCTION(BlueprintCallable)
-	USoundClass* GetSoundClassByName(ESoundClassName SoundClassName) { return SoundClassMap[SoundClassName]; }
+	USoundClass* GetSoundClassByName(ESoundClassName SoundClassName) 
+	{
+		if (USoundClass** Found = SoundClassMap.Find(SoundClassName))
+		{
+			return *Found;
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("SoundClass not found for key: %d"), static_cast<int32>(SoundClassName));
+		return nullptr;
+	}
 
 protected:
 	UPROPERTY(EditAnywhere)

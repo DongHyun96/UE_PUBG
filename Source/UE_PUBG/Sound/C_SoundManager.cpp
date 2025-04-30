@@ -21,8 +21,10 @@ AC_SoundManager::AC_SoundManager()
 void AC_SoundManager::BeginPlay()
 {
 	Super::BeginPlay();
-	InitializeSoundClassData();
-	LoadVolumeSettings();
+	//InitializeSoundClassData();
+	BuildSoundClassMap();
+	// 
+	//LoadVolumeSettings();
 }
 
 void AC_SoundManager::Tick(float DeltaTime)
@@ -41,7 +43,6 @@ void AC_SoundManager::InitializeSoundClassData()
 		if (Row)
 		{
 			SoundClassData = *Row;
-			BuildSoundClassMap();
 		}
 	}
 }

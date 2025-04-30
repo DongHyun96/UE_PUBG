@@ -233,10 +233,10 @@ void AC_Player::Tick(float DeltaTime)
 	}
 
 	// 스카이 다이빙 중인 경우에만 다이빙 사운드를 업데이트.
-	if (GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::SKYDIVING)
-	{
-		UpdateSkyDivingSound();
-	}
+	//if (GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::SKYDIVING)
+	//{
+	//	UpdateSkyDivingSound();
+	//}
 
 	//DrawingItemOutLine();
 	//UpdateInteractable(FindBestInteractable());

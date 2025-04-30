@@ -69,7 +69,9 @@ public: // Getters and setters
 
 	static UC_GameSceneManager* GetInstance(UWorld* World) { return World->GetSubsystem<UC_GameSceneManager>(); }
 
+	UFUNCTION(BlueprintCallable)
 	class AC_Player* GetPlayer() const { return Player; }
+
 	void SetPlayer(AC_Player* InPlayer) { Player = InPlayer; }
 
 public: // Widget 초기화 관련 처리

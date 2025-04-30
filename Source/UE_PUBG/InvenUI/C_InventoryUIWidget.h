@@ -87,10 +87,10 @@ protected:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	class UC_AroundItemPanelWidget* AroundItemPanel = nullptr; // 아이템 리스트 위젯
+	class UC_AroundItemPanelWidget* AroundItemPanel = nullptr; // 외부 아이템 리스트 위젯
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	class UC_InventoryItemPanelWidget* InventoryPanel = nullptr; // 아이템 리스트 위젯
+	class UC_InventoryItemPanelWidget* InventoryPanel = nullptr; // 나의 아이템 리스트 위젯
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UC_EquipmentPanelWdiget* EquipmentPanel = nullptr;
@@ -115,9 +115,11 @@ protected:
 	AC_Item* UsingItem = nullptr;
 
 
+	//나눠 버리는 위젯
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UC_BasicDivideItemPanelWidget* DivideItemAroundDropWidget = nullptr;
 
+	//나눠 줍는 위젯
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UC_BasicDivideItemPanelWidget* DivideItemInventoryDropWidget = nullptr;
 };
