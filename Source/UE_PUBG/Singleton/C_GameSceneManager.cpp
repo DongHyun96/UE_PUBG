@@ -108,6 +108,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 	}
 
 	CurrentRanking = AllCharacters.Num();
+	TotalPlayedCharacterCount = AllCharacters.Num();
 }
 
 void UC_GameSceneManager::Initialize(FSubsystemCollectionBase& Collection)

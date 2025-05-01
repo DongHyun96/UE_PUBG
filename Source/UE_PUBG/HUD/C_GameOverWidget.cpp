@@ -4,33 +4,71 @@
 #include "C_GameOverWidget.h"
 
 #include "Animation/WidgetAnimation.h"
+#include "Character/C_Player.h"
 #include "Components/TextBlock.h"
+#include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
 void UC_GameOverWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	// Init WinnerWinnerChickenDinnerTexts
-	/*for (int i = 0; i < 4; ++i)
-	{
-		FString Str = FString::Printf(TEXT("WWCD_%d"), i);
-		FName WidgetName(*Str);
-		UTextBlock* TextBlock = Cast<UTextBlock>(GetWidgetFromName(WidgetName));
-		if (!TextBlock)
-		{
-			UC_Util::Print("From GameOverWidget NativeConstruct : WWCD_TextBlock Casting failed!", FColor::Red, 10.f);
-			continue;
-		}
-
-		WinnerWinnerChickenDinnerTexts.Add(TextBlock);
-	}*/
-	if (!WinningChickenAnimation)
-		UC_Util::Print("WinningChickenAnimation not initialized!", FColor::Red, 10.f);
-	else PlayAnimation(WinningChickenAnimation);
+	/*if (!WinningChickenAnimation)			UC_Util::Print("WinningChickenAnimation not initialized!", FColor::Red, 10.f);
+	if (!PlayerCharacterName)			UC_Util::Print("PlayerCharacterName not initialized!", FColor::Red, 10.f);
+	if (!RankingTextTopRight)				UC_Util::Print("RankingTextTopRight not initialized!", FColor::Red, 10.f);
+	if (!RankingTextTotalCharacterCount)	UC_Util::Print("RankingTextTotalCharacterCount not initialized!", FColor::Red, 10.f);*/
 }
 
 void UC_GameOverWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+	HandleExitToLobbyTimer(InDeltaTime);
+}
+
+void UC_GameOverWidget::ActivateWinningSequence()
+{
+	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+	
+	PlayerCharacterName->SetText(FText::FromString(Player->GetCharacterName()));
+	
+	FString TotalCharacterString = " / " + FString::FromInt(GAMESCENE_MANAGER->GetTotalPlayedCharacterCount());
+	
+	RankingTextTotalCharacterCount->SetText(FText::FromString(TotalCharacterString));
+	RankingText->SetText(FText::FromString("#1"));
+
+	KillCountText->SetText(FText::FromString(FString::FromInt(Player->GetKillCount())));
+
+	PlayAnimation(WinningChickenAnimation);
+}
+
+void UC_GameOverWidget::ActivateLoseSequence()
+{
+	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+	PlayerCharacterName->SetText(FText::FromString(Player->GetCharacterName()));
+	FString TotalCharacterString = " / " + FString::FromInt(GAMESCENE_MANAGER->GetTotalPlayedCharacterCount());
+	RankingTextTotalCharacterCount->SetText(FText::FromString(TotalCharacterString));
+
+	FString RankingString = "#" + FString::FromInt(Player->GetRanking());
+	RankingText->SetText(FText::FromString(RankingString));
+
+	KillCountText->SetText(FText::FromString(FString::FromInt(Player->GetKillCount())));
+
+	PlayAnimation(LoseAnimation);
+}
+
+void UC_GameOverWidget::HandleExitToLobbyTimer(float DeltaTime)
+{
+	if (ExitToLobbyCountDownText->GetRenderOpacity() < 0.95f) return;
+
+	ExitToLobbyTimer -= DeltaTime;
+
+	int Sec = static_cast<int>(ExitToLobbyTimer) + 1;
+	FString CountDownString = "You will exit to lobby in " + FString::FromInt(Sec) + " seconds";
+	ExitToLobbyCountDownText->SetText(FText::FromString(CountDownString));
+
+	if (ExitToLobbyTimer < 0.f)
+	{
+		// TODO : 로비로 나가기
+		
+	}
 }

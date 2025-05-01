@@ -136,7 +136,7 @@ void AC_Player::BeginPlay()
 
 	if (GameOverWidget)
 	{
-		GameOverWidget->AddToViewport();
+		GameOverWidget->AddToViewport(20);
 		GameOverWidget->SetOwnerPlayer(this);
 	}
 	else UC_Util::Print("No GameOver Widget", FColor::MakeRandomColor(), 10.f);

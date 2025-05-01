@@ -132,6 +132,8 @@ public:
 	/// <returns></returns>
 	int GetCurrentRankingAndUpdateCurrentRanking() { return CurrentRanking--; }
 
+	int GetTotalPlayedCharacterCount() const { return TotalPlayedCharacterCount; }
+
 private:
 
 	class AC_Player*				Player{};
@@ -176,9 +178,8 @@ private:
 
 private:
 
-	// 죽었을 때 부여받을 Ranking
-	int CurrentRanking{};
-
+	int CurrentRanking{}; // 죽었을 때 부여받을 Ranking
+	int TotalPlayedCharacterCount{};
 };
 
 
