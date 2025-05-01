@@ -100,7 +100,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 		return false;
 	}
 	bool IsBulletFired = CurWeapon->FireBullet();
-	if (CurWeapon->GetCurBulletCount() > 0)
+	if (CurWeapon->GetCurBulletCount() > 0 && IsBulletFired)
 	{
 		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SINGLE_SHOT && !CurPlayer->GetIsAimDown())
 			CurWeapon->ExecuteReloadMontage();

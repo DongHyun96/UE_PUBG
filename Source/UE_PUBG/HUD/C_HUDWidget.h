@@ -96,7 +96,7 @@ public:
 	void HideCompassBarPingMarker();
 
 public:
-
+	UFUNCTION(BlueprintCallable)
 	void ToggleMiniMapEnlarged();
 
 public:
