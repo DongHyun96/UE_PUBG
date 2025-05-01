@@ -539,8 +539,12 @@ protected:
 private:
 
 	int Ranking{};
+
+public:
 	void SetRanking(int InRanking) { Ranking = InRanking; }
 	int GetRanking() const { return Ranking; }
+
+	
 };
 
 

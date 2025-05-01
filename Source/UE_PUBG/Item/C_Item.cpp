@@ -112,8 +112,7 @@ FVector AC_Item::GetGroundLocation(AC_BasicCharacter* Character)
 	if (bHit)
 	{
 		UC_Util::Print("Hit Ground");
-		UC_Util::Print(HitResult.GetActor()->GetName());
-
+		if (IsValid(HitResult.GetActor())) UC_Util::Print(HitResult.GetActor()->GetName());
 	}
 	else
 	{
