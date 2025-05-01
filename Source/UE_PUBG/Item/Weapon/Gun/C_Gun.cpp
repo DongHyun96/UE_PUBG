@@ -667,7 +667,15 @@ bool AC_Gun::FireBullet()
 		if (HasHit)
 		{
 			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity, HitLocation);
-			if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
+			//if (Cast<AC_Player>(OwnerCharacter))
+			if (OwnerCharacter->IsLocallyControlled())
+			{
+				if (GunSoundData->FireSound) UGameplayStatics::PlaySound2D(this, GunSoundData->FireSound);
+			}
+			else
+			{
+				if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
+			}
 			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
 			if (IsValid(MuzzleFlameEffectParticle))
 			{
@@ -690,7 +698,15 @@ bool AC_Gun::FireBullet()
 		else
 		{
 			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
-			if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
+			//if (Cast<AC_Player>(OwnerCharacter))
+			if (OwnerCharacter->IsLocallyControlled())
+			{
+				if (GunSoundData->FireSound) UGameplayStatics::PlaySound2D(this, GunSoundData->FireSound);
+			}
+			else
+			{
+				if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
+			}
 
 			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
 			if (IsValid(MuzzleFlameEffectParticle))

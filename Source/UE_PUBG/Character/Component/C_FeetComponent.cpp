@@ -3,7 +3,8 @@
 
 #include "Character/Component/C_FeetComponent.h"
 #include "Character/C_BasicCharacter.h"
-//#include 
+#include "Character/C_Player.h"
+
 #include "Kismet/kismetSystemLibrary.h"
 #include "Kismet/kismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -255,7 +256,16 @@ void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceTpye, FVector I
 		USoundCue* SoundCue = SurfaceTypeToSoundCueMap[InCurSurFaceTpye];
 		if (SoundCue)
 		{
-			UGameplayStatics::PlaySoundAtLocation(this, SoundCue, InLocation, InVolumeMultiplier);
+			if (OwnerCharacter->IsLocallyControlled())
+			{
+				UGameplayStatics::PlaySound2D(this, SoundCue);
+				UC_Util::Print("PlaySound2D", FColor::Emerald, 10.f);
+			}
+			else
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, SoundCue, InLocation, InVolumeMultiplier);
+				UC_Util::Print("PlaySoundAtLocation", FColor::Emerald, 10.f);
+			}
 		}
 	}
 }

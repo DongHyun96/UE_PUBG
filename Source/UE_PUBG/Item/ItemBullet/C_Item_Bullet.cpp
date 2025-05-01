@@ -130,6 +130,11 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InSta
 		//invenComp->AddInvenCurVolume(-this->GetAllVolume()); // 버리는 아이템만큼 curVolume 조절하기. TODO : Inven에서 아이템 버릴 때 문제 생기면 체크하기.
 		DropItem(Character);
 	}
+
+	//TODO : 총알을 다 버렸는데 재장전에 필요한 총알이라면 재장전을 멈춰야 함.
+	//혹은 재장전 중에는 해당 총알을 못버리게 하는 방법도 있음.
+	//이 경우에는 
+
 	//AddFivemmBulletStack을 통해서 총에 또 정보를 전달해 주어야 함
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 		UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행

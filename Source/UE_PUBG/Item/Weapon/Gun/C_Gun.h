@@ -43,7 +43,7 @@ struct FGunSoundData : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* ShoottingSound = nullptr;
+	USoundBase* FireSound = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	USoundBase* ReloadMagazineSound = nullptr;
