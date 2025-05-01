@@ -429,13 +429,13 @@ void UC_InputComponent::SetToNonAimCamera()
 void UC_InputComponent::OnNum1()
 {
 	OnNumKey(EWeaponSlot::MAIN_GUN);
-	Player->GetGameOverWidget()->ActivateWinningSequence(); // TODO : 이 라인 지울 것
+	// Player->GetGameOverWidget()->ActivateWinningSequence(); // TODO : 이 라인 지울 것
 }
 
 void UC_InputComponent::OnNum2()
 {
 	OnNumKey(EWeaponSlot::SUB_GUN);
-	Player->GetGameOverWidget()->ActivateLoseSequence(); // TODO : 이 라인 지울 것
+	// Player->GetGameOverWidget()->ActivateLoseSequence(); // TODO : 이 라인 지울 것
 }
 
 void UC_InputComponent::OnNum4()
