@@ -288,14 +288,17 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
 		OwnerPlayer->SetRecoilTimelineValues(GunDataRef->BulletRPM);
 	}
-	return AttachToComponent
-	(
+	FString TempSocketName = EQUIPPED_SOCKET_NAME.ToString();
+	UC_Util::Print(TempSocketName);
+	bool SuccessToAttach;
+	SuccessToAttach = AttachToComponent(
 		InParent,
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		EQUIPPED_SOCKET_NAME
 	);
-
-	
+	UC_Util::Print(SuccessToAttach);
+	OwnerCharacter->SetIsReloadingBullet(false);
+	return SuccessToAttach;
 }
 
 bool AC_Gun::SetAimingDown()

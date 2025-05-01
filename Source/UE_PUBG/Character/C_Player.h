@@ -88,6 +88,7 @@ public: // Getters and setters
 	void SetSpringArmRelativeLocationDest(EPoseState InNextPoseState) { MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
 	void SetAimingSpringArmRelativeLocationDest(EPoseState InNextPoseState) { AimingSpringArmRelativeLocationDest = AimingSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
 
+	UFUNCTION(BlueprintCallable)
 	class UC_HUDWidget*		GetHUDWidget()		const { return HUDWidget; }
 	class UC_MainMapWidget* GetMainMapWidget()	const { return MainMapWidget; }
 	class UC_GameOverWidget* GetGameOverWidget() const { return GameOverWidget; }
