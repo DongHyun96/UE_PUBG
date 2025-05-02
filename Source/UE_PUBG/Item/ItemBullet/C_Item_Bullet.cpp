@@ -145,8 +145,8 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InSta
 	{
 		if (curWeapon->GetCurBulletType() == CurBulletType)
 		{
-			if (!Character->GetInvenComponent()->FindMyItemByName(this->GetItemCode()))
-				;//TODO : 장전 중지
+			//if (!Character->GetInvenComponent()->FindMyItemByName(this->GetItemCode()))
+			//	;//TODO : 장전 중지
 		}
 	}
 

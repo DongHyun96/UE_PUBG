@@ -141,7 +141,7 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 	// 사망
 	if (CurHP <= 0.f)
 	{
-		if (Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠 ((현재 Enemy만 처리))
+		if(Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠 ((현재 Enemy만 처리))
 
 		if (GAMESCENE_MANAGER->GetIsGameOver()) return true;
 		
