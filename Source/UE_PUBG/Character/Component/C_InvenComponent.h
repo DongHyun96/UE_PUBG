@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Item/C_Item.h"
+#include "InvenUserInterface/C_InvenUiWidget.h"
 #include "C_InvenComponent.generated.h"
 
 #define MAX_STACK 120
