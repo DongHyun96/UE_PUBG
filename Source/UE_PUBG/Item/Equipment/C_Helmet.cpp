@@ -9,7 +9,7 @@
 #include "Character/Component/C_InvenSystem.h"
 #include "HUD/C_ArmorInfoWidget.h"
 #include "HUD/C_HUDWidget.h"
-#include "InvenUserInterface/C_EquipmentPanel.h"
+//#include "InvenUserInterface/C_EquipmentPanel.h"
 #include "Utility/C_Util.h"
 
 

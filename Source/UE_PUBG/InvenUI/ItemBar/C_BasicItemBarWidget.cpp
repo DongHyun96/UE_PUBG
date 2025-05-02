@@ -3,7 +3,8 @@
 
 #include "InvenUI/ItemBar/C_BasicItemBarWidget.h"
 #include "InvenUI/Panel/C_BasicPanelWidget.h"
-#include "InvenUserInterface/C_DragDropOperation.h"
+//#include "InvenUserInterface/C_DragDropOperation.h"
+#include "C_DragDropOperation.h"
 
 #include "Character/C_Player.h"
 

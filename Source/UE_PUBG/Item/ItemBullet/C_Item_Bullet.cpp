@@ -149,7 +149,6 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InSta
 			//	;//TODO : 장전 중지
 		}
 	}
-
 	//AddFivemmBulletStack을 통해서 총에 또 정보를 전달해 주어야 함
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 		UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행

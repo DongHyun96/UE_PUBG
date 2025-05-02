@@ -11,7 +11,8 @@
 #include "Components/Image.h"
 #include "Components/Border.h"
 
-#include "InvenUserInterface/C_DragDropOperation.h"
+//#include "InvenUserInterface/C_DragDropOperation.h"
+#include "C_DragDropOperation.h"
 
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Attachment/C_AttachableItem.h"
