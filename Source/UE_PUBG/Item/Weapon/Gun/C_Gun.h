@@ -407,10 +407,10 @@ protected:
 	// UCapsuleComponent* CapsuleComponent{};
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UParticleSystem* MuzzleFlameEffectParticle{};
-
 public:
 	UFUNCTION(BlueprintCallable)
 	FName GetCurrentBulletTypeName();
+	virtual void CancleReload();
 	
 };
 

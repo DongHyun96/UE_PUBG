@@ -116,7 +116,11 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InSta
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
 
 	if (!invenComp->FindMyItem(this)) return false;
-
+	AC_Gun* CurGun = Cast<AC_Gun>(Character->GetEquippedComponent()->GetCurWeapon());
+	if (IsValid(CurGun))
+	{
+		CurGun->CancleReload();
+	}
 	if (this->GetItemCurStack() > InStack)
 	{
 		AC_Item_Bullet* DroppedItem = Cast<AC_Item_Bullet>(SpawnItem(Character));

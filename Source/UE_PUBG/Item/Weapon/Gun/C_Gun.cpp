@@ -1236,6 +1236,11 @@ bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 	return false;
 }
 
+void AC_Gun::CancleReload()
+{
+	if (!IsValid(OwnerCharacter)) return;
+}
+
 FName AC_Gun::GetCurrentBulletTypeName()
 {
 	switch (GunDataRef->CurGunBulletType) 

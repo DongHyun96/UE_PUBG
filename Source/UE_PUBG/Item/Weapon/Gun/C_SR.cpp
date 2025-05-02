@@ -287,3 +287,22 @@ void AC_SR::ChangeCurShootingMode()
 	// Blank (SR의 경우 Shooting Mode를 바꿀 수 없게끔 처리)
 }
 
+void AC_SR::CancleReload()
+{
+	Super::CancleReload();
+	UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+
+	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+
+	UAnimMontage* SniperReloadMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
+
+	if (CurAnimInstance->Montage_IsPlaying(ReloadMontage) || CurAnimInstance->Montage_IsPlaying(SniperReloadMontage))
+	{
+		CurAnimInstance->Montage_Stop(0.02);
+	}
+	OwnerCharacter->SetIsReloadingBullet(false);
+
+	SetIsReloadingSR(false);
+	
+}
+
