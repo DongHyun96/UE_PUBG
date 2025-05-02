@@ -758,6 +758,13 @@ void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 {
 	Super::CharacterDead(KillFeedDescriptor);
 	HUDWidget->GetInstructionWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
+
+	GAMESCENE_MANAGER->SetIsGameOver(true);
+	
+	if (Ranking == 1) GameOverWidget->ActivateWinningSequence();
+	else GameOverWidget->ActivateLoseSequence();
+	// GameOverWidget->ActivateLoseSequence();
+	
 }
 
 void AC_Player::EnableRagdoll()
