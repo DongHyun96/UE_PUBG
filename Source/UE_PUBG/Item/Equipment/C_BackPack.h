@@ -57,9 +57,9 @@ public:
 	
 	//void PickUpItem(AC_BasicCharacter* Character) override;
 
-	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
+	//bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
-	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
+	//bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 protected:
 	bool MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack) override;
 
