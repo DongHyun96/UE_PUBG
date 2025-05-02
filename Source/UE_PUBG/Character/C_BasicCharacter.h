@@ -536,7 +536,7 @@ public:
 protected:
 	void CountBumpTimer(float DeltaTime);
 
-private:
+protected:
 
 	int Ranking{};
 

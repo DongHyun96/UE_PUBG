@@ -80,6 +80,9 @@ public: // Widget 초기화 관련 처리
 	void SetMiniMapWidget(UUserWidget* InMiniMapWidget) { MiniMapWidget = InMiniMapWidget; }
 
 public:
+
+	bool GetIsGameOver() const { return bIsGameOver; }
+	void SetIsGameOver(bool InIsGameOver) { bIsGameOver = InIsGameOver; }
 	
 	TArray<class AC_Enemy*>& GetEnemies() { return Enemies; }
 
@@ -180,6 +183,10 @@ private:
 
 	int CurrentRanking{}; // 죽었을 때 부여받을 Ranking
 	int TotalPlayedCharacterCount{};
+
+private:
+
+	bool bIsGameOver{};
 };
 
 

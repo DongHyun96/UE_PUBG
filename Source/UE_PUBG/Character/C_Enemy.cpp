@@ -18,6 +18,7 @@
 #include "Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
+#include "HUD/C_GameOverWidget.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Singleton/C_GameSceneManager.h"
@@ -303,4 +304,12 @@ void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 	EnemyAIController->GetPerceptionComponent()->SetComponentTickEnabled(false);
 
 	EnemyAIController->GetBrainComponent()->StopLogic("Died");
+
+	// Player만 남아있는지 체크
+	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+	if (Ranking == 2 && Player->GetMainState() != EMainState::DEAD)
+	{
+		GAMESCENE_MANAGER->SetIsGameOver(true);
+		Player->GetGameOverWidget()->ActivateWinningSequence();
+	}
 }

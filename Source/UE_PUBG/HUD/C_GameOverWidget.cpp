@@ -5,8 +5,11 @@
 
 #include "Animation/WidgetAnimation.h"
 #include "Character/C_Player.h"
+#include "Character/Component/C_PlayerController.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 #include "Singleton/C_GameSceneManager.h"
+#include "Slate/SGameLayerManager.h"
 #include "Utility/C_Util.h"
 
 void UC_GameOverWidget::NativeConstruct()
@@ -27,6 +30,8 @@ void UC_GameOverWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 
 void UC_GameOverWidget::ActivateWinningSequence()
 {
+	this->SetVisibility(ESlateVisibility::HitTestInvisible);
+	
 	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
 	
 	PlayerCharacterName->SetText(FText::FromString(Player->GetCharacterName()));
@@ -43,6 +48,22 @@ void UC_GameOverWidget::ActivateWinningSequence()
 
 void UC_GameOverWidget::ActivateLoseSequence()
 {
+	this->SetVisibility(ESlateVisibility::Visible);
+
+	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	
+
+	PlayerController->SetInputMode
+	(
+		FInputModeGameAndUI().
+		SetWidgetToFocus(this->TakeWidget()).
+		SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock).
+		SetHideCursorDuringCapture(false)
+	);
+
+	PlayerController->SetShowMouseCursor(true);
+	PlayerController->SetIgnoreLookInput(true);
+
 	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
 	PlayerCharacterName->SetText(FText::FromString(Player->GetCharacterName()));
 	FString TotalCharacterString = " / " + FString::FromInt(GAMESCENE_MANAGER->GetTotalPlayedCharacterCount());
