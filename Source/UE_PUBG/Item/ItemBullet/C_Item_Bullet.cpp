@@ -139,6 +139,17 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InSta
 	//혹은 재장전 중에는 해당 총알을 못버리게 하는 방법도 있음.
 	//이 경우에는 
 
+	AC_Gun* curWeapon = Cast<AC_Gun>(Character->GetEquippedComponent()->GetCurWeapon());
+
+	if (curWeapon && curWeapon->GetItemType() == EItemTypes::MAINGUN)
+	{
+		if (curWeapon->GetCurBulletType() == CurBulletType)
+		{
+			if (!Character->GetInvenComponent()->FindMyItemByName(this->GetItemCode()))
+				;//TODO : 장전 중지
+		}
+	}
+
 	//AddFivemmBulletStack을 통해서 총에 또 정보를 전달해 주어야 함
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 		UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행

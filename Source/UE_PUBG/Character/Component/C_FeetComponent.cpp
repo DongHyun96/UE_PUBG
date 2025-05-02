@@ -256,7 +256,7 @@ void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceTpye, FVector I
 		USoundCue* SoundCue = SurfaceTypeToSoundCueMap[InCurSurFaceTpye];
 		if (SoundCue)
 		{
-			if (OwnerCharacter->IsLocallyControlled())
+			if (OwnerCharacter->IsPlayerControlled())
 			{
 				UGameplayStatics::PlaySound2D(this, SoundCue);
 				UC_Util::Print("PlaySound2D", FColor::Emerald, 10.f);
