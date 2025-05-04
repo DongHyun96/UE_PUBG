@@ -43,12 +43,7 @@ void UC_InvenComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	
 	// ...
 }
-/// <summary>
-/// Item을 인벤에 넣을 때, 나의 최대 용량(MaxVolume)을 넘는지를 검사.
-/// 아이템의 stack에 따른 용량의 변화 작업해야함.
-/// </summary>
-/// <param name="volume"></param>
-/// <returns></returns>
+
 bool UC_InvenComponent::CheckVolume(AC_Item* item)
 {
 	//item의 용량은 ItemVolume * ItemStack 이다.
@@ -80,39 +75,35 @@ float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 /// 그렇다면 상호작용은 object에서 내용을 만들고 플레이어는 그 함수를 작동시키는 방식으로 가야 할 것 같음.
 /// </summary>
 /// <param name="wilditem"></param>
-void UC_InvenComponent::Interaction(AC_Item* wilditem)
-{
-	//AC_BasicCharacter* player = OwnerCharacter;
-	
-	//wilditem->Interaction(OwnerCharacter);
+//void UC_InvenComponent::Interaction(AC_Item* wilditem)
+//{
+//	//AC_BasicCharacter* player = OwnerCharacter;
+//	
+//	//wilditem->Interaction(OwnerCharacter);
+//
+//	wilditem->Interaction(OwnerCharacter);
+//
+//
+//	if (CheckVolume(wilditem))
+//	{
+//		//상호작용된 아이템의 무게를 더해도 무게한도를 넘지 않는 경우.
+//		CurVolume += wilditem->GetOnceVolume();
+//
+//		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+//			Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
+//		
+//		//서버와 동기화하는데 주로 사용한다고함. 서버와 클라이언트간에 컴포넌트 상태를 동기화하고, 소유한다.
+//		wilditem->AddActorComponentReplicatedSubObject(this, wilditem);
+//	}
+//	else
+//	{
+//		//상호작용된 아이템의 무게를 더했을 때, 무게한도를 넘는 경우.
+//
+//		//print("공간이 부족합니다"); 와 같은 멘트가 나오도록
+//		return;
+//	}
+//}
 
-	wilditem->Interaction(OwnerCharacter);
-
-
-	if (CheckVolume(wilditem))
-	{
-		//상호작용된 아이템의 무게를 더해도 무게한도를 넘지 않는 경우.
-		CurVolume += wilditem->GetOnceVolume();
-
-		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
-			Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
-		
-		//서버와 동기화하는데 주로 사용한다고함. 서버와 클라이언트간에 컴포넌트 상태를 동기화하고, 소유한다.
-		wilditem->AddActorComponentReplicatedSubObject(this, wilditem);
-	}
-	else
-	{
-		//상호작용된 아이템의 무게를 더했을 때, 무게한도를 넘는 경우.
-
-		//print("공간이 부족합니다"); 와 같은 멘트가 나오도록
-		return;
-	}
-}
-/// <summary>
-/// 가방의 Level에 따라 알맞는 Volume(용량)을 반환해준다.
-/// </summary>
-/// <param name="backpacklevel"></param>
-/// <returns></returns>
 float UC_InvenComponent::CheckBackPackVolume(uint32 backpacklevel)
 {
 	switch (backpacklevel)
@@ -157,24 +148,19 @@ float UC_InvenComponent::CheckBackPackVolume(EBackPackLevel backpacklevel)
 	}
 }
 
-void UC_InvenComponent::DroppingItem(AC_Item* myitem)
-{
-	
-}
-
-void UC_InvenComponent::RemoveBackPack()
-{
-	if (!MyBackPack) return;
-
-	MaxVolume -= CheckBackPackVolume(MyBackPack->GetLevel());
-
-	MyBackPack = nullptr;
-
-	CurBackPackLevel = EBackPackLevel::LV0;
-
-	CheckBackPackOnCharacter();
-
-}
+//void UC_InvenComponent::RemoveBackPack()
+//{
+//	if (!MyBackPack) return;
+//
+//	MaxVolume -= CheckBackPackVolume(MyBackPack->GetLevel());
+//
+//	MyBackPack = nullptr;
+//
+//	CurBackPackLevel = EBackPackLevel::LV0;
+//
+//	CheckBackPackOnCharacter();
+//
+//}
 
 AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_EquipableItem* EquipItem)
 {
@@ -197,8 +183,9 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 
 	if (EquipmentItems[InSlot]->GetItemDatas()->ItemType == EItemTypes::BACKPACK)
 	{
-		MyBackPack = Cast<AC_BackPack>(GetEquipmentItems()[EEquipSlot::BACKPACK]); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기. 및 BackPack의 쓸데없이 Level이 2개임 하나로 통일하기.
-		MaxVolume += CheckBackPackVolume(MyBackPack->GetLevel());
+		//MyBackPack = Cast<AC_BackPack>(GetEquipmentItems()[EEquipSlot::BACKPACK]); //TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기. 및 BackPack의 쓸데없이 Level이 2개임 하나로 통일하기.
+
+		MaxVolume += CheckBackPackVolume(Cast<AC_BackPack>(EquipmentItems[InSlot])->GetLevel());
 	}
 	else if (EquipmentItems[InSlot]->GetItemDatas()->ItemType == EItemTypes::VEST)
 		MaxVolume += 50.f;

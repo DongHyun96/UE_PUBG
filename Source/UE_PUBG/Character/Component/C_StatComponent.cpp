@@ -10,11 +10,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_OxygenWidget.h"
-#include "InvenUserInterface/C_ItemBarWidget.h"
+//#include "InvenUserInterface/C_ItemBarWidget.h"
 #include "Item/Equipment/C_EquipableItem.h"
 #include "HUD/C_BloodScreenWidget.h"
 #include "Singleton/C_GameSceneManager.h"
-
+#include "Components/ProgressBar.h"
 #include "Utility/C_Util.h"	
 
 const float UC_StatComponent::MAX_HP		= 100.f;

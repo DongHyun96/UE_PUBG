@@ -19,9 +19,12 @@ public:
 
 	void BeginPlay() override;
 
-	virtual void SetupInputComponent() override; // 입력 처리 함수
+	// 입력 처리 함수
+	virtual void SetupInputComponent() override; 
 
-	void ToggleMainMenu();  // 메뉴 토글 함수
+	// 메뉴 토글 함수
+	UFUNCTION(BlueprintCallable)
+	void ToggleMainMenu();  
 
 	//UUserWidget* GetMainMenuWidget() const { return MainMenuWidget; }  // 메뉴 위젯 반환 함수
 protected:

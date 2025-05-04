@@ -58,7 +58,7 @@ public:
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns></returns>
-	bool LegacyMoveToInven(AC_BasicCharacter* Character) override;
+	//bool LegacyMoveToInven(AC_BasicCharacter* Character) override;
 
 	/// <summary>
 	/// 해당 아이템(객체)를 얼마나 버릴 것인지 계산해서 버린다.(이것은 후에 나눠버리기 기능을 위해 uint8정도를 받아 사용하면 좋을듯.)
@@ -66,14 +66,14 @@ public:
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns></returns>
-	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
+	//bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
 	/// <summary>
 	/// 아이템을 슬롯으로 이동.
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns>true면 이동 성공, false면 실패</returns>
-	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
+	//bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 
 protected:
 	//bool MoveAroundToSlot(AC_BasicCharacter* Character) override;

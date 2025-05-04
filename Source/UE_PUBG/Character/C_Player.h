@@ -56,12 +56,16 @@ public:
 	/// </summary>
 	void OnPostWorldBeginPlay();
 
+	// 낙하중 바람 소리 재생
 	UFUNCTION(BlueprintImplementableEvent)
 	void PlaySkyDivingSound();
 
+	// 낙하중 바람 소리 정지
 	UFUNCTION(BlueprintImplementableEvent)
 	void StopSkyDivingSound();
 
+	// 낙하중 바람 소리가 중간에 끝나면 재생 
+	// TODO : looping으로 처리한 지금, 필요한 기능인지 체크하기.
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateSkyDivingSound();
 private:
