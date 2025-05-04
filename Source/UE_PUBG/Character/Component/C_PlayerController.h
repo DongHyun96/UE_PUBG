@@ -21,6 +21,7 @@ public:
 
 	virtual void SetupInputComponent() override; // 입력 처리 함수
 
+	UFUNCTION(BlueprintCallable)
 	void ToggleMainMenu();  // 메뉴 토글 함수
 
 	//UUserWidget* GetMainMenuWidget() const { return MainMenuWidget; }  // 메뉴 위젯 반환 함수

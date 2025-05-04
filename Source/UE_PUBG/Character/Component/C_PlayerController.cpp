@@ -19,7 +19,7 @@ AC_PlayerController::AC_PlayerController()
 		MainMenuClass = MainMenuWidgetBPClass.Class;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> IA_OpenMenu(TEXT("/Game/Project_PUBG/Common/Character/Input/IA_MainMenu")); // 경로는 니 프로젝트에 맞게
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_OpenMenu(TEXT("/Game/Project_PUBG/Common/Character/Input/IA_MainMenu"));
 	if (IA_OpenMenu.Succeeded())
 	{
 		OpenMenuAction = IA_OpenMenu.Object;
@@ -93,8 +93,15 @@ void AC_PlayerController::ToggleMainMenu()
 	//	return;
 	//}
 
+	if (!MainMenuWidget)
+	{
+		UC_Util::Print("MainMenuWidget is nullptr", FColor::Red, 10.f);
+		return;
+	}
 
-	if (MainMenuWidget && MainMenuWidget->GetVisibility() == ESlateVisibility::Hidden)
+	// TODO : Collapsed 는 메인메뉴창을 종료한 상태,
+	//      : Hidden은 메인메뉴창에서 Preperences같은 다른 창을 띄운 상태
+	if (MainMenuWidget->GetVisibility() == ESlateVisibility::Hidden || MainMenuWidget->GetVisibility() == ESlateVisibility::Collapsed)
 	{
 		MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 		SetPause(true);
@@ -109,8 +116,12 @@ void AC_PlayerController::ToggleMainMenu()
 		InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		SetInputMode(InputModeData);
 	}
-	else
+	else if (MainMenuWidget->GetVisibility() == ESlateVisibility::Visible)
 	{
+		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		SetPause(true);
+
+		GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
 		UC_Util::Print("MainMenuWidget is nullptr", FColor::Red, 10.f);
 	}
 	
