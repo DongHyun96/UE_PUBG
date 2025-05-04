@@ -11,8 +11,10 @@
 #include "Utility/C_Util.h"
 AC_PlayerController::AC_PlayerController()
 {
+	/// Script / UMGEditor.WidgetBlueprint'/Game/Project_PUBG/Common/UI/test/MainMenu/WBP_Menu.WBP_Menu'
 	// MainMenu 위젯을 생성하기 위한 클래스 로드, WBP_Menu의 경로나 이름이 변경되면 수정 필요
-	static ConstructorHelpers::FClassFinder<UUserWidget> MainMenuWidgetBPClass(TEXT("/Game/Project_PUBG/Common/UI/MainMenu/WBP_Menu"));
+	//static ConstructorHelpers::FClassFinder<UUserWidget> MainMenuWidgetBPClass(TEXT("/Game/Project_PUBG/Common/UI/MainMenu/WBP_Menu"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> MainMenuWidgetBPClass(TEXT("/Game/Project_PUBG/Common/UI/test/MainMenu/WBP_Menu"));
 
 	if (MainMenuWidgetBPClass.Class != nullptr)
 	{
