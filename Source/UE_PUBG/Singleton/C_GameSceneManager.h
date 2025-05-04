@@ -51,7 +51,7 @@ private:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	class AC_LootCrate* SpawnLootCrateAt(FVector SpawnLocation, AC_BasicCharacter* DeadCharacter);
+	class AC_LootCrate* SpawnLootCrateAt(FVector SpawnLocation, class AC_BasicCharacter* DeadCharacter);
 
 protected:
 	UPROPERTY(EditDefaultsOnly)

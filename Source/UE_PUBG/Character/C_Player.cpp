@@ -347,7 +347,7 @@ void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(const float& Delta
 		(
 			C_MainSpringArm->GetRelativeLocation(),
 			MainSpringArmRelativeLocationDest,
-			DeltaTime * 5.f
+			DeltaTime * SpringArmRelativeLocationLerpSpeed
 		)
 	);
 	//AimSpringArmTemp->SocketOffset
@@ -357,7 +357,7 @@ void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(const float& Delta
 		(
 			AimSpringArmTemp->GetRelativeLocation(),
 			AimingSpringArmRelativeLocationDest,
-			DeltaTime * 5.f
+			DeltaTime * SpringArmRelativeLocationLerpSpeed
 		)
 	);
 }
@@ -421,7 +421,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 				return false;
 			}
 
-			SetSpringArmRelativeLocationDest(EPoseState::STAND);
+			SetMainSpringArmRelativeLocationDest(EPoseState::STAND);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::STAND);
 			SetControllerPitchLimits(EPoseState::STAND);
 			Super::SetPoseState(EPoseState::STAND);
@@ -440,7 +440,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 				return false;
 			}
 			SetControllerPitchLimits(EPoseState::STAND);
-			SetSpringArmRelativeLocationDest(EPoseState::STAND);
+			SetMainSpringArmRelativeLocationDest(EPoseState::STAND);
 
 			if (SwimmingComponent->GetSwimmingState() != ESwimmingState::ON_GROUND)
 			{
@@ -467,7 +467,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 				return false;
 			}
 
-			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
+			SetMainSpringArmRelativeLocationDest(EPoseState::CROUCH);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CROUCH);
 			SetControllerPitchLimits(EPoseState::CROUCH);
 			Super::SetPoseState(EPoseState::CROUCH);
@@ -487,7 +487,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			}
 			SetControllerPitchLimits(EPoseState::CROUCH);
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToCrouch, EPoseState::CROUCH);
-			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
+			SetMainSpringArmRelativeLocationDest(EPoseState::CROUCH);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CROUCH);
 
 			return true;
@@ -512,7 +512,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			SetControllerPitchLimits(EPoseState::CRAWL);
 
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).StandToCrawl, EPoseState::CRAWL);
-			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
+			SetMainSpringArmRelativeLocationDest(EPoseState::CRAWL);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CRAWL);
 
 			return true;
@@ -530,7 +530,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 				return false;
 			}
 			SetControllerPitchLimits(EPoseState::CRAWL);
-			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
+			SetMainSpringArmRelativeLocationDest(EPoseState::CRAWL);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CRAWL);
 
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrouchToCrawl, EPoseState::CRAWL);
@@ -760,11 +760,16 @@ void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 	HUDWidget->GetInstructionWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
 
 	GAMESCENE_MANAGER->SetIsGameOver(true);
+
+	// TODO : if else 문으로 대체하기
+	//if (Ranking == 1) GameOverWidget->ActivateWinningSequence();
+	//else GameOverWidget->ActivateLoseSequence();
+	GameOverWidget->ActivateLoseSequence();
 	
-	if (Ranking == 1) GameOverWidget->ActivateWinningSequence();
-	else GameOverWidget->ActivateLoseSequence();
-	// GameOverWidget->ActivateLoseSequence();
-	
+	//if (AC_Gun* Gun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon()))
+	//{
+	//	UC_Util::Print("Dead : Current Gun valid!", FColor::Red, 10.f);
+	//}
 }
 
 void AC_Player::EnableRagdoll()
