@@ -280,7 +280,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
         }
     }
     //총을 들고 Aiming 중일 때 카메라 다시 원래대로 전환
-    if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+    if (Cast<AC_Player>(OwnerCharacter))
     {
         if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
         {

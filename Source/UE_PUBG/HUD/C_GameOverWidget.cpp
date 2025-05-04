@@ -66,6 +66,9 @@ void UC_GameOverWidget::ActivateLoseSequence()
 
 	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
 	PlayerCharacterName->SetText(FText::FromString(Player->GetCharacterName()));
+
+	RankingTextTopRight->SetText(FText::FromString(FString::FromInt(Player->GetRanking())));
+	
 	FString TotalCharacterString = " / " + FString::FromInt(GAMESCENE_MANAGER->GetTotalPlayedCharacterCount());
 	RankingTextTotalCharacterCount->SetText(FText::FromString(TotalCharacterString));
 

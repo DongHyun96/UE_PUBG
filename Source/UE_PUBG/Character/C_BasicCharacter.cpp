@@ -34,6 +34,7 @@
 #include "MotionWarpingComponent.h"
 #include "Component/C_SmokeEnteredChecker.h"
 #include "HUD/C_InstructionWidget.h"
+#include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -212,6 +213,12 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 			ThrowingWeapon->StartCooking();
 			ThrowingWeapon->ReleaseOnGround();
 		}
+
+	// 여기에 Player의 BackToMainCamera 처리를 해야 함 (무기 장착 해제 이전에) / Player에서 CharacterDead override를 했지만, 처리 순서 때문에 여기서밖에 처리를 못함
+	if (Cast<AC_Player>(this))
+	{
+		if (AC_Gun* Gun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon())) Gun->BackToMainCamera();
+	}
 	
 	FVector SpawnLocation = GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 	GAMESCENE_MANAGER->SpawnLootCrateAt(SpawnLocation, this);

@@ -85,8 +85,10 @@ public: // Getters and setters
 	TMap<EHandState, FPoseTurnInPlaceAnimMontage>& GetLowerBodyTurnAnimMontageMap() { return LowerBodyTurnAnimMontageMap; }
 	FPoseTurnInPlaceAnimMontage& GetLowerPoseTurnAnimMontage(EHandState InHandState) { return LowerBodyTurnAnimMontageMap[InHandState]; }
 
-	void SetSpringArmRelativeLocationDest(EPoseState InNextPoseState) { MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
+	void SetMainSpringArmRelativeLocationDest(EPoseState InNextPoseState) { MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
 	void SetAimingSpringArmRelativeLocationDest(EPoseState InNextPoseState) { AimingSpringArmRelativeLocationDest = AimingSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
+
+public:
 
 	UFUNCTION(BlueprintCallable)
 	class UC_HUDWidget*		GetHUDWidget()		const { return HUDWidget; }
@@ -338,7 +340,7 @@ private:
 	// 부모의 SkyDivingComponent 객체와 동일한 객체
 	class UC_PlayerSkyDivingComponent* PlayerSkyDivingComponent{};
 
-private:
+private: // MainSpringArm & AimingSpringArm Lerp Destinations
 
 	TMap<EPoseState, FVector> MainSpringArmRelativeLocationByPoseMap{};
 	FVector MainSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
@@ -346,6 +348,7 @@ private:
 	TMap<EPoseState, FVector> AimingSpringArmRelativeLocationByPoseMap{};
 	FVector AimingSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
 
+	float SpringArmRelativeLocationLerpSpeed = 5.f;
 
 protected:
 	//총알 Object Pooling (World에서 작업할 예정)
