@@ -57,9 +57,12 @@ public:
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 	//가방교체, 아이템획득시 해당함수로 용량이 충분한지 확인하여 T or F를 반환. 블루프린트에서 사용 가능하도록 열어줘야 할 수 있음.
-	
-	//UFUNCTION(BlueprintCallable)
-	//uint16은 해당 매크로가 지원하지 않는다. uint8, uint32는 지원한다.
+	/// <summary>
+	/// Item을 인벤에 넣을 때, 나의 최대 용량(MaxVolume)을 넘는지를 검사.
+	/// 아이템의 stack에 따른 용량의 변화 작업해야함.
+	/// </summary>
+	/// <param name="volume"></param>
+	/// <returns></returns>
 	bool CheckVolume(class AC_Item* item);
 
 	/// <summary>
@@ -70,17 +73,14 @@ public:
 	float LoopCheckVolume(AC_Item* item);
 
 	//UFUNCTION(BlueprintCallable)
-	void Interaction(AC_Item* wilditem);
+	//void Interaction(AC_Item* wilditem);
 
 	//가방의 용량을 반환
 	float CheckBackPackVolume(uint32 backpacklevel);
 	float CheckBackPackVolume(EBackPackLevel backpacklevel);
 
-	UFUNCTION(BlueprintCallable)
-	void DroppingItem(AC_Item* myitem);
-
-	UFUNCTION(BlueprintCallable)
-	void RemoveBackPack();
+	//UFUNCTION(BlueprintCallable)
+	//void RemoveBackPack();
 	
 	UFUNCTION(BlueprintCallable)
 	class AC_EquipableItem* SetSlotEquipment(EEquipSlot InSlot, AC_EquipableItem* EquipItem);
@@ -103,18 +103,25 @@ public:
 
 	bool HandleItemStackOverflow(AC_Item* InItem);
 
+	// MyItemList에 아이템을 추가하는 함수
 	void AddItemToMyList(AC_Item* item); //{ testMyItems.Add(item->GetItemDatas().ItemName, item); }
 
+	// MyItemList에 아이템을 제거하는 함수
 	void RemoveItemToMyList(AC_Item* item);// { testMyItems.Remove(item->GetItemDatas().ItemName); }
 
+	// MyItemList에 아이템을 Destroy하는 함수
 	void DestroyMyItem(AC_Item* DestroyedItem);
 
+	// Around Item List에 아이템을 추가하는 함수
 	void AddItemToAroundList(AC_Item* item) { AroundItems.Add(item); }
 
+	// Around Item List에 아이템을 제거하는 함수
 	void RemoveItemToAroundList(AC_Item* item) { AroundItems.Remove(item); }
 
+	// 캐릭터가 가방을 매고 있는지 확인하고 총의 위치를 조정하는 함수.
 	void CheckBackPackOnCharacter();
 	
+	// 현재 인벤의 용량에 용량을 추가하는 함수.
 	void AddInvenCurVolume(float ItemVolume);
 
 	
@@ -128,13 +135,13 @@ public: //Getter and Seter
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	float GetCurVolume() { return CurVolume; }
 
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	class AC_BackPack* GetMyBackPack() { return MyBackPack; }
+	//UFUNCTION(BlueprintCallable, Category = "Inventory")
+	//class AC_BackPack* GetMyBackPack() { return MyBackPack; }
 
 	UFUNCTION(BlueprintCallable)
 	void GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<AC_Item*>& Values);
 
-	void SetMyBackPack(AC_BackPack* inBackPack) { MyBackPack = inBackPack; }
+	//void SetMyBackPack(AC_BackPack* inBackPack) { MyBackPack = inBackPack; }
 
 	float GetVestVolume();
 
@@ -176,11 +183,11 @@ protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//TMap<FName, AC_Item*> MyItems;
 
-	TMap<FName, TArray<AC_Item*>> MyItems;
+	TMap<FName, TArray<AC_Item*>> MyItems{};
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TArray<AC_Item*> AroundItems;
+	TArray<AC_Item*> AroundItems{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EEquipSlot, AC_EquipableItem*> EquipmentItems = 
@@ -190,8 +197,8 @@ protected:
 	{EEquipSlot::VEST, nullptr}
 	};
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	AC_BackPack* MyBackPack {};
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//AC_BackPack* MyBackPack {};
 	
 };
 

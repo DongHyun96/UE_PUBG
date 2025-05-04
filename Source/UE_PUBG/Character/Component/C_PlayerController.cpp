@@ -13,8 +13,8 @@ AC_PlayerController::AC_PlayerController()
 {
 	/// Script / UMGEditor.WidgetBlueprint'/Game/Project_PUBG/Common/UI/test/MainMenu/WBP_Menu.WBP_Menu'
 	// MainMenu 위젯을 생성하기 위한 클래스 로드, WBP_Menu의 경로나 이름이 변경되면 수정 필요
-	//static ConstructorHelpers::FClassFinder<UUserWidget> MainMenuWidgetBPClass(TEXT("/Game/Project_PUBG/Common/UI/MainMenu/WBP_Menu"));
-	static ConstructorHelpers::FClassFinder<UUserWidget> MainMenuWidgetBPClass(TEXT("/Game/Project_PUBG/Common/UI/test/MainMenu/WBP_Menu"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> MainMenuWidgetBPClass(TEXT("/Game/Project_PUBG/Common/UI/MainMenu/WBP_Menu"));
+	//static ConstructorHelpers::FClassFinder<UUserWidget> MainMenuWidgetBPClass(TEXT("/Game/Project_PUBG/Common/UI/test/MainMenu/WBP_Menu"));
 
 	if (MainMenuWidgetBPClass.Class != nullptr)
 	{
@@ -110,8 +110,6 @@ void AC_PlayerController::ToggleMainMenu()
 		bShowMouseCursor = true;
 		UC_Util::Print("MainMenuWidget is added to viewport", FColor::Green, 10.f);
 
-		
-
 		// UIOnly 모드로 전환하고 위젯에 포커스
 		FInputModeUIOnly InputModeData;
 		InputModeData.SetWidgetToFocus(MainMenuWidget->TakeWidget());
@@ -120,11 +118,11 @@ void AC_PlayerController::ToggleMainMenu()
 	}
 	else if (MainMenuWidget->GetVisibility() == ESlateVisibility::Visible)
 	{
-		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
-		SetPause(true);
-
-		GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
-		UC_Util::Print("MainMenuWidget is nullptr", FColor::Red, 10.f);
+		//MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		//SetPause(true);
+		//
+		//GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
+		//UC_Util::Print("MainMenuWidget is nullptr", FColor::Red, 10.f);
 	}
 	
 }

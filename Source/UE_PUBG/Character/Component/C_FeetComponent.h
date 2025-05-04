@@ -58,6 +58,7 @@ public:
 	/// <summary>
 	/// FeetComponent내부에서 발소리를 재생하려고 했는데 쉽지 않아서
 	/// 애니메이션에 Notify를 사용하는 것으로 선회.
+	/// -->현재 사용중.
 	/// </summary>
 	/// <param name="InCurSurFaceTpye"></param>
 	/// <param name="InLocation"></param>

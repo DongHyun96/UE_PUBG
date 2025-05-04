@@ -43,8 +43,8 @@ public:
 	/// 내려 놓는 위치는 발정도.
 	/// </summary>
 	/// <param name="character"></param>
-	UFUNCTION(BlueprintCallable)
-	void DetachToSocket(AC_BasicCharacter* character);
+	//UFUNCTION(BlueprintCallable)
+	//void DetachToSocket(AC_BasicCharacter* character);
 
 	uint8 GetLevel() { return Level; }
 

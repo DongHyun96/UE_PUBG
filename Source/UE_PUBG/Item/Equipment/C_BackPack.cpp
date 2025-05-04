@@ -92,42 +92,42 @@ void AC_BackPack::AttachToSocket(AC_BasicCharacter* InParent)
 	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);
 }
 
-void AC_BackPack::DetachToSocket(AC_BasicCharacter* character)
-{
-	//가방 해제.
-
-	if (!character->GetInvenComponent()->GetMyBackPack()) return;
-	DetachItem();
-	////USkeletalMeshComponent* backpackMesh = this->FindComponentByClass<USkeletalMeshComponent>();
-	//BackpackMesh = FindComponentByClass<UStaticMeshComponent>();
-	//if (BackpackMesh)
-	//{
-	//	// 캐릭터에서 가방을 분리
-	//	BackpackMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-	//
-	//	// 가방이 보이지 않게 설정
-	//	BackpackMesh->SetVisibility(false);
-	//	//충돌을 여기서 꺼주고 SetLocation 이후에 다시 켜주면 OverlappedBegin이벤트가 작동함.
-	//	SetActorEnableCollision(false);
-	//}
-	//SetOwnerCharacter(nullptr);
-	//
-	//// 가방을 캐릭터의 발 아래로 이동시킴
-	//FVector DropLocation = character->GetActorLocation() + FVector(0.f, 0.f, -75.f);
-	//FRotator DropRotation = character->GetActorRotation() + FRotator(0.f, 0.f, -90.f);
-	//SetActorLocation(DropLocation);
-	//SetActorRotation(DropRotation);
-	//
-	////SetActorLocation으로 꺼져버린 충돌을 다시 켜줌.
-	//SetActorEnableCollision(true);
-	//// 가방이 다시 보이게 설정
-	//BackpackMesh->SetSimulatePhysics(true);
-	//BackpackMesh->SetEnableGravity(true);
-	//BackpackMesh->SetVisibility(true);
-
-
-
-}
+//void AC_BackPack::DetachToSocket(AC_BasicCharacter* character)
+//{
+//	//가방 해제.
+//
+//	if (!Cast<AC_BackPack>(character->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK])) return;
+//	DetachItem();
+//	////USkeletalMeshComponent* backpackMesh = this->FindComponentByClass<USkeletalMeshComponent>();
+//	//BackpackMesh = FindComponentByClass<UStaticMeshComponent>();
+//	//if (BackpackMesh)
+//	//{
+//	//	// 캐릭터에서 가방을 분리
+//	//	BackpackMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+//	//
+//	//	// 가방이 보이지 않게 설정
+//	//	BackpackMesh->SetVisibility(false);
+//	//	//충돌을 여기서 꺼주고 SetLocation 이후에 다시 켜주면 OverlappedBegin이벤트가 작동함.
+//	//	SetActorEnableCollision(false);
+//	//}
+//	//SetOwnerCharacter(nullptr);
+//	//
+//	//// 가방을 캐릭터의 발 아래로 이동시킴
+//	//FVector DropLocation = character->GetActorLocation() + FVector(0.f, 0.f, -75.f);
+//	//FRotator DropRotation = character->GetActorRotation() + FRotator(0.f, 0.f, -90.f);
+//	//SetActorLocation(DropLocation);
+//	//SetActorRotation(DropRotation);
+//	//
+//	////SetActorLocation으로 꺼져버린 충돌을 다시 켜줌.
+//	//SetActorEnableCollision(true);
+//	//// 가방이 다시 보이게 설정
+//	//BackpackMesh->SetSimulatePhysics(true);
+//	//BackpackMesh->SetEnableGravity(true);
+//	//BackpackMesh->SetVisibility(true);
+//
+//
+//
+//}
 
 bool AC_BackPack::Interaction(AC_BasicCharacter* Character)
 {
