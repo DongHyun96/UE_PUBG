@@ -187,6 +187,14 @@ private:
 private:
 
 	bool bIsGameOver{};
+
+public:
+	
+	TArray<AC_Item*> ItemContainer{};
+	UFUNCTION(BlueprintCallable)
+	void AddSpawnedItemToContainer(class AC_Item* InItem);
+
+	void ToggleItemsHiddenInGame(bool InOnAndOff);
 };
 
 

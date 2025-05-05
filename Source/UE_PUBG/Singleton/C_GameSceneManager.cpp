@@ -228,6 +228,20 @@ TPair<uint8, uint8> UC_GameSceneManager::GetContainingTileCoordinate(const FVect
 	return { (CELL_WORLDSIZE * 5.f - X) / 100, (CELL_WORLDSIZE * 5.f + Y) / 100 };
 }
 
+void UC_GameSceneManager::AddSpawnedItemToContainer(class AC_Item* InItem)
+{
+	ItemContainer.Add(InItem);
+}
+
+void UC_GameSceneManager::ToggleItemsHiddenInGame(bool InOnAndOff)
+{
+	for (AC_Item* SpawnedItem : ItemContainer)
+	{
+		SpawnedItem->SetActorHiddenInGame(InOnAndOff);
+	}
+
+}
+
 // TPair<uint8, uint8> Get
 
 //void UC_GameSceneManager::OnWorldEndPlay(UWorld* InWorld)
