@@ -116,7 +116,6 @@ void UC_GameSceneManager::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	// 월드 파괴 전 호출되는 델리게이트 등록
 	//FWorldDelegates::OnPreWorldFinishDestroy.AddUObject(this, &UC_GameSceneManager::OnWorldEndPlay);
-
 }
 
 void UC_GameSceneManager::Deinitialize()
