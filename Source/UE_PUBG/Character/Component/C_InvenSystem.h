@@ -74,6 +74,7 @@ protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_BasicCharacter* OwnerCharacter = nullptr;
 		
+
 };
 
 

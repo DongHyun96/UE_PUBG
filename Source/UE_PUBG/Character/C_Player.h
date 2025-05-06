@@ -68,6 +68,14 @@ public:
 	// TODO : looping으로 처리한 지금, 필요한 기능인지 체크하기.
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateSkyDivingSound();
+
+	// 투척류 휠 토글
+	UFUNCTION(BlueprintImplementableEvent)
+	void ToggleThrowablegWeaponWheel();
+
+	// 힐템 휠 토글
+	UFUNCTION(BlueprintImplementableEvent)
+	void ToggleConsumableWheel();
 private:
 
 	/// <summary>
@@ -113,6 +121,10 @@ public:
 	void SetCanFireWhileCrawl();
 
 	class UC_PlayerSkyDivingComponent* GetPlayerSkyDivingComponent() const { return PlayerSkyDivingComponent; }
+
+	UUserWidget* GetThrowingWheel() { return ThrowableWheelWidget; }
+
+	UUserWidget* GetConsumableWheel() { return ConsumableWheelWidget; }
 		
 public:
 	bool GetIsHighEnoughToFall() override;
@@ -326,6 +338,12 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_GameOverWidget* GameOverWidget{};	
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UUserWidget* ThrowableWheelWidget = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UUserWidget* ConsumableWheelWidget = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UC_InvenSystem* InvenSystem{};

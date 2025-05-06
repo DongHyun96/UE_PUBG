@@ -12,6 +12,8 @@
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_InvenComponent.h"
 
+#include "Item/ConsumableItem/C_ConsumableItem.h"
+
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
@@ -170,6 +172,9 @@ void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	if (CachedItem)
 	{
 		UpdateWidget(CachedItem);
+		if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(CachedItem))
+			if (!ConsumableItem->GetLinkedItemBarWidget()) ConsumableItem->SetLinkedItemBarWidget(this);
+
 		return;
 	}
 }

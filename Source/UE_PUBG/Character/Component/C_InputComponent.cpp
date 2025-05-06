@@ -135,9 +135,8 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 		EnhancedInputComponent->BindAction(IKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnIKey);
 		EnhancedInputComponent->BindAction(TabKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnTabKey);	
 
-		//EnhancedInputComponent->BindAction(MainMenuAction, ETriggerEvent::Started, this, &UC_InputComponent::OnMainMenuKey);
-
-
+		EnhancedInputComponent->BindAction(ToggleThrowableWheelAction, ETriggerEvent::Triggered, this, &UC_InputComponent::OnGKey);
+		EnhancedInputComponent->BindAction(ToggleConsumableAction, ETriggerEvent::Triggered, this, &UC_InputComponent::OnTKey);
 	}
 }	
 
@@ -631,21 +630,12 @@ void UC_InputComponent::OnTabKey()
 	}
 }
 
-void UC_InputComponent::OnMainMenuKey()
+void UC_InputComponent::OnGKey()
 {
-	//AC_PlayerController PlayerController  = Player->GetController()
-	//UC_Util::Print("Down OnMainMenuKey");
-	//UC_Util::Print(GAMESCENE_MANAGER->GetCurrentHUDMode());
-
-	//if (GAMESCENE_MANAGER->GetCurrentHUDMode() != EHUDMode::IDLE) return;
-
-	//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(Player->GetController());
-	//if (IsValid(PlayerController))
-	//{
-	//	PlayerController->ToggleMainMenu();
-	//}
-
+	GAMESCENE_MANAGER->GetPlayer()->ToggleThrowablegWeaponWheel();
 }
 
-
-
+void UC_InputComponent::OnTKey()
+{
+	GAMESCENE_MANAGER->GetPlayer()->ToggleConsumableWheel();
+}

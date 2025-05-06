@@ -67,6 +67,13 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		
 		if (UsingTimer < UsageTime)
 		{
+			if (LinkedItemBarWidget)
+				UC_Util::Print("LinkedItemBarWidget Is Good");
+			else
+			{
+				UC_Util::Print("LinkedItemBarWidget is nullptr", FColor::Red, 5.f);
+			}
+
 			HandleActivatingState(); // Pure virtual Template method
 
 			//방해 받았는지 체크해서 방해를 받았다면 Activating Cancel 시키기
@@ -84,7 +91,8 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			{
 				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) // 방해 받지 않았을 때 (즉, 활성화 Animation이 진행 중일 때)
 				{
-					if (Player) LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
+					if (Player) 
+						if (LinkedItemBarWidget) LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
 					return;
 				}
 			}
@@ -113,6 +121,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		OnActivatingFinish(); // Template method
 
 		ItemUser->SetIsActivatingConsumableItem(false, nullptr);
+
 	}
 		return;
 	case EConsumableItemState::ACTIVATE_COMPLETED:
@@ -124,7 +133,8 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		
 		if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		{
-			LinkedItemBarWidget->SetPercent(0.f, UsageTime);
+			if (LinkedItemBarWidget)
+				LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 			
 			Player->GetHUDWidget()->OnConsumableUsed();
 			Player->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
@@ -260,7 +270,8 @@ bool AC_ConsumableItem::CancelActivating()
 
 		Player->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
 		
-		LinkedItemBarWidget->SetPercent(0.f, UsageTime);
+		if (LinkedItemBarWidget)
+			LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 	}
 
 	OnCancelActivating();

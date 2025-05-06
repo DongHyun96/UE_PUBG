@@ -5,7 +5,7 @@
 #include "Character/C_Player.h"
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_EquippedComponent.h"
-
+#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Item/C_Item.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Equipment/C_BackPack.h"
@@ -435,6 +435,11 @@ int32 UC_InvenComponent::GetTotalStackByItemName(const FName& ItemName)
 			AllStack += Item->GetItemCurStack();
 		}
 	}
+
+	//if (AC_Weapon* ThrowingWeapon = OwnerCharacter->GetEquippedComponent()->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON])
+	//	if (ItemName == ThrowingWeapon->GetItemCode())
+	//		AllStack++;
+
 
 	return AllStack;
 }

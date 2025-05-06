@@ -18,6 +18,8 @@
 #include "Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
 #include "Weapon/WeaponStrategy/C_GunStrategy.h"
 
+#include "Singleton/C_GameSceneManager.h"
+
 // Sets default values
 AC_Item::AC_Item()
 {
@@ -162,6 +164,14 @@ bool AC_Item::MoveToInven(AC_BasicCharacter* Character, int32 InStack)
 		if (Character->GetInvenComponent()->GetAroundItems().Contains(this))
 			Character->GetInvenComponent()->RemoveItemToAroundList(this);
 	}
+
+	if (AC_Player* Player = Cast<AC_Player>(Character))
+	{
+		//Player->GetInvenSystem()->GetInvenUI()->UpdateEquipmentItemPanelWidget();
+		//Player->GetInvenSystem()->GetInvenUI()->UpdateAroundItemPanelWidget();
+		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+	}
+
 	return bIsMoveItem;
 }
 

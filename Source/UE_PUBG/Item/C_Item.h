@@ -282,6 +282,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FString GetItemName() const { return ItemDataRef->ItemName; }
+
 	/// <summary>
 	/// 아이템 하나의 Volume
 	/// </summary>
