@@ -67,12 +67,6 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		
 		if (UsingTimer < UsageTime)
 		{
-			if (LinkedItemBarWidget)
-				UC_Util::Print("LinkedItemBarWidget Is Good");
-			else
-			{
-				UC_Util::Print("LinkedItemBarWidget is nullptr", FColor::Red, 5.f);
-			}
 
 			HandleActivatingState(); // Pure virtual Template method
 
