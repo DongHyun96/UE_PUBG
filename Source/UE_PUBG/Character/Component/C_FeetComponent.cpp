@@ -43,7 +43,7 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Trace(LeftSocket, LeftDistance, LeftRotation);
 	Trace(RightSocket, RightDistance, RightRotation);
 
-	UC_Util::Print(RightDistance);
+	// UC_Util::Print(RightDistance);
 
 	//늘어난 다리를 안늘어난 다리에 맞추도록 안늘어난 다리의 길이를 저장
 	float Offset = FMath::Min(LeftDistance, RightDistance);
@@ -116,7 +116,7 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 		CollisionParams
 	);
 
-	DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, FColor::Red);
+	// DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, FColor::Red);
 
 	OutDistance = 0;
 	OutRotation = FRotator::ZeroRotator;
