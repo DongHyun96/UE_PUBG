@@ -237,8 +237,31 @@ void UC_GameSceneManager::ToggleItemsHiddenInGame(bool InOnAndOff)
 	for (AC_Item* SpawnedItem : ItemContainer)
 	{
 		SpawnedItem->SetActorHiddenInGame(InOnAndOff);
-	}
+		UC_Util::Print("UnHiddenItems: ", FColor::Cyan, 10.f);
 
+	}
+	for (APawn* SpawnedVehicle : VehicleContainer)
+	{
+		SpawnedVehicle->SetActorHiddenInGame(InOnAndOff);
+		UC_Util::Print("UnHiddenCars: ", FColor::Blue, 10.f);
+	}
+	if (!InOnAndOff)
+	{
+		SetVehiclesCollision();
+	}
+}
+
+void UC_GameSceneManager::AddVehiclesToContainer(class APawn* InVehicle)
+{
+	VehicleContainer.Add(InVehicle);
+	UC_Util::Print("Container: ", FColor::Red, 10.f);
+
+	
+}
+
+void UC_GameSceneManager::SetVehiclesCollision()
+{
+	OnSetVehiclesCollision.Broadcast();
 }
 
 // TPair<uint8, uint8> Get

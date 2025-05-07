@@ -23,7 +23,7 @@ enum class EHUDMode : uint8
 	MAX
 };
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetVehiclesCollisoin); 
 /// <summary>
 /// GameScene에서 사용할 Singleton class
 /// </summary>
@@ -190,11 +190,22 @@ private:
 
 public:
 	
-	TArray<AC_Item*> ItemContainer{};
+	TArray<class AC_Item*> ItemContainer{};
 	UFUNCTION(BlueprintCallable)
-	void AddSpawnedItemToContainer(class AC_Item* InItem);
+	void AddSpawnedItemToContainer( AC_Item* InItem);
 
 	void ToggleItemsHiddenInGame(bool InOnAndOff);
+
+	TArray<APawn*> VehicleContainer{};
+
+	UFUNCTION(BlueprintCallable)
+	void AddVehiclesToContainer(class APawn* InVehicle);
+	UPROPERTY(BlueprintAssignable, Category="Events")
+	FOnSetVehiclesCollisoin OnSetVehiclesCollision; // 블루프린트에서 바인딩할 수 있게 함
+
+	UFUNCTION(BlueprintCallable)
+	void SetVehiclesCollision(); // 델리게이트 실행 함수
+
 };
 
 
