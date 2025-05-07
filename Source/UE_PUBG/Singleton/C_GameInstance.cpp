@@ -3,7 +3,6 @@
 
 #include "C_GameInstance.h"
 #include "LoadingScreenModule.h"
-#include "Utility/C_Util.h"
 
 void UC_GameInstance::Init()
 {
@@ -25,13 +24,15 @@ void UC_GameInstance::BeginLoadingScreen(const FString& InMapName)
 	if (LoadingScreenModule)
 	{
 		// Module found - Start the loading screen
-		LoadingScreenModule->StartLoadingScreen();
+		LoadingScreenModule->StartLoadingScreen(InMapName);
 	}
 	else
 	{
 		// Module not found
 		UE_LOG(LogTemp, Warning, TEXT("UC_GameInstance::BeginLoadingScreen: LoadingScreenModule not found"));
 	}
+	
+	
 }
 
 void UC_GameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
