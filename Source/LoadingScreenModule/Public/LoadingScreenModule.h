@@ -14,7 +14,7 @@ public:
 	virtual bool IsGameModule() const override;
 
 	// Shows the loading screen during level transitions
-	virtual void StartLoadingScreen();
+	virtual void StartLoadingScreen(const FString& MapName);
 
 private:
 	// Store the background texture to prevent it from being garbage collected

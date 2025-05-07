@@ -21,8 +21,8 @@ public class LoadingScreenModule : ModuleRules
 					"MoviePlayer",	// Movie player for loading screens
 					"Engine",		// Main UE Engine module for UTexture2D
 					"Slate",		// UI framework
-					"SlateCore"		// Core Slate functionality
-					
+					"SlateCore",		// Core Slate functionality
+					"DeveloperSettings"
 				}
 			);
 		
