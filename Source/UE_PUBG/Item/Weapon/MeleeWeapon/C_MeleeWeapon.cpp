@@ -17,8 +17,10 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Singleton/C_GameInstance.h"
 
 #include "Utility/C_Util.h"
+
 
 const FName AC_MeleeWeapon::HOLSTER_SOCKET_NAME = "Pan_Holster"; // 무기집 socket 이름
 const FName AC_MeleeWeapon::EQUIPPED_SOCKET_NAME = "Pan_Equip"; // 무기가 손에 부착될 socket 이름
@@ -72,19 +74,23 @@ void AC_MeleeWeapon::InitializeItem(FName NewItemCode)
 {
 	Super::InitializeItem(NewItemCode);
 
-	//static const FString ContextString(TEXT("Pan Sound Lookup"));
-	//
-	////TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunSoundData 정의해 주기.
+	static const FString ContextString(TEXT("Pan Sound Lookup"));
+	
+	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunSoundData 정의해 주기.
 	//UDataTable* PanSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_ThrowingWeaponSoundData.DT_ThrowingWeaponSoundData"));
-	//
-	//if (PanSoundDataTable)
-	//{
-	//	const FPanSoundDatas* ItemData = PanSoundDataTable->FindRow<FPanSoundDatas>(ItemCode, ContextString);
-	//	if (ItemData)
-	//	{
-	//		PanSoundData = ItemData;  // 원본 참조 저장
-	//	}
-	//}
+	
+	UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
+
+	UDataTable* PanSoundDataTable = GI->GetDataTables()[EDataTableType::MeleeSound];
+
+	if (PanSoundDataTable)
+	{
+		const FMeleeWeaponSoundDatas* ItemData = PanSoundDataTable->FindRow<FMeleeWeaponSoundDatas>(ItemCode, ContextString);
+		if (ItemData)
+		{
+			MeleeWeaponSoundData = ItemData;  // 원본 참조 저장
+		}
+	}
 }
 
 bool AC_MeleeWeapon::AttachToHolster(USceneComponent* InParent)

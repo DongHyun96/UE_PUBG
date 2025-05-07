@@ -287,9 +287,9 @@ void AC_SR::ChangeCurShootingMode()
 	// Blank (SR의 경우 Shooting Mode를 바꿀 수 없게끔 처리)
 }
 
-void AC_SR::CancleReload()
+void AC_SR::CancelReload()
 {
-	Super::CancleReload();
+	Super::CancelReload();
 	UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 
 	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;

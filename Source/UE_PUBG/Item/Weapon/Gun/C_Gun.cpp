@@ -46,7 +46,10 @@
 #include "HUD/C_AmmoWidget.h"
 
 #include "Singleton/C_GameSceneManager.h"
+#include "Singleton/C_GameInstance.h"
+
 #include "Item/ItemManager/C_ItemManager.h"
+
 
 AC_Gun::AC_Gun()
 {
@@ -149,7 +152,11 @@ void AC_Gun::InitializeItem(FName NewItemCode)
 	Super::InitializeItem(NewItemCode);
 	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunDataRef 정의해 주기.
 	static const FString ContextString(TEXT("GunItem Lookup"));
-	UDataTable* GunDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunData.DT_GunData"));
+	//UDataTable* GunDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunData.DT_GunData"));
+
+	UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
+
+	UDataTable* GunDataTable = GI->GetDataTables()[EDataTableType::Gun];
 
 	if (GunDataTable)
 	{
@@ -161,7 +168,9 @@ void AC_Gun::InitializeItem(FName NewItemCode)
 	}
 
 	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunSoundData 정의해 주기.
-	UDataTable* GunSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunSoundData.DT_GunSoundData"));
+	//UDataTable* GunSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunSoundData.DT_GunSoundData"));
+
+	UDataTable* GunSoundDataTable = GI->GetDataTables()[EDataTableType::GunSound];
 
 	if (GunSoundDataTable)
 	{
@@ -1236,7 +1245,7 @@ bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 	return false;
 }
 
-void AC_Gun::CancleReload()
+void AC_Gun::CancelReload()
 {
 	if (!IsValid(OwnerCharacter)) return;
 }

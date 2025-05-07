@@ -409,11 +409,11 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable)
 	FName GetCurrentBulletTypeName();
-	virtual void CancleReload();
-
 public:
 
 	virtual void SetActorHiddenInGame(bool bNewHidden) override;
+	virtual void CancelReload();
+	
 };
 
 

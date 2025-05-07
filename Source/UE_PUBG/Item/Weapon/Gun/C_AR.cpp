@@ -253,9 +253,9 @@ void AC_AR::ChangeCurShootingMode()
 	}
 }
 
-void AC_AR::CancleReload()
+void AC_AR::CancelReload()
 {
-	Super::CancleReload();
+	Super::CancelReload();
 	UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 
 	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;

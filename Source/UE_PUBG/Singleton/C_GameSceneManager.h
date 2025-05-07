@@ -168,7 +168,7 @@ private:
 
 private:
 
-	class UDataTable* RandomNameDataTable{};
+	//class UDataTable* RandomNameDataTable{};
 
 private:
 	

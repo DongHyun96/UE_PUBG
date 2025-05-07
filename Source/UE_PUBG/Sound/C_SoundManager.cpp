@@ -4,7 +4,7 @@
 #include "Sound/C_SoundManager.h"
 #include "C_SoundManager.h"
 #include "Sound/SoundClass.h"
-
+#include "Singleton/C_GameInstance.h"
 //#include "Misc/FileHelper.h"
 //#include "Misc/Paths.h"
 //#include "Serialization/JsonWriter.h"
@@ -14,14 +14,14 @@
 AC_SoundManager::AC_SoundManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	InitializeSoundClassData();
+	//InitializeSoundClassData();
 
 }
 
 void AC_SoundManager::BeginPlay()
 {
 	Super::BeginPlay();
-	//InitializeSoundClassData();
+	InitializeSoundClassData();
 	BuildSoundClassMap();
 	// 
 	//LoadVolumeSettings();
@@ -36,7 +36,11 @@ void AC_SoundManager::InitializeSoundClassData()
 {
 	static const FString ContextString(TEXT("SoundManager"));
 
-	SoundClassDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Sounds/Sound_Class/DT_SoundClass.DT_SoundClass"));
+	UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
+
+	UDataTable* SoundClassDataTable = GI->GetDataTables()[EDataTableType::SoundClasses];
+
+	//SoundClassDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Sounds/Sound_Class/DT_SoundClass.DT_SoundClass"));
 	if (SoundClassDataTable)
 	{
 		FSoundClassTable* Row = SoundClassDataTable->FindRow<FSoundClassTable>(TEXT("SoundManager"), ContextString);

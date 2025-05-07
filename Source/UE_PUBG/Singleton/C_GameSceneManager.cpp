@@ -16,12 +16,12 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
 #include "HUD/C_MapWidget.h"
-
+#include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
-
 #include "Loot/C_LootCrate.h"
 #include "Item/ItemManager/C_ItemManager.h"
 #include "Sound/C_SoundManager.h"
+#include "Singleton/C_GameInstance.h"
 
 #include "Utility/C_TickRandomColorGenerator.h"
 
@@ -38,7 +38,12 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 
-	RandomNameDataTable = LoadObject<UDataTable>(this, TEXT("/Game/Project_PUBG/DongHyun/Character/DataTable/DT_RandomNameTable"));
+	//RandomNameDataTable = LoadObject<UDataTable>(this, TEXT("/Game/Project_PUBG/DongHyun/Character/DataTable/DT_RandomNameTable"));
+	
+	UC_GameInstance* GI = Cast<UC_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+	UDataTable* RandomNameDataTable = GI->GetDataTables()[EDataTableType::RandomName];
+
 	if (!RandomNameDataTable) UC_Util::Print("RandomNameDataTable not Loaded properly!", FColor::Red, 20.f);
 
 	TArray<FName> RowNames = RandomNameDataTable->GetRowNames();

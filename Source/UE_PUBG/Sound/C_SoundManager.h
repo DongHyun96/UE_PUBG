@@ -124,8 +124,8 @@ public:
 	}
 
 protected:
-	UPROPERTY(EditAnywhere)
-	UDataTable* SoundClassDataTable = nullptr;
+	//UPROPERTY(EditAnywhere)
+	//UDataTable* SoundClassDataTable = nullptr; //TODO : InitializeSoundClassData()에서 지역변수로하기.
 
 	UPROPERTY()
 	FSoundClassTable SoundClassData;

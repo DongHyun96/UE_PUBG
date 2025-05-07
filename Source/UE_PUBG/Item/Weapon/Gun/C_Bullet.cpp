@@ -7,7 +7,7 @@
 #include "NiagaraComponent.h"
 
 #include "UMG.h"
-
+#include "Singleton/C_GameInstance.h"
 
 #include "Character/C_BasicCharacter.h"
 #include "GameFramework/Actor.h"
@@ -71,7 +71,12 @@ void AC_Bullet::InitializeItem(FName NewItemCode)
 {
 	static const FString ContextString(TEXT("Sound Lookup"));
 	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 BulletImpactSoundData 정의해 주기. -> FiredBullet(실제 총알)은 ItemManager에서 안 할 수도.
-	UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_Bullet_Impact_Sound_Data.DT_Bullet_Impact_Sound_Data"));
+	
+	UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
+
+	UDataTable* ItemDataTable = GI->GetDataTables()[EDataTableType::BulletImpactSound];
+	
+	//UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_Bullet_Impact_Sound_Data.DT_Bullet_Impact_Sound_Data"));
 
 	if (ItemDataTable)
 	{

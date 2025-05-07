@@ -19,6 +19,7 @@
 #include "Weapon/WeaponStrategy/C_GunStrategy.h"
 
 #include "Singleton/C_GameSceneManager.h"
+#include "Singleton/C_GameInstance.h"
 
 // Sets default values
 AC_Item::AC_Item()
@@ -49,7 +50,11 @@ void AC_Item::InitializeItem(FName NewItemCode)
 {
 	static const FString ContextString(TEXT("Item Lookup"));
 	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 ItemDataRef 정의해 주기.
-	UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_Item.DT_Item"));
+	//UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_Item.DT_Item"));
+
+	UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
+
+	UDataTable* ItemDataTable = GI->GetDataTables()[EDataTableType::Item];
 
 	if (ItemDataTable)
 	{
