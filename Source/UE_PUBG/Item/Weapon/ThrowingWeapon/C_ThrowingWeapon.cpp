@@ -271,7 +271,10 @@ void AC_ThrowingWeapon::InitializeItem(FName NewItemCode)
 		{
 			ThrowingWeaponSoundData = ItemData;  // 원본 참조 저장
 		}
+		else UC_Util::Print("From AC_ThrowingWeapon::InitializeItem : ItemData not found in row(nullptr)", FColor::Red, 10.f);
 	}
+	else UC_Util::Print("From AC_ThrowingWeapon::InitializeItem : GunSoundDataTable not found(nullptr)", FColor::Red, 10.f);
+		
 }
 
   FName AC_ThrowingWeapon::GetThrowableItemName(EThrowableType TargetType)
@@ -799,6 +802,12 @@ void AC_ThrowingWeapon::OnRemovePinFin()
 {
 	OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
 
+	if (!ThrowingWeaponSoundData)
+	{
+		UC_Util::Print("From AC_ThrowingWeapon::OnRemovePinFin : ThrowingWeaponSoundData nullptr!", FColor::Red, 10.f);
+		return;
+	}
+	
 	if (ThrowingWeaponSoundData->PinPullSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->PinPullSound, GetActorLocation());
 }
 
