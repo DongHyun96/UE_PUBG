@@ -25,6 +25,7 @@
 
 #include "HUD/C_InstructionWidget.h"
 
+#include "Singleton/C_GameInstance.h"
 const TMap<EConsumableItemType, FName> AC_ConsumableItem::ConsumableItemNameMap =
 {
 	{EConsumableItemType::MEDKIT,			"Item_Heal_MedKit_C"},
@@ -164,7 +165,11 @@ void AC_ConsumableItem::InitializeItem(FName NewItemCode)
 	Super::InitializeItem(NewItemCode);
 	static const FString ContextString(TEXT("HealItem Lookup"));
 
-	UDataTable* HealSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_HealingItemUsingSound.DT_HealingItemUsingSound"));
+	//UDataTable* HealSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_HealingItemUsingSound.DT_HealingItemUsingSound"));
+
+	UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
+
+	UDataTable* HealSoundDataTable = GI->GetDataTables()[EDataTableType::HealItemUsingSound];
 
 	if (HealSoundDataTable)
 	{

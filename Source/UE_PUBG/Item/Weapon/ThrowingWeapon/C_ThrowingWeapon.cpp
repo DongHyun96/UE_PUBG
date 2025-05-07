@@ -43,6 +43,7 @@
 #include "Utility/C_Util.h"
 
 #include "Singleton/C_GameSceneManager.h"
+#include "Singleton/C_GameInstance.h"
 
 const float AC_ThrowingWeapon::UP_DIR_BOOST_OFFSET = 500.f;
 
@@ -262,7 +263,11 @@ void AC_ThrowingWeapon::InitializeItem(FName NewItemCode)
 	static const FString ContextString(TEXT("GunItem Lookup"));
 	
 	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunSoundData 정의해 주기.
-	UDataTable* GunSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_ThrowingWeaponSoundData.DT_ThrowingWeaponSoundData"));
+	//UDataTable* GunSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_ThrowingWeaponSoundData.DT_ThrowingWeaponSoundData"));
+
+	UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
+
+	UDataTable* GunSoundDataTable = GI->GetDataTables()[EDataTableType::ThrowingWeaponSound];
 
 	if (GunSoundDataTable)
 	{

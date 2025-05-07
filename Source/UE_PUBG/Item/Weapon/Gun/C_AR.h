@@ -37,7 +37,7 @@ private:
 
 	void ChangeCurShootingMode() override;
 	//특정 행동을 할 때 Reloading 모션 중지
-	virtual void CancleReload() override; 
+	virtual void CancelReload() override; 
 private:
 
 	// 각 피격 부위별 Damage Rate

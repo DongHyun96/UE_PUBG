@@ -410,7 +410,7 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable)
 	FName GetCurrentBulletTypeName();
-	virtual void CancleReload();
+	virtual void CancelReload();
 	
 };
 

@@ -116,11 +116,7 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InSta
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
 
 	if (!invenComp->FindMyItem(this)) return false;
-	AC_Gun* CurGun = Cast<AC_Gun>(Character->GetEquippedComponent()->GetCurWeapon());
-	if (IsValid(CurGun))
-	{
-		CurGun->CancleReload();
-	}
+
 	if (this->GetItemCurStack() > InStack)
 	{
 		AC_Item_Bullet* DroppedItem = Cast<AC_Item_Bullet>(SpawnItem(Character));
@@ -139,14 +135,20 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InSta
 	//혹은 재장전 중에는 해당 총알을 못버리게 하는 방법도 있음.
 	//이 경우에는 
 
-	AC_Gun* curWeapon = Cast<AC_Gun>(Character->GetEquippedComponent()->GetCurWeapon());
+	//AC_Gun* CurGun = Cast<AC_Gun>(Character->GetEquippedComponent()->GetCurWeapon());
+	//if (IsValid(CurGun))
+	//{
+	//	CurGun->CancelReload();
+	//}
 
-	if (curWeapon && curWeapon->GetItemType() == EItemTypes::MAINGUN)
+	AC_Gun* CurGun = Cast<AC_Gun>(Character->GetEquippedComponent()->GetCurWeapon());
+
+	if (CurGun && CurGun->GetItemType() == EItemTypes::MAINGUN)
 	{
-		if (curWeapon->GetCurBulletType() == CurBulletType)
+		if (CurGun->GetCurBulletType() == CurBulletType)
 		{
-			//if (!Character->GetInvenComponent()->FindMyItemByName(this->GetItemCode()))
-			//	;//TODO : 장전 중지
+			if (!Character->GetInvenComponent()->FindMyItemByName(this->GetItemCode()))
+				CurGun->CancelReload();
 		}
 	}
 	//AddFivemmBulletStack을 통해서 총에 또 정보를 전달해 주어야 함
