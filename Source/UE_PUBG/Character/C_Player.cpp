@@ -544,11 +544,13 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 {
-	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
-
+	AC_Item*		OverlappedItem		= Cast<AC_Item>(OtherActor);
+	AC_BasicLoot*	OverlappedLootBox	= Cast<AC_BasicLoot>(OtherActor);
+	
 	//if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
+	if (!IsValid(OverlappedItem) && !IsValid(OverlappedLootBox)) return;
 
-	if (IsValid(OverlappedItem))
+	if (IsValid(OverlappedItem) && !OverlappedItem->IsHidden())
 	{
 		// UC_Util::Print("OverlappedItem");
 		//UC_Util::Print(*OverlappedItem->GetName());
@@ -568,8 +570,8 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 		InvenSystem->InitializeList();
 		return;
 	}
-	AC_BasicLoot* OverlappedLootBox = Cast<AC_BasicLoot>(OtherActor);
-	
+
+	// Loot Box 처리
 	if (IsValid(OverlappedLootBox))
 	{
 		if (OverlappedLootBox->GetLootItems().Num() == 0) return;

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
-//#include "Item/ItemManager/C_ItemManager.h"
 #include "C_GameSceneManager.generated.h"
 
 // 주의 : GetWorld() 부분 (World가 맞지 않다면 GetInstance로 GameSceneManager 객체 불러오기 처리하기)
@@ -139,11 +138,11 @@ public:
 
 private:
 
-	class AC_Player*				Player{};
-	class AC_MagneticFieldManager*	MagneticFieldManager{};
-	class AC_AirplaneManager*		AirplaneManager{};
-	class AC_ItemManager*			ItemManager{};
-	class AC_SoundManager*			SoundManager{}; 
+	AC_Player*					Player{};
+	AC_MagneticFieldManager*	MagneticFieldManager{};
+	AC_AirplaneManager*			AirplaneManager{};
+	AC_ItemManager*				ItemManager{};
+	AC_SoundManager*			SoundManager{}; 
 private:
 
 	// 인게임 모든 캐릭터들(Player + Enemies)
@@ -190,11 +189,12 @@ private:
 
 public:
 	
-	TArray<AC_Item*> ItemContainer{};
+	TArray<class AC_Item*> ItemContainer{};
+	
 	UFUNCTION(BlueprintCallable)
-	void AddSpawnedItemToContainer(class AC_Item* InItem);
+	void AddSpawnedItemToContainer(AC_Item* InItem);
 
-	void ToggleItemsHiddenInGame(bool InOnAndOff);
+	void ToggleItemsHiddenInGame(bool InHiddenInGame);
 };
 
 

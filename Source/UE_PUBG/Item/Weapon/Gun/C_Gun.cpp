@@ -1241,6 +1241,22 @@ void AC_Gun::CancleReload()
 	if (!IsValid(OwnerCharacter)) return;
 }
 
+void AC_Gun::SetActorHiddenInGame(bool bNewHidden)
+{
+	Super::SetActorHiddenInGame(bNewHidden);
+	// 각 Attachment에 대해서도 한 번에 visibility 처리
+	for (int i = 0; i < static_cast<int>(EPartsName::MAX); ++i)
+	{
+		EPartsName PartsName = static_cast<EPartsName>(i);
+
+		if (!IsPartAttached[PartsName]) continue;
+
+		AttachedItem[PartsName]->SetActorHiddenInGame(bNewHidden);
+	}
+
+	SetMagazineVisibility(!bNewHidden);
+}
+
 FName AC_Gun::GetCurrentBulletTypeName()
 {
 	switch (GunDataRef->CurGunBulletType) 

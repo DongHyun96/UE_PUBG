@@ -15,18 +15,13 @@
 
 //#include "DrawDebugHelpers.h"
 #include "Engine/SkeletalMeshSocket.h"
-// Sets default values for this component's properties
 UC_FeetComponent::UC_FeetComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
 
 }
 
-
-// Called when the game starts
 void UC_FeetComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -35,20 +30,20 @@ void UC_FeetComponent::BeginPlay()
 	
 }
 
-
-// Called every frame
 void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (IsValid(OwnerCharacter) && OwnerCharacter->GetPoseState() == EPoseState::CRAWL) return;
 
-	float LeftDistance, RightDistance;
+	float LeftDistance{}, RightDistance{};
 
-	FRotator LeftRotation, RightRotation;
+	FRotator LeftRotation{}, RightRotation{};
 
 	Trace(LeftSocket, LeftDistance, LeftRotation);
 	Trace(RightSocket, RightDistance, RightRotation);
+
+	UC_Util::Print(RightDistance);
 
 	//늘어난 다리를 안늘어난 다리에 맞추도록 안늘어난 다리의 길이를 저장
 	float Offset = FMath::Min(LeftDistance, RightDistance);
@@ -121,6 +116,8 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 		CollisionParams
 	);
 
+	DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, FColor::Red);
+
 	OutDistance = 0;
 	OutRotation = FRotator::ZeroRotator;
 
@@ -144,6 +141,8 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 	OutRotation = FRotator(Pitch, 0, Roll);
 
 	CurrentSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
+
+	
 
 	//if (bIsNowOnGround && !bWasOnGroundLastFrame)
 	//{
@@ -249,11 +248,11 @@ void UC_FeetComponent::PlaySoundInTick(float DeltaTime)
 	//}
 }
 
-void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceTpye, FVector InLocation, float InVolumeMultiplier)
+void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier)
 {
-	if (SurfaceTypeToSoundCueMap.Contains(InCurSurFaceTpye))
+	if (SurfaceTypeToSoundCueMap.Contains(InCurSurFaceType))
 	{
-		USoundCue* SoundCue = SurfaceTypeToSoundCueMap[InCurSurFaceTpye];
+		USoundCue* SoundCue = SurfaceTypeToSoundCueMap[InCurSurFaceType];
 		if (SoundCue)
 		{
 			if (OwnerCharacter->IsLocallyControlled())

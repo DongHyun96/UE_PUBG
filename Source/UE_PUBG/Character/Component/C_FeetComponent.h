@@ -7,7 +7,7 @@
 #include "Kismet/kismetSystemLibrary.h"
 #include "Sound/SoundCue.h"
 #include "C_FeetComponent.generated.h"
-//#include "C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/PhysicsCore/Public/Chaos/ChaosEngineInterface.h"
+
 
 USTRUCT(BlueprintType)
 struct FFeetData
@@ -60,9 +60,9 @@ public:
 	/// 애니메이션에 Notify를 사용하는 것으로 선회.
 	/// -->현재 사용중.
 	/// </summary>
-	/// <param name="InCurSurFaceTpye"></param>
+	/// <param name="InCurSurFaceType"></param>
 	/// <param name="InLocation"></param>
-	void PlaySoundCue(EPhysicalSurface InCurSurFaceTpye, FVector InLocation, float InVolumeMultiplier);
+	void PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier);
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)

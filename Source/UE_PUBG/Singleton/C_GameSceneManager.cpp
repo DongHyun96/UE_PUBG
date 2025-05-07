@@ -232,11 +232,11 @@ void UC_GameSceneManager::AddSpawnedItemToContainer(class AC_Item* InItem)
 	ItemContainer.Add(InItem);
 }
 
-void UC_GameSceneManager::ToggleItemsHiddenInGame(bool InOnAndOff)
+void UC_GameSceneManager::ToggleItemsHiddenInGame(bool InHiddenInGame)
 {
 	for (AC_Item* SpawnedItem : ItemContainer)
 	{
-		SpawnedItem->SetActorHiddenInGame(InOnAndOff);
+		SpawnedItem->SetActorHiddenInGame(InHiddenInGame);
 	}
 
 }

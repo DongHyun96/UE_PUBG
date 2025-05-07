@@ -209,7 +209,7 @@ bool UC_AttachableItemMeshComponent::AttachToGun(USceneComponent* InParent, EPar
 /// <param name="InAttachmentName">부착물의 이름</param>
 void UC_AttachableItemMeshComponent::DetachFromGun(USceneComponent* InParent, EPartsName InPartsName, EAttachmentNames InAttachmentName)
 {
-	TArray<class AAttachmentActor*> AttachmentItem = AttachableItemsMesh[InPartsName][InAttachmentName];
+	TArray<AAttachmentActor*> AttachmentItem = AttachableItemsMesh[InPartsName][InAttachmentName];
 	AC_Gun* ParentGun = Cast<AC_Gun>(InParent->GetOuter());
 	if (!IsValid(ParentGun))         return;
 	if (AttachmentItem.IsEmpty())    return;
@@ -224,8 +224,6 @@ void UC_AttachableItemMeshComponent::DetachFromGun(USceneComponent* InParent, EP
 		AttachmentItem[0]->UseDetachStrategy();
 	else if (Cast<AC_Gun>(AttachmentItem[1]->GetAttachParentActor()) == ParentGun)
 		AttachmentItem[1]->UseDetachStrategy();
-	return;
-
 }
 
 void UC_AttachableItemMeshComponent::UseAttachmentStrategy(USceneComponent* InParent)

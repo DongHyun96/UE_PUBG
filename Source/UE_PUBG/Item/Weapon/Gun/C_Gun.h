@@ -324,7 +324,6 @@ protected:
 
 	//해당 부위 파츠가 장착중인지 -> 아래 AttachedItem으로 통합 예정
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-
 	TMap<EPartsName, bool> IsPartAttached{};
 
 	//해당 부위에 어떤 파츠가 붙어있는가 -> 아래 AttachedItem으로 통합 예정
@@ -411,7 +410,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FName GetCurrentBulletTypeName();
 	virtual void CancleReload();
-	
+
+public:
+
+	virtual void SetActorHiddenInGame(bool bNewHidden) override;
 };
 
 

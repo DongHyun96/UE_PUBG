@@ -30,12 +30,6 @@ AC_MagneticFieldManager::AC_MagneticFieldManager()
 void AC_MagneticFieldManager::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// TODO : 밑 라인 지우기
-	// PhaseInfos = TestPhaseInfos;
-	
-	FTimerHandle TimerHandle{};
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_MagneticFieldManager::ActivateMagneticField, 5.f);
 }
 
 void AC_MagneticFieldManager::Tick(float DeltaTime)
@@ -48,9 +42,7 @@ void AC_MagneticFieldManager::Tick(float DeltaTime)
 	if (!bIsHandleUpdateStateStarted) return;
 	
 	HandleUpdateState(DeltaTime);
-
-	// TODO : 주석 풀기
-	//HandleDamagingCharacters(DeltaTime);
+	HandleDamagingCharacters(DeltaTime);
 }
 
 void AC_MagneticFieldManager::ActivateMagneticField()
