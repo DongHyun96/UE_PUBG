@@ -78,8 +78,16 @@ private:
 	void HandleFKeyInstructionPanelDefaultAlpha(const float& InDeltaTime);
 	
 public:
-
+	
+	/// <summary>
+	/// FKeyInstruction UI 활성화
+	/// </summary>
+	/// <param name="Instruction"> : 활성화 시킬 F Instruction Widget 내용 </param>
 	void ActivateFKeyInstruction(const FString& Instruction);
+
+	/// <summary>
+	/// FKeyInstruction UI 비활성화
+	/// </summary>
 	void DeActivateFKeyInstruction();
 
 	UFUNCTION(BlueprintImplementableEvent)
