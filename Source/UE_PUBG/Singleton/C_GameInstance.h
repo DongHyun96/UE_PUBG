@@ -21,15 +21,15 @@ enum class EDataTableType: uint8
 	RandomName,
 	MAX
 };
-
-USTRUCT(BlueprintType)
-struct FGameDataTables
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<EDataTableType, UDataTable*> DataTables{};
-};
+//
+//USTRUCT(BlueprintType)
+//struct FGameDataTables
+//{
+//	GENERATED_BODY()
+//
+//	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+//	TMap<EDataTableType, UDataTable*> DataTables{};
+//};
 
 /**
  * 게임 실행 -> 종료 까지 지속적으로 살아있는 Singleton 클래스 (GameManager)

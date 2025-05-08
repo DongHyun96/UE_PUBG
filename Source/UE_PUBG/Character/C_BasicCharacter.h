@@ -292,6 +292,8 @@ public:
 	void SetIsWalking(bool InIsWalking) { bIsWalking = InIsWalking; }
 	bool GetIsSprinting() const { return bIsSprinting; }
 	void SetIsSprinting(bool InIsSprinting) { bIsSprinting = InIsSprinting; }
+
+	UFUNCTION(BlueprintCallable)
 	bool GetIsReloadingBullet() { return bIsReloadingBullet; }
 	void SetIsReloadingBullet(bool bInIsReloading) { bIsReloadingBullet = bInIsReloading; }
 

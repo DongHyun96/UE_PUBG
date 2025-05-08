@@ -232,6 +232,7 @@ void AC_Player::Tick(float DeltaTime)
 	//	CurOutLinedItem = nullptr;
 	//	return;
 	//}
+	if (!NewInteractableItem) return;
 
 	// 아이템이 변경되었을 때만 업데이트 수행
 	if (NewInteractableItem != CurOutLinedItem)
@@ -652,7 +653,9 @@ AC_Item* AC_Player::FindBestInteractable()
 	for (auto& AroundItem : InvenComponent->GetAroundItems())
 	{
 		AC_Item* CachedInteractableItem = AroundItem;
-		
+
+		if (!CachedInteractableItem) continue;
+
 		//밖으로 빼야 될 수도.
 		FVector PlayerToItemVector = (CachedInteractableItem->GetActorLocation() - PlayerCamera->GetCameraLocation()).GetSafeNormal();
 		

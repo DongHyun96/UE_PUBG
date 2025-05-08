@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "C_GameInstance.h"
@@ -13,6 +13,8 @@ void UC_GameInstance::Init()
 
 	// This ensures our function is called after a map has finished loading
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UC_GameInstance::EndLoadingScreen);
+
+
 }
 
 void UC_GameInstance::BeginLoadingScreen(const FString& InMapName)

@@ -109,36 +109,6 @@ bool AC_Weapon::ExecuteMrb_Completed()
 	return WeaponButtonStrategy->UseMrb_CompletedStrategy(OwnerCharacter, this);
 }
 
-//void AC_Weapon::PickUpItem(AC_BasicCharacter* Character)
-//{
-//	EItemTypes Type = ItemDataRef->ItemType;
-//
-//	switch (Type)
-//	{
-//	case EItemTypes::MAINGUN:
-//		PickUpItem(Character);
-//		break;
-//	case EItemTypes::MELEEWEAPON:
-//		PickUpItem(Character);
-//		break;
-//	case EItemTypes::THROWABLE:
-//		PickUpItem(Character);
-//		break;
-//	default:
-//		break;
-//	}
-//}
-//
-//bool AC_Weapon::Interaction(AC_BasicCharacter* Character)
-//{
-//	if (Character)
-//	{
-//		PickUpItem(Character);
-//		return true;
-//	}
-//	return false;
-//}
-
 bool AC_Weapon::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.

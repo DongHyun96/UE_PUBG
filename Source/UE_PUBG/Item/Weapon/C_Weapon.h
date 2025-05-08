@@ -109,14 +109,6 @@ public:
 	virtual bool AttachToHand(class USceneComponent* InParent) PURE_VIRTUAL(AC_Weapon::AttachToHand, return false;);
 
 	/// <summary>
-	/// 다형성에 의해서 어차피 알아서 자식클래스의 PickUpItem을 사용한다고함.
-	/// </summary>
-	/// <param name="Character"></param>
-	//virtual void PickUpItem(class AC_BasicCharacter* Character) override;
-	//
-	//virtual bool Interaction(AC_BasicCharacter* Character) override;
-
-	/// <summary>
 	/// 아이템의 type에 따라 알맞는 WeaponSlot을 반환
 	/// </summary>
 	/// <returns>WeaponSlot을 반환</returns>

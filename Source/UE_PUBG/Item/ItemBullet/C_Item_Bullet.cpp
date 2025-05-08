@@ -131,16 +131,6 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InSta
 		DropItem(Character);
 	}
 
-	//TODO : 총알을 다 버렸는데 재장전에 필요한 총알이라면 재장전을 멈춰야 함.
-	//혹은 재장전 중에는 해당 총알을 못버리게 하는 방법도 있음.
-	//이 경우에는 
-
-	//AC_Gun* CurGun = Cast<AC_Gun>(Character->GetEquippedComponent()->GetCurWeapon());
-	//if (IsValid(CurGun))
-	//{
-	//	CurGun->CancelReload();
-	//}
-
 	AC_Gun* CurGun = Cast<AC_Gun>(Character->GetEquippedComponent()->GetCurWeapon());
 
 	if (CurGun && CurGun->GetItemType() == EItemTypes::MAINGUN)
@@ -149,6 +139,7 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InSta
 		{
 			if (!Character->GetInvenComponent()->FindMyItemByName(this->GetItemCode()))
 				CurGun->CancelReload();
+			//TODO : 이미 play중인 사운드를 정지 시켜야함.
 		}
 	}
 	//AddFivemmBulletStack을 통해서 총에 또 정보를 전달해 주어야 함
