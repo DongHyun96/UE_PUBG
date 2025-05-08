@@ -11,6 +11,7 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_OxygenWidget.h"
 //#include "InvenUserInterface/C_ItemBarWidget.h"
+#include "Character/C_Player.h"
 #include "Item/Equipment/C_EquipableItem.h"
 #include "HUD/C_BloodScreenWidget.h"
 #include "Singleton/C_GameSceneManager.h"
@@ -141,7 +142,7 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 	// 사망
 	if (CurHP <= 0.f)
 	{
-		// if(Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠 ((현재 Enemy만 처리))
+		if(Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠 ((현재 Enemy만 처리))
 
 		if (GAMESCENE_MANAGER->GetIsGameOver()) return true;
 		
