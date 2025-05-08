@@ -4,6 +4,7 @@
 #include "InvenUI/ItemBar/C_BasicItemBarWidget.h"
 #include "InvenUI/Panel/C_BasicPanelWidget.h"
 #include "InvenUserInterface/C_DragDropOperation.h"
+//#include "C_DragDropOperation.h"
 
 #include "Character/C_Player.h"
 
@@ -11,11 +12,13 @@
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_InvenComponent.h"
 
+#include "Item/ConsumableItem/C_ConsumableItem.h"
+
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "Components/Progressbar.h"
-
+#include "Singleton/C_GameSceneManager.h"
 #include "Kismet/GameplayStatics.h"
 
 //#include "Blueprint/WidgetBlueprintLibrary.h"
@@ -46,8 +49,8 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 		if (InMouseEvent.IsAltDown())
 			if (HalfStackItemInteraction()) return FReply::Handled(); //참이면 return, 거짓이면 남은 코드 실행.
 
-		AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));//ItemBar가 변수로 OwnerPlayer를 가지면 메모리 낭비가 심할거 같아서 사용
-		
+		//AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));//ItemBar가 변수로 OwnerPlayer를 가지면 메모리 낭비가 심할거 같아서 사용
+		AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
 		CachedItem->Interaction(OwnerPlayer);
 
 		UpdateWidget(CachedItem);
@@ -70,7 +73,8 @@ FReply UC_BasicItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& In
 			//드래그를 시작하고 반응함
 			FEventReply RePlyResult =
 				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-			AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)); //TODO : 게임 신 매니저에서 플레이어 가져오기
+			//AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)); //TODO : 게임 신 매니저에서 플레이어 가져오기
+			AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
 			//UC_Util::Print("LeftMouseButton");
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 
@@ -83,7 +87,8 @@ FReply UC_BasicItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& In
 
 void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
-	AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	//AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
 
 	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
 	PlayerController->SetIgnoreMoveInput(false); // 이동 허용
@@ -167,6 +172,9 @@ void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	if (CachedItem)
 	{
 		UpdateWidget(CachedItem);
+		if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(CachedItem))
+			if (!ConsumableItem->GetLinkedItemBarWidget()) ConsumableItem->SetLinkedItemBarWidget(this);
+
 		return;
 	}
 }

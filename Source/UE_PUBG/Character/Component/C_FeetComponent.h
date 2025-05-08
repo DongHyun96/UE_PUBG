@@ -7,7 +7,7 @@
 #include "Kismet/kismetSystemLibrary.h"
 #include "Sound/SoundCue.h"
 #include "C_FeetComponent.generated.h"
-//#include "C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/PhysicsCore/Public/Chaos/ChaosEngineInterface.h"
+
 
 USTRUCT(BlueprintType)
 struct FFeetData
@@ -46,22 +46,42 @@ protected:
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void Trace(FName InName, float& OutDistance, FRotator& OutRotation);
-
-	FFeetData GetData() { return Data; }
-
 	UFUNCTION(BlueprintCallable)
 	EPhysicalSurface GetSurfaceType() { return CurrentSurfaceType; }
 
+	FFeetData GetData() { return Data; }
+private:
+
+	void Trace(FName InName, float& OutDistance, FRotator& OutRotation);
+
+private:
+	
 	void PlaySoundInTick(float DeltaTime);
 
 	/// <summary>
 	/// FeetComponent내부에서 발소리를 재생하려고 했는데 쉽지 않아서
 	/// 애니메이션에 Notify를 사용하는 것으로 선회.
+	/// -->현재 사용중.
 	/// </summary>
-	/// <param name="InCurSurFaceTpye"></param>
+	/// <param name="InCurSurFaceType"></param>
 	/// <param name="InLocation"></param>
-	void PlaySoundCue(EPhysicalSurface InCurSurFaceTpye, FVector InLocation, float InVolumeMultiplier);
+	void PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier);
+
+private:
+	
+	/// <summary>
+	/// Foot sound 처리 담당
+	/// </summary>
+	void HandleFootSounds();
+
+	/// <summary>
+	/// 시작 지점으로부터 바닥면까지 Trace 검사하여 Distance검사하기
+	/// </summary>
+	/// <param name="OutDistance"> : 검사된 Trace 거리 </param>
+	/// <param name="TraceStartLocation"> : Trace start Location </param>
+	/// <param name="InTraceDistance"> : Trace 검사 거리 (cm) </param>
+	/// <returns> : Trace 실패 시 return false </returns>
+	bool GetDistanceToFloor(float& OutDistance, const FVector& TraceStartLocation, const float InTraceDistance);
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -83,6 +103,7 @@ protected:
 	FName RightSocket = "RightFoot";
 
 protected:
+	
 	/// <summary>
 	/// EPhysicalSurface를 바로 Key로 사용할 수 없음.
 	/// EPhysicalSurface는 UEnum값이 아니라 #define으로 정의된 C++ Enum값임.
@@ -90,7 +111,9 @@ protected:
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<TEnumAsByte<EPhysicalSurface>, USoundCue*> SurfaceTypeToSoundCueMap{};
+	
 private:
+	
 	class AC_BasicCharacter* OwnerCharacter = nullptr;
 
 	FFeetData Data{};
@@ -102,4 +125,16 @@ private:
 	bool bWasOnGroundLastFrame = false;
 
 	float AccumulatedFootstepTime = 0.f;
+
+private:
+
+	const FName LeftFootSoleSocket = "LeftFootSole";
+	const FName RightFootSoleSocket = "RightFootSole";
+
+	float LeftFootSoleMaxDistance{};
+	float RightFootSoleMaxDistance{};
+
+	bool bLeftFootSoundPlayed{};
+	bool bRightFootSoundPlayed{};
+	
 };

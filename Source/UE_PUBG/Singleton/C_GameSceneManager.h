@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
-//#include "Item/ItemManager/C_ItemManager.h"
 #include "C_GameSceneManager.generated.h"
 
 // 주의 : GetWorld() 부분 (World가 맞지 않다면 GetInstance로 GameSceneManager 객체 불러오기 처리하기)
@@ -23,7 +22,7 @@ enum class EHUDMode : uint8
 	MAX
 };
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetVehiclesCollisoin); 
 /// <summary>
 /// GameScene에서 사용할 Singleton class
 /// </summary>
@@ -51,7 +50,7 @@ private:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	class AC_LootCrate* SpawnLootCrateAt(FVector SpawnLocation, AC_BasicCharacter* DeadCharacter);
+	class AC_LootCrate* SpawnLootCrateAt(FVector SpawnLocation, class AC_BasicCharacter* DeadCharacter);
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -69,7 +68,9 @@ public: // Getters and setters
 
 	static UC_GameSceneManager* GetInstance(UWorld* World) { return World->GetSubsystem<UC_GameSceneManager>(); }
 
+	UFUNCTION(BlueprintCallable)
 	class AC_Player* GetPlayer() const { return Player; }
+
 	void SetPlayer(AC_Player* InPlayer) { Player = InPlayer; }
 
 public: // Widget 초기화 관련 처리
@@ -78,6 +79,9 @@ public: // Widget 초기화 관련 처리
 	void SetMiniMapWidget(UUserWidget* InMiniMapWidget) { MiniMapWidget = InMiniMapWidget; }
 
 public:
+
+	bool GetIsGameOver() const { return bIsGameOver; }
+	void SetIsGameOver(bool InIsGameOver) { bIsGameOver = InIsGameOver; }
 	
 	TArray<class AC_Enemy*>& GetEnemies() { return Enemies; }
 
@@ -124,13 +128,21 @@ public:
 	/// </summary>
 	TPair<uint8, uint8> GetContainingTileCoordinate(const FVector2D& WorldPositionXY) const;
 
+	/// <summary>
+	/// CurrentRanking을 받음과 동시에 CurrentRanking 업데이트 처리
+	/// </summary>
+	/// <returns></returns>
+	int GetCurrentRankingAndUpdateCurrentRanking() { return CurrentRanking--; }
+
+	int GetTotalPlayedCharacterCount() const { return TotalPlayedCharacterCount; }
+
 private:
 
-	class AC_Player*				Player{};
-	class AC_MagneticFieldManager*	MagneticFieldManager{};
-	class AC_AirplaneManager*		AirplaneManager{};
-	class AC_ItemManager*			ItemManager{};
-	class AC_SoundManager*			SoundManager{}; 
+	AC_Player*					Player{};
+	AC_MagneticFieldManager*	MagneticFieldManager{};
+	AC_AirplaneManager*			AirplaneManager{};
+	AC_ItemManager*				ItemManager{};
+	AC_SoundManager*			SoundManager{}; 
 private:
 
 	// 인게임 모든 캐릭터들(Player + Enemies)
@@ -156,7 +168,7 @@ private:
 
 private:
 
-	class UDataTable* RandomNameDataTable{};
+	//class UDataTable* RandomNameDataTable{};
 
 private:
 	
@@ -165,6 +177,34 @@ private:
 private:
 
 	class AC_TickRandomColorGenerator* TickRandomColorGenerator{};
+
+private:
+
+	int CurrentRanking{}; // 죽었을 때 부여받을 Ranking
+	int TotalPlayedCharacterCount{};
+
+private:
+
+	bool bIsGameOver{};
+
+public:
+	
+	TArray<class AC_Item*> ItemContainer{};
+
+	UFUNCTION(BlueprintCallable)
+	void AddSpawnedItemToContainer(AC_Item* InItem);
+
+	void ToggleItemsHiddenInGame(bool InHiddenInGame);
+
+	TArray<APawn*> VehicleContainer{};
+
+	UFUNCTION(BlueprintCallable)
+	void AddVehiclesToContainer(class APawn* InVehicle);
+	UPROPERTY(BlueprintAssignable, Category="Events")
+	FOnSetVehiclesCollisoin OnSetVehiclesCollision; // 블루프린트에서 바인딩할 수 있게 함
+
+	UFUNCTION(BlueprintCallable)
+	void SetVehiclesCollision(); // 델리게이트 실행 함수
 
 };
 

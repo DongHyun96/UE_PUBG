@@ -9,7 +9,7 @@
 #include "Character/Component/C_InvenSystem.h"
 #include "HUD/C_ArmorInfoWidget.h"
 #include "HUD/C_HUDWidget.h"
-#include "InvenUserInterface/C_EquipmentPanel.h"
+//#include "InvenUserInterface/C_EquipmentPanel.h"
 #include "Utility/C_Util.h"
 
 
@@ -34,21 +34,21 @@ bool AC_Helmet::Interaction(AC_BasicCharacter* Character)
 	MoveToSlot(Character, GetItemCurStack());
 	return true;
 }
-
-bool AC_Helmet::LegacyMoveToAround(AC_BasicCharacter* Character)
-{
-	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, nullptr);
-	OwnerCharacter = nullptr;
-
-	return false;
-}
-
-bool AC_Helmet::LegacyMoveToSlot(AC_BasicCharacter* Character)
-{
-	//TODO : 장착되어 있던 Vest 처리해주기 및 제대로 구현하기, SetSlotEquipment함수 참고하기.(TODO From Vest)
-	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, this);
-	return true;
-}
+//
+//bool AC_Helmet::LegacyMoveToAround(AC_BasicCharacter* Character)
+//{
+//	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, nullptr);
+//	OwnerCharacter = nullptr;
+//
+//	return false;
+//}
+//
+//bool AC_Helmet::LegacyMoveToSlot(AC_BasicCharacter* Character)
+//{
+//	//TODO : 장착되어 있던 Vest 처리해주기 및 제대로 구현하기, SetSlotEquipment함수 참고하기.(TODO From Vest)
+//	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, this);
+//	return true;
+//}
 
 void AC_Helmet::AttachToSocket(class AC_BasicCharacter* InParent)
 {

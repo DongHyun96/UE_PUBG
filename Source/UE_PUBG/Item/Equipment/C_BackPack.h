@@ -43,8 +43,8 @@ public:
 	/// 내려 놓는 위치는 발정도.
 	/// </summary>
 	/// <param name="character"></param>
-	UFUNCTION(BlueprintCallable)
-	void DetachToSocket(AC_BasicCharacter* character);
+	//UFUNCTION(BlueprintCallable)
+	//void DetachToSocket(AC_BasicCharacter* character);
 
 	uint8 GetLevel() { return Level; }
 
@@ -57,9 +57,9 @@ public:
 	
 	//void PickUpItem(AC_BasicCharacter* Character) override;
 
-	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
+	//bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
-	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
+	//bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 protected:
 	bool MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack) override;
 

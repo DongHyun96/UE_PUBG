@@ -75,6 +75,7 @@ public:
 	/// </summary>
 	/// <param name="ItemUser"> : 아이템 사용 Character </param>
 	/// <returns> : 사용 시작이 적절히 되었다면 return true </returns>
+	UFUNCTION(BlueprintCallable)
 	bool StartUsingConsumableItem(class AC_BasicCharacter* InItemUser);
 
 	/// <summary>
@@ -85,11 +86,11 @@ public:
 
 	bool Interaction(AC_BasicCharacter* Character) override;
 
-	bool LegacyMoveToInven(AC_BasicCharacter* Character) override;
-
-	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
-
-	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
+	//bool LegacyMoveToInven(AC_BasicCharacter* Character) override;
+	//
+	//bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
+	//
+	//bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
 
 protected:

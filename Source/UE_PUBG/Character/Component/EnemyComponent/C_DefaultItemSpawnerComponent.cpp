@@ -5,6 +5,7 @@
 
 #include "Character/C_Enemy.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "Item/ConsumableItem/C_ConsumableItem.h"
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Equipment/C_Helmet.h"
 #include "Item/Equipment/C_Vest.h"
@@ -24,6 +25,7 @@ void UC_DefaultItemSpawnerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	SpawnDefaultWeaponsAndItems();
+	ToggleSpawnedItemsHiddenInGame(true);
 }
 
 
@@ -41,6 +43,14 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 	SpawnWeapons(Param);
 	SpawnConsumableItems(Param);
 	SpawnBullets(Param);
+}
+
+void UC_DefaultItemSpawnerComponent::ToggleSpawnedItemsHiddenInGame(bool InHiddenInGame)
+{
+	TArray<AActor*> AttachedItems{};
+	OwnerEnemy->GetAttachedActors(AttachedItems);
+
+	for (AActor* AttachedItem : AttachedItems) AttachedItem->SetActorHiddenInGame(InHiddenInGame);
 }
 
 void UC_DefaultItemSpawnerComponent::SpawnWeapons(const FActorSpawnParameters& Param)

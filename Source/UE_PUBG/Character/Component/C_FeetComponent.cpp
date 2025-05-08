@@ -3,6 +3,8 @@
 
 #include "Character/Component/C_FeetComponent.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
+
 #include "Kismet/kismetSystemLibrary.h"
 #include "Kismet/kismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -12,19 +14,15 @@
 #include "Utility/C_Util.h"
 
 //#include "DrawDebugHelpers.h"
+#include "C_SwimmingComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
-// Sets default values for this component's properties
 UC_FeetComponent::UC_FeetComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
 
 }
 
-
-// Called when the game starts
 void UC_FeetComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -33,18 +31,21 @@ void UC_FeetComponent::BeginPlay()
 	
 }
 
-
-// Called every frame
 void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	float LeftDistance, RightDistance;
+	if (!IsValid(OwnerCharacter)) return;
+	if (OwnerCharacter->GetPoseState() == EPoseState::CRAWL) return;
 
-	FRotator LeftRotation, RightRotation;
+	float LeftDistance{}, RightDistance{};
+
+	FRotator LeftRotation{}, RightRotation{};
 
 	Trace(LeftSocket, LeftDistance, LeftRotation);
 	Trace(RightSocket, RightDistance, RightRotation);
+
+	// UC_Util::Print(RightDistance);
 
 	//늘어난 다리를 안늘어난 다리에 맞추도록 안늘어난 다리의 길이를 저장
 	float Offset = FMath::Min(LeftDistance, RightDistance);
@@ -66,15 +67,12 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Data.RightRotation =
 		UKismetMathLibrary::RInterpTo(Data.RightRotation, RightRotation, DeltaTime, InterpSpeed);
 
-	PlaySoundInTick(DeltaTime);
-
+	// PlaySoundInTick(DeltaTime);
+	HandleFootSounds();
 }
 
 void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRotation)
 {
-	if (OwnerCharacter == nullptr)
-		return;
-
 	FVector Socket = OwnerCharacter->GetMesh()->GetSocketLocation(InName);
 
 	float PosZ = OwnerCharacter->GetActorLocation().Z;
@@ -117,6 +115,8 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 		CollisionParams
 	);
 
+	// DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, FColor::Red);
+
 	OutDistance = 0;
 	OutRotation = FRotator::ZeroRotator;
 
@@ -140,6 +140,8 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 	OutRotation = FRotator(Pitch, 0, Roll);
 
 	CurrentSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
+
+	
 
 	//if (bIsNowOnGround && !bWasOnGroundLastFrame)
 	//{
@@ -245,14 +247,84 @@ void UC_FeetComponent::PlaySoundInTick(float DeltaTime)
 	//}
 }
 
-void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceTpye, FVector InLocation, float InVolumeMultiplier)
+void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier)
 {
-	if (SurfaceTypeToSoundCueMap.Contains(InCurSurFaceTpye))
+	if (!SurfaceTypeToSoundCueMap.Contains(InCurSurFaceType)) return;
+	
+	USoundCue* SoundCue = SurfaceTypeToSoundCueMap[InCurSurFaceType];
+	if (!SoundCue) return;
+	
+	if (OwnerCharacter->IsLocallyControlled())
 	{
-		USoundCue* SoundCue = SurfaceTypeToSoundCueMap[InCurSurFaceTpye];
-		if (SoundCue)
-		{
-			UGameplayStatics::PlaySoundAtLocation(this, SoundCue, InLocation, InVolumeMultiplier);
-		}
+		UGameplayStatics::PlaySound2D(this, SoundCue, InVolumeMultiplier);
+		// UC_Util::Print("PlaySound2D", FColor::Emerald, 10.f);
 	}
+	else
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, SoundCue, InLocation, InVolumeMultiplier);
+		// UC_Util::Print("PlaySoundAtLocation", FColor::Emerald, 10.f);
+	}
+}
+
+void UC_FeetComponent::HandleFootSounds()
+{
+	if (OwnerCharacter->GetMainState() != EMainState::IDLE)		return;
+	if (OwnerCharacter->GetSwimmingComponent()->IsSwimming())	return;
+	if (OwnerCharacter->GetPoseState() == EPoseState::CRAWL)	return;
+
+	const float SoleTraceDistance = 100.f;
+	
+	// Left foot sole 높이 조사
+	float CurLeftFootSoleHeight{}, CurRightFootSoleHeight{};
+	const FVector LeftFootSoleLocation = OwnerCharacter->GetMesh()->GetSocketLocation(LeftFootSoleSocket);
+	const FVector RightFootSoleLocation = OwnerCharacter->GetMesh()->GetSocketLocation(RightFootSoleSocket);
+	
+	const bool bLeftHit  = GetDistanceToFloor(CurLeftFootSoleHeight, LeftFootSoleLocation, SoleTraceDistance);
+	const bool bRightHit = GetDistanceToFloor(CurRightFootSoleHeight, RightFootSoleLocation, SoleTraceDistance);
+
+	// 발이 떨어졌다고 판단되면 bSoundPlayed 초기화
+	if (!bLeftHit || CurLeftFootSoleHeight > 2.f)   bLeftFootSoundPlayed  = false;
+	if (!bRightHit || CurRightFootSoleHeight > 2.f) bRightFootSoundPlayed = false;
+
+	LeftFootSoleMaxDistance  = bLeftHit  ? FMath::Max(LeftFootSoleMaxDistance, CurLeftFootSoleHeight)   : SoleTraceDistance;
+	RightFootSoleMaxDistance = bRightHit ? FMath::Max(RightFootSoleMaxDistance, CurRightFootSoleHeight) : SoleTraceDistance;
+
+	const FVector2D FootHeightRangeForVolumeMultiplier = {0.f, 80.f};
+	const FVector2D VolumeMultiplierRange = {0.3f, 1.f};
+	
+	// Trace 검사 성공 시에만 발소리 내기 시도
+	// Hit 성공했고, 0.2cm 이하라면, 발소리 내기 시도
+	if (bLeftHit && CurLeftFootSoleHeight < 0.2f && !bLeftFootSoundPlayed) 
+	{
+		// 17 44 70
+		const float VolumeMultiplier = FMath::GetMappedRangeValueClamped(FootHeightRangeForVolumeMultiplier, VolumeMultiplierRange, LeftFootSoleMaxDistance);
+		PlaySoundCue(CurrentSurfaceType, LeftFootSoleLocation, VolumeMultiplier);
+		bLeftFootSoundPlayed = true;
+	}
+
+	if (bRightHit && CurRightFootSoleHeight < 0.2f && !bRightFootSoundPlayed)
+	{
+		const float VolumeMultiplier = FMath::GetMappedRangeValueClamped(FootHeightRangeForVolumeMultiplier, VolumeMultiplierRange, RightFootSoleMaxDistance);
+		PlaySoundCue(CurrentSurfaceType, RightFootSoleLocation, VolumeMultiplier);
+		bRightFootSoundPlayed = true;
+	}
+	
+}
+
+bool UC_FeetComponent::GetDistanceToFloor(float& OutDistance, const FVector& TraceStartLocation, const float InTraceDistance)
+{
+	OutDistance = 0.f;
+	
+	FVector TraceEndLocation = TraceStartLocation - FVector::UnitZ() * InTraceDistance;
+
+	FHitResult HitResult{};
+	FCollisionQueryParams CollisionParams{};
+	CollisionParams.AddIgnoredActor(OwnerCharacter);
+
+	bool IsHit = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStartLocation, TraceEndLocation, ECC_Visibility, CollisionParams);
+
+	if (!IsHit) return false;
+
+	OutDistance = HitResult.Distance;
+	return true;
 }

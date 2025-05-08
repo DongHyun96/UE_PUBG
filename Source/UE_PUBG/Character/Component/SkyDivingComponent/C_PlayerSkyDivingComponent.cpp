@@ -86,6 +86,9 @@ void UC_PlayerSkyDivingComponent::SetStateToSkyDivingState()
 {
 	UCharacterMovementComponent* OwnerMovement = OwnerCharacter->GetCharacterMovement();
 
+	// 다이빙 사운드를 시작.
+	OwnerPlayer->PlaySkyDivingSound();
+
 	OwnerMovement->AirControl = 1.f;
 	//OwnerMovement->GravityScale = 0.5f;
 	VelocityZLerpDest = STATE_DIVINGSPEEDS[SkyDivingState].ZSpeedMin;
@@ -117,6 +120,9 @@ void UC_PlayerSkyDivingComponent::SetStateToSkyDivingState()
 
 void UC_PlayerSkyDivingComponent::SetStateToParachutingState()
 {
+	// 다이빙 사운드를 종료
+	OwnerPlayer->StopSkyDivingSound();
+
 	// Alt키가 눌려있을 때에, Character Rotation 비율에 따라 Speed를 갱신시켜주어야 함
 	if (OwnerCharacter->GetIsHoldDirection() || OwnerCharacter->GetIsAltPressed())
 	{

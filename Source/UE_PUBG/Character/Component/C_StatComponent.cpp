@@ -10,10 +10,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_OxygenWidget.h"
-#include "InvenUserInterface/C_ItemBarWidget.h"
+//#include "InvenUserInterface/C_ItemBarWidget.h"
+#include "Character/C_Player.h"
 #include "Item/Equipment/C_EquipableItem.h"
 #include "HUD/C_BloodScreenWidget.h"
-
+#include "Singleton/C_GameSceneManager.h"
+#include "Components/ProgressBar.h"
 #include "Utility/C_Util.h"	
 
 const float UC_StatComponent::MAX_HP		= 100.f;
@@ -89,6 +91,8 @@ void UC_StatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UC_StatComponent::SetCurHP(const float& InCurHP)
 {
+	if (OwnerCharacter->GetMainState() == EMainState::DEAD) return;
+	
 	CurHP = InCurHP;
 
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
@@ -97,6 +101,8 @@ void UC_StatComponent::SetCurHP(const float& InCurHP)
 
 void UC_StatComponent::SetCurBoosting(const float& InCurBoosting)
 {
+	if (OwnerCharacter->GetMainState() == EMainState::DEAD) return;
+	
 	CurBoosting = InCurBoosting;
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
 	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetBoostBar()->SetPercent(CurBoosting / MAX_BOOSTING);
@@ -136,7 +142,9 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 	// 사망
 	if (CurHP <= 0.f)
 	{
-		if (Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠 ((현재 Enemy만 처리))
+		if(Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠 ((현재 Enemy만 처리))
+
+		if (GAMESCENE_MANAGER->GetIsGameOver()) return true;
 		
 		// 사망 처리 
 		OwnerCharacter->CharacterDead(KillFeedDescriptor);
@@ -195,6 +203,7 @@ float UC_StatComponent::TakeDamage(float DamageAmount, FName DamagingPhysicsAsse
 
 bool UC_StatComponent::ApplyHeal(const float& HealAmount)
 {
+	if (OwnerCharacter->GetMainState() == EMainState::DEAD) return false;
 	if (CurHP >= MAX_HP)  return false; // 이미 체력이 모두 찼을 때
 	if (HealAmount < 0.f) return false;
 
@@ -207,6 +216,7 @@ bool UC_StatComponent::ApplyHeal(const float& HealAmount)
 
 bool UC_StatComponent::AddBoost(const float& BoostAmount)
 {
+	if (OwnerCharacter->GetMainState() == EMainState::DEAD) return false;
 	if (CurBoosting >= MAX_BOOSTING)	return false;
 	if (BoostAmount < 0.f)				return false;
 
@@ -289,8 +299,6 @@ FBoostingEffectFactor UC_StatComponent::GetBoostingEffectFactorByCurBoostingAmou
 
 void UC_StatComponent::HandleFallingDamage()
 {
-	// TODO : 차에서 떨어졌을 때에는 아마 차에서 내리는 함수에서 따로 처리를 해줘야 함
-	
 	// SkyDiving 중이라면 Damage 처리 x
 	if (OwnerCharacter->GetMainState() == EMainState::SKYDIVING) return;
 	

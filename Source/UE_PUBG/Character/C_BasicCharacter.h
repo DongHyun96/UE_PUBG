@@ -292,6 +292,8 @@ public:
 	void SetIsWalking(bool InIsWalking) { bIsWalking = InIsWalking; }
 	bool GetIsSprinting() const { return bIsSprinting; }
 	void SetIsSprinting(bool InIsSprinting) { bIsSprinting = InIsSprinting; }
+
+	UFUNCTION(BlueprintCallable)
 	bool GetIsReloadingBullet() { return bIsReloadingBullet; }
 	void SetIsReloadingBullet(bool bInIsReloading) { bIsReloadingBullet = bInIsReloading; }
 
@@ -535,6 +537,16 @@ public:
 	float GetBumpTimer() {return BumpTimer; }
 protected:
 	void CountBumpTimer(float DeltaTime);
+
+protected:
+
+	int Ranking{};
+
+public:
+	void SetRanking(int InRanking) { Ranking = InRanking; }
+	int GetRanking() const { return Ranking; }
+
+	
 };
 
 

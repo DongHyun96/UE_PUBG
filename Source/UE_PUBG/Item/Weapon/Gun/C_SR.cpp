@@ -253,7 +253,7 @@ bool AC_SR::AIFireBullet(class AC_BasicCharacter* InTargetCharacter)
 		CurBulletCount--;
 		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
 		if (!Succeeded) UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
-		if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
+		if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
 		//UC_Util::Print("SR Reloading Start!!!!!!!!!!", FColor::MakeRandomColor(), 10.f);
 		AIFireTimer = 0.0f;
 
@@ -285,5 +285,24 @@ float AC_SR::GetDamageRateByBodyPart(const FName& BodyPart)
 void AC_SR::ChangeCurShootingMode()
 {
 	// Blank (SR의 경우 Shooting Mode를 바꿀 수 없게끔 처리)
+}
+
+void AC_SR::CancelReload()
+{
+	Super::CancelReload();
+	UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+
+	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+
+	UAnimMontage* SniperReloadMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
+
+	if (CurAnimInstance->Montage_IsPlaying(ReloadMontage) || CurAnimInstance->Montage_IsPlaying(SniperReloadMontage))
+	{
+		CurAnimInstance->Montage_Stop(0.02);
+	}
+	OwnerCharacter->SetIsReloadingBullet(false);
+
+	SetIsReloadingSR(false);
+	
 }
 

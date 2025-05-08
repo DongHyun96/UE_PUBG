@@ -19,9 +19,9 @@ public:
 
 	bool Interaction(AC_BasicCharacter* Character) override;
 	
-	bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
+	//bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
 
-	bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
+	//bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 
 	void AttachToSocket(class AC_BasicCharacter* InParent);
 

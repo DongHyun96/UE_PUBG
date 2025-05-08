@@ -92,42 +92,42 @@ void AC_BackPack::AttachToSocket(AC_BasicCharacter* InParent)
 	if (!Attached) UC_Util::Print("Not Attached", FColor::Cyan, 5.f);
 }
 
-void AC_BackPack::DetachToSocket(AC_BasicCharacter* character)
-{
-	//가방 해제.
-
-	if (!character->GetInvenComponent()->GetMyBackPack()) return;
-	DetachItem();
-	////USkeletalMeshComponent* backpackMesh = this->FindComponentByClass<USkeletalMeshComponent>();
-	//BackpackMesh = FindComponentByClass<UStaticMeshComponent>();
-	//if (BackpackMesh)
-	//{
-	//	// 캐릭터에서 가방을 분리
-	//	BackpackMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-	//
-	//	// 가방이 보이지 않게 설정
-	//	BackpackMesh->SetVisibility(false);
-	//	//충돌을 여기서 꺼주고 SetLocation 이후에 다시 켜주면 OverlappedBegin이벤트가 작동함.
-	//	SetActorEnableCollision(false);
-	//}
-	//SetOwnerCharacter(nullptr);
-	//
-	//// 가방을 캐릭터의 발 아래로 이동시킴
-	//FVector DropLocation = character->GetActorLocation() + FVector(0.f, 0.f, -75.f);
-	//FRotator DropRotation = character->GetActorRotation() + FRotator(0.f, 0.f, -90.f);
-	//SetActorLocation(DropLocation);
-	//SetActorRotation(DropRotation);
-	//
-	////SetActorLocation으로 꺼져버린 충돌을 다시 켜줌.
-	//SetActorEnableCollision(true);
-	//// 가방이 다시 보이게 설정
-	//BackpackMesh->SetSimulatePhysics(true);
-	//BackpackMesh->SetEnableGravity(true);
-	//BackpackMesh->SetVisibility(true);
-
-
-
-}
+//void AC_BackPack::DetachToSocket(AC_BasicCharacter* character)
+//{
+//	//가방 해제.
+//
+//	if (!Cast<AC_BackPack>(character->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK])) return;
+//	DetachItem();
+//	////USkeletalMeshComponent* backpackMesh = this->FindComponentByClass<USkeletalMeshComponent>();
+//	//BackpackMesh = FindComponentByClass<UStaticMeshComponent>();
+//	//if (BackpackMesh)
+//	//{
+//	//	// 캐릭터에서 가방을 분리
+//	//	BackpackMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+//	//
+//	//	// 가방이 보이지 않게 설정
+//	//	BackpackMesh->SetVisibility(false);
+//	//	//충돌을 여기서 꺼주고 SetLocation 이후에 다시 켜주면 OverlappedBegin이벤트가 작동함.
+//	//	SetActorEnableCollision(false);
+//	//}
+//	//SetOwnerCharacter(nullptr);
+//	//
+//	//// 가방을 캐릭터의 발 아래로 이동시킴
+//	//FVector DropLocation = character->GetActorLocation() + FVector(0.f, 0.f, -75.f);
+//	//FRotator DropRotation = character->GetActorRotation() + FRotator(0.f, 0.f, -90.f);
+//	//SetActorLocation(DropLocation);
+//	//SetActorRotation(DropRotation);
+//	//
+//	////SetActorLocation으로 꺼져버린 충돌을 다시 켜줌.
+//	//SetActorEnableCollision(true);
+//	//// 가방이 다시 보이게 설정
+//	//BackpackMesh->SetSimulatePhysics(true);
+//	//BackpackMesh->SetEnableGravity(true);
+//	//BackpackMesh->SetVisibility(true);
+//
+//
+//
+//}
 
 bool AC_BackPack::Interaction(AC_BasicCharacter* Character)
 {
@@ -167,66 +167,66 @@ bool AC_BackPack::Interaction(AC_BasicCharacter* Character)
 //
 //}
 
-bool AC_BackPack::LegacyMoveToAround(AC_BasicCharacter* Character)
-{
-	
-	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
-	AC_BackPack* curBackPack = nullptr;
-	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
-
-	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//TODO : 갑빠가 더해주는 Volume 추가해야함.
-
-	if (curVolume > preMaxVolume) return false;
-
-	if (curBackPack)
-	{
-		//curBackPack->SetOwnerCharacter(nullptr);
-		InvenComp->SetSlotEquipment(EEquipSlot::BACKPACK, curBackPack);
-		//InvenComp->RemoveBackPack();
-		//curBackPack->DetachItem();
-	}
-	 
-	InvenComp->CheckBackPackOnCharacter();
-
-	this->SetItemPlace(EItemPlace::AROUND);
-
-	// Player일 경우, Armor info widget 업데이트
-	if (AC_Player* Player = Cast<AC_Player>(Character))
-		Player->GetHUDWidget()->GetArmorInfoWidget()->SetBackPackInfo(0);
-
-	return true;
-}
-
-bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
-{
-	
-	//TODO : PickUpItem 내용으로 우선 구현한 것. 다시 구현하기.
-	//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
-	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
-	UC_EquippedComponent* EquipComp = Character->GetEquippedComponent();
-
-	AC_BackPack* curBackPack = nullptr;
-	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
-
-	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//갑빠가 더해주는 Volume 추가해야함.
-
-	if (curVolume > preMaxVolume) return false;
-
-	if (curBackPack)
-		curBackPack->LegacyMoveToAround(Character);
-
-	//InvenComp->EquippedBackPack(this);
-
-	InvenComp->SetSlotEquipment(EEquipSlot::BACKPACK, this);
-
-	InvenComp->CheckBackPackOnCharacter();
-			
-	this->SetItemPlace(EItemPlace::SLOT);
-	
-	return true;
-}
+//bool AC_BackPack::LegacyMoveToAround(AC_BasicCharacter* Character)
+//{
+//	
+//	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
+//	AC_BackPack* curBackPack = nullptr;
+//	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
+//
+//	float curVolume = InvenComp->GetCurVolume();
+//	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//TODO : 갑빠가 더해주는 Volume 추가해야함.
+//
+//	if (curVolume > preMaxVolume) return false;
+//
+//	if (curBackPack)
+//	{
+//		//curBackPack->SetOwnerCharacter(nullptr);
+//		InvenComp->SetSlotEquipment(EEquipSlot::BACKPACK, curBackPack);
+//		//InvenComp->RemoveBackPack();
+//		//curBackPack->DetachItem();
+//	}
+//	 
+//	InvenComp->CheckBackPackOnCharacter();
+//
+//	this->SetItemPlace(EItemPlace::AROUND);
+//
+//	// Player일 경우, Armor info widget 업데이트
+//	if (AC_Player* Player = Cast<AC_Player>(Character))
+//		Player->GetHUDWidget()->GetArmorInfoWidget()->SetBackPackInfo(0);
+//
+//	return true;
+//}
+//
+//bool AC_BackPack::LegacyMoveToSlot(AC_BasicCharacter* Character)
+//{
+//	
+//	//TODO : PickUpItem 내용으로 우선 구현한 것. 다시 구현하기.
+//	//캐릭터의 현재 용량과 바꾼 가방의 최대용량을 비교해서 바꾸기.
+//	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
+//	UC_EquippedComponent* EquipComp = Character->GetEquippedComponent();
+//
+//	AC_BackPack* curBackPack = nullptr;
+//	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
+//
+//	float curVolume = InvenComp->GetCurVolume();
+//	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel());//갑빠가 더해주는 Volume 추가해야함.
+//
+//	if (curVolume > preMaxVolume) return false;
+//
+//	if (curBackPack)
+//		curBackPack->LegacyMoveToAround(Character);
+//
+//	//InvenComp->EquippedBackPack(this);
+//
+//	InvenComp->SetSlotEquipment(EEquipSlot::BACKPACK, this);
+//
+//	InvenComp->CheckBackPackOnCharacter();
+//			
+//	this->SetItemPlace(EItemPlace::SLOT);
+//	
+//	return true;
+//}
 
 bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character,int32 InStack)
 {

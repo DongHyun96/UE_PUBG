@@ -16,12 +16,12 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
 #include "HUD/C_MapWidget.h"
-
+#include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
-
 #include "Loot/C_LootCrate.h"
 #include "Item/ItemManager/C_ItemManager.h"
 #include "Sound/C_SoundManager.h"
+#include "Singleton/C_GameInstance.h"
 
 #include "Utility/C_TickRandomColorGenerator.h"
 
@@ -38,7 +38,12 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 
-	RandomNameDataTable = LoadObject<UDataTable>(this, TEXT("/Game/Project_PUBG/DongHyun/Character/DataTable/DT_RandomNameTable"));
+	//RandomNameDataTable = LoadObject<UDataTable>(this, TEXT("/Game/Project_PUBG/DongHyun/Character/DataTable/DT_RandomNameTable"));
+	
+	UC_GameInstance* GI = Cast<UC_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+	UDataTable* RandomNameDataTable = GI->GetDataTables()[EDataTableType::RandomName];
+
 	if (!RandomNameDataTable) UC_Util::Print("RandomNameDataTable not Loaded properly!", FColor::Red, 20.f);
 
 	TArray<FName> RowNames = RandomNameDataTable->GetRowNames();
@@ -106,6 +111,9 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		
 		if (AC_SoundManager* Sound_Manager = Cast<AC_SoundManager>(*Actor)) SoundManager = Sound_Manager;
 	}
+
+	CurrentRanking = AllCharacters.Num();
+	TotalPlayedCharacterCount = AllCharacters.Num();
 }
 
 void UC_GameSceneManager::Initialize(FSubsystemCollectionBase& Collection)
@@ -113,7 +121,6 @@ void UC_GameSceneManager::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	// 월드 파괴 전 호출되는 델리게이트 등록
 	//FWorldDelegates::OnPreWorldFinishDestroy.AddUObject(this, &UC_GameSceneManager::OnWorldEndPlay);
-
 }
 
 void UC_GameSceneManager::Deinitialize()
@@ -223,6 +230,43 @@ TPair<uint8, uint8> UC_GameSceneManager::GetContainingTileCoordinate(const FVect
 	}
 
 	return { (CELL_WORLDSIZE * 5.f - X) / 100, (CELL_WORLDSIZE * 5.f + Y) / 100 };
+}
+
+void UC_GameSceneManager::AddSpawnedItemToContainer(class AC_Item* InItem)
+{
+	ItemContainer.Add(InItem);
+}
+
+void UC_GameSceneManager::ToggleItemsHiddenInGame(bool InHiddenInGame)
+{
+	for (AC_Item* SpawnedItem : ItemContainer)
+	{
+		SpawnedItem->SetActorHiddenInGame(InHiddenInGame);
+	}
+
+
+	for (APawn* SpawnedVehicle : VehicleContainer)
+	{
+		SpawnedVehicle->SetActorHiddenInGame(InHiddenInGame);
+		UC_Util::Print("UnHiddenCars: ", FColor::Blue, 10.f);
+	}
+	if (!InHiddenInGame)
+	{
+		SetVehiclesCollision();
+	}
+}
+
+void UC_GameSceneManager::AddVehiclesToContainer(class APawn* InVehicle)
+{
+	VehicleContainer.Add(InVehicle);
+	UC_Util::Print("Container: ", FColor::Red, 10.f);
+
+	
+}
+
+void UC_GameSceneManager::SetVehiclesCollision()
+{
+	OnSetVehiclesCollision.Broadcast();
 }
 
 // TPair<uint8, uint8> Get

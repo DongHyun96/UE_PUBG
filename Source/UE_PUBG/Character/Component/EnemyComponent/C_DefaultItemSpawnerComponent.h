@@ -34,6 +34,13 @@ private:
 	/// </summary>
 	void SpawnDefaultWeaponsAndItems();
 
+public:
+	
+	/// <summary>
+	/// 기본 Spawn 처리한 Item들 중 직접적으로 Attach되어 있는 Actor들의 HiddenInGame Toggle 처리 
+	/// </summary>
+	void ToggleSpawnedItemsHiddenInGame(bool InHiddenInGame);
+
 private:
 
 	void SpawnWeapons(const FActorSpawnParameters& Param);

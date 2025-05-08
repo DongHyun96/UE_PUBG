@@ -99,7 +99,10 @@ private:
 
 	void OnTabKey();
 
-	void OnMainMenuKey();
+	void OnGKey();
+
+	void OnTKey();
+
 private:
 
 	class AC_Player* Player{};
@@ -186,6 +189,12 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UInputAction* MainMenuAction{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UInputAction* ToggleThrowableWheelAction{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UInputAction* ToggleConsumableAction{};
 };
 
 

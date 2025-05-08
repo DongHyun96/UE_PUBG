@@ -54,6 +54,7 @@
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 #include "Component/SkyDivingComponent/C_PlayerSkyDivingComponent.h"
 #include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
+#include "HUD/C_GameOverWidget.h"
 #include "HUD/C_InstructionWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 
@@ -132,7 +133,13 @@ void AC_Player::BeginPlay()
 		// MainMapWidget->AddToViewport(9);
 		MainMapWidget->SetOwnerPlayer(this);
 	} else UC_Util::Print("No MainMapWidget", FColor::MakeRandomColor(), 10.f);
-	
+
+	if (GameOverWidget)
+	{
+		GameOverWidget->AddToViewport(20);
+		GameOverWidget->SetOwnerPlayer(this);
+	}
+	else UC_Util::Print("No GameOver Widget", FColor::MakeRandomColor(), 10.f);
 
 	if (InvenSystem)
 	{
@@ -225,12 +232,28 @@ void AC_Player::Tick(float DeltaTime)
 	//	CurOutLinedItem = nullptr;
 	//	return;
 	//}
+	if (!NewInteractableItem) return;
 
 	// 아이템이 변경되었을 때만 업데이트 수행
 	if (NewInteractableItem != CurOutLinedItem)
 	{
 		UpdateInteractable(NewInteractableItem);
 	}
+
+	// 스카이 다이빙 중인 경우에만 다이빙 사운드를 업데이트.
+	//if (GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::SKYDIVING)
+	//{
+	//	UpdateSkyDivingSound();
+	//}
+
+	/*switch (HandState)
+	{
+	case EHandState::UNARMED: UC_Util::Print("UnArmed"); break;
+	case EHandState::WEAPON_GUN: UC_Util::Print("Weapon_Gun"); break;
+	case EHandState::WEAPON_MELEE: UC_Util::Print("WEAPON_MELEE"); break;
+	case EHandState::WEAPON_THROWABLE: UC_Util::Print("WEAPON_THROWABLE"); break;
+	case EHandState::HANDSTATE_MAX: UC_Util::Print("HANDSTATE_MAX"); break;
+	}*/
 
 	//DrawingItemOutLine();
 	//UpdateInteractable(FindBestInteractable());
@@ -325,7 +348,7 @@ void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(const float& Delta
 		(
 			C_MainSpringArm->GetRelativeLocation(),
 			MainSpringArmRelativeLocationDest,
-			DeltaTime * 5.f
+			DeltaTime * SpringArmRelativeLocationLerpSpeed
 		)
 	);
 	//AimSpringArmTemp->SocketOffset
@@ -335,7 +358,7 @@ void AC_Player::HandleLerpMainSpringArmToDestRelativeLocation(const float& Delta
 		(
 			AimSpringArmTemp->GetRelativeLocation(),
 			AimingSpringArmRelativeLocationDest,
-			DeltaTime * 5.f
+			DeltaTime * SpringArmRelativeLocationLerpSpeed
 		)
 	);
 }
@@ -399,7 +422,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 				return false;
 			}
 
-			SetSpringArmRelativeLocationDest(EPoseState::STAND);
+			SetMainSpringArmRelativeLocationDest(EPoseState::STAND);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::STAND);
 			SetControllerPitchLimits(EPoseState::STAND);
 			Super::SetPoseState(EPoseState::STAND);
@@ -418,7 +441,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 				return false;
 			}
 			SetControllerPitchLimits(EPoseState::STAND);
-			SetSpringArmRelativeLocationDest(EPoseState::STAND);
+			SetMainSpringArmRelativeLocationDest(EPoseState::STAND);
 
 			if (SwimmingComponent->GetSwimmingState() != ESwimmingState::ON_GROUND)
 			{
@@ -445,7 +468,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 				return false;
 			}
 
-			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
+			SetMainSpringArmRelativeLocationDest(EPoseState::CROUCH);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CROUCH);
 			SetControllerPitchLimits(EPoseState::CROUCH);
 			Super::SetPoseState(EPoseState::CROUCH);
@@ -465,7 +488,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			}
 			SetControllerPitchLimits(EPoseState::CROUCH);
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrawlToCrouch, EPoseState::CROUCH);
-			SetSpringArmRelativeLocationDest(EPoseState::CROUCH);
+			SetMainSpringArmRelativeLocationDest(EPoseState::CROUCH);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CROUCH);
 
 			return true;
@@ -490,7 +513,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			SetControllerPitchLimits(EPoseState::CRAWL);
 
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).StandToCrawl, EPoseState::CRAWL);
-			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
+			SetMainSpringArmRelativeLocationDest(EPoseState::CRAWL);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CRAWL);
 
 			return true;
@@ -508,7 +531,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 				return false;
 			}
 			SetControllerPitchLimits(EPoseState::CRAWL);
-			SetSpringArmRelativeLocationDest(EPoseState::CRAWL);
+			SetMainSpringArmRelativeLocationDest(EPoseState::CRAWL);
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CRAWL);
 
 			ExecutePoseTransitionAction(GetPoseTransitionMontagesByHandState(HandState).CrouchToCrawl, EPoseState::CRAWL);
@@ -522,11 +545,13 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 {
-	AC_Item* OverlappedItem = Cast<AC_Item>(OtherActor);
-
+	AC_Item*		OverlappedItem		= Cast<AC_Item>(OtherActor);
+	AC_BasicLoot*	OverlappedLootBox	= Cast<AC_BasicLoot>(OtherActor);
+	
 	//if (IsValid(OverlappedItem) && (OverlappedItem->GetOwnerCharacter() == nullptr))
+	if (!IsValid(OverlappedItem) && !IsValid(OverlappedLootBox)) return;
 
-	if (IsValid(OverlappedItem))
+	if (IsValid(OverlappedItem) && !OverlappedItem->IsHidden())
 	{
 		// UC_Util::Print("OverlappedItem");
 		//UC_Util::Print(*OverlappedItem->GetName());
@@ -546,8 +571,8 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 		InvenSystem->InitializeList();
 		return;
 	}
-	AC_BasicLoot* OverlappedLootBox = Cast<AC_BasicLoot>(OtherActor);
-	
+
+	// Loot Box 처리
 	if (IsValid(OverlappedLootBox))
 	{
 		if (OverlappedLootBox->GetLootItems().Num() == 0) return;
@@ -628,7 +653,9 @@ AC_Item* AC_Player::FindBestInteractable()
 	for (auto& AroundItem : InvenComponent->GetAroundItems())
 	{
 		AC_Item* CachedInteractableItem = AroundItem;
-		
+
+		if (!CachedInteractableItem) continue;
+
 		//밖으로 빼야 될 수도.
 		FVector PlayerToItemVector = (CachedInteractableItem->GetActorLocation() - PlayerCamera->GetCameraLocation()).GetSafeNormal();
 		
@@ -736,6 +763,18 @@ void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 {
 	Super::CharacterDead(KillFeedDescriptor);
 	HUDWidget->GetInstructionWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
+
+	GAMESCENE_MANAGER->SetIsGameOver(true);
+
+	// TODO : if else 문으로 대체하기
+	//if (Ranking == 1) GameOverWidget->ActivateWinningSequence();
+	//else GameOverWidget->ActivateLoseSequence();
+	GameOverWidget->ActivateLoseSequence();
+	
+	//if (AC_Gun* Gun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon()))
+	//{
+	//	UC_Util::Print("Dead : Current Gun valid!", FColor::Red, 10.f);
+	//}
 }
 
 void AC_Player::EnableRagdoll()

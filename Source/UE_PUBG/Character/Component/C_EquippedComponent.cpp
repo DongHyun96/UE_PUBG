@@ -147,9 +147,10 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
 bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 {
     if (OwnerCharacter->GetSwimmingComponent()->IsSwimming()) return false;
-
     if (IsValid(Weapons[CurWeaponType]))
     {
+        AC_Gun* CurWeaponGun = Cast<AC_Gun>(Weapons[CurWeaponType]);
+
         // 현재 무기의 Sheath나 Draw animation montage가 이미 재생 중이라면 return
         if (OwnerCharacter->GetMesh()->GetAnimInstance()
             ->Montage_IsPlaying(Weapons[CurWeaponType]->GetCurDrawMontage().AnimMontage))
@@ -158,6 +159,12 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
         if (OwnerCharacter->GetMesh()->GetAnimInstance()
             ->Montage_IsPlaying(Weapons[CurWeaponType]->GetCurSheathMontage().AnimMontage))
             return false;
+        // if (IsValid(CurWeaponGun))
+        // {
+        //     
+        //     if (CurWeaponGun->GetIsPlayingMontagesOfAny())
+        //         return false;
+        // }
     }
 
     NextWeaponType = InChangeTo;
@@ -273,7 +280,7 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
         }
     }
     //총을 들고 Aiming 중일 때 카메라 다시 원래대로 전환
-    if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+    if (Cast<AC_Player>(OwnerCharacter))
     {
         if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
         {
@@ -433,7 +440,7 @@ void UC_EquippedComponent::OnDrawEnd()
         return;
     }
 
-    // UC_Util::Print("OnDrawEnd", FColor::Cyan, 5.f);
+    UC_Util::Print("OnDrawEnd", FColor::Cyan, 5.f);
 
     Weapons[NextWeaponType]->AttachToHand(OwnerCharacter->GetMesh());
     CurWeaponType = NextWeaponType;

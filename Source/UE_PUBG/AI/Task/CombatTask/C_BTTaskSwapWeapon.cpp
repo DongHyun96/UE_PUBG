@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AI/Task/CombatTask/C_BTTaskSwapWeapon.h"
@@ -88,7 +88,7 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 
 	// TODO : /**/ --> 이 부분 주석 풀기
 	
-	/*// 총기류 먼저 바꾸기 시도
+	// 총기류 먼저 바꾸기 시도
 	FName SevenBulletItemName	= AC_Item_Bullet::GetBulletTypeName(EBulletType::SEVENMM);
 	FName FiveBulletItemName	= AC_Item_Bullet::GetBulletTypeName(EBulletType::FIVEMM);
 	
@@ -130,7 +130,7 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 		// 시야에 보이는지만 체크해서 AR 사용하기
 		if (Controller->IsCurrentlyOnSight(TargetCharacter))
 			return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
-	}*/
+	}
 
 	// 시야에 보이지 않는 중, Inven에 있는 Throwable이랑 Slot에 있는 Throwable 모두 조사해야 함
 

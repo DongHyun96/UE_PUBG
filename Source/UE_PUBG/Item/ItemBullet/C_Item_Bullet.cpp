@@ -130,6 +130,18 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InSta
 		//invenComp->AddInvenCurVolume(-this->GetAllVolume()); // 버리는 아이템만큼 curVolume 조절하기. TODO : Inven에서 아이템 버릴 때 문제 생기면 체크하기.
 		DropItem(Character);
 	}
+
+	AC_Gun* CurGun = Cast<AC_Gun>(Character->GetEquippedComponent()->GetCurWeapon());
+
+	if (CurGun && CurGun->GetItemType() == EItemTypes::MAINGUN)
+	{
+		if (CurGun->GetCurBulletType() == CurBulletType)
+		{
+			if (!Character->GetInvenComponent()->FindMyItemByName(this->GetItemCode()))
+				CurGun->CancelReload();
+			//TODO : 이미 play중인 사운드를 정지 시켜야함.
+		}
+	}
 	//AddFivemmBulletStack을 통해서 총에 또 정보를 전달해 주어야 함
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 		UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행

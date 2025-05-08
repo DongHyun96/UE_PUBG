@@ -31,6 +31,7 @@
 bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
 	// Shooting Mode 바꾸기
+	if (WeaponUser->GetHandState() !=EHandState::WEAPON_GUN) return false;
 	
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
@@ -44,6 +45,8 @@ bool AC_GunStrategy::UseBKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
 	//if (WeaponUser->GetIsHoldDirection()) return false;
+	if (WeaponUser->GetHandState() != EHandState::WEAPON_GUN) return false;
+	
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 
 	if (!IsValid(CurPlayer)) return false;
@@ -63,7 +66,7 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	//	WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::MUZZLE, EAttachmentNames::COMPENSATOR);
 	//	return true;
 	//}
-	WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);
+	// WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);
 	//WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::MUZZLE, EAttachmentNames::COMPENSATOR);
 
 	AC_SR* CurrentSR = Cast<AC_SR>(CurWeapon);
@@ -79,9 +82,11 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
-
+	
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	if (!WeaponUser->GetCanFireBullet()) return false;
+
+	if (WeaponUser->GetHandState() != EHandState::WEAPON_GUN) return false;
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	
@@ -95,7 +100,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 		return false;
 	}
 	bool IsBulletFired = CurWeapon->FireBullet();
-	if (CurWeapon->GetCurBulletCount() > 0)
+	if (CurWeapon->GetCurBulletCount() > 0 && IsBulletFired)
 	{
 		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SINGLE_SHOT && !CurPlayer->GetIsAimDown())
 			CurWeapon->ExecuteReloadMontage();
@@ -106,6 +111,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 
 bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	if (WeaponUser->GetHandState() != EHandState::WEAPON_GUN) return false;
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	if (!WeaponUser->GetCanFireBullet()) return false;
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
@@ -151,6 +157,7 @@ bool AC_GunStrategy::UseMlb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 
 bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	if (WeaponUser->GetHandState() != EHandState::WEAPON_GUN) return false;
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
@@ -177,6 +184,7 @@ bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 
 bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
+	if (WeaponUser->GetHandState() != EHandState::WEAPON_GUN) return false;
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Item/C_Item.h"
-#include "InvenUserInterface/C_InvenUiWidget.h"
+//#include "InvenUserInterface/C_InvenUiWidget.h"
 #include "InvenUI/C_InventoryUIWidget.h"
 #include "C_InvenSystem.generated.h"
 
@@ -74,6 +74,7 @@ protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_BasicCharacter* OwnerCharacter = nullptr;
 		
+
 };
 
 

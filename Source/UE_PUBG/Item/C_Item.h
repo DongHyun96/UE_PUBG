@@ -198,14 +198,14 @@ public:
 	void DeductItemStack() { ItemCurStack -= 1; }
 
 
-	UFUNCTION(BlueprintCallable)
-	virtual bool LegacyMoveToInven(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToInven, return false;);
-	
-	UFUNCTION(BlueprintCallable)
-	virtual bool LegacyMoveToAround(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToAround, return false;);
-	
-	UFUNCTION(BlueprintCallable)
-	virtual bool LegacyMoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToSlot, return false;);
+	//UFUNCTION(BlueprintCallable)
+	//virtual bool LegacyMoveToInven(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToInven, return false;);
+	//
+	//UFUNCTION(BlueprintCallable)
+	//virtual bool LegacyMoveToAround(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToAround, return false;);
+	//
+	//UFUNCTION(BlueprintCallable)
+	//virtual bool LegacyMoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToSlot, return false;);
 
 	/// <summary>
 	/// 아이템이 Inven으로 보낼 때 사용하면 현재 Place에 맞게  작동
@@ -282,6 +282,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FString GetItemName() const { return ItemDataRef->ItemName; }
+
 	/// <summary>
 	/// 아이템 하나의 Volume
 	/// </summary>

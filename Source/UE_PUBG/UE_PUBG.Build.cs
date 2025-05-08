@@ -30,7 +30,9 @@ public class UE_PUBG : ModuleRules
             "AIModule",
             "Water",
             "NavigationSystem",
-            "PhysicsCore"
+            "PhysicsCore",
+            "LoadingScreenModule"
+            // "MoviePlayer"
         });
 
         /*

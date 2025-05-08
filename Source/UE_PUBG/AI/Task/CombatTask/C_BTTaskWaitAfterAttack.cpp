@@ -27,6 +27,8 @@ void UC_BTTaskWaitAfterAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8
 	
 	// 기다린 시간 끝
 	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
+	EnemyBehaviorComponent->SetServiceType(EServiceType::IDLE);
 }
 
 EBTNodeResult::Type UC_BTTaskWaitAfterAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -49,7 +51,12 @@ EBTNodeResult::Type UC_BTTaskWaitAfterAttack::ExecuteTask(UBehaviorTreeComponent
 	
 	UC_BehaviorComponent* BehaviorComponent = Controller->GetBehaviorComponent();
 
-	if (BehaviorComponent->GetAfterAttackTaskWaitTime() <= 0.f) return EBTNodeResult::Succeeded;
+	if (BehaviorComponent->GetAfterAttackTaskWaitTime() <= 0.f)
+	{
+		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
+		BehaviorComponent->SetServiceType(EServiceType::IDLE);
+		return EBTNodeResult::Succeeded;
+	}
 
 	EnemyTimers.Add(Enemy, 0.f);
 	

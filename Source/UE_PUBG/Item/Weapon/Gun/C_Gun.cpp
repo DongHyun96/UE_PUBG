@@ -46,7 +46,10 @@
 #include "HUD/C_AmmoWidget.h"
 
 #include "Singleton/C_GameSceneManager.h"
+#include "Singleton/C_GameInstance.h"
+
 #include "Item/ItemManager/C_ItemManager.h"
+
 
 AC_Gun::AC_Gun()
 {
@@ -149,7 +152,11 @@ void AC_Gun::InitializeItem(FName NewItemCode)
 	Super::InitializeItem(NewItemCode);
 	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunDataRef 정의해 주기.
 	static const FString ContextString(TEXT("GunItem Lookup"));
-	UDataTable* GunDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunData.DT_GunData"));
+	//UDataTable* GunDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunData.DT_GunData"));
+
+	UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
+
+	UDataTable* GunDataTable = GI->GetDataTables()[EDataTableType::Gun];
 
 	if (GunDataTable)
 	{
@@ -161,7 +168,9 @@ void AC_Gun::InitializeItem(FName NewItemCode)
 	}
 
 	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 GunSoundData 정의해 주기.
-	UDataTable* GunSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunSoundData.DT_GunSoundData"));
+	//UDataTable* GunSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunSoundData.DT_GunSoundData"));
+
+	UDataTable* GunSoundDataTable = GI->GetDataTables()[EDataTableType::GunSound];
 
 	if (GunSoundDataTable)
 	{
@@ -288,14 +297,17 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
 		OwnerPlayer->SetRecoilTimelineValues(GunDataRef->BulletRPM);
 	}
-	return AttachToComponent
-	(
+	FString TempSocketName = EQUIPPED_SOCKET_NAME.ToString();
+	UC_Util::Print(TempSocketName);
+	bool SuccessToAttach;
+	SuccessToAttach = AttachToComponent(
 		InParent,
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		EQUIPPED_SOCKET_NAME
 	);
-
-	
+	UC_Util::Print(SuccessToAttach);
+	OwnerCharacter->SetIsReloadingBullet(false);
+	return SuccessToAttach;
 }
 
 bool AC_Gun::SetAimingDown()
@@ -667,7 +679,15 @@ bool AC_Gun::FireBullet()
 		if (HasHit)
 		{
 			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity, HitLocation);
-			if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
+			//if (Cast<AC_Player>(OwnerCharacter))
+			if (OwnerCharacter->IsLocallyControlled())
+			{
+				if (GunSoundData->FireSound) UGameplayStatics::PlaySound2D(this, GunSoundData->FireSound);
+			}
+			else
+			{
+				if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
+			}
 			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
 			if (IsValid(MuzzleFlameEffectParticle))
 			{
@@ -690,7 +710,15 @@ bool AC_Gun::FireBullet()
 		else
 		{
 			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
-			if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
+			//if (Cast<AC_Player>(OwnerCharacter))
+			if (OwnerCharacter->IsLocallyControlled())
+			{
+				if (GunSoundData->FireSound) UGameplayStatics::PlaySound2D(this, GunSoundData->FireSound);
+			}
+			else
+			{
+				if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
+			}
 
 			if (Succeeded) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
 			if (IsValid(MuzzleFlameEffectParticle))
@@ -1215,6 +1243,27 @@ bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)
 bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 {
 	return false;
+}
+
+void AC_Gun::CancelReload()
+{
+	if (!IsValid(OwnerCharacter)) return;
+}
+
+void AC_Gun::SetActorHiddenInGame(bool bNewHidden)
+{
+	Super::SetActorHiddenInGame(bNewHidden);
+	// 각 Attachment에 대해서도 한 번에 visibility 처리
+	for (int i = 0; i < static_cast<int>(EPartsName::MAX); ++i)
+	{
+		EPartsName PartsName = static_cast<EPartsName>(i);
+
+		if (!IsPartAttached[PartsName]) continue;
+
+		AttachedItem[PartsName]->SetActorHiddenInGame(bNewHidden);
+	}
+
+	SetMagazineVisibility(!bNewHidden);
 }
 
 FName AC_Gun::GetCurrentBulletTypeName()

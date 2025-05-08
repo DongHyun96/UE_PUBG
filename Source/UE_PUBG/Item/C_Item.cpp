@@ -18,6 +18,9 @@
 #include "Weapon/WeaponStrategy/I_WeaponButtonStrategy.h"
 #include "Weapon/WeaponStrategy/C_GunStrategy.h"
 
+#include "Singleton/C_GameSceneManager.h"
+#include "Singleton/C_GameInstance.h"
+
 // Sets default values
 AC_Item::AC_Item()
 {
@@ -47,7 +50,11 @@ void AC_Item::InitializeItem(FName NewItemCode)
 {
 	static const FString ContextString(TEXT("Item Lookup"));
 	//TODO : 나중에 ItemManager를 통해 아이템을 모두 관리하게 되면 ItemManager를 통해서 ItemDataRef 정의해 주기.
-	UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_Item.DT_Item"));
+	//UDataTable* ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_Item.DT_Item"));
+
+	UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
+
+	UDataTable* ItemDataTable = GI->GetDataTables()[EDataTableType::Item];
 
 	if (ItemDataTable)
 	{
@@ -112,8 +119,7 @@ FVector AC_Item::GetGroundLocation(AC_BasicCharacter* Character)
 	if (bHit)
 	{
 		UC_Util::Print("Hit Ground");
-		UC_Util::Print(HitResult.GetActor()->GetName());
-
+		if (IsValid(HitResult.GetActor())) UC_Util::Print(HitResult.GetActor()->GetName());
 	}
 	else
 	{
@@ -163,6 +169,14 @@ bool AC_Item::MoveToInven(AC_BasicCharacter* Character, int32 InStack)
 		if (Character->GetInvenComponent()->GetAroundItems().Contains(this))
 			Character->GetInvenComponent()->RemoveItemToAroundList(this);
 	}
+
+	if (AC_Player* Player = Cast<AC_Player>(Character))
+	{
+		//Player->GetInvenSystem()->GetInvenUI()->UpdateEquipmentItemPanelWidget();
+		//Player->GetInvenSystem()->GetInvenUI()->UpdateAroundItemPanelWidget();
+		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+	}
+
 	return bIsMoveItem;
 }
 

@@ -11,15 +11,17 @@
 #include "Utility/C_Util.h"
 AC_PlayerController::AC_PlayerController()
 {
+	/// Script / UMGEditor.WidgetBlueprint'/Game/Project_PUBG/Common/UI/test/MainMenu/WBP_Menu.WBP_Menu'
 	// MainMenu 위젯을 생성하기 위한 클래스 로드, WBP_Menu의 경로나 이름이 변경되면 수정 필요
 	static ConstructorHelpers::FClassFinder<UUserWidget> MainMenuWidgetBPClass(TEXT("/Game/Project_PUBG/Common/UI/MainMenu/WBP_Menu"));
+	//static ConstructorHelpers::FClassFinder<UUserWidget> MainMenuWidgetBPClass(TEXT("/Game/Project_PUBG/Common/UI/test/MainMenu/WBP_Menu"));
 
 	if (MainMenuWidgetBPClass.Class != nullptr)
 	{
 		MainMenuClass = MainMenuWidgetBPClass.Class;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> IA_OpenMenu(TEXT("/Game/Project_PUBG/Common/Character/Input/IA_MainMenu")); // 경로는 니 프로젝트에 맞게
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_OpenMenu(TEXT("/Game/Project_PUBG/Common/Character/Input/IA_MainMenu"));
 	if (IA_OpenMenu.Succeeded())
 	{
 		OpenMenuAction = IA_OpenMenu.Object;
@@ -93,15 +95,20 @@ void AC_PlayerController::ToggleMainMenu()
 	//	return;
 	//}
 
+	if (!MainMenuWidget)
+	{
+		UC_Util::Print("MainMenuWidget is nullptr", FColor::Red, 10.f);
+		return;
+	}
 
-	if (MainMenuWidget && MainMenuWidget->GetVisibility() == ESlateVisibility::Hidden)
+	// TODO : Collapsed 는 메인메뉴창을 종료한 상태,
+	//      : Hidden은 메인메뉴창에서 Preperences같은 다른 창을 띄운 상태
+	if (MainMenuWidget->GetVisibility() == ESlateVisibility::Hidden || MainMenuWidget->GetVisibility() == ESlateVisibility::Collapsed)
 	{
 		MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 		SetPause(true);
 		bShowMouseCursor = true;
 		UC_Util::Print("MainMenuWidget is added to viewport", FColor::Green, 10.f);
-
-		
 
 		// UIOnly 모드로 전환하고 위젯에 포커스
 		FInputModeUIOnly InputModeData;
@@ -109,9 +116,13 @@ void AC_PlayerController::ToggleMainMenu()
 		InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 		SetInputMode(InputModeData);
 	}
-	else
+	else if (MainMenuWidget->GetVisibility() == ESlateVisibility::Visible)
 	{
-		UC_Util::Print("MainMenuWidget is nullptr", FColor::Red, 10.f);
+		//MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		//SetPause(true);
+		//
+		//GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
+		//UC_Util::Print("MainMenuWidget is nullptr", FColor::Red, 10.f);
 	}
 	
 }

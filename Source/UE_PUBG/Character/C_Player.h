@@ -55,7 +55,27 @@ public:
 	/// 레벨의 모든 Actor의 BeginPlay 이 후 호출될 함수
 	/// </summary>
 	void OnPostWorldBeginPlay();
-	
+
+	// 낙하중 바람 소리 재생
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlaySkyDivingSound();
+
+	// 낙하중 바람 소리 정지
+	UFUNCTION(BlueprintImplementableEvent)
+	void StopSkyDivingSound();
+
+	// 낙하중 바람 소리가 중간에 끝나면 재생 
+	// TODO : looping으로 처리한 지금, 필요한 기능인지 체크하기.
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateSkyDivingSound();
+
+	// 투척류 휠 토글
+	UFUNCTION(BlueprintImplementableEvent)
+	void ToggleThrowablegWeaponWheel();
+
+	// 힐템 휠 토글
+	UFUNCTION(BlueprintImplementableEvent)
+	void ToggleConsumableWheel();
 private:
 
 	/// <summary>
@@ -77,11 +97,15 @@ public: // Getters and setters
 	TMap<EHandState, FPoseTurnInPlaceAnimMontage>& GetLowerBodyTurnAnimMontageMap() { return LowerBodyTurnAnimMontageMap; }
 	FPoseTurnInPlaceAnimMontage& GetLowerPoseTurnAnimMontage(EHandState InHandState) { return LowerBodyTurnAnimMontageMap[InHandState]; }
 
-	void SetSpringArmRelativeLocationDest(EPoseState InNextPoseState) { MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
+	void SetMainSpringArmRelativeLocationDest(EPoseState InNextPoseState) { MainSpringArmRelativeLocationDest = MainSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
 	void SetAimingSpringArmRelativeLocationDest(EPoseState InNextPoseState) { AimingSpringArmRelativeLocationDest = AimingSpringArmRelativeLocationByPoseMap[InNextPoseState]; }
 
+public:
+
+	UFUNCTION(BlueprintCallable)
 	class UC_HUDWidget*		GetHUDWidget()		const { return HUDWidget; }
 	class UC_MainMapWidget* GetMainMapWidget()	const { return MainMapWidget; }
+	class UC_GameOverWidget* GetGameOverWidget() const { return GameOverWidget; }
 	 
 	class UC_PingSystemComponent* GetPingSystemComponent() const { return PingSystemComponent; }
 
@@ -97,6 +121,10 @@ public: // Getters and setters
 	void SetCanFireWhileCrawl();
 
 	class UC_PlayerSkyDivingComponent* GetPlayerSkyDivingComponent() const { return PlayerSkyDivingComponent; }
+
+	UUserWidget* GetThrowingWheel() { return ThrowableWheelWidget; }
+
+	UUserWidget* GetConsumableWheel() { return ConsumableWheelWidget; }
 		
 public:
 	bool GetIsHighEnoughToFall() override;
@@ -306,7 +334,16 @@ protected:
 	class UC_HUDWidget* HUDWidget{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_MainMapWidget* MainMapWidget{};	
+	class UC_MainMapWidget* MainMapWidget{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_GameOverWidget* GameOverWidget{};	
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UUserWidget* ThrowableWheelWidget = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UUserWidget* ConsumableWheelWidget = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UC_InvenSystem* InvenSystem{};
@@ -325,7 +362,7 @@ private:
 	// 부모의 SkyDivingComponent 객체와 동일한 객체
 	class UC_PlayerSkyDivingComponent* PlayerSkyDivingComponent{};
 
-private:
+private: // MainSpringArm & AimingSpringArm Lerp Destinations
 
 	TMap<EPoseState, FVector> MainSpringArmRelativeLocationByPoseMap{};
 	FVector MainSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
@@ -333,6 +370,7 @@ private:
 	TMap<EPoseState, FVector> AimingSpringArmRelativeLocationByPoseMap{};
 	FVector AimingSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
 
+	float SpringArmRelativeLocationLerpSpeed = 5.f;
 
 protected:
 	//총알 Object Pooling (World에서 작업할 예정)

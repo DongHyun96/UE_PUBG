@@ -179,7 +179,7 @@ private:
 
 private:
 
-	bool bFallingFlag{};
+	bool  bFallingFlag{};
 	float FallingStartedHeight{};
 	float FallDamageAmount{};
 

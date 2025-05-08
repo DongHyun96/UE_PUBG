@@ -34,11 +34,6 @@ void UC_InstructionWidget::NativeConstruct()
 
     if (!GameStartTimerPanel || !GameStartTimerText)
         UC_Util::Print("From UC_InstructionWidget::NativeConstruct : GameStartTimer Panel init failed!", FColor::Red, 10.f);
-    /*else
-    {
-        FTimerHandle TimerHandle{};
-        GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this](){ ToggleGameStartTimerVisibility(true); }, 3.f, false);        
-    }*/
     
     // Init PlayerWarningLog 관련
     for (int i = 0; i < 4; ++i)
@@ -138,16 +133,6 @@ void UC_InstructionWidget::NativeTick(const FGeometry& MyGeometry, float InDelta
 
     HandleGameStartTimerPanelDefaultAlpha(InDeltaTime);
     HandleFKeyInstructionPanelDefaultAlpha(InDeltaTime);
-
-    // For Testing : TODO : 아래 라인들 지우기
-    // StartTimer not triggered
-    /*if (GameStartTimerRenderOpacityLerpDestination < 1.f) return;
-    
-    Timer -= InDeltaTime;
-    if (Timer < 0.f) return;
-    
-    int TimerNumber = static_cast<int>(Timer) + 1;
-    SetGameStartTimerText(TimerNumber);*/
 }
 
 void UC_InstructionWidget::HandleConsumableInstructionFlicker(const float& DeltaTime)

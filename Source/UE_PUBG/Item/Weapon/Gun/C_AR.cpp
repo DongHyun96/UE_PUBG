@@ -200,7 +200,7 @@ bool AC_AR::AIFireBullet(class AC_BasicCharacter* InTargetCharacter)
 		CurBulletCount--;
 		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
 		if (!Succeeded) UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
-		if (GunSoundData->ShoottingSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->ShoottingSound, GetActorLocation());
+		if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
 
 
 		AIFireTimer = 0.0f;
@@ -251,6 +251,22 @@ void AC_AR::ChangeCurShootingMode()
 
 		OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog(PlayerLog);
 	}
+}
+
+void AC_AR::CancelReload()
+{
+	Super::CancelReload();
+	UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+
+	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+
+
+	if (CurAnimInstance->Montage_IsPlaying(ReloadMontage))
+	{
+		CurAnimInstance->Montage_Stop(0.02);
+	}
+	OwnerCharacter->SetIsReloadingBullet(false);
+
 }
 
 
