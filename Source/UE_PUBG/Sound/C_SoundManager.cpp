@@ -22,7 +22,6 @@ void AC_SoundManager::BeginPlay()
 {
 	Super::BeginPlay();
 	InitializeSoundClassData();
-	BuildSoundClassMap();
 	// 
 	//LoadVolumeSettings();
 }
@@ -36,26 +35,31 @@ void AC_SoundManager::InitializeSoundClassData()
 {
 	static const FString ContextString(TEXT("SoundManager"));
 
+	static const FName SoundManagerRowName(TEXT("SoundManager"));
+
 	UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
 
 	UDataTable* SoundClassDataTable = GI->GetDataTables()[EDataTableType::SoundClasses];
 
-	//SoundClassDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Sounds/Sound_Class/DT_SoundClass.DT_SoundClass"));
 	if (SoundClassDataTable)
 	{
-		FSoundClassTable* Row = SoundClassDataTable->FindRow<FSoundClassTable>(TEXT("SoundManager"), ContextString);
+		FSoundClassTable* Row = SoundClassDataTable->FindRow<FSoundClassTable>(SoundManagerRowName, ContextString);
 		if (Row)
 		{
-			SoundClassData = *Row;
+			BuildSoundClassMap(Row);
+		}
+		else
+		{
+			UC_Util::Print("Failed to find row in SoundClassDataTable");
 		}
 	}
 }
 
-void AC_SoundManager::BuildSoundClassMap()
+void AC_SoundManager::BuildSoundClassMap(FSoundClassTable* InDataTable)
 {
 	SoundClassMap.Empty();
 
-	for (const FSoundClassEntry& Entry : SoundClassData.SoundClasses)
+	for (const FSoundClassEntry& Entry : InDataTable->SoundClasses)
 	{
 		if (Entry.SoundClassName != ESoundClassName::NONE && Entry.SoundClassName != ESoundClassName::MAX && Entry.SoundClass)
 		{

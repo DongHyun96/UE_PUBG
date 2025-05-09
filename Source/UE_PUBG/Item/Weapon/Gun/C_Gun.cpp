@@ -1248,6 +1248,9 @@ bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 void AC_Gun::CancelReload()
 {
 	if (!IsValid(OwnerCharacter)) return;
+
+	OwnerCharacter->StopReloadBulletSound();
+	OwnerCharacter->StopReloadMagazineSound();
 }
 
 void AC_Gun::SetActorHiddenInGame(bool bNewHidden)
