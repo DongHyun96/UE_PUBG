@@ -215,7 +215,6 @@ void UC_CameraEffectComponent::CaptureScene()
 void UC_CameraEffectComponent::ExecuteFlashBangEffect(float Duration)
 {
 	// 현재의 남은 Duration 이하인 Duration이 들어왔다면 새로이 FlashBangEffect를 실행하지 않음
-	// TODO PostProcess Bloom intensity 조정
 	if (FlashBangEffectDuration >= Duration) return;
 
 	if (!IsValid(PostProcessVolume))
@@ -225,10 +224,6 @@ void UC_CameraEffectComponent::ExecuteFlashBangEffect(float Duration)
 	}
 
 	FlashBangEffectDuration = Duration;
-
-	//CaptureScene();
-	//FString Temp{};
-	//FScreenshotRequest::RequestScreenshot(Temp, false, false);
 }
 
 

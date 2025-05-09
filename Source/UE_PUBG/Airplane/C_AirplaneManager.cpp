@@ -41,7 +41,7 @@ void AC_AirplaneManager::BeginPlay()
 
 	InitAirplaneStartPosAndFlightDirection();
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
+	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
 	
 }
 
