@@ -177,6 +177,11 @@ public:
 
 	virtual void EnableRagdoll();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void StopReloadBulletSound();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StopReloadMagazineSound();
 protected:
 
 	/// <summary>
@@ -230,6 +235,12 @@ public: // Getters and setters
 
 	UFUNCTION(BlueprintCallable)
 	UC_FeetComponent* GetFeetComponent() { return FeetComponent; }
+
+	//UFUNCTION(BlueprintCallable)
+	//UAudioComponent* GetReloadMagazineAudioComponent() { return ReloadMagazineAudioComponent; }
+	//
+	//UFUNCTION(BlueprintCallable)
+	//UAudioComponent* GetReloadBulletAudioComponent() { return ReloadBulletAudioComponent; }
 protected:
 	void SetPoseState(EPoseState InPoseState);
 
@@ -546,7 +557,12 @@ public:
 	void SetRanking(int InRanking) { Ranking = InRanking; }
 	int GetRanking() const { return Ranking; }
 
-	
+protected:
+	//class UAudioComponent* ReloadMagazineAudioComponent{};
+	//				 
+	//UAudioComponent* ReloadBulletAudioComponent{};
+
+
 };
 
 

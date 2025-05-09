@@ -25,9 +25,10 @@
 #include "Component/C_PlayerController.h"
 #include "HUD/C_HUDWidget.h"
 
-
+#include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
+
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Bullet.h"
 
@@ -95,6 +96,10 @@ AC_BasicCharacter::AC_BasicCharacter()
 
 	SmokeEnteredChecker = CreateDefaultSubobject<UC_SmokeEnteredChecker>("SmokeEnteredChecker");
 	SmokeEnteredChecker->SetOwnerCharacter(this);
+
+	//ReloadMagazineAudioComponent = CreateDefaultSubobject<UAudioComponent>("ReloadMagazineAudioComponent");
+	//ReloadBulletAudioComponent = CreateDefaultSubobject<UAudioComponent>("ReloadBulletAudioComponent");
+
 }
 
 // Called when the game starts or when spawned
