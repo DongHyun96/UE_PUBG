@@ -292,7 +292,10 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
         {
             AC_Gun* TempWeapon = Cast<AC_Gun>(Weapons[CurWeaponType]);
             if (IsValid(TempWeapon))
+            {
                 TempWeapon->BackToMainCamera();
+                TempWeapon->CancelReload();
+            }
         }
     }
     
