@@ -273,6 +273,7 @@ void UC_FeetComponent::HandleFootSounds()
 	if (OwnerCharacter->GetPoseState() == EPoseState::CRAWL)	return;
 
 	const float SoleTraceDistance = 100.f;
+	const float GroundDetachThreshold = 0.5f; // 발이 지면에서 떨어졌다고 판단되기 시작하는 높이
 	
 	// Left foot sole 높이 조사
 	float CurLeftFootSoleHeight{}, CurRightFootSoleHeight{};
@@ -282,9 +283,18 @@ void UC_FeetComponent::HandleFootSounds()
 	const bool bLeftHit  = GetDistanceToFloor(CurLeftFootSoleHeight, LeftFootSoleLocation, SoleTraceDistance);
 	const bool bRightHit = GetDistanceToFloor(CurRightFootSoleHeight, RightFootSoleLocation, SoleTraceDistance);
 
+	if (OwnerCharacter->GetPoseState() == EPoseState::CROUCH)
+	{
+		CurLeftFootSoleHeight  = FMath::Max(0.f, CurLeftFootSoleHeight - 4.5f);
+		CurRightFootSoleHeight = FMath::Max(0.f, CurRightFootSoleHeight - 4.5f);
+	}
+
+	/*if (Cast<AC_Player>(OwnerCharacter))
+		UC_Util::Print(CurLeftFootSoleHeight);*/
+
 	// 발이 떨어졌다고 판단되면 bSoundPlayed 초기화
-	if (!bLeftHit || CurLeftFootSoleHeight > 2.f)   bLeftFootSoundPlayed  = false;
-	if (!bRightHit || CurRightFootSoleHeight > 2.f) bRightFootSoundPlayed = false;
+	if (!bLeftHit || CurLeftFootSoleHeight > GroundDetachThreshold)   bLeftFootSoundPlayed  = false;
+	if (!bRightHit || CurRightFootSoleHeight > GroundDetachThreshold) bRightFootSoundPlayed = false;
 
 	LeftFootSoleMaxDistance  = bLeftHit  ? FMath::Max(LeftFootSoleMaxDistance, CurLeftFootSoleHeight)   : SoleTraceDistance;
 	RightFootSoleMaxDistance = bRightHit ? FMath::Max(RightFootSoleMaxDistance, CurRightFootSoleHeight) : SoleTraceDistance;

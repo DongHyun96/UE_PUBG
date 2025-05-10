@@ -41,18 +41,17 @@ void UC_CameraEffectComponent::BeginPlay()
 	TArray<AActor*> PPVolumes{};
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APostProcessVolume::StaticClass(), PPVolumes);
 
-	if (!PPVolumes.IsEmpty()) PostProcessVolume = Cast<APostProcessVolume>(PPVolumes[0]);
-	PostProcessInitialIntensity = PostProcessVolume->Settings.BloomIntensity;
-
-	/*PrimaryComponentTick.SetTickFunctionEnable(false);
-
-	FTimerHandle TimerHandle{};
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this] ()
+	for (AActor* PPVolume : PPVolumes)
 	{
-		PrimaryComponentTick.SetTickFunctionEnable(true);
-	}, 3.f, false);*/
-	
-	//ScreenShotWidget->AddToViewport();
+		if (PPVolume->Tags.Contains("MainPostProcessVolume"))
+		{
+			PostProcessVolume = Cast<APostProcessVolume>(PPVolume);
+			PostProcessInitialIntensity = PostProcessVolume->Settings.BloomIntensity;
+			break;
+		}
+	}
+
+	if (!IsValid(PostProcessVolume)) UC_Util::Print("From UC_CameraEffectComponent::BeginPlay : PostProcessVolume is not valid!", FColor::Red, 10.f);
 }
 
 
@@ -136,6 +135,8 @@ void UC_CameraEffectComponent::ExecuteCameraShake(float ShakeScale)
 
 void UC_CameraEffectComponent::HandleFlashBangEffect(const float& DeltaTime)
 {
+	if (!PostProcessVolume) return;
+	
 	FlashBangEffectDuration -= DeltaTime;
 
 	// End of Effect
@@ -219,7 +220,7 @@ void UC_CameraEffectComponent::ExecuteFlashBangEffect(float Duration)
 
 	if (!IsValid(PostProcessVolume))
 	{
-		UC_Util::Print("From UC_CameraEffectComponent::ExecuteFlashBangEffect : PostProcessVolume Invalid!", FColor::Cyan, 5.f);
+		UC_Util::Print("From UC_CameraEffectComponent::ExecuteFlashBangEffect : PostProcessVolume Invalid!", FColor::Red, 10.f);
 		return;
 	}
 

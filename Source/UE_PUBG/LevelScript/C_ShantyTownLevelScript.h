@@ -64,6 +64,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	bool bUseCodeToInit{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	bool bHideSpawnedItemsOnGameStart{};
 	
 };
 

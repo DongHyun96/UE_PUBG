@@ -255,7 +255,7 @@ void AC_EnemyAIController::UpdateDetectedCharactersRangeLevel()
 	}
 }
 
-bool AC_EnemyAIController::RemoveCharacterFromDetectedCharacters(class AC_BasicCharacter* TargetCharacter)
+bool AC_EnemyAIController::RemoveCharacterFromDetectedCharacters(AC_BasicCharacter* TargetCharacter)
 {
 	bool Removed{};
 	
@@ -268,7 +268,7 @@ bool AC_EnemyAIController::RemoveCharacterFromDetectedCharacters(class AC_BasicC
 	return Removed;
 }
 
-bool AC_EnemyAIController::AddCharacterToDetectedCharacters(class AC_BasicCharacter* InCharacter)
+bool AC_EnemyAIController::AddCharacterToDetectedCharacters(AC_BasicCharacter* InCharacter)
 {
 	float DistanceBetweenTwoCharacters = FVector::Distance(OwnerCharacter->GetActorLocation(), InCharacter->GetActorLocation());
 	

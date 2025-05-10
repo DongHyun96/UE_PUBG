@@ -97,8 +97,8 @@ void AC_ShantyTownLevelScript::BeginPlay()
 
 				GAMESCENE_MANAGER->AddSpawnedItemToContainer(SpawnedItem);
 				GAMESCENE_MANAGER->AddSpawnedItemToContainer(SpawnedBullet);
-				// Gun->SetActorHiddenInGame(true);
-				// SpawnedBullet->SetActorHiddenInGame(true);
+				Gun->SetActorHiddenInGame(bHideSpawnedItemsOnGameStart);
+				SpawnedBullet->SetActorHiddenInGame(bHideSpawnedItemsOnGameStart);
 				continue;
 			}
 
@@ -107,13 +107,13 @@ void AC_ShantyTownLevelScript::BeginPlay()
 				MeleeWeapon->SetActorLocation({SpawnedLocation.X, SpawnedLocation.Y, ItemMeshBoxExtentY * 1.5f + SpawnedLocation.Z});
 				MeleeWeapon->SetActorRotation({90.f, -55.f, 0.f});
 				GAMESCENE_MANAGER->AddSpawnedItemToContainer(MeleeWeapon);
-				// MeleeWeapon->SetActorHiddenInGame(true);
+				MeleeWeapon->SetActorHiddenInGame(bHideSpawnedItemsOnGameStart);
 				continue;
 			}
 
 			SpawnedItem->SetActorLocation({SpawnedLocation.X, SpawnedLocation.Y, ZOffset + SpawnedLocation.Z});
 			GAMESCENE_MANAGER->AddSpawnedItemToContainer(SpawnedItem);
-			// SpawnedItem->SetActorHiddenInGame(true);
+			SpawnedItem->SetActorHiddenInGame(bHideSpawnedItemsOnGameStart);
 		}
 	}
 }

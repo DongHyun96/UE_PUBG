@@ -103,10 +103,10 @@ protected:
 	// Camera Shake
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "CameraShake")
 	TSubclassOf<UCameraShakeBase> CameraShakeClass{};
-
+	
 private: // Flash Bang 피격 Effect 관련
-
-	class APostProcessVolume* PostProcessVolume{};
+	
+	APostProcessVolume* PostProcessVolume{};
 	float FlashBangEffectDuration{};
 
 	float PostProcessInitialIntensity{};

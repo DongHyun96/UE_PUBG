@@ -3,6 +3,8 @@
 
 #include "Character/Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
 
+#include "Character/C_Enemy.h"
+#include "Character/Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Utility/C_Util.h"
@@ -46,6 +48,10 @@ void UC_EnemySkyDivingComponent::SetStateToSkyDivingState()
 	
 	// BS 속도 setting
 	OwnerCharacter->SetNextSpeed(400.f);
+
+	// Default Spawn 처리된 아이템 HiddenInGame 끄기
+	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter))
+		Enemy->GetItemSpawnerHelper()->ToggleSpawnedItemsHiddenInGame(false);
 }
 
 void UC_EnemySkyDivingComponent::SetStateToParachutingState()
