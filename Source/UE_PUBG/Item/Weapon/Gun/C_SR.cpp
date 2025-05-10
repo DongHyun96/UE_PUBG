@@ -82,6 +82,9 @@ bool AC_SR::ExecuteReloadMontage()
 	{
 		if (CurEnemy->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
 	}
+	UC_Util::Print(CurBulletCount, FColor::Green);
+	UC_Util::Print(IsReloadingSR, FColor::Green);
+	//UC_Util::Print(CurBulletCount, FColor::Green);
 
 	if (CurBulletCount >= 1 && CurrentShootingMode == EShootingMode::SINGLE_SHOT &&!IsReloadingSR)
 	{
@@ -92,7 +95,7 @@ bool AC_SR::ExecuteReloadMontage()
 		bIsSniperReload = true;
 		OwnerCharacter->SetIsReloadingBullet(true);
 		BackToMainCamera();
-
+		UC_Util::Print("Nori hutoi",FColor::Cyan);
 		//OwnerPlayer->SetRecoilTimelineValues(BulletRPM);
 		return 	AttachToComponent
 		(
@@ -104,7 +107,8 @@ bool AC_SR::ExecuteReloadMontage()
 	else
 	{
 		if (LeftAmmoCount == 0) return false;
-
+		UC_Util::Print(CurBulletCount);
+		UC_Util::Print(IsReloadingSR);
 		OwnerCharacter->SetIsReloadingBullet(true);
 		OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
 		BackToMainCamera();
@@ -295,14 +299,14 @@ void AC_SR::CancelReload()
 	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
 
 	UAnimMontage* SniperReloadMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
-
+	UC_Util::Print("CancleReload : ", FColor::Red, 10.f);
+	IsReloadingSR = false;
 	if (CurAnimInstance->Montage_IsPlaying(ReloadMontage) || CurAnimInstance->Montage_IsPlaying(SniperReloadMontage))
 	{
 		CurAnimInstance->Montage_Stop(0.02);
 	}
 	OwnerCharacter->SetIsReloadingBullet(false);
 
-	SetIsReloadingSR(false);
 	
 }
 
