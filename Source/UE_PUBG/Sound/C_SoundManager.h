@@ -94,20 +94,24 @@ private:
 	/// </summary>
 	void InitializeSoundClassData();
 
-	void BuildSoundClassMap();
+	void BuildSoundClassMap(FSoundClassTable* InDataTable);
 
 
 
 public:
+	// 이름으로 사운드 클래스를 찾고 볼륨 조절.
 	UFUNCTION(BlueprintCallable)
 	void SetVolumeByName(ESoundClassName SoundClassName, float Volume);
 
+	// 이름으로 사운드 클래스를 찾고 볼륨을 가져옴.
 	UFUNCTION(BlueprintCallable)
 	float GetVolumeByName(ESoundClassName SoundClassName) const;
 
+	// 현재 볼륨	설정을 JSON 파일로 저장.
 	UFUNCTION(BlueprintCallable)
 	void SaveVolumeSettings();
 
+	// JSON 파일에서 볼륨 설정을 불러옴.
 	UFUNCTION(BlueprintCallable)
 	void LoadVolumeSettings();
 
@@ -123,10 +127,14 @@ public:
 		return nullptr;
 	}
 
+public:
+
 protected:
 	UPROPERTY()
-	FSoundClassTable SoundClassData{};
-
-	UPROPERTY()
 	TMap<ESoundClassName, USoundClass*> SoundClassMap{};
+
+
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TArray<UAudioComponent*> AudioComponents{};
 };

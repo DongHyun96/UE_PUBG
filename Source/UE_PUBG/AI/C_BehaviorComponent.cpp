@@ -32,7 +32,7 @@ void UC_BehaviorComponent::BeginPlay()
 	// SetServiceType(EServiceType::COMBAT);
 	SetIdleTaskType(EIdleTaskType::WAIT);
 	// SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
-	SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer()); // TODO : 이 라인 지우기
+	// SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer()); // TODO : 이 라인 지우기
 	// OwnerEnemyAIController->SetFocus(GAMESCENE_MANAGER->GetPlayer());
 }
 
@@ -88,7 +88,7 @@ EIdleTaskType UC_BehaviorComponent::GetIdleTaskType() const
 	return static_cast<EIdleTaskType>(Blackboard->GetValueAsEnum(IdleTaskKey));
 }
 
-void UC_BehaviorComponent::OnTargetCharacterDead(class AC_BasicCharacter* DeadCharacter)
+void UC_BehaviorComponent::OnTargetCharacterDead(AC_BasicCharacter* DeadCharacter)
 {
 	if (GetTargetCharacter() != DeadCharacter)
 	{
@@ -169,7 +169,7 @@ FVector UC_BehaviorComponent::GetInCircleTargetLocation() const
 	return Blackboard->GetValueAsVector(InCircleTargetLocationKey);
 }
 
-class AC_BasicCharacter* UC_BehaviorComponent::GetTargetCharacter() const
+AC_BasicCharacter* UC_BehaviorComponent::GetTargetCharacter() const
 {
 	return Cast<AC_BasicCharacter>(Blackboard->GetValueAsObject(TargetCharacterKey));
 }

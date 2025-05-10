@@ -13,7 +13,6 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
-#include "Character/Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 
 #include "HUD/C_HUDWidget.h"
@@ -41,6 +40,7 @@ void AC_AirplaneManager::BeginPlay()
 
 	InitAirplaneStartPosAndFlightDirection();
 
+	// TODO : 주석 풀 것
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
 	
 }
@@ -88,7 +88,6 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 			
 			UC_BehaviorComponent* EnemyBehvaiorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent(); 
 			EnemyBehvaiorComponent->SetServiceType(EServiceType::SKYDIVE);
-			Enemy->GetItemSpawnerHelper()->ToggleSpawnedItemsHiddenInGame(false);
 		}
 	}
 

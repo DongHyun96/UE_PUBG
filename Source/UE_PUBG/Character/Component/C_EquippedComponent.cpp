@@ -147,9 +147,15 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
 bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 {
     if (OwnerCharacter->GetSwimmingComponent()->IsSwimming()) return false;
+
+    OwnerCharacter->StopReloadBulletSound();
+    OwnerCharacter->StopReloadMagazineSound();
+
     if (IsValid(Weapons[CurWeaponType]))
     {
         AC_Gun* CurWeaponGun = Cast<AC_Gun>(Weapons[CurWeaponType]);
+
+
 
         // 현재 무기의 Sheath나 Draw animation montage가 이미 재생 중이라면 return
         if (OwnerCharacter->GetMesh()->GetAnimInstance()
@@ -286,7 +292,10 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
         {
             AC_Gun* TempWeapon = Cast<AC_Gun>(Weapons[CurWeaponType]);
             if (IsValid(TempWeapon))
+            {
                 TempWeapon->BackToMainCamera();
+                TempWeapon->CancelReload();
+            }
         }
     }
     
