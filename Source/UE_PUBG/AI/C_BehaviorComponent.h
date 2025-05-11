@@ -35,7 +35,7 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void SetBlackboard(class UBlackboardComponent* InBlackboard) { Blackboard = InBlackboard; }
+	void SetBlackboard(UBlackboardComponent* InBlackboard) { Blackboard = InBlackboard; }
 
 	bool SetServiceType(EServiceType Type);
 	EServiceType GetServiceType() const;
@@ -49,11 +49,6 @@ public:
 
 	bool SetIdleTaskType(EIdleTaskType Type);
 	EIdleTaskType GetIdleTaskType() const;
-
-public: // Attack이 끝나고 기다릴 시간 Add 처리
-
-	
-	
 
 private:
 	/// <summary>

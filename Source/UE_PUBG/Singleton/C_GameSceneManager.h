@@ -94,7 +94,7 @@ public:
 	class AC_SoundManager* GetSoundManager() const { return SoundManager; }
 
 	UFUNCTION(BlueprintCallable)
-	TArray<class AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
+	TArray<AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
 	TArray<AActor*>& GetAllCharacterActors() { return AllCharacterActors; }
 
 	/// <summary>

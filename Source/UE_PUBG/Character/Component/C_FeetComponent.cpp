@@ -36,7 +36,15 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (!IsValid(OwnerCharacter)) return;
-	if (OwnerCharacter->GetPoseState() == EPoseState::CRAWL) return;
+	if (OwnerCharacter->GetPoseState() == EPoseState::CRAWL || OwnerCharacter->GetSwimmingComponent()->IsSwimming())
+	{
+		Data.LeftDistance		= FVector::ZeroVector;
+		Data.RightDistance		= FVector::ZeroVector;
+		Data.RootBoneDistance	= FVector::ZeroVector;
+		Data.LeftRotation		= FRotator::ZeroRotator;
+		Data.RightRotation		= FRotator::ZeroRotator;
+		return;
+	}
 
 	float LeftDistance{}, RightDistance{};
 
@@ -289,8 +297,7 @@ void UC_FeetComponent::HandleFootSounds()
 		CurRightFootSoleHeight = FMath::Max(0.f, CurRightFootSoleHeight - 4.5f);
 	}
 
-	/*if (Cast<AC_Player>(OwnerCharacter))
-		UC_Util::Print(CurLeftFootSoleHeight);*/
+	if (Cast<AC_Player>(OwnerCharacter)) UC_Util::Print(CurLeftFootSoleHeight);
 
 	// 발이 떨어졌다고 판단되면 bSoundPlayed 초기화
 	if (!bLeftHit || CurLeftFootSoleHeight > GroundDetachThreshold)   bLeftFootSoundPlayed  = false;

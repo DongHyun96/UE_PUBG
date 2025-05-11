@@ -32,7 +32,7 @@ void UC_BehaviorComponent::BeginPlay()
 	// SetServiceType(EServiceType::COMBAT);
 	SetIdleTaskType(EIdleTaskType::WAIT);
 	// SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
-	// SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer()); // TODO : 이 라인 지우기
+	// SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer());
 	// OwnerEnemyAIController->SetFocus(GAMESCENE_MANAGER->GetPlayer());
 }
 
