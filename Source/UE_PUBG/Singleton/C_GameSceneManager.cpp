@@ -256,7 +256,7 @@ void UC_GameSceneManager::ToggleItemsHiddenInGame(bool InHiddenInGame)
 	}
 }
 
-void UC_GameSceneManager::AddVehiclesToContainer(class APawn* InVehicle)
+void UC_GameSceneManager::AddVehiclesToContainer(APawn* InVehicle)
 {
 	VehicleContainer.Add(InVehicle);
 	UC_Util::Print("Container: ", FColor::Red, 10.f);

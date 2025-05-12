@@ -47,12 +47,14 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-	EPhysicalSurface GetSurfaceType() { return CurrentSurfaceType; }
-
+	EPhysicalSurface GetLeftSurfaceType() const {return CurrentLeftSurfaceType; }
+	UFUNCTION(BlueprintCallable)
+	EPhysicalSurface GetRightSurfaceType() const {return CurrentRightSurfaceType; }
+	
 	FFeetData GetData() { return Data; }
 private:
 
-	void Trace(FName InName, float& OutDistance, FRotator& OutRotation);
+	void Trace(FName InName, float& OutDistance, FRotator& OutRotation, EPhysicalSurface& OutSurfaceType);
 
 private:
 	
@@ -118,7 +120,7 @@ private: /* Foot Sole Collider Collision Callbacks */
 	/// FeetWaterDetectionCollider와 WaterCollider BeginOverlap되었을 때 Callback 받을 함수
 	/// </summary>
 	UFUNCTION()
-	void OnLeftFootSoleColliderBeginOverlap
+	void OnFootSoleColliderBeginOverlap
 	(
 		UPrimitiveComponent*	OverlappedComponent,
 		AActor*					OtherActor,
@@ -132,37 +134,13 @@ private: /* Foot Sole Collider Collision Callbacks */
 	/// FeetWaterDetectionCollider와 WaterCollider EndOverlap 검사 
 	/// </summary>
 	UFUNCTION()
-	void OnLeftFootSoleColliderEndOverlap
+	void OnFootSoleColliderEndOverlap
 	(
 		UPrimitiveComponent*	OverlappedComponent,
 		AActor*					OtherActor,
 		UPrimitiveComponent*	OtherComp,
 		int32					OtherBodyIndex
 	);
-
-	UFUNCTION()
-	void OnRightFootSoleColliderBeginOverlap
-	(
-		UPrimitiveComponent*	OverlappedComponent,
-		AActor*					OtherActor,
-		UPrimitiveComponent*	OtherComp,
-		int32					OtherBodyIndex,
-		bool					bFromSweep,
-		const FHitResult&		SweepResult
-	);
-
-	/// <summary>
-	/// FeetWaterDetectionCollider와 WaterCollider EndOverlap 검사 
-	/// </summary>
-	UFUNCTION()
-	void OnRightFootSoleColliderEndOverlap
-	(
-		UPrimitiveComponent*	OverlappedComponent,
-		AActor*					OtherActor,
-		UPrimitiveComponent*	OtherComp,
-		int32					OtherBodyIndex
-	);
-
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -200,7 +178,11 @@ private:
 	FFeetData Data{};
 
 	// 오른발 쪽 SurfaceType으로 세팅됨
-	EPhysicalSurface CurrentSurfaceType = EPhysicalSurface::SurfaceType_Default;
+	// EPhysicalSurface CurrentSurfaceType = EPhysicalSurface::SurfaceType_Default;
+	EPhysicalSurface CurrentLeftSurfaceType  = EPhysicalSurface::SurfaceType_Default;
+	EPhysicalSurface CurrentRightSurfaceType = EPhysicalSurface::SurfaceType_Default;
+
+	
 
 	float LastFootstepTime = 0.0f;
 
