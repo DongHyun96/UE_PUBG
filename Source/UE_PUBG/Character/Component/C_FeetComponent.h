@@ -78,10 +78,91 @@ private:
 	/// 시작 지점으로부터 바닥면까지 Trace 검사하여 Distance검사하기
 	/// </summary>
 	/// <param name="OutDistance"> : 검사된 Trace 거리 </param>
+	/// <param name="OutHitSurfaceType"> : 충돌된 SurfaceType </param>
 	/// <param name="TraceStartLocation"> : Trace start Location </param>
 	/// <param name="InTraceDistance"> : Trace 검사 거리 (cm) </param>
 	/// <returns> : Trace 실패 시 return false </returns>
-	bool GetDistanceToFloor(float& OutDistance, const FVector& TraceStartLocation, const float InTraceDistance);
+	bool GetFootDistanceToFloor(float& OutDistance, EPhysicalSurface& OutHitSurfaceType, const FVector& TraceStartLocation, const float InTraceDistance);
+
+private: /* Feet Water Detection Collision Callbacks */
+	
+	/// <summary>
+	/// FeetWaterDetectionCollider와 WaterCollider BeginOverlap되었을 때 Callback 받을 함수
+	/// </summary>
+	UFUNCTION()
+	void OnFeetWaterDetectionColliderBeginOverlap
+	(
+		UPrimitiveComponent*	OverlappedComponent,
+		AActor*					OtherActor,
+		UPrimitiveComponent*	OtherComp,
+		int32					OtherBodyIndex,
+		bool					bFromSweep,
+		const FHitResult&		SweepResult
+	);
+
+	/// <summary>
+	/// FeetWaterDetectionCollider와 WaterCollider EndOverlap 검사 
+	/// </summary>
+	UFUNCTION()
+	void OnFeetWaterDetectionColliderEndOverlap
+	(
+		UPrimitiveComponent*	OverlappedComponent,
+		AActor*					OtherActor,
+		UPrimitiveComponent*	OtherComp,
+		int32					OtherBodyIndex
+	);
+
+private: /* Foot Sole Collider Collision Callbacks */
+
+	/// <summary>
+	/// FeetWaterDetectionCollider와 WaterCollider BeginOverlap되었을 때 Callback 받을 함수
+	/// </summary>
+	UFUNCTION()
+	void OnLeftFootSoleColliderBeginOverlap
+	(
+		UPrimitiveComponent*	OverlappedComponent,
+		AActor*					OtherActor,
+		UPrimitiveComponent*	OtherComp,
+		int32					OtherBodyIndex,
+		bool					bFromSweep,
+		const FHitResult&		SweepResult
+	);
+
+	/// <summary>
+	/// FeetWaterDetectionCollider와 WaterCollider EndOverlap 검사 
+	/// </summary>
+	UFUNCTION()
+	void OnLeftFootSoleColliderEndOverlap
+	(
+		UPrimitiveComponent*	OverlappedComponent,
+		AActor*					OtherActor,
+		UPrimitiveComponent*	OtherComp,
+		int32					OtherBodyIndex
+	);
+
+	UFUNCTION()
+	void OnRightFootSoleColliderBeginOverlap
+	(
+		UPrimitiveComponent*	OverlappedComponent,
+		AActor*					OtherActor,
+		UPrimitiveComponent*	OtherComp,
+		int32					OtherBodyIndex,
+		bool					bFromSweep,
+		const FHitResult&		SweepResult
+	);
+
+	/// <summary>
+	/// FeetWaterDetectionCollider와 WaterCollider EndOverlap 검사 
+	/// </summary>
+	UFUNCTION()
+	void OnRightFootSoleColliderEndOverlap
+	(
+		UPrimitiveComponent*	OverlappedComponent,
+		AActor*					OtherActor,
+		UPrimitiveComponent*	OtherComp,
+		int32					OtherBodyIndex
+	);
+
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -118,6 +199,7 @@ private:
 
 	FFeetData Data{};
 
+	// 오른발 쪽 SurfaceType으로 세팅됨
 	EPhysicalSurface CurrentSurfaceType = EPhysicalSurface::SurfaceType_Default;
 
 	float LastFootstepTime = 0.0f;
@@ -126,6 +208,7 @@ private:
 
 	float AccumulatedFootstepTime = 0.f;
 
+/* 발소리 관련 */
 private:
 
 	const FName LeftFootSoleSocket = "LeftFootSole";
@@ -136,5 +219,25 @@ private:
 
 	bool bLeftFootSoundPlayed{};
 	bool bRightFootSoundPlayed{};
+
+protected: // 발바닥 Collider
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UBoxComponent* LeftFootSoleCollider{};
 	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UBoxComponent* RightFootSoleCollider{};
+	
+/* Feet on water 관련 */
+	
+protected: 
+
+	// Water에서의 발자국 소리를 위한 Water 감지 Collider
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UCapsuleComponent* FeetWaterDetectionCollider{};
+
+private:
+	
+	// 다리 부분이 (발바닥부터) 물에 들어가 있으면 true
+	bool bIsLegOnWater{};
 };
