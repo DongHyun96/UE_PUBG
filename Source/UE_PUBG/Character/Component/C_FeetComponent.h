@@ -52,6 +52,9 @@ public:
 	EPhysicalSurface GetRightSurfaceType() const {return CurrentRightSurfaceType; }
 	
 	FFeetData GetData() { return Data; }
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsLegOnWater() const { return bIsLegOnWater; }
 private:
 
 	void Trace(FName InName, float& OutDistance, FRotator& OutRotation, EPhysicalSurface& OutSurfaceType);

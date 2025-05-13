@@ -19,15 +19,7 @@ bool UC_BasicPanelWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 
 	AC_Item* DroppedItem = Cast<AC_Item>(MyOperation->Payload);
 
-	//UC_ItemBox* DroppedItemBox = MyOperation->DraggedItemBox;
-
-	UC_Util::Print("Create DroppedItemBox");
-
 	if (!DroppedItem) return false;
-
-	UC_Util::Print("Success DroppedItemBox");
-
-	//bool bIsCtrlDown = InDragDropEvent.IsControlDown();
 
 	if (InDragDropEvent.IsControlDown() && DroppedItem->GetItemCurStack() > 1)
 	{

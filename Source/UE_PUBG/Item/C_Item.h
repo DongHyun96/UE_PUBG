@@ -295,8 +295,6 @@ public:
 
 	virtual AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 
-	//void SetItemPlace(EItemPlace InPlace) { ItemDataRef.ItemPlace = InPlace; }
-
 	void SetItemPlace(EItemPlace InPlace) { ItemPlace = InPlace; }
 
 	//캐릭터의 밑바닥을 라인 트레이스로 location을 반환해줌.

@@ -60,8 +60,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	EEquipSlot EquipSlot{};
 
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	//class UProgressBar* DurabilityBar = nullptr;
 };
 
 

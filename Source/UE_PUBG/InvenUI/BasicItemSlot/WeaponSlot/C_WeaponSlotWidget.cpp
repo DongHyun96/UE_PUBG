@@ -35,16 +35,11 @@ FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 	{
 		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
 
-
-
 		if (SlotItem)
 		{  
 			// 우클릭 이벤트 실행
 			// slot에서는 장착아이템이 존재하면 해제하는 함수를 실행한다.
 			MouseRBDownInteraction(SlotItem);
-			//{
-			//	OwnerPlayer->GetEquippedComponent()->SetSlotWeapon(WeaponType, nullptr);
-			//}
 
 			if (UC_InventoryUIWidget* InvenUiWidget = GetTypedOuter<UC_InventoryUIWidget>())
 				InvenUiWidget->UpdateWidget();
@@ -55,34 +50,10 @@ FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
-//FReply UC_WeaponSlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-//{
-//	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-//	{
-//		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
-//
-//		if (SlotItem)
-//		{
-//			//드래그 이벤트 실행.
-//			//드래그를 시작하고 반응함
-//			FEventReply RePlyResult =
-//				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-//			
-//			//UC_Util::Print("LeftMouseButton");
-//			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
-//
-//			return RePlyResult.NativeReply;
-//		}
-//	}
-//	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
-//}
-
 void UC_WeaponSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
 	//dragdrop class를 새로 만들어 사용해야 할 수 있음.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
-	//if (!CachedItem) return;
-	//UObject* ResourceObject = Cast<UImage>(CachedItem->GetItemDatas().ItemIcon)->Brush.GetResourceObject();//UTexture2D인데 아랫줄에서 바로 사용 가능할 것 같은데?
 	UTexture2D* Texture = nullptr;
 
 	AC_Item* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
@@ -154,7 +125,6 @@ void UC_WeaponSlotWidget::UpdateSlotItemImage(AC_Weapon* SlotItem)
 		Brush.TintColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		WeaponImage->SetBrush(Brush);
 		WeaponSlotPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		//SetVisibility(ESlateVisibility::Visible);
 	}
 	else
 	{

@@ -9,9 +9,6 @@
 #include "Utility/C_Util.h"
 bool UC_AroundItemPanelWidget::HandleDrop(AC_Item* DroppedItem)
 {
-    UC_Util::Print("MoveToAround");
-    
-
     return DroppedItem->MoveToAround(OwnerPlayer, DroppedItem->GetItemCurStack());
 }
 

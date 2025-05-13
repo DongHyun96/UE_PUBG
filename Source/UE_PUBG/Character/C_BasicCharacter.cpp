@@ -233,7 +233,7 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 	//GetMesh()->SetAllBodiesPhysicsBlendWeight(0.0f);
 
 
-	// 💡 본별 물리 속도 제거
+	// 본별 물리 속도 제거
 	TArray<FName> BoneNames;
 	GetMesh()->GetBoneNames(BoneNames);
 	for (const FName& BoneName : BoneNames)

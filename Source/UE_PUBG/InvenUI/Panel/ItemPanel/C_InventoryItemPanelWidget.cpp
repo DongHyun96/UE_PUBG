@@ -11,7 +11,6 @@
 
 bool UC_InventoryItemPanelWidget::HandleDrop(AC_Item* DroppedItem)
 {
-    UC_Util::Print("MoveToInven");
     return DroppedItem->MoveToInven(OwnerPlayer, DroppedItem->GetItemCurStack());
 }
 

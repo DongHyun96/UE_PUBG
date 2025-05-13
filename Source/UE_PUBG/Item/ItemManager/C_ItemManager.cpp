@@ -9,7 +9,6 @@ AC_ItemManager::AC_ItemManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-    InitializeItemManager();
 
 }
 
@@ -17,6 +16,8 @@ AC_ItemManager::AC_ItemManager()
 void AC_ItemManager::BeginPlay()
 {
 	Super::BeginPlay();
+    InitializeItemManager();
+
 }
 
 // Called every frame

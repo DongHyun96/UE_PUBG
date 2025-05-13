@@ -34,7 +34,6 @@ FReply UC_AttachableItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InG
 			FEventReply RePlyResult =
 				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 
-			//UC_Util::Print("LeftMouseButton");
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 
 			return RePlyResult.NativeReply;
@@ -47,17 +46,9 @@ FReply UC_AttachableItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InG
 		if (!curGun) return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 
 		if (AC_AttachableItem* SlotItem = curGun->GetAttachableItem()[SlotName])
-		{   // 우클릭 이벤트 실행
-			//EquippedItem->Interaction(OwnerCharacter);
+		{  
+			// 우클릭 이벤트 실행
 			SlotItem->MoveToInven(OwnerPlayer, SlotItem->GetItemCurStack());
-			//InitInvenUIWidget();
-
-			//NativeOnListItemObjectSet에서의 호출과 중복으로 일단 주석처리, 다만 이벤트시에 초기화가 필요하면 사용해야 할 수 있음.
-			//if (!CachedItem) return;
-
-			//InitBar(CachedItem);
-			//SetVisibility(ESlateVisibility::Visible);
-			//UpdateWidget();
 
 			if (UC_InventoryUIWidget* InvenUiWidget = GetTypedOuter<UC_InventoryUIWidget>())
 				InvenUiWidget->UpdateWidget();
@@ -68,41 +59,11 @@ FReply UC_AttachableItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InG
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
-//FReply UC_AttachableItemSlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-//{
-//	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-//	{
-//		//AC_EquipableItem* SlotItem = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EquipSlot];
-//		//AC_AttachableItem* SlotItem = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetWeapons()[GunSlot])->GetAttachableItem()[SlotName];
-//
-//		AC_Gun* curGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetWeapons()[GunSlot]);
-//
-//		if (!curGun) return FReply::Unhandled();
-//
-//		AC_AttachableItem* SlotItem = curGun->GetAttachableItem()[SlotName];
-//
-//		if (SlotItem)
-//		{
-//			//드래그 이벤트 실행.
-//			//드래그를 시작하고 반응함
-//			FEventReply RePlyResult =
-//				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-//
-//			//UC_Util::Print("LeftMouseButton");
-//			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
-//
-//			return RePlyResult.NativeReply;
-//		}
-//	}
-//	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
-//}
-
 void UC_AttachableItemSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
 	//dragdrop class를 새로 만들어 사용해야 할 수 있음.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
-	//if (!CachedItem) return;
-	//UObject* ResourceObject = Cast<UImage>(CachedItem->GetItemDatas().ItemIcon)->Brush.GetResourceObject();//UTexture2D인데 아랫줄에서 바로 사용 가능할 것 같은데?
+
 	UTexture2D* Texture = nullptr;
 
 	AC_Gun* curGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetWeapons()[GunSlot]);
@@ -154,8 +115,6 @@ void UC_AttachableItemSlotWidget::UpdateSlotItemImage(AC_Gun* SlotItem)
 {
 	AC_AttachableItem* curItem = SlotItem->GetAttachableItem()[SlotName];
 
-	//AC_AttachableItem* curItem = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetWeapons()[GunSlot])->GetAttachableItem()[SlotName];
-
 	if (curItem)
 	{
 		ItemImage->SetBrushFromTexture(curItem->GetItemDatas()->ItemSlotImage);
@@ -186,19 +145,3 @@ void UC_AttachableItemSlotWidget::DiscriminateSlot(TArray<EPartsName> Attachable
 	}
 	this->SetVisibility(ESlateVisibility::Collapsed); // Widget 비활성화.
 }
-
-//void UC_AttachableItemSlotWidget::DiscriminateSlot(TArray<EPartsName> AttachableSlots, AC_Gun SlotItem)
-//{
-//	for (EPartsName Name : AttachableSlots)
-//	{
-//		if (SlotName == Name)
-//		{
-//			this->UpdateSlotItemImage(SlotItem);
-//			this->SetVisibility(ESlateVisibility::Visible); //Widget 활성화.
-//			return;
-//		}
-//	}
-//	this->SetVisibility(ESlateVisibility::Collapsed); // Widget 비활성화.
-//}
-
-

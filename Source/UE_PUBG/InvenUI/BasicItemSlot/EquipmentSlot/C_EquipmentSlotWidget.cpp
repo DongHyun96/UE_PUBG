@@ -22,16 +22,8 @@ FReply UC_EquipmentSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 	{
 		if (AC_EquipableItem* SlotItem = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EquipSlot])
 		{   // 우클릭 이벤트 실행
-			//EquippedItem->Interaction(OwnerCharacter);
 			SlotItem->MoveToAround(OwnerPlayer, SlotItem->GetItemCurStack());
-			//InitInvenUIWidget();
 
-			//NativeOnListItemObjectSet에서의 호출과 중복으로 일단 주석처리, 다만 이벤트시에 초기화가 필요하면 사용해야 할 수 있음.
-			//if (!CachedItem) return;
-
-			//InitBar(CachedItem);
-			//SetVisibility(ESlateVisibility::Visible);
-			//UpdateWidget();
 
 			if (UC_InventoryUIWidget* InvenUiWidget = GetTypedOuter<UC_InventoryUIWidget>())
 				InvenUiWidget->UpdateWidget();
@@ -49,7 +41,6 @@ FReply UC_EquipmentSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 			FEventReply RePlyResult =
 				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 
-			//UC_Util::Print("LeftMouseButton");
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 
 			return RePlyResult.NativeReply;
@@ -58,28 +49,6 @@ FReply UC_EquipmentSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 	// 다른 버튼 클릭 처리
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
-
-//FReply UC_EquipmentSlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-//{
-//	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-//	{
-//		AC_EquipableItem* SlotItem = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EquipSlot];
-//
-//		if (SlotItem)
-//		{
-//			//드래그 이벤트 실행.
-//			//드래그를 시작하고 반응함
-//			FEventReply RePlyResult =
-//				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-//
-//			//UC_Util::Print("LeftMouseButton");
-//			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
-//
-//			return RePlyResult.NativeReply;
-//		}
-//	}
-//	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
-//}
 
 void UC_EquipmentSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
@@ -165,7 +134,6 @@ void UC_EquipmentSlotWidget::UpdateSlotItemImage(AC_EquipableItem* SlotItem)
 
 void UC_EquipmentSlotWidget::UpdateDurabilityBar(float percent)
 {
-	//DurabilityBar->SetPercent(1.0f - percent);
 }
 
 
