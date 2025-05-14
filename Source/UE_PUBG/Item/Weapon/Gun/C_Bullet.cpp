@@ -56,7 +56,7 @@ void AC_Bullet::BeginPlay()
 	}
 	InitializeItem(ItemCode);
 	//DeactivateInstance();
-		
+	SetActorTickEnabled(false);
 }
 
 void AC_Bullet::Tick(float DeltaTime)

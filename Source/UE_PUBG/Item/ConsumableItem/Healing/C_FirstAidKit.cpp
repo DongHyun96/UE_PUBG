@@ -1,4 +1,4 @@
-﻿
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
@@ -65,6 +65,9 @@ void AC_FirstAidKit::OnActivatingFinish()
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, false);
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED FIRST AID KIT");
+
+	SetActorTickEnabled(false);
+
 }
 
 void AC_FirstAidKit::OnCancelActivating()

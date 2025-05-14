@@ -2,6 +2,7 @@
 
 
 #include "Item/ItemManager/C_ItemManager.h"
+#include "Singleton/C_GameInstance.h"
 #include "Utility/C_Util.h"
 
 // Sets default values
@@ -34,43 +35,83 @@ void AC_ItemManager::InitializeItemManager()
 
 void AC_ItemManager::LoadItemDataTable()
 {
-    static ConstructorHelpers::FObjectFinder<UDataTable> GeneralItemDataTableObject(TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_Item.DT_Item"));
-    static ConstructorHelpers::FObjectFinder<UDataTable>     GunItemDataTableObject(TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunData.DT_GunData"));
+    //static ConstructorHelpers::FObjectFinder<UDataTable> GeneralItemDataTableObject(TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_Item.DT_Item"));
+    //static ConstructorHelpers::FObjectFinder<UDataTable>     GunItemDataTableObject(TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_GunData.DT_GunData"));
 
-    if (GeneralItemDataTableObject.Succeeded())
+	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
+
+    UDataTable* GeneralItemTable = GameInstance->GetDataTables()[EDataTableType::Item];
+
+    if (GeneralItemTable)
     {
-        GeneralItemTable = GeneralItemDataTableObject.Object;
-
         TArray<FName> RowNames = GeneralItemTable->GetRowNames();
-
         //데이터 테이블에서 모든 아이템을 캐싱
         for (const FName& RowName : RowNames)
         {
             FItemData* ItemData = GeneralItemTable->FindRow<FItemData>(RowName, TEXT("LoadItemDataTable"));
-
             if (ItemData)
             {
                 GeneralItemDataCache.Add(RowName, *ItemData);
             }
         }
     }
-
-    if (GunItemDataTableObject.Succeeded())
+    else
     {
-        GunItemTable = GunItemDataTableObject.Object;
-
-        TArray<FName> RowNames = GunItemTable->GetRowNames();
-
-        for (const FName& RowName : RowNames)
-        {
-            FGunData* GunItemData = GunItemTable->FindRow<FGunData>(RowName, TEXT("LoadGunDataTable"));
-
-            if (GunItemData)
-            {
-                GunItemDataCache.Add(RowName, *GunItemData);
-            }
-        }
+		UC_Util::Print("GeneralItemTable is nullptr", FColor::Red, 10.f);
     }
+
+	UDataTable* GunItemTable = GameInstance->GetDataTables()[EDataTableType::Gun];
+
+	if (GunItemTable)
+	{
+		TArray<FName> RowNames = GunItemTable->GetRowNames();
+		for (const FName& RowName : RowNames)
+		{
+			FGunData* GunItemData = GunItemTable->FindRow<FGunData>(RowName, TEXT("LoadGunDataTable"));
+			if (GunItemData)
+			{
+				GunItemDataCache.Add(RowName, *GunItemData);
+			}
+		}
+	}
+    else
+    {
+		UC_Util::Print("GunItemTable is nullptr", FColor::Red, 10.f);
+    }
+    //if (GeneralItemDataTableObject.Succeeded())
+    //{
+    //    GeneralItemTable = GeneralItemDataTableObject.Object;
+    //
+    //    TArray<FName> RowNames = GeneralItemTable->GetRowNames();
+    //
+    //    //데이터 테이블에서 모든 아이템을 캐싱
+    //    for (const FName& RowName : RowNames)
+    //    {
+    //        FItemData* ItemData = GeneralItemTable->FindRow<FItemData>(RowName, TEXT("LoadItemDataTable"));
+    //
+    //        if (ItemData)
+    //        {
+    //            GeneralItemDataCache.Add(RowName, *ItemData);
+    //        }
+    //    }
+    //}
+    //
+    //if (GunItemDataTableObject.Succeeded())
+    //{
+    //    GunItemTable = GunItemDataTableObject.Object;
+    //
+    //    TArray<FName> RowNames = GunItemTable->GetRowNames();
+    //
+    //    for (const FName& RowName : RowNames)
+    //    {
+    //        FGunData* GunItemData = GunItemTable->FindRow<FGunData>(RowName, TEXT("LoadGunDataTable"));
+    //
+    //        if (GunItemData)
+    //        {
+    //            GunItemDataCache.Add(RowName, *GunItemData);
+    //        }
+    //    }
+    //}
 
 }
 

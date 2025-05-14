@@ -48,12 +48,12 @@ public:
     // 총기 데이터 정보 가져오기
     FGunData* GetGunData(FName ItemCode);
 protected:
-    UPROPERTY(EditAnywhere, Category = "Item Data")
-    UDataTable* GeneralItemTable;
-
-    // 총기 데이터 테이블
-    UPROPERTY(EditAnywhere, Category = "Weapon Data")
-    UDataTable* GunItemTable;
+    //UPROPERTY(EditAnywhere, Category = "Item Data")
+    //UDataTable* GeneralItemTable;
+    //
+    //// 총기 데이터 테이블
+    //UPROPERTY(EditAnywhere, Category = "Weapon Data")
+    //UDataTable* GunItemTable;
 
 private:
     // 아이템을 이름을 키로 하여 캐싱

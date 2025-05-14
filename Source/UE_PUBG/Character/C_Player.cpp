@@ -282,7 +282,6 @@ void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AC_Player::SetPlayerMappingContext()
 {
 	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetController());
-
 	if (PlayerController != nullptr)
 	{
 		//if (UEnhancedInputLocalPlayerSubsystem)

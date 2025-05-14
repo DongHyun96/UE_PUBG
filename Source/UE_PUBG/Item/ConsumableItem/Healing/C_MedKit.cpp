@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/ConsumableItem/Healing/C_MedKit.h"
@@ -72,6 +72,9 @@ void AC_MedKit::OnActivatingFinish()
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, false);
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED MED KIT");
+
+	SetActorTickEnabled(false);
+
 }
 
 void AC_MedKit::OnCancelActivating()

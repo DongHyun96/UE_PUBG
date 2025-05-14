@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-//#include "DataTables/C_ItemDataTables.h"
 #include "C_Item.generated.h"
 
 
@@ -112,18 +111,14 @@ struct FItemData : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	TSubclassOf<class AC_Item> ItemClass{};
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	//USoundClass* SoundClass = nullptr;
 };	
 
 
 
 /// <summary>
-/// 소모아이템분류를 위한 상위 클래스.
-/// 가방에 들어가는 아이템을 위한 클래스.
-/// 예)탄, 진통제, 구상, 수류탄등.
-/// 가방에 들어가는 소지품 목록 작성해야함.
+/// 모든 아이템은 이 클래스를 상속받아야함.
+/// 틱을	사용하기 위해서는 SetActorEnableTick(true)로 설정해줘야함.
+/// 틱 사용이 끝났다면 SetActorEnableTick(false)로 꺼줘야함.
 /// </summary>
 UCLASS(abstract, BlueprintType)
 class UE_PUBG_API AC_Item : public AActor
@@ -159,9 +154,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool Interaction(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item::Interaction, return false;);
 
-	//virtual bool Interaction(AC_BasicCharacter* Character, int32 InStack) PURE_VIRTUAL(AC_Item::Interaction, return false;);
-
-
 	virtual bool UseItem() PURE_VIRTUAL(AC_Item::UseItem, return false;);
 
 	/// <summary>
@@ -175,6 +167,7 @@ public:
 
 	/// <summary>
 	/// Around -> MyItems로 아이템이 이동할 때, 이미 해당 아이템이 존재할때 ItemStack을 C_Item내에서 Set하는 함수.
+	/// TODO : 만약 내부적으로만 사용하는 함수라면 private로 바꿔야함.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void SetItemStack(int32 inItemStack);// { ItemDatas.ItemCurStack = inItemStack; }
@@ -197,23 +190,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeductItemStack() { ItemCurStack -= 1; }
 
-
-	//UFUNCTION(BlueprintCallable)
-	//virtual bool LegacyMoveToInven(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToInven, return false;);
-	//
-	//UFUNCTION(BlueprintCallable)
-	//virtual bool LegacyMoveToAround(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToAround, return false;);
-	//
-	//UFUNCTION(BlueprintCallable)
-	//virtual bool LegacyMoveToSlot(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item:LegacyMoveToSlot, return false;);
-
 	/// <summary>
 	/// 아이템이 Inven으로 보낼 때 사용하면 현재 Place에 맞게  작동
 	/// </summary>
 	/// <param name="Character"></param>
 	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
-	virtual bool MoveToInven(AC_BasicCharacter* Character, int32 InStack);
+	bool MoveToInven(AC_BasicCharacter* Character, int32 InStack);
 	
 	/// <summary>
 	/// 아이템을 Around로 보낼 때 사용하면 현재 Place에 맞게 작동.
@@ -221,7 +204,7 @@ public:
 	/// <param name="Character"></param>
 	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
-	virtual bool MoveToAround(AC_BasicCharacter* Character, int32 InStack);
+	bool MoveToAround(AC_BasicCharacter* Character, int32 InStack);
 	
 	/// <summary>
 	/// 아이템을 Slot으로 보낼 때 Place에 따라 작동.
@@ -229,7 +212,7 @@ public:
 	/// <param name="Character"></param>
 	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
-	virtual bool MoveToSlot(AC_BasicCharacter* Character, int32 InStack);
+	bool MoveToSlot(AC_BasicCharacter* Character, int32 InStack);
 
 	/// <summary>
 	/// 현재 아이템과 동일한 아이템을 매개변수 Character의 발 아래에 spawn하는 함수.
@@ -250,18 +233,18 @@ public:
 	AC_Item* DividItemSpawn(int32 DivideNum, AC_BasicCharacter* Character, bool bIsActorEnableCollision);
 
 protected:
-	//MoveTo~에 사용되는 Template Methode Patern 9개.
-	virtual bool MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack);
-	virtual bool MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack);
-	virtual bool MoveSlotToSlot(AC_BasicCharacter* Character, int32 InStack);
+	//MoveTo~에 사용되는 9개 함수.
+	virtual bool   MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool    MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool     MoveSlotToSlot(AC_BasicCharacter* Character, int32 InStack);
 
-	virtual bool MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack);
-	virtual bool MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack);
-	virtual bool MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool  MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool   MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool    MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack);
 
 	virtual bool MoveAroundToAround(AC_BasicCharacter* Character, int32 InStack);
-	virtual bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack);
-	virtual bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool  MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack);
+	virtual bool   MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack);
 
 public:
 	FName GetItemCode() const { return ItemCode; }
@@ -305,6 +288,7 @@ public:
 	/// </summary>
 	/// <param name="bEnable"></param>
 	void SetOutlineEffect(bool bEnable);
+
 
 protected:
 

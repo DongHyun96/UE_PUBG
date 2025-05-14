@@ -169,30 +169,59 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 	{
 	case EHUDMode::IDLE:
 		MiniMapWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Hidden);
-		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
+		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Collapsed);
+		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Collapsed);
 		Player->GetInvenSystem()->GetInvenUI()->CloseDivideItemWidget();
 		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		return;
 	case EHUDMode::INVEN:
-		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Hidden);
-		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Hidden);
-		MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
+		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Collapsed);
+		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Collapsed);
+		MiniMapWidget->SetVisibility(ESlateVisibility::Collapsed);
 		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Visible);
 		return;
 	case EHUDMode::MAINMAP:
-		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
+		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Collapsed);
 		Player->GetInvenSystem()->GetInvenUI()->CloseDivideItemWidget();
 
-		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Hidden);
-		MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
+		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Collapsed);
+		MiniMapWidget->SetVisibility(ESlateVisibility::Collapsed);
 		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Visible);
 
-	//case EHUDMode::MAINMENU:
+		//case EHUDMode::MAINMENU:
 
 		return;
 	case EHUDMode::MAX: default: return;
 	}
+
+	//switch (InHUDMode)
+	//{
+	//case EHUDMode::IDLE:
+	//	MiniMapWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	//	HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Hidden);
+	//	HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
+	//	Player->GetInvenSystem()->GetInvenUI()->CloseDivideItemWidget();
+	//	HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	//	return;
+	//case EHUDMode::INVEN:
+	//	HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Hidden);
+	//	HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Hidden);
+	//	MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
+	//	HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Visible);
+	//	return;
+	//case EHUDMode::MAINMAP:
+	//	HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
+	//	Player->GetInvenSystem()->GetInvenUI()->CloseDivideItemWidget();
+
+	//	HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Hidden);
+	//	MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
+	//	HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Visible);
+
+	////case EHUDMode::MAINMENU:
+
+	//	return;
+	//case EHUDMode::MAX: default: return;
+	//}
 }
 
 FColor UC_GameSceneManager::GetTickRandomColor() const
