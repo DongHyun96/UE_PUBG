@@ -967,12 +967,8 @@ void AC_ThrowingWeapon::UpdatePlayerProjectileLaunchValues()
 
 void AC_ThrowingWeapon::OnOwnerCharacterPoseTransitionFin()
 {
-	if (bIsCharging)
-	{
-		// 새로운 자세에 맞는 Anim Montage로 다시 재생
-		OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
-		return;
-	}
+	// 새로운 자세에 맞는 Anim Montage로 다시 재생
+	if (bIsCharging) OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
 }
 
 void AC_ThrowingWeapon::ClearSpline()
