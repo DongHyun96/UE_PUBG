@@ -20,6 +20,7 @@
 #include "Utility/C_Util.h"
 
 #include "PhysicsEngine/PhysicsAsset.h"
+#include "Singleton/C_GameSceneManager.h"
 
 const TMap<FName, float> AC_GrenadeExplode::BodyPartsDamageRate =
 {
@@ -131,8 +132,8 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 	//SetPhysicsAssetCollidersEnabled(Character->GetMesh()->GetPhysicsAsset(), true);
 
 	ThrowingWeapon->SetActorHiddenInGame(true);
-	
-	ThrowingWeapon->GetWorld()->GetTimerManager().SetTimer(ThrowingWeapon->GetDestroyTimerHandle(), [ThrowingWeapon]()
+	FTimerHandle& TimerHandle = UC_GameSceneManager::GetInstance(ThrowingWeapon->GetWorld())->GetTimerHandle();
+	ThrowingWeapon->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [ThrowingWeapon]()
 	{
 		ThrowingWeapon->Destroy();
 	}, 10.f, false);

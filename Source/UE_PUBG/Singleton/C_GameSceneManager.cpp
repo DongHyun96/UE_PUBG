@@ -37,8 +37,6 @@ UC_GameSceneManager::UC_GameSceneManager()
 void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
-
-	//RandomNameDataTable = LoadObject<UDataTable>(this, TEXT("/Game/Project_PUBG/DongHyun/Character/DataTable/DT_RandomNameTable"));
 	
 	UC_GameInstance* GI = Cast<UC_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
@@ -127,9 +125,15 @@ void UC_GameSceneManager::Deinitialize()
 {
 	Super::Deinitialize();
 
+	UC_Util::Print("Deinitialize GameSceneManager", FColor::Red, 10.f);
+
 	for (UObject* NONGCObject : GCProtectedObjects)
 		NONGCObject->RemoveFromRoot();
 
+	for (FTimerHandle& TimerHandle : GameSceneTimerHandles)
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+
+	GameSceneTimerHandles.Empty();
 	GCProtectedObjects.Empty();
 
 	HUDWidgets.Empty();
@@ -153,6 +157,12 @@ AC_LootCrate* UC_GameSceneManager::SpawnLootCrateAt(FVector SpawnLocation, AC_Ba
 	}
 
 	return LootCrate;
+}
+
+FTimerHandle& UC_GameSceneManager::GetTimerHandle()
+{
+	GameSceneTimerHandles.AddDefaulted();
+	return GameSceneTimerHandles.Last();
 }
 
 void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
@@ -279,10 +289,8 @@ void UC_GameSceneManager::ToggleItemsHiddenInGame(bool InHiddenInGame)
 		SpawnedVehicle->SetActorHiddenInGame(InHiddenInGame);
 		UC_Util::Print("UnHiddenCars: ", FColor::Blue, 10.f);
 	}
-	if (!InHiddenInGame)
-	{
-		SetVehiclesCollision();
-	}
+	
+	if (!InHiddenInGame) SetVehiclesCollision();
 }
 
 void UC_GameSceneManager::AddVehiclesToContainer(APawn* InVehicle)
@@ -297,12 +305,3 @@ void UC_GameSceneManager::SetVehiclesCollision()
 {
 	OnSetVehiclesCollision.Broadcast();
 }
-
-// TPair<uint8, uint8> Get
-
-//void UC_GameSceneManager::OnWorldEndPlay(UWorld* InWorld)
-//{
-//	//UC_Util::PrintLogMessage("OnWorldEndPlay");
-//
-//	
-//}

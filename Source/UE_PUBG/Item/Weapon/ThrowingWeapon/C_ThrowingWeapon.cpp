@@ -153,7 +153,7 @@ void AC_ThrowingWeapon::BeginPlay()
 
 	// 자기 자신의 AIAttack 전략 init
 	AIAttackStrategy = AIAttackStrategies[ThrowableType];
-	
+
 }
 
 void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -742,7 +742,8 @@ void AC_ThrowingWeapon::StartCooking()
 	bIsCooked = true;
 
 	// TODO : Player -> Ready 상태에서 Cooking 시작하면 남은 시간 HUD 띄우기
-	GetWorld()->GetTimerManager().SetTimer(CookingTimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);
+	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);
 
 	if (!ThrowingWeaponSoundData) return;
 	if (!ThrowingWeaponSoundData->CookingSound) return;

@@ -261,7 +261,7 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 
 	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->AddTopKillFeedLog(KillFeedDescriptor);
 
-	FTimerHandle TimerHandle;
+	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_BasicCharacter::DestroyCharacter, 5.f, false);
 }
 
@@ -348,13 +348,12 @@ void AC_BasicCharacter::HandleOverlapEnd(AActor* OtherActor)
 
 void AC_BasicCharacter::DestroyCharacter()
 {
-	//GAMESCENE_MANAGER->GetAllCharacters().Remove(this);
-	//GAMESCENE_MANAGER->GetAllCharacterActors().Remove(this);
-	//
-	//this->Destroy();
+	GAMESCENE_MANAGER->GetAllCharacters().Remove(this);
+	GAMESCENE_MANAGER->GetAllCharacterActors().Remove(this);
 	
+	this->Destroy();
 	//this->SetActorEnableCollision(false);
-	this->SetActorHiddenInGame(true);
+	//this->SetActorHiddenInGame(true);
 }
 
 void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)

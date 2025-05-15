@@ -18,6 +18,7 @@
 #include "Character/Component/C_CameraEffectComponent.h"
 
 #include "PhysicsEngine/PhysicsAsset.h"
+#include "Singleton/C_GameSceneManager.h"
 
 const float AC_FlashBangExplode::EFFECT_DURATION_MAX = 6.f;
 
@@ -103,7 +104,8 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		SetPhysicsAssetCollidersEnabled(Character, true);
 	
 	ThrowingWeapon->SetActorHiddenInGame(true);
-	ThrowingWeapon->GetWorld()->GetTimerManager().SetTimer(ThrowingWeapon->GetDestroyTimerHandle(), [ThrowingWeapon]()
+	FTimerHandle& TimerHandle = UC_GameSceneManager::GetInstance(ThrowingWeapon->GetWorld())->GetTimerHandle();
+	ThrowingWeapon->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [ThrowingWeapon]()
 	{
 		ThrowingWeapon->Destroy();
 	}, 10.f, false);

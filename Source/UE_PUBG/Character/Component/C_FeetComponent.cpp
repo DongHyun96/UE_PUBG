@@ -22,9 +22,6 @@ UC_FeetComponent::UC_FeetComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	FeetWaterDetectionCollider = CreateDefaultSubobject<UCapsuleComponent>("FeetWaterDetectionCollider");
-
-	LeftFootSoleCollider = CreateDefaultSubobject<UBoxComponent>("LeftFootSoleCollider");
-	RightFootSoleCollider = CreateDefaultSubobject<UBoxComponent>("RightFootSoleCollider");
 }
 
 void UC_FeetComponent::BeginPlay()
@@ -37,14 +34,6 @@ void UC_FeetComponent::BeginPlay()
 	FeetWaterDetectionCollider->OnComponentEndOverlap.AddDynamic(this, &UC_FeetComponent::OnFeetWaterDetectionColliderEndOverlap);
 	
 	FeetWaterDetectionCollider->AttachToComponent(OwnerCharacter->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
-
-	LeftFootSoleCollider->OnComponentBeginOverlap.AddDynamic(this, &UC_FeetComponent::OnFootSoleColliderBeginOverlap);
-	LeftFootSoleCollider->OnComponentEndOverlap.AddDynamic(this, &UC_FeetComponent::OnFootSoleColliderEndOverlap);
-	RightFootSoleCollider->OnComponentBeginOverlap.AddDynamic(this, &UC_FeetComponent::OnFootSoleColliderBeginOverlap);
-	RightFootSoleCollider->OnComponentEndOverlap.AddDynamic(this, &UC_FeetComponent::OnFootSoleColliderEndOverlap);
-	
-	LeftFootSoleCollider->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), LeftFootSoleSocket);
-	RightFootSoleCollider->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), RightFootSoleSocket);
 }
 
 void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -65,12 +54,10 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		return;
 	}
 
-	HandleFootSounds();
-	
+
 	float LeftDistance{}, RightDistance{};
-
 	FRotator LeftRotation{}, RightRotation{};
-
+	
 	Trace(LeftSocket, LeftDistance, LeftRotation, CurrentLeftSurfaceType);
 	Trace(RightSocket, RightDistance, RightRotation, CurrentRightSurfaceType);
 
@@ -250,91 +237,6 @@ void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector I
 	}
 }
 
-void UC_FeetComponent::HandleFootSounds()
-{
-	if (OwnerCharacter->GetMainState() != EMainState::IDLE)		return;
-	if (OwnerCharacter->GetSwimmingComponent()->IsSwimming())	return;
-	if (OwnerCharacter->GetPoseState() == EPoseState::CRAWL)	return;
-
-	static const float SoleTraceDistance = 100.f;
-	static const float GroundDetachThreshold = 0.5f; // 발이 지면에서 떨어졌다고 판단되기 시작하는 높이
-	
-	// Foot sole 높이 조사 & SurfaceType 조사
-	float CurLeftFootSoleHeight{}, CurRightFootSoleHeight{};
-	EPhysicalSurface LeftSurfaceType{};
-	EPhysicalSurface RightSurfaceType{};
-	
-	const FVector LeftFootLocation  = OwnerCharacter->GetMesh()->GetSocketLocation(LeftFootSoleSocket);
-	const FVector RightFootLocation = OwnerCharacter->GetMesh()->GetSocketLocation(RightFootSoleSocket);
-	
-	const bool bLeftHit  = GetFootDistanceToFloor(CurLeftFootSoleHeight, LeftSurfaceType, LeftFootLocation, SoleTraceDistance);
-	const bool bRightHit = GetFootDistanceToFloor(CurRightFootSoleHeight, RightSurfaceType, RightFootLocation, SoleTraceDistance);
-
-	if (OwnerCharacter->GetPoseState() == EPoseState::CROUCH)
-	{
-		CurLeftFootSoleHeight  = FMath::Max(0.f, CurLeftFootSoleHeight - 4.5f);
-		CurRightFootSoleHeight = FMath::Max(0.f, CurRightFootSoleHeight - 4.5f);
-	}
-
-	// if (Cast<AC_Player>(OwnerCharacter)) UC_Util::Print(CurLeftFootSoleHeight);
-
-	// 발이 떨어졌다고 판단되면 bSoundPlayed 초기화
-	if (!bLeftHit  || CurLeftFootSoleHeight > GroundDetachThreshold)   bLeftFootSoundPlayed  = false;
-	if (!bRightHit || CurRightFootSoleHeight > GroundDetachThreshold)  bRightFootSoundPlayed = false;
-
-	LeftFootSoleMaxDistance  = bLeftHit  ? FMath::Max(LeftFootSoleMaxDistance, CurLeftFootSoleHeight)   : SoleTraceDistance;
-	RightFootSoleMaxDistance = bRightHit ? FMath::Max(RightFootSoleMaxDistance, CurRightFootSoleHeight) : SoleTraceDistance;
-
-	static const FVector2D FootHeightRangeForVolumeMultiplier = {0.f, 80.f};
-	static const FVector2D VolumeMultiplierRange = {0.3f, 1.f};
-	
-	// Trace 검사 성공 시에만 발소리 내기 시도
-	// Hit 성공했고, 0.2cm 이하라면, 발소리 내기 시도
-	if (bLeftHit && CurLeftFootSoleHeight < 0.2f && !bLeftFootSoundPlayed) 
-	{
-		// 17 44 70
-		// if (Cast<AC_Player>(OwnerCharacter)) UC_Util::Print("Playing Left Foot Sound", FColor::Blue);
-		const float VolumeMultiplier = FMath::GetMappedRangeValueClamped(FootHeightRangeForVolumeMultiplier, VolumeMultiplierRange, LeftFootSoleMaxDistance);
-		// PlaySoundCue(LeftSurfaceType, LeftFootLocation, VolumeMultiplier);
-		bLeftFootSoundPlayed = true;
-	}
-
-	// if (!bLeftHit) UC_Util::Print("Left Not hit!");
-
-	if (bRightHit && CurRightFootSoleHeight < 0.2f && !bRightFootSoundPlayed)
-	{
-		// if (Cast<AC_Player>(OwnerCharacter)) UC_Util::Print("Playing Right Foot Sound", FColor::Blue);
-		// CurrentSurfaceType = RightSurfaceType;
-		const float VolumeMultiplier = FMath::GetMappedRangeValueClamped(FootHeightRangeForVolumeMultiplier, VolumeMultiplierRange, RightFootSoleMaxDistance);
-		// PlaySoundCue(RightSurfaceType, RightFootLocation, VolumeMultiplier);
-		bRightFootSoundPlayed = true;
-	}
-	
-}
-
-bool UC_FeetComponent::GetFootDistanceToFloor(float& OutDistance, EPhysicalSurface& OutHitSurfaceType, const FVector& TraceStartLocation, const float InTraceDistance)
-{
-	OutDistance = 0.f;
-	
-	FVector TraceEndLocation = TraceStartLocation - FVector::UnitZ() * InTraceDistance;
-
-	FHitResult HitResult{};
-	FCollisionQueryParams CollisionParams{};
-	CollisionParams.AddIgnoredActor(OwnerCharacter);
-	CollisionParams.bReturnPhysicalMaterial = true;
-
-	bool IsHit = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStartLocation, TraceEndLocation, ECC_Visibility, CollisionParams);
-
-	DrawDebugLine(GetWorld(), TraceStartLocation, IsHit ? HitResult.ImpactPoint : TraceEndLocation, FColor::Red);
-
-	if (!IsHit) return false;
-
-	OutDistance = HitResult.Distance;
-	// EPhysicalSurface CurrentLeftSurfaceType  = EPhysicalSurface::SurfaceType_Default;
-	OutHitSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
-	return true;
-}
-
 void UC_FeetComponent::OnFeetWaterDetectionColliderBeginOverlap
 (
 	UPrimitiveComponent*	OverlappedComponent,
@@ -360,47 +262,3 @@ void UC_FeetComponent::OnFeetWaterDetectionColliderEndOverlap
 	UC_Util::Print("Feet Water Collider EndOverlap", FColor::Red, 10.f);
 	bIsLegOnWater = false;
 }
-
-void UC_FeetComponent::OnFootSoleColliderBeginOverlap
-(
-	UPrimitiveComponent*	OverlappedComponent,
-	AActor*					OtherActor,
-	UPrimitiveComponent*	OtherComp,
-	int32					OtherBodyIndex,
-	bool					bFromSweep,
-	const FHitResult&		SweepResult
-)
-{
-	
-	if (OverlappedComponent == LeftFootSoleCollider) // Left
-	{
-		UC_Util::Print("Left Overlapped", FColor::Red, 10.f);
-		// PlaySoundCue(CurrentSurfaceType, OverlappedComponent->GetComponentLocation(), 1.f);
-	}
-
-	if (OverlappedComponent == RightFootSoleCollider)
-	{
-		UC_Util::Print("Right Overlapped", FColor::Red, 10.f);
-		// PlaySoundCue(CurrentSurfaceType, OverlappedComponent->GetComponentLocation(), 1.f);
-	}
-}
-
-void UC_FeetComponent::OnFootSoleColliderEndOverlap
-(
-	UPrimitiveComponent*	OverlappedComponent,
-	AActor*					OtherActor,
-	UPrimitiveComponent*	OtherComp,
-	int32					OtherBodyIndex
-)
-{
-	if (OverlappedComponent == LeftFootSoleCollider) // Left
-	{
-		UC_Util::Print("Left Overlapped End", FColor::Red, 10.f);
-	}
-
-	if (OverlappedComponent == RightFootSoleCollider)
-	{
-		UC_Util::Print("Right Overlapped End", FColor::Red, 10.f);
-	}
-}
-
