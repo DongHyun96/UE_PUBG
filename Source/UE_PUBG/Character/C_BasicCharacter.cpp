@@ -43,6 +43,7 @@
 #include "Loot/C_LootCrate.h"
 
 #include "Singleton/C_GameSceneManager.h"
+#include "UniversalObjectLocators/AnimInstanceLocatorFragment.h"
 
 #include "Utility/C_Util.h"
 
@@ -496,7 +497,35 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 	NextPoseState			= InNextPoseState;
 	bCanMove				= false;
 	bIsPoseTransitioning	= true;
+	AC_Gun* TempGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
+	if (bIsReloadingBullet && IsValid(TempGun))
+	{
+		UAnimInstance* TempAnimInstance = GetMesh()->GetAnimInstance();
+		UAnimMontage* CurReloadMontage = TempGun->ReloadMontages[PoseState].Montages[TempGun->GetCurrentWeaponState()].AnimMontage;
+		UAnimMontage* NextReloadMontage = TempGun->ReloadMontages[InNextPoseState].Montages[TempGun->GetCurrentWeaponState()].AnimMontage;
+		if (IsValid(TempAnimInstance) && IsValid(CurReloadMontage) && IsValid(NextReloadMontage))
+		{
+			
+			if (TempAnimInstance->Montage_IsPlaying(CurReloadMontage)) 
+			{
+				float CurrentPosition = TempAnimInstance->Montage_GetPosition(CurReloadMontage);
+				float CurrentMontageLength = CurReloadMontage->GetPlayLength();
+				float PlayRatio = 0.0f;
+				if (CurrentMontageLength> 0.0f && CurrentPosition > 0.0f)
+				{
+					PlayRatio = CurrentPosition/CurrentMontageLength;
+				}
+				float NextMontageLength = NextReloadMontage->GetPlayLength();
+				float NextStartPosition = NextMontageLength * PlayRatio;
 
+				TempAnimInstance->Montage_Stop(0.1f,CurReloadMontage);
+				TempAnimInstance->Montage_Play(NextReloadMontage);
+				TempAnimInstance->Montage_SetPosition(NextReloadMontage, NextStartPosition);
+				
+			}
+		}
+		
+	}
 	return true;
 }
 
