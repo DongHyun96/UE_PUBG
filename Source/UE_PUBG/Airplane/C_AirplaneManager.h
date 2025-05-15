@@ -102,8 +102,6 @@ private:
 
 private:
 
-	FTimerHandle TimerHandle{};
-
 	// 비행기 출발 시작 전까지의 Timer 시작했는지
 	bool TakeOffTimerStarted{};
 

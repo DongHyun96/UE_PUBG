@@ -192,8 +192,6 @@ public: // Getters & Setters
 
 	const FThrowingWeaponSoundData* GetThrowingWeaponSoundData() { return ThrowingWeaponSoundData; }
 
-	FTimerHandle& GetDestroyTimerHandle() { return DestroyTimerHandle; }
-
 public:
 
 	/// <summary>
@@ -352,10 +350,6 @@ private:
 private:
 
 	bool bIsCooked{};
-
-	FTimerHandle CookingTimerHandle{};
-
-	FTimerHandle DestroyTimerHandle{};
 
 protected:
 
