@@ -1,39 +1,9 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_MainGunSlotWidget.h"
 #include "InvenUI/C_InventoryUIWidget.h"
 #include "Item/Weapon/Gun/C_Gun.h"
-
-//FReply UC_MainGunSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-//{
-//	// 우클릭인지 체크
-//	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
-//	{
-//		AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN];
-//		if (SlotItem)
-//		{   // 우클릭 이벤트 실행
-//			if (SlotItem->MoveToAround(OwnerPlayer))
-//			{
-//				OwnerPlayer->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MAIN_GUN, nullptr);
-//			}
-//
-//			if (UC_InventoryUIWidget* InvenUiWidget = GetTypedOuter<UC_InventoryUIWidget>())
-//				InvenUiWidget->UpdateWidget();
-//			return FReply::Handled();
-//		}
-//	}
-//	// 다른 버튼 클릭 처리
-//	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-//}
-//
-//void UC_MainGunSlotWidget::UpdateWidget()
-//{
-//	//TODO : Gun의 경우 사용하는 총알의 종류와 갯수를 표시해줌. 하위 클래스에서 진행할 예정.
-//	AC_Weapon* SlotItem = OwnerPlayer->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN];
-//
-//	UpdateSlotItemImage(SlotItem);
-//}
 
 bool UC_MainGunSlotWidget::ChangedGunSlot(AC_Gun* gun)
 {

@@ -147,7 +147,7 @@ void AC_CustomNavLinkProxy::OnReceiveSmartLinkReached(AActor* Agent, const FVect
 	// 시작 지점 자세 변환 적용, 이미 같은 자세라면 전환 x
 	Enemy->SetPoseState(Enemy->GetPoseState(), DirectionPoseStates[CurDirection].StartPointPoseState);
 	
-	FTimerHandle TimerHandle{};
+	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
 	
 	// 도착 지점 확인 Set에 Enemy 넣어두기
 	LinkEnteredEnemies[CurDirection].Add(Enemy);

@@ -37,8 +37,6 @@ UC_GameSceneManager::UC_GameSceneManager()
 void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
-
-	//RandomNameDataTable = LoadObject<UDataTable>(this, TEXT("/Game/Project_PUBG/DongHyun/Character/DataTable/DT_RandomNameTable"));
 	
 	UC_GameInstance* GI = Cast<UC_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
@@ -127,9 +125,15 @@ void UC_GameSceneManager::Deinitialize()
 {
 	Super::Deinitialize();
 
+	UC_Util::Print("Deinitialize GameSceneManager", FColor::Red, 10.f);
+
 	for (UObject* NONGCObject : GCProtectedObjects)
 		NONGCObject->RemoveFromRoot();
 
+	for (FTimerHandle& TimerHandle : GameSceneTimerHandles)
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+
+	GameSceneTimerHandles.Empty();
 	GCProtectedObjects.Empty();
 
 	HUDWidgets.Empty();
@@ -155,6 +159,12 @@ AC_LootCrate* UC_GameSceneManager::SpawnLootCrateAt(FVector SpawnLocation, AC_Ba
 	return LootCrate;
 }
 
+FTimerHandle& UC_GameSceneManager::GetTimerHandle()
+{
+	GameSceneTimerHandles.AddDefaulted();
+	return GameSceneTimerHandles.Last();
+}
+
 void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 {
 	CurrentHUDMode = InHUDMode;
@@ -169,30 +179,59 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 	{
 	case EHUDMode::IDLE:
 		MiniMapWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Hidden);
-		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
+		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Collapsed);
+		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Collapsed);
 		Player->GetInvenSystem()->GetInvenUI()->CloseDivideItemWidget();
 		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		return;
 	case EHUDMode::INVEN:
-		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Hidden);
-		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Hidden);
-		MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
+		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Collapsed);
+		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Collapsed);
+		MiniMapWidget->SetVisibility(ESlateVisibility::Collapsed);
 		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Visible);
 		return;
 	case EHUDMode::MAINMAP:
-		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
+		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Collapsed);
 		Player->GetInvenSystem()->GetInvenUI()->CloseDivideItemWidget();
 
-		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Hidden);
-		MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
+		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Collapsed);
+		MiniMapWidget->SetVisibility(ESlateVisibility::Collapsed);
 		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Visible);
 
-	//case EHUDMode::MAINMENU:
+		//case EHUDMode::MAINMENU:
 
 		return;
 	case EHUDMode::MAX: default: return;
 	}
+
+	//switch (InHUDMode)
+	//{
+	//case EHUDMode::IDLE:
+	//	MiniMapWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	//	HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Hidden);
+	//	HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
+	//	Player->GetInvenSystem()->GetInvenUI()->CloseDivideItemWidget();
+	//	HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	//	return;
+	//case EHUDMode::INVEN:
+	//	HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Hidden);
+	//	HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Hidden);
+	//	MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
+	//	HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Visible);
+	//	return;
+	//case EHUDMode::MAINMAP:
+	//	HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Hidden);
+	//	Player->GetInvenSystem()->GetInvenUI()->CloseDivideItemWidget();
+
+	//	HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Hidden);
+	//	MiniMapWidget->SetVisibility(ESlateVisibility::Hidden);
+	//	HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Visible);
+
+	////case EHUDMode::MAINMENU:
+
+	//	return;
+	//case EHUDMode::MAX: default: return;
+	//}
 }
 
 FColor UC_GameSceneManager::GetTickRandomColor() const
@@ -250,13 +289,11 @@ void UC_GameSceneManager::ToggleItemsHiddenInGame(bool InHiddenInGame)
 		SpawnedVehicle->SetActorHiddenInGame(InHiddenInGame);
 		UC_Util::Print("UnHiddenCars: ", FColor::Blue, 10.f);
 	}
-	if (!InHiddenInGame)
-	{
-		SetVehiclesCollision();
-	}
+	
+	if (!InHiddenInGame) SetVehiclesCollision();
 }
 
-void UC_GameSceneManager::AddVehiclesToContainer(class APawn* InVehicle)
+void UC_GameSceneManager::AddVehiclesToContainer(APawn* InVehicle)
 {
 	VehicleContainer.Add(InVehicle);
 	UC_Util::Print("Container: ", FColor::Red, 10.f);
@@ -268,12 +305,3 @@ void UC_GameSceneManager::SetVehiclesCollision()
 {
 	OnSetVehiclesCollision.Broadcast();
 }
-
-// TPair<uint8, uint8> Get
-
-//void UC_GameSceneManager::OnWorldEndPlay(UWorld* InWorld)
-//{
-//	//UC_Util::PrintLogMessage("OnWorldEndPlay");
-//
-//	
-//}

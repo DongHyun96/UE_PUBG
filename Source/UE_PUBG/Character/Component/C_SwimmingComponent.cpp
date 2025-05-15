@@ -41,7 +41,7 @@ void UC_SwimmingComponent::BeginPlay()
 	WaterDetectionCollider->OnComponentBeginOverlap.AddDynamic(this, &UC_SwimmingComponent::OnWaterDetectionColliderBeginOverlap);
 	WaterDetectionCollider->OnComponentEndOverlap.AddDynamic  (this, &UC_SwimmingComponent::OnWaterDetectionColliderEndOverlap);
 
-	const FName ATTACH_SOCKET_NAME = "SwimmingColliderSocket";
+	static const FName ATTACH_SOCKET_NAME = "SwimmingColliderSocket";
 	
 	WaterDetectionCollider->AttachToComponent
 	(

@@ -29,10 +29,8 @@ AC_Item::AC_Item()
     //WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
 
 	//OwnerCharacter = nullptr;
-	
 }
 
-// Called when the game starts or when spawned
 void AC_Item::BeginPlay()
 {
 	Super::BeginPlay();
@@ -40,7 +38,6 @@ void AC_Item::BeginPlay()
 	InitializeItem(ItemCode);
 }
 
-// Called every frame
 void AC_Item::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -310,14 +307,6 @@ void AC_Item::SetItemStack(int32 inItemStack)
 	{
 		OwnerCharacter->GetInvenComponent()->DestroyMyItem(this);
 	}
-
-	//int32 ItemMaxStack = GetItemDatas()->ItemMaxStack;
-	//
-	//if (ItemCurStack > ItemMaxStack)
-	//{
-	//	int32 SpritStack = ItemCurStack - ItemMaxStack;
-	//	SpawnItem(OwnerCharacter)
-	//}
 }
 
 void AC_Item::SetOutlineEffect(bool bEnable)

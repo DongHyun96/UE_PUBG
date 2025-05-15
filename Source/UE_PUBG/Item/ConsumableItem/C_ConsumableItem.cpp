@@ -201,6 +201,8 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 	if (!UsingMontageMap.Contains(ItemUser->GetPoseState()))    return false;
 	if (!UsingMontageMap[ItemUser->GetPoseState()].AnimMontage) return false;
 
+	SetActorTickEnabled(true);
+
 	float PlayTime = ItemUser->PlayAnimMontage(UsingMontageMap[ItemUser->GetPoseState()]);
 
 	// 다른 Montage에 의해 방해 받았을 때
@@ -279,6 +281,8 @@ bool AC_ConsumableItem::CancelActivating()
 
 	UsingTimer			= 0.f;
 	//ItemUser			= nullptr;
+
+	SetActorTickEnabled(false);
 
 	return true;
 }

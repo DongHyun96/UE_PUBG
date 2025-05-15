@@ -11,7 +11,7 @@ void UC_AnimNotify_FootStep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
     AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(MeshComp->GetOwner());
     if (!Character) return;
 
-    EPhysicalSurface SurfaceType = Character->GetFeetComponent()->GetSurfaceType();
+    EPhysicalSurface SurfaceType = Character->GetFeetComponent()->GetLeftSurfaceType();
 
     //USoundBase* FootstepSound = Character->GetFootstepSoundForSurface(SurfaceType, bIsLeftFoot);
     //if (FootstepSound)

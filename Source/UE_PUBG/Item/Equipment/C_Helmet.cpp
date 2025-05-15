@@ -24,31 +24,13 @@ void AC_Helmet::BeginPlay()
 
 	HelmetMesh = FindComponentByClass<UStaticMeshComponent>();
 
-	//if (!IsValid(HelmetMesh))
-	//	UC_Util::Print("From AC_Helmet::Beginplay : HelmetMesh var not inited!", FColor::Red, 10.f);
 }
 
 bool AC_Helmet::Interaction(AC_BasicCharacter* Character)
 {
-	//Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, this);
 	MoveToSlot(Character, GetItemCurStack());
 	return true;
 }
-//
-//bool AC_Helmet::LegacyMoveToAround(AC_BasicCharacter* Character)
-//{
-//	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, nullptr);
-//	OwnerCharacter = nullptr;
-//
-//	return false;
-//}
-//
-//bool AC_Helmet::LegacyMoveToSlot(AC_BasicCharacter* Character)
-//{
-//	//TODO : 장착되어 있던 Vest 처리해주기 및 제대로 구현하기, SetSlotEquipment함수 참고하기.(TODO From Vest)
-//	Character->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, this);
-//	return true;
-//}
 
 void AC_Helmet::AttachToSocket(class AC_BasicCharacter* InParent)
 {
@@ -61,9 +43,6 @@ void AC_Helmet::AttachToSocket(class AC_BasicCharacter* InParent)
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		SocketName
 	);
-	//BackpackMesh->SetVisibility(true);
-
-	//DrawDebugSphere(GetWorld(), InParent->GetSocketLocation(SocketName), 10.f, 12, FColor::Red, false, 10.f);
 
 	SetOwnerCharacter(InParent);
 

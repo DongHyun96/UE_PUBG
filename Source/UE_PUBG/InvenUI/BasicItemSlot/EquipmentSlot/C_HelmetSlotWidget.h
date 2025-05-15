@@ -15,9 +15,6 @@ class UE_PUBG_API UC_HelmetSlotWidget : public UC_EquipmentSlotWidget
 	GENERATED_BODY()
 
 public:
-
-	//void UpdateWidget() override;
-
 	/// <summary>
 	/// DurabilityBar(내구도bar)를 업데이트함.
 	/// </summary>

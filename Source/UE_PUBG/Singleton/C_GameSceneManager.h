@@ -94,13 +94,20 @@ public:
 	class AC_SoundManager* GetSoundManager() const { return SoundManager; }
 
 	UFUNCTION(BlueprintCallable)
-	TArray<class AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
+	TArray<AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
 	TArray<AActor*>& GetAllCharacterActors() { return AllCharacterActors; }
 
 	/// <summary>
 	/// GameScene에서 GC로부터 보호된 Object들 추가 -> GameScene 끝날 때 일괄 삭제처리 예정
 	/// </summary>
 	void AddGCProtectedObject(UObject* Object) { GCProtectedObjects.Add(Object); }
+
+	/// <summary>
+	/// 새로운 TimerHandle 받기
+	/// 새로운 TimerHandle을 생성하면서 동시에 GameScene이 끝날 때 
+	/// </summary>
+	/// <returns></returns>
+	FTimerHandle& GetTimerHandle();
 
 	UFUNCTION(BlueprintCallable)
 	EHUDMode GetCurrentHUDMode() const { return CurrentHUDMode; }
@@ -136,6 +143,20 @@ public:
 
 	int GetTotalPlayedCharacterCount() const { return TotalPlayedCharacterCount; }
 
+public:
+	
+	UFUNCTION(BlueprintCallable)
+	void AddSpawnedItemToContainer(class AC_Item* InItem);
+
+	void ToggleItemsHiddenInGame(bool InHiddenInGame);
+
+	UFUNCTION(BlueprintCallable)
+	void AddVehiclesToContainer(class APawn* InVehicle);
+
+	
+private:
+	void SetVehiclesCollision(); // 델리게이트 실행 함수
+
 private:
 
 	AC_Player*					Player{};
@@ -146,19 +167,22 @@ private:
 private:
 
 	// 인게임 모든 캐릭터들(Player + Enemies)
-	TArray<class AC_BasicCharacter*> AllCharacters{};
+	TArray<AC_BasicCharacter*> AllCharacters{};
 	TArray<AActor*> AllCharacterActors{};
 
 private:
 
-	class TArray<AC_Enemy*> Enemies{};
+	TArray<AC_Enemy*> Enemies{};
 
 private:
 
 	// InGameScene내에서 Unreal GC로부터 보호된 객체들 -> GameScene이 끝날 때 해제할 예정
 	TSet<UObject*> GCProtectedObjects{};
 
-private:
+	// InGameScene내에서 사용되는 TimerHandle
+	TArray<FTimerHandle> GameSceneTimerHandles{};
+
+private: /* Widget UI 관련 */
 
 	// Main Player의 Widget들, 현재 어떤 WidgetMode인지에 따른 Visibility setting 처리
 	EHUDMode CurrentHUDMode{};
@@ -167,12 +191,8 @@ private:
 	UUserWidget*			     MiniMapWidget{};
 
 private:
-
-	//class UDataTable* RandomNameDataTable{};
-
-private:
 	
-	const float CELL_WORLDSIZE = 10000.f;
+	const float CELL_WORLDSIZE = 10000.f; // Shanty_Town Cell world size
 
 private:
 
@@ -187,25 +207,20 @@ private:
 
 	bool bIsGameOver{};
 
-public:
+private:
 	
-	TArray<class AC_Item*> ItemContainer{};
-
-	UFUNCTION(BlueprintCallable)
-	void AddSpawnedItemToContainer(AC_Item* InItem);
-
-	void ToggleItemsHiddenInGame(bool InHiddenInGame);
-
+	TArray<AC_Item*> ItemContainer{};
 	TArray<APawn*> VehicleContainer{};
 
-	UFUNCTION(BlueprintCallable)
-	void AddVehiclesToContainer(class APawn* InVehicle);
+protected:
+	
 	UPROPERTY(BlueprintAssignable, Category="Events")
 	FOnSetVehiclesCollisoin OnSetVehiclesCollision; // 블루프린트에서 바인딩할 수 있게 함
 
-	UFUNCTION(BlueprintCallable)
-	void SetVehiclesCollision(); // 델리게이트 실행 함수
+private:
 
+	
+	
 };
 
 

@@ -72,25 +72,6 @@ bool UC_GunSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 	HandleDrop(MyOperation);
 	OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 	return true;
-	//switch (DroppedItem->GetItemDatas().ItemType)
-	//{
-	//case EItemTypes::NONE:
-	//case EItemTypes::BULLET:
-	//case EItemTypes::CONSUMPTIONITEM:
-	//	//return false;
-	//case EItemTypes::BACKPACK:
-	//case EItemTypes::MAINGUN:
-	//case EItemTypes::MELEEWEAPON:
-	//case EItemTypes::THROWABLE:
-	//case EItemTypes::ATTACHMENT:
-	//case EItemTypes::VEST:
-	//case EItemTypes::HELMET:
-	//	HandleDrop(MyOperation);
-	//	OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
-	//	return true;
-	//default:
-	//	return false;
-	//}
 }
 
 bool UC_GunSlotWidget::MouseRBDownInteraction(AC_Weapon* inSlotWeapon)
@@ -100,20 +81,10 @@ bool UC_GunSlotWidget::MouseRBDownInteraction(AC_Weapon* inSlotWeapon)
 
 void UC_GunSlotWidget::UpdateWidget()
 {
-	//UC_EquippedComponent* EquipComp = OwnerPlayer->GetEquippedComponent();
-	//
-	//AC_Gun* curWeapon = Cast<AC_Gun>(EquipComp->GetWeapons()[WeaponType]);
-	//
-	//AC_Weapon* CachedWeapon = OwnerPlayer->GetEquippedComponent()->GetWeapons()[WeaponType];
-	////TODO : Gun의 경우 사용하는 총알의 종류와 갯수를 표시해줌. 하위 클래스에서 진행할 예정.
-	//
-	//UpdateSlotItemImage(curWeapon);
-
 	Super::UpdateWidget();
 
 	UpdateAttachableSlotVisibility();
-
-}
+	}
 
 void UC_GunSlotWidget::UpdateAttachableSlotVisibility()
 {
@@ -130,7 +101,6 @@ void UC_GunSlotWidget::UpdateAttachableSlotVisibility()
 		if (UC_AttachableItemSlotWidget* PartSlot = AttachSlot.Value)
 		{
 			PartSlot->DiscriminateSlot(Parts, curWeapon);
-			//PartSlot->UpdateSlotItemImage(curWeapon);
 		}
 	}
 
@@ -163,11 +133,6 @@ bool UC_GunSlotWidget::SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, AC_Attac
 	SlotGun->SetAttachableItemSlot(InAttachableItem->GetName(), InAttachableItem);
 
 	return true;
-	//if (!ChangedItem) return true;
-	//
-	//return ChangedItem->MoveToInven(OwnerPlayer);
-
-	
 }
 
 void UC_GunSlotWidget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
@@ -237,19 +202,8 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 	{
 		if (InOperation->curWeaponSlot != WeaponType)
 			Cast<AC_AttachableItem>(DroppedItem)->MoveToSlot(OwnerPlayer, DroppedItem->GetItemCurStack());
-
-		//if (InOperation->curWeaponSlot == EWeaponSlot::MAIN_GUN && WeaponType == EWeaponSlot::SUB_GUN)
-		//{
-		//	Cast<AC_AttachableItem>(DroppedItem)->MoveToSlot(OwnerPlayer);
-		//}
-		//
-		//if (InOperation->curWeaponSlot == EWeaponSlot::SUB_GUN && WeaponType == EWeaponSlot::MAIN_GUN)
-		//{
-		//	Cast<AC_AttachableItem>(DroppedItem)->MoveToSlot(OwnerPlayer);
-		//}
 	}
 
-	//if (InOperation->curWeaponSlot == EWeaponSlot::SUB_GUN && WeaponType == EWeaponSlot::MAIN_GUN)
 
 
 	AC_Gun* Gun = Cast<AC_Gun>(DroppedItem);

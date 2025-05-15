@@ -44,7 +44,7 @@ public:
 	bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) override;
 
 	class UProgressBar* GetHPBar() const { return HPBar; }
-	class UProgressBar* GetBoostBar() const { return BoostBar; }
+	UProgressBar*       GetBoostBar() const { return BoostBar; }
 
 	class AC_EnemyAIController* GetEnemyAIController() const;
 
@@ -97,6 +97,8 @@ public: // For Testing
 private:
 
 	void CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor) override;
+
+	void DestroyCharacter() override;
 	
 protected:
 

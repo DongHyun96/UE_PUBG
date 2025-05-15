@@ -320,7 +320,7 @@ bool UC_EquippedComponent::ToggleArmed()
 
         return ChangeCurWeapon(EWeaponSlot::NONE);
     }
-
+    //For Backup
     // 현재 들고 있는 무기가 없을 때
     return ChangeCurWeapon(PrevWeaponType);
 }

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/ConsumableItem/Boosting/C_PainKiller.h"
@@ -52,6 +52,9 @@ void AC_PainKiller::OnActivatingFinish()
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::PAIN_KILLER, false);
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED PAINKILLER");
+
+	SetActorTickEnabled(false);
+
 }
 
 void AC_PainKiller::OnCancelActivating()

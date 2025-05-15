@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/ConsumableItem/Healing/C_Bandage.h"
@@ -70,6 +70,8 @@ void AC_Bandage::OnActivatingFinish()
 	
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED BANDAGE");
+
+	SetActorTickEnabled(false);
 }
 
 void AC_Bandage::OnCancelActivating()

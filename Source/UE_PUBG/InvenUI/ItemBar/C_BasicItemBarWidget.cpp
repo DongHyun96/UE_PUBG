@@ -32,11 +32,10 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 {
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton) && InMouseEvent.IsLeftAltDown())
 	{
-		//TODO : 절반 줍기, 절반 버리기 구현하기.
-		if (HalfStackItemInteraction())
+		if (HalfStackItemInteraction()) // true면 return, false면 남은 코드 실행.
 		{
 			UpdateInvenUIWidget();
-			return FReply::Handled(); //참이면 return, 거짓이면 남은 코드 실행.
+			return FReply::Handled(); 
 		}
 	}
 
@@ -49,7 +48,6 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 		if (InMouseEvent.IsAltDown())
 			if (HalfStackItemInteraction()) return FReply::Handled(); //참이면 return, 거짓이면 남은 코드 실행.
 
-		//AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));//ItemBar가 변수로 OwnerPlayer를 가지면 메모리 낭비가 심할거 같아서 사용
 		AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
 		CachedItem->Interaction(OwnerPlayer);
 
@@ -87,7 +85,6 @@ FReply UC_BasicItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& In
 
 void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
-	//AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
 
 	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
@@ -101,32 +98,16 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
 	Border->SetBrushColor(BorderColor);
 
-	//Border->SetPadding(FMargin(2.0f)); 패딩이 필요하면 사용하기.
-
 	UImage* DragVisual = NewObject<UImage>(Texture);
 
 	DragVisual->SetBrushFromTexture(Texture);
-	//DragVisual->SetBrushFromTexture(Texture);
 	DragVisual->Brush.ImageSize = FVector2D(64.f, 64.f);
 	Border->SetContent(DragVisual);
 
 	DragOperation->DefaultDragVisual = Border;
-	//Border->SetUserFocus(Cast<AC_PlayerController>(OwnerCharacter->GetController()));
-
-	//UObject* ResourceObject = ItemImage1->Brush.GetResourceObject();
-	//UTexture2D* Texture = Cast<UTexture2D>(ResourceObject);
-	//
-	//UImage* DragVisual = NewObject<UImage>(Texture);
-	//DragVisual->SetBrushFromTexture(Texture);
-	//
-	//DragOperation->DefaultDragVisual = DragVisual;
-
-	//DragOperation->DefaultDragVisual = ItemImage1; // 드래그 시 아이템의 미리보기 이미지
-	//DragOperation->DefaultDragVisual = this; // 드래그 시 아이템의 미리보기 이미지
 
 	DragOperation->Payload = CachedItem; // 드래그 중 전달할 데이터 (아이템)
 	DragOperation->Pivot = EDragPivot::MouseDown;
-	//DragOperation->Pivot = EDragPivot::CenterCenter;
 	FVector2D MousePosition = InMouseEvent.GetScreenSpacePosition();
 
 	// 현재 마우스 클릭 위치 가져오기 (화면 좌표)
@@ -138,8 +119,6 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 
 	// 드래그 비주얼 위치를 강제로 설정 (렌더링 기준으로 설정)
 	Border->SetRenderTranslation(WidgetScreenPosition);
-
-	//DragOperation->SetDraggedItemBox(CachedItem);
 
 	//TODO : UDragDropOperation내의 DraggedItem을 UItemBox의 DraggedItemBox로 대체하기. 
 	DragOperation->DraggedItem =  CachedItem;
@@ -154,11 +133,6 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	}
 	this->Visibility = ESlateVisibility::SelfHitTestInvisible;
 	OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
-
-	//OwnerCharacter->GetInvenSystem()->GetInvenUI()->SetItemListZorder(CachedItem->GetOwnerCharacter());
-
-
-	//UC_Util::Print("OnDragDetected!!");
 
 	OutOperation = DragOperation;
 }
@@ -192,15 +166,6 @@ void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
 		ItemType = CachedItemData->ItemType;
 
 		ItemName->SetText(FText::FromString(CachedItemData->ItemName));
-
-		//if (CachedItem->GetItemCurStack() == 0)
-		//{
-		//	ItemStackBlock->SetText(FText::FromString(""));
-		//}
-		//else
-		//{
-		//	ItemStackBlock->SetText(FText::AsNumber(CachedItem->GetItemCurStack()));
-		//}
 
 		SetVisibility(ESlateVisibility::Visible);
 	}
@@ -245,7 +210,7 @@ bool UC_BasicItemBarWidget::HalfStackItemInteraction()
 
 	float RestVolume = PlayerCharacter->GetInvenComponent()->GetMaxVolume() - PlayerCharacter->GetInvenComponent()->GetCurVolume();
 
-	if ( CachedItem->GetItemPlace() == EItemPlace::AROUND)
+	if (CachedItem->GetItemPlace() == EItemPlace::AROUND)
 	{
 		if (RestVolume >= HalfStack *  CachedItem->GetItemDatas()->ItemVolume)
 		{
@@ -257,12 +222,12 @@ bool UC_BasicItemBarWidget::HalfStackItemInteraction()
 		}
 		else
 		{
-			 CachedItem->MoveToInven(PlayerCharacter, HalfStack);
+			CachedItem->MoveToInven(PlayerCharacter, HalfStack);
 			return true;
 		}
 
 	}
-	else if ( CachedItem->GetItemPlace() == EItemPlace::INVEN)
+	else if (CachedItem->GetItemPlace() == EItemPlace::INVEN)
 	{
 		AC_Item* SpawnItem =  CachedItem->SpawnItem(PlayerCharacter);
 		 CachedItem->SetItemStack( CachedItem->GetItemCurStack() - HalfStack);

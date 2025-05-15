@@ -282,7 +282,6 @@ void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AC_Player::SetPlayerMappingContext()
 {
 	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetController());
-
 	if (PlayerController != nullptr)
 	{
 		//if (UEnhancedInputLocalPlayerSubsystem)
@@ -1052,7 +1051,7 @@ void AC_Player::InitTurnAnimMontageMap()
 {
 	for (uint8 handState = 0; handState < static_cast<uint8>(EHandState::HANDSTATE_MAX); handState++)
 	{
-		FPoseTurnInPlaceAnimMontage CurrenteHandStateTurnInPlaces{};
+		FPoseTurnInPlaceAnimMontage CurrentHandStateTurnInPlaces{};
 
 		for (uint8 poseState = 0; poseState < static_cast<uint8>(EPoseState::POSE_MAX); poseState++)
 		{
@@ -1074,7 +1073,7 @@ void AC_Player::InitTurnAnimMontageMap()
 			PriorityLeftMontage.Priority	= EMontagePriority::TURN_IN_PLACE;
 			PriorityLeftMontage.AnimMontage = (TurnLeftMontage.Succeeded()) ? TurnLeftMontage.Object : nullptr;
 			
-			CurrenteHandStateTurnInPlaces.LeftMontages.Emplace(currentPose, PriorityLeftMontage);
+			CurrentHandStateTurnInPlaces.LeftMontages.Emplace(currentPose, PriorityLeftMontage);
 
 			// Right side
 			FString rightMontagePath = FString::Printf
@@ -1090,10 +1089,10 @@ void AC_Player::InitTurnAnimMontageMap()
 			PriorityRightMontage.Priority    = EMontagePriority::TURN_IN_PLACE;
 			PriorityRightMontage.AnimMontage = (TurnRightMontage.Succeeded()) ? TurnRightMontage.Object : nullptr;
 
-			CurrenteHandStateTurnInPlaces.RightMontages.Emplace(currentPose, PriorityRightMontage);
+			CurrentHandStateTurnInPlaces.RightMontages.Emplace(currentPose, PriorityRightMontage);
 		}
 
-		TurnAnimMontageMap.Emplace(static_cast<EHandState>(handState), CurrenteHandStateTurnInPlaces);
+		TurnAnimMontageMap.Emplace(static_cast<EHandState>(handState), CurrentHandStateTurnInPlaces);
 	}
 
 }

@@ -47,17 +47,25 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-	EPhysicalSurface GetSurfaceType() { return CurrentSurfaceType; }
+	EPhysicalSurface GetLeftSurfaceType() const {return CurrentLeftSurfaceType; }
+	UFUNCTION(BlueprintCallable)
+	EPhysicalSurface GetRightSurfaceType() const {return CurrentRightSurfaceType; }
+	
 
-	FFeetData GetData() { return Data; }
+	UFUNCTION(BlueprintCallable)
+	bool GetIsLegOnWater() const { return bIsLegOnWater; }
+
+	FFeetData GetData() const { return Data; }
+
 private:
 
-	void Trace(FName InName, float& OutDistance, FRotator& OutRotation);
+	void Trace(FName InName, float& OutDistance, FRotator& OutRotation, EPhysicalSurface& OutSurfaceType);
 
 private:
 	
 	void PlaySoundInTick(float DeltaTime);
 
+protected:
 	/// <summary>
 	/// FeetComponent내부에서 발소리를 재생하려고 했는데 쉽지 않아서
 	/// 애니메이션에 Notify를 사용하는 것으로 선회.
@@ -65,23 +73,36 @@ private:
 	/// </summary>
 	/// <param name="InCurSurFaceType"></param>
 	/// <param name="InLocation"></param>
+	UFUNCTION(BlueprintCallable)
 	void PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier);
 
-private:
+private: /* Feet Water Detection Collision Callbacks */
 	
 	/// <summary>
-	/// Foot sound 처리 담당
+	/// FeetWaterDetectionCollider와 WaterCollider BeginOverlap되었을 때 Callback 받을 함수
 	/// </summary>
-	void HandleFootSounds();
+	UFUNCTION()
+	void OnFeetWaterDetectionColliderBeginOverlap
+	(
+		UPrimitiveComponent*	OverlappedComponent,
+		AActor*					OtherActor,
+		UPrimitiveComponent*	OtherComp,
+		int32					OtherBodyIndex,
+		bool					bFromSweep,
+		const FHitResult&		SweepResult
+	);
 
 	/// <summary>
-	/// 시작 지점으로부터 바닥면까지 Trace 검사하여 Distance검사하기
+	/// FeetWaterDetectionCollider와 WaterCollider EndOverlap 검사 
 	/// </summary>
-	/// <param name="OutDistance"> : 검사된 Trace 거리 </param>
-	/// <param name="TraceStartLocation"> : Trace start Location </param>
-	/// <param name="InTraceDistance"> : Trace 검사 거리 (cm) </param>
-	/// <returns> : Trace 실패 시 return false </returns>
-	bool GetDistanceToFloor(float& OutDistance, const FVector& TraceStartLocation, const float InTraceDistance);
+	UFUNCTION()
+	void OnFeetWaterDetectionColliderEndOverlap
+	(
+		UPrimitiveComponent*	OverlappedComponent,
+		AActor*					OtherActor,
+		UPrimitiveComponent*	OtherComp,
+		int32					OtherBodyIndex
+	);
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -118,23 +139,23 @@ private:
 
 	FFeetData Data{};
 
-	EPhysicalSurface CurrentSurfaceType = EPhysicalSurface::SurfaceType_Default;
+	EPhysicalSurface CurrentLeftSurfaceType  = SurfaceType_Default;
+	EPhysicalSurface CurrentRightSurfaceType = SurfaceType_Default;
 
 	float LastFootstepTime = 0.0f;
 
 	bool bWasOnGroundLastFrame = false;
 
 	float AccumulatedFootstepTime = 0.f;
+	
+
+protected: /* Feet on water 관련 */ 
+
+	// Water에서의 발자국 소리를 위한 Water 감지 Collider
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UCapsuleComponent* FeetWaterDetectionCollider{};
 
 private:
-
-	const FName LeftFootSoleSocket = "LeftFootSole";
-	const FName RightFootSoleSocket = "RightFootSole";
-
-	float LeftFootSoleMaxDistance{};
-	float RightFootSoleMaxDistance{};
-
-	bool bLeftFootSoundPlayed{};
-	bool bRightFootSoundPlayed{};
 	
+	bool bIsLegOnWater{}; // 다리 부분이 (발바닥부터) 물에 들어가 있으면 true
 };

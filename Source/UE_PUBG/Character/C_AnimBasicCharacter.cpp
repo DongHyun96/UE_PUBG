@@ -39,7 +39,9 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 
 	const FRotator YawRotation(0, OwnerCharacter->GetActorRotation().Yaw, 0);
 
-	float DirectionDest = CalculateDirection(OwnerCharacter->GetVelocity().GetSafeNormal2D(), YawRotation); 
+	// Direction의 경우에도 부드러운 방향전환 Animation 처리를 위해 Lerp로 처리함
+	// BS로 기본 처리되지만, 180 -> -180으로 Direction이 한 번에 전환되는 과정에서 뚝뚝 끊기게 나오는 현상 때문에 Lerp를 사용했음
+	float DirectionDest = CalculateDirection(OwnerCharacter->GetVelocity().GetSafeNormal2D(), YawRotation);
 	Direction			= FMath::Lerp(Direction, DirectionDest, DeltaSeconds * 5.f);
 	
 

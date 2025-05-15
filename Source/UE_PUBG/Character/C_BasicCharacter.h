@@ -202,14 +202,14 @@ protected:
 	//자식 단계에서 OverlapBegin에서 사용할 함수 Template method
 	virtual void HandleOverlapEnd(AActor* OtherActor);
 
-	void DestroyCharacter();
+	virtual void DestroyCharacter();
 public:
 
 	/// <summary>
 	/// Pose와 캐릭터 이동방향에 따른 MaxWalkSpeed 조정
 	/// </summary>
 	/// <param name="MovementVector"> : Input action movement vector </param>
-	virtual void UpdateMaxWalkSpeed(const FVector2D& MovementVector);
+	void UpdateMaxWalkSpeed(const FVector2D& MovementVector);
 
 
 public: // Getters and setters
@@ -234,7 +234,7 @@ public: // Getters and setters
 	int GetKillCount() const { return KillCount; }
 
 	UFUNCTION(BlueprintCallable)
-	UC_FeetComponent* GetFeetComponent() { return FeetComponent; }
+	class UC_FeetComponent* GetFeetComponent() { return FeetComponent; }
 
 	//UFUNCTION(BlueprintCallable)
 	//UAudioComponent* GetReloadMagazineAudioComponent() { return ReloadMagazineAudioComponent; }
@@ -472,10 +472,10 @@ protected: // Consumable 관련
 	bool bIsActivatingConsumableItem{};
 
 	// 현재 활성화 중인 Consumable Item
-	class AC_ConsumableItem* CurActivatingConsumableItem{};
+	AC_ConsumableItem* CurActivatingConsumableItem{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_ConsumableUsageMeshComponent* ConsumableUsageMeshComponent{};
+	UC_ConsumableUsageMeshComponent* ConsumableUsageMeshComponent{};
 
 
 protected: // 총알 Object Pooling(AC_Item으로 만들어진 Bullet은 사용X)

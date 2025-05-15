@@ -135,8 +135,12 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 		EnhancedInputComponent->BindAction(IKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnIKey);
 		EnhancedInputComponent->BindAction(TabKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnTabKey);	
 
-		EnhancedInputComponent->BindAction(ToggleThrowableWheelAction, ETriggerEvent::Triggered, this, &UC_InputComponent::OnGKey);
-		EnhancedInputComponent->BindAction(ToggleConsumableAction, ETriggerEvent::Triggered, this, &UC_InputComponent::OnTKey);
+		EnhancedInputComponent->BindAction(ToggleThrowableWheelAction, ETriggerEvent::Started, this, &UC_InputComponent::OnGKey);
+		EnhancedInputComponent->BindAction(ToggleThrowableWheelAction, ETriggerEvent::Completed, this, &UC_InputComponent::OnGKey);
+
+		EnhancedInputComponent->BindAction(ToggleConsumableAction, ETriggerEvent::Started, this, &UC_InputComponent::OnTKey);
+		EnhancedInputComponent->BindAction(ToggleConsumableAction, ETriggerEvent::Completed, this, &UC_InputComponent::OnTKey);
+
 	}
 }	
 

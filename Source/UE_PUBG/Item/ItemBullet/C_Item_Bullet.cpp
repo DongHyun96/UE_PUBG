@@ -31,6 +31,7 @@ AC_Item_Bullet::AC_Item_Bullet()
 void AC_Item_Bullet::BeginPlay()
 {
 	Super::BeginPlay();
+	SetActorTickEnabled(false);
 }
 
 void AC_Item_Bullet::Tick(float DeltaTime)
