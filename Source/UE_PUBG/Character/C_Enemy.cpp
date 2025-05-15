@@ -313,3 +313,9 @@ void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 		Player->GetGameOverWidget()->ActivateWinningSequence();
 	}
 }
+
+void AC_Enemy::DestroyCharacter()
+{
+	Super::DestroyCharacter();
+	GAMESCENE_MANAGER->GetEnemies().Remove(this);
+}
