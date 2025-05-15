@@ -295,8 +295,7 @@ void AC_BasicCharacter::EnableRagdoll()
 	
 	//SetActorEnableCollision(false);
 
-	//FTimerHandle TimerHandle;
-
+	// FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
 	//GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_BasicCharacter::EnableRagdoll, 2.f, false);
 }
 
