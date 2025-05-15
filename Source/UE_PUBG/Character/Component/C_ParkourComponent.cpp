@@ -115,8 +115,8 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 			GetWorld()->GetTimerManager().SetTimer
 			(
 				TimerHandle,
-				this, 
-				&UC_ParkourComponent::SetOwnerCharacterCanMoveToTrue, 
+				this,
+				&UC_ParkourComponent::SetOwnerCharacterCanMoveToTrue,
 				CanMoveTimerAfterWarpActionFin, 
 				false
 			);
