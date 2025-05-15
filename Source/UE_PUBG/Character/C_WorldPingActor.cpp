@@ -67,8 +67,8 @@ void AC_WorldPingActor::HandleUpdateWorldPingScale()
 	}
 
 	if (!PingWidgetComponent->IsVisible()) return;
-
-	//PingWidgetComponent->GetUserWidgetObject()->SetRenderScale();
+	if (!IsValid(GAMESCENE_MANAGER->GetPlayer())) return;
+	
 	FVector PlayerLocation = GAMESCENE_MANAGER->GetPlayer()->GetActorLocation();
 
 	float DistanceToPlayer = FVector::Distance(PlayerLocation, this->GetActorLocation());

@@ -765,15 +765,19 @@ void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 
 	GAMESCENE_MANAGER->SetIsGameOver(true);
 
-	// TODO : if else 문으로 대체하기
+	// TODO : 밑의 if else 문으로 대체하기
+	GameOverWidget->ActivateLoseSequence();
 	//if (Ranking == 1) GameOverWidget->ActivateWinningSequence();
 	//else GameOverWidget->ActivateLoseSequence();
-	GameOverWidget->ActivateLoseSequence();
-	
-	//if (AC_Gun* Gun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon()))
-	//{
-	//	UC_Util::Print("Dead : Current Gun valid!", FColor::Red, 10.f);
-	//}
+
+	// Player의 경우, 터질 수 있는 경우를 미연에 방지하고자, 사망 처리되어도 DestroyActor처리하지 않고 객체는 살려둔채로 HiddenInGame 처리
+	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+	GetWorldTimerManager().SetTimer(TimerHandle,
+	[this]()
+	{
+		this->SetActorHiddenInGame(true);
+	},
+	5.f, false);
 }
 
 void AC_Player::EnableRagdoll()

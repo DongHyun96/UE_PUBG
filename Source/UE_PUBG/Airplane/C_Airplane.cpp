@@ -57,7 +57,7 @@ void AC_Airplane::Tick(float DeltaTime)
 	AddActorWorldOffset(FlightDirection * FLIGHT_SPEED * DeltaTime, false);
 
 	// 다른 Character의 위치는 상관 x Player의 위치만 Update(Map에 표기되기 때문)
-	if (!IsValid(Player)) Player = GAMESCENE_MANAGER->GetPlayer();
+	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
 	if (Player->GetMainState() == EMainState::SKYDIVING && Player->GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::READY)
 		Player->SetActorLocation(this->GetActorLocation());
 	
@@ -93,7 +93,7 @@ void AC_Airplane::StartFlight()
 	this->SetActorRotation(FlightDirection.Rotation());
 
 	// MainMap UI에 비행기 이미지 Visibility 토글
-	if (!Player) Player = GAMESCENE_MANAGER->GetPlayer();
+	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
 	Player->GetMainMapWidget()->ToggleAirplaneImageVisibility(true);
 	Player->GetHUDWidget()->GetMiniMapWidget()->ToggleAirplaneImageVisibility(true);
 }
@@ -108,8 +108,8 @@ void AC_Airplane::OnEngineSound(bool bIsPlaySound)
 
 void AC_Airplane::UpdatePlayerMapHUD()
 {
-	Player->GetMainMapWidget()->UpdateAirplaneImagePosition(this->GetActorLocation());
-	Player->GetHUDWidget()->GetMiniMapWidget()->UpdateAirplaneImagePosition(this->GetActorLocation());
+	GAMESCENE_MANAGER->GetPlayer()->GetMainMapWidget()->UpdateAirplaneImagePosition(this->GetActorLocation());
+	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetMiniMapWidget()->UpdateAirplaneImagePosition(this->GetActorLocation());
 }
 
 void AC_Airplane::UpdateProps(const float& DeltaTime)

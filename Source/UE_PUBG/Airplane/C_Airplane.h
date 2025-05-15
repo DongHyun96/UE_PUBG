@@ -81,14 +81,10 @@ private:
 	bool IsFlying{};
 
 private:
-	TArray<class UStaticMeshComponent*> Props{};
+	TArray<UStaticMeshComponent*> Props{};
 
 	const float PROP_ROT_SPEED = 2000.f;
 	float PropRotZValue{};
-
-private:
-	// Player Map 관련 및 HUD 정보 계속해서 수정 필요해서 레퍼런스 들고 있게 처리
-	class AC_Player* Player{};
 
 };
 

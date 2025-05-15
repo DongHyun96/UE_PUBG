@@ -37,6 +37,10 @@ UC_GameSceneManager::UC_GameSceneManager()
 void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
+
+	// TimerHandles pooling
+	for (int i = 0; i < TimerHandlePoolCount; ++i) GameSceneTimerHandles.AddDefaulted();
+		
 	
 	UC_GameInstance* GI = Cast<UC_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
@@ -161,6 +165,13 @@ AC_LootCrate* UC_GameSceneManager::SpawnLootCrateAt(FVector SpawnLocation, AC_Ba
 
 FTimerHandle& UC_GameSceneManager::GetTimerHandle()
 {
+	for (FTimerHandle& TimerHandle : GameSceneTimerHandles)
+	{
+		if (!GetWorld()->GetTimerManager().IsTimerActive(TimerHandle))
+			return TimerHandle;
+	}
+
+	// 만약 모든 TimerHandle이 사용중이라면 새로운 TimerHandle 추가해서 처리시킴
 	GameSceneTimerHandles.AddDefaulted();
 	return GameSceneTimerHandles.Last();
 }

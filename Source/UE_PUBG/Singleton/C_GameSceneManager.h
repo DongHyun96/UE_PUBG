@@ -103,8 +103,7 @@ public:
 	void AddGCProtectedObject(UObject* Object) { GCProtectedObjects.Add(Object); }
 
 	/// <summary>
-	/// 새로운 TimerHandle 받기
-	/// 새로운 TimerHandle을 생성하면서 동시에 GameScene이 끝날 때 
+	/// Object 
 	/// </summary>
 	/// <returns></returns>
 	FTimerHandle& GetTimerHandle();
@@ -181,6 +180,7 @@ private:
 
 	// InGameScene내에서 사용되는 TimerHandle
 	TArray<FTimerHandle> GameSceneTimerHandles{};
+	const int TimerHandlePoolCount = 50;
 
 private: /* Widget UI 관련 */
 
