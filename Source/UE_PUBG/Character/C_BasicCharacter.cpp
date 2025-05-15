@@ -531,8 +531,6 @@ void AC_BasicCharacter::PoolingBullets()
 	}
 }
 
-
-
 void AC_BasicCharacter::ActivateBloodParticle(FVector InLocation)
 {
 	for (auto BloodEffect : BloodParticleComponents)

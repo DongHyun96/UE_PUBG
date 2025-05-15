@@ -261,7 +261,7 @@ public:
 
 	void SetCanMove(bool InCanMove) { bCanMove = InCanMove; }
 
-	bool GetCanMove() const { return bCanMove; }a
+	bool GetCanMove() const { return bCanMove; }
 	bool GetIsAimDown() { return bIsAimDownSight; }
 	bool GetIsWatchingSight() { return bIsWatchingSight; }
 	bool GetIsFiringBullet() { return bIsFiringBullet; }
