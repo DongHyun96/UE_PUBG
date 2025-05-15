@@ -305,8 +305,13 @@ void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 
 	EnemyAIController->GetBrainComponent()->StopLogic("Died");
 
+	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_Enemy::DestroyCharacter, 5.f, false);
+
 	// Player만 남아있는지 체크
 	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+	if (!IsValid(Player)) return;
+	
 	if (Ranking == 2 && Player->GetMainState() != EMainState::DEAD)
 	{
 		GAMESCENE_MANAGER->SetIsGameOver(true);

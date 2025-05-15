@@ -106,7 +106,7 @@ private:
 
 private:
 
-	class AC_Player* Player{};
+	AC_Player* Player{};
 	class UCharacterMovementComponent* PlayerMovement{};
 
 public:

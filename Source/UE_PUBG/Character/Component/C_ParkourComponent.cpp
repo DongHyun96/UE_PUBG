@@ -114,7 +114,7 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		{
 			GetWorld()->GetTimerManager().SetTimer
 			(
-				TimerHandle,
+				GAMESCENE_MANAGER->GetTimerHandle(),
 				this,
 				&UC_ParkourComponent::SetOwnerCharacterCanMoveToTrue,
 				CanMoveTimerAfterWarpActionFin, 

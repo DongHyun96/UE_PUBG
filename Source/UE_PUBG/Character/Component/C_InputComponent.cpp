@@ -636,10 +636,10 @@ void UC_InputComponent::OnTabKey()
 
 void UC_InputComponent::OnGKey()
 {
-	GAMESCENE_MANAGER->GetPlayer()->ToggleThrowablegWeaponWheel();
+	Player->ToggleThrowablegWeaponWheel();
 }
 
 void UC_InputComponent::OnTKey()
 {
-	GAMESCENE_MANAGER->GetPlayer()->ToggleConsumableWheel();
+	Player->ToggleConsumableWheel();
 }
