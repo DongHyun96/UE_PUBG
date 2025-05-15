@@ -111,6 +111,7 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 			OwnerCharacter->SetCanMove(true);
 		}
 		else
+		{
 			GetWorld()->GetTimerManager().SetTimer
 			(
 				TimerHandle,
@@ -119,6 +120,7 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 				CanMoveTimerAfterWarpActionFin, 
 				false
 			);
+		}
 
 		// 착용 중인 무기가 있었을 때 해당 무기 다시 장착 시도
 		OwnerCharacter->GetEquippedComponent()->TryReAttachCurWeaponToHand();

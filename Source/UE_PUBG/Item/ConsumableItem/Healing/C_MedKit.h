@@ -43,8 +43,7 @@ private:
 	void HideBandageMesh();
 
 private:
-
-	struct FTimerHandle TimerHandle {};
+	
 	static const float SWITCHING_TIME;
 	static const float BAND_USAGE_MESH_SHOW_TIME;
 };

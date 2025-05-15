@@ -242,9 +242,12 @@ private:
 
 private:
 
+	// TODO : TimerHandle Tick에서 불리고 있는 쪽이 있음
+	// 이거 처리해줘야 됨
+	FTimerHandle TimerHandle{};
+	
 	// Warp Action이 끝나고 MainSkeletalMesh로 돌아온 이 후, CanMove를 true로 주기까지의 Timer 시간
 	float CanMoveTimerAfterWarpActionFin{};
-	struct FTimerHandle TimerHandle{};
 
 private:
 

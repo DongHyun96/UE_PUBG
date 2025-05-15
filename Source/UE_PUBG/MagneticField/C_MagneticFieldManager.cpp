@@ -252,10 +252,11 @@ void AC_MagneticFieldManager::InitManager()
 
 	UpdateWalls(MainCircle.MidLocation, MainCircle.Radius);
 
-	FTimerHandle TimerHandle{};
-	FTimerHandle TimerHandle2{};
+	
 	//UpdateNextCircleInfoOnMapUI();
 	//UpdateMainCircleInfoOnMapUI();
+	FTimerHandle TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+	FTimerHandle TimerHandle2 = GAMESCENE_MANAGER->GetTimerHandle();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_MagneticFieldManager::UpdateMainCircleInfoOnMapUI, 2.f, false);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle2, this, &AC_MagneticFieldManager::UpdateNextCircleInfoOnMapUI, 2.f, false);
 }
