@@ -60,8 +60,8 @@
 
 AC_Player::AC_Player()
 {
-	//PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = false;
 	
 	MyInputComponent = CreateDefaultSubobject<UC_InputComponent>("MyInputComponent");
 	CrosshairWidgetComponent = CreateDefaultSubobject<UC_CrosshairWidgetComponent>("CrosshairWidgetComponent");

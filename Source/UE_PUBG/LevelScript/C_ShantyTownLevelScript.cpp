@@ -16,7 +16,9 @@
 
 AC_ShantyTownLevelScript::AC_ShantyTownLevelScript()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
 }
 
 
@@ -25,7 +27,7 @@ void AC_ShantyTownLevelScript::BeginPlay()
 	Super::BeginPlay();
 
 	if (!bUseCodeToInit) return;
-
+	//return;
 	InitFloors();
 
 	//FString str = "ShantyTown Floor Count : " + FString::FromInt(FloorStaticMeshComponents.Num()); 
@@ -40,7 +42,7 @@ void AC_ShantyTownLevelScript::BeginPlay()
 
 		for (TSubclassOf<AC_Item> ItemClass : PUBGItemClasses)
 		{
-			while (!bCanSpawn && SpawnCount < 100)
+			while (!bCanSpawn && SpawnCount < 50)
 			{
 				float RandomX = FMath::RandRange(-BoxExtent.X, BoxExtent.X) * 0.5f;
 				float RandomY = FMath::RandRange(-BoxExtent.Y, BoxExtent.Y) * 0.5f;

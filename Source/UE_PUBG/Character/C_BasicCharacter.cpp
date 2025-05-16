@@ -52,8 +52,8 @@
 AC_BasicCharacter::AC_BasicCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	//PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = false;
 
 	EquippedComponent = CreateDefaultSubobject<UC_EquippedComponent>("EquippedComponent");
 	EquippedComponent->SetOwnerCharacter(this);
@@ -541,7 +541,6 @@ void AC_BasicCharacter::PoolingBullets()
 {
 	FActorSpawnParameters Param2{};
 	Param2.Owner = this;
-	return;
 	for (int i = 0; i < 30; i++)
 	{
 		UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));

@@ -20,8 +20,8 @@
 
 AC_Bullet::AC_Bullet()
 {
-	//PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = false;
 	//WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
 	//if (!RootComponent)
 	//{
