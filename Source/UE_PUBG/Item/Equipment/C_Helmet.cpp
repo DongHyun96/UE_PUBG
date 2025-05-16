@@ -15,7 +15,9 @@
 
 AC_Helmet::AC_Helmet()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
 }
 
 void AC_Helmet::BeginPlay()

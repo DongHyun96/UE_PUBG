@@ -13,12 +13,15 @@ void UC_StaticMeshToHISMConverter::ConvertToHISM()
 	UWorld* World = GetWorld();
 	if (!World) return;
 
-	// HISM들을 붙일 새로운 Actor 생성
+	// 새로운 Actor 생성 및 RootComponent 설정
 	AActor* InstancingActor = World->SpawnActor<AActor>();
 	if (!InstancingActor) return;
 
-	// 원하는 이름 부여 (에디터에서 찾기 쉽게)
 	InstancingActor->Rename(TEXT("HISM_Container"));
+	USceneComponent* RootComp = NewObject<USceneComponent>(InstancingActor, TEXT("Root"));
+	InstancingActor->SetRootComponent(RootComp);
+	RootComp->RegisterComponent();
+	InstancingActor->SetActorLocation(FVector::ZeroVector); // 위치 지정
 
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(World, AStaticMeshActor::StaticClass(), FoundActors);
@@ -35,20 +38,17 @@ void UC_StaticMeshToHISMConverter::ConvertToHISM()
 
 		if (!MeshToHISMMap.Contains(Mesh))
 		{
-			// HISM 생성 및 설정
 			UHierarchicalInstancedStaticMeshComponent* HISM =
 				NewObject<UHierarchicalInstancedStaticMeshComponent>(InstancingActor);
 
 			HISM->RegisterComponent();
 			HISM->SetStaticMesh(Mesh);
-			HISM->AttachToComponent(InstancingActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-
+			HISM->AttachToComponent(RootComp, FAttachmentTransformRules::KeepRelativeTransform);
 			MeshToHISMMap.Add(Mesh, HISM);
 		}
 
 		MeshToHISMMap[Mesh]->AddInstance(SMC->GetComponentTransform());
 
-		// 원본 액터 제거
 		SMActor->Destroy();
 	}
 }

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/C_Enemy.h"
@@ -35,7 +35,8 @@ const TMap<EPoseState, float> AC_Enemy::ActorZLocationOffsetFromBottom =
 
 AC_Enemy::AC_Enemy()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	
 	TeamID = ETeamAttitude::Hostile;
 

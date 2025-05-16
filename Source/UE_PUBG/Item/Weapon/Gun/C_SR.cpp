@@ -37,7 +37,8 @@ const TMap<FName, float> AC_SR::BODYPARTS_DAMAGERATE =
 
 AC_SR::AC_SR()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	//ItemType 설정.
 	//ItemDataRef.ItemType = EItemTypes::MAINGUN;
 	//CurGunType = EGunType::SR;

@@ -11,7 +11,9 @@ const float AC_EquipableItem::DURABILITY_MAX = 100.f;
 
 AC_EquipableItem::AC_EquipableItem()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
 }
 
 void AC_EquipableItem::BeginPlay()

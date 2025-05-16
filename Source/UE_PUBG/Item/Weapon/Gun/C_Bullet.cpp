@@ -20,7 +20,8 @@
 
 AC_Bullet::AC_Bullet()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	//WeaponButtonStrategy = CreateDefaultSubobject<AC_GunStrategy>("GunStrategy");
 	//if (!RootComponent)
 	//{
@@ -105,6 +106,9 @@ void AC_Bullet::DeactivateInstance()
 	BulletProjectileMovement->Velocity = FVector(0);
 	BulletProjectileMovement->SetActive(false);
 	BulletProjectileMovement->SetComponentTickEnabled(false);
+
+	//
+	SphereCollider->SetVisibility(false);
 
 	SphereCollider->SetActive(false);
 	SphereCollider->SetComponentTickEnabled(false);
