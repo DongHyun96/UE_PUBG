@@ -81,7 +81,7 @@ public:
 	/// </summary>
 	void SwapMeshToMainSkeletalMesh();
 
-	class USkeletalMesh* GetRootedSkeletalMesh() { return RootedSkeletalMesh; }
+	USkeletalMesh* GetRootedSkeletalMesh() { return RootedSkeletalMesh; }
 
 private:
 	/// <summary>
@@ -208,7 +208,7 @@ protected:
 
 	// Root Bone 처리된 Skeletal Mesh의 Anim class
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSubclassOf<class UAnimInstance> RootedAnimInstanceClass{};
+	TSubclassOf<UAnimInstance> RootedAnimInstanceClass{};
 
 protected:
 
@@ -228,7 +228,7 @@ private:
 
 private:
 
-	class USkeletalMesh* MainSkeletalMesh{};
+	USkeletalMesh* MainSkeletalMesh{};
 
 protected:
 

@@ -80,8 +80,6 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	Data.RightRotation =
 		UKismetMathLibrary::RInterpTo(Data.RightRotation, RightRotation, DeltaTime, InterpSpeed);
-
-	// PlaySoundInTick(DeltaTime);
 }
 
 void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRotation, EPhysicalSurface& OutSurfaceType)
@@ -135,87 +133,6 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 	OutRotation = FRotator(Pitch, 0, Roll);
 
 	OutSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
-}
-
-void UC_FeetComponent::PlaySoundInTick(float DeltaTime)
-{
-	if (OwnerCharacter == nullptr) return;
-
-	//TODO : 속도에 따른 소리 크기
-
-	FVector Velocity = OwnerCharacter->GetVelocity();
-	float Speed = Velocity.Size();
-
-	if (Speed < 10.f)
-	{
-		AccumulatedFootstepTime = 0.f; // 멈췄으면 초기화
-		return;
-	}
-
-	//float FootstepInterval = FMath::Clamp(670.f / Speed, 0.2f, 1.0f);
-	float FootstepInterval = 1.25f - Speed / 670.f;
-
-	AccumulatedFootstepTime += DeltaTime; // 매 프레임 델타타임만큼 누적
-	//UC_Util::Print(Speed);
-	//UC_Util::Print(FootstepInterval);
-	//UC_Util::Print(AccumulatedFootstepTime);
-
-	if (AccumulatedFootstepTime >= FootstepInterval)
-	{
-		//FVector Velocity = OwnerCharacter->GetVelocity();
-		//float Speed = Velocity.Size();
-
-		float VolumeMultiplier = FMath::Clamp(Speed / 670.f, 0.5f, 1.2f);
-
-		// PlaySoundCue(CurrentSurfaceType, GetOwner()->GetActorLocation(), VolumeMultiplier);
-		AccumulatedFootstepTime = 0.f; // 발소리 내고 다시 초기화
-	}
-	//// 캐릭터의 속도 계산
-	//FVector Velocity = OwnerCharacter->GetVelocity();
-	//float Speed = Velocity.Size();  // 캐릭터의 속도
-
-	//if (Speed < 10.f) return;
-
-	//float FootstepInterval = 0.0f;
-
-	//if (Speed > 600.f)
-	//{
-	//	FootstepInterval = .2;
-	//}
-	//else if (Speed > 480.f)
-	//{
-	//	FootstepInterval = .3f;
-	//}
-	//else if (Speed > 400.f)
-	//{
-	//	FootstepInterval = .4f;
-	//}
-	//else if (Speed > 340.f)
-	//{
-	//	FootstepInterval = .5f;
-	//}
-	//else if (Speed > 120.f)
-	//{
-	//	FootstepInterval = .6f;
-	//}
-	//else
-	//{
-	//	FootstepInterval = .9f;
-	//}
-	////UC_Util::Print(Speed);
-
-	//// 속도에 따른 발소리 재생 간격 계산
-	//// 속도가 빠르면 소리 간격이 짧고, 느리면 길어진다.
-	////float FootstepInterval = FMath::Clamp(670.f / Speed , 0.2f, 1.f);  // 속도가 500을 넘지 않도록 클램프
-	////UC_Util::Print(FootstepInterval);
-
-	//// 일정 시간마다 발소리 재생
-	//// GetWorld()->GetTimeSeconds()로 게임 시작 시간 이후의 경과 시간을 확인
-	//if (GetWorld()->GetTimeSeconds() - LastFootstepTime >= FootstepInterval)
-	//{
-	//	PlaySoundCue(CurrentSurfaceType, GetOwner()->GetActorLocation());
-	//	LastFootstepTime = GetWorld()->GetTimeSeconds();  // 발소리가 재생된 시간 기록
-	//}
 }
 
 void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier)

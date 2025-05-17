@@ -18,6 +18,11 @@ class UE_PUBG_API UC_ThrowableProgressBar : public UCanvasPanel
 public:
 	
 	/// <summary>
+	/// HUD Widget의 NativeConstruct부분에서 호출될 함수
+	/// </summary>
+	void OnParentWidgetNativeConstruct();
+	
+	/// <summary>
 	/// Custom Tick (C_HUDWidget 클래스 내에서 호출될 예정) 
 	/// </summary>
 	void Tick(float InDeltaTime);
@@ -37,5 +42,11 @@ private:
 private:
 
 	const float WarningStartPercent = 0.68f; // WarningFlickering과 ProgressBar 색상 더 진하게 처리하는 시점
+
+private:
+
+	float FlickerElapsedTime{};
+	const float FlickerInterval = 0.05f;
+	bool bIsFlickerImageVisible = true;
 
 };

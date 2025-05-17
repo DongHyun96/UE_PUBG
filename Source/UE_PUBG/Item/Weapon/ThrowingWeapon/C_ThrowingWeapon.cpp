@@ -39,6 +39,7 @@
 #include "AIThrowableAttackStrategy/C_AIGrenadeAttackStrategy.h"
 #include "AIThrowableAttackStrategy/C_AISmokeGrenadeAttackStrategy.h"
 #include "AIThrowableAttackStrategy/I_AIThrowableAttackStrategy.h"
+#include "HUD/C_ThrowableProgressBar.h"
 
 #include "Utility/C_Util.h"
 
@@ -211,6 +212,21 @@ void AC_ThrowingWeapon::HandleAfterCooked(float DeltaTime)
 	if (!bIsCooked || bExploded) return;
 	
 	CookingTimer += DeltaTime;
+
+	// Set ThrowableProgressBar Percent
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+	{
+		UC_ThrowableProgressBar* ThrowableProgressBar = Player->GetHUDWidget()->GetThrowableProgressBar(); 
+		
+		if (GetAttachParentActor()) // 손에서 아직 떠나지 않았을 때
+		{
+			ThrowableProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			// 조금 더 인위적으로 보이게끔 CookingTime 총 시간을 늘림
+			const float CookingTimeExtend = FMath::GetMappedRangeValueClamped(FVector2D(2.f, 5.f), FVector2D(0.1f, 0.3f), CookingTime); 
+			ThrowableProgressBar->SetPercent(CookingTimer / (CookingTime + CookingTimeExtend));
+		}
+	}
+	
 	if (CookingTimer > CookingTime) Explode(); // Time to explode
 }
 
@@ -643,6 +659,9 @@ void AC_ThrowingWeapon::OnThrowThrowable()
 	ProjectileMovement->Activate();
 
 	if (!bIsCooked) StartCooking();
+
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+		Player->GetHUDWidget()->GetThrowableProgressBar()->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void AC_ThrowingWeapon::OnThrowProcessEnd()
@@ -772,6 +791,9 @@ bool AC_ThrowingWeapon::ReleaseOnGround()
 
 	ProjectileMovement->Velocity = FVector(0.f, 0.f, 0.f); // 0.f의 속력으로 날리기
 	ProjectileMovement->Activate();
+
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+		Player->GetHUDWidget()->GetThrowableProgressBar()->SetVisibility(ESlateVisibility::Hidden);
 
 	OnThrowProcessEnd();
 
