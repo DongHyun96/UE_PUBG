@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/AttachmentActors/C_Attachment_Scope4X.h"
@@ -9,9 +9,10 @@
 
 AC_Attachment_Scope4X::AC_Attachment_Scope4X()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	PartName       = EPartsName::SCOPE;
 	AttachmentName = EAttachmentNames::SCOPE4;
+	//RootComponent = AttachmentMesh;
 }
 
 void AC_Attachment_Scope4X::BeginPlay()

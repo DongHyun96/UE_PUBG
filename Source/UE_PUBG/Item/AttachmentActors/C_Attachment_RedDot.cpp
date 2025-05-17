@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/AttachmentActors/C_Attachment_RedDot.h"
@@ -6,9 +6,10 @@
 
 AC_Attachment_RedDot::AC_Attachment_RedDot()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	PartName = EPartsName::SCOPE;
 	AttachmentName = EAttachmentNames::REDDOT;
+	//RootComponent = AttachmentMesh;
 }
 
 void AC_Attachment_RedDot::BeginPlay()

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/AttachmentActors/C_Attachment_Compensator.h"
@@ -8,10 +8,11 @@
 
 AC_Attachment_Compensator::AC_Attachment_Compensator()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	PartName	   = EPartsName::MUZZLE;
 	AttachmentName = EAttachmentNames::COMPENSATOR;
 	AttachmentMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMesh");
+	RootComponent = AttachmentMesh;
 }
 
 void AC_Attachment_Compensator::BeginPlay()

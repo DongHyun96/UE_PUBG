@@ -29,7 +29,7 @@ void AC_ShantyTownLevelScript::BeginPlay()
 	if (!bUseCodeToInit) return;
 
 	UC_Util::Print("Using LevelScript to spawn level items", FColor::Red, 10.f);
-
+	return;
 	InitFloors();
 	//FString str = "ShantyTown Floor Count : " + FString::FromInt(FloorStaticMeshComponents.Num()); 
 	//UC_Util::Print(str , FColor::Yellow, 10.f);

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Item/AttachmentActors/C_Attachment_VertGrip.h"
 #include "Item/AttachmentActors/C_Attachment_Scope4X.h"
@@ -10,11 +10,11 @@
 
 AC_Attachment_VertGrip::AC_Attachment_VertGrip()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	PartName       = EPartsName::GRIP;
 	AttachmentName = EAttachmentNames::VERTGRIP;
 	AttachmentMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
-
+	RootComponent = AttachmentMesh;
 }
 
 void AC_Attachment_VertGrip::BeginPlay()
