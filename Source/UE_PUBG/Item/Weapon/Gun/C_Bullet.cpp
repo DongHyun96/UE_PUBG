@@ -55,7 +55,7 @@ void AC_Bullet::BeginPlay()
 		//UC_Util::Print("Found Mesh");
 		
 	}
-	//InitializeItem(ItemCode);
+	InitializeItem(ItemCode);
 	//DeactivateInstance();
 	//SetActorTickEnabled(false);
 }
