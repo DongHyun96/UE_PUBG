@@ -13,30 +13,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1cdef74d-d80f-494a-ae47-bfe8b5168add" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Enemy/BPC_Enemy.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Enemy/BPC_Enemy.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/ShantyTown/Maps/Demo_Map.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ShantyTown/Maps/Demo_Map.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/HH_Map/HH_ThirdPersonMap/3/MQ/7N6GO3N91YYQ9QSEH3IXWV.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/HH_Map/HH_ThirdPersonMap/3/XH/MALRFZOS5Y3X8WKQZ7SQQU.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/HH_Map/HH_ThirdPersonMap/B/WP/MKGRDMCC2AW1PN8VYNPGYZ.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Airplane/C_AirplaneManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Airplane/C_AirplaneManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_AnimPlayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_AnimPlayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_EquippedComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_EquippedComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_EquippedComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_EquippedComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_StatComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_StatComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_StatComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_StatComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/ThrowingWeapon/C_GrenadeExplode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/ThrowingWeapon/C_GrenadeExplode.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/MagneticField/C_MagneticFieldManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/MagneticField/C_MagneticFieldManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/MagneticField/C_MagneticFieldManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/MagneticField/C_MagneticFieldManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DpaMonitoringSettings">
+    <option name="firstShow" value="false" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "DongHyun96"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/DongHyun96/UE_PUBG.git",
+    "accountId": "a634e358-9f7f-400d-8b05-4a4417fdaf37"
+  }
+}]]></component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -50,10 +51,10 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "C/C++ 프로젝트.UE_PUBG.executor": "Debug",
+    "C/C++ 프로젝트.UE_PUBG.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "DongHyun__Branch",
+    "git-widget-placeholder": "Buffer__Temp",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -175,6 +176,7 @@
       <workItem from="1738587261186" duration="543000" />
       <workItem from="1738602426162" duration="350000" />
       <workItem from="1738651163896" duration="1256000" />
+      <workItem from="1747484732968" duration="430000" />
     </task>
     <servers />
   </component>
