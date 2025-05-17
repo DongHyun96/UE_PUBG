@@ -91,8 +91,5 @@ void UC_GameOverWidget::HandleExitToLobbyTimer(float DeltaTime)
 	ExitToLobbyCountDownText->SetText(FText::FromString(CountDownString));
 
 	if (ExitToLobbyTimer < 0.f)
-	{
-		// TODO : 로비로 나가기
-		
-	}
+		UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), LobbyLevel);
 }

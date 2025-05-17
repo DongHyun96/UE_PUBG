@@ -27,11 +27,19 @@ void AC_ShantyTownLevelScript::BeginPlay()
 	Super::BeginPlay();
 
 	if (!bUseCodeToInit) return;
-	//return;
+
+	UC_Util::Print("Using LevelScript to spawn level items", FColor::Red, 10.f);
+
 	InitFloors();
 	//FString str = "ShantyTown Floor Count : " + FString::FromInt(FloorStaticMeshComponents.Num()); 
 	//UC_Util::Print(str , FColor::Yellow, 10.f);
 
+	// For Testing(지우기)
+	float MinBoxExtentSize = 1e9;
+	FString MinBoxName{};
+	float MaxBoxExtentSize = 0.f;
+	float AverageBoxSize{};
+	
 	for (UStaticMeshComponent* FloorMeshComponent : FloorStaticMeshComponents)
 	{
 		FVector Origin{}, BoxExtent{};
@@ -39,9 +47,22 @@ void AC_ShantyTownLevelScript::BeginPlay()
 		UKismetSystemLibrary::GetComponentBounds(FloorMeshComponent, Origin, BoxExtent, SphereRadius);
 		float ZOffset = BoxExtent.Z * 0.5f;
 
+		float CurrentBoxSize = BoxExtent.X * BoxExtent.Y * 0.01f; // Meter 단위로 처리 
+		// MinBoxExtentSize = FMath::Min(MinBoxExtentSize, CurrentBoxSize);
+		if (MinBoxExtentSize > CurrentBoxSize)
+		{
+			MinBoxExtentSize = CurrentBoxSize;
+			MinBoxName = FloorMeshComponent->GetOwner()->GetActorLabel();
+		}
+		
+		MaxBoxExtentSize = FMath::Max(MaxBoxExtentSize, CurrentBoxSize);
+		AverageBoxSize += CurrentBoxSize;
+
+		const int TOTAL_SPAWN_COUNT_PER_ITEM = 3; // 이게 아이템 총 량은 아니고 같은 아이템 종류 개수 Limit 개수임
+		
 		for (TSubclassOf<AC_Item> ItemClass : PUBGItemClasses)
 		{
-			while (!bCanSpawn && SpawnCount < 10)
+			while (!bCanSpawn && SpawnCount < TOTAL_SPAWN_COUNT_PER_ITEM)
 			{
 				float RandomX = FMath::RandRange(-BoxExtent.X, BoxExtent.X) * 0.5f;
 				float RandomY = FMath::RandRange(-BoxExtent.Y, BoxExtent.Y) * 0.5f;
@@ -117,6 +138,15 @@ void AC_ShantyTownLevelScript::BeginPlay()
 			SpawnedItem->SetActorHiddenInGame(bHideSpawnedItemsOnGameStart);
 		}
 	}
+
+	AverageBoxSize /= FloorStaticMeshComponents.Num();
+	FString str = "AverageFloorSize : " + FString::SanitizeFloat(AverageBoxSize);
+	UC_Util::Print(str, FColor::Cyan, 20.f);
+	str = "MinFloorSize : " + FString::SanitizeFloat(MinBoxExtentSize);
+	UC_Util::Print(str, FColor::Cyan, 20.f);
+	str = "MaxFloorSize : " + FString::SanitizeFloat(MaxBoxExtentSize);
+	UC_Util::Print(str, FColor::Cyan, 20.f);
+	UC_Util::Print(MinBoxName, FColor::Cyan, 20.f);
 }
 
 void AC_ShantyTownLevelScript::Tick(float DeltaTime)

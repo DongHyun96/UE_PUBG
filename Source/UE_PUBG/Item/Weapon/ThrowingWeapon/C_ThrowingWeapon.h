@@ -92,6 +92,14 @@ public:
 	/// <return> : OwnerCharcter가 nullptr이면, return false </return>
 	bool UpdateCurMontagesToOwnerCharacterPoseState();
 
+private:
+	
+	/// <summary>
+	/// 투척류 Cooking 처리된 이후 Handling 
+	/// </summary>
+	/// <param name="DeltaTime"></param>
+	void HandleAfterCooked(float DeltaTime);
+
 public:
 
 	/// <summary>
@@ -350,11 +358,16 @@ private:
 private:
 
 	bool bIsCooked{};
+	bool bExploded{};
 
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	float CookingTime = 5.f;
+
+private:
+
+	float CookingTimer{}; // Cooking 시작 되었을 때 Count될 Timer
 
 	//protected:
 	//

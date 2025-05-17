@@ -46,6 +46,8 @@ public:
 
 	void SetCrawlRotationAngle(const float& Angle) { CrawlRotationAngle = Angle; }
 
+	float GetSpeed() const { return Speed; }
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

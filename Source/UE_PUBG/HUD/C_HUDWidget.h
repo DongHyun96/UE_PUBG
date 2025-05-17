@@ -109,6 +109,7 @@ public:
 	class UC_AmmoWidget*					GetAmmoWidget()						const { return AmmoWidget; }
 	class UC_ArmorInfoWidget*				GetArmorInfoWidget()				const { return ArmorInfoWidget; }
 	class UC_MagneticFieldIndicatorWidget*	GetMagneticFieldIndicatorWidget()	const { return MagneticFieldIndicatorWidget; }
+	class UC_ThrowableProgressBar*			GetThrowableProgressBar()			const { return ThrowableProgressBar; }
 
 protected:
 
@@ -176,6 +177,10 @@ private:
 
 	const FVector2D MINIMAP_ENLARGED_INDICATOR_POS	= FVector2D(783.304077f, -120.f);
 	const FVector2D MINIMAP_MINIMIZED_INDICATOR_POS = FVector2D(783.304077f, 185.387939f);
-	FVector2D		MagneticFieldIndicatorPosLerpDestination = MINIMAP_MINIMIZED_INDICATOR_POS; 
+	FVector2D		MagneticFieldIndicatorPosLerpDestination = MINIMAP_MINIMIZED_INDICATOR_POS;
+
+private: // ThrowableProgressBar
+
+	UC_ThrowableProgressBar* ThrowableProgressBar{};	
 
 };

@@ -29,7 +29,6 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-
 	class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 
 protected:

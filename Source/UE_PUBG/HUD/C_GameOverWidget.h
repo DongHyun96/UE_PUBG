@@ -63,6 +63,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ExitToLobbyCountDownText{};
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TSoftObjectPtr<UWorld> LobbyLevel{};
+	
 private:
 
 	// 최대 60초 기다린 이후 로비로 나가기

@@ -770,15 +770,6 @@ void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 	GameOverWidget->ActivateLoseSequence();
 	//if (Ranking == 1) GameOverWidget->ActivateWinningSequence();
 	//else GameOverWidget->ActivateLoseSequence();
-
-	// Player의 경우, 터질 수 있는 경우를 미연에 방지하고자, 사망 처리되어도 DestroyActor처리하지 않고 객체는 살려둔채로 HiddenInGame 처리
-	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
-	GetWorldTimerManager().SetTimer(TimerHandle,
-	[this]()
-	{
-		this->SetActorHiddenInGame(true);
-	},
-	5.f, false);
 }
 
 void AC_Player::EnableRagdoll()
@@ -792,6 +783,13 @@ void AC_Player::EnableRagdoll()
 		
 	HUDWidget->SetVisibility(ESlateVisibility::Collapsed);
 	SetActorTickEnabled(false);
+}
+
+void AC_Player::DestroyCharacter()
+{
+	Super::DestroyCharacter();
+	// Player의 경우, 터질 수 있는 경우를 미연에 방지하고자, 사망 처리되어도 DestroyActor처리하지 않고 객체는 살려둔채로 HiddenInGame 처리
+	this->SetActorHiddenInGame(true);
 }
 
 void AC_Player::SetAimPressCameraLocation()

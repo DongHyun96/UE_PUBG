@@ -105,7 +105,7 @@ void AC_EnemyAIController::OnPossess(APawn* InPawn)
 		// if (AC_Player* Player = Cast<AC_Player>(actor))
 		// {
 		// 	BehaviorComponent->SetTargetLocation(Player->GetActorLocation());
-		// 	Blackboard->SetValueAsObject("Player", Player);
+		// 	Blackboard->SetValueAsObject("Player", Player);x
 		// 	return;
 		// }
 	}
