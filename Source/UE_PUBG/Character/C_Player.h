@@ -179,6 +179,8 @@ private:
 	void CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor) override;
 	void EnableRagdoll() override;
 
+	void DestroyCharacter() override;
+
 protected:
 	AC_Item* CurOutLinedItem = nullptr;
 

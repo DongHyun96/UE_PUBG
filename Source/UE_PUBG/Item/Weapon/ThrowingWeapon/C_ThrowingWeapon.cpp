@@ -190,7 +190,9 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AC_ThrowingWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (!IsValid(OwnerCharacter)) return;
 	UpdateCurMontagesToOwnerCharacterPoseState();
+	HandleAfterCooked(DeltaTime);
 }
 
 bool AC_ThrowingWeapon::UpdateCurMontagesToOwnerCharacterPoseState()
@@ -202,6 +204,14 @@ bool AC_ThrowingWeapon::UpdateCurMontagesToOwnerCharacterPoseState()
 	CurThrowProcessMontages = ThrowProcessMontages[OwnerCharacter->GetPoseState()];
 
 	return true;
+}
+
+void AC_ThrowingWeapon::HandleAfterCooked(float DeltaTime)
+{
+	if (!bIsCooked || bExploded) return;
+	
+	CookingTimer += DeltaTime;
+	if (CookingTimer > CookingTime) Explode(); // Time to explode
 }
 
   bool AC_ThrowingWeapon::AttachToHolster(USceneComponent* InParent)
@@ -741,9 +751,8 @@ void AC_ThrowingWeapon::StartCooking()
 {
 	bIsCooked = true;
 
-	// TODO : Player -> Ready 상태에서 Cooking 시작하면 남은 시간 HUD 띄우기
-	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);
+	/*FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_ThrowingWeapon::Explode, CookingTime, false);*/
 
 	if (!ThrowingWeaponSoundData) return;
 	if (!ThrowingWeaponSoundData->CookingSound) return;
@@ -777,10 +786,10 @@ void AC_ThrowingWeapon::Explode()
 		return;
 	}
 
-	bool Exploded = ExplodeStrategy->UseStrategy(this);
+	bExploded = ExplodeStrategy->UseStrategy(this);
 	if (GetAttachParentActor()) ReleaseOnGround(); // 손에서 아직 떠나지 않았을 때
 	
-	if (Exploded && ThrowingWeaponSoundData->ExplosionSound)
+	if (bExploded && ThrowingWeaponSoundData->ExplosionSound)
 		UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->ExplosionSound, GetActorLocation());
 }
 

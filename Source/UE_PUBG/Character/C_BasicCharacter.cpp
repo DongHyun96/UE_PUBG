@@ -262,9 +262,8 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 
 	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->AddTopKillFeedLog(KillFeedDescriptor);
 
-	// Player의 경우, ActorHiddenInGame으로 대체(터질 수 있는 부분이 많아서 Player Character는 Hidden 처리하고 객체는 살려둠)
-	/*FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_BasicCharacter::DestroyCharacter, 5.f, false);*/
+	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_BasicCharacter::DestroyCharacter, 5.f, false);
 }
 
 void AC_BasicCharacter::EnableRagdoll()
@@ -352,7 +351,6 @@ void AC_BasicCharacter::DestroyCharacter()
 	GAMESCENE_MANAGER->GetAllCharacters().Remove(this);
 	GAMESCENE_MANAGER->GetAllCharacterActors().Remove(this);
 	
-	this->Destroy();
 	//this->SetActorEnableCollision(false);
 	//this->SetActorHiddenInGame(true);
 }
