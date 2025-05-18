@@ -23,9 +23,10 @@ protected:
 
 public:
 	virtual void Tick(float DeltaTime) override;
-private:
+	
+private: // Primitive Operations
 
-	bool IsAvailableToStartUsing(class AC_BasicCharacter* InItemUser) override;
+	bool IsAvailableToStartUsing(AC_BasicCharacter* InItemUser) override;
 
 	void HandleActivatingState() override;
 

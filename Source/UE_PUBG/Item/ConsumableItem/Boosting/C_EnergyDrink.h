@@ -27,7 +27,7 @@ public:
 
 	//bool Interaction(AC_BasicCharacter* Character) override;
 
-private:
+private: // Primitive Operations
 	
 	void OnStartUsing()		  override;
 	void OnActivatingFinish() override;

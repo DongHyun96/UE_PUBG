@@ -27,7 +27,7 @@ public:
 
 	//bool Interaction(AC_BasicCharacter* Character) override;
 
-private:
+private: // Primitive Operations
 
 	void HandleActivatingState()	override;
 	void OnStartUsing()				override;
@@ -41,8 +41,6 @@ private:
 	void HideUsageMesh();
 
 private:
-
-	struct FTimerHandle TimerHandle{};
 	static const float USAGE_MESH_SHOWN_TIME;
 
 private:

@@ -54,7 +54,10 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
+	
+	/// <summary>
+	/// 현재의 ConsumableItemState에 따른 FSM 처리 (Template method) 
+	/// </summary>
 	virtual void Tick(float DeltaTime) override;
 	
 	//void SetLinkedItemBarWidget(class UC_ItemBarWidget* InItemBarWidget);
@@ -71,7 +74,7 @@ public:
 public:
 
 	/// <summary>
-	/// 소모 아이템 사용하기 시작
+	/// 소모 아이템 사용하기 시작 (Template method)
 	/// </summary>
 	/// <param name="ItemUser"> : 아이템 사용 Character </param>
 	/// <returns> : 사용 시작이 적절히 되었다면 return true </returns>
@@ -79,7 +82,7 @@ public:
 	bool StartUsingConsumableItem(class AC_BasicCharacter* InItemUser);
 
 	/// <summary>
-	/// 사용 활성화 시도 중 Item 사용 취소 시도
+	/// 사용 활성화 시도 중 Item 사용 취소 시도 (Template method)
 	/// </summary>
 	/// <returns> : 정상적으로 취소되었다면 return true </returns>
 	bool CancelActivating();
@@ -96,34 +99,34 @@ public:
 protected:
 
 	/// <summary>
-	/// 각 아이템 별 사용 시작 가능한 조건인지 check
+	/// 각 아이템 별 사용 시작 가능한 조건인지 check (StartUsingConsumableItem Template method 내의 Primitive operation)
 	/// </summary>
 	virtual bool IsAvailableToStartUsing(class AC_BasicCharacter* InItemUser) PURE_VIRTUAL(AC_ConsumableItem::IsAvailableToStartUsing, return false;);
 
 	/// <summary>
-	/// 각 아이템 별 사용 시작 시 호출될 Template method
+	/// 각 아이템 별 사용 시작 시 호출될 함수 (StartUsingConsumableItem Template method 내의 Primitive operation)
 	/// </summary>
 	virtual void OnStartUsing() PURE_VIRTUAL(AC_ConsumableItem::OnStartUsing, );
 
 	/// <summary>
-	/// 각 아이템 별 Activating이 끝났을 시 호출될 Template method
+	/// 각 아이템 별 Activating이 끝났을 시 호출될 함수 (Activating State 단계에서의 Primitive operation)
 	/// </summary>
 	virtual void OnActivatingFinish() PURE_VIRTUAL(AC_ConsumableItem::OnActivatingFinish, );
 	
 protected:
 
 	/// <summary>
-	/// 아이템 발동 시작과 실제 발동 사이의 사용대기시간에 호출될 Tick Activating State Template method
+	/// 아이템 발동 시작과 실제 발동 사이의 사용대기시간에 호출될 (Activating State 단계에서의 Primitive operation)
 	/// </summary>
 	virtual void HandleActivatingState() PURE_VIRTUAL(AC_ConsumableItem::HandleActivatingState, );
 
 	/// <summary>
-	/// 아이템 사용 시간까지 방해 받지 않고 모두 시간을 소모했다면, 사용하기 적용(Tick ActivatedCompleted Template method)
+	/// 아이템 사용 시간까지 방해 받지 않고 모두 시간을 소모했다면, 사용하기 적용 (ActivatedCompleted 단계에서의 Primitive Operation)
 	/// </summary>
 	virtual void HandleActivateCompletedState() PURE_VIRTUAL(AC_ConsumableItem::HandleActivateCompletedState, );
 
 	/// <summary>
-	/// 아이템 발동 이전에 Cancel 당했을 시 호출될 Template method
+	/// 아이템 발동 완료 이전에 Cancel 당했을 시 호출될 Primitive Operation (CancelActivating() Primitive Operation)
 	/// </summary>
 	virtual void OnCancelActivating() PURE_VIRTUAL(AC_ConsumableItem::OnCancelActivating, );
 

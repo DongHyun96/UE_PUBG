@@ -69,7 +69,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		if (UsingTimer < UsageTime)
 		{
 
-			HandleActivatingState(); // Pure virtual Template method
+			HandleActivatingState(); // Pure virtual primitive operation (자식 단계에서 세부적인 처리가 나뉘어지는 단계)
 
 			//방해 받았는지 체크해서 방해를 받았다면 Activating Cancel 시키기
 
@@ -113,14 +113,14 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		// 착용 중인 무기가 있었을 때 해당 무기 다시 장착 시도 (없다면 그냥 넘어가는 처리로 됨)
 		ItemUser->GetEquippedComponent()->TryReAttachCurWeaponToHand();
 
-		OnActivatingFinish(); // Template method
+		OnActivatingFinish(); // Pure-virtual Primitive Operation
 
 		ItemUser->SetIsActivatingConsumableItem(false, nullptr);
 
 	}
 		return;
 	case EConsumableItemState::ACTIVATE_COMPLETED:
-		HandleActivateCompletedState(); // Template Method
+		HandleActivateCompletedState(); // Pure-virtual Primitive Operation
 		return;
 	case EConsumableItemState::USED:
 	{
@@ -145,7 +145,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		{
 
 			ItemUser->GetInvenComponent()->RemoveItemToMyList(this);
-			HandleDestroy(); // 각 아이템 별 Destroy 하는 시점이 다름
+			HandleDestroy(); // 각 아이템 별 Destroy 하는 시점이 다름 (Pure-virtual Primitive operation)
 			return;
 		}
 	}
@@ -191,7 +191,7 @@ FName AC_ConsumableItem::GetConsumableItemName(EConsumableItemType InConsumableI
 
 bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 {
-	if (!IsAvailableToStartUsing(InItemUser))				return false; // Template Method(IsAvaliableToStartUsing())
+	if (!IsAvailableToStartUsing(InItemUser))				return false; // Pure-virtual Primitive Operation (자식단계에서 세부 구현이 이루어짐)
 	if (InItemUser->GetSwimmingComponent()->IsSwimming())	return false;
 	if (ConsumableItemState != EConsumableItemState::IDLE)	return false;
 
@@ -220,7 +220,7 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 		UserPlayer->GetInvenSystem()->GetInvenUI()->SetUsingItem(this); 
 	}
 	
-	OnStartUsing(); // Template method
+	OnStartUsing(); // Pure-virtual Primitive Operation
 
 	// 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기 시도
 	ItemUser->GetEquippedComponent()->TryAttachCurWeaponToHolsterWithoutSheathMotion();
@@ -275,7 +275,7 @@ bool AC_ConsumableItem::CancelActivating()
 			LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 	}
 
-	OnCancelActivating();
+	OnCancelActivating(); // Pure-virtual Primitive operation
 
 	ConsumableItemState = EConsumableItemState::IDLE;
 
