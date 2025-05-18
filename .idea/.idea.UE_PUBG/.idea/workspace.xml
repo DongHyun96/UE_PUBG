@@ -14,24 +14,6 @@
   <component name="ChangeListManager">
     <list default="true" id="1cdef74d-d80f-494a-ae47-bfe8b5168add" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Animation/ABP_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Animation/ABP_Player.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Model/BaseBody/MainCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Model/BaseBody/MainCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Model/BaseBody/MainCharacter_Skeleton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Model/BaseBody/MainCharacter_Skeleton.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_BasicCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_BasicCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_EquippedComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_EquippedComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_InputComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_InputComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Boosting/C_EnergyDrink.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Boosting/C_EnergyDrink.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Boosting/C_PainKiller.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Boosting/C_PainKiller.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_BoostItem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_BoostItem.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_ConsumableItem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_ConsumableItem.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_ConsumableItem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_ConsumableItem.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_HealItem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_HealItem.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_Bandage.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_Bandage.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_Bandage.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_Bandage.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_FirstAidKit.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_FirstAidKit.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_MedKit.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_MedKit.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,22 +62,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;C/C++ 프로젝트.UE_PUBG.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;DongHyun__Branch&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;CodeLensConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "C/C++ 프로젝트.UE_PUBG.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "Buffer__Temp",
+    "ignore.virus.scanning.warn.message": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "CodeLensConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="C/C++ 프로젝트.UE_PUBG">
     <configuration name="UE5" type="CppProject" factoryName="C++ Project">
       <option name="DEFAULT_PROJECT_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
@@ -211,6 +193,7 @@
       <workItem from="1747485271863" duration="589000" />
       <workItem from="1747486007292" duration="6294000" />
       <workItem from="1747540289874" duration="25665000" />
+      <workItem from="1747576177378" duration="381000" />
     </task>
     <servers />
   </component>
