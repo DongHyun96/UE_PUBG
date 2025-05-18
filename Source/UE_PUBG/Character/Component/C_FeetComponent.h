@@ -61,10 +61,6 @@ private:
 
 	void Trace(FName InName, float& OutDistance, FRotator& OutRotation, EPhysicalSurface& OutSurfaceType);
 
-private:
-	
-	void PlaySoundInTick(float DeltaTime);
-
 protected:
 	/// <summary>
 	/// FeetComponent내부에서 발소리를 재생하려고 했는데 쉽지 않아서

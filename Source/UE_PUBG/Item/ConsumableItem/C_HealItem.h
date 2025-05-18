@@ -26,8 +26,10 @@ public:
 	
 private:
 
-	void HandleActivateCompletedState() override; // Hook Method
+	// Primitive Operation
+	void HandleActivateCompletedState() override;
 
+	// Primitive Operation
 	bool IsAvailableToStartUsing(class AC_BasicCharacter* InItemUser) override;
 
 protected:

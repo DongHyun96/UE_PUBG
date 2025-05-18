@@ -44,6 +44,8 @@ void UC_HUDWidget::NativeConstruct()
 	if (!ThrowableProgressBarOrigin)
 		UC_Util::Print("From UC_HUDWidget::NativeConstruct : ThrowableProgressBarOrigin nullptr!", FColor::Red, 10.f);
 	ThrowableProgressBar->SetProgressBar(ThrowableProgressBarOrigin);
+
+	ThrowableProgressBar->OnParentWidgetNativeConstruct();
 }
 
 void UC_HUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

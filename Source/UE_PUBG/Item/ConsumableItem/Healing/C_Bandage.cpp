@@ -15,6 +15,7 @@
 
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_InstructionWidget.h"
+#include "Singleton/C_GameSceneManager.h"
 
 const float AC_Bandage::USAGE_MESH_SHOWN_TIME = 10.f;
 
@@ -66,6 +67,7 @@ void AC_Bandage::OnActivatingFinish()
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::BANDAGE, true);
 	
 	// 10초 뒤 팔에 감은 붕대 감추기
+	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_Bandage::HideUsageMesh, USAGE_MESH_SHOWN_TIME, false);
 	
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))

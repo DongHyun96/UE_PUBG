@@ -471,15 +471,8 @@ void UC_InputComponent::OnXKey()
 
 void UC_InputComponent::OnBKey()
 {
-	if (!GAMESCENE_MANAGER->GetEnemies().IsEmpty())
-	{
-		AC_Enemy* Enemy = GAMESCENE_MANAGER->GetEnemies()[0]; 
-		// Enemy->GetEnemyAIController()->GetBrainComponent()->RestartLogic();
-	}
-	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteBKey();
-
 }
 
 void UC_InputComponent::OnRKey()

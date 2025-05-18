@@ -377,7 +377,7 @@ private:
 private:
 
 	static TMap<EThrowableType, class II_ExplodeStrategy*> ExplodeStrategies;
-	class II_ExplodeStrategy* ExplodeStrategy{};
+	II_ExplodeStrategy* ExplodeStrategy{};
 
 protected:
 
