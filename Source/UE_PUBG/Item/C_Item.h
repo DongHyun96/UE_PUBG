@@ -111,6 +111,9 @@ struct FItemData : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	TSubclassOf<class AC_Item> ItemClass{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	float SpawnProbability = .1f;
 };	
 
 

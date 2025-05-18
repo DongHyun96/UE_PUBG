@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -33,12 +33,16 @@ private:
 
 	void TryAddToFloorStaticMeshComponentsArrayIfPossible(UStaticMeshComponent* StaticMeshComponent);
 
-protected:
+	void LegacySpawnItem();
 
+
+	void SpawnItemInWorld(const TArray<FName> ItemNameList);
+
+
+protected:
 	// Building 클래스 references
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TArray<TSubclassOf<AActor>> ShantyTownBuildingClasses{};
-
 	// Spawn 처리될 아이템 클래스 종류들 (블루프린트에서 모두 넣어주어야 함)
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TArray<TSubclassOf<class AC_Item>> PUBGItemClasses{};
@@ -53,12 +57,13 @@ private:
 
 	TArray<UStaticMeshComponent*> FloorStaticMeshComponents{};
 
-private:
+private://Legacy
 
 	int SpawnCount{};
 	bool bCanSpawn{};
 	FVector NewSpawnLocation{};
 	TArray<FVector> ItemLocationsInAComponent{};
+
 
 protected:
 

@@ -41,12 +41,17 @@ public:
 	UFUNCTION(BlueprintCallable)
     AC_Item* SpawnItem(FName ItemCode, FVector Location, int32 Stack = 0);
 
+    void PoolingWeightedItemCodes();
+
+
 public:
     // 아이템을 이름으로 조회
     FItemData* GetItemData(FName ItemCode);
 
     // 총기 데이터 정보 가져오기
     FGunData* GetGunData(FName ItemCode);
+
+	TArray<FName> GetWeightedItemCodes() const { return WeightedItemCodes; }
 protected:
     //UPROPERTY(EditAnywhere, Category = "Item Data")
     //UDataTable* GeneralItemTable;
@@ -60,4 +65,8 @@ private:
     TMap<FName, FItemData> GeneralItemDataCache{};
 
     TMap<FName, FGunData> GunItemDataCache{};
+
+private:
+    // 스폰할 아이템 Name List, Item Code를 Pooling
+    TArray<FName> WeightedItemCodes{};
 };

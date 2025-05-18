@@ -143,6 +143,21 @@ AC_Item* AC_ItemManager::SpawnItem(FName ItemCode, FVector Location, int32 Stack
 
 }
 
+void AC_ItemManager::PoolingWeightedItemCodes()
+{
+    for (const auto& Elem : GeneralItemDataCache)
+    {
+        const FItemData& Data = Elem.Value;
+
+        // 예: 확률 0.5 → 50% → 50개 삽입
+        int32 Weight = FMath::RoundToInt(Data.SpawnProbability * 100.0f);
+        for (int32 i = 0; i < Weight; ++i)
+        {
+            WeightedItemCodes.Add(Elem.Key);
+        }
+    }
+}
+
 FItemData* AC_ItemManager::GetItemData(FName ItemCode)
 {
     if (GeneralItemDataCache.Contains(ItemCode))
