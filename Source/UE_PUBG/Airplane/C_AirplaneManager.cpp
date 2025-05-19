@@ -41,8 +41,8 @@ void AC_AirplaneManager::BeginPlay()
 	InitAirplaneStartPosAndFlightDirection();
 
 	// TODO : 주석 풀 것
-	// FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle(); 
-	// GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
+	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle(); 
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
 	
 }
 
@@ -112,8 +112,8 @@ void AC_AirplaneManager::InitRandomStartDestPosition()
 	float RandomScalar			= FMath::RandRange(0.f, CIRCLE_RADIUS);
 	FVector RandomPos			= RandomDirection * RandomScalar; // 원 안의 임의의 지점
 
-	// Random한 기울기 잡기 -> 맵 가장자리 임의의 다른 점을 시작점으로 잡는 것으로 대체dw
-	float StartX{}, StartY{}, DestX{}, DestY{};
+	// Random한 기울기 잡기 -> 맵 가장자리 임의의 다른 점을 시작점으로 잡는 것으로 대체
+	float StartX{}, StartY{};
 	float Slope{};
 
 	if (FMath::RandRange(0, 1) == 0) // X값을 border에 맞출 때

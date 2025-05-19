@@ -33,10 +33,9 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	
 public:
 
-	void SetOwnerCharcter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 	ESkyDivingState GetSkyDivingState() const { return SkyDivingState; }
 
@@ -54,7 +53,7 @@ public:
 	/// </summary>
 	bool IsCharacterLandingMontagePlaying() const { return OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(LandingMontage.AnimMontage); }
 
-protected: // SetSkyDivingState 내부의 Template pattern methods
+protected: // SetSkyDivingState 내부의 Primitive Operations
 	
 	virtual void SetStateToSkyDivingState() PURE_VIRTUAL( UC_SkyDivingComponent::SetStateToSkyDivingState; );
 

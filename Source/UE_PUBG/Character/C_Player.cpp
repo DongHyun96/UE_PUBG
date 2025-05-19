@@ -105,7 +105,7 @@ AC_Player::AC_Player()
 	CameraEffectComponent->SetOwnerPlayer(this);
 
 	SkyDivingComponent = CreateDefaultSubobject<UC_PlayerSkyDivingComponent>("PlayerSkyDivingComponent");
-	SkyDivingComponent->SetOwnerCharcter(this);
+	SkyDivingComponent->SetOwnerCharacter(this);
 	PlayerSkyDivingComponent = Cast<UC_PlayerSkyDivingComponent>(SkyDivingComponent);
 }
 
@@ -694,7 +694,7 @@ void AC_Player::UpdateInteractable(AC_Item* InteractableItem)
 
 	// 새 아이템이 존재하면 아웃라인 적용
 	CurOutLinedItem = InteractableItem;
-	if (CurOutLinedItem)
+	if (IsValid(CurOutLinedItem))
 	{
 		FString Instruction = "PICK " + CurOutLinedItem->GetItemName(); 
 		HUDWidget->GetInstructionWidget()->ActivateFKeyInstruction(Instruction);

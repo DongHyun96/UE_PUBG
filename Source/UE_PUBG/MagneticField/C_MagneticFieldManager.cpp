@@ -30,6 +30,8 @@ AC_MagneticFieldManager::AC_MagneticFieldManager()
 void AC_MagneticFieldManager::BeginPlay()
 {
 	Super::BeginPlay();
+	/*FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_MagneticFieldManager::ActivateMagneticField, 5.f);*/
 }
 
 void AC_MagneticFieldManager::Tick(float DeltaTime)
@@ -269,6 +271,7 @@ void AC_MagneticFieldManager::UpdateWalls(const FVector& MidLocation, const floa
 	float WallWidth = 2 * PI * Radius / float(SLICE_COUNT);
 	WallWidth *= 0.01f; // 기본 단위가 1m로 맞춰져 있음
 
+	// Scale X가 높이, Y가 Width로 처리됨, z는 평면의 두께로 처리되는데 어차피 PlaneMesh라 반영 x
 	MagneticWalls[0]->SetActorScale3D(FVector(100.f, WallWidth, 1.f));
 	MagneticWalls[0]->UpdateMaterialVTiling();
 

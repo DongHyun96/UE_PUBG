@@ -47,7 +47,7 @@ AC_Enemy::AC_Enemy()
 	TargetLocationSettingHelper->SetOwnerEnemy(this);
 	
 	SkyDivingComponent = CreateDefaultSubobject<UC_EnemySkyDivingComponent>("EnemySkyDivingComponent");
-	SkyDivingComponent->SetOwnerCharcter(this);
+	SkyDivingComponent->SetOwnerCharacter(this);
 	EnemySkyDivingComponent = Cast<UC_EnemySkyDivingComponent>(SkyDivingComponent);
 }
 
