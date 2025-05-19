@@ -78,7 +78,7 @@ void AC_FirstAidKit::OnCancelActivating()
 void AC_FirstAidKit::HandleDestroy()
 {
 	UC_Util::Print("Destroying FirstAidKit", FColor::Red, 5.f);
-	this->Destroy();
+	this->DestroyItem();
 }
 
 

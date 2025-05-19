@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 
@@ -30,7 +30,7 @@ bool AC_SmokeGrndExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 			SmokeOverlappedHandler->OnDestroyOwnerSmokeGrenade();
 		else UC_Util::Print("Error : Smoke Overlapped Handler not found!", FColor::MakeRandomColor(), 10.f);
 		
-		ThrowingWeapon->Destroy();
+		ThrowingWeapon->DestroyItem();
 	}, 27.f, false);
 	
 	if (UC_SmokeOverlappedHandler* SmokeOverlappedHandler = ThrowingWeapon->FindComponentByClass<UC_SmokeOverlappedHandler>())

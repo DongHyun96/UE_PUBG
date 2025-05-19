@@ -13,6 +13,7 @@
 #include "InvenUI/C_InventoryUIWidget.h"
 #include "HUD/C_ArmorInfoWidget.h"
 #include "HUD/C_HUDWidget.h"
+#include "Singleton/C_GameSceneManager.h"
 
 #include "Utility/C_Util.h"
 
@@ -293,7 +294,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 		CurVolume += item->GetItemAllVolume();
 
 		// 원본 아이템 삭제 TODO : 혹시 중복 삭제가 되는 경우가 생기는지 확인하기.
-		item->Destroy();
+		item->DestroyItem();
 	}
 	else
 	{
@@ -353,7 +354,7 @@ void UC_InvenComponent::DestroyMyItem(AC_Item* DestroyedItem)
 {
 	RemoveItemToMyList(DestroyedItem);
 
-	DestroyedItem->Destroy();
+	DestroyedItem->DestroyItem();
 
 	//if (MyItems.Contains(DestroyedItem->GetItemCode())) // MyItems에 해당 아이템 코드가 존재하는지 확인
 	//{

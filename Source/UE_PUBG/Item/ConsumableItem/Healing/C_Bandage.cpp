@@ -92,7 +92,7 @@ void AC_Bandage::HideUsageMesh()
 	if (bDestroyFlag)
 	{
 		UC_Util::Print("Destroying Bandage", FColor::Red, 5.f);
-		this->Destroy();
+		this->DestroyItem();
 	}
 }
 

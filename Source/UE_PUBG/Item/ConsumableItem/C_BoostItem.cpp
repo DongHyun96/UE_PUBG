@@ -48,7 +48,7 @@ void AC_BoostItem::HandleActivateCompletedState()
 void AC_BoostItem::HandleDestroy()
 {
 	UC_Util::Print("Destroying Boost Item", FColor::Red, 5.f);
-	this->Destroy();
+	this->DestroyItem();
 }
 
 

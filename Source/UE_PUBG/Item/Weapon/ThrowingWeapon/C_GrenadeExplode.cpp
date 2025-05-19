@@ -135,7 +135,7 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 	FTimerHandle& TimerHandle = UC_GameSceneManager::GetInstance(ThrowingWeapon->GetWorld())->GetTimerHandle();
 	ThrowingWeapon->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [ThrowingWeapon]()
 	{
-		ThrowingWeapon->Destroy();
+		ThrowingWeapon->DestroyItem();
 	}, 10.f, false);
 	
 	return true;

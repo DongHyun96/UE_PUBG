@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Item/Weapon/ThrowingWeapon/C_FlashBangExplode.h"
@@ -107,7 +107,7 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 	FTimerHandle& TimerHandle = UC_GameSceneManager::GetInstance(ThrowingWeapon->GetWorld())->GetTimerHandle();
 	ThrowingWeapon->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [ThrowingWeapon]()
 	{
-		ThrowingWeapon->Destroy();
+		ThrowingWeapon->DestroyItem();
 	}, 10.f, false);
 
 	return true;

@@ -43,6 +43,19 @@ public:
 
     void PoolingWeightedItemCodes();
 
+    UFUNCTION(BlueprintCallable)
+    void AddSpawnedItemToContainer(class AC_Item* InItem)
+    {
+		if (!InItem) return;
+        ItemContainer.Add(InItem);
+    }
+
+    UFUNCTION(BlueprintCallable)
+	void DeleteSpawnedItemToContainer(AC_Item* InItem)
+	{
+		if (!InItem) return;
+		ItemContainer.Remove(InItem);
+	}
 
 public:
     // 아이템을 이름으로 조회
@@ -52,6 +65,9 @@ public:
     FGunData* GetGunData(FName ItemCode);
 
 	TArray<FName> GetWeightedItemCodes() const { return WeightedItemCodes; }
+
+    // TODO : 지우기. 스폰된 아이템 숫자를 보여주기 위한 함수. AI에게 직접 스폰한 아이템은 나오지 않음.
+	TArray<AC_Item*> GetItemContainer() const { return ItemContainer; }
 protected:
     //UPROPERTY(EditAnywhere, Category = "Item Data")
     //UDataTable* GeneralItemTable;
@@ -69,4 +85,6 @@ private:
 private:
     // 스폰할 아이템 Name List, Item Code를 Pooling
     TArray<FName> WeightedItemCodes{};
+
+    TArray<AC_Item*> ItemContainer{};
 };

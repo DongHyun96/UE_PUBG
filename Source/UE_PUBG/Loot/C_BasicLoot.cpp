@@ -68,7 +68,7 @@ void AC_BasicLoot::AddItemInLootItems(AC_Item* InItem)
 		}
 
 		CachedItem->SetItemStack(PrevItemStack);
-		InItem->Destroy();
+		InItem->DestroyItem();
 	}
 	else
 		LootItems.Emplace(InItem);

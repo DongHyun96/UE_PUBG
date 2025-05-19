@@ -113,7 +113,7 @@ struct FItemData : public FTableRowBase
 	TSubclassOf<class AC_Item> ItemClass{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
-	float SpawnProbability = .1f;
+	float SpawnProbability = .0f;
 };	
 
 
@@ -234,6 +234,18 @@ public:
 	/// <returns>새로 생성한 나뉘어진 아이템, nullptr이면 CurStack이 1이여서 못나누는 상황</returns>
 	UFUNCTION(BlueprintCallable)
 	AC_Item* DividItemSpawn(int32 DivideNum, AC_BasicCharacter* Character, bool bIsActorEnableCollision);
+
+	/// <summary>
+	/// 아이템을 파괴하는 함수.
+	/// Destroy함수 대신 사용 할 것.
+	/// 내부적으로 Destroy를 사용하고 있음.
+	/// 아이템 매니저의 컨테이너에서 삭제해주고,
+	/// 아이템을 Destroy하는 함수.
+	/// </summary>
+	/// <param name="bNetForce"></param>
+	/// <param name="bShouldModifyLevel"></param>
+	/// <returns></returns>
+	bool DestroyItem(bool bNetForce = false, bool bShouldModifyLevel = true);
 
 protected:
 	//MoveTo~에 사용되는 9개 함수.
