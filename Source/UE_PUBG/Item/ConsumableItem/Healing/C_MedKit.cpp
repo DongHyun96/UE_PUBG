@@ -86,7 +86,7 @@ void AC_MedKit::OnCancelActivating()
 
 void AC_MedKit::HandleDestroy()
 {
-	this->Destroy();
+	this->DestroyItem();
 }
 
 void AC_MedKit::SwitchingBandageToSyringe()

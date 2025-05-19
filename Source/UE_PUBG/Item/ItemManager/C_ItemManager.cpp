@@ -127,7 +127,7 @@ AC_Item* AC_ItemManager::SpawnItem(FName ItemCode, FVector Location, int32 Stack
     //if (!FoundData || !FoundData->ItemClass) return nullptr;
         
     FActorSpawnParameters SpawnParams;
-    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
     AC_Item* NewItem = GetWorld()->SpawnActor<AC_Item>(
         GeneralItemDataCache[ItemCode].ItemClass, Location, FRotator::ZeroRotator, SpawnParams
@@ -137,6 +137,7 @@ AC_Item* AC_ItemManager::SpawnItem(FName ItemCode, FVector Location, int32 Stack
     {
         if (Stack != 0)
             NewItem->SetItemStack(Stack); // 필요한 초기값 설정
+		ItemContainer.Add(NewItem);       // 스폰한 아이템을 컨테이너에 추가
     }
 
     return NewItem;
@@ -157,6 +158,11 @@ void AC_ItemManager::PoolingWeightedItemCodes()
         }
     }
 }
+//
+//void AC_ItemManager::AddSpawnedItemToContainer(AC_Item* InItem)
+//{
+//	ItemContainer.Add(InItem);  
+//}
 
 FItemData* AC_ItemManager::GetItemData(FName ItemCode)
 {

@@ -146,6 +146,13 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void AddSpawnedItemToContainer(class AC_Item* InItem);
+	//{
+	//	if (!ItemManager) return;
+	//	ItemManager->AddSpawnedItemToContainer(InItem);
+	//}
+
+	UFUNCTION(BlueprintCallable)
+	void DeleteSpawnedItemToContainer(AC_Item* InItem);
 
 	void ToggleItemsHiddenInGame(bool InHiddenInGame);
 

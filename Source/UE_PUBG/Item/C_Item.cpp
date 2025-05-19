@@ -143,6 +143,8 @@ AC_Item* AC_Item::SpawnItem(AC_BasicCharacter* Character)
 	//SpawnItem->SetItemStack(1);
 	//SpawnItem->SetActorHiddenInGame(true);
 	SpawnItem->SetActorEnableCollision(false);//생성될 때 무조건 OverlapBegine에 반응해서 우선 꺼뒀음.
+	GAMESCENE_MANAGER->AddSpawnedItemToContainer(this);
+
 	return SpawnItem;
 }
 
@@ -339,4 +341,13 @@ AC_Item* AC_Item::DividItemSpawn(int32 DivideNum, AC_BasicCharacter* Character, 
 	DividedItem->SetActorEnableCollision(ActorEnAbleCollision);
 
 	return DividedItem;
+}
+
+bool AC_Item::DestroyItem(bool bNetForce, bool bShouldModifyLevel)
+{
+	// 아이템 매니저에서 아이템 제거.
+	GAMESCENE_MANAGER->DeleteSpawnedItemToContainer(this);
+
+	// 아이템 객체 제거.
+	return this->Destroy(bNetForce, bShouldModifyLevel);
 }

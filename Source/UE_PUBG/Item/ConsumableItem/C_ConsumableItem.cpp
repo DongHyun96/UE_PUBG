@@ -475,7 +475,7 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 
 
 
-			this->Destroy();
+			this->DestroyItem();
 		}
 		else
 		{

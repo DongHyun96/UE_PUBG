@@ -35,12 +35,12 @@ void AC_ShantyTownLevelScript::BeginPlay()
 
 	GAMESCENE_MANAGER->GetItemManager()->PoolingWeightedItemCodes();
 
-	SpawnItemInWorld(GAMESCENE_MANAGER->GetItemManager()->GetWeightedItemCodes());
+	//SpawnItemInWorld(GAMESCENE_MANAGER->GetItemManager()->GetWeightedItemCodes());
+	LegacySpawnItem(GAMESCENE_MANAGER->GetItemManager()->GetWeightedItemCodes());
 	//FString str = "ShantyTown Floor Count : " + FString::FromInt(FloorStaticMeshComponents.Num()); 
 	//UC_Util::Print(str , FColor::Yellow, 10.f);
-	
-	//LegacySpawnItem();
-
+	//UC_Util::Print("Spawned Items Count : " + FString::FromInt(ItemLocationsInAComponent.Num()), FColor::Emerald, 10.f);
+	UC_Util::Print("Spawned Items Count : " + FString::FromInt(GAMESCENE_MANAGER->GetItemManager()->GetItemContainer().Num()),FColor::Emerald, 10);
 }
 
 void AC_ShantyTownLevelScript::Tick(float DeltaTime)
@@ -89,13 +89,18 @@ void AC_ShantyTownLevelScript::TryAddToFloorStaticMeshComponentsArrayIfPossible(
 	// if (StaticMeshComponent->GetName().Contains("Floor"))
 }
 
-void AC_ShantyTownLevelScript::LegacySpawnItem()
+void AC_ShantyTownLevelScript::LegacySpawnItem(const TArray<FName> ItemNameList)
 {
 	// For Testing(지우기)
 	float MinBoxExtentSize = 1e9;
 	FString MinBoxName{};
 	float MaxBoxExtentSize = 0.f;
 	float AverageBoxSize{};
+
+	const int32 MaxItemsPerFloor = 5;
+
+	const TArray<FName> WeightedItemCodes = ItemNameList;
+
 
 	for (UStaticMeshComponent* FloorMeshComponent : FloorStaticMeshComponents)
 	{
@@ -117,39 +122,44 @@ void AC_ShantyTownLevelScript::LegacySpawnItem()
 
 		const int TOTAL_SPAWN_COUNT_PER_ITEM = 3; // 이게 아이템 총 량은 아니고 같은 아이템 종류 개수 Limit 개수임
 
-		for (TSubclassOf<AC_Item> ItemClass : PUBGItemClasses)
+		SpawnCount = 0;
+
+		//for (TSubclassOf<AC_Item> ItemClass : PUBGItemClasses)
+		
+		//(SpawnedCount < MaxItemsPerFloor && WeightedItemCodes.Num() > 0)
+		//while (!bCanSpawn && SpawnCount < TOTAL_SPAWN_COUNT_PER_ITEM)
+		while (!bCanSpawn && SpawnCount < MaxItemsPerFloor && WeightedItemCodes.Num() > 0)
 		{
-			while (!bCanSpawn && SpawnCount < TOTAL_SPAWN_COUNT_PER_ITEM)
+			float RandomX = FMath::RandRange(-BoxExtent.X, BoxExtent.X) * 0.5f;
+			float RandomY = FMath::RandRange(-BoxExtent.Y, BoxExtent.Y) * 0.5f;
+
+			FVector FloorWorldLocation = FloorMeshComponent->GetComponentLocation();
+
+			NewSpawnLocation = FloorWorldLocation + FVector::UnitX() * RandomX + FVector::UnitY() * RandomY;
+
+			for (const FVector& ItemLocation : ItemLocationsInAComponent)
 			{
-				float RandomX = FMath::RandRange(-BoxExtent.X, BoxExtent.X) * 0.5f;
-				float RandomY = FMath::RandRange(-BoxExtent.Y, BoxExtent.Y) * 0.5f;
-
-				FVector FloorWorldLocation = FloorMeshComponent->GetComponentLocation();
-
-				NewSpawnLocation = FloorWorldLocation + FVector::UnitX() * RandomX + FVector::UnitY() * RandomY;
-
-				for (const FVector& ItemLocation : ItemLocationsInAComponent)
+				if (FVector::Distance(ItemLocation, NewSpawnLocation) < 5.f)
 				{
-					if (FVector::Distance(ItemLocation, NewSpawnLocation) < 5.f)
-					{
-						++SpawnCount;
-						break;
-					}
+					++SpawnCount;
+					break;
 				}
-				bCanSpawn = true;
 			}
+			bCanSpawn = true;
 
 			if (!bCanSpawn) continue;
 
 			ItemLocationsInAComponent.Add(NewSpawnLocation);
 
 			FActorSpawnParameters SpawnParams{};
+			FName ItemCode = WeightedItemCodes[FMath::RandRange(0, WeightedItemCodes.Num() - 1)];
 
 			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-			AC_Item* SpawnedItem = GetWorld()->SpawnActor<AC_Item>(ItemClass, NewSpawnLocation, FRotator::ZeroRotator, SpawnParams);
-
+			//AC_Item* SpawnedItem = GetWorld()->SpawnActor<AC_Item>(ItemClass, NewSpawnLocation, FRotator::ZeroRotator, SpawnParams);
+			AC_Item* SpawnedItem = GAMESCENE_MANAGER->GetItemManager()->SpawnItem(ItemCode, NewSpawnLocation);
+			++SpawnCount;
 			bCanSpawn = false;
-			SpawnCount = 0;
+			//SpawnCount = 0;
 			ItemLocationsInAComponent.Empty();
 
 			const FVector SpawnedLocation = SpawnedItem->GetActorLocation();
@@ -164,6 +174,7 @@ void AC_ShantyTownLevelScript::LegacySpawnItem()
 			{
 				Gun->SetActorLocation({ SpawnedLocation.X, SpawnedLocation.Y, ItemMeshBoxExtentY * 1.5f + SpawnedLocation.Z });
 				// Gun->SetActorRotation({90.f, 0.f, 0.f});
+				Gun->SetActorRotation({ 0.f, 90.f, 90.f });
 
 				// Spawn Bullets
 				TSubclassOf<AC_Item_Bullet> BulletClass = PUBGBulletClasses[Gun->GetCurBulletType()];
@@ -172,10 +183,11 @@ void AC_ShantyTownLevelScript::LegacySpawnItem()
 				BulletTransform.SetLocation(Gun->GetActorLocation());
 				BulletTransform.SetScale3D({ 0.5f, 0.5f, 0.5f });
 
-				AC_Item_Bullet* SpawnedBullet = GetWorld()->SpawnActor<AC_Item_Bullet>(BulletClass, BulletTransform, SpawnParams);
+				//AC_Item_Bullet* SpawnedBullet = GetWorld()->SpawnActor<AC_Item_Bullet>(BulletClass, BulletTransform, SpawnParams);
+				AC_Item* SpawnedBullet = GAMESCENE_MANAGER->GetItemManager()->SpawnItem(Gun->GetCurrentBulletTypeName(), Gun->GetActorLocation());
 
-				GAMESCENE_MANAGER->AddSpawnedItemToContainer(SpawnedItem);
-				GAMESCENE_MANAGER->AddSpawnedItemToContainer(SpawnedBullet);
+				//GAMESCENE_MANAGER->AddSpawnedItemToContainer(SpawnedItem);
+				//GAMESCENE_MANAGER->AddSpawnedItemToContainer(SpawnedBullet);
 				Gun->SetActorHiddenInGame(bHideSpawnedItemsOnGameStart);
 				SpawnedBullet->SetActorHiddenInGame(bHideSpawnedItemsOnGameStart);
 				continue;
@@ -184,14 +196,16 @@ void AC_ShantyTownLevelScript::LegacySpawnItem()
 			if (AC_MeleeWeapon* MeleeWeapon = Cast<AC_MeleeWeapon>(SpawnedItem))
 			{
 				MeleeWeapon->SetActorLocation({ SpawnedLocation.X, SpawnedLocation.Y, ItemMeshBoxExtentY * 1.5f + SpawnedLocation.Z });
-				MeleeWeapon->SetActorRotation({ 90.f, -55.f, 0.f });
-				GAMESCENE_MANAGER->AddSpawnedItemToContainer(MeleeWeapon);
+				//MeleeWeapon->SetActorRotation({ 90.f, -55.f, 0.f });
+				MeleeWeapon->SetActorRotation({ 125.f, 0, 90.f });
+				// 
+				//GAMESCENE_MANAGER->AddSpawnedItemToContainer(MeleeWeapon);
 				MeleeWeapon->SetActorHiddenInGame(bHideSpawnedItemsOnGameStart);
 				continue;
 			}
 
 			SpawnedItem->SetActorLocation({ SpawnedLocation.X, SpawnedLocation.Y, ZOffset + SpawnedLocation.Z });
-			GAMESCENE_MANAGER->AddSpawnedItemToContainer(SpawnedItem);
+			//GAMESCENE_MANAGER->AddSpawnedItemToContainer(SpawnedItem);
 			SpawnedItem->SetActorHiddenInGame(bHideSpawnedItemsOnGameStart);
 		}
 	}
@@ -245,18 +259,43 @@ void AC_ShantyTownLevelScript::SpawnItemInWorld(const TArray<FName> ItemNameList
 			if (bTooClose) continue;
 
 			AC_Item* SpawnedItem = GAMESCENE_MANAGER->GetItemManager()->SpawnItem(ItemCode, SpawnLoc);
+
 			// 스폰
 			//AC_Item* Item = SpawnItem(ItemCode, SpawnLoc, 1);
 			if (!SpawnedItem) continue;
 
+			SpawnedItem->SetActorHiddenInGame(bHideSpawnedItemsOnGameStart);
+
 			UsedLocations.Add(SpawnLoc);
 			++SpawnedCount;
 
+			const FVector SpawnedLocation = SpawnedItem->GetActorLocation();
+
+			UMeshComponent* ItemMeshComponent = SpawnedItem->GetComponentByClass<UMeshComponent>();
+			FVector ItemMeshOrigin{}, ItemMeshBoxExtent{};
+			float ItemMeshSphereRadius{};
+			UKismetSystemLibrary::GetComponentBounds(ItemMeshComponent, ItemMeshOrigin, ItemMeshBoxExtent, ItemMeshSphereRadius);
+			const float ItemMeshBoxExtentY = ItemMeshBoxExtent.Y;
+
 			if (AC_Gun* Gun = Cast<AC_Gun>(SpawnedItem))
 			{
-				GAMESCENE_MANAGER->GetItemManager()->SpawnItem(Gun->GetCurrentBulletTypeName(), SpawnLoc);
+				Gun->SetActorLocation({ SpawnedLocation.X, SpawnedLocation.Y, ItemMeshBoxExtentY * 1.5f + SpawnedLocation.Z });
+				Gun->SetActorRotation({ 0.f, 90.f, 90.f });
 
+				GAMESCENE_MANAGER->GetItemManager()->SpawnItem(Gun->GetCurrentBulletTypeName(), Gun->GetActorLocation());
+
+				continue;
 			}
+
+			if (AC_MeleeWeapon* MeleeWeapon = Cast<AC_MeleeWeapon>(SpawnedItem))
+			{
+				MeleeWeapon->SetActorLocation({ SpawnedLocation.X, SpawnedLocation.Y, ItemMeshBoxExtentY * 1.5f + SpawnedLocation.Z });
+				MeleeWeapon->SetActorRotation({ 125.f, 0, 90.f });
+				continue;
+			}
+
+			SpawnedItem->SetActorLocation({ SpawnedLocation.X, SpawnedLocation.Y, ZOffset + SpawnedLocation.Z });
+
 		}
 	}
 }

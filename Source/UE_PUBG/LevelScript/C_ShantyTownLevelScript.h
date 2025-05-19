@@ -33,7 +33,7 @@ private:
 
 	void TryAddToFloorStaticMeshComponentsArrayIfPossible(UStaticMeshComponent* StaticMeshComponent);
 
-	void LegacySpawnItem();
+	void LegacySpawnItem(const TArray<FName> ItemNameList);
 
 
 	void SpawnItemInWorld(const TArray<FName> ItemNameList);

@@ -410,6 +410,7 @@ AC_Item* AC_ThrowingWeapon::SpawnItem(AC_BasicCharacter* Character)
 	//SpawnItem->SetItemStack(1);
 	//SpawnItem->SetActorHiddenInGame(true);
 	SpawnItem->SetActorEnableCollision(false);//생성될 때 무조건 OverlapBegine에 반응해서 우선 꺼뒀음.
+	GAMESCENE_MANAGER->AddSpawnedItemToContainer(this);
 	return SpawnItem;
 }
 
