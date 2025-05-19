@@ -14,6 +14,19 @@
   <component name="ChangeListManager">
     <list default="true" id="1cdef74d-d80f-494a-ae47-bfe8b5168add" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/MagneticField/BPC_MagneticWall.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/MagneticField/BPC_MagneticWall.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/DH_Map/DH_ThirdPersonMap/3/DX/MEXSDWZZTYTBV2QKKD3J8K.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/DH_Map/DH_ThirdPersonMap/3/DX/MEXSDWZZTYTBV2QKKD3J8K.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/DH_Map/DH_ThirdPersonMap/A/A3/JKDWOD54T1LV2ABE8IDMCT.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Airplane/C_Airplane.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Airplane/C_Airplane.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Airplane/C_Airplane.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Airplane/C_Airplane.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Airplane/C_AirplaneManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Airplane/C_AirplaneManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Airplane/C_AirplaneManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Airplane/C_AirplaneManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_Enemy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_Enemy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_Player.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_Player.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_ParkourComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_ParkourComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/SkyDivingComponent/C_SkyDivingComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/SkyDivingComponent/C_SkyDivingComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/SkyDivingComponent/C_SkyDivingComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/SkyDivingComponent/C_SkyDivingComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/MagneticField/C_MagneticFieldManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/MagneticField/C_MagneticFieldManager.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,13 +52,18 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Plugins/Online/OnlineSubsystemUtils/Source/OnlineSubsystemUtils/Classes/DestroySessionCallbackProxy.h" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Plugins/Runtime/MeshModelingToolset/Source/ModelingComponents/Private/PropertySets/OnAcceptProperties.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Editor/AnimGraph/Public/AnimGraphNode_ModifyCurve.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/AVEncoder/Public/VideoCommon.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/Math/Color.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Animation/AnimMontage.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/GameFramework/Character.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Animation/AnimMontage.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Pawn.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Experimental/IoStoreOnDemand/Private/OnDemandIoDispatcherBackend.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Experimental/Voronoi/Private/voro++/src/c_loops.hh" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Experimental/Voronoi/Private/voro++/src/container.hh" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/SymsLib/syms/core/generated/syms_meta_pe.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/ThirdParty/NVIDIA/CUDA/cuda.h" root0="FORCE_HIGHLIGHTING" />
@@ -62,22 +80,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "C/C++ 프로젝트.UE_PUBG.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Buffer__Temp",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "CodeLensConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;C/C++ 프로젝트.UE_PUBG.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;DongHyun__Branch&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CodeLensConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="C/C++ 프로젝트.UE_PUBG">
     <configuration name="UE5" type="CppProject" factoryName="C++ Project">
       <option name="DEFAULT_PROJECT_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
@@ -194,6 +212,8 @@
       <workItem from="1747486007292" duration="6294000" />
       <workItem from="1747540289874" duration="25665000" />
       <workItem from="1747576177378" duration="381000" />
+      <workItem from="1747576730012" duration="30742000" />
+      <workItem from="1747640044107" duration="622000" />
     </task>
     <servers />
   </component>

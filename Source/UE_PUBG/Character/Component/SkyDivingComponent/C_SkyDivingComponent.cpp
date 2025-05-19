@@ -116,7 +116,7 @@ bool UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		OwnerCharacter->SetActorHiddenInGame(false);
 		ParachuteBackpackStaticMeshComponent->SetVisibility(true);
 		
-		SetStateToSkyDivingState(); // Template method
+		SetStateToSkyDivingState(); // Primitive operation
 		return true;
 	}
 	case ESkyDivingState::PARACHUTING:
@@ -128,7 +128,7 @@ bool UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		OwnerCharacter->PlayAnimMontage(DeployParachuteMontage);
 		ParachuteSkeletalMeshComponent->GetAnimInstance()->Montage_Play(ParachuteDeployMontage);
 
-		SetStateToParachutingState(); // Template method
+		SetStateToParachutingState(); // Primitive operation
 		return true;
 	}
 	case ESkyDivingState::LANDING:
@@ -144,7 +144,7 @@ bool UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		OwnerCharacter->PlayAnimMontage(LandingMontage);
 		SkyDivingState = ESkyDivingState::LANDING;
 
-		SetStateToLandingState(); // Template method
+		SetStateToLandingState(); // Primitive operation
 		return true;
 	}
 	default: return false;

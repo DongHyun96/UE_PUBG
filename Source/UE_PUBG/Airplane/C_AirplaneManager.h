@@ -108,7 +108,7 @@ private:
 	// 비행기 출발 시작했는지
 	bool HasAirplaneTakeOff{};
 
-	float TakeOffTimer = 3.f; // 게임 시작까지 총 30초 (TakeOff 까지)
+	float TakeOffTimer = 10.f; // 게임 시작까지 총 30초 (TakeOff 까지)
 
 private:
 

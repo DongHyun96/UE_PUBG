@@ -29,7 +29,7 @@ public:
 	void SetFlightDirection(FVector InDirection);
 
 	void SetIsFlying(bool InIsFlying);
-	bool GetIsFlying() const { return IsFlying; }
+	bool GetIsFlying() const { return bIsFlying; }
 
 public:
 
@@ -78,7 +78,7 @@ private:
 
 private:
 	
-	bool IsFlying{};
+	bool bIsFlying{};
 
 private:
 	TArray<UStaticMeshComponent*> Props{};

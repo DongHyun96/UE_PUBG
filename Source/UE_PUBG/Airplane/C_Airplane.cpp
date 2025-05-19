@@ -51,7 +51,7 @@ void AC_Airplane::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!IsFlying) return;
+	if (!bIsFlying) return;
 	
 	// 실질적인 비행기 이동 처리
 	AddActorWorldOffset(FlightDirection * FLIGHT_SPEED * DeltaTime, false);
@@ -73,7 +73,7 @@ void AC_Airplane::SetFlightDirection(FVector InDirection)
 
 void AC_Airplane::SetIsFlying(bool InIsFlying)
 {
-	IsFlying = InIsFlying;
+	bIsFlying = InIsFlying;
 
 	OnEngineSound(InIsFlying);
 
@@ -82,7 +82,7 @@ void AC_Airplane::SetIsFlying(bool InIsFlying)
 
 void AC_Airplane::StartFlight()
 {
-	IsFlying = true;
+	bIsFlying = true;
 
 	OnEngineSound(true);
 
@@ -114,7 +114,7 @@ void AC_Airplane::UpdatePlayerMapHUD()
 
 void AC_Airplane::UpdateProps(const float& DeltaTime)
 {
-	if (!IsFlying) return;
+	if (!bIsFlying) return;
 
 	PropRotZValue += DeltaTime * PROP_ROT_SPEED;
 	PropRotZValue = FMath::Fmod(PropRotZValue, 360.f);

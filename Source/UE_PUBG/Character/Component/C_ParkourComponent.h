@@ -228,7 +228,7 @@ private:
 
 private:
 
-	USkeletalMesh* MainSkeletalMesh{};
+	USkeletalMesh* MainSkeletalMesh{}; // Main으로 OwnerCharacter가 사용중인 Mesh (SkeletalMesh without floor root node)
 
 protected:
 
