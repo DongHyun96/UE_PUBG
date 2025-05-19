@@ -393,6 +393,10 @@ void UC_InputComponent::HoldDirection()
 
 	Player->SetIsHoldDirection(true);
 	Player->SetIsAltPressed(false);
+	AC_Gun* TempGun = Cast<AC_Gun>(Player->GetEquippedComponent()->GetCurWeapon());
+	if (Player->GetIsAimDown() || Player->GetIsWatchingSight())
+		TempGun->BackToMainCamera();
+	
 	if (Player->Controller)
 	{
 		//FRotator NewRotation;

@@ -500,12 +500,25 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 	AC_Gun* TempGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
 	if (bIsReloadingBullet && IsValid(TempGun))
 	{
-		UAnimInstance* TempAnimInstance = GetMesh()->GetAnimInstance();
-		UAnimMontage* CurReloadMontage = TempGun->ReloadMontages[PoseState].Montages[TempGun->GetCurrentWeaponState()].AnimMontage;
-		UAnimMontage* NextReloadMontage = TempGun->ReloadMontages[InNextPoseState].Montages[TempGun->GetCurrentWeaponState()].AnimMontage;
-		if (IsValid(TempAnimInstance) && IsValid(CurReloadMontage) && IsValid(NextReloadMontage))
+		UAnimInstance* TempAnimInstance  = GetMesh()->GetAnimInstance();
+		UAnimMontage*  CurReloadMontage  = nullptr;
+		UAnimMontage*  NextReloadMontage = TempGun->ReloadMontages[InNextPoseState].Montages[TempGun->GetCurrentWeaponState()].AnimMontage;
+		if (IsValid(TempAnimInstance)  && IsValid(NextReloadMontage))
 		{
-			
+			float HighestWeight = 0.0f;
+			for (const FAnimMontageInstance* MontageInstance : TempAnimInstance->MontageInstances)
+			{
+				if (MontageInstance->IsActive())
+				{
+					float CurrentWeight = MontageInstance->GetWeight();
+					if (CurrentWeight > HighestWeight)
+					{
+						HighestWeight = CurrentWeight;
+						CurReloadMontage = MontageInstance->Montage;
+					}
+				}
+			}
+
 			if (TempAnimInstance->Montage_IsPlaying(CurReloadMontage)) 
 			{
 				float CurrentPosition = TempAnimInstance->Montage_GetPosition(CurReloadMontage);

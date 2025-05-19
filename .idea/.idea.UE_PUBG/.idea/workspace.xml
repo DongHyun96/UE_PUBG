@@ -5,6 +5,7 @@
     <projectFile profileName="EpicGames.AspNet">../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.AspNet/EpicGames.AspNet.csproj</projectFile>
     <projectFile kind="Docker">../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Perforce.Fixture/EpicGames.Perforce.Fixture.csproj</projectFile>
     <projectFile>../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/UnrealBuildTool/UnrealBuildTool.csproj</projectFile>
+    <projectFile kind="Docker">../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Perforce.Fixture/EpicGames.Perforce.Fixture.csproj</projectFile>
     <projectFile>Intermediate/ProjectFiles/UE5.vcxproj</projectFile>
     <projectFile>Intermediate/ProjectFiles/UE_PUBG.vcxproj</projectFile>
   </component>
@@ -14,6 +15,12 @@
   <component name="ChangeListManager">
     <list default="true" id="1cdef74d-d80f-494a-ae47-bfe8b5168add" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/Item/Weapon/Gun/SR/BPC_Mosin_Nagant.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Common/Item/Weapon/Gun/SR/BPC_Mosin_Nagant.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/B/OU/EC5HJW3FFAXJX8GRFH0FQL.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_BasicCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_BasicCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_InputComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_InputComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/Gun/C_Gun.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/Gun/C_Gun.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,16 +46,13 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/AVEncoder/Public/VideoCommon.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/Math/Color.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Animation/AnimMontage.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/GameFramework/Character.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Animation/AnimMontage.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Pawn.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Experimental/IoStoreOnDemand/Private/OnDemandIoDispatcherBackend.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Experimental/Voronoi/Private/voro++/src/container.hh" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/SymsLib/syms/core/generated/syms_meta_pe.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/ThirdParty/NVIDIA/CUDA/cuda.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://5" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Components/InputComponent.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Components/InputComponent.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/UMG/Public/Components/ListView.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
@@ -64,10 +68,10 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "C/C++ 프로젝트.UE_PUBG.executor": "Run",
+    "C/C++ 프로젝트.UE_PUBG.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Buffer__Temp",
+    "git-widget-placeholder": "HyunHo__Branch",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -158,6 +162,17 @@
         <option name="Build" />
       </method>
     </configuration>
+    <configuration name="EpicGames.Perforce.Fixture/Dockerfile (1)" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="containerName" value="epicgames.perforce.fixture" />
+          <option name="contextFolderPath" value="C:\Users\Park\Desktop\UE_PUBG" />
+          <option name="sourceFilePath" value="../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Perforce.Fixture/Dockerfile" />
+        </settings>
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
     <configuration name="EpicGames.Perforce.Fixture/Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
       <deployment type="dockerfile">
         <settings>
@@ -194,6 +209,7 @@
       <workItem from="1747486007292" duration="6294000" />
       <workItem from="1747540289874" duration="25665000" />
       <workItem from="1747576177378" duration="381000" />
+      <workItem from="1747576675839" duration="11191000" />
     </task>
     <servers />
   </component>

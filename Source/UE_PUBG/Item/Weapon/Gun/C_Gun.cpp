@@ -375,9 +375,15 @@ void AC_Gun::HandleSpringArmRotation()
 {
 	//if (!bIsAimPress) return;
 	FRotator ControlRotation = OwnerCharacter->GetControlRotation();
+	//UC_Util::Print(ControlRotation);
 	FRotator NewRotation = FRotator(ControlRotation.Pitch, ControlRotation.Yaw, 0);
-	AimSightSpringArm->SetWorldRotation(OwnerCharacter->GetControlRotation());
-	//AimSightSpringArm->SetWorldRotation(NewRotation);
+	//AimSightSpringArm->SetWorldRotation(OwnerCharacter->GetControlRotation());
+	if (OwnerCharacter->GetPoseState()==EPoseState::CRAWL)
+	{
+		NewRotation.Pitch -= 7.0f;
+		NewRotation.Yaw -= 0.5f;
+	}
+	AimSightSpringArm->SetWorldRotation(NewRotation);
 }
 
 void AC_Gun::GetPlayerIsAimDownOrNot()
