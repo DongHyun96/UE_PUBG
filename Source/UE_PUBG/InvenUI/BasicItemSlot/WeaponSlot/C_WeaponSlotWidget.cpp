@@ -10,9 +10,9 @@
 
 #include "InvenUserInterface/C_DragDropOperation.h"
 
-
 FReply UC_WeaponSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+	if (OwnerPlayer->GetIsActivatingConsumableItem()) return FReply::Unhandled();
 	// 우클릭인지 체크
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
@@ -138,6 +138,8 @@ void UC_WeaponSlotWidget::UpdateSlotItemImage(AC_Weapon* SlotItem)
 
 bool UC_WeaponSlotWidget::MouseRBDownInteraction(AC_Weapon* inSlotWeapon)
 {
+	if (OwnerPlayer->GetIsActivatingConsumableItem()) return false;
+
 	return false;
 }
 

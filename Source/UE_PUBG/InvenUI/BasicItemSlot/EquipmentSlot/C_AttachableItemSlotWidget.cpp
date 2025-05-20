@@ -18,7 +18,8 @@
 
 FReply UC_AttachableItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	
+	if (OwnerPlayer->GetIsActivatingConsumableItem()) return FReply::Unhandled();
+
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
 		AC_Gun* curGun = Cast<AC_Gun>(OwnerPlayer->GetEquippedComponent()->GetWeapons()[GunSlot]);

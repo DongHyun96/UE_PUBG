@@ -6,6 +6,8 @@
 
 bool UC_ThrowableWeaponSlotWidget::MouseRBDownInteraction(AC_Weapon* inSlotWeapon)
 {
+
+	if (OwnerPlayer->GetIsActivatingConsumableItem()) return false;
 	return inSlotWeapon->MoveToInven(OwnerPlayer, inSlotWeapon->GetItemCurStack());
 }
 

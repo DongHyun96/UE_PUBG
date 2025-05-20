@@ -53,7 +53,6 @@ void AC_EnergyDrink::OnActivatingFinish()
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED ENERGY DRINK");
 
-	SetActorTickEnabled(false);
 
 }
 

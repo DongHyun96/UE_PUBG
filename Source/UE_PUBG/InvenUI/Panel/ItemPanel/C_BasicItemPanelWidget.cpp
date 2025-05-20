@@ -49,14 +49,16 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, TArray<AC_Item
                 // ListView에서 해당 아이템에 대한 EntryWidget 가져오기 (이제 유효할 가능성이 높음)
                 UC_BasicItemBarWidget* EntryWidget = Cast<UC_BasicItemBarWidget>(ItemListView1->GetEntryWidgetFromItem(Item));
 
-                if (IsValid(ConsumableItem->GetLinkedItemBarWidget()))
-                {
-                    EntryWidget = ConsumableItem->GetLinkedItemBarWidget();
-                }
-                else
-                {
+                if (!EntryWidget)
                     ConsumableItem->SetLinkedItemBarWidget(EntryWidget);
-                }
+
+                //if (IsValid(ConsumableItem->GetLinkedItemBarWidget()))
+                //{
+                //    EntryWidget = ConsumableItem->GetLinkedItemBarWidget();
+                //}
+                //else
+                //{
+                //}
                 //EntryWidget->UpdateWidget(Item);
             }
             UC_Util::Print(Item->GetItemCurStack());
