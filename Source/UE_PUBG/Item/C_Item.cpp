@@ -166,6 +166,9 @@ bool AC_Item::MoveToInven(AC_BasicCharacter* Character, int32 InStack)
 	default:
 		break;
 	}
+	
+	// 인벤에 넣으면 tick 켜주기.
+	if (bIsMoveItem == true) SetActorTickEnabled(true);
 
 	AC_BasicLoot* OwnerLootBox = Cast<AC_BasicLoot>(this->GetOwner());
 
@@ -189,17 +192,25 @@ bool AC_Item::MoveToInven(AC_BasicCharacter* Character, int32 InStack)
 
 bool AC_Item::MoveToAround(AC_BasicCharacter* Character, int32 InStack)
 {
+	bool bIsMoveItem = false;
+
 	switch (ItemPlace)
 	{
 	case EItemPlace::AROUND:
-		return MoveAroundToAround(Character, InStack);
+		bIsMoveItem = MoveAroundToAround(Character, InStack);
+		break;
 	case EItemPlace::INVEN:
-		return MoveInvenToAround(Character, InStack);
+		bIsMoveItem = MoveInvenToAround(Character, InStack);
+		break;
 	case EItemPlace::SLOT:
-		return MoveSlotToAround(Character, InStack);
+		bIsMoveItem = MoveSlotToAround(Character, InStack);
+		break;
 	default:
 		break;
 	}
+	// 아이템을 땅에 버리면 Tick 꺼주기.
+	if (bIsMoveItem == true) SetActorTickEnabled(false);
+
 	return false;
 }
 
@@ -220,6 +231,9 @@ bool AC_Item::MoveToSlot(AC_BasicCharacter* Character, int32 InStack)
 	default:
 		break;
 	}
+
+	// 슬롯에 넣으면 tick 켜주기.
+	if (bIsMoveItem == true) SetActorTickEnabled(true);
 
 	AC_BasicLoot* OwnerLootBox = Cast<AC_BasicLoot>(this->GetOwner());
 

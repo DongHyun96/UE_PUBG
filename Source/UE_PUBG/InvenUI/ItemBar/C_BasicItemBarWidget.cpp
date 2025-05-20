@@ -65,6 +65,10 @@ FReply UC_BasicItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& In
 {
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
+		AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
+
+		if (OwnerPlayer->GetIsActivatingConsumableItem()) return FReply::Unhandled();
+
 		if (CachedItem)
 		{
 			//드래그 이벤트 실행.
@@ -72,7 +76,6 @@ FReply UC_BasicItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& In
 			FEventReply RePlyResult =
 				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 			//AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)); //TODO : 게임 신 매니저에서 플레이어 가져오기
-			AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
 			//UC_Util::Print("LeftMouseButton");
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
 

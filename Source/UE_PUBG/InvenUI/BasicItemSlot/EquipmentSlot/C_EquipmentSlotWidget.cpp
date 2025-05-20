@@ -9,6 +9,7 @@
 //#include "C_DragDropOperation.h"
 #include "Components/ProgressBar.h"
 #include "Components/Border.h"
+#include "Singleton/C_GameSceneManager.h"
 
 
 void UC_EquipmentSlotWidget::NativeConstruct()
@@ -18,6 +19,10 @@ void UC_EquipmentSlotWidget::NativeConstruct()
 
 FReply UC_EquipmentSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+	//AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
+
+	if (OwnerPlayer->GetIsActivatingConsumableItem()) return FReply::Unhandled();
+
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
 		if (AC_EquipableItem* SlotItem = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EquipSlot])

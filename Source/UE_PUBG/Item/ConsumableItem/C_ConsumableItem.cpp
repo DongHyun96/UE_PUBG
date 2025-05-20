@@ -57,6 +57,9 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 	UsingTimer += DeltaTime;
 
+	if (!LinkedItemBarWidget)
+		UC_Util::Print("LinkedItemBarWidget is Nullptr");
+
 	switch (ConsumableItemState)
 	{
 	case EConsumableItemState::IDLE:
@@ -201,12 +204,13 @@ bool AC_ConsumableItem::StartUsingConsumableItem(AC_BasicCharacter* InItemUser)
 	if (!UsingMontageMap.Contains(ItemUser->GetPoseState()))    return false;
 	if (!UsingMontageMap[ItemUser->GetPoseState()].AnimMontage) return false;
 
-	SetActorTickEnabled(true);
 
 	float PlayTime = ItemUser->PlayAnimMontage(UsingMontageMap[ItemUser->GetPoseState()]);
 
 	// 다른 Montage에 의해 방해 받았을 때
 	if (PlayTime == 0.f) return false;
+
+	//SetActorTickEnabled(true);
 
 	// 사용 시작하기
 	ConsumableItemState = EConsumableItemState::ACTIVATING;
@@ -282,7 +286,7 @@ bool AC_ConsumableItem::CancelActivating()
 	UsingTimer			= 0.f;
 	//ItemUser			= nullptr;
 
-	SetActorTickEnabled(false);
+	//SetActorTickEnabled(false);
 
 	return true;
 }

@@ -66,7 +66,6 @@ void AC_FirstAidKit::OnActivatingFinish()
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED FIRST AID KIT");
 
-	SetActorTickEnabled(false);
 
 }
 

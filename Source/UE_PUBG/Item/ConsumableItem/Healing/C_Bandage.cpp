@@ -73,7 +73,6 @@ void AC_Bandage::OnActivatingFinish()
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED BANDAGE");
 
-	SetActorTickEnabled(false);
 }
 
 void AC_Bandage::OnCancelActivating()

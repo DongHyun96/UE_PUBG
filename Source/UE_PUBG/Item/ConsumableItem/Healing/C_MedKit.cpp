@@ -74,7 +74,6 @@ void AC_MedKit::OnActivatingFinish()
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED MED KIT");
 
-	SetActorTickEnabled(false);
 
 }
 

@@ -53,7 +53,6 @@ void AC_PainKiller::OnActivatingFinish()
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED PAINKILLER");
 
-	SetActorTickEnabled(false);
 
 }
 

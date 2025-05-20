@@ -76,6 +76,9 @@ bool UC_GunSlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 
 bool UC_GunSlotWidget::MouseRBDownInteraction(AC_Weapon* inSlotWeapon)
 {
+
+	if (OwnerPlayer->GetIsActivatingConsumableItem()) return false;
+
     return inSlotWeapon->MoveToAround(OwnerPlayer, inSlotWeapon->GetItemCurStack());
 }
 
