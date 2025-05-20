@@ -117,6 +117,7 @@ void AC_EnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, struct FAISt
 
 	AC_BasicCharacter* PerceptionUpdatedCharacter = Cast<AC_BasicCharacter>(Actor);
 	if (!IsValid(PerceptionUpdatedCharacter)) return; // 인지된 Actor가 Character가 아닐 때
+	if (PerceptionUpdatedCharacter->GetMainState() == EMainState::DEAD) return; // 인지된 Character가 이미 죽은 상태인 경우
 	
 	if (Stimulus.WasSuccessfullySensed()) // 새로 인지된 Actor인 상황
 	{
@@ -270,6 +271,9 @@ bool AC_EnemyAIController::RemoveCharacterFromDetectedCharacters(AC_BasicCharact
 
 bool AC_EnemyAIController::AddCharacterToDetectedCharacters(AC_BasicCharacter* InCharacter)
 {
+	if (!IsValid(InCharacter)) return false;
+	if (InCharacter->GetMainState() == EMainState::DEAD) return false;
+	
 	float DistanceBetweenTwoCharacters = FVector::Distance(OwnerCharacter->GetActorLocation(), InCharacter->GetActorLocation());
 	
 	for (int i = 0; i < static_cast<int>(ESightRangeLevel::Max); ++i)

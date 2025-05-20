@@ -61,20 +61,6 @@ void UC_SwimmingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 	HandleSwimmingState();
 	UpdateOxygenAmount(DeltaTime);
-
-	/*switch (SwimmingState)
-	{
-	case ESwimmingState::ON_GROUND:			UC_Util::Print("OnGround");
-		break;
-	case ESwimmingState::SWIMMING_SURFACE:	UC_Util::Print("Surface");
-		break;
-	case ESwimmingState::SWIMMING_UNDER:	UC_Util::Print("Under");
-		break;
-	case ESwimmingState::MAX:
-		break;
-	default:
-		break;
-	}*/
 }
 
 void UC_SwimmingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
@@ -178,16 +164,6 @@ void UC_SwimmingComponent::OnSwimmingMoveEnd()
 	bIsHandlingPlayerMovementOnCurrentTick = false;
 	OwnerCharacter->GetPoseColliderHandlerComponent()->SetColliderByPoseState(EPoseState::STAND);
 	OwnerCharacter->GetPoseColliderHandlerComponent()->SetColliderBySwimmingMovingState(false);
-}
-
-void UC_SwimmingComponent::SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter)
-{
-	OwnerCharacter = InOwnerCharacter;
-	//WaterDetectionCollider->AttachToComponent
-	//(
-	//	OwnerCharacter->GetRootComponent(),
-	//	FAttachmentTransformRules::KeepRelativeTransform
-	//);
 }
 
 void UC_SwimmingComponent::HandleSwimmingState()
