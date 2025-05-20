@@ -30,6 +30,10 @@ void UC_BasicItemBarWidget::NativeConstruct()
 
 FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
+
+	if (OwnerPlayer->GetIsActivatingConsumableItem()) return FReply::Unhandled();
+
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton) && InMouseEvent.IsLeftAltDown())
 	{
 		if (HalfStackItemInteraction()) // true면 return, false면 남은 코드 실행.
@@ -48,7 +52,6 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 		if (InMouseEvent.IsAltDown())
 			if (HalfStackItemInteraction()) return FReply::Handled(); //참이면 return, 거짓이면 남은 코드 실행.
 
-		AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
 		CachedItem->Interaction(OwnerPlayer);
 
 		UpdateWidget(CachedItem);
@@ -63,11 +66,13 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 
 FReply UC_BasicItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
+
+	if (OwnerPlayer->GetIsActivatingConsumableItem()) return FReply::Unhandled();
+
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
 	{
-		AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
 
-		if (OwnerPlayer->GetIsActivatingConsumableItem()) return FReply::Unhandled();
 
 		if (CachedItem)
 		{
