@@ -36,6 +36,7 @@
 #include "Component/C_SmokeEnteredChecker.h"
 #include "HUD/C_InstructionWidget.h"
 #include "Item/Weapon/Gun/C_Gun.h"
+#include "Item/Weapon/Gun/C_SR.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -498,6 +499,8 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 	bCanMove				= false;
 	bIsPoseTransitioning	= true;
 	AC_Gun* TempGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
+	AC_SR* TempSR = Cast<AC_SR>(TempGun);
+	if (TempSR->GetIsReloadingSR()) return true;
 	if (bIsReloadingBullet && IsValid(TempGun))
 	{
 		UAnimInstance* TempAnimInstance  = GetMesh()->GetAnimInstance();

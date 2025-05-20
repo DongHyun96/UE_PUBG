@@ -5,6 +5,7 @@
     <projectFile profileName="EpicGames.AspNet">../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.AspNet/EpicGames.AspNet.csproj</projectFile>
     <projectFile kind="Docker">../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Perforce.Fixture/EpicGames.Perforce.Fixture.csproj</projectFile>
     <projectFile>../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/UnrealBuildTool/UnrealBuildTool.csproj</projectFile>
+    <projectFile kind="Docker">../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Perforce.Fixture/EpicGames.Perforce.Fixture.csproj</projectFile>
     <projectFile>Intermediate/ProjectFiles/UE5.vcxproj</projectFile>
     <projectFile>Intermediate/ProjectFiles/UE_PUBG.vcxproj</projectFile>
   </component>
@@ -14,6 +15,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0d99d8de-302d-4e13-b224-daf87b7af6d6" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_BasicCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_BasicCharacter.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +41,7 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://0" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -50,21 +52,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;C/C++ 프로젝트.UE_PUBG.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Buffer__Temp&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "C/C++ 프로젝트.UE_PUBG.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "HyunHo__Branch",
+    "ignore.virus.scanning.warn.message": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="C/C++ 프로젝트.UE_PUBG">
     <configuration name="UE5" type="CppProject" factoryName="C++ Project">
       <option name="DEFAULT_PROJECT_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
@@ -145,6 +147,17 @@
         <option name="Build" />
       </method>
     </configuration>
+    <configuration name="EpicGames.Perforce.Fixture/Dockerfile (1)" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="containerName" value="epicgames.perforce.fixture" />
+          <option name="contextFolderPath" value="C:\Users\Park\Desktop\UE_PUBG" />
+          <option name="sourceFilePath" value="../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Perforce.Fixture/Dockerfile" />
+        </settings>
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
+      <method v="2" />
+    </configuration>
     <configuration name="EpicGames.Perforce.Fixture/Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
       <deployment type="dockerfile">
         <settings>
@@ -175,6 +188,7 @@
       <workItem from="1747640947547" duration="52000" />
       <workItem from="1747641115239" duration="563000" />
       <workItem from="1747641699380" duration="420000" />
+      <workItem from="1747642206220" duration="3789000" />
     </task>
     <servers />
   </component>
