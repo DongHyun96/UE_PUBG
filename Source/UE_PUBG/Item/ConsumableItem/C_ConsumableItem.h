@@ -79,7 +79,7 @@ public:
 	/// <param name="ItemUser"> : 아이템 사용 Character </param>
 	/// <returns> : 사용 시작이 적절히 되었다면 return true </returns>
 	UFUNCTION(BlueprintCallable)
-	bool StartUsingConsumableItem(class AC_BasicCharacter* InItemUser);
+	bool StartUsingConsumableItem(AC_BasicCharacter* InItemUser);
 
 	/// <summary>
 	/// 사용 활성화 시도 중 Item 사용 취소 시도 (Template method)
@@ -90,7 +90,7 @@ public:
 	bool Interaction(AC_BasicCharacter* Character) override;
 
 	//bool LegacyMoveToInven(AC_BasicCharacter* Character) override;
-	//
+	//_EnemyAIController
 	//bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
 	//
 	//bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
@@ -101,7 +101,7 @@ protected:
 	/// <summary>
 	/// 각 아이템 별 사용 시작 가능한 조건인지 check (StartUsingConsumableItem Template method 내의 Primitive operation)
 	/// </summary>
-	virtual bool IsAvailableToStartUsing(class AC_BasicCharacter* InItemUser) PURE_VIRTUAL(AC_ConsumableItem::IsAvailableToStartUsing, return false;);
+	virtual bool IsAvailableToStartUsing(AC_BasicCharacter* InItemUser) PURE_VIRTUAL(AC_ConsumableItem::IsAvailableToStartUsing, return false;);
 
 	/// <summary>
 	/// 각 아이템 별 사용 시작 시 호출될 함수 (StartUsingConsumableItem Template method 내의 Primitive operation)

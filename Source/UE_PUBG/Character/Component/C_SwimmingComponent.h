@@ -51,7 +51,7 @@ public:
 
 public:
 
-	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter);
+	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
 	ESwimmingState GetSwimmingState() const { return SwimmingState; }
 

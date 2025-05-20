@@ -349,7 +349,7 @@ protected: // Predicted Path 관련
 
 private:
 
-	// Predicted Path를 그릴 때, 던지기 자세에서의 socket위치를 파악하기 위함, 플레이어만 사용
+	// Predicted Path를 그릴 때, 던지기 자세에서의 socket위치를 파악하기 위함, (플레이어만 사용하기 때문에 Static으로 둠)
 	static class USkeletalMeshComponent* OwnerMeshTemp;
 
 	//  GameScene에 배치된 총 ThrowingWeapon 개수 -> OwnerMeshTemp Destroy 처리 시 사용 예정
