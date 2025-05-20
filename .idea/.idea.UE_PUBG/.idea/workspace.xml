@@ -15,12 +15,8 @@
   <component name="ChangeListManager">
     <list default="true" id="0d99d8de-302d-4e13-b224-daf87b7af6d6" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/AI/C_EnemyAIController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/AI/C_EnemyAIController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/AI/Task/IdleTask/C_BTTaskWait.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/AI/Task/IdleTask/C_BTTaskWait.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_SwimmingComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_SwimmingComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_SwimmingComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_SwimmingComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_ConsumableItem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_ConsumableItem.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_ConsumableItem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_ConsumableItem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,25 +62,12 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "C/C++ 프로젝트.UE_PUBG.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "HyunHo__Branch",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
-    &quot;C/C++ 프로젝트.UE_PUBG.executor&quot;: &quot;Run&quot;,
+    &quot;C/C++ 프로젝트.UE_PUBG.executor&quot;: &quot;Debug&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;DongHyun__Branch&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;HyunHo__Branch&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -92,8 +75,21 @@
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  &lt;component name=&quot;PropertiesComponent&quot;&gt;{
+  &amp;quot;keyToString&amp;quot;: {
+    &amp;quot;C/C++ 프로젝트.UE_PUBG.executor&amp;quot;: &amp;quot;Run&amp;quot;,
+    &amp;quot;RunOnceActivity.ShowReadmeOnStart&amp;quot;: &amp;quot;true&amp;quot;,
+    &amp;quot;RunOnceActivity.git.unshallow&amp;quot;: &amp;quot;true&amp;quot;,
+    &amp;quot;git-widget-placeholder&amp;quot;: &amp;quot;DongHyun__Branch&amp;quot;,
+    &amp;quot;ignore.virus.scanning.warn.message&amp;quot;: &amp;quot;true&amp;quot;,
+    &amp;quot;node.js.detected.package.eslint&amp;quot;: &amp;quot;true&amp;quot;,
+    &amp;quot;node.js.detected.package.tslint&amp;quot;: &amp;quot;true&amp;quot;,
+    &amp;quot;node.js.selected.package.eslint&amp;quot;: &amp;quot;(autodetect)&amp;quot;,
+    &amp;quot;node.js.selected.package.tslint&amp;quot;: &amp;quot;(autodetect)&amp;quot;,
+    &amp;quot;nodejs_package_manager_path&amp;quot;: &amp;quot;npm&amp;quot;,
+    &amp;quot;vue.rearranger.settings.migration&amp;quot;: &amp;quot;true&amp;quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="C/C++ 프로젝트.UE_PUBG">
     <configuration name="UE5" type="CppProject" factoryName="C++ Project">
       <option name="DEFAULT_PROJECT_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/UE5.vcxproj" />
@@ -220,6 +216,7 @@
       <workItem from="1747666585400" duration="680000" />
       <workItem from="1747703126803" duration="7328000" />
       <workItem from="1747725421651" duration="8502000" />
+      <workItem from="1747743570779" duration="466000" />
     </task>
     <servers />
   </component>

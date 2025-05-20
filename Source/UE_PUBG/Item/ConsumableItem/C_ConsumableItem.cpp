@@ -57,8 +57,8 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 	UsingTimer += DeltaTime;
 
-	if (!LinkedItemBarWidget)
-		UC_Util::Print("LinkedItemBarWidget is Nullptr");
+	/*if (!LinkedItemBarWidget)
+		UC_Util::Print("LinkedItemBarWidget is Nullptr");*/
 
 	switch (ConsumableItemState)
 	{
