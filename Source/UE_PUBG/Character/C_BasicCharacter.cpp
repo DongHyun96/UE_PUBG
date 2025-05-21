@@ -10,22 +10,16 @@
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 
-#include "Character/C_Player.h"
-
 #include "Component/C_StatComponent.h"
 #include "Component/C_ConsumableUsageMeshComponent.h"
 #include "Component/C_PoseColliderHandlerComponent.h"
 #include "Component/C_SwimmingComponent.h"
-#include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "Character/Component/C_AttachableItemMeshComponent.h"
 #include "Character/Component/C_FeetComponent.h"
-#include "C_Player.h"   
 
 #include "Component/C_ParkourComponent.h"
-#include "Component/C_PlayerController.h"
 #include "HUD/C_HUDWidget.h"
 
-#include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 
@@ -34,17 +28,16 @@
 
 #include "MotionWarpingComponent.h"
 #include "Component/C_SmokeEnteredChecker.h"
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
+#include "HUD/C_TimeBoxWidget.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/Gun/C_SR.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
-#include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 
 #include "Loot/C_LootCrate.h"
 
 #include "Singleton/C_GameSceneManager.h"
-#include "UniversalObjectLocators/AnimInstanceLocatorFragment.h"
 
 #include "Utility/C_Util.h"
 
@@ -212,7 +205,7 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 		ParkourComponent->SwapMeshToMainSkeletalMesh();
 
 	MainState = EMainState::DEAD;
-	Ranking = GAMESCENE_MANAGER->GetCurrentRankingAndUpdateCurrentRanking();
+	Ranking = GAMESCENE_MANAGER->GetCurrentRankingAndUpdateCurrentRanking(); // 이 캐릭터의 Ranking 업데이트
 
 	// 투척류 투척 Process 중이었을 때, 손에 든 투척류 놓치고 죽기
 	if (AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(EquippedComponent->GetCurWeapon()))
@@ -223,10 +216,7 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 		}
 
 	// 여기에 Player의 BackToMainCamera 처리를 해야 함 (무기 장착 해제 이전에) / Player에서 CharacterDead override를 했지만, 처리 순서 때문에 여기서밖에 처리를 못함
-	if (Cast<AC_Player>(this))
-	{
-		if (AC_Gun* Gun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon())) Gun->BackToMainCamera();
-	}
+	if (Cast<AC_Player>(this)) if (AC_Gun* Gun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon())) Gun->BackToMainCamera();
 	
 	FVector SpawnLocation = GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 	GAMESCENE_MANAGER->SpawnLootCrateAt(SpawnLocation, this);
@@ -256,14 +246,23 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 	{
 		if (KillFeedDescriptor.DamageCauser != KillFeedDescriptor.DamageTaker)
 			KillFeedDescriptor.DamageCauser->AddKillCount();
+			
 	}
 
-	// 만약 이 캐릭터를 사망에 이르게 한 캐릭터가 Player라면, Player 중간 KillFeed 정보 넣기
+	// 만약 이 캐릭터를 사망에 이르게 한 캐릭터가 Player라면, Player Middle KillFeed 정보 추가 & KillCount UI 정보 업데이트
 	if (AC_Player* PlayerDamageCauser = Cast<AC_Player>(KillFeedDescriptor.DamageCauser))
-		PlayerDamageCauser->GetHUDWidget()->GetInstructionWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
+	{
+		PlayerDamageCauser->GetHUDWidget()->GetInformWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
+		PlayerDamageCauser->GetHUDWidget()->GetTimeBoxWidget()->SetKilledCountText(PlayerDamageCauser->GetKillCount());
+	}
 
-	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->AddTopKillFeedLog(KillFeedDescriptor);
+	// Top KillFeed 추가
+	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget()->AddTopKillFeedLog(KillFeedDescriptor);
 
+	// AliveCount 업데이트
+	int LeftCharacterCount = GAMESCENE_MANAGER->RemoveOneFromCurrentAliveCharacterCount();
+	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetTimeBoxWidget()->SetAliveCountText(LeftCharacterCount);
+	
 	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_BasicCharacter::DestroyCharacter, 5.f, false);
 }
@@ -498,14 +497,24 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 	NextPoseState			= InNextPoseState;
 	bCanMove				= false;
 	bIsPoseTransitioning	= true;
-	AC_Gun* TempGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon());
-	AC_SR* TempSR = Cast<AC_SR>(TempGun);
-	if (TempSR->GetIsReloadingSR()) return true;
-	if (bIsReloadingBullet && IsValid(TempGun))
+
+	// 만약에 현재 들고 있는 무기가 Gun이라면 Gun에 대한 추가 TransitionAction 처리
+	if (AC_Gun* CurGun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon()))
+		ExecuteGunTransitionAction(CurGun, InNextPoseState);
+	
+	return true;
+}
+
+void AC_BasicCharacter::ExecuteGunTransitionAction(AC_Gun* CurGun, EPoseState InNextPoseState)
+{
+	AC_SR* TempSR = Cast<AC_SR>(CurGun);
+	if (IsValid(TempSR)) if (TempSR->GetIsReloadingSR()) return;
+	
+	if (bIsReloadingBullet && IsValid(CurGun))
 	{
 		UAnimInstance* TempAnimInstance  = GetMesh()->GetAnimInstance();
 		UAnimMontage*  CurReloadMontage  = nullptr;
-		UAnimMontage*  NextReloadMontage = TempGun->ReloadMontages[InNextPoseState].Montages[TempGun->GetCurrentWeaponState()].AnimMontage;
+		UAnimMontage*  NextReloadMontage = CurGun->ReloadMontages[InNextPoseState].Montages[CurGun->GetCurrentWeaponState()].AnimMontage;
 		if (IsValid(TempAnimInstance)  && IsValid(NextReloadMontage))
 		{
 			float HighestWeight = 0.0f;
@@ -537,12 +546,9 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 				TempAnimInstance->Montage_Stop(0.1f,CurReloadMontage);
 				TempAnimInstance->Montage_Play(NextReloadMontage);
 				TempAnimInstance->Montage_SetPosition(NextReloadMontage, NextStartPosition);
-				
 			}
 		}
-		
 	}
-	return true;
 }
 
 void AC_BasicCharacter::Jump()

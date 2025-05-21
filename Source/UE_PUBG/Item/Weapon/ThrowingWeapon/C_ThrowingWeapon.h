@@ -223,7 +223,6 @@ private:
 
 public:
 
-	// Get Predicted Projectile path start location
 	FVector GetPredictedThrowStartLocation();
 
 private:
@@ -288,7 +287,7 @@ protected:
 	static const TMap<EThrowableType, FName> EQUIPPED_SOCKET_NAMES;
 
 	static const FName HOLSTER_SOCKET_NAME;
-	static const FName THROW_START_SOCKET_NAME;
+	static const FName THROW_START_SOCKET_NAME; // TempMesh의 위치로 Throwable Start 위치 잡는 Socket & 실질적으로 Throw Throwable할 때 Projectile위치를 이 Socket으로 잡음
 
 protected:
 
@@ -348,9 +347,6 @@ protected: // Predicted Path 관련
 	class UStaticMesh* SplineMesh{};
 
 private:
-
-	// Predicted Path를 그릴 때, 던지기 자세에서의 socket위치를 파악하기 위함, (플레이어만 사용하기 때문에 Static으로 둠)
-	static class USkeletalMeshComponent* OwnerMeshTemp;
 
 	//  GameScene에 배치된 총 ThrowingWeapon 개수 -> OwnerMeshTemp Destroy 처리 시 사용 예정
 	static int ThrowingWeaponCount;

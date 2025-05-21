@@ -14,7 +14,7 @@
 #include "HUD/C_HUDWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
 
 #include "Utility/C_Util.h"
 
@@ -151,7 +151,7 @@ bool AC_AR::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, 
 	NewRotation.Pitch		= 0.f;
 	NewRotation.Roll		= 0.f;
 	OwnerEnemy->SetActorRotation(NewRotation);
-	UC_Util::Print("Trying To Attack");
+	// UC_Util::Print("Trying To Attack");
 	AIFireTimer += DeltaTime;
 	//UC_Util::Print(AIFireTimer);
 	if (AIFireTimer > GetBulletRPM() && abs(NewRotation.Yaw - LookRotation.Yaw) < 10.0f)
@@ -250,7 +250,7 @@ void AC_AR::ChangeCurShootingMode()
 		case EShootingMode::MAX: break;
 		}
 
-		OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog(PlayerLog);
+		OwnerPlayer->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog(PlayerLog);
 	}
 }
 

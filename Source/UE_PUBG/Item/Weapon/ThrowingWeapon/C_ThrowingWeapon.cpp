@@ -59,8 +59,6 @@ const TMap<EThrowableType, FName> AC_ThrowingWeapon::THROWABLETYPE_ITEMNAME_MAP 
 	{EThrowableType::SMOKE,			"Item_Weapon_SmokeBomb_C"},
 };
 
-USkeletalMeshComponent* AC_ThrowingWeapon::OwnerMeshTemp{};
-
 const TMap<EThrowableType, FName> AC_ThrowingWeapon::EQUIPPED_SOCKET_NAMES =
 {
 	{EThrowableType::GRENADE,		"GrenadeEquipped"},
@@ -73,7 +71,7 @@ const FName AC_ThrowingWeapon::THROW_START_SOCKET_NAME	= "Throwable_ThrowStart";
 
 const float AC_ThrowingWeapon::PROJECTILE_RADIUS		= 5.f;
 
-TMap<EThrowableType, class II_AIThrowableAttackStrategy*> AC_ThrowingWeapon::AIAttackStrategies{};
+TMap<EThrowableType, II_AIThrowableAttackStrategy*> AC_ThrowingWeapon::AIAttackStrategies{};
 
 AC_ThrowingWeapon::AC_ThrowingWeapon()
 {
@@ -163,12 +161,6 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		if (--ThrowingWeaponCount <= 0) // World에 배치된 마지막 ThrowingWeapon이 Destroy되었을 때
 		{
-			if (OwnerMeshTemp)
-			{
-				OwnerMeshTemp->DestroyComponent();
-				OwnerMeshTemp = nullptr;
-			}
-
 			if (!ExplodeStrategies.IsEmpty())	ExplodeStrategies.Empty(); // GC는 GameSceneManager에서 처리
 			if (!AIAttackStrategies.IsEmpty())	AIAttackStrategies.Empty(); // GC는 GSMgr에서 처리
 		}
@@ -176,12 +168,6 @@ void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 
 	ThrowingWeaponCount = 0;
-
-	if (OwnerMeshTemp)
-	{
-		OwnerMeshTemp->DestroyComponent();
-		OwnerMeshTemp = nullptr;
-	}
 
 	// GC는 GameSceneManager에서 처리
 	if (!ExplodeStrategies.IsEmpty())  ExplodeStrategies.Empty(); 
@@ -818,59 +804,9 @@ void AC_ThrowingWeapon::Explode()
 
 FVector AC_ThrowingWeapon::GetPredictedThrowStartLocation()
 {
-	if (!IsValid(OwnerMeshTemp))
-	{
-		OwnerMeshTemp = NewObject<USkeletalMeshComponent>(OwnerCharacter);
-
-		if (!IsValid(OwnerMeshTemp))
-		{
-			UC_Util::Print("From AC_ThrowingWeapon::GetPredictedThrowStartLocation : OwnerTempMesh Not inited!");
-			return FVector::ZeroVector;
-		}
-
-		OwnerMeshTemp->SetVisibility(false);
-		OwnerMeshTemp->RegisterComponent();
-		OwnerMeshTemp->SetSkeletalMesh(OwnerCharacter->GetMesh()->SkeletalMesh);
-		OwnerMeshTemp->SetAnimInstanceClass(OwnerCharacter->GetMesh()->GetAnimInstance()->GetClass());
-		OwnerMeshTemp->SetWorldTransform(OwnerCharacter->GetMesh()->GetComponentTransform());
-	}
-
-	// 자세에 맞는 Montage가 재생중이지 않다면, 해당 Montage로 변경 뒤에 멈추기
-	static EPoseState PredictedPoseState = EPoseState::POSE_MAX;
-
-	UAnimInstance* MeshAnimInstance = OwnerMeshTemp->GetAnimInstance();
-
-	// 현재 posing이 다르다면 예측 경로 시작점도 달라짐
-	
-	float ThrowThrowableTime{};
-
-	for (const FAnimNotifyEvent& NotifyEvent : CurThrowProcessMontages.ThrowMontage.AnimMontage->Notifies)
-	{
-		if (NotifyEvent.NotifyName == "AN_OnThrowThrowable_C")
-		{
-			ThrowThrowableTime = NotifyEvent.GetTime();
-			break;
-		}
-	}
-
-	if (PredictedPoseState != OwnerCharacter->GetPoseState() ||
-		MeshAnimInstance->Montage_GetPosition(CurThrowProcessMontages.ThrowMontage.AnimMontage) != ThrowThrowableTime)
-	{
-		PredictedPoseState = OwnerCharacter->GetPoseState();
-		
-		MeshAnimInstance->Montage_Play(CurThrowProcessMontages.ThrowMontage.AnimMontage);
-		MeshAnimInstance->Montage_SetPosition(CurThrowProcessMontages.ThrowMontage.AnimMontage, ThrowThrowableTime);
-		MeshAnimInstance->Montage_Pause();
-
-		OwnerMeshTemp->TickPose(GetWorld()->GetDeltaSeconds(), true);
-		OwnerMeshTemp->RefreshBoneTransforms();
-		OwnerMeshTemp->RefreshFollowerComponents();
-		OwnerMeshTemp->UpdateComponentToWorld();
-	}
-
-	OwnerMeshTemp->SetWorldTransform(OwnerCharacter->GetMesh()->GetComponentTransform());
-
-	return OwnerMeshTemp->GetSocketLocation(THROW_START_SOCKET_NAME);
+	const FName PredictedThrowStartSocketName = (OwnerCharacter->GetPoseState() == EPoseState::CRAWL) ?
+		"CrawlThrowablePredictedStartLocation" : "StandThrowablePredictedStartLocation"; // 예측 처리용 ThrowStart 위치 Socket
+	return OwnerCharacter->GetMesh()->GetSocketLocation(PredictedThrowStartSocketName);
 }
 
 void AC_ThrowingWeapon::DrawDebugPredictedPath()

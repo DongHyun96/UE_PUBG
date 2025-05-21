@@ -13,7 +13,7 @@
 #include "Item/Weapon/C_Weapon.h"
 
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 
 const float AC_MedKit::SWITCHING_TIME = 3.2f;
@@ -65,14 +65,14 @@ void AC_MedKit::OnStartUsing()
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_MedKit::SwitchingBandageToSyringe, SWITCHING_TIME, false);
 
 	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
-		UserPlayer->GetHUDWidget()->GetInstructionWidget()->ActivateConsumableInstruction("Using MedKit");
+		UserPlayer->GetHUDWidget()->GetInformWidget()->ActivateConsumableInstruction("Using MedKit");
 }
 
 void AC_MedKit::OnActivatingFinish()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, false);
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
-		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED MED KIT");
+		Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("USED MED KIT");
 
 
 }

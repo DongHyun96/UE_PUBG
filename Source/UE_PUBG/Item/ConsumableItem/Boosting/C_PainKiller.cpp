@@ -13,7 +13,7 @@
 #include "Item/Weapon/C_Weapon.h"
 
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
 
 
 AC_PainKiller::AC_PainKiller()
@@ -44,14 +44,14 @@ void AC_PainKiller::OnStartUsing()
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::PAIN_KILLER, true);
 
 	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
-		UserPlayer->GetHUDWidget()->GetInstructionWidget()->ActivateConsumableInstruction("Using Pain Killer");
+		UserPlayer->GetHUDWidget()->GetInformWidget()->ActivateConsumableInstruction("Using Pain Killer");
 }
 
 void AC_PainKiller::OnActivatingFinish()
 {
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::PAIN_KILLER, false);
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
-		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED PAINKILLER");
+		Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("USED PAINKILLER");
 
 
 }

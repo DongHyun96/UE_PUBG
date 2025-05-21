@@ -11,7 +11,7 @@
 
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_SkyDiveWidget.h"
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
 
 #include "Utility/C_Util.h"
 

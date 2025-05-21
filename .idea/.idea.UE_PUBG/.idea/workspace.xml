@@ -14,8 +14,51 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0d99d8de-302d-4e13-b224-daf87b7af6d6" name="변경" comment="">
+      <change afterPath="$PROJECT_DIR$/Source/UE_PUBG/HUD/C_TimeBoxWidget.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/UE_PUBG/HUD/C_TimeBoxWidget.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/DH_Map/DH_ThirdPersonMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/DH_Map/DH_ThirdPersonMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/BPC_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/BPC_Player.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Enemy/BPC_Enemy.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Enemy/BPC_Enemy.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Model/BaseBody/MainCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Model/BaseBody/MainCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Model/BaseBody/MainCharacter_Skeleton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Model/BaseBody/MainCharacter_Skeleton.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/Character/Model/BaseBody/object_0_002.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/InvenUI/WB_TimeBox.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Common/InvenUI/WB_TimeBox.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/Character/Model/BaseBody/MainCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/Character/Model/BaseBody/MainCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/Character/Widget/InstructionWidgets/WBPC_InstructionWidget.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/Character/Widget/WBPC_PlayerHUD.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/Character/Widget/WBPC_PlayerHUD.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/Character/Model/BaseBody/MainCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/Character/Model/BaseBody/MainCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Sangyun/BaseBody_11_26/BaseBody/MainCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Sangyun/BaseBody_11_26/BaseBody/MainCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Sangyun/Character/Model/BaseBody/MainCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Sangyun/Character/Model/BaseBody/MainCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Airplane/C_AirplaneManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Airplane/C_AirplaneManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_BasicCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_BasicCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_BasicCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_BasicCharacter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_Enemy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_Enemy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_Player.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_Player.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_WorldPingActor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_WorldPingActor.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_InputComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_InputComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_PoseColliderHandlerComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_PoseColliderHandlerComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_StatComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_StatComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/SkyDivingComponent/C_PlayerSkyDivingComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/SkyDivingComponent/C_PlayerSkyDivingComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/SkyDivingComponent/C_SkyDivingComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/SkyDivingComponent/C_SkyDivingComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/HUD/C_HUDWidget.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/HUD/C_HUDWidget.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/HUD/C_InstructionWidget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/HUD/C_InformWidget.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/HUD/C_InstructionWidget.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/HUD/C_InformWidget.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Boosting/C_EnergyDrink.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Boosting/C_EnergyDrink.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Boosting/C_PainKiller.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Boosting/C_PainKiller.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_ConsumableItem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/C_ConsumableItem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_Bandage.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_Bandage.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_FirstAidKit.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_FirstAidKit.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_MedKit.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/ConsumableItem/Healing/C_MedKit.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/Gun/C_AR.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/Gun/C_AR.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/WeaponStrategy/C_GunStrategy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/WeaponStrategy/C_GunStrategy.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/MagneticField/C_MagneticFieldManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/MagneticField/C_MagneticFieldManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameSceneManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameSceneManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameSceneManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameSceneManager.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,14 +87,22 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Private/Serialization/PredictionKeyNetSerializer.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Developer/FunctionalTesting/Private/FunctionalAITest.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Developer/TraceInsights/Private/Insights/TaskGraphProfiler/ViewModels/TaskTimingTrack.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Developer/TraceInsights/Private/Insights/ViewModels/MarkersTimingTrack.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Developer/Windows/LiveCoding/Private/External/LC_Commands.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Editor/AnimGraph/Private/AnimBlueprintExtension_CachedPose.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Editor/AnimGraph/Private/AnimBlueprintExtension_PropertyAccess.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Editor/SequenceRecorder/Private/TimecodeBoneMethodCustomization.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Core/ManagedProcess.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/AIModule/Public/GameplayDebugger/GameplayDebuggerCategory_BehaviorTree.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/ClothingSystemRuntimeCommon/Public/ClothingSimulation.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectHandle.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Components/MeshComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Components/SkeletalMeshComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/RenderCore/Public/RenderGraphUtils.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/UMG/Public/Components/CanvasPanel.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/ThirdParty/NVIDIA/CUDA/cuda.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -217,6 +268,8 @@
       <workItem from="1747703126803" duration="7328000" />
       <workItem from="1747725421651" duration="8502000" />
       <workItem from="1747743570779" duration="466000" />
+      <workItem from="1747785456264" duration="13696000" />
+      <workItem from="1747806302746" duration="15176000" />
     </task>
     <servers />
   </component>

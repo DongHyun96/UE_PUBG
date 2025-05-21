@@ -12,7 +12,7 @@
 #include "Item/Weapon/C_Weapon.h"
 
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
 
 
 AC_EnergyDrink::AC_EnergyDrink()
@@ -43,7 +43,7 @@ void AC_EnergyDrink::OnStartUsing()
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::DRINK, true);
 
 	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
-		UserPlayer->GetHUDWidget()->GetInstructionWidget()->ActivateConsumableInstruction("Using Energy Drink");
+		UserPlayer->GetHUDWidget()->GetInformWidget()->ActivateConsumableInstruction("Using Energy Drink");
 }
 
 void AC_EnergyDrink::OnActivatingFinish()
@@ -51,7 +51,7 @@ void AC_EnergyDrink::OnActivatingFinish()
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::DRINK, false);
 	
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
-		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED ENERGY DRINK");
+		Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("USED ENERGY DRINK");
 
 
 }
