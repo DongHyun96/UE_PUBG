@@ -23,7 +23,7 @@
 #include "Components/AudioComponent.h"
 #include "Utility/C_Util.h"
 
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
 
 #include "Singleton/C_GameInstance.h"
 const TMap<EConsumableItemType, FName> AC_ConsumableItem::ConsumableItemNameMap =
@@ -78,7 +78,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 			if (ItemUser->GetCharacterMovement()->IsFalling() || ItemUser->GetSwimmingComponent()->IsSwimming())
 			{
-				if (Player) Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("ITEM USE INTERRUPTED");
+				if (Player) Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("ITEM USE INTERRUPTED");
 				CancelActivating();
 				return;
 			}
@@ -96,7 +96,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			}
 
 			// 방해를 받음
-			if (Player) Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("ITEM USE INTERRUPTED");
+			if (Player) Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("ITEM USE INTERRUPTED");
 			CancelActivating();
 			return;
 		}
@@ -135,7 +135,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 				LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 			
 			Player->GetHUDWidget()->OnConsumableUsed();
-			Player->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
+			Player->GetHUDWidget()->GetInformWidget()->DeActivateConsumableInstruction();
 			
 			Player->GetInvenSystem()->GetInvenUI()->SetUsingItem(nullptr);
 			if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened() && Player->GetInvenSystem()->GetInvenUI()->GetUsingItem() == nullptr)
@@ -273,7 +273,7 @@ bool AC_ConsumableItem::CancelActivating()
 		//Player->GetInvenSystem()->GetInvenUI()->InitWidget();
 		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 
-		Player->GetHUDWidget()->GetInstructionWidget()->DeActivateConsumableInstruction();
+		Player->GetHUDWidget()->GetInformWidget()->DeActivateConsumableInstruction();
 		
 		if (LinkedItemBarWidget)
 			LinkedItemBarWidget->SetPercent(0.f, UsageTime);

@@ -142,6 +142,14 @@ public:
 
 	int GetTotalPlayedCharacterCount() const { return TotalPlayedCharacterCount; }
 
+	/// <summary>
+	/// CurrentAliveCount에서 하나 제거 
+	/// </summary>
+	/// <returns> : 제거한 이후 CurrentAliveCharacterCount 수 </returns>
+	int RemoveOneFromCurrentAliveCharacterCount() { return --CurrentAliveCharacterCount; }
+	
+	int GetCurrentAliveCharacterCount() const { return CurrentAliveCharacterCount; }
+
 public:
 	
 	UFUNCTION(BlueprintCallable)
@@ -208,7 +216,8 @@ private:
 private:
 
 	int CurrentRanking{}; // 죽었을 때 부여받을 Ranking
-	int TotalPlayedCharacterCount{};
+	int TotalPlayedCharacterCount{}; // 게임 시작했을 때 살아있었던 총 Character 수
+	int CurrentAliveCharacterCount{}; // 현재 살아있는 캐릭터 수
 
 private:
 

@@ -230,7 +230,6 @@ public: // Getters and setters
 	void SetIsHitting(bool bHit) { bIsHitting = bHit; }
 
 	void AddKillCount() { ++KillCount; }
-	void SetKillCount(int InKillCount) { KillCount = InKillCount; }
 	int GetKillCount() const { return KillCount; }
 
 	UFUNCTION(BlueprintCallable)
@@ -348,6 +347,13 @@ public:
 	/// <param name="InNextPoseState"> : 다음 자세 </param>
 	/// <returns> Pose transition motion이 제대로 실행되었다면 return true </returns>
 	bool ExecutePoseTransitionAction(const FPriorityAnimMontage& TransitionMontage, EPoseState InNextPoseState);
+
+private:
+	
+	/// <summary>
+	/// 현재 총기 HandState일 때, 추가적인 PoseTransitionAction Action 실행  
+	/// </summary>
+	void ExecuteGunTransitionAction(class AC_Gun* CurGun, EPoseState InNextPoseState);
 
 public:
 
@@ -561,7 +567,6 @@ protected:
 	//class UAudioComponent* ReloadMagazineAudioComponent{};
 	//				 
 	//UAudioComponent* ReloadBulletAudioComponent{};
-
 
 };
 

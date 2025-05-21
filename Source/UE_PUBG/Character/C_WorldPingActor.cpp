@@ -42,13 +42,13 @@ bool AC_WorldPingActor::SpawnPingActorToWorld(FVector SpawnLocation)
 	this->SetActorLocation(SpawnLocation);
 
 	// TODO : 이 라인 지우기 (For Testing)
-	if (!GAMESCENE_MANAGER->GetEnemies().IsEmpty())
+	/*if (!GAMESCENE_MANAGER->GetEnemies().IsEmpty())
 	{
 		UC_BehaviorComponent* FirstEnemyBehaviorComponent = GAMESCENE_MANAGER->GetEnemies()[0]->GetEnemyAIController()->GetBehaviorComponent(); 
 		FirstEnemyBehaviorComponent->SetBasicTargetLocation(SpawnLocation);
 		FirstEnemyBehaviorComponent->SetServiceType(EServiceType::IDLE);
 		FirstEnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
-	}
+	}*/
 
 	return true;
 }

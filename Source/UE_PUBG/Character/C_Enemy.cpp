@@ -57,6 +57,10 @@ void AC_Enemy::BeginPlay()
 
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
+	GetMesh()->SetMaterial(0, GetMesh()->GetMaterial(1));
+
+	// GetMesh()->GetMaterials()[0];
+
 	/* UDataTable* RandomNameDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/DongHyun/Character/DataTable/DT_RandomNameTable"));
 
 	if (!RandomNameDataTable)

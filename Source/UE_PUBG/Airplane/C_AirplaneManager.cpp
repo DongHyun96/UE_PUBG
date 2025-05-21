@@ -17,7 +17,8 @@
 
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
+#include "HUD/C_TimeBoxWidget.h"
 #include "MagneticField/C_MagneticFieldManager.h"
 
 AC_AirplaneManager::AC_AirplaneManager()
@@ -65,7 +66,7 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 	TakeOffTimer -= DeltaTime;
 
 	// 게임 시작까지 남은 시간 UI로 띄우기
-	UC_InstructionWidget* InstructionWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget(); 
+	UC_InformWidget* InstructionWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget(); 
 	int TakeOffLeftSec = static_cast<int>(TakeOffTimer) + 1; 
 	InstructionWidget->SetGameStartTimerText(TakeOffLeftSec);
 	
@@ -75,6 +76,7 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 	
 	Airplane->StartFlight();
 	HasAirplaneTakeOff = true;
+	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetTimeBoxWidget()->SetAliveText("ALIVE");
 	
 	InstructionWidget->ToggleGameStartTimerVisibility(false);
 	
@@ -217,7 +219,7 @@ void AC_AirplaneManager::UpdateCanDive()
 	CanDive = FlightDirection.Equals(StartToAirplaneDirection, KINDA_SMALL_NUMBER);
 
 	// Player HUD 업데이트
-	if (CanDive) GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->ToggleEjectInstructionVisibility(true);
+	if (CanDive) GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget()->ToggleEjectInstructionVisibility(true);
 }
 
 bool AC_AirplaneManager::IsValueValidInBorder(float PositionValue)
@@ -332,7 +334,7 @@ void AC_AirplaneManager::InitAirplaneStartPosAndFlightDirection()
 void AC_AirplaneManager::StartTakeOffTimer()
 {
 	TakeOffTimerStarted = true;
-	UC_InstructionWidget* InstructionWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget(); 
+	UC_InformWidget* InstructionWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget(); 
 	InstructionWidget->ToggleGameStartTimerVisibility(true);
 	InstructionWidget->SetGameStartTimerText(static_cast<int>(TakeOffTimer) + 1);
 }

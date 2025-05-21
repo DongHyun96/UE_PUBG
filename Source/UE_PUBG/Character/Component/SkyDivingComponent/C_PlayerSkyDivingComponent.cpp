@@ -7,7 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
 #include "HUD/C_SkyDiveWidget.h"
 #include "Utility/C_Util.h"
 
@@ -113,7 +113,7 @@ void UC_PlayerSkyDivingComponent::SetStateToSkyDivingState()
 	//PlayerMainMapWidget->TogglePlayerMarkerImageVisibility(true);
 
 	// Instruction Key HUD 업데이트
-	UC_InstructionWidget* InstructionWidget = OwnerPlayer->GetHUDWidget()->GetInstructionWidget();
+	UC_InformWidget* InstructionWidget = OwnerPlayer->GetHUDWidget()->GetInformWidget();
 	InstructionWidget->ToggleDeployParachuteInstructionVisibility(true);
 	InstructionWidget->ToggleEjectInstructionVisibility(false);
 }
@@ -154,7 +154,7 @@ void UC_PlayerSkyDivingComponent::SetStateToParachutingState()
 	else VelocityZLerpDest = STATE_DIVINGSPEEDS[SkyDivingState].ZSpeedMin;
 
 	// Instruction Key HUD 업데이트
-	OwnerPlayer->GetHUDWidget()->GetInstructionWidget()->ToggleDeployParachuteInstructionVisibility(false);
+	OwnerPlayer->GetHUDWidget()->GetInformWidget()->ToggleDeployParachuteInstructionVisibility(false);
 }
 
 void UC_PlayerSkyDivingComponent::SetStateToLandingState()

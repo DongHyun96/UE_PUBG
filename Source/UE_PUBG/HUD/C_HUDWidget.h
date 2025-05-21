@@ -105,11 +105,12 @@ public:
 	class UBorder*							GetMiniMapBorder() 					const { return MiniMapBorder; }
 	class UC_OxygenWidget*					GetOxygenWidget()					const { return OxygenWidget; }
 	class UC_SkyDiveWidget*					GetSkyDiveWidget()					const { return SkyDiveWidget; }
-	class UC_InstructionWidget* 			GetInstructionWidget()				const { return InstructionWidget; }
+	class UC_InformWidget* 					GetInformWidget()					const { return InformWidget; }
 	class UC_AmmoWidget*					GetAmmoWidget()						const { return AmmoWidget; }
 	class UC_ArmorInfoWidget*				GetArmorInfoWidget()				const { return ArmorInfoWidget; }
 	class UC_MagneticFieldIndicatorWidget*	GetMagneticFieldIndicatorWidget()	const { return MagneticFieldIndicatorWidget; }
 	class UC_ThrowableProgressBar*			GetThrowableProgressBar()			const { return ThrowableProgressBar; }
+	class UC_TimeBoxWidget*					GetTimeBoxWidget()					const { return TimeBoxWidget; }
 
 protected:
 
@@ -143,9 +144,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_SkyDiveWidget* SkyDiveWidget{};
 
-	// Key Instruction Widget
+	// Information Widget
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_InstructionWidget* InstructionWidget{};
+	class UC_InformWidget* InformWidget{};
 
 	// Armor Info Widget
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -181,6 +182,11 @@ private:
 
 private: // ThrowableProgressBar
 
-	UC_ThrowableProgressBar* ThrowableProgressBar{};	
+	UC_ThrowableProgressBar* ThrowableProgressBar{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWRite, EditDefaultsOnly)
+	UC_TimeBoxWidget* TimeBoxWidget{};
 
 };

@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Character/Component/C_StatComponent.h"
 #include "Components/CanvasPanel.h"
-#include "C_InstructionWidget.generated.h"
+#include "C_InformWidget.generated.h"
 
 enum class EDamageType : uint8;
 
@@ -41,7 +41,7 @@ struct FTopKillFeedBlock // 킬피드 한 block에 대한 struct
  * 각종 Instruction 및, 킬로그 UI 처리 담당
  */
 UCLASS()
-class UE_PUBG_API UC_InstructionWidget : public UUserWidget
+class UE_PUBG_API UC_InformWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

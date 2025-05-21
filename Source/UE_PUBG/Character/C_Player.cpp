@@ -55,7 +55,7 @@
 #include "Component/SkyDivingComponent/C_PlayerSkyDivingComponent.h"
 #include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "HUD/C_GameOverWidget.h"
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 
 AC_Player::AC_Player()
@@ -418,7 +418,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND))
 			{
-				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("STANDING BLOCKED!");
+				HUDWidget->GetInformWidget()->AddPlayerWarningLog("STANDING BLOCKED!");
 				return false;
 			}
 
@@ -432,12 +432,12 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (bIsActivatingConsumableItem)
 			{
-				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("STANDING BLOCKED!");
+				HUDWidget->GetInformWidget()->AddPlayerWarningLog("STANDING BLOCKED!");
 				return false;
 			}
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND))
 			{
-				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("STANDING BLOCKED!");
+				HUDWidget->GetInformWidget()->AddPlayerWarningLog("STANDING BLOCKED!");
 				return false;
 			}
 			SetControllerPitchLimits(EPoseState::STAND);
@@ -464,7 +464,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH))
 			{
-				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CROUCH BLOCKED!");
+				HUDWidget->GetInformWidget()->AddPlayerWarningLog("CROUCH BLOCKED!");
 				return false;
 			}
 
@@ -478,12 +478,12 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (bIsActivatingConsumableItem)
 			{
-				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CROUCH BLOCKED!");
+				HUDWidget->GetInformWidget()->AddPlayerWarningLog("CROUCH BLOCKED!");
 				return false;
 			}
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH))
 			{
-				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CROUCH BLOCKED!");
+				HUDWidget->GetInformWidget()->AddPlayerWarningLog("CROUCH BLOCKED!");
 				return false;
 			}
 			SetControllerPitchLimits(EPoseState::CROUCH);
@@ -502,12 +502,12 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (bIsActivatingConsumableItem)
 			{
-				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+				HUDWidget->GetInformWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
 				return false;
 			}
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL))
 			{
-				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+				HUDWidget->GetInformWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
 				return false;
 			}
 			SetControllerPitchLimits(EPoseState::CRAWL);
@@ -522,12 +522,12 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (bIsActivatingConsumableItem)
 			{
-				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+				HUDWidget->GetInformWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
 				return false;
 			}
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CRAWL))
 			{
-				HUDWidget->GetInstructionWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+				HUDWidget->GetInformWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
 				return false;
 			}
 			SetControllerPitchLimits(EPoseState::CRAWL);
@@ -688,7 +688,7 @@ void AC_Player::UpdateInteractable(AC_Item* InteractableItem)
 	// 이전 아웃라인 제거
 	if (CurOutLinedItem)
 	{
-		HUDWidget->GetInstructionWidget()->DeActivateFKeyInstruction();
+		HUDWidget->GetInformWidget()->DeActivateFKeyInstruction();
 		CurOutLinedItem->SetOutlineEffect(false);
 	}
 
@@ -697,7 +697,7 @@ void AC_Player::UpdateInteractable(AC_Item* InteractableItem)
 	if (IsValid(CurOutLinedItem))
 	{
 		FString Instruction = "PICK " + CurOutLinedItem->GetItemName(); 
-		HUDWidget->GetInstructionWidget()->ActivateFKeyInstruction(Instruction);
+		HUDWidget->GetInformWidget()->ActivateFKeyInstruction(Instruction);
 		CurOutLinedItem->SetOutlineEffect(true);
 	}
 }
@@ -762,7 +762,7 @@ void AC_Player::DrawingItemOutLine()
 void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 {
 	Super::CharacterDead(KillFeedDescriptor);
-	HUDWidget->GetInstructionWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
+	HUDWidget->GetInformWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
 
 	GAMESCENE_MANAGER->SetIsGameOver(true);
 

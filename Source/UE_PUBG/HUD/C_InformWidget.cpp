@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
 
 #include "SkeletalMeshAttributes.h"
 #include "Character/C_BasicCharacter.h"
@@ -17,7 +17,7 @@
 #include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
-void UC_InstructionWidget::NativeConstruct()
+void UC_InformWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
@@ -119,7 +119,7 @@ void UC_InstructionWidget::NativeConstruct()
         UC_Util::Print("From Instruction Widget NativeConstruct : MagneticFieldStatusInstructionText casting failed", FColor::Red, 10.f);
 }
 
-void UC_InstructionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+void UC_InformWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
@@ -135,7 +135,7 @@ void UC_InstructionWidget::NativeTick(const FGeometry& MyGeometry, float InDelta
     HandleFKeyInstructionPanelDefaultAlpha(InDeltaTime);
 }
 
-void UC_InstructionWidget::HandleConsumableInstructionFlicker(const float& DeltaTime)
+void UC_InformWidget::HandleConsumableInstructionFlicker(const float& DeltaTime)
 {
     if (ConsumableInstruction->GetVisibility() == ESlateVisibility::Hidden) return;
 
@@ -150,7 +150,7 @@ void UC_InstructionWidget::HandleConsumableInstructionFlicker(const float& Delta
     ConsumableCurrentUsingTextBlock->SetRenderOpacity(Alpha);
 }
 
-void UC_InstructionWidget::HandleLogFadeOut(const float& DeltaTime)
+void UC_InformWidget::HandleLogFadeOut(const float& DeltaTime)
 {
     for (TSet<UWidget*>::TIterator It(FadeOutLogs); It; ++It)
     {
@@ -170,7 +170,7 @@ void UC_InstructionWidget::HandleLogFadeOut(const float& DeltaTime)
     }
 }
 
-void UC_InstructionWidget::HandleLogLifeTimers(const float& DeltaTime)
+void UC_InformWidget::HandleLogLifeTimers(const float& DeltaTime)
 {
     for (TMap<UWidget*, float>::TIterator It(LogLifeTimers); It; ++It)
     {
@@ -185,7 +185,7 @@ void UC_InstructionWidget::HandleLogLifeTimers(const float& DeltaTime)
     }
 }
 
-void UC_InstructionWidget::HandleLogQueuePositionsAndDefaultAlpha(const float& DeltaTime, EQueueLogType QueueLogType)
+void UC_InformWidget::HandleLogQueuePositionsAndDefaultAlpha(const float& DeltaTime, EQueueLogType QueueLogType)
 {
     TArray<int>& LogSequence = (QueueLogType == EQueueLogType::PlayerWarningLog) ? PlayerWarningLogSequence : TopKillFeedLogSequence;
     TArray<FVector2D>& EachLogInitialPositions = (QueueLogType == EQueueLogType::PlayerWarningLog) ?
@@ -217,21 +217,21 @@ void UC_InstructionWidget::HandleLogQueuePositionsAndDefaultAlpha(const float& D
     }
 }
 
-void UC_InstructionWidget::HandleGameStartTimerPanelDefaultAlpha(const float& DeltaTime)
+void UC_InformWidget::HandleGameStartTimerPanelDefaultAlpha(const float& DeltaTime)
 {
     float Opacity = GameStartTimerPanel->GetRenderOpacity();
     Opacity = FMath::Lerp(Opacity, GameStartTimerRenderOpacityLerpDestination, DeltaTime * 10.f);
     GameStartTimerPanel->SetRenderOpacity(Opacity);
 }
 
-void UC_InstructionWidget::HandleFKeyInstructionPanelDefaultAlpha(const float& InDeltaTime)
+void UC_InformWidget::HandleFKeyInstructionPanelDefaultAlpha(const float& InDeltaTime)
 {
     float Opacity = FKeyInstructionPanel->GetRenderOpacity();
     Opacity = FMath::Lerp(Opacity, FKeyInstructionOpacityLerpDestination, InDeltaTime * 15.f);
     FKeyInstructionPanel->SetRenderOpacity(Opacity);
 }
 
-void UC_InstructionWidget::ActivateFKeyInstruction(const FString& Instruction)
+void UC_InformWidget::ActivateFKeyInstruction(const FString& Instruction)
 {
     FKeyInstructionOpacityLerpDestination = 1.f;
     FKeyInstructionText->SetText(FText::FromString(Instruction));
@@ -242,12 +242,12 @@ void UC_InstructionWidget::ActivateFKeyInstruction(const FString& Instruction)
     FKeyInstructionPanelSlot->SetOffsets(FMargin(0.f, 0.f, RightOffset, 0.f));
 }
 
-void UC_InstructionWidget::DeActivateFKeyInstruction()
+void UC_InformWidget::DeActivateFKeyInstruction()
 {
     FKeyInstructionOpacityLerpDestination = 0.f;
 }
 
-bool UC_InstructionWidget::ActivateConsumableInstruction(FString UsingTextContent)
+bool UC_InformWidget::ActivateConsumableInstruction(FString UsingTextContent)
 {
     // 이미 다른 아이템 TextContent가 활성화 되어있을 때
     if (ConsumableInstruction->GetVisibility() == ESlateVisibility::SelfHitTestInvisible) return false;
@@ -260,17 +260,17 @@ bool UC_InstructionWidget::ActivateConsumableInstruction(FString UsingTextConten
     return true;
 }
 
-void UC_InstructionWidget::ToggleGameStartTimerVisibility(bool Visible)
+void UC_InformWidget::ToggleGameStartTimerVisibility(bool Visible)
 {
     GameStartTimerRenderOpacityLerpDestination = Visible ? 1.f : 0.f;
 }
 
-void UC_InstructionWidget::SetGameStartTimerText(int Second)
+void UC_InformWidget::SetGameStartTimerText(int Second)
 {
     GameStartTimerText->SetText(FText::FromString(FString::FromInt(Second)));
 }
 
-bool UC_InstructionWidget::ActivateMagneticFieldInstructionText(FString InstructionString)
+bool UC_InformWidget::ActivateMagneticFieldInstructionText(FString InstructionString)
 {
     // 내용 setting 하기
     MagneticFieldStatusInstructionText->SetText(FText::FromString(InstructionString));
@@ -284,7 +284,7 @@ bool UC_InstructionWidget::ActivateMagneticFieldInstructionText(FString Instruct
     return true;
 }
 
-bool UC_InstructionWidget::ActivateMiddleKillFeedLog(const FKillFeedDescriptor& KillFeedDescriptor)
+bool UC_InformWidget::ActivateMiddleKillFeedLog(const FKillFeedDescriptor& KillFeedDescriptor)
 {
     // 가운데 KillFeed와 관련 없는 정보가 들어왔을 때
     if (KillFeedDescriptor.DamageCauser != GAMESCENE_MANAGER->GetPlayer() &&
@@ -358,7 +358,7 @@ bool UC_InstructionWidget::ActivateMiddleKillFeedLog(const FKillFeedDescriptor& 
     return true;
 }
 
-bool UC_InstructionWidget::AddPlayerWarningLog(const FString& WarningLog)
+bool UC_InformWidget::AddPlayerWarningLog(const FString& WarningLog)
 {
     // 새로운 첫 번째 로그로 맨 뒤 로그 이동시키기
     int TargetIndex = PlayerWarningLogSequence.Last();
@@ -385,7 +385,7 @@ bool UC_InstructionWidget::AddPlayerWarningLog(const FString& WarningLog)
     return true;
 }
 
-bool UC_InstructionWidget::AddTopKillFeedLog(const struct FKillFeedDescriptor& KillFeedDescriptor)
+bool UC_InformWidget::AddTopKillFeedLog(const struct FKillFeedDescriptor& KillFeedDescriptor)
 {
     int TargetIndex = TopKillFeedLogSequence.Last();
     TopKillFeedLogSequence.RemoveAt(TopKillFeedLogSequence.Num() - 1);
@@ -477,7 +477,7 @@ bool UC_InstructionWidget::AddTopKillFeedLog(const struct FKillFeedDescriptor& K
     return true;
 }
 
-void UC_InstructionWidget::ApplyNewLifeTimerToLog(UWidget* Log, float TotalLifeTime)
+void UC_InformWidget::ApplyNewLifeTimerToLog(UWidget* Log, float TotalLifeTime)
 {
     LogLifeTimers.Add(Log, TotalLifeTime);
     FadeOutLogs.Remove(Log);

@@ -14,7 +14,7 @@
 #include "Item/Weapon/C_Weapon.h"
 
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 
 const float AC_Bandage::USAGE_MESH_SHOWN_TIME = 10.f;
@@ -59,7 +59,7 @@ void AC_Bandage::OnStartUsing()
 	UC_Util::Print("Starts to use Bandage!");
 
 	if (AC_Player* UserPlayer = Cast<AC_Player>(ItemUser))
-		UserPlayer->GetHUDWidget()->GetInstructionWidget()->ActivateConsumableInstruction("Using Bandage");
+		UserPlayer->GetHUDWidget()->GetInformWidget()->ActivateConsumableInstruction("Using Bandage");
 }
 
 void AC_Bandage::OnActivatingFinish()
@@ -71,7 +71,7 @@ void AC_Bandage::OnActivatingFinish()
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_Bandage::HideUsageMesh, USAGE_MESH_SHOWN_TIME, false);
 	
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
-		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("USED BANDAGE");
+		Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("USED BANDAGE");
 
 }
 

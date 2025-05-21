@@ -39,7 +39,7 @@
 
 #include "GameFramework/PhysicsVolume.h"
 #include "HUD/C_GameOverWidget.h"
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
 #include "HUD/C_MagneticFieldIndicatorWidget.h"
 
 #include "Singleton/C_GameSceneManager.h"
@@ -462,7 +462,7 @@ void UC_InputComponent::OnNumKey(EWeaponSlot ChangeTo)
 			Player->GetEquippedComponent()->SetCurWeaponTypeToNone();
 
 		Player->GetCurActivatingConsumableItem()->CancelActivating();
-		Player->GetHUDWidget()->GetInstructionWidget()->AddPlayerWarningLog("ITEM USE INTERRUPTED");
+		Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("ITEM USE INTERRUPTED");
 	}
 
 	Player->GetEquippedComponent()->ChangeCurWeapon(ChangeTo);

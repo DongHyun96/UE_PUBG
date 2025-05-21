@@ -114,24 +114,13 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 	if (DamageAmount < 0.f) return false;
 
 	CurHP -= DamageAmount;
-
-
 	if (CurHP < 0.f) CurHP = 0.f;
 
 	if (OwnerHUDWidget) 
 	{ 
 		OwnerHUDWidget->OnUpdateHP(CurHP); 
-		if (HittingBlood)
-		{ 
-			HittingBlood->ShowHitEffect(); 
-			// UC_Util::Print("HittingBlood!");
-		}
-		else
-		{
-			// UC_Util::Print("HitingBlood is Nullptr!");
-		}
+		if (HittingBlood) HittingBlood->ShowHitEffect();
 	}
-
 	
 	if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
 	{

@@ -18,6 +18,7 @@
 #include "HUD/C_MapWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
+#include "HUD/C_TimeBoxWidget.h"
 #include "Loot/C_LootCrate.h"
 #include "Item/ItemManager/C_ItemManager.h"
 #include "Sound/C_SoundManager.h"
@@ -116,6 +117,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 
 	CurrentRanking = AllCharacters.Num();
 	TotalPlayedCharacterCount = AllCharacters.Num();
+	CurrentAliveCharacterCount = TotalPlayedCharacterCount;
 }
 
 void UC_GameSceneManager::Initialize(FSubsystemCollectionBase& Collection)
@@ -194,12 +196,14 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Collapsed);
 		Player->GetInvenSystem()->GetInvenUI()->CloseDivideItemWidget();
 		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		Player->GetHUDWidget()->GetTimeBoxWidget()->ToggleKilledCountTextVisibility(false);
 		return;
 	case EHUDMode::INVEN:
 		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Collapsed);
 		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Collapsed);
 		MiniMapWidget->SetVisibility(ESlateVisibility::Collapsed);
 		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Visible);
+		Player->GetHUDWidget()->GetTimeBoxWidget()->ToggleKilledCountTextVisibility(true);
 		return;
 	case EHUDMode::MAINMAP:
 		HUDWidgets[EHUDMode::INVEN]->SetVisibility(ESlateVisibility::Collapsed);
@@ -208,6 +212,7 @@ void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 		HUDWidgets[EHUDMode::IDLE]->SetVisibility(ESlateVisibility::Collapsed);
 		MiniMapWidget->SetVisibility(ESlateVisibility::Collapsed);
 		HUDWidgets[EHUDMode::MAINMAP]->SetVisibility(ESlateVisibility::Visible);
+		Player->GetHUDWidget()->GetTimeBoxWidget()->ToggleKilledCountTextVisibility(true);
 
 		//case EHUDMode::MAINMENU:
 

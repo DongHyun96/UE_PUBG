@@ -13,7 +13,7 @@
 #include "Character/C_Player.h"
 #include "Character/Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_InstructionWidget.h"
+#include "HUD/C_InformWidget.h"
 #include "HUD/C_MagneticFieldIndicatorWidget.h"
 #include "HUD/C_MapWidget.h"
 #include "HUD/C_MainMapWidget.h"
@@ -66,7 +66,7 @@ void AC_MagneticFieldManager::ActivateMagneticField()
 
 	UC_HUDWidget* HUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget();
 	
-	HUDWidget->GetInstructionWidget()->ActivateMagneticFieldInstructionText(MagneticFieldInfoString);
+	HUDWidget->GetInformWidget()->ActivateMagneticFieldInstructionText(MagneticFieldInfoString);
 	HUDWidget->GetMagneticFieldIndicatorWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	HUDWidget->GetMagneticFieldIndicatorWidget()->SetPhaseText("PHASE  1");
 
@@ -111,7 +111,7 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 
 		{
 			UC_HUDWidget* HUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget(); 
-			HUDWidget->GetInstructionWidget()->ActivateMagneticFieldInstructionText("RESTRICTING PLAY AREA!");
+			HUDWidget->GetInformWidget()->ActivateMagneticFieldInstructionText("RESTRICTING PLAY AREA!");
 			HUDWidget->GetMagneticFieldIndicatorWidget()->ToggleWarningTriangleVisibility(true);
 		}
 		
@@ -185,7 +185,7 @@ void AC_MagneticFieldManager::HandleUpdateState(const float& DeltaTime)
 			MagneticFieldInfoString += "!";
 
 			UC_HUDWidget* HUDWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget(); 
-			HUDWidget->GetInstructionWidget()->ActivateMagneticFieldInstructionText(MagneticFieldInfoString);
+			HUDWidget->GetInformWidget()->ActivateMagneticFieldInstructionText(MagneticFieldInfoString);
 			HUDWidget->GetMagneticFieldIndicatorWidget()->ToggleWarningTriangleVisibility(false);
 			HUDWidget->GetMagneticFieldIndicatorWidget()->SetProgressBarPercent(0.f);
 			HUDWidget->GetMagneticFieldIndicatorWidget()->SetPhaseText("PHASE  " + FString::FromInt(CurrentPhase));
@@ -387,7 +387,7 @@ void AC_MagneticFieldManager::HandleDelayTimeHUDNotification()
 			FString NotifyLog = "RESTRICTING THE PLAY AREA IN ";
 			NotifyLog += (Checker.Key == 60.f) ? "1 MINUTE" : FString::FromInt(static_cast<int>(Checker.Key)) + " SECONDS"; 
 			
-			GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInstructionWidget()->ActivateMagneticFieldInstructionText(NotifyLog);
+			GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget()->ActivateMagneticFieldInstructionText(NotifyLog);
 			Checker.Value = true;
 		}
 	}
