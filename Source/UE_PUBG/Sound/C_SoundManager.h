@@ -32,6 +32,7 @@ enum class ESoundClassName : uint8
 	AIRPLANE,
 	LANDING,
 	PARACHUTE,
+	BGM,
 	MAX
 };
 
