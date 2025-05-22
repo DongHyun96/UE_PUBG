@@ -68,6 +68,9 @@ public:
 
     // TODO : 지우기. 스폰된 아이템 숫자를 보여주기 위한 함수. AI에게 직접 스폰한 아이템은 나오지 않음.
 	TArray<AC_Item*> GetItemContainer() const { return ItemContainer; }
+
+	bool GetEnemyDefaultSpawnedItemHiddenInGame() const {return bEnemyDefaultSpawnedItemHiddenInGame; }
+	
 protected:
     //UPROPERTY(EditAnywhere, Category = "Item Data")
     //UDataTable* GeneralItemTable;
@@ -87,4 +90,12 @@ private:
     TArray<FName> WeightedItemCodes{};
 
     TArray<AC_Item*> ItemContainer{};
+
+protected:
+
+	// Level별 Enemy 기본 아이템 및 무기들 보이고 시작할지 정함
+	// 만약에 현재 Level에 ItemManager 액터가 배치되어있지 않다면 Hidden false로 처리할 예정
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bEnemyDefaultSpawnedItemHiddenInGame{};
+
 };

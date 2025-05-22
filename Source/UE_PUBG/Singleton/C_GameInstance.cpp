@@ -3,6 +3,7 @@
 
 #include "C_GameInstance.h"
 #include "LoadingScreenModule.h"
+#include "Utility/C_Util.h"
 
 void UC_GameInstance::Init()
 {
