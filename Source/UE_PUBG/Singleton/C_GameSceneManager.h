@@ -73,6 +73,7 @@ public: // Getters and setters
 
 	void SetPlayer(AC_Player* InPlayer) { Player = InPlayer; }
 
+
 public: // Widget 초기화 관련 처리
 
 	void SetHUDWidgetByHUDMode(EHUDMode Mode, UUserWidget* InUserWidget) { HUDWidgets.Add(Mode, InUserWidget); }
@@ -233,10 +234,6 @@ protected:
 	UPROPERTY(BlueprintAssignable, Category="Events")
 	FOnSetVehiclesCollisoin OnSetVehiclesCollision; // 블루프린트에서 바인딩할 수 있게 함
 
-private:
-
-	
-	
 };
 
 

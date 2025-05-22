@@ -171,7 +171,6 @@ void AC_ConsumableItem::InitializeItem(FName NewItemCode)
 	//UDataTable* HealSoundDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_HealingItemUsingSound.DT_HealingItemUsingSound"));
 
 	UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
-
 	UDataTable* HealSoundDataTable = GI->GetDataTables()[EDataTableType::HealItemUsingSound];
 
 	if (HealSoundDataTable)

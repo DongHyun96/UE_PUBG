@@ -9,10 +9,13 @@
 #include "Item/Equipment/C_BackPack.h"
 #include "Item/Equipment/C_Helmet.h"
 #include "Item/Equipment/C_Vest.h"
+#include "Item/ItemManager/C_ItemManager.h"
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Singleton/C_GameInstance.h"
+#include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
 UC_DefaultItemSpawnerComponent::UC_DefaultItemSpawnerComponent()
@@ -25,7 +28,11 @@ void UC_DefaultItemSpawnerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	SpawnDefaultWeaponsAndItems();
-	ToggleSpawnedItemsHiddenInGame(true);
+
+	if (GAMESCENE_MANAGER->GetItemManager())
+		ToggleSpawnedItemsHiddenInGame(GAMESCENE_MANAGER->GetItemManager()->GetEnemyDefaultSpawnedItemHiddenInGame());
+	else
+		ToggleSpawnedItemsHiddenInGame(false);
 }
 
 
