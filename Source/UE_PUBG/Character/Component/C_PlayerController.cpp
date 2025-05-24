@@ -108,7 +108,6 @@ void AC_PlayerController::ToggleMainMenu()
 		MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 		SetPause(true);
 		bShowMouseCursor = true;
-		UC_Util::Print("MainMenuWidget is added to viewport", FColor::Green, 10.f);
 
 		// UIOnly 모드로 전환하고 위젯에 포커스
 		FInputModeUIOnly InputModeData;
