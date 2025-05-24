@@ -15,7 +15,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0d99d8de-302d-4e13-b224-daf87b7af6d6" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/IntroScene/LobbyMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/IntroScene/LobbyMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_BasicCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_BasicCharacter.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,38 +41,7 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Plugins/Experimental/CinematicPrestreaming/Source/CinematicPrestreaming/Private/Tracks/MovieSceneCinePrestreamingTrack.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Plugins/Online/OnlineFramework/Source/Lobby/Private/LobbyBeaconState.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Plugins/Online/OnlineServices/Source/OnlineServicesInterface/Private/Online/Lobbies.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Private/Serialization/PredictionKeyNetSerializer.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Plugins/Runtime/InstancedActors/Source/InstancedActors/Private/GameplayDebuggerCategory_InstancedActors.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Developer/FunctionalTesting/Classes/FunctionalTestLevelScript.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Developer/FunctionalTesting/Private/FunctionalAITest.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Developer/TraceInsights/Private/Insights/TaskGraphProfiler/ViewModels/TaskTimingTrack.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Developer/TraceInsights/Private/Insights/ViewModels/MarkersTimingTrack.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Developer/Windows/LiveCoding/Private/External/LC_Commands.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Editor/AnimGraph/Private/AnimBlueprintExtension_CachedPose.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Editor/AnimGraph/Private/AnimBlueprintExtension_PropertyAccess.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Editor/LevelEditor/Private/LevelEditorContextMenu.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Editor/MovieSceneCaptureDialog/Private/MovieSceneCaptureDialogModule.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Editor/SequenceRecorder/Private/TimecodeBoneMethodCustomization.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Core/ManagedProcess.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/AIModule/Public/GameplayDebugger/GameplayDebuggerCategory_BehaviorTree.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/AudioMixer/Private/SoundFileIO/SoundFileIOManagerImpl.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/ClothingSystemRuntimeCommon/Public/ClothingSimulation.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/UObject/LoadTimesObjectVersion.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectHandle.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Components/MeshComponent.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Components/SkeletalMeshComponent.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Engine/LevelScriptActor.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Engine/LevelScriptBlueprint.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Animation/AnimationRuntime.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/LevelScriptActor.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/LevelScriptBlueprint.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/RenderCore/Public/RenderGraphUtils.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/UMG/Public/Components/CanvasPanel.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/ThirdParty/NVIDIA/CUDA/cuda.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://1" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
@@ -245,6 +214,7 @@
       <workItem from="1747830556634" duration="4939000" />
       <workItem from="1747868573276" duration="13145000" />
       <workItem from="1747912108952" duration="487000" />
+      <workItem from="1747978678000" duration="12232000" />
     </task>
     <servers />
   </component>

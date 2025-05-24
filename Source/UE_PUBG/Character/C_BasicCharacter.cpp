@@ -508,7 +508,14 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 void AC_BasicCharacter::ExecuteGunTransitionAction(AC_Gun* CurGun, EPoseState InNextPoseState)
 {
 	AC_SR* TempSR = Cast<AC_SR>(CurGun);
-	if (IsValid(TempSR)) if (TempSR->GetIsReloadingSR()) return;
+	TMap<EPoseState, FPriorityAnimMontage> TempMontages{};
+
+	if (IsValid(TempSR))
+	{
+		UC_Util::Print("Noooooooooooooooo",FColor::Black);
+
+		TempMontages = TempSR->SniperReloadMontages;
+	}
 	
 	if (bIsReloadingBullet && IsValid(CurGun))
 	{
@@ -530,9 +537,25 @@ void AC_BasicCharacter::ExecuteGunTransitionAction(AC_Gun* CurGun, EPoseState In
 					}
 				}
 			}
-
-			if (TempAnimInstance->Montage_IsPlaying(CurReloadMontage)) 
+			bool bIsReloadingSR = false;
+			if (IsValid(TempSR))
 			{
+				for (auto& PriorityMontage : TempMontages)
+				{
+					if(CurReloadMontage == PriorityMontage.Value.AnimMontage)
+					{
+						bIsReloadingSR = true;
+						//UC_Util::Print(bIsReloadingSR,FColor::Red);
+						//UC_Util::Print("bIsReloadingSR",FColor::Red);
+						break;
+					}
+				}
+			}
+			UC_Util::Print(bIsReloadingSR,FColor::Blue);
+
+			if (TempAnimInstance->Montage_IsPlaying(CurReloadMontage) && !bIsReloadingSR) 
+			{
+				//UC_Util::Print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
 				float CurrentPosition = TempAnimInstance->Montage_GetPosition(CurReloadMontage);
 				float CurrentMontageLength = CurReloadMontage->GetPlayLength();
 				float PlayRatio = 0.0f;
