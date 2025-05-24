@@ -13,5 +13,7 @@ UCLASS()
 class UE_PUBG_API UC_LobbyWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+	
 	
 };
