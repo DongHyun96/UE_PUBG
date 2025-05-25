@@ -21,6 +21,14 @@ enum class EDataTableType: uint8
 	RandomName,
 	MAX
 };
+
+UENUM(BlueprintType)
+enum class ELevelType : uint8
+{
+	QuickStart,
+	ShantyTown,
+	TrainingGround
+};
 //
 //USTRUCT(BlueprintType)
 //struct FGameDataTables
@@ -69,6 +77,9 @@ public:
 	//UFUNCTION(BlueprintCallable)
 	//FGameDataTables* GetGameDataTables() const { return GameDataTables; }
 
+	void SetCurrentSelectedLevelType(ELevelType InLevelType) {CurrentSelectedLevelType = InLevelType; }
+	ELevelType GetCurrentSelectedLevelType() const { return CurrentSelectedLevelType; }
+
 protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//FGameDataTables* GameDataTables{};
@@ -97,4 +108,9 @@ protected:
 
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//UDataTable* DT_SoundClasses = nullptr;
+
+private:
+
+	ELevelType CurrentSelectedLevelType{};
+	
 };

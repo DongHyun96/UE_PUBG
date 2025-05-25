@@ -14,7 +14,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0d99d8de-302d-4e13-b224-daf87b7af6d6" name="변경" comment="">
+      <change afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_ToggleButtonGroupWidget.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_ToggleButtonGroupWidget.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_ToggleButtonWidget.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_ToggleButtonWidget.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/IntroScene/LobbyMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/IntroScene/LobbyMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/UI/MainMenu/WBP_Menu.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Common/UI/MainMenu/WBP_Menu.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/LobbyMap/WBPC_LobbyWidget.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/LobbyMap/WBPC_LobbyWidget.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyScenePawn.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyScenePawn.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameInstance.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +51,31 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://1" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://4" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Editor/UnrealEd/Private/Commandlets/PackageUtilities.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Editor/UnrealEd/Private/EditorEngine.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Horde/Compute/Native.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/Math/Vector2D.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/UMG/Private/Blueprint/GameViewportSubsystem.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/UMG/Private/UserWidget.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/UMG/Public/Blueprint/UserWidget.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/UMG/Public/Blueprint/WidgetTree.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
@@ -219,6 +254,7 @@
       <workItem from="1748044621660" duration="3565000" />
       <workItem from="1748088887640" duration="285000" />
       <workItem from="1748089273884" duration="304000" />
+      <workItem from="1748089632783" duration="37978000" />
     </task>
     <servers />
   </component>
