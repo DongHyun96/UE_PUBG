@@ -15,10 +15,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0d99d8de-302d-4e13-b224-daf87b7af6d6" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/LobbyMap/WBPC_LobbyWidget.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/LobbyMap/WBPC_LobbyWidget.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyScenePawn.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyScenePawn.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/ShantyTown/Maps/Shanty_Town_Map.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/ShantyTown/Maps/Shanty_Town_Map.umap" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -233,6 +230,7 @@
       <workItem from="1748089632783" duration="37978000" />
       <workItem from="1748181882191" duration="13662000" />
       <workItem from="1748243120757" duration="5007000" />
+      <workItem from="1748261260009" duration="375000" />
     </task>
     <servers />
   </component>
