@@ -24,7 +24,8 @@ protected:
 public:
 	
 	/// <summary>
-	/// Level Selection Panel에서 Map Selected 되었을 때, Callback 받는 함수 
+	/// <para> Map selection ToggleButtonGroup에서 Map Selected 되었을 때, Callback 받는 함수 </para> 
+	/// <para> Map Selection panel의 배경 이미지 및 Animation 재생 & 맵 이름 변경 처리 </para> 
 	/// </summary>
 	/// <param name="InSelected"></param>
 	void OnSelectedMapChanged(ELevelType InSelected);
