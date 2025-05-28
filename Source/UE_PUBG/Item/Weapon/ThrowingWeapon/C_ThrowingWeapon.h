@@ -52,13 +52,11 @@ struct FThrowingWeaponSoundData : public FTableRowBase
 /// <returns></returns>
 inline EThrowableType& operator++(EThrowableType& Type)
 {
-	if (Type == EThrowableType::MAX || Type == EThrowableType::SMOKE)
-	{
-		Type = EThrowableType::GRENADE;
-		return Type;
-	}
-	
-	Type = static_cast<EThrowableType>(static_cast<uint8>(Type) + 1);
+	uint8 TypeToInt = static_cast<uint8>(Type);
+	uint8 MaxType   = static_cast<uint8>(EThrowableType::MAX);
+
+	Type = (TypeToInt >= MaxType - 1) ? static_cast<EThrowableType>(0) :
+									    static_cast<EThrowableType>(static_cast<uint8>(Type) + 1);   
 	return Type;
 }
 
