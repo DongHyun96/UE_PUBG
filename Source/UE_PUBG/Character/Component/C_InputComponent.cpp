@@ -37,6 +37,9 @@
 
 #include "Utility/C_Util.h"
 
+#include "InputMappingContext.h"
+#include "InputAction.h"
+
 #include "GameFramework/PhysicsVolume.h"
 #include "HUD/C_GameOverWidget.h"
 #include "HUD/C_InformWidget.h"
@@ -78,7 +81,7 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 {
 	Player			= InPlayer;
 	PlayerMovement	= Player->GetCharacterMovement();
-
+	
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
 	if (IsValid(EnhancedInputComponent))
