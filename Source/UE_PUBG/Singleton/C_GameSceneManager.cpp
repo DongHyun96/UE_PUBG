@@ -122,6 +122,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 
 void UC_GameSceneManager::Initialize(FSubsystemCollectionBase& Collection)
 {
+	UC_Util::Print("Initialize GameSceneManager", FColor::Red, 20.f);
 	Super::Initialize(Collection);
 	// 월드 파괴 전 호출되는 델리게이트 등록
 	//FWorldDelegates::OnPreWorldFinishDestroy.AddUObject(this, &UC_GameSceneManager::OnWorldEndPlay);
@@ -180,6 +181,8 @@ FTimerHandle& UC_GameSceneManager::GetTimerHandle()
 
 void UC_GameSceneManager::SetCurrentHUDMode(EHUDMode InHUDMode)
 {
+	UC_Util::Print("Set Current HUD Mode", FColor::Red, 10.f);
+	
 	CurrentHUDMode = InHUDMode;
 
 	if (!IsValid(HUDWidgets[EHUDMode::IDLE]))		HUDWidgets[EHUDMode::IDLE]    = Player->GetHUDWidget();

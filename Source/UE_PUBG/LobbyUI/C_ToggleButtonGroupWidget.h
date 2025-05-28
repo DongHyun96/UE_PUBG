@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "C_ToggleButtonGroupWidget.generated.h"
 
+enum class ELevelType : uint8;
 /**
  * 특정 케이스 - Lobby UI의 Map Selection에서의 Toggle 버튼들의 그룹으로 사용할 예정
  */
@@ -21,13 +22,16 @@ protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 public:
-	
+
 	/// <summary>
-	/// 초기 선택 처리 (NativePreConstruct나 NativeConstruct에서 처리 못하는 부분 때문에 따로 빼 둠) / 부모LobbyWidget의 PreConstruct에서 호출될 예정 
+	/// 초기 선택 처리 (NativePreConstruct나 NativeConstruct에서 처리 못하는 부분 때문에 따로 빼 둠) / 부모LobbyWidget의 PreConstruct에서 호출될 예정
 	/// </summary>
+	/// <param name="InParentLobbyWidget"> : 멤버변수 ParentLobbyWidget 또한 초기화 </param>
 	void Init(class UC_LobbyWidget* InParentLobbyWidget);
+	void Init();
 	
 	void SetCurrentSelectedButton(class UC_ToggleButtonWidget* InButton);
+	UC_ToggleButtonWidget* GetCurrentSelectedButton() const { return CurrentSelectedButton; }
 
 	class UC_LobbyWidget* GetParentLobbyWidget() const { return ParentLobbyWidget; }
 	

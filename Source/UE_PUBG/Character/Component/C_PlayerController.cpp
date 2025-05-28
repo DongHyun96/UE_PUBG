@@ -8,6 +8,8 @@
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "Blueprint/UserWidget.h"
+#include "Character/C_Player.h"
+#include "LobbyUI/C_LobbyWidget.h"
 #include "Utility/C_Util.h"
 AC_PlayerController::AC_PlayerController()
 {
@@ -26,6 +28,12 @@ AC_PlayerController::AC_PlayerController()
 	{
 		OpenMenuAction = IA_OpenMenu.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_LobbyFKey(TEXT("/Game/Project_PUBG/DongHyun/LobbyMap/LobbyInput/IA_LobbyF"));
+	if (IA_LobbyFKey.Succeeded()) IALobbyFKeyAction = IA_LobbyFKey.Object;
+		
+	static ConstructorHelpers::FObjectFinder<UInputAction> IA_LobbySpaceBar(TEXT("/Game/Project_PUBG/DongHyun/LobbyMap/LobbyInput/IA_LobbySpaceBar"));
+	if (IA_LobbySpaceBar.Succeeded()) IALobbySpaceBarAction = IA_LobbySpaceBar.Object;
 }
 
 void AC_PlayerController::BeginPlay()
@@ -33,20 +41,11 @@ void AC_PlayerController::BeginPlay()
 	Super::BeginPlay();
 	/// Script / EnhancedInput.InputAction'/Game/Project_PUBG/Common/Character/Input/IA_MainMenu.IA_MainMenu'
 
-
 	InputMappingContext = LoadObject<UInputMappingContext>(
 		nullptr, TEXT("/Game/Project_PUBG/Common/Character/Input/IMC_PlayerController.IMC_PlayerController"));
 	
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
-		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
-	{
-		if (InputMappingContext)
-			Subsystem->AddMappingContext(InputMappingContext, 0); // Priority 0
-		else
-		{
-			UC_Util::Print("InputMappingContext is nullptr", FColor::Red, 10.f);
-		}
-	}
+	if (!AddIMCToSubsystem(InputMappingContext, 0))
+		UC_Util::Print("Adding IMC_PlayerController failed!", FColor::Red, 10.f);
 
 	if (IsLocalPlayerController())
 	{
@@ -67,6 +66,16 @@ void AC_PlayerController::BeginPlay()
 
 	//SetupInputComponent();
 
+	// 만일 이 Controller를 사용중인 Pawn이 AC_Player이라면(In Game Level) -> 반대로 아니라면, 현재 Lobby Level
+	if (!Cast<AC_Player>(GetPawn()))
+	{
+		// Lobby Level일 때의 Input Mapping Context 더 추가해주기
+		UInputMappingContext* LobbyIMC = LoadObject<UInputMappingContext>(
+		nullptr, TEXT("/Game/Project_PUBG/Common/Character/Input/IMC_Lobby.IMC_Lobby"));
+
+		if (!AddIMCToSubsystem(LobbyIMC, 1))
+			UC_Util::Print("Adding Lobby IMC failed!", FColor::Red, 10.f);
+	}
 }
 
 void AC_PlayerController::SetupInputComponent()
@@ -76,12 +85,13 @@ void AC_PlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		EnhancedInput->BindAction(OpenMenuAction, ETriggerEvent::Started, this, &AC_PlayerController::ToggleMainMenu);
+		EnhancedInput->BindAction(IALobbyFKeyAction, ETriggerEvent::Completed, this, &AC_PlayerController::OnLobbyFKeyReleased);
+		EnhancedInput->BindAction(IALobbySpaceBarAction, ETriggerEvent::Started, this, &AC_PlayerController::OnLobbySpaceBarDown);
 	}
 }
 
 void AC_PlayerController::ToggleMainMenu()
 {
-	UC_Util::Print("Down ToggleMainMenu");
 
 	if (!InputMappingContext)
 	{
@@ -102,7 +112,7 @@ void AC_PlayerController::ToggleMainMenu()
 	}
 
 	// TODO : Collapsed 는 메인메뉴창을 종료한 상태,
-	//      : Hidden은 메인메뉴창에서 Preperences같은 다른 창을 띄운 상태
+	//      : Hidden은 메인메뉴창에서 Preferences같은 다른 창을 띄운 상태
 	if (MainMenuWidget->GetVisibility() == ESlateVisibility::Hidden || MainMenuWidget->GetVisibility() == ESlateVisibility::Collapsed)
 	{
 		MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
@@ -124,4 +134,54 @@ void AC_PlayerController::ToggleMainMenu()
 		//UC_Util::Print("MainMenuWidget is nullptr", FColor::Red, 10.f);
 	}
 	
+}
+
+bool AC_PlayerController::AddIMCToSubsystem(UInputMappingContext* IMC, int Priority)
+{
+	if (!IsValid(IMC))
+	{
+		UC_Util::Print("From AC_PlayerController::AddIMCToSubsystem : Invalid IMC received!", FColor::Red, 10.f);
+		return false;
+	}
+	
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+
+	if (!Subsystem)
+	{
+		UC_Util::Print("From AC_PlayerController::AddIMCToSubsystem : Subsystem not found", FColor::Red, 10.f);
+		return false;
+	}
+
+	Subsystem->AddMappingContext(IMC, Priority);
+	return true;
+}
+
+void AC_PlayerController::OnLobbySpaceBarDown()
+{
+	if (!IsValid(LobbyWidget))
+	{
+		UC_Util::Print("From AC_PlayerController::OnLobbySpaceBarDown : Invalid LobbyWidget", FColor::Red, 10.f);
+		return;
+	}
+
+	// Menu가 열려있다면 input 무시
+	if (MainMenuWidget->GetVisibility() == ESlateVisibility::Visible ||
+		MainMenuWidget->GetVisibility() == ESlateVisibility::SelfHitTestInvisible) return;
+	
+	LobbyWidget->OnLobbySpaceBarDown();
+}
+
+void AC_PlayerController::OnLobbyFKeyReleased()
+{
+	if (!IsValid(LobbyWidget))
+	{
+		UC_Util::Print("From AC_PlayerController::OnLobbyFKeyReleased : Invalid LobbyWidget", FColor::Red, 10.f);
+		return;
+	}
+
+	// Menu가 열려있다면 input 무시
+	if (MainMenuWidget->GetVisibility() == ESlateVisibility::Visible ||
+		MainMenuWidget->GetVisibility() == ESlateVisibility::SelfHitTestInvisible) return;
+
+	LobbyWidget->OnLobbyFKeyReleased();
 }

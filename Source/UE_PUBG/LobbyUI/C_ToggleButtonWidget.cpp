@@ -51,8 +51,8 @@ void UC_ToggleButtonWidget::Select()
 	if (ToggleState == EToggleState::Selected) return;
 
 	ParentToggleButtonGroup->SetCurrentSelectedButton(this);
-	if (UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance()))
-		GameInstance->SetCurrentSelectedLevelType(LevelType);
+	/*if (UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance()))
+		GameInstance->SetCurrentSelectedLevelType(LevelType);*/\
 	
 	ToggleState = EToggleState::Selected;
 	

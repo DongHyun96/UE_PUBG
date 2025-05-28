@@ -27,17 +27,34 @@ enum class ELevelType : uint8
 {
 	QuickStart,
 	ShantyTown,
-	TrainingGround
+	TrainingGround,
+	Max
 };
-//
-//USTRUCT(BlueprintType)
-//struct FGameDataTables
-//{
-//	GENERATED_BODY()
-//
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-//	TMap<EDataTableType, UDataTable*> DataTables{};
-//};
+
+/// <summary>
+/// ELevelType에 대한 Iterator 구현 연산자 오버로딩 (Prefix (++Type))
+/// </summary>
+/// <param name="Type"></param>
+/// <returns></returns>
+inline ELevelType& operator++(ELevelType& Type)
+{
+	uint8 TypeToInt = static_cast<uint8>(Type);
+	uint8 Max       = static_cast<uint8>(ELevelType::Max);
+
+	Type = (TypeToInt >= Max - 1) ? static_cast<ELevelType>(0) :
+									static_cast<ELevelType>(static_cast<uint8>(Type) + 1);
+	return Type;	
+}
+
+inline ELevelType& operator--(ELevelType& Type)
+{
+	uint8 TypeToInt = static_cast<uint8>(Type);
+	
+	Type = (TypeToInt == 0) ?	static_cast<ELevelType>(static_cast<uint8>(ELevelType::Max) - 1) :
+								static_cast<ELevelType>(static_cast<uint8>(Type) - 1);
+	return Type;
+}
+
 
 /**
  * 게임 실행 -> 종료 까지 지속적으로 살아있는 Singleton 클래스 (GameManager)
@@ -80,6 +97,16 @@ public:
 	void SetCurrentSelectedLevelType(ELevelType InLevelType) {CurrentSelectedLevelType = InLevelType; }
 	ELevelType GetCurrentSelectedLevelType() const { return CurrentSelectedLevelType; }
 
+	/// <summary>
+	/// Set CurrentLevelType to next Level Type
+	/// </summary>
+	void IncreaseCurrentSelectedLevelType() { ++CurrentSelectedLevelType; }
+
+	/// <summary>
+	/// Set CurrentLevelType to previousS Level Type
+	/// </summary>
+	void DecreaseCurrentSelectedLevelType() { --CurrentSelectedLevelType; }
+
 protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//FGameDataTables* GameDataTables{};
@@ -109,8 +136,9 @@ protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//UDataTable* DT_SoundClasses = nullptr;
 
-private:
+protected:
 
+	UPROPERTY(BlueprintReadOnly)
 	ELevelType CurrentSelectedLevelType{};
 	
 };

@@ -49,22 +49,34 @@ void UC_ToggleButtonGroupWidget::NativeTick(const FGeometry& MyGeometry, float I
 void UC_ToggleButtonGroupWidget::Init(UC_LobbyWidget* InParentLobbyWidget)
 {
 	ParentLobbyWidget = InParentLobbyWidget;
+	Init();
+}
+
+void UC_ToggleButtonGroupWidget::Init()
+{
+	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
 	
-	for (UC_ToggleButtonWidget* Button : ToggleButtons)
-	{
-		if (UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance()))
-			if (Button->GetLevelType() == GameInstance->GetCurrentSelectedLevelType())
-			{
-				Button->Select();
-				break;
-			}
-	}
+    if (!GameInstance)
+    {
+    	UC_Util::Print("From UC_ToggleButtonGroupWidget::Init : Cannot find GameInstance!", FColor::Red, 10.f);
+    	return;
+    }
+    
+    for (UC_ToggleButtonWidget* Button : ToggleButtons)
+    {
+    	if (Button->GetLevelType() == GameInstance->GetCurrentSelectedLevelType())
+    	{
+    		Button->Select();
+    		break;
+    	}
+    }
 }
 
 void UC_ToggleButtonGroupWidget::SetCurrentSelectedButton(UC_ToggleButtonWidget* InButton)
 {
 	UC_ToggleButtonWidget* PrevSelected = CurrentSelectedButton;
 	CurrentSelectedButton = InButton;
+	
 	ParentLobbyWidget->OnSelectedMapChanged(InButton->GetLevelType());
 	
 	if (PrevSelected == CurrentSelectedButton || !PrevSelected) return;
