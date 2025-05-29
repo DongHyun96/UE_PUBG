@@ -110,6 +110,11 @@ void AC_PlayerController::ToggleMainMenu()
 		UC_Util::Print("MainMenuWidget is nullptr", FColor::Red, 10.f);
 		return;
 	}
+	
+	if (!Cast<AC_Player>(GetPawn())) // Lobby map에서의 예외처리
+	{
+		if (LobbyWidget->GetCurrentLobbyPageLocation() == ELobbyPageLocation::LogIn) return;
+	}
 
 	// TODO : Collapsed 는 메인메뉴창을 종료한 상태,
 	//      : Hidden은 메인메뉴창에서 Preferences같은 다른 창을 띄운 상태

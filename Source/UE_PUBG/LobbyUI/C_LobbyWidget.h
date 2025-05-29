@@ -32,14 +32,13 @@ protected:
 	
 	virtual void NativeConstruct() override;
 
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	
+
 public:
 	
-	/// <summary>
-	/// Current LobbyPageLocation Update & 그에 따른 Panel Visibility 및 Camera effect 적용 (일괄처리)
-	/// or 따로 버튼 눌렀을 때 각각으로 분할해서 처리할지, SetLobbyLocation은 처리한 채 (TODO : 위로 할지 아래로 할지 결정(일단은 밑을 따름)
-	/// </summary>
-	/// <param name="InLobbyPageLocation"></param>
 	void SetCurrentLobbyPageLocation(ELobbyPageLocation InLobbyPageLocation) { CurrentLobbyPageLocation = InLobbyPageLocation; }
+	ELobbyPageLocation GetCurrentLobbyPageLocation() const { return CurrentLobbyPageLocation; }
 
 public:
 	
@@ -56,7 +55,7 @@ public: // Input 관련 처리
 	void OnLobbyFKeyPressed();
 	void OnLobbyFKeyReleased();
 
-protected:
+protected: // Play Button 처리 관련
 	
 	/// <summary>
 	/// PlayButton이 제대로 눌렸을 때 호출될 Blueprint 구현화 함수 
@@ -66,7 +65,14 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	TSoftObjectPtr<UWorld> GetRandomLevel();
+
+protected:
 	
+	/// <summary>
+	/// Lobby Widget 첫 시작 시, Log in page이면 Main Lobby UI 감추기 용도 
+	/// </summary>
+	UFUNCTION(BlueprintImplementableEvent)
+	void HideMainLobbyUIOnWidgetStart();
 
 private:
 	
@@ -74,6 +80,17 @@ private:
 	/// Main Lobby로 진입했을 때 처리해야 할 일련의 과정 (ex. 현재 고른 맵으로 UI 이미지 초기화 등) 
 	/// </summary>
 	void InitMainLobby();
+
+private: // Log-In page 관련
+
+	UFUNCTION()
+	void OnNickNameTextBoxTextChanged(const FText& Text);
+
+	UFUNCTION()
+	void OnNickNameTextBoxCommitted(const FText& Text, ETextCommit::Type CommitMethod);
+
+	UFUNCTION()
+	void OnLogInConfirmButtonReleased();
 
 private: // Main Lobby 쪽 관련
 
@@ -127,14 +144,10 @@ private: // Map Selection Panel 버튼 관련
 	UFUNCTION()
 	void OnMapSelectionPanelCancelButtonReleased();
 
-protected:
-
-	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
-
 private:
 
 	// 현재 Lobby Page 위치 
-	ELobbyPageLocation CurrentLobbyPageLocation = ELobbyPageLocation::MainLobby;
+	ELobbyPageLocation CurrentLobbyPageLocation{};
 
 	// 현재 Main Lobby UI 토글버튼(스페이스 바)으로 Hidden처리 되었는지
 	bool bMainLobbyUIHidden{};
@@ -143,16 +156,31 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<ELevelType, TSoftObjectPtr<UWorld>> Levels{};
+
+protected: // LogIn Page 관련
+
+	UPROPERTY(meta = (BindWidget))
+	class UBackgroundBlur* BackgroundBlur{};
+	float BlurLerpDest{};
+
+	UPROPERTY(meta = (BindWidget))
+	class UEditableTextBox* NickNameTextBox{};
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* LoginConfirmButton{};
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* WarningText{};
 	
 protected:
 	
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* ToggleLobbyUIText{};
+	UTextBlock* ToggleLobbyUIText{};
 
 protected: // MainLobby Play 버튼
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* PlayButton{};
+	UButton* PlayButton{};
 	
 protected: // MainLobby - Select GameMap 버튼 쪽 관련
 
@@ -184,7 +212,7 @@ private: // Main Lobby - MapSelectionHorizontalBox 쪽 관련
 	// Main Lobby Map Selection Horizontal box의 Map Name 아래의 Bar 이미지들
 	TArray<UImage*> MapSelectionBelowBars{};
 
-protected:
+protected: // Setting button 관련
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* SettingButton{};
@@ -231,6 +259,15 @@ protected: // Widget Animations
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* MapNameSizeAnimation{};
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* LoginPanelSlideIn{};
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* LoginPanelSlideOut{};
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* NickNameCharacterWarningAnimation{};
+	 
 };
 
 

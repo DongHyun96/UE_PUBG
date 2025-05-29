@@ -94,6 +94,8 @@ public:
 	//UFUNCTION(BlueprintCallable)
 	//FGameDataTables* GetGameDataTables() const { return GameDataTables; }
 
+public:
+
 	void SetCurrentSelectedLevelType(ELevelType InLevelType) {CurrentSelectedLevelType = InLevelType; }
 	ELevelType GetCurrentSelectedLevelType() const { return CurrentSelectedLevelType; }
 
@@ -106,6 +108,20 @@ public:
 	/// Set CurrentLevelType to previousS Level Type
 	/// </summary>
 	void DecreaseCurrentSelectedLevelType() { --CurrentSelectedLevelType; }
+
+public:
+
+	void SetPlayerNickName(const FString& InNickName);
+	
+	const FString& GetPlayerNickName() const { return PlayerNickName; }
+	bool GetPlayerNickNameSet() const { return bPlayerNickNameSet; }
+	
+protected:
+
+	// 가장 첫 로그인 때 정한 NickName (한 번 정한 이후 변하지 않을 예정)
+	UPROPERTY(BlueprintReadOnly)
+	FString PlayerNickName = "Dongman"; // 임시 이름으로 일단 지정해놓음 (Log-in 시에 바뀔 예정)
+	bool bPlayerNickNameSet{};
 
 protected:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
