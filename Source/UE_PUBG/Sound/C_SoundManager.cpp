@@ -9,6 +9,8 @@
 //#include "Misc/Paths.h"
 //#include "Serialization/JsonWriter.h"
 //#include "Serialization/JsonSerializer.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 #include "Utility/C_Util.h"
 
 AC_SoundManager::AC_SoundManager()
@@ -16,6 +18,10 @@ AC_SoundManager::AC_SoundManager()
 	PrimaryActorTick.bCanEverTick = true;
 	//InitializeSoundClassData();
 
+	BGMComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("BGMComponent"));
+	BGMComponent->SetupAttachment(RootComponent);
+
+	AudioComponents.Add(BGMComponent);
 }
 
 void AC_SoundManager::BeginPlay()
@@ -65,6 +71,28 @@ void AC_SoundManager::BuildSoundClassMap(FSoundClassTable* InDataTable)
 		{
 			SoundClassMap.Add(Entry.SoundClassName, Entry.SoundClass);
 		}
+	}
+}
+
+void AC_SoundManager::PlaySoundEffect(ESoundClassName EffectType, FVector Location, float InVolumeMultiplier, bool bForce2D)
+{
+	if (!SoundEffectMap.Contains(EffectType)) return;
+
+	const FSoundEffectData& EffectData = SoundEffectMap[EffectType];
+
+	if (!EffectData.Sound) return;
+
+	float FinalVolume = EffectData.VolumeMultiplier * GetVolumeByName(EffectType) * InVolumeMultiplier;
+
+	const bool bUse2D = bForce2D || EffectData.bIs2D;
+
+	if (bUse2D)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), EffectData.Sound, FinalVolume);
+	}
+	else
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), EffectData.Sound, Location, FinalVolume);
 	}
 }
 

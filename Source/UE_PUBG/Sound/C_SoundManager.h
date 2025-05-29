@@ -73,6 +73,24 @@ struct FSoundClassTable : public FTableRowBase
 	TArray<FSoundClassEntry> SoundClasses;
 };
 
+USTRUCT(BlueprintType)
+struct FSoundEffectData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundBase* Sound = nullptr;  
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ESoundClassName SoundClassType = ESoundClassName::NONE;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float VolumeMultiplier = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIs2D = true;
+};
+
 UCLASS()
 class UE_PUBG_API AC_SoundManager : public AActor
 {
@@ -100,6 +118,9 @@ private:
 
 
 public:
+	UFUNCTION(BlueprintCallable)
+	void PlaySoundEffect(ESoundClassName EffectType, FVector Location = FVector::ZeroVector, float InVolumeMultiplier = 1.0f, bool bForce2D = false);
+
 	// 이름으로 사운드 클래스를 찾고 볼륨 조절.
 	UFUNCTION(BlueprintCallable)
 	void SetVolumeByName(ESoundClassName SoundClassName, float Volume);
@@ -129,13 +150,17 @@ public:
 	}
 
 public:
-
+	UAudioComponent* GetBGMComponent() const { return BGMComponent; }
 protected:
 	UPROPERTY()
 	TMap<ESoundClassName, USoundClass*> SoundClassMap{};
 
-
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	TMap<ESoundClassName, FSoundEffectData> SoundEffectMap;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TArray<UAudioComponent*> AudioComponents{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UAudioComponent* BGMComponent = nullptr;
 };
