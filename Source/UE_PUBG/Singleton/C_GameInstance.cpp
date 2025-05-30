@@ -42,3 +42,9 @@ void UC_GameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
 {
 	UE_LOG(LogTemp, Warning, TEXT("UC_GameInstance::EndLoadingScreen: %s"), *InLoadedWorld->GetName());
 }
+
+void UC_GameInstance::SetPlayerNickName(const FString& InNickName)
+{
+	PlayerNickName = InNickName;
+	bPlayerNickNameSet = true;
+}

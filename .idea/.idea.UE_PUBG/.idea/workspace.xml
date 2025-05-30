@@ -15,22 +15,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0d99d8de-302d-4e13-b224-daf87b7af6d6" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Common/UI/MainMenu/WBP_Menu.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Common/UI/MainMenu/WBP_Menu.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/LobbyMap/WBPC_LobbyWidget.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/LobbyMap/WBPC_LobbyWidget.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/Aircraft/Blueprint/BP_Aircraft_Full.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/Aircraft/Blueprint/BP_Aircraft_Full.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyScenePawn.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyScenePawn.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_InputComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_InputComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_PlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_PlayerController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_PlayerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_PlayerController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_ToggleButtonGroupWidget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_ToggleButtonGroupWidget.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_ToggleButtonGroupWidget.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_ToggleButtonGroupWidget.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_ToggleButtonWidget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_ToggleButtonWidget.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameInstance.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameSceneManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameSceneManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyPlayerPawn/C_LobbyPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyPlayerPawn/C_LobbyPawn.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,6 +48,7 @@
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Editor/UnrealEd/Private/EditorEngine.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Horde/Compute/Native.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/Math/Vector2D.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/Misc/Char.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h" root0="FORCE_HIGHLIGHTING" />
@@ -84,6 +70,7 @@
     <setting file="file://$PROJECT_DIR$/../../../../../../../../Program Files/Epic Games/UE_5.4/Engine/Source/ThirdParty/NVIDIA/CUDA/cuda.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.h" root0="FORCE_HIGHLIGHTING" />
   </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 1
@@ -267,11 +254,27 @@
       <workItem from="1748261747807" duration="422000" />
       <workItem from="1748331102223" duration="15382000" />
       <workItem from="1748398237264" duration="23455000" />
+      <workItem from="1748433773414" duration="672000" />
+      <workItem from="1748452388197" duration="28161000" />
+      <workItem from="1748567405851" duration="27000" />
+      <workItem from="1748567443978" duration="3248000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
 </project>

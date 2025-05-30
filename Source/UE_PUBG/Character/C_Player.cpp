@@ -56,6 +56,7 @@
 #include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "HUD/C_GameOverWidget.h"
 #include "HUD/C_InformWidget.h"
+#include "Singleton/C_GameInstance.h"
 #include "Singleton/C_GameSceneManager.h"
 
 AC_Player::AC_Player()
@@ -197,9 +198,8 @@ void AC_Player::BeginPlay()
 	SetControllerPitchLimits(PoseState);
 
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &AC_Player::OnPostWorldBeginPlay);
-
-	// TODO : Player name의 경우, 맨 처음 입력 받아 Name 세팅하기
-	CharacterName = "Dongman";
+	
+	CharacterName = Cast<UC_GameInstance>(GetGameInstance())->GetPlayerNickName();
 }
 
 void AC_Player::EndPlay(const EEndPlayReason::Type EndPlayReason)

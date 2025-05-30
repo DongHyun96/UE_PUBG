@@ -122,7 +122,7 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 
 void UC_GameSceneManager::Initialize(FSubsystemCollectionBase& Collection)
 {
-	UC_Util::Print("Initialize GameSceneManager", FColor::Red, 20.f);
+	// UC_Util::Print("Initialize GameSceneManager", FColor::Red, 20.f);
 	Super::Initialize(Collection);
 	// 월드 파괴 전 호출되는 델리게이트 등록
 	//FWorldDelegates::OnPreWorldFinishDestroy.AddUObject(this, &UC_GameSceneManager::OnWorldEndPlay);
@@ -132,7 +132,7 @@ void UC_GameSceneManager::Deinitialize()
 {
 	Super::Deinitialize();
 
-	UC_Util::Print("Deinitialize GameSceneManager", FColor::Red, 10.f);
+	// UC_Util::Print("Deinitialize GameSceneManager", FColor::Red, 10.f);
 
 	for (UObject* NONGCObject : GCProtectedObjects)
 		NONGCObject->RemoveFromRoot();

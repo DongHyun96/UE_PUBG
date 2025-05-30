@@ -5,23 +5,23 @@
 
 #include "C_ToggleButtonGroupWidget.h"
 #include "C_ToggleButtonWidget.h"
-#include "EnhancedInputSubsystems.h"
-#include "InputMappingContext.h"
 #include "Character/Component/C_PlayerController.h"
+#include "Components/BackgroundBlur.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanel.h"
+#include "Components/EditableTextBox.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "LobbyPlayerPawn/C_LobbyPawn.h"
 #include "Singleton/C_GameInstance.h"
+#include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
 void UC_LobbyWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 	MapSelectToggleButtonGroup->Init(this);
-
-	// GetWidgetFromName()
-
+	
 	// Init MapSelectionBelowBars
 	for (int i = 0; i < static_cast<uint8>(ELevelType::Max); ++i)
 	{
@@ -66,11 +66,46 @@ void UC_LobbyWidget::NativeConstruct()
 
 	if (PlayButton) PlayButton->OnReleased.AddDynamic(this, &UC_LobbyWidget::OnPlayButtonReleased);
 
+	if (LoginConfirmButton) LoginConfirmButton->OnReleased.AddDynamic(this, &UC_LobbyWidget::OnLogInConfirmButtonReleased);
+
+	if (NickNameTextBox)
+	{
+		NickNameTextBox->OnTextChanged.AddDynamic(this, &UC_LobbyWidget::OnNickNameTextBoxTextChanged);
+		NickNameTextBox->OnTextCommitted.AddDynamic(this, &UC_LobbyWidget::OnNickNameTextBoxCommitted);
+	}
+	
 	InitMainLobby();
 
 	if (AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetOwningPlayer()))
 		PlayerController->SetLobbyWidget(this);
 	else UC_Util::Print("From UC_LobbyWidget::NativeConstruct : Failed to get PlayerController", FColor::Red, 10.f);
+
+	// TODO : 현재 최초 로그인인지 확인하여, 맞다면 Login 처리 먼저 진행
+	if (UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance()))
+		CurrentLobbyPageLocation = GameInstance->GetPlayerNickNameSet() ? ELobbyPageLocation::MainLobby : ELobbyPageLocation::LogIn;
+
+	// Init each widget positions by First Lobby page location (Pawn Initial 위치도 어쩔 수 없이 여기서 정해주어야 함)
+	// -> 아니면 GameInstance 직접 확인함으로써 적용하기(이게 더 괜찮을듯?)
+	if (CurrentLobbyPageLocation == ELobbyPageLocation::LogIn) // First page - Log in page
+	{
+		bMainLobbyUIHidden = true;
+		HideMainLobbyUIOnWidgetStart();
+		FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+		{
+			PlayAnimation(LoginPanelSlideIn);
+			NickNameTextBox->SetFocus();
+			BlurLerpDest = 10.f;
+		}, 1.5f, false);
+	}
+}
+
+void UC_LobbyWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	float BackgroundBlurStrength = FMath::Lerp(BackgroundBlur->GetBlurStrength(), BlurLerpDest, 5.f * InDeltaTime);
+	BackgroundBlur->SetBlurStrength(BackgroundBlurStrength);
 }
 
 /*void UC_LobbyWidget::SetCurrentLobbyPageLocation(ELobbyPageLocation InLobbyPageLocation)
@@ -145,6 +180,100 @@ void UC_LobbyWidget::InitMainLobby()
 	UpdateSelectedMapBars(SelectedLevelType);
 }
 
+void UC_LobbyWidget::OnNickNameTextBoxTextChanged(const FText& Text)
+{
+	// 제한 사항 적용 : 공백x & 14자 제한 & 영문입력만 받기
+	FString ReceivedString = Text.ToString();
+
+	if (ReceivedString.IsEmpty()) return;
+	TCHAR LastChar = ReceivedString[ReceivedString.Len() - 1];
+	
+	if (LastChar == ' ')
+	{
+		WarningText->SetText(FText::FromString("No spaces allowed"));
+		PlayAnimation(NickNameCharacterWarningAnimation);
+		ReceivedString.RemoveAt(ReceivedString.Len() - 1);
+	}
+	else if (!((LastChar >= 'A' && LastChar <= 'Z') || (LastChar >= 'a' && LastChar <= 'z'))) // 알파벳 테스팅
+	{
+		WarningText->SetText(FText::FromString("Only alphabet letters are allowed"));
+		PlayAnimation(NickNameCharacterWarningAnimation);
+		ReceivedString.RemoveAt(ReceivedString.Len() - 1);
+	}
+	
+	// ReceivedString = ReceivedString.Replace(TEXT(" "), TEXT(""));
+
+	if (ReceivedString.Len() > 14)
+	{
+		WarningText->SetText(FText::FromString("Maximum of 14 characters allowed"));
+		PlayAnimation(NickNameCharacterWarningAnimation);
+		ReceivedString = ReceivedString.LeftChop(1);
+		// ReceivedString.RemoveAt(ReceivedString.Len() - 1);
+	}
+	
+	NickNameTextBox->SetText(FText::FromString(ReceivedString));
+}
+
+void UC_LobbyWidget::OnNickNameTextBoxCommitted(const FText& Text, ETextCommit::Type CommitMethod)
+{
+	if (CommitMethod != ETextCommit::Type::OnEnter) return;
+	OnLogInConfirmButtonReleased();	
+}
+
+void UC_LobbyWidget::OnLogInConfirmButtonReleased()
+{
+	if (CurrentLobbyPageLocation != ELobbyPageLocation::LogIn) return;
+	FString ReceivedName = NickNameTextBox->GetText().ToString();
+	if (ReceivedName.IsEmpty())
+	{
+		WarningText->SetText(FText::FromString("Nick name cannot be empty"));
+		PlayAnimation(NickNameCharacterWarningAnimation);
+		return;
+	}
+	
+	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController()); 
+
+	if (!PlayerController)
+	{
+		UC_Util::Print("From UC_LobbyWidget::OnLogInConfirmButtonReleased : Cannot find PlayerController!", FColor::Red, 10.f);
+		return;
+	}
+	
+	// EditableTextBlock 입력 후, 화면을 한 번 클릭하고 나서야 다른 키보드 Input 처리가 가능했음
+	// 바로 다른 키보드 Input 처리(IMC_Lobby) 가능하게끔 setting
+	PlayerController->SetInputMode
+	(
+		FInputModeGameAndUI()
+		.SetWidgetToFocus(this->TakeWidget())
+		.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock)
+		.SetHideCursorDuringCapture(false)
+	);
+
+	PlayerController->bShowMouseCursor = true;
+	PlayerController->SetIgnoreLookInput(true);
+	
+	FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::Cleared);
+
+	BlurLerpDest = 0.f;
+	
+	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
+	GameInstance->SetPlayerNickName(ReceivedName);
+
+	AC_LobbyPawn* LobbyPawn = Cast<AC_LobbyPawn>(PlayerController->GetPawn());
+	LobbyPawn->SetLocationLerpDestinationToMainLobby();
+	LobbyPawn->InitCharacterNameTag();
+	
+	PlayAnimation(LoginPanelSlideOut);
+
+	// Main Lobby 전환 setting
+	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+	{
+		CurrentLobbyPageLocation = ELobbyPageLocation::MainLobby;
+		OnLobbySpaceBarDown();
+	}, 2.f, false);
+}
+
 void UC_LobbyWidget::OnPlayButtonReleased()
 {
 	if (!PlayButton->IsHovered()) return;
@@ -211,9 +340,17 @@ void UC_LobbyWidget::OnSelectGameMapButtonUnhovered()
 
 void UC_LobbyWidget::OnSettingButtonReleased()
 {
-	if (SettingButton->IsHovered()) return;
-	
-	// TODO : 설정창 열기
+	if (!SettingButton->IsHovered()) return;
+
+	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController()); 
+
+	if (!PlayerController)
+	{
+		UC_Util::Print("From UC_LobbyWidget::OnSettingButtonReleased : Cannot find PlayerController!", FColor::Red, 10.f);
+		return;
+	}
+
+	PlayerController->ToggleMainMenu();
 }
 
 void UC_LobbyWidget::OnSettingButtonHovered()
@@ -249,14 +386,4 @@ void UC_LobbyWidget::OnMapSelectionPanelCancelButtonReleased()
 	ToggleLobbyUIText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 	InitMainLobby();
-}
-
-FReply UC_LobbyWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
-{
-	UC_Util::Print("asdf", FColor::Red, 10.f);
-
-	// TODO : 입력 여기서 처리되었을 때 Handled 처리하기
-	// return FReply::Handled();
-
-	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 }
