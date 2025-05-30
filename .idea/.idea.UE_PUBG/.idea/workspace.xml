@@ -14,21 +14,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0d99d8de-302d-4e13-b224-daf87b7af6d6" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyPlayerPawn/C_LobbyPawn.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyPlayerPawn/C_LobbyPawn.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/IntroScene/LobbyMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/IntroScene/LobbyMap.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/LobbyMap/WBPC_LobbyWidget.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/LobbyMap/WBPC_LobbyWidget.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyScenePawn.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyScenePawn.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_Player.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/C_Player.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_PlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Character/Component/C_PlayerController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameInstance.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameInstance.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameSceneManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/Singleton/C_GameSceneManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyPlayerPawn/C_LobbyPawn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyPlayerPawn/C_LobbyPawn.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -269,6 +256,8 @@
       <workItem from="1748398237264" duration="23455000" />
       <workItem from="1748433773414" duration="672000" />
       <workItem from="1748452388197" duration="28161000" />
+      <workItem from="1748567405851" duration="27000" />
+      <workItem from="1748567443978" duration="3248000" />
     </task>
     <servers />
   </component>

@@ -49,7 +49,7 @@ void AC_LobbyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AC_LobbyPawn::HandleLerpLocation(float DeltaTime)
 {
-	const float NewX = FMath::Lerp(GetActorLocation().X, CurrentXLocationLerpDest, DeltaTime * 2.f);
+	const float NewX = FMath::Lerp(GetActorLocation().X, CurrentXLocationLerpDest, DeltaTime * 1.f);
 	FVector Location = GetActorLocation();
 	Location.X = NewX;
 	SetActorLocation(Location);
