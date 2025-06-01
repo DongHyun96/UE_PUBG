@@ -15,7 +15,9 @@
   <component name="ChangeListManager">
     <list default="true" id="0d99d8de-302d-4e13-b224-daf87b7af6d6" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UE_PUBG/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/UE_PUBG.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/LobbyMap/WBP_LobbyNameTag.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/DongHyun/LobbyMap/WBP_LobbyNameTag.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Project_PUBG/Hyunho/LobbyScene/BPC_LobbyCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UE_PUBG/LobbyUI/C_LobbyWidget.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -259,6 +261,8 @@
       <workItem from="1748567405851" duration="27000" />
       <workItem from="1748567443978" duration="3248000" />
       <workItem from="1748592638500" duration="279000" />
+      <workItem from="1748595897554" duration="4949000" />
+      <workItem from="1748752074721" duration="2622000" />
     </task>
     <servers />
   </component>
