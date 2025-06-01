@@ -193,22 +193,26 @@ void UC_LobbyWidget::OnNickNameTextBoxTextChanged(const FText& Text)
 		WarningText->SetText(FText::FromString("No spaces allowed"));
 		PlayAnimation(NickNameCharacterWarningAnimation);
 		ReceivedString.RemoveAt(ReceivedString.Len() - 1);
+		NickNameTextBox->SetText(FText::FromString(ReceivedString));
+		return;
 	}
-	else if (!((LastChar >= 'A' && LastChar <= 'Z') || (LastChar >= 'a' && LastChar <= 'z'))) // 알파벳 테스팅
+
+	const bool bIsAlphabet = ('A' <= LastChar && LastChar <= 'Z') || ('a' <= LastChar && LastChar <= 'z'); 
+	
+	if (!bIsAlphabet) 
 	{
 		WarningText->SetText(FText::FromString("Only alphabet letters are allowed"));
 		PlayAnimation(NickNameCharacterWarningAnimation);
 		ReceivedString.RemoveAt(ReceivedString.Len() - 1);
+		NickNameTextBox->SetText(FText::FromString(ReceivedString));
+		return;
 	}
 	
-	// ReceivedString = ReceivedString.Replace(TEXT(" "), TEXT(""));
-
 	if (ReceivedString.Len() > 14)
 	{
 		WarningText->SetText(FText::FromString("Maximum of 14 characters allowed"));
 		PlayAnimation(NickNameCharacterWarningAnimation);
 		ReceivedString = ReceivedString.LeftChop(1);
-		// ReceivedString.RemoveAt(ReceivedString.Len() - 1);
 	}
 	
 	NickNameTextBox->SetText(FText::FromString(ReceivedString));
