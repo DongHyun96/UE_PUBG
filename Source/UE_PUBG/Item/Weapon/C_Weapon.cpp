@@ -7,7 +7,10 @@
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Enemy.h"
+#include "Character/C_Player.h"
 #include "Gun/C_Gun.h"
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_InformWidget.h"
 #include "MeleeWeapon/C_MeleeWeapon.h"
 #include "ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Utility/C_Util.h"
@@ -230,6 +233,9 @@ bool AC_Weapon::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 
 	if (ItemStackCount == 0)
 	{
+		if (AC_Player* Player = Cast<AC_Player>(Character))
+			Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("Cannot pick up item : Inventory is full");
+		
 		UC_Util::Print("Not Enough Volume");
 		return false; //인벤에 넣을 수 있는 아이템의 갯수가 0 이면 넣을 수 없으므로 return false;
 	}

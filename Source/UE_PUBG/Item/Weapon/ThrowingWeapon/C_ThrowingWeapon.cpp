@@ -39,6 +39,7 @@
 #include "AIThrowableAttackStrategy/C_AIGrenadeAttackStrategy.h"
 #include "AIThrowableAttackStrategy/C_AISmokeGrenadeAttackStrategy.h"
 #include "AIThrowableAttackStrategy/I_AIThrowableAttackStrategy.h"
+#include "HUD/C_InformWidget.h"
 #include "HUD/C_ThrowableProgressBar.h"
 
 #include "Utility/C_Util.h"
@@ -533,6 +534,8 @@ bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 	if (ItemStackCount == 0)
 	{
 		UC_Util::Print("Not Enough Volume");
+		if (AC_Player* Player = Cast<AC_Player>(Character))
+			Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("Cannot pick up item : Inventory is full");
 		return false; //인벤에 넣을 수 있는 아이템의 갯수가 0 이면 넣을 수 없으므로 return false;
 	}
 
