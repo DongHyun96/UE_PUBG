@@ -108,7 +108,7 @@ struct FNameStruct : public FTableRowBase
 };
 
 
-UCLASS()
+UCLASS(Abstract)
 class UE_PUBG_API AC_BasicCharacter : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
@@ -250,7 +250,7 @@ public:
 	/// <param name="InChangeFrom"> : 바꾸기 전 자세 </param>
 	/// <param name="InChangeTo"> : 바꿀 자세 </param>
 	/// <returns> : 제대로 바꾸었다면 return true </returns>
-	virtual bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo);
+	virtual bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) PURE_VIRTUAL(AC_BasicCharacter::SetPoseState, return false;);
 
 	float GetNextSpeed() const { return NextSpeed; }
 	void SetNextSpeed(float InNextSpeed) { NextSpeed = InNextSpeed; }
