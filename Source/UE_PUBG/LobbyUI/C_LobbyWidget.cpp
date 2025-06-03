@@ -221,7 +221,7 @@ void UC_LobbyWidget::OnNickNameTextBoxTextChanged(const FText& Text)
 void UC_LobbyWidget::OnNickNameTextBoxCommitted(const FText& Text, ETextCommit::Type CommitMethod)
 {
 	if (CommitMethod != ETextCommit::Type::OnEnter) return;
-	OnLogInConfirmButtonReleased();	
+	OnLogInConfirmButtonReleased();
 }
 
 void UC_LobbyWidget::OnLogInConfirmButtonReleased()
@@ -235,7 +235,7 @@ void UC_LobbyWidget::OnLogInConfirmButtonReleased()
 		return;
 	}
 	
-	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController()); 
+	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
 
 	if (!PlayerController)
 	{

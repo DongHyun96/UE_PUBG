@@ -108,7 +108,7 @@ struct FNameStruct : public FTableRowBase
 };
 
 
-UCLASS()
+UCLASS(Abstract)
 class UE_PUBG_API AC_BasicCharacter : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
@@ -250,7 +250,7 @@ public:
 	/// <param name="InChangeFrom"> : 바꾸기 전 자세 </param>
 	/// <param name="InChangeTo"> : 바꿀 자세 </param>
 	/// <returns> : 제대로 바꾸었다면 return true </returns>
-	virtual bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo);
+	virtual bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) PURE_VIRTUAL(AC_BasicCharacter::SetPoseState, return false;);
 
 	float GetNextSpeed() const { return NextSpeed; }
 	void SetNextSpeed(float InNextSpeed) { NextSpeed = InNextSpeed; }
@@ -327,7 +327,8 @@ public:
 public:
 
 	/// <summary>
-	/// Pose Transition montage가 진행 중인 중간에 Call	되는 함수
+	/// <para> Pose Transition montage가 진행 중인 중간에 Callback 되는 함수 </para>
+	/// <para> 이 단계에서 실질적인 PoseState가 바뀜 </para>
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnPoseTransitionGoing();

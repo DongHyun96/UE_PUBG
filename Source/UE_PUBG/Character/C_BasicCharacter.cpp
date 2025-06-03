@@ -430,15 +430,19 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 
 void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
 {
+	EPoseState PrevPoseState = PoseState;
 	PoseState = InPoseState;
 	PoseColliderHandlerComponent->SetColliderByPoseState(PoseState);
-}
 
-bool AC_BasicCharacter::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
-{
-	// TODO : Enemy 캐릭터에 대한 자세 변환 적용 - Player는 작성 완료 BasicCharacter 작성 필요
+	// FeetComponent의 WaterFeetCollider 관련 Callback 처리
+	if (PrevPoseState == EPoseState::CRAWL)
+	{
+		FeetComponent->OnPoseStateCrawlToAny();
+		return;
+	}
 
-	return false;
+	if (PoseState == EPoseState::CRAWL)
+		FeetComponent->OnPoseStateChangedToCrawl();
 }
 
 bool AC_BasicCharacter::GetIsHighEnoughToFall()
@@ -471,8 +475,9 @@ void AC_BasicCharacter::SetIsActivatingConsumableItem(bool InIsActivatingConsuma
 
 void AC_BasicCharacter::OnPoseTransitionGoing()
 {
-	PoseState = NextPoseState;
-	PoseColliderHandlerComponent->SetColliderByPoseState(PoseState);
+	SetPoseState(NextPoseState);
+	/*PoseState = NextPoseState;
+	PoseColliderHandlerComponent->SetColliderByPoseState(PoseState);*/
 }
 
 void AC_BasicCharacter::OnPoseTransitionFinish()
@@ -510,12 +515,7 @@ void AC_BasicCharacter::ExecuteGunTransitionAction(AC_Gun* CurGun, EPoseState In
 	AC_SR* TempSR = Cast<AC_SR>(CurGun);
 	TMap<EPoseState, FPriorityAnimMontage> TempMontages{};
 
-	if (IsValid(TempSR))
-	{
-		UC_Util::Print("Noooooooooooooooo",FColor::Black);
-
-		TempMontages = TempSR->SniperReloadMontages;
-	}
+	if (IsValid(TempSR)) TempMontages = TempSR->SniperReloadMontages;
 	
 	if (bIsReloadingBullet && IsValid(CurGun))
 	{
@@ -555,7 +555,6 @@ void AC_BasicCharacter::ExecuteGunTransitionAction(AC_Gun* CurGun, EPoseState In
 
 			if (TempAnimInstance->Montage_IsPlaying(CurReloadMontage) && !bIsReloadingSR) 
 			{
-				//UC_Util::Print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
 				float CurrentPosition = TempAnimInstance->Montage_GetPosition(CurReloadMontage);
 				float CurrentMontageLength = CurReloadMontage->GetPlayLength();
 				float PlayRatio = 0.0f;

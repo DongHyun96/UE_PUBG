@@ -495,7 +495,7 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 		case EPoseState::POSE_MAX: default: return false;
 		}
-	case EPoseState::CRAWL:
+	case EPoseState::CRAWL: // Crawl로 바꾸는 경우, Super::SetPoseState 처리는 Transition montage 처리 과정에서 처리됨
 		switch (InChangeFrom)	
 		{
 		case EPoseState::STAND: // Stand to Crawl

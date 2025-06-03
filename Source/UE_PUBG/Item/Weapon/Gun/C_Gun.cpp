@@ -533,7 +533,7 @@ bool AC_Gun::GetCanGunAction()
 	return CanAim;
 }
 
-void AC_Gun::ChangeCurShootingMode()
+/*void AC_Gun::ChangeCurShootingMode()
 {
 	// Single_Shot 이전까지 단발, 연사, 점사를 모두 포함한 ShootingMode switching 기본 implementation
 	
@@ -548,7 +548,7 @@ void AC_Gun::ChangeCurShootingMode()
 	}
 
 	//UC_Util::Print(CurMode);
-}
+}*/
 
 bool AC_Gun::ExecuteReloadMontage()
 {
