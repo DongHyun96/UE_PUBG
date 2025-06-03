@@ -69,8 +69,10 @@ protected:
 	/// </summary>
 	/// <param name="InCurSurFaceType"></param>
 	/// <param name="InLocation"></param>
+	/// <param name="InVolumeMultiplier"></param>
+	/// <param name="bLeftFootSound"> : LeftFoot 쪽 Sound인지 </param>
 	UFUNCTION(BlueprintCallable)
-	void PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier);
+	void PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier, bool bLeftFootSound);
 
 private: /* Feet Water Detection Collision Callbacks */
 	
@@ -145,9 +147,14 @@ protected:
 	/// EPhysicalSurface는 UEnum값이 아니라 #define으로 정의된 C++ Enum값임.
 	/// 그래서 TEnumAsByte로 감싸서(캐스팅)해서 사용해야함.
 	/// </summary>
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<TEnumAsByte<EPhysicalSurface>, USoundCue*> SurfaceTypeToSoundCueMap{};
-	
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//TMap<TEnumAsByte<EPhysicalSurface>, USoundCue*> SurfaceTypeToSoundCueMap{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<TEnumAsByte<EPhysicalSurface>, USoundCue*> LeftSurfaceTypeToSoundCueMap{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<TEnumAsByte<EPhysicalSurface>, USoundCue*> RightSurfaceTypeToSoundCueMap{};
 private:
 	
 	class AC_BasicCharacter* OwnerCharacter = nullptr;

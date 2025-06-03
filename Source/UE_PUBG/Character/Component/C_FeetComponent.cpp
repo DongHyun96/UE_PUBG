@@ -110,8 +110,6 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 		CollisionParams
 	);
 
-	// DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, FColor::Red);
-
 	OutDistance = 0;
 	OutRotation = FRotator::ZeroRotator;
 
@@ -121,6 +119,9 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 		OutSurfaceType = SurfaceType_Default;
 		return;
 	}
+
+	DrawDebugLine(GetWorld(), Start, IsHit ? HitResult.ImpactPoint : End, FColor::Red);
+	if (IsHit) DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 20, FColor::Green, false);
 
 	float Length = (HitResult.ImpactPoint - HitResult.TraceEnd).Size();
 
@@ -137,15 +138,17 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 	OutSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
 }
 
-void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier)
+void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier, bool bLeftFootSound)
 {
+	TMap<TEnumAsByte<EPhysicalSurface>, USoundCue*>& SurfaceTypeToSoundCueMap = bLeftFootSound ? LeftSurfaceTypeToSoundCueMap : RightSurfaceTypeToSoundCueMap; 
 	if (!SurfaceTypeToSoundCueMap.Contains(InCurSurFaceType)) return;
 	
 	USoundCue* SoundCue = SurfaceTypeToSoundCueMap[InCurSurFaceType];
 	if (!SoundCue) return;
 	
-	if (OwnerCharacter->IsLocallyControlled())
+	if (Cast<AC_Player>(OwnerCharacter))
 	{
+		UC_Util::Print(InVolumeMultiplier);
 		UGameplayStatics::PlaySound2D(this, SoundCue, InVolumeMultiplier);
 		// UC_Util::Print("PlaySound2D", FColor::Emerald, 10.f);
 	}

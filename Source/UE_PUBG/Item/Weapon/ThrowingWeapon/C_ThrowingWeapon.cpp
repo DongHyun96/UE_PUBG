@@ -938,7 +938,7 @@ void AC_ThrowingWeapon::UpdatePlayerProjectileLaunchValues()
 
 void AC_ThrowingWeapon::OnOwnerCharacterPoseTransitionFin()
 {
-	// 새로운 자세에 맞는 Anim Montage로 다시 재생
+	// Charging 중이라면, 새로운 자세에 맞는 Anim Montage로 다시 재생
 	if (bIsCharging) OwnerCharacter->PlayAnimMontage(CurThrowProcessMontages.ThrowReadyMontage);
 }
 

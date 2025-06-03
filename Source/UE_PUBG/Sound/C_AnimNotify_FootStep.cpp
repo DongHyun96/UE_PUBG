@@ -32,7 +32,7 @@ void UC_AnimNotify_FootStep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
     }
 
     const FVector2D SpeedRange = {0.f, 630.f};
-    const FVector2D VolumeRange = {0.5f, 1.f};
+    const FVector2D VolumeRange = {0.65f, 1.f};
     FootSoundVolume = bHasFallingData ? 1.f : FMath::GetMappedRangeValueClamped(SpeedRange, VolumeRange, AnimBasicCharacter->GetSpeed());
 
 	bIsValidToPlaySound = true;
