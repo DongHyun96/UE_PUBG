@@ -41,6 +41,8 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (!IsValid(OwnerCharacter)) return;
+	
+	HandleFeetWaterColliderStatusByPoseState(DeltaTime);
 
 	if (Cast<AC_Player>(OwnerCharacter)) if (bIsLegOnWater) UC_Util::Print("LegOnWater");
 	
@@ -178,4 +180,37 @@ void UC_FeetComponent::OnFeetWaterDetectionColliderEndOverlap
 {
 	UC_Util::Print("Feet Water Collider EndOverlap", FColor::Red, 10.f);
 	bIsLegOnWater = false;
+}
+
+void UC_FeetComponent::HandleFeetWaterColliderStatusByPoseState(float DeltaTime)
+{
+	if (OwnerCharacter->GetPoseState() == EPoseState::CRAWL) return;
+
+	static const TMap<EPoseState, float> PoseByFeetWaterColliderZLocationDest =
+	{
+		{EPoseState::STAND,		-21.595007f},
+		{EPoseState::CROUCH,	0.f},
+		{EPoseState::CRAWL,		0.f}
+	};
+
+	FVector RelativeLocation = FeetWaterDetectionCollider->GetRelativeLocation(); 
+	float Z = FMath::Lerp
+	(
+		FeetWaterDetectionCollider->GetRelativeLocation().Z,
+		PoseByFeetWaterColliderZLocationDest[OwnerCharacter->GetPoseState()],
+		DeltaTime * 10.f
+	);
+	RelativeLocation.Z = Z;
+	
+	FeetWaterDetectionCollider->SetRelativeLocation(RelativeLocation);
+}
+
+void UC_FeetComponent::OnPoseStateCrawlToAny()
+{
+	FeetWaterDetectionCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void UC_FeetComponent::OnPoseStateChangedToCrawl()
+{
+	FeetWaterDetectionCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

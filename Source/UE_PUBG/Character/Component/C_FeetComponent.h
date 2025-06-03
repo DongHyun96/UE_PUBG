@@ -100,6 +100,25 @@ private: /* Feet Water Detection Collision Callbacks */
 		int32					OtherBodyIndex
 	);
 
+
+	/// <summary>
+	///  PoseState에 따른 FeetWaterCollider 위치 조정
+	///  Crawl 상태의 경우 Collider를 끔
+	/// </summary>
+	void HandleFeetWaterColliderStatusByPoseState(float DeltaTime);
+
+public:
+	
+	/// <summary>
+	/// FeetWaterCollider 다시 적용하기 위한 Call back 함수 
+	/// </summary>
+	void OnPoseStateCrawlToAny();
+
+	/// <summary>
+	/// Crawl일 때에 FeetWaterCollider의 Collision disable 처리
+	/// </summary>
+	void OnPoseStateChangedToCrawl();
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TEnumAsByte<EDrawDebugTrace::Type> DrawDebugType;

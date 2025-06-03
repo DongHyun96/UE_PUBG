@@ -327,7 +327,8 @@ public:
 public:
 
 	/// <summary>
-	/// Pose Transition montage가 진행 중인 중간에 Call	되는 함수
+	/// <para> Pose Transition montage가 진행 중인 중간에 Callback 되는 함수 </para>
+	/// <para> 이 단계에서 실질적인 PoseState가 바뀜 </para>
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void OnPoseTransitionGoing();
