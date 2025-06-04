@@ -104,11 +104,10 @@ bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(
 		TArray<AActor*> AttachedActors{};
 		OwnerCharacter->GetAttachedActors(AttachedActors);
 		CollisionParams.AddIgnoredActors(AttachedActors);
-
 		OwnerCharacter->GetEquippedComponent()->AddAttachedPartsActorsToIgnoreActors(CollisionParams);
 
 		FHitResult HitResult{};
-
+		
 		bool HasHit = GetWorld()->SweepSingleByChannel
 		(
 			HitResult,
