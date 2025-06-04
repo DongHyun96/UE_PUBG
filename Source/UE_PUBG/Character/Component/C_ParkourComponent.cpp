@@ -182,6 +182,18 @@ void UC_ParkourComponent::ExecuteMotionWarpingAction(const FParkourDescriptor& C
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	// OwnerCharacter->SetActorEnableCollision(false);
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (bDrawDebugInfos)
+	{
+		// Motion Warping 지점
+		
+
+		for (const FVector& HitPosition : CurParkourDesc.VerticalHitPositions)
+			DrawDebugSphere(GetWorld(), HitPosition, 10.f, 10, FColor::Green, true);
+
+		if (CurParkourDesc.bLandPosInited)
+			DrawDebugSphere(GetWorld(), CurParkourDesc.LandPos, 10.f, 10, FColor::Cyan, true);
+	}
 	
 	// ParkourActionStrategy 실행
 	CurParkourActionStrategy->UseMotionWarpActionStrategy(OwnerCharacter, CurParkourDesc);
