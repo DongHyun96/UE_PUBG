@@ -51,15 +51,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EPhysicalSurface GetRightSurfaceType() const {return CurrentRightSurfaceType; }
 	
-
-	UFUNCTION(BlueprintCallable)
-	bool GetIsLegOnWater() const { return bIsLegOnWater; }
-
 	FFeetData GetData() const { return Data; }
 
 private:
 
-	void Trace(FName InName, float& OutDistance, FRotator& OutRotation, EPhysicalSurface& OutSurfaceType);
+	void Trace(const FName& InName, float& OutDistance, FRotator& OutRotation, EPhysicalSurface& OutSurfaceType);
 
 protected:
 	/// <summary>
@@ -73,53 +69,6 @@ protected:
 	/// <param name="bLeftFootSound"> : LeftFoot 쪽 Sound인지 </param>
 	UFUNCTION(BlueprintCallable)
 	void PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier, bool bLeftFootSound);
-
-private: /* Feet Water Detection Collision Callbacks */
-	
-	/// <summary>
-	/// FeetWaterDetectionCollider와 WaterCollider BeginOverlap되었을 때 Callback 받을 함수
-	/// </summary>
-	UFUNCTION()
-	void OnFeetWaterDetectionColliderBeginOverlap
-	(
-		UPrimitiveComponent*	OverlappedComponent,
-		AActor*					OtherActor,
-		UPrimitiveComponent*	OtherComp,
-		int32					OtherBodyIndex,
-		bool					bFromSweep,
-		const FHitResult&		SweepResult
-	);
-
-	/// <summary>
-	/// FeetWaterDetectionCollider와 WaterCollider EndOverlap 검사 
-	/// </summary>
-	UFUNCTION()
-	void OnFeetWaterDetectionColliderEndOverlap
-	(
-		UPrimitiveComponent*	OverlappedComponent,
-		AActor*					OtherActor,
-		UPrimitiveComponent*	OtherComp,
-		int32					OtherBodyIndex
-	);
-
-
-	/// <summary>
-	///  PoseState에 따른 FeetWaterCollider 위치 조정
-	///  Crawl 상태의 경우 Collider를 끔
-	/// </summary>
-	void HandleFeetWaterColliderStatusByPoseState(float DeltaTime);
-
-public:
-	
-	/// <summary>
-	/// FeetWaterCollider 다시 적용하기 위한 Call back 함수 
-	/// </summary>
-	void OnPoseStateCrawlToAny();
-
-	/// <summary>
-	/// Crawl일 때에 FeetWaterCollider의 Collision disable 처리
-	/// </summary>
-	void OnPoseStateChangedToCrawl();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -170,14 +119,4 @@ private:
 
 	float AccumulatedFootstepTime = 0.f;
 	
-
-protected: /* Feet on water 관련 */ 
-
-	// Water에서의 발자국 소리를 위한 Water 감지 Collider
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UCapsuleComponent* FeetWaterDetectionCollider{};
-
-private:
-	
-	bool bIsLegOnWater{}; // 다리 부분이 (발바닥부터) 물에 들어가 있으면 true
 };

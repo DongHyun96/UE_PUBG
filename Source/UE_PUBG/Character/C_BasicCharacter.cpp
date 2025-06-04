@@ -430,19 +430,8 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 
 void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
 {
-	EPoseState PrevPoseState = PoseState;
 	PoseState = InPoseState;
 	PoseColliderHandlerComponent->SetColliderByPoseState(PoseState);
-
-	// FeetComponent의 WaterFeetCollider 관련 Callback 처리
-	if (PrevPoseState == EPoseState::CRAWL)
-	{
-		FeetComponent->OnPoseStateCrawlToAny();
-		return;
-	}
-
-	if (PoseState == EPoseState::CRAWL)
-		FeetComponent->OnPoseStateChangedToCrawl();
 }
 
 bool AC_BasicCharacter::GetIsHighEnoughToFall()
