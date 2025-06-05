@@ -1,5 +1,4 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_ParkourComponent.h"
@@ -7,7 +6,7 @@
 #include "Character/C_Player.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
-#include "MotionWarpingComponent.h"
+
 
 #include "Character/Component/ParkourActionStrategy/I_ParkourActionStrategy.h"
 #include "Character/Component/ParkourActionStrategy/C_VaultLowActionStrategy.h"
@@ -17,15 +16,17 @@
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Item/Weapon/C_Weapon.h"
+
 #include "Item/Weapon/Gun/C_Gun.h"
 
 #include "Singleton/C_GameSceneManager.h"
 
 #include "Utility/C_Util.h"
 
-TMap<EParkourActionType, class II_ParkourActionStrategy*> UC_ParkourComponent::ParkourActionStrategies{};
+TMap<EParkourActionType, II_ParkourActionStrategy*> UC_ParkourComponent::ParkourActionStrategies{};
 int UC_ParkourComponent::ParkourComponentCount{};
+
+const ECollisionChannel UC_ParkourComponent::ParkourCollisionChannel = ECC_GameTraceChannel2;
 
 UC_ParkourComponent::UC_ParkourComponent()
 {
@@ -73,7 +74,6 @@ void UC_ParkourComponent::BeginPlay()
 		ParkourActionStrategies.Add(EParkourActionType::MANTLING_HIGH, MantleHighStrategy);
 	}
 }
-
 
 void UC_ParkourComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
@@ -179,9 +179,21 @@ void UC_ParkourComponent::ExecuteMotionWarpingAction(const FParkourDescriptor& C
 
 	SwapMesh(true);
 
-	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+	OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	// OwnerCharacter->SetActorEnableCollision(false);
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (bDrawDebugInfos)
+	{
+		// Motion Warping 지점
+		
+
+		for (const FVector& HitPosition : CurParkourDesc.VerticalHitPositions)
+			DrawDebugSphere(GetWorld(), HitPosition, 10.f, 10, FColor::Green, true);
+
+		if (CurParkourDesc.bLandPosInited)
+			DrawDebugSphere(GetWorld(), CurParkourDesc.LandPos, 10.f, 10, FColor::Cyan, true);
+	}
 	
 	// ParkourActionStrategy 실행
 	CurParkourActionStrategy->UseMotionWarpActionStrategy(OwnerCharacter, CurParkourDesc);
@@ -300,12 +312,12 @@ bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor&
 		StartLocation,
 		DestLocation,
 		FQuat::Identity,
-		ECC_Visibility,
+		ParkourCollisionChannel,
 		FCollisionShape::MakeSphere(SphereRad),
 		CurParkourDesc.CollisionParams
 	);
 
-	// DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRad, 10, FColor::Magenta, true);
+	if (bDrawDebugInfos) DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRad, 10, FColor::Magenta, true);
 
 	if (!HasHit)
 	{
@@ -332,7 +344,7 @@ bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor&
 			StartLocation,
 			DestLocation,
 			FQuat::Identity,
-			ECC_Visibility,
+			ParkourCollisionChannel,
 			FCollisionShape::MakeSphere(SphereRad),
 			CurParkourDesc.CollisionParams
 		);
@@ -340,7 +352,7 @@ bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor&
 		if (HasHit)
 		{
 			CurParkourDesc.VerticalHitPositions.Add(HitResult.Location);
-			// DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRad, 10, FColor::Red, true);
+			if (bDrawDebugInfos) DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRad, 10, FColor::Red, true);
 			continue; // 다음 DistanceLevel 조사
 		}
 
@@ -349,7 +361,7 @@ bool UC_ParkourComponent::InitVerticalHitPositionsAndLandPos(FParkourDescriptor&
 		FVector End   = Start - FVector::UnitZ() * 50000.f; // 너무 낮은 높이로 LandPos 잡힐수도 있음 -> Test / 이럴 때에는 Vaulting에서 처리
 		HitResult = {};
 
-		HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, CurParkourDesc.CollisionParams);
+		HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ParkourCollisionChannel, CurParkourDesc.CollisionParams);
 
 		if (!HasHit) return true;
 
@@ -450,7 +462,7 @@ bool UC_ParkourComponent::CheckLowParkourTarget(FParkourDescriptor& CurParkourDe
 		Start,
 		Dest,
 		FQuat::Identity,
-		ECC_Visibility,
+		ParkourCollisionChannel,
 		FCollisionShape::MakeSphere(5.f),
 		CurParkourDesc.CollisionParams
 	);
@@ -460,6 +472,8 @@ bool UC_ParkourComponent::CheckLowParkourTarget(FParkourDescriptor& CurParkourDe
 	HitResult = {};
 
 	// 60, 30, 0
+	/*// Water 판정 났을 때 Parkour 처리 피하기 위해서 Material 조사도 여기서 임시로 처리
+	CurParkourDesc.CollisionParams.bReturnPhysicalMaterial = true;*/
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -473,21 +487,26 @@ bool UC_ParkourComponent::CheckLowParkourTarget(FParkourDescriptor& CurParkourDe
 			StartLocation,
 			DestLocation,
 			FQuat::Identity,
-			ECC_Visibility,
+			ParkourCollisionChannel,
 			FCollisionShape::MakeSphere(SphereRadius),
 			CurParkourDesc.CollisionParams
 		);
 
-		// DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRadius, 20, FColor::Red, true);
+		if (bDrawDebugInfos) DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRadius, 20, FColor::Red, true);
 
-		if (HasHit)
+		EPhysicalSurface HitSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
+
+		// Hit했고 물가가 아니라면(SurfaceType9 = Water)
+		if (HasHit && HitSurfaceType != SurfaceType9)
 		{
 			CurParkourDesc.FirstObstacleHitLocation = HitResult.ImpactPoint;
 			CurParkourDesc.bIsLowAction = true;
+			// CurParkourDesc.CollisionParams.bReturnPhysicalMaterial = false;
 			return true;
 		}
 	}
-
+	
+	// CurParkourDesc.CollisionParams.bReturnPhysicalMaterial = false;
 	return false;
 }
 
@@ -507,7 +526,7 @@ bool UC_ParkourComponent::CheckHighParkourTarget(FParkourDescriptor& CurParkourD
 		Start,
 		Dest,
 		FQuat::Identity,
-		ECC_Visibility,
+		ParkourCollisionChannel,
 		FCollisionShape::MakeSphere(5.f),
 		CurParkourDesc.CollisionParams
 	);
@@ -520,7 +539,7 @@ bool UC_ParkourComponent::CheckHighParkourTarget(FParkourDescriptor& CurParkourD
 	const FVector CheckSpaceAboveStart = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * 60.f;
 	const FVector CheckSpaceAboveDest = OwnerCharacter->GetActorLocation()  + FVector::UnitZ() * 180.f;
 	const float CheckSpaceAboveRad = OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() * 0.65f;
-	// DrawDebugCylinder(GetWorld(), CheckSpaceAboveStart, CheckSpaceAboveDest, CheckSpaceAboveRad, 20, FColor::Red, true);
+	if (bDrawDebugInfos) DrawDebugCylinder(GetWorld(), CheckSpaceAboveStart, CheckSpaceAboveDest, CheckSpaceAboveRad, 20, FColor::Red, true);
 	HitResult = {};
 
 	bool HasSomethingAboveHead = GetWorld()->SweepSingleByChannel
@@ -529,7 +548,7 @@ bool UC_ParkourComponent::CheckHighParkourTarget(FParkourDescriptor& CurParkourD
 		CheckSpaceAboveStart,
 		CheckSpaceAboveDest,
 		FQuat::Identity,
-		ECC_Visibility,
+		ParkourCollisionChannel,
 		FCollisionShape::MakeSphere(CheckSpaceAboveRad),
 		CurParkourDesc.CollisionParams
 	);
@@ -539,6 +558,8 @@ bool UC_ParkourComponent::CheckHighParkourTarget(FParkourDescriptor& CurParkourD
 	HitResult = {};
 
 	// 180, 150, 120, 90
+	// Water 판정 났을 때 Parkour 처리 피하기 위해서 Material 조사도 여기서 임시로 처리
+	// CurParkourDesc.CollisionParams.bReturnPhysicalMaterial = true;
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -552,21 +573,26 @@ bool UC_ParkourComponent::CheckHighParkourTarget(FParkourDescriptor& CurParkourD
 			StartLocation,
 			DestLocation,
 			FQuat::Identity,
-			ECC_Visibility,
+			ParkourCollisionChannel,
 			FCollisionShape::MakeSphere(SphereRadius),
 			CurParkourDesc.CollisionParams
 		);
 
-		// DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRadius, 20, FColor::Red, true);
+		if (bDrawDebugInfos) DrawDebugCylinder(GetWorld(), StartLocation, DestLocation, SphereRadius, 20, FColor::Red, true);
 
-		if (HasHit)
+		EPhysicalSurface HitSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
+
+		// Hit했고 물가가 아니라면(SurfaceType9 = Water
+		if (HasHit && HitSurfaceType != SurfaceType9)
 		{
 			CurParkourDesc.FirstObstacleHitLocation = HitResult.ImpactPoint;
 			CurParkourDesc.bIsLowAction = false;
+			// CurParkourDesc.CollisionParams.bReturnPhysicalMaterial = false;
 			return true;
 		}
 	}
-
+	
+	// CurParkourDesc.CollisionParams.bReturnPhysicalMaterial = false;
 	return false;
 }
 
@@ -619,13 +645,16 @@ bool UC_ParkourComponent::CheckSpaceForVaulting(const FParkourDescriptor& CurPar
 		StartLocation,
 		DestLocation,
 		OwnerCharacter->GetActorRotation().Quaternion(),
-		ECC_Visibility,
+		ParkourCollisionChannel,
 		FCollisionShape::MakeBox(BoxExtent),
 		CurParkourDesc.CollisionParams
 	);
 
-	//DrawDebugBox(GetWorld(), StartLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Blue, true);
-	//DrawDebugBox(GetWorld(), DestLocation,  BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Blue, true);
+	if (bDrawDebugInfos)
+	{
+		DrawDebugBox(GetWorld(), StartLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Blue, true);
+		DrawDebugBox(GetWorld(), DestLocation,  BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Blue, true);
+	}
 
 	return !HasHit;
 }
@@ -647,13 +676,16 @@ bool UC_ParkourComponent::CheckSpaceForMantling(const FParkourDescriptor& CurPar
 		StartLocation,
 		DestLocation,
 		OwnerCharacter->GetActorRotation().Quaternion(),
-		ECC_Visibility,
+		ParkourCollisionChannel,
 		FCollisionShape::MakeBox(BoxExtent),
 		CurParkourDesc.CollisionParams
 	);
 
-	// DrawDebugBox(GetWorld(), StartLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Cyan, true);
-	// DrawDebugBox(GetWorld(), DestLocation,  BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Cyan, true);
+	if (bDrawDebugInfos)
+	{
+		DrawDebugBox(GetWorld(), StartLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Cyan, true);
+		DrawDebugBox(GetWorld(), DestLocation,  BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Cyan, true);
+	}
 
 	if (HasHit)
 	{
@@ -669,12 +701,12 @@ bool UC_ParkourComponent::CheckSpaceForMantling(const FParkourDescriptor& CurPar
 	(
 		BoxLocation,
 		OwnerCharacter->GetActorRotation().Quaternion(),
-		ECC_Visibility,
+		ParkourCollisionChannel,
 		FCollisionShape::MakeBox(BoxExtent),
 		CurParkourDesc.CollisionParams
 	);
 
-	// DrawDebugBox(GetWorld(), BoxLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Yellow, true);
+	if (bDrawDebugInfos) DrawDebugBox(GetWorld(), BoxLocation, BoxExtent, OwnerCharacter->GetActorRotation().Quaternion(), FColor::Yellow, true);
 	return !HasOverlapped;
 
 	/*StartLocation	  = CurParkourDesc.VerticalHitPositions[0] + FVector::UnitZ() * 100.f;
@@ -687,7 +719,7 @@ bool UC_ParkourComponent::CheckSpaceForMantling(const FParkourDescriptor& CurPar
 		StartLocation,
 		DestLocation,
 		OwnerCharacter->GetActorRotation().Quaternion(),
-		ECC_Visibility,
+		ParkourCollisionChannel,
 		FCollisionShape::MakeBox(BoxExtent),
 		CurParkourDesc.CollisionParams
 	);

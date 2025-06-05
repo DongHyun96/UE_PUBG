@@ -137,6 +137,10 @@ protected:
 
 private:
 
+	static const ECollisionChannel PoseCheckerChannel;
+
+private:
+
 	// 자세별 CapsuleComponent(RootComponent) Collider 높이와 Radius
 	static const TMap<EPoseState, TPair<float, float>> POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS;
 

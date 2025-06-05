@@ -195,6 +195,11 @@ private:
 
 private:
 
+	// 파쿠르 검사용 TraceChannel
+	static const ECollisionChannel ParkourCollisionChannel;
+
+private:
+
 	// 생성된 총 ParkourComponent 개수 ParkourActionStrategies 해제 시 사용 예정
 	static int ParkourComponentCount;
 	static TMap<EParkourActionType, class II_ParkourActionStrategy*> ParkourActionStrategies;
@@ -257,6 +262,12 @@ private:
 private:
 
 	FColor DebugMsgColor{};
+
+protected:
+
+	// DebugLine들을 그릴건지 체크
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	bool bDrawDebugInfos{};
 };
 
 

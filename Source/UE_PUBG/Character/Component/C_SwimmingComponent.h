@@ -34,6 +34,13 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
+	
+	/// <summary>
+	/// WaterDetectionCollider Capsule의 가장 낮은 지점 Z값 
+	/// </summary>
+	float GetWaterDetectionColliderLowestZ() const;
+
+public:
 
 	void HandlePlayerMovement(const FVector2D& MovementVector);
 

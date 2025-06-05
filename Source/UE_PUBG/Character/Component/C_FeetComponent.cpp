@@ -15,13 +15,12 @@
 
 #include "C_SwimmingComponent.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 UC_FeetComponent::UC_FeetComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	FeetWaterDetectionCollider = CreateDefaultSubobject<UCapsuleComponent>("FeetWaterDetectionCollider");
 }
 
 void UC_FeetComponent::BeginPlay()
@@ -29,11 +28,6 @@ void UC_FeetComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<AC_BasicCharacter>(GetOwner());
-
-	FeetWaterDetectionCollider->OnComponentBeginOverlap.AddDynamic(this, &UC_FeetComponent::OnFeetWaterDetectionColliderBeginOverlap);
-	FeetWaterDetectionCollider->OnComponentEndOverlap.AddDynamic(this, &UC_FeetComponent::OnFeetWaterDetectionColliderEndOverlap);
-	
-	FeetWaterDetectionCollider->AttachToComponent(OwnerCharacter->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true));
 }
 
 void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -41,12 +35,11 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (!IsValid(OwnerCharacter)) return;
-	
-	HandleFeetWaterColliderStatusByPoseState(DeltaTime);
 
-	if (Cast<AC_Player>(OwnerCharacter)) if (bIsLegOnWater) UC_Util::Print("LegOnWater");
-	
-	if (OwnerCharacter->GetPoseState() == EPoseState::CRAWL || OwnerCharacter->GetSwimmingComponent()->IsSwimming())
+	// 각각, Crawl 자세일 때 / 수영중일 때 / 파쿠르 중일 때 IK 적용 x
+	if (OwnerCharacter->GetPoseState() == EPoseState::CRAWL  ||
+		OwnerCharacter->GetSwimmingComponent()->IsSwimming() ||
+		OwnerCharacter->GetCharacterMovement()->MovementMode == MOVE_Flying)
 	{
 		Data.LeftDistance		= FVector::ZeroVector;
 		Data.RightDistance		= FVector::ZeroVector;
@@ -55,6 +48,13 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		Data.RightRotation		= FRotator::ZeroRotator;
 		return;
 	}
+
+	/*Data.LeftDistance		= FVector::ZeroVector;
+	Data.RightDistance		= FVector::ZeroVector;
+	Data.RootBoneDistance	= FVector::ZeroVector;
+	Data.LeftRotation		= FRotator::ZeroRotator;
+	Data.RightRotation		= FRotator::ZeroRotator;
+	return;*/
 
 
 	float LeftDistance{}, RightDistance{};
@@ -84,19 +84,18 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		UKismetMathLibrary::RInterpTo(Data.RightRotation, RightRotation, DeltaTime, InterpSpeed);
 }
 
-void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRotation, EPhysicalSurface& OutSurfaceType)
+void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& OutRotation, EPhysicalSurface& OutSurfaceType)
 {
 	FVector Socket = OwnerCharacter->GetMesh()->GetSocketLocation(InName);
 
-	float PosZ = OwnerCharacter->GetActorLocation().Z;
+	// 수영을 하기 직전까지 물 발소리 처리를 위한 LineTrace PosZ 위치 지정
+	const float StartPosZ = OwnerCharacter->GetSwimmingComponent()->GetWaterDetectionColliderLowestZ();
+	FVector Start = FVector(Socket.X, Socket.Y, StartPosZ);
 
-	FVector Start = FVector(Socket.X, Socket.Y, PosZ);
+	float EndPosZ = OwnerCharacter->GetActorLocation().Z - OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - TraceDistance;
+	FVector End = FVector(Socket.X, Socket.Y, EndPosZ);
 
-	PosZ = Start.Z - OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - TraceDistance;
-
-	FVector End = FVector(Socket.X, Socket.Y, PosZ);
-
-	FHitResult HitResult{};
+	/*FHitResult HitResult{};
 	FCollisionQueryParams CollisionParams{};
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
 	CollisionParams.bReturnPhysicalMaterial = true;
@@ -108,34 +107,65 @@ void UC_FeetComponent::Trace(FName InName, float& OutDistance, FRotator& OutRota
 		End,
 		ECC_Visibility,
 		CollisionParams
+	);*/
+
+	TArray<FHitResult> HitResults{};
+	FCollisionQueryParams CollisionParams{};
+	CollisionParams.AddIgnoredActor(OwnerCharacter);
+	CollisionParams.bReturnPhysicalMaterial = true;
+
+	// 물가의 경우, 2번째 Hit된 지물에 Foot IK를 적용시켜야 함 -> Trace 결과도 두 번째 지형지물의 값으로 Reference 초기화 시키기
+	bool IsHit = GetWorld()->LineTraceMultiByChannel
+	(
+		HitResults,
+		Start,
+		End,
+		ECC_Visibility,
+		CollisionParams
 	);
 
 	OutDistance = 0;
 	OutRotation = FRotator::ZeroRotator;
 
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false);
+	
 	if (!IsHit)
 	{
-		OutDistance = HitResult.Distance;
+		OutDistance = 0.f;
 		OutSurfaceType = SurfaceType_Default;
 		return;
 	}
 
-	DrawDebugLine(GetWorld(), Start, IsHit ? HitResult.ImpactPoint : End, FColor::Red);
-	if (IsHit) DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 20, FColor::Green, false);
+	for (const FHitResult& HitResult : HitResults) DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 5.f, 10, FColor::Green, false);
 
-	float Length = (HitResult.ImpactPoint - HitResult.TraceEnd).Size();
+	// 첫 Line blocked된 지형지물의 유형이 물이라면, 두 번째 LineTraced된 지형지물의 값을 Foot IK 값으로 사용
+	OutSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResults[0].PhysMaterial.Get());
+
+	// 현재 Trace하는 지형지물에 Water가 존재하는지에 따른 FootIK용 HitResult를 지정해주어야 함
+	FHitResult HitResultForFootIK{};
+
+	// 현재 Project Setting의 SurfaceType9번이 Water로 지정되어 있음
+	if (OutSurfaceType == SurfaceType9)
+	{
+		// Water 지형지물만 잡힌 상황 / Foot IK처리를 할 필요 없음(애초에 이 상황은 나오지 않지만 예외처리로 둠)
+		if (HitResults.Num() <= 1) return;
+		
+		HitResultForFootIK = HitResults[1];
+	}
+	else HitResultForFootIK = HitResults[0]; // 일반적인 땅 상황
+
+	float Length = (HitResultForFootIK.ImpactPoint - HitResultForFootIK.TraceEnd).Size();
 
 	OutDistance = Length - TraceDistance + OffsetDistance;
 
-	float Roll = UKismetMathLibrary::DegAtan2(HitResult.Normal.Y, HitResult.Normal.Z);
-	float Pitch = -UKismetMathLibrary::DegAtan2(HitResult.Normal.X, HitResult.Normal.Z);
+	float Roll = UKismetMathLibrary::DegAtan2(HitResultForFootIK.Normal.Y, HitResultForFootIK.Normal.Z);
+	float Pitch = -UKismetMathLibrary::DegAtan2(HitResultForFootIK.Normal.X, HitResultForFootIK.Normal.Z);
 
 	Pitch = FMath::Clamp(Pitch, -15.0f, 15.0f);
 	Roll  = FMath::Clamp(Roll, -15.0f, 15.0f);
 
 	OutRotation = FRotator(Pitch, 0, Roll);
-
-	OutSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
+	// OutSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResultForFootIK.PhysMaterial.Get());
 }
 
 void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier, bool bLeftFootSound)
@@ -148,7 +178,6 @@ void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector I
 	
 	if (Cast<AC_Player>(OwnerCharacter))
 	{
-		UC_Util::Print(InVolumeMultiplier);
 		UGameplayStatics::PlaySound2D(this, SoundCue, InVolumeMultiplier);
 		// UC_Util::Print("PlaySound2D", FColor::Emerald, 10.f);
 	}
@@ -157,63 +186,4 @@ void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector I
 		UGameplayStatics::PlaySoundAtLocation(this, SoundCue, InLocation, InVolumeMultiplier);
 		// UC_Util::Print("PlaySoundAtLocation", FColor::Emerald, 10.f);
 	}
-}
-
-void UC_FeetComponent::OnFeetWaterDetectionColliderBeginOverlap
-(
-	UPrimitiveComponent*	OverlappedComponent,
-	AActor*					OtherActor,
-	UPrimitiveComponent*	OtherComp,
-	int32					OtherBodyIndex,
-	bool					bFromSweep,
-	const FHitResult&		SweepResult
-)
-{
-	UC_Util::Print("Feet Water Collider BeginOverlap", FColor::Red, 10.f);
-	bIsLegOnWater = true;
-}
-
-void UC_FeetComponent::OnFeetWaterDetectionColliderEndOverlap
-(
-	UPrimitiveComponent*	OverlappedComponent,
-	AActor*					OtherActor,
-	UPrimitiveComponent*	OtherComp,
-	int32					OtherBodyIndex
-)
-{
-	UC_Util::Print("Feet Water Collider EndOverlap", FColor::Red, 10.f);
-	bIsLegOnWater = false;
-}
-
-void UC_FeetComponent::HandleFeetWaterColliderStatusByPoseState(float DeltaTime)
-{
-	if (OwnerCharacter->GetPoseState() == EPoseState::CRAWL) return;
-
-	static const TMap<EPoseState, float> PoseByFeetWaterColliderZLocationDest =
-	{
-		{EPoseState::STAND,		-21.595007f},
-		{EPoseState::CROUCH,	0.f},
-		{EPoseState::CRAWL,		0.f}
-	};
-
-	FVector RelativeLocation = FeetWaterDetectionCollider->GetRelativeLocation(); 
-	float Z = FMath::Lerp
-	(
-		FeetWaterDetectionCollider->GetRelativeLocation().Z,
-		PoseByFeetWaterColliderZLocationDest[OwnerCharacter->GetPoseState()],
-		DeltaTime * 10.f
-	);
-	RelativeLocation.Z = Z;
-	
-	FeetWaterDetectionCollider->SetRelativeLocation(RelativeLocation);
-}
-
-void UC_FeetComponent::OnPoseStateCrawlToAny()
-{
-	FeetWaterDetectionCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-}
-
-void UC_FeetComponent::OnPoseStateChangedToCrawl()
-{
-	FeetWaterDetectionCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

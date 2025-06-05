@@ -10,6 +10,8 @@
 #include "HUD/C_InformWidget.h"
 #include "Utility/C_Util.h"
 
+const ECollisionChannel UC_PoseColliderHandlerComponent::PoseCheckerChannel = ECC_GameTraceChannel1;
+
 const TMap<EPoseState, TPair<float, float>> UC_PoseColliderHandlerComponent::POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS =
 {
 	{EPoseState::STAND,		{88.f, 34.f}},
@@ -104,18 +106,17 @@ bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(
 		TArray<AActor*> AttachedActors{};
 		OwnerCharacter->GetAttachedActors(AttachedActors);
 		CollisionParams.AddIgnoredActors(AttachedActors);
-
 		OwnerCharacter->GetEquippedComponent()->AddAttachedPartsActorsToIgnoreActors(CollisionParams);
 
 		FHitResult HitResult{};
-
+		
 		bool HasHit = GetWorld()->SweepSingleByChannel
 		(
 			HitResult,
 			StartLocation,
 			DestLocation,
 			FQuat::Identity,
-			ECC_Visibility,
+			PoseCheckerChannel,
 			FCollisionShape::MakeSphere(SWEEP_SPHERE_RAD),
 			CollisionParams
 		);
@@ -150,7 +151,7 @@ bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(
 			StartLocation,
 			DestLocation,
 			FQuat::Identity,
-			ECC_Visibility,
+			PoseCheckerChannel,
 			FCollisionShape::MakeSphere(SWEEP_SPHERE_RAD),
 			CollisionParams
 		);
@@ -277,8 +278,8 @@ float UC_PoseColliderHandlerComponent::GetCrawlSlopeAngle
 	FHitResult HeadHitResult{};
 	FHitResult PelvisHitResult{};
 
-	bool HasHeadHit		= GetWorld()->LineTraceSingleByChannel(HeadHitResult, HeadStartLocation, HeadDestLocation, ECC_Visibility, CollisionParams);
-	bool HasPelvisHit	= GetWorld()->LineTraceSingleByChannel(PelvisHitResult, PelvisStartLocation, PelvisDestLocation, ECC_Visibility, CollisionParams);
+	bool HasHeadHit		= GetWorld()->LineTraceSingleByChannel(HeadHitResult, HeadStartLocation, HeadDestLocation, PoseCheckerChannel, CollisionParams);
+	bool HasPelvisHit	= GetWorld()->LineTraceSingleByChannel(PelvisHitResult, PelvisStartLocation, PelvisDestLocation, PoseCheckerChannel, CollisionParams);
 
 	if (EnableDebugLine)
 	{
@@ -341,8 +342,8 @@ float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree
 	//FHitResult HeadHitResult{};
 	//FHitResult PelvisHitResult{};
 
-	//bool HasHeadHit		= GetWorld()->LineTraceSingleByChannel(HeadHitResult, HeadStartLocation, HeadDestLocation, ECC_Visibility, CollisionParams);
-	//bool HasPelvisHit	= GetWorld()->LineTraceSingleByChannel(PelvisHitResult, PelvisStartLocation, PelvisDestLocation, ECC_Visibility, CollisionParams);
+	//bool HasHeadHit		= GetWorld()->LineTraceSingleByChannel(HeadHitResult, HeadStartLocation, HeadDestLocation, PoseCheckerChannel, CollisionParams);
+	//bool HasPelvisHit	= GetWorld()->LineTraceSingleByChannel(PelvisHitResult, PelvisStartLocation, PelvisDestLocation, PoseCheckerChannel, CollisionParams);
 
 	//if (EnableDebugLine)
 	//{

@@ -63,6 +63,11 @@ void UC_SwimmingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	UpdateOxygenAmount(DeltaTime);
 }
 
+float UC_SwimmingComponent::GetWaterDetectionColliderLowestZ() const
+{
+	return WaterDetectionCollider->GetComponentLocation().Z - WaterDetectionCollider->GetScaledCapsuleHalfHeight();
+}
+
 void UC_SwimmingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
 {
 	bIsHandlingPlayerMovementOnCurrentTick = true;
