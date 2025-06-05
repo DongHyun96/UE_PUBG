@@ -112,6 +112,11 @@ void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& 
 	TArray<FHitResult> HitResults{};
 	FCollisionQueryParams CollisionParams{};
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
+
+	TArray<AActor*> AttachedActors{};
+	OwnerCharacter->GetAttachedActors(AttachedActors);
+	CollisionParams.AddIgnoredActors(AttachedActors);
+	
 	CollisionParams.bReturnPhysicalMaterial = true;
 
 	// 물가의 경우, 2번째 Hit된 지물에 Foot IK를 적용시켜야 함 -> Trace 결과도 두 번째 지형지물의 값으로 Reference 초기화 시키기
