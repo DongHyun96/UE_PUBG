@@ -127,8 +127,7 @@ void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& 
 	OutDistance = 0;
 	OutRotation = FRotator::ZeroRotator;
 
-	/*DrawDebugLine(GetWorld(), Start, IsHit ? HitResult.ImpactPoint : End, FColor::Red);
-	if (IsHit) DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 20, FColor::Green, false);*/
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false);
 	
 	if (!IsHit)
 	{
@@ -136,6 +135,8 @@ void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& 
 		OutSurfaceType = SurfaceType_Default;
 		return;
 	}
+
+	for (const FHitResult& HitResult : HitResults) DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 5.f, 10, FColor::Green, false);
 
 	// 첫 Line blocked된 지형지물의 유형이 물이라면, 두 번째 LineTraced된 지형지물의 값을 Foot IK 값으로 사용
 	OutSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResults[0].PhysMaterial.Get());
@@ -164,8 +165,7 @@ void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& 
 	Roll  = FMath::Clamp(Roll, -15.0f, 15.0f);
 
 	OutRotation = FRotator(Pitch, 0, Roll);
-
-	OutSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResultForFootIK.PhysMaterial.Get());
+	// OutSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResultForFootIK.PhysMaterial.Get());
 }
 
 void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier, bool bLeftFootSound)
