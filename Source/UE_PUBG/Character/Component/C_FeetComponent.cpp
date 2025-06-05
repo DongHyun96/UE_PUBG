@@ -14,6 +14,7 @@
 
 
 #include "C_SwimmingComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -28,6 +29,20 @@ void UC_FeetComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerCharacter = Cast<AC_BasicCharacter>(GetOwner());
+
+	LeftFootSoundDescriptor.FootAudioComponent = NewObject<UAudioComponent>(this);
+	LeftFootSoundDescriptor.FootAudioComponent->SetAutoActivate(false);
+
+	// OwnerCharacter가 Player의 경우, 2D Sound로 재생 setting / Enemy의 경우 3D Sound
+	LeftFootSoundDescriptor.FootAudioComponent->bAllowSpatialization = (Cast<AC_Player>(OwnerCharacter) == nullptr);
+
+	// AttachToComponent를 하면, 3D 재생의 경우 위치 지정을 하지 않더라도 자동으로 해당 위치에서 재생처리됨
+	LeftFootSoundDescriptor.FootAudioComponent->AttachToComponent(OwnerCharacter->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName("LeftFootSocket"));
+	
+	RightFootSoundDescriptor.FootAudioComponent = NewObject<UAudioComponent>(this);
+	RightFootSoundDescriptor.FootAudioComponent->SetAutoActivate(false);
+	RightFootSoundDescriptor.FootAudioComponent->AttachToComponent(OwnerCharacter->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName("RightFootSocket"));
+	RightFootSoundDescriptor.FootAudioComponent->bAllowSpatialization = (Cast<AC_Player>(OwnerCharacter) == nullptr);
 }
 
 void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -60,8 +75,8 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	float LeftDistance{}, RightDistance{};
 	FRotator LeftRotation{}, RightRotation{};
 	
-	Trace(LeftSocket, LeftDistance, LeftRotation, CurrentLeftSurfaceType);
-	Trace(RightSocket, RightDistance, RightRotation, CurrentRightSurfaceType);
+	Trace(LeftSocket, LeftDistance, LeftRotation, LeftFootSoundDescriptor);
+	Trace(RightSocket, RightDistance, RightRotation, RightFootSoundDescriptor);
 
 	//늘어난 다리를 안늘어난 다리에 맞추도록 안늘어난 다리의 길이를 저장
 	float Offset = FMath::Min(LeftDistance, RightDistance);
@@ -84,7 +99,7 @@ void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		UKismetMathLibrary::RInterpTo(Data.RightRotation, RightRotation, DeltaTime, InterpSpeed);
 }
 
-void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& OutRotation, EPhysicalSurface& OutSurfaceType)
+void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& OutRotation, FFootSoundDescriptor& OutSoundDescriptor)
 {
 	FVector Socket = OwnerCharacter->GetMesh()->GetSocketLocation(InName);
 
@@ -137,25 +152,30 @@ void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& 
 	if (!IsHit)
 	{
 		OutDistance = 0.f;
-		OutSurfaceType = SurfaceType_Default;
+		OutSoundDescriptor.CurrentSurfaceType = SurfaceType_Default;
 		return;
 	}
 
 	for (const FHitResult& HitResult : HitResults) DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 5.f, 10, FColor::Green, false);
 
 	// 첫 Line blocked된 지형지물의 유형이 물이라면, 두 번째 LineTraced된 지형지물의 값을 Foot IK 값으로 사용
-	OutSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResults[0].PhysMaterial.Get());
+	OutSoundDescriptor.CurrentSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResults[0].PhysMaterial.Get());
 
 	// 현재 Trace하는 지형지물에 Water가 존재하는지에 따른 FootIK용 HitResult를 지정해주어야 함
 	FHitResult HitResultForFootIK{};
 
 	// 현재 Project Setting의 SurfaceType9번이 Water로 지정되어 있음
-	if (OutSurfaceType == SurfaceType9)
+	if (OutSoundDescriptor.CurrentSurfaceType == SurfaceType9)
 	{
 		// Water 지형지물만 잡힌 상황 / Foot IK처리를 할 필요 없음(애초에 이 상황은 나오지 않지만 예외처리로 둠)
-		if (HitResults.Num() <= 1) return;
-		
+		if (HitResults.Num() <= 1)
+		{
+			OutSoundDescriptor.bIsDeepWater = false;
+			return;
+		}
+
 		HitResultForFootIK = HitResults[1];
+		OutSoundDescriptor.bIsDeepWater = (HitResults[0].ImpactPoint.Z - HitResults[1].ImpactPoint.Z > 30.f);
 	}
 	else HitResultForFootIK = HitResults[0]; // 일반적인 땅 상황
 
@@ -175,10 +195,11 @@ void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& 
 
 void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier, bool bLeftFootSound)
 {
-	TMap<TEnumAsByte<EPhysicalSurface>, USoundCue*>& SurfaceTypeToSoundCueMap = bLeftFootSound ? LeftSurfaceTypeToSoundCueMap : RightSurfaceTypeToSoundCueMap; 
-	if (!SurfaceTypeToSoundCueMap.Contains(InCurSurFaceType)) return;
+	const FFootSoundDescriptor& SoundDescriptor = bLeftFootSound ? LeftFootSoundDescriptor : RightFootSoundDescriptor;
 	
-	USoundCue* SoundCue = SurfaceTypeToSoundCueMap[InCurSurFaceType];
+	if (!SoundDescriptor.SurfaceTypeToSoundCueMap.Contains(InCurSurFaceType)) return;
+	
+	USoundCue* SoundCue = SoundDescriptor.SurfaceTypeToSoundCueMap[InCurSurFaceType];
 	if (!SoundCue) return;
 	
 	if (Cast<AC_Player>(OwnerCharacter))
@@ -192,3 +213,20 @@ void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector I
 		// UC_Util::Print("PlaySoundAtLocation", FColor::Emerald, 10.f);
 	}
 }
+
+void UC_FeetComponent::PlaySoundByAudioComponent(EPhysicalSurface InCurSurFaceType, float InVolumeMultiplier, bool bLeftFootSound)
+{
+	const FFootSoundDescriptor& SoundDescriptor = bLeftFootSound ? LeftFootSoundDescriptor : RightFootSoundDescriptor;
+	
+	if (!SoundDescriptor.SurfaceTypeToSoundCueMap.Contains(InCurSurFaceType)) return;
+	
+	USoundCue* SoundCue = SoundDescriptor.SurfaceTypeToSoundCueMap[InCurSurFaceType];
+	if (!SoundCue) return;
+	
+	SoundDescriptor.FootAudioComponent->SetSound(SoundCue);
+	SoundDescriptor.FootAudioComponent->SetVolumeMultiplier(InVolumeMultiplier);
+	SoundDescriptor.FootAudioComponent->SetBoolParameter("IsDeepWater", SoundDescriptor.bIsDeepWater);
+	SoundDescriptor.FootAudioComponent->Play();
+}
+
+
