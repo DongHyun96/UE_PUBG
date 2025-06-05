@@ -115,6 +115,8 @@ bool UC_GunSlotWidget::SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, AC_Attac
 	
 	if (!SlotGun) return false;
 
+	UC_Util::Print(SlotGun->GetItemName());
+
 	EItemPlace InAttachableItemPlace = InAttachableItem->GetItemPlace();
 
 	if (InAttachableItemPlace == EItemPlace::INVEN)
@@ -125,6 +127,9 @@ bool UC_GunSlotWidget::SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, AC_Attac
 	{
 		OwnerPlayer->GetInvenComponent()->RemoveItemToAroundList(InAttachableItem);
 	}
+
+	// 해당 아이템에 대한 부착 슬롯이 없다면 return false;
+	if (!SlotGun->GetAttachableItem().Contains(InAttachableItem->GetName())) return false;
 
 	AC_AttachableItem* ChangedItem = SlotGun->GetAttachableItem()[InAttachableItem->GetName()];
 

@@ -240,36 +240,6 @@ void AC_Player::Tick(float DeltaTime)
 	{
 		UpdateInteractable(NewInteractableItem);
 	}
-
-	// 스카이 다이빙 중인 경우에만 다이빙 사운드를 업데이트.
-	//if (GetSkyDivingComponent()->GetSkyDivingState() == ESkyDivingState::SKYDIVING)
-	//{
-	//	UpdateSkyDivingSound();
-	//}
-
-	/*switch (HandState)
-	{
-	case EHandState::UNARMED: UC_Util::Print("UnArmed"); break;
-	case EHandState::WEAPON_GUN: UC_Util::Print("Weapon_Gun"); break;
-	case EHandState::WEAPON_MELEE: UC_Util::Print("WEAPON_MELEE"); break;
-	case EHandState::WEAPON_THROWABLE: UC_Util::Print("WEAPON_THROWABLE"); break;
-	case EHandState::HANDSTATE_MAX: UC_Util::Print("HANDSTATE_MAX"); break;
-	}*/
-
-	//DrawingItemOutLine();
-	//UpdateInteractable(FindBestInteractable());
-	//DistanceToGround = GetCharacterMovement()->CurrentFloor.FloorDist;
-	
-	//int TestCount = 0;
-
-	//for (auto& Bullet : PooledBullets)
-	//{
-	//	if (Bullet->GetIsActive())
-	//	{
-	//		TestCount++;
-	//	}
-	//}
-	//UC_Util::Print(TestCount);
 }
 
 void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
