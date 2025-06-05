@@ -242,7 +242,7 @@ bool AC_AttachableItem::AttachItemToWeaponAndMoveInven(AC_Gun* Weapon, UC_InvenC
 	
 	AC_AttachableItem* ChangedItem = Weapon->GetAttachableItem()[Name];
 	
-	invenComp->RemoveItemToMyList(this);  // 인벤토리에서 아이템 제거
+	//invenComp->RemoveItemToMyList(this);  // 인벤토리에서 아이템 제거
 	
 	if (ChangedItem)
 	{
