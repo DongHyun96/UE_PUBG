@@ -502,7 +502,7 @@ public:
 	TArray<AC_Bullet*>& GetBullets() { return PooledBullets; }
 	
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_FeetComponent* FeetComponent{};
 protected:
 

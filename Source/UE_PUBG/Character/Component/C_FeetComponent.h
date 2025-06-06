@@ -125,10 +125,10 @@ protected:
 
 protected:
 	
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Footstep")
 	FFootSoundDescriptor LeftFootSoundDescriptor{};
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Footstep")
 	FFootSoundDescriptor RightFootSoundDescriptor{};
 	
 private:

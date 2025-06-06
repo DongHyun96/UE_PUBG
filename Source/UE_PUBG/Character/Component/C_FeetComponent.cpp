@@ -195,6 +195,8 @@ void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& 
 
 void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector InLocation, float InVolumeMultiplier, bool bLeftFootSound)
 {
+	if (OwnerCharacter->GetCharacterMovement()->IsFalling()) return;
+	
 	const FFootSoundDescriptor& SoundDescriptor = bLeftFootSound ? LeftFootSoundDescriptor : RightFootSoundDescriptor;
 	
 	if (!SoundDescriptor.SurfaceTypeToSoundCueMap.Contains(InCurSurFaceType)) return;
@@ -216,6 +218,8 @@ void UC_FeetComponent::PlaySoundCue(EPhysicalSurface InCurSurFaceType, FVector I
 
 void UC_FeetComponent::PlaySoundByAudioComponent(EPhysicalSurface InCurSurFaceType, float InVolumeMultiplier, bool bLeftFootSound)
 {
+	if (OwnerCharacter->GetCharacterMovement()->IsFalling()) return;
+	
 	const FFootSoundDescriptor& SoundDescriptor = bLeftFootSound ? LeftFootSoundDescriptor : RightFootSoundDescriptor;
 	
 	if (!SoundDescriptor.SurfaceTypeToSoundCueMap.Contains(InCurSurFaceType)) return;
