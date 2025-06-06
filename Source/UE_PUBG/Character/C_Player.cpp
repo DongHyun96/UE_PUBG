@@ -396,6 +396,10 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			SetAimingSpringArmRelativeLocationDest(EPoseState::STAND);
 			SetControllerPitchLimits(EPoseState::STAND);
 			Super::SetPoseState(EPoseState::STAND);
+			
+			if (CharacterSounds->CrouchToStandSound) UGameplayStatics::PlaySound2D(this, CharacterSounds->CrouchToStandSound);
+			else UC_Util::Print("CrouchToStandSound nullptr!", FColor::Red, 10.f);
+			
 			return true;
 
 		case EPoseState::CRAWL: // Crawl To Stand
@@ -442,6 +446,10 @@ bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			SetAimingSpringArmRelativeLocationDest(EPoseState::CROUCH);
 			SetControllerPitchLimits(EPoseState::CROUCH);
 			Super::SetPoseState(EPoseState::CROUCH);
+
+			if (CharacterSounds->StandToCrouchSound) UGameplayStatics::PlaySound2D(this, CharacterSounds->StandToCrouchSound);
+			else UC_Util::Print("StandToCrouchSound nullptr!", FColor::Red, 10.f);
+			
 			return true;
 
 		case EPoseState::CRAWL: // Crawl To Crouch

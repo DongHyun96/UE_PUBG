@@ -107,6 +107,21 @@ struct FNameStruct : public FTableRowBase
 	FString Name{};
 };
 
+USTRUCT(BlueprintType)
+struct FCharacterSounds
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	USoundBase* StandToCrouchSound{};
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	USoundBase* CrouchToStandSound{};
+
+	// StandToCrawl -> Crawl과 연관된 Pose change가 Pose Transition Montage가 관여
+	// Montage가 관여하는 Pose change의 경우, SoundBase를 AnimNotify 자체가 소유하게끔 처리ㄴ
+};
+
 
 UCLASS(Abstract)
 class UE_PUBG_API AC_BasicCharacter : public ACharacter, public IGenericTeamAgentInterface
@@ -242,6 +257,8 @@ public: // Getters and setters
 	//UAudioComponent* GetReloadBulletAudioComponent() { return ReloadBulletAudioComponent; }
 protected:
 	void SetPoseState(EPoseState InPoseState);
+
+	
 
 public:
 	/// <summary>
@@ -568,6 +585,10 @@ protected:
 	//class UAudioComponent* ReloadMagazineAudioComponent{};
 	//				 
 	//UAudioComponent* ReloadBulletAudioComponent{};
+
+protected:
+
+	const FCharacterSounds* CharacterSounds{};
 
 };
 
