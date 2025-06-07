@@ -114,7 +114,16 @@ struct FItemData : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	float SpawnProbability = .0f;
-};	
+};
+
+USTRUCT(BlueprintType)
+struct FItemSoundData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* PickUpSound{};
+};
 
 
 
@@ -336,7 +345,12 @@ protected:
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	AC_BasicCharacter* OwnerCharacter{};
-};
-// Fill out your copyright notice in the Description page of Project Settings.
 
+protected:
+	/// <summary>
+	/// 아이템 관련 Sound
+	/// 더 세부적인 Sound는 개별 자식 클래스에서 struct 정의하고 해당 레퍼런스를 들고 있을 예정
+	/// </summary>
+	const FItemSoundData* ItemSoundDataRef{};
+};
 

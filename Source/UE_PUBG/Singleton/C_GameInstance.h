@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Character/C_BasicCharacter.h"
 #include "Engine/GameInstance.h"
 #include "C_GameInstance.generated.h"
 
@@ -94,6 +95,8 @@ public:
 	//UFUNCTION(BlueprintCallable)
 	//FGameDataTables* GetGameDataTables() const { return GameDataTables; }
 
+	const FCharacterSounds* GetCharacterSounds() const { return &CharacterSounds; }
+
 public:
 
 	void SetCurrentSelectedLevelType(ELevelType InLevelType) {CurrentSelectedLevelType = InLevelType; }
@@ -133,6 +136,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputMappingContext* DefaultInputMappingContext{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FCharacterSounds CharacterSounds{};
 
 protected:
 

@@ -20,6 +20,7 @@
 #include "Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
 #include "HUD/C_GameOverWidget.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
@@ -124,6 +125,9 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::STAND)) return false;
 
 			Super::SetPoseState(EPoseState::STAND);
+
+			if (CharacterSounds->CrouchToStandSound)
+				UGameplayStatics::PlaySoundAtLocation(this, CharacterSounds->CrouchToStandSound, this->GetActorLocation());
 			
 			return true;
 
@@ -150,6 +154,10 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 
 			if (!PoseColliderHandlerComponent->CanChangePoseOnCurrentSurroundEnvironment(EPoseState::CROUCH)) return false;
 			Super::SetPoseState(EPoseState::CROUCH);
+
+			if (CharacterSounds->StandToCrouchSound)
+				UGameplayStatics::PlaySoundAtLocation(this, CharacterSounds->StandToCrouchSound, this->GetActorLocation());
+			
 			return true;
 
 		case EPoseState::CRAWL: // Crawl To Crouch

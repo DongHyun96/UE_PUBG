@@ -63,6 +63,9 @@ void AC_Item::InitializeItem(FName NewItemCode)
 			ItemDataRef = ItemData;  // 원본 참조 저장
 		}
 	}
+
+	// TODO : SoundDataTable 초기화 처리
+	// UDataTable* SoundDataTable = GI->GetDataTables()[EDataTableType]
 }
 
 void AC_Item::DetachItem()

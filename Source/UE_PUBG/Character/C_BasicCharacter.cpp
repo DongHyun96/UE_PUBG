@@ -36,6 +36,7 @@
 #include "Particles/ParticleSystemComponent.h"
 
 #include "Loot/C_LootCrate.h"
+#include "Singleton/C_GameInstance.h"
 
 #include "Singleton/C_GameSceneManager.h"
 
@@ -110,6 +111,9 @@ void AC_BasicCharacter::BeginPlay()
 	InitializeBloodParticleComponents();
 	//InvenSystem->GetInvenUI()->AddToViewport();
 	//InvenSystem->GetInvenUI()->SetVisibility(ESlateVisibility::Hidden);
+
+	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
+	CharacterSounds = GameInstance->GetCharacterSounds();
 }
 
 void AC_BasicCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
