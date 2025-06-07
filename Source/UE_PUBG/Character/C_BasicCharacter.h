@@ -119,7 +119,7 @@ struct FCharacterSounds
 	USoundBase* CrouchToStandSound{};
 
 	// StandToCrawl -> Crawl과 연관된 Pose change가 Pose Transition Montage가 관여
-	// Montage가 관여하는 Pose change의 경우, SoundBase를 AnimNotify 자체가 소유하게끔 처리ㄴ
+	// Montage가 관여하는 Pose change의 경우, SoundBase를 AnimNotify 자체가 SoundBase를 소유하고 재생하게끔 처리
 };
 
 
