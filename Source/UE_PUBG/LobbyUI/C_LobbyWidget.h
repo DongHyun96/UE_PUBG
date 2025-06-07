@@ -267,7 +267,14 @@ protected: // Widget Animations
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* NickNameCharacterWarningAnimation{};
-	 
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	USoundBase* NickNameTypingSound{}; 
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	USoundBase* NickNameEnteredSound{};
 };
 
 

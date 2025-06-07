@@ -119,7 +119,15 @@ private:
 	static const TMap<bool, FMargin> HoverMapNameMargins;
 
 	// Horizontal Box 내의 위치별 selected 당하지 않았을 때의 Margin들
-	static const TMap<EHorizontalBoxPlace, FMargin> HorizontalBoxPlaceMargins; 
+	static const TMap<EHorizontalBoxPlace, FMargin> HorizontalBoxPlaceMargins;
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	USoundBase* HoverSound{};
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	USoundBase* PressedSound{};
 };
 
 
