@@ -114,8 +114,12 @@ public:
 	void SetPlayerNickName(const FString& InNickName);
 	
 	const FString& GetPlayerNickName() const { return PlayerNickName; }
+
 	bool GetPlayerNickNameSet() const { return bPlayerNickNameSet; }
-	
+
+	UFUNCTION(BlueprintCallable)
+	UInputMappingContext* GetDefaultInputMappingContext() const { return DefaultInputMappingContext; }
+
 protected:
 
 	// 가장 첫 로그인 때 정한 NickName (한 번 정한 이후 변하지 않을 예정)
@@ -124,33 +128,11 @@ protected:
 	bool bPlayerNickNameSet{};
 
 protected:
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//FGameDataTables* GameDataTables{};
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EDataTableType, UDataTable*> DataTables{};
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//UDataTable* DT_BulletImpactSound = nullptr;
 
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//UDataTable* DT_Gun = nullptr;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//UDataTable* DT_GunSound = nullptr;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//UDataTable* DT_HealItemUsingSound = nullptr;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//UDataTable* DT_Item = nullptr;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//UDataTable* DT_MeleeSound = nullptr;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//UDataTable* DT_ThrowingWeaponSound = nullptr;
-
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//UDataTable* DT_SoundClasses = nullptr;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UInputMappingContext* DefaultInputMappingContext{};
 
 protected:
 

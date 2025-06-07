@@ -44,9 +44,10 @@
 #include "HUD/C_GameOverWidget.h"
 #include "HUD/C_InformWidget.h"
 #include "HUD/C_MagneticFieldIndicatorWidget.h"
-
 #include "Singleton/C_GameSceneManager.h"
 #include "SkyDivingComponent/C_PlayerSkyDivingComponent.h"
+#include "InputMappingContext.h"
+#include "EnhancedActionKeyMapping.h"
 
 // Sets default values for this component's properties
 UC_InputComponent::UC_InputComponent()
@@ -142,6 +143,8 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 
 	EnhancedInputComponent->BindAction(ToggleConsumableAction, ETriggerEvent::Started, this, &UC_InputComponent::OnTKey);
 	EnhancedInputComponent->BindAction(ToggleConsumableAction, ETriggerEvent::Completed, this, &UC_InputComponent::OnTKey);
+
+	MappingContext->GetMappings().FindByKey(FEnhancedActionKeyMapping(Num1Action, EKeys::One))->Action
 }	
 
 void UC_InputComponent::Move(const FInputActionValue& Value)

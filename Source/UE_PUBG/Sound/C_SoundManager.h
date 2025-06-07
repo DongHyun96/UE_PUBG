@@ -155,7 +155,7 @@ protected:
 	UPROPERTY()
 	TMap<ESoundClassName, USoundClass*> SoundClassMap{};
 
-	UPROPERTY(EditAnywhere, Category = "Sound")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Sound")
 	TMap<ESoundClassName, FSoundEffectData> SoundEffectMap;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
