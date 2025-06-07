@@ -144,7 +144,7 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 	EnhancedInputComponent->BindAction(ToggleConsumableAction, ETriggerEvent::Started, this, &UC_InputComponent::OnTKey);
 	EnhancedInputComponent->BindAction(ToggleConsumableAction, ETriggerEvent::Completed, this, &UC_InputComponent::OnTKey);
 
-	MappingContext->GetMappings().FindByKey(FEnhancedActionKeyMapping(Num1Action, EKeys::One))->Action
+	// MappingContext->GetMappings().FindByKey(FEnhancedActionKeyMapping(Num1Action, EKeys::One))->Action;
 }	
 
 void UC_InputComponent::Move(const FInputActionValue& Value)
