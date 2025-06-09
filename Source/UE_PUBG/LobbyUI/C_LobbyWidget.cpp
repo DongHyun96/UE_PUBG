@@ -12,6 +12,7 @@
 #include "Components/EditableTextBox.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 #include "LobbyPlayerPawn/C_LobbyPawn.h"
 #include "Singleton/C_GameInstance.h"
 #include "Singleton/C_GameSceneManager.h"
@@ -214,13 +215,15 @@ void UC_LobbyWidget::OnNickNameTextBoxTextChanged(const FText& Text)
 		PlayAnimation(NickNameCharacterWarningAnimation);
 		ReceivedString = ReceivedString.LeftChop(1);
 	}
-	
+
+	UGameplayStatics::PlaySound2D(this, NickNameTypingSound);
 	NickNameTextBox->SetText(FText::FromString(ReceivedString));
 }
 
 void UC_LobbyWidget::OnNickNameTextBoxCommitted(const FText& Text, ETextCommit::Type CommitMethod)
 {
 	if (CommitMethod != ETextCommit::Type::OnEnter) return;
+	UGameplayStatics::PlaySound2D(this, NickNameEnteredSound);
 	OnLogInConfirmButtonReleased();
 }
 

@@ -137,6 +137,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputMappingContext* DefaultInputMappingContext{};
 
+protected: // Sound 관련
+
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FCharacterSounds CharacterSounds{};
 

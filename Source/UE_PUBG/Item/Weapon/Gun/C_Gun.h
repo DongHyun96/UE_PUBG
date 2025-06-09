@@ -53,6 +53,12 @@ struct FGunSoundData : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	USoundBase* NullBulletSound = nullptr;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* AimDownSightSound{};
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USoundBase* ChangeShootingModeSound{};
 };
 
 

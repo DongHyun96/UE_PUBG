@@ -7,6 +7,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 #include "Singleton/C_GameInstance.h"
 
 const TMap<bool, FMargin> UC_ToggleButtonWidget::HoverMapNameMargins =
@@ -85,6 +86,8 @@ void UC_ToggleButtonWidget::NativeOnMouseEnter(const FGeometry& InGeometry, cons
 
 	UCanvasPanelSlot* MapNameSlot = Cast<UCanvasPanelSlot>(MapName->Slot);
 	MapNameSlot->SetOffsets(HoverMapNameMargins[true]);
+
+	UGameplayStatics::PlaySound2D(this, HoverSound);
 }
 
 void UC_ToggleButtonWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
@@ -101,6 +104,9 @@ void UC_ToggleButtonWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent
 
 FReply UC_ToggleButtonWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+	if (ToggleState == EToggleState::Idle) UGameplayStatics::PlaySound2D(this, PressedSound);
+	
 	Select();
+	
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }

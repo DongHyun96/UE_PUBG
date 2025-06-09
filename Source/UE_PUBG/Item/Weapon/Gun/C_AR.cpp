@@ -251,6 +251,7 @@ void AC_AR::ChangeCurShootingMode()
 		}
 
 		OwnerPlayer->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog(PlayerLog);
+		UGameplayStatics::PlaySound2D(this, GunSoundData->ChangeShootingModeSound, 1.f, FMath::RandRange(1.f, 1.25f));
 	}
 }
 

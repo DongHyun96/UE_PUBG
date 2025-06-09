@@ -342,6 +342,7 @@ bool AC_Gun::SetAimingPress()
 	if (!IsValid(OwnerPlayer))       return false;
 	if (OwnerPlayer->GetIsAimDown()) return false;
 	OwnerPlayer->SetToAimKeyPress();
+	
 	//bIsAimDown = true;
 	//OwnerCharacter->bUseControllerRotationYaw = true;
 

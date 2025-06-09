@@ -171,28 +171,19 @@ bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	MrbPressTimeCount = 0;
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
-
-
-	if (WeaponUser->GetNextSpeed() != 0 && WeaponUser->GetPoseState() == EPoseState::CRAWL)
-	{
-		return false;
-	}
-	CurWeapon->SetAimingPress();
-	//UC_Util::Print("Mrb Clicked");
-
-
-
-	return true;
+	if (WeaponUser->GetNextSpeed() != 0 && WeaponUser->GetPoseState() == EPoseState::CRAWL) return false;
+	
+	return CurWeapon->SetAimingPress();
 }
 
 bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
-	if (WeaponUser->GetHandState() != EHandState::WEAPON_GUN) return false;
+	if (WeaponUser->GetHandState() != EHandState::WEAPON_GUN)			return false;
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
-	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
-	if (WeaponUser->GetIsHoldDirection()) return false;
-	if (WeaponUser->GetIsTooCloseToAimGun()) return false;
+	if (!IsValid(CurPlayer))											return false;
+	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened())	return false; //UI가 열려 있을때 작동 금지.
+	if (WeaponUser->GetIsHoldDirection())								return false;
+	if (WeaponUser->GetIsTooCloseToAimGun())							return false;
 
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 
@@ -243,17 +234,14 @@ bool AC_GunStrategy::UseMrb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 		{
 			return false;
 		}
-		CurWeapon->SetAimingDown();
-		return true;
 
+		UGameplayStatics::PlaySound2D(CurWeapon, CurWeapon->GetGunSoundData()->AimDownSightSound);
+		return CurWeapon->SetAimingDown();
 	}
 	if (CurWeapon->GetIsAimPress())
 	{
-		
-		CurWeapon->BackToMainCamera();
-
-		return true;
-
+		UGameplayStatics::PlaySound2D(CurWeapon, CurWeapon->GetGunSoundData()->AimDownSightSound, 1.f, 1.5f);
+		return CurWeapon->BackToMainCamera();
 	}
 	CurWeapon->BackToMainCamera();
 	CurWeapon->SetIsAimPress(false);
