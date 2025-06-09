@@ -7,9 +7,9 @@
 #include "Character/C_AnimBasicCharacter.h"
 #include "Character/C_BasicCharacter.h"
 
-void UC_AnimNotify_FootStep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+void UC_AnimNotify_FootStep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-	Super::Notify(MeshComp, Animation);
+	Super::Notify(MeshComp, Animation, EventReference);
 	
     AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(MeshComp->GetOwner());
     if (!Character)

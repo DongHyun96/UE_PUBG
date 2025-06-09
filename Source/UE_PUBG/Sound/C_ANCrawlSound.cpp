@@ -9,9 +9,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Utility/C_Util.h"
 
-void UC_ANCrawlSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+void UC_ANCrawlSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-	Super::Notify(MeshComp, Animation);
+	Super::Notify(MeshComp, Animation, EventReference);
 
 	if (AC_Player* Player = Cast<AC_Player>(MeshComp->GetOwner()))
 	{

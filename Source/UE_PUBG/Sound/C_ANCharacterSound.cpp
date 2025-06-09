@@ -9,9 +9,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Utility/C_Util.h"
 
-void UC_ANCharacterSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+void UC_ANCharacterSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+	const FAnimNotifyEventReference& EventReference)
 {
-	Super::Notify(MeshComp, Animation);
+	Super::Notify(MeshComp, Animation, EventReference);
 
 	if (!IsValid(Sound)) return;
 
