@@ -131,16 +131,20 @@ bool AC_AttachableItem::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InSt
 
 	//AC_Gun* curWeapon = nullptr;
 
+	bool bIsChanged = false;
+
 	if (AC_Gun* curWeapon = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]))
 	{
-		return this->AttachItemToWeaponAndMoveInven(curWeapon, invenComp);
+		bIsChanged = this->AttachItemToWeaponAndMoveInven(curWeapon, invenComp);
+		if (bIsChanged) return bIsChanged;
 	}
 
 	if (AC_Gun* curWeapon = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]))
 	{
-		return this->AttachItemToWeaponAndMoveInven(curWeapon, invenComp);
+		bIsChanged = this->AttachItemToWeaponAndMoveInven(curWeapon, invenComp);
+		if (bIsChanged) return bIsChanged;
 	}
-	return false;
+	return bIsChanged;
 }
 
 bool AC_AttachableItem::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)

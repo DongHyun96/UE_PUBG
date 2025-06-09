@@ -171,7 +171,7 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 	UC_EquippedComponent* EquipComp = OwnerPlayer->GetEquippedComponent();
 	AC_Weapon* curWeapon = EquipComp->GetWeapons()[WeaponType];//드랍된 슬롯의 Weapon
 	//AC_Item* DroppedItem = Cast<AC_Item>(InOperation->DraggedItem);
-	AC_Item* DroppedItem =InOperation->DraggedItem;
+	AC_Item* DroppedItem = InOperation->DraggedItem;
 
 	if (!curWeapon) //return DroppedItem->MoveToSlot(OwnerPlayer); //드랍된 슬롯에 무기가 없다면 바로 장착
 	{
