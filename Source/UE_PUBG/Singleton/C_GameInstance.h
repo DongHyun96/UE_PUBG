@@ -121,7 +121,7 @@ public:
 	bool GetPlayerNickNameSet() const { return bPlayerNickNameSet; }
 
 	UFUNCTION(BlueprintCallable)
-	UInputMappingContext* GetDefaultInputMappingContext() const { return DefaultInputMappingContext; }
+	class UInputMappingContext* GetDefaultInputMappingContext() const { return DefaultInputMappingContext; }
 
 protected:
 

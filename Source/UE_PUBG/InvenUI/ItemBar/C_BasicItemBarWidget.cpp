@@ -52,7 +52,8 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 		if (InMouseEvent.IsAltDown())
 			if (HalfStackItemInteraction()) return FReply::Handled(); //참이면 return, 거짓이면 남은 코드 실행.
 
-		CachedItem->Interaction(OwnerPlayer);
+		if (CachedItem->Interaction(OwnerPlayer))
+			UGameplayStatics::PlaySound2D(CachedItem, CachedItem->GetPickUpSound());
 
 		UpdateWidget(CachedItem);
 
@@ -226,11 +227,13 @@ bool UC_BasicItemBarWidget::HalfStackItemInteraction()
 			 CachedItem->SetItemStack( CachedItem->GetItemCurStack() - HalfStack);
 			SpawnItem->SetItemStack(HalfStack);
 			SpawnItem->MoveToInven(PlayerCharacter, HalfStack);
+			UGameplayStatics::PlaySound2D(SpawnItem, SpawnItem->GetPickUpSound());
 			return true;
 		}
 		else
 		{
 			CachedItem->MoveToInven(PlayerCharacter, HalfStack);
+			UGameplayStatics::PlaySound2D(CachedItem, CachedItem->GetPickUpSound());
 			return true;
 		}
 
@@ -251,6 +254,7 @@ bool UC_BasicItemBarWidget::HalfStackItemInteraction()
 		PlayerCharacter->GetInvenComponent()->AddInvenCurVolume(-DividedItemVolume);
 
 		PlayerCharacter->GetInvenSystem()->GetInvenUI()->UpdateVolumeBar(PlayerCharacter);
+		UGameplayStatics::PlaySound2D(SpawnItem, SpawnItem->GetPickUpSound());
 		return true;
 	}
 

@@ -6,10 +6,16 @@
 #include "InvenUI/Panel/DivideItemPanel/C_BasicDivideItemPanelWidget.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_InvenSystem.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utility/C_Util.h"
 bool UC_AroundItemPanelWidget::HandleDrop(AC_Item* DroppedItem)
 {
-    return DroppedItem->MoveToAround(OwnerPlayer, DroppedItem->GetItemCurStack());
+    if (DroppedItem->MoveToAround(OwnerPlayer, DroppedItem->GetItemCurStack()))
+    {
+        UGameplayStatics::PlaySound2D(DroppedItem, DroppedItem->GetPickUpSound());
+        return true;
+    }
+    return false;
 }
 
 void UC_AroundItemPanelWidget::ShowDividePanelWidget(AC_Item* DroppedItem)

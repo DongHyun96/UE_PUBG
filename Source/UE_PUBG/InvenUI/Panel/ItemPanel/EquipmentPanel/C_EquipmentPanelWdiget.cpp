@@ -19,6 +19,7 @@
 //#include "C_DragDropOperation.h"
 
 #include "Item/C_Item.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Utility/C_Util.h"
 
@@ -90,7 +91,12 @@ void UC_EquipmentPanelWdiget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
 bool UC_EquipmentPanelWdiget::HandleDrop(AC_Item* DroppedItemBox)
 {
 	UC_Util::Print("MoveToSlot");
-	return DroppedItemBox->MoveToSlot(OwnerPlayer,DroppedItemBox->GetItemCurStack());
+	if (DroppedItemBox->MoveToSlot(OwnerPlayer,DroppedItemBox->GetItemCurStack()))
+	{
+		UGameplayStatics::PlaySound2D(DroppedItemBox, DroppedItemBox->GetPickUpSound());	
+		return true;
+	}
+	return false;
 }
 
 

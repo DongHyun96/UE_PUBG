@@ -587,7 +587,9 @@ void UC_InputComponent::OnFKey()
 
 	if (Player->GetCurOutLinedItem())
 	{
-		Player->GetCurOutLinedItem()->Interaction(Player);
+		if (Player->GetCurOutLinedItem()->Interaction(Player))
+			UGameplayStatics::PlaySound2D(Player->GetCurOutLinedItem(), Player->GetCurOutLinedItem()->GetPickUpSound());
+		
 		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 	}
 	

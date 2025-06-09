@@ -116,17 +116,6 @@ struct FItemData : public FTableRowBase
 	float SpawnProbability = .0f;
 };
 
-USTRUCT(BlueprintType)
-struct FItemSoundData : public FTableRowBase
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USoundBase* PickUpSound{};
-};
-
-
-
 /// <summary>
 /// 모든 아이템은 이 클래스를 상속받아야함.
 /// 틱을	사용하기 위해서는 SetActorEnableTick(true)로 설정해줘야함.
@@ -313,6 +302,8 @@ public:
 	/// <param name="bEnable"></param>
 	void SetOutlineEffect(bool bEnable);
 
+	USoundBase* GetPickUpSound() const { return PickUpSound; }
+
 
 protected:
 
@@ -347,10 +338,9 @@ protected:
 	AC_BasicCharacter* OwnerCharacter{};
 
 protected:
-	/// <summary>
-	/// 아이템 관련 Sound
-	/// 더 세부적인 Sound는 개별 자식 클래스에서 struct 정의하고 해당 레퍼런스를 들고 있을 예정
-	/// </summary>
-	const FItemSoundData* ItemSoundDataRef{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Sound")
+	USoundBase* PickUpSound{};
+	
 };
 

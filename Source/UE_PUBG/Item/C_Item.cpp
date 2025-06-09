@@ -214,7 +214,7 @@ bool AC_Item::MoveToAround(AC_BasicCharacter* Character, int32 InStack)
 	// 아이템을 땅에 버리면 Tick 꺼주기.
 	if (bIsMoveItem == true) SetActorTickEnabled(false);
 
-	return false;
+	return bIsMoveItem;
 }
 
 bool AC_Item::MoveToSlot(AC_BasicCharacter* Character, int32 InStack)
