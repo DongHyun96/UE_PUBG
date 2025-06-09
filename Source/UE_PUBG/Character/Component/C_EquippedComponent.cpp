@@ -353,7 +353,7 @@ bool UC_EquippedComponent::TryAttachCurWeaponToHolsterWithoutSheathMotion()
 bool UC_EquippedComponent::TryReAttachCurWeaponToHand()
 {
     if (!GetCurWeapon()) return false;
-
+    
     SetNextWeaponType(CurWeaponType);
     FPriorityAnimMontage DrawMontage = GetCurWeapon()->GetCurDrawMontage();
     OwnerCharacter->PlayAnimMontage(DrawMontage);

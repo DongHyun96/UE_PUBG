@@ -37,12 +37,26 @@ void UC_FeetComponent::BeginPlay()
 	LeftFootSoundDescriptor.FootAudioComponent->bAllowSpatialization = (Cast<AC_Player>(OwnerCharacter) == nullptr);
 
 	// AttachToComponent를 하면, 3D 재생의 경우 위치 지정을 하지 않더라도 자동으로 해당 위치에서 재생처리됨
-	LeftFootSoundDescriptor.FootAudioComponent->AttachToComponent(OwnerCharacter->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName("LeftFootSocket"));
+	LeftFootSoundDescriptor.FootAudioComponent->AttachToComponent
+	(
+		OwnerCharacter->GetRootComponent(),
+		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+		FName("LeftFootSocket")
+	);
 	
 	RightFootSoundDescriptor.FootAudioComponent = NewObject<UAudioComponent>(this);
 	RightFootSoundDescriptor.FootAudioComponent->SetAutoActivate(false);
-	RightFootSoundDescriptor.FootAudioComponent->AttachToComponent(OwnerCharacter->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName("RightFootSocket"));
+	RightFootSoundDescriptor.FootAudioComponent->AttachToComponent
+	(
+		OwnerCharacter->GetRootComponent(),
+		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+		FName("RightFootSocket")
+	);
 	RightFootSoundDescriptor.FootAudioComponent->bAllowSpatialization = (Cast<AC_Player>(OwnerCharacter) == nullptr);
+	
+	/*FString AddressString = FString::Printf(TEXT("0x%p"), LeftFootSoundDescriptor.SurfaceTypeToSoundCueMap[SurfaceType9]);
+	UC_Util::Print(AddressString, FColor::Cyan, 20.f);*/
+    
 }
 
 void UC_FeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -147,7 +161,7 @@ void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& 
 	OutDistance = 0;
 	OutRotation = FRotator::ZeroRotator;
 
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false);
+	// DrawDebugLine(GetWorld(), Start, End, FColor::Red, false);
 	
 	if (!IsHit)
 	{
@@ -156,7 +170,7 @@ void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& 
 		return;
 	}
 
-	for (const FHitResult& HitResult : HitResults) DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 5.f, 10, FColor::Green, false);
+	// for (const FHitResult& HitResult : HitResults) DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 5.f, 10, FColor::Green, false);
 
 	// 첫 Line blocked된 지형지물의 유형이 물이라면, 두 번째 LineTraced된 지형지물의 값을 Foot IK 값으로 사용
 	OutSoundDescriptor.CurrentSurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResults[0].PhysMaterial.Get());
