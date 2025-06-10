@@ -53,7 +53,14 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 			if (HalfStackItemInteraction()) return FReply::Handled(); //참이면 return, 거짓이면 남은 코드 실행.
 
 		if (CachedItem->Interaction(OwnerPlayer))
-			UGameplayStatics::PlaySound2D(CachedItem, CachedItem->GetPickUpSound());
+		{
+			// Consumable Usage 처리일 떄에는 SFX 재생 x 처리를 위함
+			AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(CachedItem);
+			if (!ConsumableItem)
+				UGameplayStatics::PlaySound2D(CachedItem, CachedItem->GetPickUpSound());
+			else if (ConsumableItem->GetConsumableItemState() != EConsumableItemState::ACTIVATING)
+				UGameplayStatics::PlaySound2D(CachedItem, CachedItem->GetPickUpSound());
+		}
 
 		UpdateWidget(CachedItem);
 
