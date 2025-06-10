@@ -6,6 +6,7 @@
 #include "Item/Weapon/WeaponStrategy/C_MeleeWeaponStrategy.h"
 
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -290,7 +291,10 @@ void AC_MeleeWeapon::OnBodyColliderBeginOverlap
 		return;
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(this, MeleeWeaponSoundData->ImpactSound, GetActorLocation());
+	if (Cast<AC_Player>(OwnerCharacter))
+		UGameplayStatics::PlaySound2D(this, MeleeWeaponSoundData->ImpactSound);
+	else
+		UGameplayStatics::PlaySoundAtLocation(this, MeleeWeaponSoundData->ImpactSound, GetActorLocation());
 
 }
 

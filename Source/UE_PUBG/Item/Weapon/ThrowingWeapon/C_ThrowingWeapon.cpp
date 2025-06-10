@@ -39,6 +39,7 @@
 #include "AIThrowableAttackStrategy/C_AIGrenadeAttackStrategy.h"
 #include "AIThrowableAttackStrategy/C_AISmokeGrenadeAttackStrategy.h"
 #include "AIThrowableAttackStrategy/I_AIThrowableAttackStrategy.h"
+#include "Character/C_Enemy.h"
 #include "HUD/C_InformWidget.h"
 #include "HUD/C_ThrowableProgressBar.h"
 
@@ -595,7 +596,14 @@ void AC_ThrowingWeapon::OnRemovePinFin()
 		return;
 	}
 	
-	if (ThrowingWeaponSoundData->PinPullSound) UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->PinPullSound, GetActorLocation());
+	if (ThrowingWeaponSoundData->PinPullSound)
+	{
+		if (Cast<AC_Player>(OwnerCharacter))
+			UGameplayStatics::PlaySound2D(this, ThrowingWeaponSoundData->PinPullSound);
+		else
+			UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->PinPullSound, GetActorLocation());
+		
+	}
 }
 
 void AC_ThrowingWeapon::OnThrowReadyLoop()
@@ -765,8 +773,11 @@ void AC_ThrowingWeapon::StartCooking()
 
 	if (!ThrowingWeaponSoundData) return;
 	if (!ThrowingWeaponSoundData->CookingSound) return;
-	
-	UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->CookingSound, GetActorLocation());
+
+	if (Cast<AC_Player>(OwnerCharacter))
+		UGameplayStatics::PlaySound2D(this, ThrowingWeaponSoundData->CookingSound);
+	else
+		UGameplayStatics::PlaySoundAtLocation(this, ThrowingWeaponSoundData->CookingSound, GetActorLocation());
 }
 
 bool AC_ThrowingWeapon::ReleaseOnGround()
