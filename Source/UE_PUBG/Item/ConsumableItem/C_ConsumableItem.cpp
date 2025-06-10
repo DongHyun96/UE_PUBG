@@ -537,6 +537,7 @@ void AC_ConsumableItem::PlayUsingSound()
 {
 	if (UsingSoundData->UsingSound && AudioComponent)
 	{
+		AudioComponent->bAllowSpatialization = (Cast<AC_Player>(ItemUser) == nullptr); // Player or Enemy에 따른 2D Sound or 3D sound 설정
 		AudioComponent->Play();
 	}
 }
