@@ -8,6 +8,14 @@
 
 enum class EWeaponSlot : uint8;
 
+UENUM(BlueprintType)
+enum class ETemplateEnum : uint8
+{
+	MOVE,
+	JUMP
+
+};
+
 //UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UE_PUBG_API UC_InputComponent : public UActorComponent
@@ -107,6 +115,7 @@ private:
 private:
 
 	AC_Player* Player{};
+
 	class UCharacterMovementComponent* PlayerMovement{};
 
 public:
@@ -142,60 +151,63 @@ public:
 	class UInputAction* HoldDirectionAction{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* Num1Action{};
+	class UInputAction* Num1Action{}; // Draw Main Weapon
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* Num2Action{};
+	class UInputAction* Num2Action{}; // Draw Sub Weapon
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* Num4Action{};
+	class UInputAction* Num4Action{}; // Draw Melee Weapon
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* Num5Action{};
+	class UInputAction* Num5Action{}; // Draw Throwable Weapon
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* XAction{};
+	class UInputAction* XAction{}; // Toggle Armed
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* BAction{};
+	class UInputAction* BAction{}; // Change Shooting Mode
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* RAction{};
+	class UInputAction* RAction{}; // Reload
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* MLBAction{};
+	class UInputAction* MLBAction{}; // Shoot
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* MRBAction{};
+	class UInputAction* MRBAction{}; // Toggle Aiming?
 
 	// 가운데 마우스 버튼 처리
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* MMBAction{}; 
+	class UInputAction* MMBAction{};  // Ping System
 	
 	//상호작용키(F)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* Interaction{};
+	class UInputAction* Interaction{}; //
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* NKeyAction{};
+	class UInputAction* NKeyAction{}; // Toggle Big Map
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* MKeyAction{};
+	class UInputAction* MKeyAction{}; // Toggle Main Map
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* IKeyAction{};
+	class UInputAction* IKeyAction{}; // Toggle Inventory 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* TabKeyAction{};
+	class UInputAction* TabKeyAction{}; // Toggle Inventory
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UInputAction* MainMenuAction{};
+	UInputAction* MainMenuAction{}; // Toggle Main Menu
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UInputAction* ToggleThrowableWheelAction{};
+	UInputAction* ToggleThrowableWheelAction{}; // Toggle Throwable Wheel
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UInputAction* ToggleConsumableAction{};
+	UInputAction* ToggleConsumableAction{};		// Toggle Consumable Item
+
+protected:
+
 };
 
 
