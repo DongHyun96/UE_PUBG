@@ -29,7 +29,7 @@ enum class ELevelType : uint8
 	QuickStart,
 	ShantyTown,
 	TrainingGround,
-	Max
+	Max,
 };
 
 /// <summary>
