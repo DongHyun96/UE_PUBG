@@ -16,8 +16,9 @@ class UE_PUBG_API UC_ANCrawlSound : public UAnimNotify
 
 public:
 	
-	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 
+	
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)

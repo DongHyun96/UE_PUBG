@@ -71,6 +71,9 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		}*/
 	}
 
+	FString str = "Overlapped : " + FString::FromInt(OverlappingActors.Num());
+	UC_Util::Print(str, FColor::Red, 10.f);
+
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
 	{
 		// 머리 쪽에만 LineTrace 시도해서 맞는다면, 섬광탄 효과 발동 시도

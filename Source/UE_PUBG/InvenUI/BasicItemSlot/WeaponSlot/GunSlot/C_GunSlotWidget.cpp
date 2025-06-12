@@ -12,6 +12,7 @@
 #include "Item/C_Item.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Attachment/C_AttachableItem.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Utility/C_Util.h"
 
@@ -79,7 +80,13 @@ bool UC_GunSlotWidget::MouseRBDownInteraction(AC_Weapon* inSlotWeapon)
 
 	if (OwnerPlayer->GetIsActivatingConsumableItem()) return false;
 
-    return inSlotWeapon->MoveToAround(OwnerPlayer, inSlotWeapon->GetItemCurStack());
+	if (inSlotWeapon->MoveToAround(OwnerPlayer, inSlotWeapon->GetItemCurStack()))
+	{
+		UC_Util::Print("GunSlotRBDownInteraction", FColor::Red, 10.f);
+		UGameplayStatics::PlaySound2D(inSlotWeapon, inSlotWeapon->GetPickUpSound());
+		return true;	
+	}
+    return false;
 }
 
 void UC_GunSlotWidget::UpdateWidget()
@@ -141,7 +148,7 @@ bool UC_GunSlotWidget::SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, AC_Attac
 			ChangedItem->MoveToAround(OwnerPlayer, ChangedItem->GetItemCurStack());
 	}
 	SlotGun->SetAttachableItemSlot(InAttachableItem->GetName(), InAttachableItem);
-
+	UGameplayStatics::PlaySound2D(InAttachableItem, InAttachableItem->GetPickUpSound());
 	return true;
 }
 
@@ -205,13 +212,22 @@ bool UC_GunSlotWidget::HandleDrop(UC_DragDropOperation* InOperation)
 			//드롭된 아이템이 부착물이라면 드롭된 슬롯에 우선 장착.
 			if (SetAttachmentSlotOnDrop(curWeapon, Cast<AC_AttachableItem>(DroppedItem))) return true;
 		}
-		return DroppedItem->MoveToSlot(OwnerPlayer, DroppedItem->GetItemCurStack());
+
+		if (DroppedItem->MoveToSlot(OwnerPlayer, DroppedItem->GetItemCurStack()))
+		{
+			UGameplayStatics::PlaySound2D(DroppedItem, DroppedItem->GetPickUpSound());
+			return true;
+		}
+		return false;
 	}
 
 	if (DroppedItem->GetItemDatas()->ItemType == EItemTypes::ATTACHMENT)
 	{
 		if (InOperation->curWeaponSlot != WeaponType)
-			Cast<AC_AttachableItem>(DroppedItem)->MoveToSlot(OwnerPlayer, DroppedItem->GetItemCurStack());
+		{
+			if (Cast<AC_AttachableItem>(DroppedItem)->MoveToSlot(OwnerPlayer, DroppedItem->GetItemCurStack()))
+				UGameplayStatics::PlaySound2D(DroppedItem, DroppedItem->GetPickUpSound());
+		}
 	}
 
 

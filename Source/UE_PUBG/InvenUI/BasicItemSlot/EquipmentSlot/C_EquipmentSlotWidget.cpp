@@ -9,6 +9,7 @@
 //#include "C_DragDropOperation.h"
 #include "Components/ProgressBar.h"
 #include "Components/Border.h"
+#include "Kismet/GameplayStatics.h"
 #include "Singleton/C_GameSceneManager.h"
 
 
@@ -27,7 +28,8 @@ FReply UC_EquipmentSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
 	{
 		if (AC_EquipableItem* SlotItem = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EquipSlot])
 		{   // 우클릭 이벤트 실행
-			SlotItem->MoveToAround(OwnerPlayer, SlotItem->GetItemCurStack());
+			if (SlotItem->MoveToAround(OwnerPlayer, SlotItem->GetItemCurStack()))
+				UGameplayStatics::PlaySound2D(SlotItem, SlotItem->GetPickUpSound());
 
 
 			if (UC_InventoryUIWidget* InvenUiWidget = GetTypedOuter<UC_InventoryUIWidget>())

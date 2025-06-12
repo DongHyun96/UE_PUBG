@@ -29,7 +29,7 @@ enum class ELevelType : uint8
 	QuickStart,
 	ShantyTown,
 	TrainingGround,
-	Max
+	Max,
 };
 
 /// <summary>
@@ -121,7 +121,7 @@ public:
 	bool GetPlayerNickNameSet() const { return bPlayerNickNameSet; }
 
 	UFUNCTION(BlueprintCallable)
-	UInputMappingContext* GetDefaultInputMappingContext() const { return DefaultInputMappingContext; }
+	class UInputMappingContext* GetDefaultInputMappingContext() const { return DefaultInputMappingContext; }
 
 protected:
 

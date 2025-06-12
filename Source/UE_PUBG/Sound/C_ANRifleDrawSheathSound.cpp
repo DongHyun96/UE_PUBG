@@ -15,9 +15,9 @@ const int UC_ANRifleDrawSheathSound::ARIndex = 0;
 const int UC_ANRifleDrawSheathSound::SRIndex = 1;
 
 
-void UC_ANRifleDrawSheathSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+void UC_ANRifleDrawSheathSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-	Super::Notify(MeshComp, Animation);
+	Super::Notify(MeshComp, Animation, EventReference);
 
 	AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(MeshComp->GetOwner());
 	if (!Character) return;

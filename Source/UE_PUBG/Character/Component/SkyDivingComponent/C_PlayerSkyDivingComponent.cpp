@@ -4,6 +4,7 @@
 #include "Character/Component/SkyDivingComponent/C_PlayerSkyDivingComponent.h"
 
 #include "Character/C_Player.h"
+#include "Components/AudioComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "HUD/C_HUDWidget.h"
@@ -22,6 +23,12 @@ void UC_PlayerSkyDivingComponent::BeginPlay()
 
 	OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 	if (!IsValid(OwnerPlayer)) UC_Util::Print("From UC_PlayerSkyDivingComponent : OwnerPlayer casting failed!", FColor::Red, 10.f);
+
+	ParachutingSoundAudioComponent = NewObject<UAudioComponent>(this);
+	ParachutingSoundAudioComponent->SetAutoActivate(false);
+	ParachutingSoundAudioComponent->bAllowSpatialization = true;
+
+	ParachutingSoundAudioComponent->AttachToComponent(OwnerCharacter->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
 }
 
 void UC_PlayerSkyDivingComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -123,6 +130,9 @@ void UC_PlayerSkyDivingComponent::SetStateToParachutingState()
 	// 다이빙 사운드를 종료
 	OwnerPlayer->StopSkyDivingSound();
 
+	ParachutingSoundAudioComponent->SetSound(ParachutingSound);
+	ParachutingSoundAudioComponent->Play();
+
 	// Alt키가 눌려있을 때에, Character Rotation 비율에 따라 Speed를 갱신시켜주어야 함
 	if (OwnerCharacter->GetIsHoldDirection() || OwnerCharacter->GetIsAltPressed())
 	{
@@ -161,12 +171,15 @@ void UC_PlayerSkyDivingComponent::SetStateToLandingState()
 {
 	// SkyDiving HUD 끄기
 	OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden);
+	ParachutingSoundAudioComponent->Stop();
+	
 }
 
 void UC_PlayerSkyDivingComponent::OnCharacterLandedOnWater()
 {
 	Super::OnCharacterLandedOnWater();
 	OwnerPlayer->GetHUDWidget()->GetSkyDiveWidget()->SetVisibility(ESlateVisibility::Hidden); // HUD 끄기
+	ParachutingSoundAudioComponent->Stop();
 }
 
 void UC_PlayerSkyDivingComponent::HandlePlayerMovement(const FVector2D& MovementVector)

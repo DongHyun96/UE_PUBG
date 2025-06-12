@@ -15,6 +15,7 @@
 
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Attachment/C_AttachableItem.h"
+#include "Kismet/GameplayStatics.h"
 
 FReply UC_AttachableItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
@@ -49,7 +50,8 @@ FReply UC_AttachableItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InG
 		if (AC_AttachableItem* SlotItem = curGun->GetAttachableItem()[SlotName])
 		{  
 			// 우클릭 이벤트 실행
-			SlotItem->MoveToInven(OwnerPlayer, SlotItem->GetItemCurStack());
+			if (SlotItem->MoveToInven(OwnerPlayer, SlotItem->GetItemCurStack()))
+				UGameplayStatics::PlaySound2D(OwnerPlayer, SlotItem->GetPickUpSound()); // 효과음 재생
 
 			if (UC_InventoryUIWidget* InvenUiWidget = GetTypedOuter<UC_InventoryUIWidget>())
 				InvenUiWidget->UpdateWidget();

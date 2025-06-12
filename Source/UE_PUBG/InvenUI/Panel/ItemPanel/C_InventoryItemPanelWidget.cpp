@@ -6,12 +6,18 @@
 #include "InvenUI/Panel/DivideItemPanel/C_BasicDivideItemPanelWidget.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_InvenSystem.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utility/C_Util.h"
 
 
 bool UC_InventoryItemPanelWidget::HandleDrop(AC_Item* DroppedItem)
 {
-    return DroppedItem->MoveToInven(OwnerPlayer, DroppedItem->GetItemCurStack());
+    if (DroppedItem->MoveToInven(OwnerPlayer, DroppedItem->GetItemCurStack()))
+    {
+        UGameplayStatics::PlaySound2D(DroppedItem, DroppedItem->GetPickUpSound());
+        return true;
+    }
+    return false;
 }
 
 void UC_InventoryItemPanelWidget::ShowDividePanelWidget(AC_Item* DroppedItem)

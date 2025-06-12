@@ -142,6 +142,12 @@ private: // SkyDiving & Parachuting 자세 speed 관련
 private: // 중력가속 사용 x -> 직접 Velocity.Z를 조절
 
 	float VelocityZLerpDest{};
-	
+
+protected: // Player 전용 Parachuting 상태의 sound
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	USoundBase* ParachutingSound{};
+
+	UAudioComponent* ParachutingSoundAudioComponent{};
 };
 
