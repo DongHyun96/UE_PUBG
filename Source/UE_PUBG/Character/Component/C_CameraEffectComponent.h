@@ -142,16 +142,18 @@ protected: // Player의 경우에만 수류탄 및 섬광탄 피격 당했을 �
 	UPROPERTY(BluePrintReadWrite, EditDefaultsOnly)
 	USoundBase* FlashBangStunnedSound{};
 
-
 	// 먹먹함 효과 SoundMix
 	UPROPERTY(BluePrintReadWrite, EditDefaultsOnly)
 	USoundMix* DeafenedMix{};
+
 	
 private:
 
 	UAudioComponent* StunnedAudioComponent{};
 
 	float DeafenedTime{};
+
+	bool bHasStunnedAudioComponentFadeOutStart = true;
 };
 
 
