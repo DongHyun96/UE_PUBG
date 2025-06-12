@@ -278,10 +278,13 @@ void AC_GrenadeExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* Cha
 		float XRotDelta = (FMath::RandRange(0, 10) % 2 == 0) ? 35.f * DistanceRateFactor : -35.f * DistanceRateFactor;
 		float CamShakeScale = 1.f * DistanceRateFactor;
 
+		float DeafenedDuration = FMath::GetMappedRangeValueClamped(FVector2D(0.f, 1.f), FVector2D(1.f, 4.f), DistanceRateFactor);
+
 		//Player->ExecuteCameraAimPunching({ 0.f, 1.f, 0.f }, 100.f, 35.f); // Maximum 값
 		//Player->ExecuteCameraShake(1.f);
 		Player->GetCameraEffectComponent()->ExecuteCameraAimPunching(PunchingDirection, PunchingIntensity, XRotDelta);
 		Player->GetCameraEffectComponent()->ExecuteCameraShake(CamShakeScale);
+		Player->GetCameraEffectComponent()->ExecuteDeafenedEffect(DeafenedDuration);
 	}
 
 	// TODO : Enemy AI 또한 방해주기
