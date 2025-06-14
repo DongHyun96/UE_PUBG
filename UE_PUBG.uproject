@@ -13,7 +13,8 @@
 				"CoreUObject",
 				"UMG",
 				"Engine",
-				"Blutility"
+				"Blutility",
+				"EnhancedInput"
 			]
 		},
 		{

@@ -104,15 +104,15 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 	EnhancedInputComponent->BindAction(HoldDirectionAction, ETriggerEvent::Triggered, this, &UC_InputComponent::HoldDirection);
 	EnhancedInputComponent->BindAction(HoldDirectionAction, ETriggerEvent::Completed, this, &UC_InputComponent::ReleaseDirection);
 
-	EnhancedInputComponent->BindAction(Num1Action, ETriggerEvent::Started, this, &UC_InputComponent::OnNum1);
-	EnhancedInputComponent->BindAction(Num2Action, ETriggerEvent::Started, this, &UC_InputComponent::OnNum2);
-	EnhancedInputComponent->BindAction(Num4Action, ETriggerEvent::Started, this, &UC_InputComponent::OnNum4);
-	EnhancedInputComponent->BindAction(Num5Action, ETriggerEvent::Started, this, &UC_InputComponent::OnNum5);
+	EnhancedInputComponent->BindAction(DrawMainWeapon, ETriggerEvent::Started, this, &UC_InputComponent::OnNum1);
+	EnhancedInputComponent->BindAction(DrawSubWeapon, ETriggerEvent::Started, this, &UC_InputComponent::OnNum2);
+	EnhancedInputComponent->BindAction(DrawMeleeWeapon, ETriggerEvent::Started, this, &UC_InputComponent::OnNum4);
+	EnhancedInputComponent->BindAction(DrawThrowableWeapon, ETriggerEvent::Started, this, &UC_InputComponent::OnNum5);
 
-	EnhancedInputComponent->BindAction(XAction, ETriggerEvent::Started,     this, &UC_InputComponent::OnXKey);
+	EnhancedInputComponent->BindAction(ToggleArmed, ETriggerEvent::Started,     this, &UC_InputComponent::OnXKey);
 																    
-	EnhancedInputComponent->BindAction(BAction, ETriggerEvent::Started,		this, &UC_InputComponent::OnBKey);
-	EnhancedInputComponent->BindAction(RAction, ETriggerEvent::Started,     this, &UC_InputComponent::OnRKey);
+	EnhancedInputComponent->BindAction(ChangeShootingMode, ETriggerEvent::Started,		this, &UC_InputComponent::OnBKey);
+	EnhancedInputComponent->BindAction(Reload, ETriggerEvent::Started,     this, &UC_InputComponent::OnRKey);
 
 	EnhancedInputComponent->BindAction(MLBAction, ETriggerEvent::Started,   this, &UC_InputComponent::OnMLBStarted);
 	EnhancedInputComponent->BindAction(MLBAction, ETriggerEvent::Ongoing,   this, &UC_InputComponent::OnMLBOnGoing);
@@ -132,8 +132,8 @@ void UC_InputComponent::BindAction(UInputComponent* PlayerInputComponent, AC_Pla
 	EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Started, this, &UC_InputComponent::OnWalkStarted);
 	EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Completed, this, &UC_InputComponent::OnWalkReleased);
 
-	EnhancedInputComponent->BindAction(NKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnNKey);
-	EnhancedInputComponent->BindAction(MKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnMKey);
+	EnhancedInputComponent->BindAction(MiniMap, ETriggerEvent::Started, this, &UC_InputComponent::OnNKey);
+	EnhancedInputComponent->BindAction(WorldMap, ETriggerEvent::Started, this, &UC_InputComponent::OnMKey);
 
 	EnhancedInputComponent->BindAction(IKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnIKey);
 	EnhancedInputComponent->BindAction(TabKeyAction, ETriggerEvent::Started, this, &UC_InputComponent::OnTabKey);	

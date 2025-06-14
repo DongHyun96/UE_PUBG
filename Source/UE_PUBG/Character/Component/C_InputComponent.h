@@ -9,11 +9,32 @@
 enum class EWeaponSlot : uint8;
 
 UENUM(BlueprintType)
-enum class ETemplateEnum : uint8
+enum class EInputAction : uint8
 {
 	MOVE,
-	JUMP
-
+	JUMP,
+	LOOK,
+	WALK,
+	SPRINT,
+	CRAWL,
+	CROUCH,
+	HOLD_DIRECTION,
+	DRAW_MAIN_WEAPON,
+	DRAW_SUB_WEAPON,
+	DRAW_MELEE_WEAPON,
+	DRAW_THROWABLE_WEAPON,
+	TOGGLE_ARMED,
+	CHANGE_SHOOTING_MODE,
+	RELOAD,
+	SHOT,
+	TOGGLE_AIMING,
+	PING,
+	INTERACTION,
+	MINI_MAP,
+	INVEN_UI,
+	MAIN_MENU,
+	THROWABLE_WHEEL,
+	CONSUMABLE_WHEEL
 };
 
 //UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -35,6 +56,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void BindAction(UInputComponent* PlayerInputComponent, class AC_Player* InPlayer);
+
+	TMap<EInputAction, class UInputAction*> GetInputActionMap() const { return InputActionMap; }
 
 private:
 
@@ -151,54 +174,54 @@ public:
 	class UInputAction* HoldDirectionAction{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* Num1Action{}; // Draw Main Weapon
+	class UInputAction* DrawMainWeapon{};           // Draw Main Weapon Num1Action
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* Num2Action{}; // Draw Sub Weapon
+	class UInputAction* DrawSubWeapon{};           // Draw Sub Weapon Num2Action
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* Num4Action{}; // Draw Melee Weapon
+	class UInputAction* DrawMeleeWeapon{};           // Draw Melee Weapon Num4Action
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* Num5Action{}; // Draw Throwable Weapon
+	class UInputAction* DrawThrowableWeapon{};           // Draw Throwable Weapon Num5Action
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* XAction{}; // Toggle Armed
+	class UInputAction* ToggleArmed{};              // Toggle Armed XAction
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* BAction{}; // Change Shooting Mode
+	class UInputAction* ChangeShootingMode{};              // Change Shooting Mode BAction
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* RAction{}; // Reload
+	class UInputAction* Reload{};              // Reload RAction
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* MLBAction{}; // Shoot
+	class UInputAction* MLBAction{};            // Shot MLBAction
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* MRBAction{}; // Toggle Aiming?
+	class UInputAction* MRBAction{};            // Toggle Aiming? MRBAction
 
 	// 가운데 마우스 버튼 처리
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* MMBAction{};  // Ping System
+	class UInputAction* MMBAction{};            // Ping System MMBAction
 	
 	//상호작용키(F)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* Interaction{}; //
+	class UInputAction* Interaction{};          //
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* NKeyAction{}; // Toggle Big Map
+	class UInputAction* MiniMap{};           // Toggle Big Map NKeyAction
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* MKeyAction{}; // Toggle Main Map
+	class UInputAction* WorldMap{};           // Toggle Main Map MKeyAction
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* IKeyAction{}; // Toggle Inventory 
+	class UInputAction* IKeyAction{};           // Toggle Inventory  IKeyAction
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class UInputAction* TabKeyAction{}; // Toggle Inventory
+	class UInputAction* TabKeyAction{};         // Toggle Inventory
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UInputAction* MainMenuAction{}; // Toggle Main Menu
+	UInputAction* MainMenuAction{};             // Toggle Main Menu MainMenuAction
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UInputAction* ToggleThrowableWheelAction{}; // Toggle Throwable Wheel
@@ -207,7 +230,8 @@ public:
 	UInputAction* ToggleConsumableAction{};		// Toggle Consumable Item
 
 protected:
-
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<EInputAction, UInputAction*> InputActionMap{};
 };
 
 

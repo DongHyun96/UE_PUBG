@@ -6,6 +6,7 @@
 #include "InputAction.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedActionKeyMapping.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
 UC_PlayerInputManagerComponent::UC_PlayerInputManagerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -16,27 +17,31 @@ UC_PlayerInputManagerComponent::UC_PlayerInputManagerComponent()
 	//{
 	//	IMC_Player = DefaultIMCObj.Object;
 	//}
+
+	
 }
-//
-//void UC_PlayerInputManagerComponent::BeginPlay()
-//{
-//	Super::BeginPlay();
-//
-//    APlayerController* PC = Cast<APlayerController>(GetOwner());
-//    if (PC)
-//    {
-//        UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
-//        if (Subsystem)
-//        {
-//            // 복제본 생성
-//            IMC_User = DuplicateObject<UInputMappingContext>(IMC_Player, this);
-//            Subsystem->AddMappingContext(IMC_User, 0);
-//        }
-//
-//        LoadKeyMappings();
-//    }
-//}
-//
+
+void UC_PlayerInputManagerComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+    APlayerController* PC = Cast<APlayerController>(GetOwner());
+    if (PC)
+    {
+        UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
+        if (Subsystem)
+        {
+            // 복제본 생성
+            IMC_User = DuplicateObject<UInputMappingContext>(IMC_Player, this);
+            Subsystem->AddMappingContext(IMC_User, 0);
+            //Subsystem->GetUserSettings()->GetCurrentKeyProfile()->GetPlayerMappingRows().FindKey()
+            //Subsystem->AddPlayerMappedKey()
+        }
+
+        //LoadKeyMappings();
+    }
+}
+
 //void UC_PlayerInputManagerComponent::InitializeInputContext()
 //{
 //}
