@@ -3,6 +3,7 @@
 
 #include "Character/Component/C_CameraEffectComponent.h"
 
+#include "C_PlayerDeafenedHandler.h"
 #include "Character/C_Player.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
@@ -53,6 +54,12 @@ void UC_CameraEffectComponent::BeginPlay()
 	}
 
 	if (!IsValid(PostProcessVolume)) UC_Util::Print("From UC_CameraEffectComponent::BeginPlay : PostProcessVolume is not valid!", FColor::Red, 10.f);
+
+	StunnedAudioComponent = NewObject<UAudioComponent>(this);
+	StunnedAudioComponent->SetAutoActivate(false);
+	StunnedAudioComponent->bAllowSpatialization = true;
+	StunnedAudioComponent->AttachToComponent(OwnerPlayer->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
+	StunnedAudioComponent->SetSound(FlashBangStunnedSound);
 }
 
 
@@ -62,7 +69,6 @@ void UC_CameraEffectComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 	HandleCameraAimPunching(DeltaTime);
 	HandleFlashBangEffect(DeltaTime);
-	HandleDeafenedMixEffect(DeltaTime);
 }
 
 void UC_CameraEffectComponent::HandleCameraAimPunching(const float& DeltaTime)
@@ -106,16 +112,6 @@ void UC_CameraEffectComponent::HandleCameraAimPunching(const float& DeltaTime)
 
 }
 
-void UC_CameraEffectComponent::HandleDeafenedMixEffect(float DeltaTime)
-{
-	DeafenedTime -= DeltaTime;
-
-	if (DeafenedTime > 0.f) return;
-
-	DeafenedTime = 0.f;
-	UGameplayStatics::ClearSoundMixModifiers(this);
-}
-
 void UC_CameraEffectComponent::ExecuteCameraAimPunching
 (
 	FVector CamPunchingDirection,
@@ -145,15 +141,6 @@ void UC_CameraEffectComponent::ExecuteCameraShake(float ShakeScale)
 		PlayerController->PlayerCameraManager->StartCameraShake(CameraShakeClass, ShakeScale);
 }
 
-void UC_CameraEffectComponent::ExecuteDeafenedEffect(float Duration)
-{
-	FString Str = "Received Duration : " + FString::SanitizeFloat(Duration);
-	UC_Util::Print(Str, FColor::Red, 10.f);
-	UGameplayStatics::PushSoundMixModifier(this, DeafenedMix);
-	DeafenedTime = Duration;
-}
-
-
 void UC_CameraEffectComponent::HandleFlashBangEffect(const float& DeltaTime)
 {
 	if (!PostProcessVolume) return;
@@ -170,19 +157,11 @@ void UC_CameraEffectComponent::HandleFlashBangEffect(const float& DeltaTime)
 		// TODO : Capture된 잔상 남기기
 
 		// 효과음 효과 제거
-		/*if (IsValid(StunnedAudioComponent)) if (StunnedAudioComponent->IsPlaying())
+		if (!bHasStunnedAudioComponentFadeOutStart)
 		{
 			StunnedAudioComponent->FadeOut(1.5f, 0.f);
-			// UGameplayStatics::PopSoundMixModifier(this, DeafenedMix);
-			UGameplayStatics::ClearSoundMixModifiers(this);
-			StunnedAudioComponent = nullptr;
-		}*/
-
-		if (IsValid(StunnedAudioComponent) && StunnedAudioComponent->IsPlaying())
-			StunnedAudioComponent->FadeOut(1.5f, 0.f);
-
-		StunnedAudioComponent = nullptr;
-		
+			bHasStunnedAudioComponentFadeOutStart = true;
+		}
 		return;
 	}
 
@@ -263,11 +242,11 @@ void UC_CameraEffectComponent::ExecuteFlashBangEffect(float Duration)
 	
 	// 섬광탄 피격음 효과 처리 및 Deafened Audio Mix 효과 시작
 	// if (IsValid(StunnedAudioComponent)) if (StunnedAudioComponent->IsPlaying()) return;
-	
-	if (IsValid(StunnedAudioComponent)) // 이미 재생중이라는 뜻
-		StunnedAudioComponent->Play(); // 다시 처음부터 재생
-	else StunnedAudioComponent = UGameplayStatics::SpawnSound2D(this, FlashBangStunnedSound); // 새로 재생
-	
-	UGameplayStatics::PushSoundMixModifier(this, DeafenedMix);
-	DeafenedTime = Duration;
+
+	// FlashBang Stunned SoundBase 새로 재생
+	StunnedAudioComponent->Play();
+	bHasStunnedAudioComponentFadeOutStart = false;
+
+	// 먹먹함 효과 추가
+	OwnerPlayer->GetDeafenedHandler()->ExecuteDeafenedEffect(Duration);
 }
