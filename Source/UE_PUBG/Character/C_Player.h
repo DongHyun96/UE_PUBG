@@ -3,14 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-//#include "GameFramework/Character.h"
-#include "Components/TimelineComponent.h"
 #include "Character/C_BasicCharacter.h"
 #include "C_Player.generated.h"
-
-
-// 주석 테스트
-// 주석 테스트
 
 /// <summary>
 /// Pose 별 Turn left, right anim montage 구조체
@@ -20,7 +14,6 @@ struct FPoseTurnInPlaceAnimMontage
 {
 	GENERATED_BODY()
 
-public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TMap<EPoseState, FPriorityAnimMontage> LeftMontages{};
 		
@@ -125,6 +118,10 @@ public:
 	UUserWidget* GetThrowingWheel() { return ThrowableWheelWidget; }
 
 	UUserWidget* GetConsumableWheel() { return ConsumableWheelWidget; }
+
+	class UC_CrosshairWidgetComponent* GetCrosshairWidgetComponent() { return CrosshairWidgetComponent; }
+
+	class UC_PlayerDeafenedHandler* GetDeafenedHandler() const { return DeafenedHandler; }
 		
 public:
 	bool GetIsHighEnoughToFall() override;
@@ -181,28 +178,8 @@ private:
 
 	void DestroyCharacter() override;
 
-protected:
-	AC_Item* CurOutLinedItem = nullptr;
-
-protected:
-	//Aim Press Camera
-	UPROPERTY(EditDefaultsOnly)
-	class UCameraComponent* AimCamera{};
-	UPROPERTY(EditDefaultsOnly)
-	class USpringArmComponent* AimSpringArmTemp{};
-
-protected: // Camera
-
-	UPROPERTY(BluePrintReadWrite, EditAnywhere)
-	class UCameraComponent* MainCamera{};
-
-	UPROPERTY(BluePrintReadWrite, EditAnywhere)
-	class USpringArmComponent* C_MainSpringArm{};
-
-	FQuat InitialMainCameraRelativeRotation;
-
 public:
-	UCameraComponent* GetMainCamera() { return MainCamera; }
+	class UCameraComponent* GetMainCamera() const { return MainCamera; }
 	UCameraComponent* GetAimCamera() const { return AimCamera; }
 protected:
 	//Aim Press Camera 위치 조정 함수
@@ -312,6 +289,26 @@ private:
 	float PlayerRecoilFactorByPose = 1.0f;
 
 protected:
+	AC_Item* CurOutLinedItem = nullptr;
+
+protected:
+	//Aim Press Camera
+	UPROPERTY(EditDefaultsOnly)
+	class UCameraComponent* AimCamera{};
+	UPROPERTY(EditDefaultsOnly)
+	USpringArmComponent* AimSpringArmTemp{};
+
+protected: // Camera
+
+	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+	UCameraComponent* MainCamera{};
+
+	UPROPERTY(BluePrintReadWrite, EditAnywhere)
+	USpringArmComponent* C_MainSpringArm{};
+
+	FQuat InitialMainCameraRelativeRotation;
+
+protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly) 
 	class UC_InputComponent* MyInputComponent{};
@@ -333,13 +330,13 @@ protected: // Turn in place 애님 몽타주 관련
 protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_HUDWidget* HUDWidget{};
+	UC_HUDWidget* HUDWidget{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_MainMapWidget* MainMapWidget{};
+	UC_MainMapWidget* MainMapWidget{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_GameOverWidget* GameOverWidget{};	
+	UC_GameOverWidget* GameOverWidget{};	
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UUserWidget* ThrowableWheelWidget = nullptr;
@@ -349,20 +346,19 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UC_InvenSystem* InvenSystem{};
+	
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_PingSystemComponent* PingSystemComponent{};
-
-protected:
+	UC_PingSystemComponent* PingSystemComponent{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_CameraEffectComponent* CameraEffectComponent{};
+	UC_CameraEffectComponent* CameraEffectComponent{};
 
 private:
 
 	// 부모의 SkyDivingComponent 객체와 동일한 객체
-	class UC_PlayerSkyDivingComponent* PlayerSkyDivingComponent{};
+	UC_PlayerSkyDivingComponent* PlayerSkyDivingComponent{};
 
 private: // MainSpringArm & AimingSpringArm Lerp Destinations
 
@@ -374,27 +370,13 @@ private: // MainSpringArm & AimingSpringArm Lerp Destinations
 
 	float SpringArmRelativeLocationLerpSpeed = 5.f;
 
-protected:
-	//총알 Object Pooling (World에서 작업할 예정)
-	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	//TArray<class AC_Bullet*> PooledBullets;
-
-	//void PoolingBullets();
-
-	FCollisionQueryParams LineTraceCollisionParams{};
-
-	void SetLineTraceCollisionIgnore();
-
-public:
-
-	FCollisionQueryParams& GetLineTraceCollisionParams() { return LineTraceCollisionParams; }
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	class UC_CrosshairWidgetComponent* CrosshairWidgetComponent{};
+	UC_CrosshairWidgetComponent* CrosshairWidgetComponent{};
 
-public:
-	UC_CrosshairWidgetComponent* GetCrosshairWidgetComponent() { return CrosshairWidgetComponent; }
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UC_PlayerDeafenedHandler* DeafenedHandler{};
 	
 };
 

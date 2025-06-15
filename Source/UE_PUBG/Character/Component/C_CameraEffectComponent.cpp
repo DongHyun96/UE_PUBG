@@ -3,6 +3,7 @@
 
 #include "Character/Component/C_CameraEffectComponent.h"
 
+#include "C_PlayerDeafenedHandler.h"
 #include "Character/C_Player.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
@@ -68,7 +69,6 @@ void UC_CameraEffectComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 	HandleCameraAimPunching(DeltaTime);
 	HandleFlashBangEffect(DeltaTime);
-	HandleDeafenedMixEffect(DeltaTime);
 }
 
 void UC_CameraEffectComponent::HandleCameraAimPunching(const float& DeltaTime)
@@ -112,16 +112,6 @@ void UC_CameraEffectComponent::HandleCameraAimPunching(const float& DeltaTime)
 
 }
 
-void UC_CameraEffectComponent::HandleDeafenedMixEffect(float DeltaTime)
-{
-	DeafenedTime -= DeltaTime;
-
-	if (DeafenedTime > 0.f) return;
-
-	DeafenedTime = 0.f;
-	UGameplayStatics::ClearSoundMixModifiers(this);
-}
-
 void UC_CameraEffectComponent::ExecuteCameraAimPunching
 (
 	FVector CamPunchingDirection,
@@ -149,12 +139,6 @@ void UC_CameraEffectComponent::ExecuteCameraShake(float ShakeScale)
 
 	if (PlayerController && PlayerController->PlayerCameraManager && CameraShakeClass)
 		PlayerController->PlayerCameraManager->StartCameraShake(CameraShakeClass, ShakeScale);
-}
-
-void UC_CameraEffectComponent::ExecuteDeafenedEffect(float Duration)
-{
-	UGameplayStatics::PushSoundMixModifier(this, DeafenedMix);
-	DeafenedTime = Duration;
 }
 
 void UC_CameraEffectComponent::HandleFlashBangEffect(const float& DeltaTime)
@@ -263,7 +247,6 @@ void UC_CameraEffectComponent::ExecuteFlashBangEffect(float Duration)
 	StunnedAudioComponent->Play();
 	bHasStunnedAudioComponentFadeOutStart = false;
 
-	// 먹먹함 효과 initialize
-	UGameplayStatics::PushSoundMixModifier(this, DeafenedMix);
-	DeafenedTime = Duration;
+	// 먹먹함 효과 추가
+	OwnerPlayer->GetDeafenedHandler()->ExecuteDeafenedEffect(Duration);
 }

@@ -10,6 +10,7 @@
 #include "Character/Component/C_StatComponent.h"
 #include "Character/Component/C_CameraEffectComponent.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_PlayerDeafenedHandler.h"
 
 #include "Kismet/GameplayStatics.h"
 
@@ -284,7 +285,7 @@ void AC_GrenadeExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* Cha
 		//Player->ExecuteCameraShake(1.f);
 		Player->GetCameraEffectComponent()->ExecuteCameraAimPunching(PunchingDirection, PunchingIntensity, XRotDelta);
 		Player->GetCameraEffectComponent()->ExecuteCameraShake(CamShakeScale);
-		Player->GetCameraEffectComponent()->ExecuteDeafenedEffect(DeafenedDuration);
+		Player->GetDeafenedHandler()->ExecuteDeafenedEffect(DeafenedDuration);
 	}
 
 	// TODO : Enemy AI 또한 방해주기

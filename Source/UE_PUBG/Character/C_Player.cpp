@@ -52,6 +52,7 @@
 #include "HUD/C_MainMapWidget.h"
 #include "HUD/C_SkyDiveWidget.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
+#include "Component/C_PlayerDeafenedHandler.h"
 #include "Component/SkyDivingComponent/C_PlayerSkyDivingComponent.h"
 #include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "HUD/C_GameOverWidget.h"
@@ -108,6 +109,9 @@ AC_Player::AC_Player()
 	SkyDivingComponent = CreateDefaultSubobject<UC_PlayerSkyDivingComponent>("PlayerSkyDivingComponent");
 	SkyDivingComponent->SetOwnerCharacter(this);
 	PlayerSkyDivingComponent = Cast<UC_PlayerSkyDivingComponent>(SkyDivingComponent);
+
+	DeafenedHandler = CreateDefaultSubobject<UC_PlayerDeafenedHandler>("DeafenedHandler");
+	DeafenedHandler->SetOwnerPlayer(this);
 }
 
 void AC_Player::BeginPlay()
@@ -1311,19 +1315,3 @@ void AC_Player::SetRecoilFactorByPose()
 		break;
 	}
 }
-
-void AC_Player::SetLineTraceCollisionIgnore()
-{
-	LineTraceCollisionParams.AddIgnoredActor(this);
-	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
-
-	//LineTraceCollisionParams.AddIgnoredActor(OwnerCharacter);
-	LineTraceCollisionParams.AddIgnoredActor(PlayerCamera);
-	for (auto& Bullet : Bullets)
-	{
-		LineTraceCollisionParams.AddIgnoredActor(Bullet);
-	}
-}
-
-
-

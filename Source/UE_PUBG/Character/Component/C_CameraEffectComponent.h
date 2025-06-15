@@ -29,10 +29,6 @@ private:
 	/// </summary>
 	void HandleCameraAimPunching(const float& DeltaTime);
 
-	/// <summary>
-	/// Deafened 처리 관여 (귀먹먹함 처리)
-	/// </summary>
-	void HandleDeafenedMixEffect(float DeltaTime);
 public:
 
 	/// <summary>
@@ -55,12 +51,6 @@ public:
 	/// </summary>
 	/// <param name="ShakeScale"></param>
 	void ExecuteCameraShake(float ShakeScale = 1.f);
-
-	/// <summary>
-	/// Player 귀먹먹함 Effect 실행
-	/// </summary>
-	/// <param name="Duration"> : 귀먹먹함 총 시간 </param>
-	void ExecuteDeafenedEffect(float Duration);
 
 private:
 
@@ -141,18 +131,10 @@ protected: // Player의 경우에만 수류탄 및 섬광탄 피격 당했을 �
 	// 섬광탄 피격 당했을 때의 Player 피격음
 	UPROPERTY(BluePrintReadWrite, EditDefaultsOnly)
 	USoundBase* FlashBangStunnedSound{};
-
-	// 먹먹함 효과 SoundMix
-	UPROPERTY(BluePrintReadWrite, EditDefaultsOnly)
-	USoundMix* DeafenedMix{};
-
 	
 private:
 
 	UAudioComponent* StunnedAudioComponent{};
-
-	float DeafenedTime{};
-
 	bool bHasStunnedAudioComponentFadeOutStart = true;
 };
 
