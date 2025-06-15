@@ -6,10 +6,9 @@
 #include "Camera/CameraComponent.h"
 #include "Character/C_Player.h"
 #include "Components/AudioComponent.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Utility/C_Util.h"
-
-FCollisionQueryParams UC_PlayerDeafenedHandler::CollisionParams{};
 
 UC_PlayerDeafenedHandler::UC_PlayerDeafenedHandler()
 {
@@ -20,23 +19,41 @@ void UC_PlayerDeafenedHandler::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerMainCamera = OwnerPlayer->GetMainCamera();
-	
-	CollisionParams.bReturnPhysicalMaterial = true;
 
 	UnderWaterAudioComponent = NewObject<UAudioComponent>(this);
 	UnderWaterAudioComponent->SetAutoActivate(false);
 	UnderWaterAudioComponent->bAllowSpatialization = true;
 	UnderWaterAudioComponent->AttachToComponent(OwnerPlayer->GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true));
 	UnderWaterAudioComponent->SetSound(UnderWaterSFX);
+
+	CameraWaterCheckingCollider = Cast<UShapeComponent>(OwnerPlayer->GetDefaultSubobjectByName("CameraWaterCheckingCollider"));
+	if (!CameraWaterCheckingCollider)
+	{
+		UC_Util::Print("From UC_PlayerDeafenedHandler::BeginPlay : CameraWaterCheckingCollider casting failed!", FColor::Red, 10.f);
+		return;
+	}
+
+	CameraWaterCheckingCollider->OnComponentBeginOverlap.AddDynamic(this, &UC_PlayerDeafenedHandler::OnCameraWaterBeginOverlap);
 }
 
 void UC_PlayerDeafenedHandler::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// Update Deafened Timer
 	DeafenedTime = FMath::Max(DeafenedTime - DeltaTime, 0.f);
 
-	bool bIsCameraUnderWater = HandleMainCameraUnderWater(); 
+	// Check if camera exited water
+	if (!bPendingCheckingCameraUnderWaterOnTickComponent && CameraWaterCheckingCollider->GetComponentLocation().Z > CameraWaterEnteredZ)
+	{
+		UC_Util::Print("Cam exits!");
+		bIsCameraUnderWater = false;
+
+		if (UnderWaterAudioComponent->IsPlaying())
+			UnderWaterAudioComponent->Stop();
+	}
+
+	bPendingCheckingCameraUnderWaterOnTickComponent = false;
 
 	// DeafenedEffectTime이 다 줄어들었고, Camera가 UnderWater밑이 아니면 DeafenedSoundMix 지우기
 	if (DeafenedTime <= 0.f && !bIsCameraUnderWater)
@@ -57,30 +74,26 @@ void UC_PlayerDeafenedHandler::ExecuteDeafenedEffect(float DeafenedDuration)
 	bDeafened = true;
 }
 
-bool UC_PlayerDeafenedHandler::HandleMainCameraUnderWater()
+void UC_PlayerDeafenedHandler::OnCameraWaterBeginOverlap
+(
+	UPrimitiveComponent*	OverlappedComp,
+	AActor*					OtherActor,
+	UPrimitiveComponent*	OtherComp,
+	int32					OtherBodyIndex,
+	bool					bFromSweep,
+	const FHitResult&		SweepResult
+)
 {
-	static const ECollisionChannel CameraWaterCheckChannel = ECC_GameTraceChannel3;
-	static EPhysicalSurface WaterSurfaceType = SurfaceType9; // SurfaceType 9번이 Water로 지정되어 있음
+	FString Str = "Entered Z : " + FString::SanitizeFloat(OtherActor->GetActorLocation().Z);
 	
-	FVector Start = PlayerMainCamera->GetComponentLocation();
-	FVector End = Start + FVector::UnitZ() * 500.f;
-
-	FHitResult HitResult{};
-
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, CameraWaterCheckChannel, CollisionParams);
-
-	// DrawDebugLine(GetWorld(), Start, bHit ? HitResult.ImpactPoint : End, FColor::Red);
-
-	// 카메라가 물 속이 아님
-	if (!bHit || UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get()) != WaterSurfaceType)
-	{
-		// UC_Util::Print("Not hit");
-		return false;
-	}
-
-	// DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 10, FColor::Green);
-
-	// 카메라가 물 속에 있을 때
+	// Tick pending을 한 번 걸어주어야 TickComponent에서 Exit 처리가 바로 안되고 잘 처리됨
+	bPendingCheckingCameraUnderWaterOnTickComponent = true;
+	
+	UC_Util::Print(Str, FColor::MakeRandomColor());
+	if (bIsCameraUnderWater) return; // 이미 물 속에 들어와 있는 상황
+	
+	CameraWaterEnteredZ = OtherActor->GetActorLocation().Z;
+	bIsCameraUnderWater = true;
 	
 	if (!bDeafened)
 	{
@@ -90,7 +103,4 @@ bool UC_PlayerDeafenedHandler::HandleMainCameraUnderWater()
 
 	if (!UnderWaterAudioComponent->IsPlaying())
 		UnderWaterAudioComponent->Play();
-	
-	return true;
 }
-

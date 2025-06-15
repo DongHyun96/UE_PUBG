@@ -33,17 +33,27 @@ public:
 
 private:
 	
-	/// <summary>
-	/// Main Camera가 물 속에 들어갔다면, 물 속 SFX 처리 담당
-	/// </summary>
-	/// <returns> : MainCamera가 현재 물 속에 있다면 return true </returns>
-	bool HandleMainCameraUnderWater();
+	UFUNCTION()
+	void OnCameraWaterBeginOverlap
+	(
+		UPrimitiveComponent*	OverlappedComp,
+		AActor*					OtherActor,
+		UPrimitiveComponent*	OtherComp,
+		int32					OtherBodyIndex,
+		bool					bFromSweep,
+		const FHitResult&		SweepResult
+	);
 
 private:
 
 	AC_Player* OwnerPlayer{};
 	class UCameraComponent* PlayerMainCamera{};
 
+	float DeafenedTime{};
+	bool  bDeafened{};
+	
+	UAudioComponent* UnderWaterAudioComponent{};
+	
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -54,16 +64,11 @@ protected:
 
 private:
 	
-	UAudioComponent* UnderWaterAudioComponent{};
-	
-private:
+	UShapeComponent* CameraWaterCheckingCollider{};
+	float CameraWaterEnteredZ{}; // 카메라가 물에 담긴 순간의 해당 물의 z값
 
-	float DeafenedTime{};
-
-	static FCollisionQueryParams CollisionParams;
-
-	bool bDeafened{};
-	
+	bool bIsCameraUnderWater{};
+	bool bPendingCheckingCameraUnderWaterOnTickComponent{};
 };
 
 
