@@ -52,7 +52,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	USoundBase* UnderWaterSFX{};	
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "TraceChannel")
 	TEnumAsByte<ECollisionChannel> CamWaterTraceChannel{};
 	
 private:

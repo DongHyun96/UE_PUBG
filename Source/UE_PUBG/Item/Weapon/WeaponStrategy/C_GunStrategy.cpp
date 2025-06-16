@@ -94,8 +94,13 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	MlbPressTimeCount = 0;
 	if (CurWeapon->GetCurBulletCount() == 0)
 	{
-		if (CurWeapon->GetGunSoundData()->NullBulletSound) UGameplayStatics::PlaySoundAtLocation(this, CurWeapon->GetGunSoundData()->NullBulletSound, CurWeapon->GetActorLocation());
-		if (AC_Player* Player = Cast<AC_Player>(WeaponUser)) Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("THERE IS NO AMMUNITION");
+		if (CurWeapon->GetGunSoundData()->NullBulletSound)
+		{
+			if (CurPlayer) UGameplayStatics::PlaySound2D(this, CurWeapon->GetGunSoundData()->NullBulletSound);
+			else UGameplayStatics::PlaySoundAtLocation(this, CurWeapon->GetGunSoundData()->NullBulletSound, CurWeapon->GetActorLocation());
+		}
+		
+		if (CurPlayer) CurPlayer->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("THERE IS NO AMMUNITION");
 		CurWeapon->ExecuteReloadMontage();
 		return false;
 	}

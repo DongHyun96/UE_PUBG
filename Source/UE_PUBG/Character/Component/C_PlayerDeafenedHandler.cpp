@@ -67,7 +67,7 @@ bool UC_PlayerDeafenedHandler::HandleMainCameraUnderWater()
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, CamWaterTraceChannel, CollisionParams);
 
-	DrawDebugLine(GetWorld(), Start, bHit ? HitResult.ImpactPoint : End, FColor::Red);
+	// DrawDebugLine(GetWorld(), Start, bHit ? HitResult.ImpactPoint : End, FColor::Red);
 
 	// 카메라가 물 속이 아님
 	if (!bHit || UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get()) != WaterSurfaceType)
@@ -76,7 +76,7 @@ bool UC_PlayerDeafenedHandler::HandleMainCameraUnderWater()
 		return false;
 	}
 	
-	DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 10, FColor::Green);
+	// DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 10, FColor::Green);
 
 	// 카메라가 물 속에 있을 때
 	
