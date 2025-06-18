@@ -43,10 +43,9 @@ void AC_Item_Bullet::Tick(float DeltaTime)
 bool AC_Item_Bullet::Interaction(AC_BasicCharacter* Character)
 {
 	if (ItemPlace == EItemPlace::AROUND)
-	{
 		return MoveToInven(Character, this->GetItemCurStack());
-	}
-	else return false;
+	
+	return false;
 }
 
 bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
