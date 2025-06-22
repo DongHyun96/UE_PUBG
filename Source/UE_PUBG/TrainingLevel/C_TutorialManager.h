@@ -18,7 +18,7 @@ enum class ETutorialStage : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FTutorialStageChecker
+struct FTutorialStageData
 {
 	GENERATED_BODY()
 
@@ -53,5 +53,5 @@ protected:
 	ETutorialStage CurrentStage{};
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<ETutorialStage, FTutorialStageChecker> TutorialStageInfos{};
+	TMap<ETutorialStage, FTutorialStageData> TutorialStageInfos{};
 };

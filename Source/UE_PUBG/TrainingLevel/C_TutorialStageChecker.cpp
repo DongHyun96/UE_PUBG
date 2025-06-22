@@ -15,12 +15,6 @@ UC_TutorialStageChecker::UC_TutorialStageChecker()
 void UC_TutorialStageChecker::BeginPlay()
 {
 	Super::BeginPlay();
-
-	for (uint8 SubGoalCount : SubGoalCounts)
-	{
-		TArray<bool> SubGoals{};
-		SubGoals.Init(false, SubGoalCount);
-	}
 }
 
 void UC_TutorialStageChecker::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -28,27 +22,34 @@ void UC_TutorialStageChecker::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-bool UC_TutorialStageChecker::OnSubGoalAchieved(uint8 MainGoalIndex, uint8 SubGoalIndex)
+bool UC_TutorialStageChecker::OnSubGoalAchieved(uint8 TargetGoal, uint8 SubGoalIndex)
 {
-	if (MainGoalIndex >= MainGoalsAchieved.Num()) return false;
-	if (SubGoalIndex >= SubGoalsAchieved[MainGoalIndex].Num()) return false;
+	if (TargetGoal >= GoalData.Num()) return false;
+
+	FGoalData& Data = GoalData[TargetGoal];
+	
+	if (SubGoalIndex >= Data.SubGoalsAchieved.Num()) return false;
+
 
 	// 이미 달성한 MainGoal이거나 SubGoal이라면 return false
-	if (MainGoalsAchieved[MainGoalIndex]) return false;
-	if (SubGoalsAchieved[MainGoalIndex][SubGoalIndex]) return false;
+	if (Data.bMainGoalAchieved) return false;
+	if (Data.SubGoalsAchieved[SubGoalIndex]) return false;
 
-	SubGoalsAchieved[MainGoalIndex][SubGoalIndex] = true;
+	// 해당 SubGoal 달성 처리
+	Data.SubGoalsAchieved[SubGoalIndex] = true;
 
-	for (bool SubGoalAchieved : SubGoalsAchieved[MainGoalIndex])
+	for (uint8 SubGoalAchieved : Data.SubGoalsAchieved)
 		if (!SubGoalAchieved) return true; // 아직 남아있는 SubGoal이 있을 떄
 
 	// MainGoal 안의 모든 SubGoal을 달성함
-	MainGoalsAchieved[MainGoalIndex] = true;
+	Data.bMainGoalAchieved = true;
 	
 	// TODO : 해당되는 MainGoal UI 업데이트 (체크표시)
 
-	for (bool MainGoalAchieved : MainGoalsAchieved) // 아직 남아있는 MainGoal이 있을 때
-		if (!MainGoalAchieved) return true;
+	for (const FGoalData& GData : GoalData) // 아직 남아있는 MainGoal이 있을 때
+	{
+		if (!GData.bMainGoalAchieved) return true;
+	}
 	
 	// 현재의 세부 Tutorial에서 모든 Main Goal을 달성함
 	// TODO : 다음 문 열기, Delegate 모두 해제

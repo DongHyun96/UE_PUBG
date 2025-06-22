@@ -6,6 +6,19 @@
 #include "Components/ActorComponent.h"
 #include "C_TutorialStageChecker.generated.h"
 
+USTRUCT(BlueprintType)
+struct FGoalData
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	bool bMainGoalAchieved{};
+
+	// 직렬화 관련 문제 때문에 bool 대신 uint8 사용
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TArray<uint8> SubGoalsAchieved{};
+};
+
 enum class ETutorialStage : uint8;
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -27,8 +40,10 @@ public:
 	/// <summary>
 	/// 각 TutorialStage에서 특정한 Tutorial Sub Gaol 행위를 완료했을 때 CallBack 받는 함수
 	/// </summary>
-	/// <return> 이미 Achieved 된 상태이거나, 해당하는 Goal Index가 존재하지 않다면 return false </return>
-	bool OnSubGoalAchieved(uint8 MainGoalIndex, uint8 SubGoalIndex);
+	/// <param name="TargetGoal"> : Target MainGoal Index </param>
+	/// <param name="SubGoalIndex"> : Target SubGoal Index </param>
+	/// <returns> 이미 Achieved 된 상태이거나, 해당하는 Goal Index가 존재하지 않다면 return false </returns>
+	bool OnSubGoalAchieved(uint8 TargetGoal, uint8 SubGoalIndex);
 
 public:
 
@@ -41,18 +56,11 @@ private:
 	AC_TutorialManager* OwnerTutorialManager{};
 
 protected:
-
-	// 세부 Tutorial 단계에서의 각 Main 목표 순서로 Achieved되었는지 체크
+	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TArray<bool> MainGoalsAchieved{};
-
-	// Main 목표순으로 SubGoalCounts가 몇개가 되는지 체크 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TArray<uint8> SubGoalCounts{};
+	TArray<FGoalData> GoalData{};
 	
 private:
-	
-	TArray<TArray<bool>> SubGoalsAchieved{}; // Main Goal 순서대로 SubGoals 나열 | SubGoals Achieved 되었는지 체크
 	
 	bool bHasStart{}; // 현재 Stage가 TriggerBox Overlap에 의해 시작되었는지 체크  
 };

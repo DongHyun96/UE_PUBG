@@ -16,10 +16,11 @@ AC_TutorialManager::AC_TutorialManager()
 	{
 		ETutorialStage Stage = static_cast<ETutorialStage>(i);
 
-		FTutorialStageChecker StageInfo{};
+		FTutorialStageData StageInfo{};
 		
 		FString StageCheckerName		= GetTutorialStageName(Stage) + "Checker";
 		StageInfo.TutorialStageChecker 	= CreateDefaultSubobject<UC_TutorialStageChecker>(FName(*StageCheckerName));
+		StageInfo.TutorialStageChecker->SetOwnerTutorialManager(this);
 		
 		TutorialStageInfos.Add(Stage, StageInfo);
 	}
