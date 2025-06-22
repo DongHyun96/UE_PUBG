@@ -53,5 +53,7 @@ public class UE_PUBG : ModuleRules
         PrivateDependencyModuleNames.AddRange(new string[] { });
 
         PublicIncludePaths.Add(ModuleDirectory);
-    }
+
+        bUseUnity = false;
+	}
 }
