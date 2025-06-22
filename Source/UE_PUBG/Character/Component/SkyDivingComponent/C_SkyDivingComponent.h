@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
 #include "Character/C_BasicCharacter.h"
+#include "Components/ActorComponent.h"
 
 #include "C_SkyDivingComponent.generated.h"
 

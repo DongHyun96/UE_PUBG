@@ -8,8 +8,6 @@
 #include "AI/C_EnemyAIController.h"
 #include "AI/Service/C_BTServiceIdle.h"
 #include "Character/C_Enemy.h"
-#include "Character/C_Player.h"
-#include "HUD/C_MainMapWidget.h"
 #include "MagneticField/C_MagneticFieldManager.h"
 #include "MagneticField/C_WaterTileCheckerComponent.h"
 #include "Singleton/C_GameSceneManager.h"

@@ -3,20 +3,13 @@
 
 #include "AI/C_EnemyAIController.h"
 
-#include "ParticleHelper.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Character/C_Player.h"
 #include "Character/C_Enemy.h"
 #include "AI/C_BehaviorComponent.h"
 #include "Navigation/PathFollowingComponent.h"
-#include "ProfilingDebugging/StallDetector.h"
-#include "Service/C_BTServiceCombat.h"
-#include "Singleton/C_GameSceneManager.h"
-
-#include "Utility/C_Util.h"
 
 const TMap<ESightRangeLevel, float> AC_EnemyAIController::SIGHT_RANGE_DISTANCE =
 {

@@ -11,11 +11,6 @@
 
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "Components/SceneComponent.h"
-#include "Components/AudioComponent.h"
-
-#include "Kismet/GameplayStatics.h"
-
-#include "Utility/C_Util.h"
 
 // Sets default values
 AC_Airplane::AC_Airplane()

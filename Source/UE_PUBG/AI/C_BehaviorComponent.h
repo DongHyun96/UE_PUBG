@@ -6,7 +6,6 @@
 
 #include "Components/ActorComponent.h"
 #include "Service/C_BTServiceIdle.h"
-// #include "Service/C_BTServiceIdle.h"
 #include "C_BehaviorComponent.generated.h"
 
 UENUM(BlueprintType)

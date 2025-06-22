@@ -2,14 +2,7 @@
 
 
 #include "AI/Task/IdleTask/C_BTTaskChangePose.h"
-
-#include "Character/C_BasicCharacter.h"
-#include "Character/C_Enemy.h"
-
-#include "AI/C_EnemyAIController.h"
 #include "AI/C_BehaviorComponent.h"
-
-#include "Utility/C_Util.h"
 
 UC_BTTaskChangePose::UC_BTTaskChangePose()
 {

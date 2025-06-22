@@ -14,7 +14,6 @@
 #include "Character/C_Player.h"
 #include "Character/Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
-#include "HUD/C_MainMapWidget.h"
 #include "Utility/C_Util.h"
 
 UC_BTTaskSkyDive::UC_BTTaskSkyDive()

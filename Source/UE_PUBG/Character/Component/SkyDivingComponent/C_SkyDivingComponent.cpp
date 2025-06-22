@@ -5,14 +5,6 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Character/C_BasicCharacter.h"
-#include "Character/C_Player.h"
-
-#include "GameFramework/SpringArmComponent.h"
-
-#include "HUD/C_HUDWidget.h"
-#include "HUD/C_SkyDiveWidget.h"
-#include "HUD/C_InformWidget.h"
-
 #include "Utility/C_Util.h"
 
 #include "Singleton/C_GameSceneManager.h"

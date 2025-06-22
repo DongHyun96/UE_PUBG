@@ -6,7 +6,6 @@
 #include "Character/C_Enemy.h"
 #include "Character/Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Utility/C_Util.h"
 
 UC_EnemySkyDivingComponent::UC_EnemySkyDivingComponent()

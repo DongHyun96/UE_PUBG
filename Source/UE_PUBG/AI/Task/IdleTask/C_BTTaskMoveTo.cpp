@@ -6,7 +6,6 @@
 #include "NavigationSystem.h"
 #include "AI/C_EnemyAIController.h"
 #include "Character/C_Enemy.h"
-#include "Navigation/PathFollowingComponent.h"
 #include "Utility/C_Util.h"
 
 UC_BTTaskMoveTo::UC_BTTaskMoveTo()

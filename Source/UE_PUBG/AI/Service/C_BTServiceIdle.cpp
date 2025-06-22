@@ -3,14 +3,6 @@
 
 #include "AI/Service/C_BTServiceIdle.h"
 
-#include "Singleton/C_GameSceneManager.h"
-
-#include "Character/C_Player.h"
-#include "AI/C_EnemyAIController.h"
-#include "AI/C_BehaviorComponent.h"
-
-#include "Utility/C_Util.h"
-
 UC_BTServiceIdle::UC_BTServiceIdle()
 {
 	NodeName = "Idle";

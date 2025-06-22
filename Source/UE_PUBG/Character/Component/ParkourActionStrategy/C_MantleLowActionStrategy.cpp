@@ -2,13 +2,8 @@
 
 
 #include "Character/Component/ParkourActionStrategy/C_MantleLowActionStrategy.h"
-
 #include "Character/C_BasicCharacter.h"
-#include "Character/C_Player.h"
-
 #include "Character/Component/C_ParkourComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-
 #include "MotionWarpingComponent.h"
 
 void UC_MantleLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* TargetCharacter, const FParkourDescriptor& CurParkourDesc)

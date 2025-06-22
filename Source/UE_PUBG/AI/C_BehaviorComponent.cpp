@@ -4,16 +4,11 @@
 #include "AI/C_BehaviorComponent.h"
 
 #include "C_EnemyAIController.h"
-#include "EnhancedInputSubsystemInterface.h"
 #include "Character/C_BasicCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/C_Enemy.h"
-#include "Character/C_Player.h"
-#include "Navigation/PathFollowingComponent.h"
-#include "Service/C_BTServiceCombat.h"
 
 #include "Service/C_BTServiceIdle.h"
-#include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
 

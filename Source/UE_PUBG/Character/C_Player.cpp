@@ -204,6 +204,8 @@ void AC_Player::BeginPlay()
 	GetWorld()->OnWorldBeginPlay.AddUObject(this, &AC_Player::OnPostWorldBeginPlay);
 	
 	CharacterName = Cast<UC_GameInstance>(GetGameInstance())->GetPlayerNickName();
+
+	
 }
 
 void AC_Player::EndPlay(const EEndPlayReason::Type EndPlayReason)

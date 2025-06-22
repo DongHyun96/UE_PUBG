@@ -11,7 +11,6 @@
 #include "Character/Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "MagneticField/C_MagneticFieldManager.h"
 #include "Singleton/C_GameSceneManager.h"
-#include "Utility/C_Util.h"
 
 UC_BTTaskWait::UC_BTTaskWait()
 {
