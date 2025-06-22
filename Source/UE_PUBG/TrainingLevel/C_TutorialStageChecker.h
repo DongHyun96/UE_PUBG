@@ -11,7 +11,7 @@ struct FGoalData
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly)
 	bool bMainGoalAchieved{};
 
 	// 직렬화 관련 문제 때문에 bool 대신 uint8 사용
@@ -21,7 +21,7 @@ struct FGoalData
 
 enum class ETutorialStage : uint8;
 
-UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class UE_PUBG_API UC_TutorialStageChecker : public UActorComponent
 {
 	GENERATED_BODY()

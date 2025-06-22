@@ -22,13 +22,10 @@ struct FTutorialStageData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_TutorialStageChecker* TutorialStageChecker{};
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditInstanceOnly)
 	class ATriggerBox* StageStartTriggerBox{};
-
-	
 };
 
 UCLASS()
@@ -54,4 +51,24 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<ETutorialStage, FTutorialStageData> TutorialStageInfos{};
+
+	TArray<UC_TutorialStageChecker*> TutorialStageCheckers{};
+
+protected: // 리플렉션 문제 때문에 struct 안에서의 UObject 포인터 default 내용이 details에 나오지 않는 문제로 밑에 처럼 구조를 처리해야 함
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UC_TutorialStageChecker* MovementStageChecker{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UC_TutorialStageChecker* WeaponStageChecker{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UC_TutorialStageChecker* ThrowableStageChecker{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UC_TutorialStageChecker* HealingStageChecker{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UC_TutorialStageChecker* EndStageChecker{};
+	
 };

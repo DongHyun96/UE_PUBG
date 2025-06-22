@@ -24,6 +24,12 @@ AC_TutorialManager::AC_TutorialManager()
 		
 		TutorialStageInfos.Add(Stage, StageInfo);
 	}
+
+	MovementStageChecker	= TutorialStageInfos[ETutorialStage::MovementTutorial].TutorialStageChecker;
+	WeaponStageChecker		= TutorialStageInfos[ETutorialStage::WeaponTutorial].TutorialStageChecker;
+	ThrowableStageChecker	= TutorialStageInfos[ETutorialStage::ThrowableTutorial].TutorialStageChecker;
+	HealingStageChecker		= TutorialStageInfos[ETutorialStage::HealingTutorial].TutorialStageChecker;
+	EndStageChecker			= TutorialStageInfos[ETutorialStage::TutorialEnd].TutorialStageChecker;
 }
 
 void AC_TutorialManager::BeginPlay()
