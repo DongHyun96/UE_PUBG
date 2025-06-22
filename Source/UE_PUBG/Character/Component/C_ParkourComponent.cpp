@@ -16,6 +16,7 @@
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 #include "Item/Weapon/Gun/C_Gun.h"
 
@@ -781,6 +782,8 @@ void UC_ParkourComponent::OnParkourAnimMontageEnd()
 	OwnerCharacter->GetMesh()->GetAnimInstance()->StopAllMontages(0);
 
 	bPendingMeshUpdateToMainMesh = true; // 다음 Update Tick에서 Main skeletal mesh로 돌아감
+
+	if (OwnerPlayer) OwnerPlayer->GetMainSpringArm()->bDoCollisionTest = true;
 }
 
 void UC_ParkourComponent::SwapMeshToMainSkeletalMesh()

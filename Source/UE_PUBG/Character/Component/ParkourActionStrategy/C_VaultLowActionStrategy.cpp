@@ -10,11 +10,16 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "MotionWarpingComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 #include "Utility/C_Util.h"
 
 void UC_VaultLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* TargetCharacter, const FParkourDescriptor& CurParkourDesc)
 {
+	// VaultLow의 경우, 카메라가 Vaulting하려는 물체에 들어가려는 경우가 많아서 SpringArm의 기능을 잠시 꺼두고 처리할 예정
+	// 다시 true로 돌리는 건 ParkourComponent에서 ParkourEnd AnimNotify 받을 때 처리
+	if (AC_Player* Player = Cast<AC_Player>(TargetCharacter))
+		Player->GetMainSpringArm()->bDoCollisionTest = false;
 	
 	// WarpStartPos, WarpMiddlePos, WarpLandPos 잡아주기
 	FVector WarpStartPos	= CurParkourDesc.VerticalHitPositions[0];
