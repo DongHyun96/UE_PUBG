@@ -23,6 +23,7 @@
 #include "Item/ItemManager/C_ItemManager.h"
 #include "Sound/C_SoundManager.h"
 #include "Singleton/C_GameInstance.h"
+#include "TrainingLevel/C_TutorialManager.h"
 
 #include "Utility/C_TickRandomColorGenerator.h"
 
@@ -41,7 +42,6 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 
 	// TimerHandles pooling
 	for (int i = 0; i < TimerHandlePoolCount; ++i) GameSceneTimerHandles.AddDefaulted();
-		
 	
 	UC_GameInstance* GI = Cast<UC_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
@@ -113,6 +113,8 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		}
 		
 		if (AC_SoundManager* Sound_Manager = Cast<AC_SoundManager>(*Actor)) SoundManager = Sound_Manager;
+		
+		if (AC_TutorialManager* Tutorial_Manager = Cast<AC_TutorialManager>(*Actor)) TutorialManager = Tutorial_Manager;
 	}
 
 	CurrentRanking = AllCharacters.Num();
