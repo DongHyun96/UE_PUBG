@@ -17,20 +17,6 @@ enum class ETutorialStage : uint8
 	Max
 };
 
-USTRUCT(BlueprintType)
-struct FTutorialStageData
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_TutorialStageChecker* TutorialStageChecker{};
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	class ATriggerBox* StageStartTriggerBox{};
-
-	
-};
-
 UCLASS()
 class UE_PUBG_API AC_TutorialManager : public AActor
 {
@@ -45,13 +31,15 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
-	static FString GetTutorialStageName(ETutorialStage Stage);
-
 protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	ETutorialStage CurrentStage{};
+
+	UPROPERTY(EditDefaultsOnly)
+	TMap<ETutorialStage, class UC_TutorialStageChecker*> TutorialStageCheckers{};
+
+	UPROPERTY(EditInstanceOnly)
+	TMap<ETutorialStage, class ATriggerBox*> StageStartTriggerBoxes{};
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<ETutorialStage, FTutorialStageData> TutorialStageInfos{};
 };
