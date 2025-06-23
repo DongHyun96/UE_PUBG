@@ -193,6 +193,15 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 	// Update Max walk speed
 	Player->UpdateMaxWalkSpeed(MovementVector);
 
+	// Tutorial용 binding(WASD Movement tutorial)된 상황이라면, broadcast 처리
+	if (MovementTutorialDelegate.IsBound())
+	{
+		if (MovementVector.X == -1) MovementTutorialDelegate.Broadcast(0, 0);
+		if (MovementVector.X == 1)  MovementTutorialDelegate.Broadcast(0, 1);
+		if (MovementVector.Y == -1) MovementTutorialDelegate.Broadcast(0, 2);
+		if (MovementVector.Y == 1)  MovementTutorialDelegate.Broadcast(0, 3);
+	}
+
 	if (Player->Controller != nullptr)
 	{
 		const FRotator Rotation = FRotator(0, Player->GetActorRotation().Yaw, 0);

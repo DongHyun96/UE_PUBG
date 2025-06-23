@@ -6,17 +6,12 @@
 #include "Components/ActorComponent.h"
 #include "C_TutorialStageChecker.generated.h"
 
-USTRUCT(BlueprintType)
+DECLARE_MULTICAST_DELEGATE_TwoParams(FGoalAchievedDelegate, uint8 /*TargetGoal*/, int /*SubGoalIndex*/);
+
 struct FGoalData
 {
-	GENERATED_BODY()
-	
-	UPROPERTY(BlueprintReadOnly)
 	bool bMainGoalAchieved{};
-
-	// 직렬화 관련 문제 때문에 bool 대신 uint8 사용
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TArray<uint8> SubGoalsAchieved{};
+	TArray<bool> SubGoalsAchieved{};
 };
 
 enum class ETutorialStage : uint8;
@@ -38,12 +33,21 @@ public:
 	void SetOwnerTutorialManager(class AC_TutorialManager* InOwnerTutorialManager) { OwnerTutorialManager = InOwnerTutorialManager; }
 
 	/// <summary>
-	/// 각 TutorialStage에서 특정한 Tutorial Sub Gaol 행위를 완료했을 때 CallBack 받는 함수
+	/// 각 TutorialStage에서 특정한 Tutorial Goal 행위를 완료했을 때 CallBack 받는 함수
 	/// </summary>
 	/// <param name="TargetGoal"> : Target MainGoal Index </param>
-	/// <param name="SubGoalIndex"> : Target SubGoal Index </param>
+	/// <param name="SubGoalIndex"> : Target SubGoal Index (만약 SubGoal이 따로 없는 MainGoal이라면 -1 사용(default value))</param>
 	/// <returns> 이미 Achieved 된 상태이거나, 해당하는 Goal Index가 존재하지 않다면 return false </returns>
-	bool OnSubGoalAchieved(uint8 TargetGoal, uint8 SubGoalIndex);
+	bool OnGoalAchieved(uint8 TargetGoal, int SubGoalIndex = -1);
+
+private:
+	
+	/// <summary>
+	/// OnGoalAchieved 함수 내의 MainGoal Achieved 체크 처리 boilerplate code 정리 
+	/// </summary>
+	/// <param name="TargetData"></param>
+	/// <returns></returns>
+	bool MainGoalAchievedCheckingRoutine(FGoalData& TargetData);
 
 public:
 
@@ -54,13 +58,15 @@ private:
 	
 	// 이 Component를 갖고 있는 TutorialManager
 	AC_TutorialManager* OwnerTutorialManager{};
+	bool bHasStart{}; // 현재 Stage가 TriggerBox Overlap에 의해 시작되었는지 체크
 
 protected:
 	
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TArray<FGoalData> GoalData{};
-	
+
 private:
+
+	// Delegate를 걸어둔 모든 Delegate들
+	TArray<TMulticastDelegate<void(uint8, int)>> SubscribedDelegates{};
 	
-	bool bHasStart{}; // 현재 Stage가 TriggerBox Overlap에 의해 시작되었는지 체크  
 };
