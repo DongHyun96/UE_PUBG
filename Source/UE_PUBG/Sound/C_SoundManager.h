@@ -32,7 +32,16 @@ enum class ESoundClassName : uint8
 	AIRPLANE,
 	LANDING,
 	PARACHUTE,
+	GLIDING,
 	BGM,
+	SFX,
+	SFX_NORMAL,
+	FLASH_BANG_STURNNED,
+	UNDER_WATER,
+	SWIM,
+	ITEM_PICKUP,
+	HANDLING_WEAPON,
+	POSE_ACTION,
 	MAX
 };
 
@@ -163,4 +172,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UAudioComponent* BGMComponent = nullptr;
+
+	
 };
