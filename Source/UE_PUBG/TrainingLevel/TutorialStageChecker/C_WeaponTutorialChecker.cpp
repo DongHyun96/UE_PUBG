@@ -6,11 +6,15 @@
 UC_WeaponTutorialChecker::UC_WeaponTutorialChecker()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+}
 
+void UC_WeaponTutorialChecker::BeginPlay()
+{
+	Super::BeginPlay();
+	
 	// 무기와 탄환 획득하기
-	FGoalData GatherWeaponsAndAmmo{};
-	GatherWeaponsAndAmmo.SubGoalsAchieved.Init(false, 2);
-	GoalData.Add(GatherWeaponsAndAmmo);
+	GoalData.Add(FGoalData());
+	GoalData[0].SubGoalsAchieved.Init(false, 2);
 
 	// R 재장전하기
 	GoalData.Add(FGoalData());
@@ -19,14 +23,8 @@ UC_WeaponTutorialChecker::UC_WeaponTutorialChecker()
 	GoalData.Add(FGoalData());
 
 	// 스코프 모드에서 목표물 명중하기
-	FGoalData HitTargetWhileAimDownSight{};
-	HitTargetWhileAimDownSight.SubGoalsAchieved.Init(false, 10);
-	GoalData.Add(HitTargetWhileAimDownSight);
-}
-
-void UC_WeaponTutorialChecker::BeginPlay()
-{
-	Super::BeginPlay();
+	GoalData.Add(FGoalData());
+	GoalData[3].SubGoalsAchieved.Init(false, 10);
 }
 
 void UC_WeaponTutorialChecker::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

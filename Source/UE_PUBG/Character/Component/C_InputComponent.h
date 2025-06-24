@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "C_InputComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FMovementTutorialDelegate, uint8, int);
+DECLARE_DELEGATE_RetVal_TwoParams(bool, FMovementTutorialDelegate, uint8, int);
 
 enum class EWeaponSlot : uint8;
 

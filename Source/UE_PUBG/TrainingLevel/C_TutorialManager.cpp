@@ -52,3 +52,22 @@ void AC_TutorialManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AC_TutorialManager::SetStageToNextStage()
+{
+	// 현재 Stage Delegate 해제
+	if (CurrentStage != ETutorialStage::Max)
+		TutorialStageCheckers[CurrentStage]->ClearSubscribedDelegates();
+
+	UC_Util::Print("Set Current Stage to next stage", FColor::Red, 10.f);
+	
+	if (++CurrentStage != ETutorialStage::Max)
+	{
+		// TODO : 다음 문 열기
+		// 현재는 Delegate Init 처리로 두었음 (For Testing)
+		TutorialStageCheckers[CurrentStage]->InitDelegateSubscriptions();
+	}
+	else
+	{
+		// Tutorial End 처리
+	}
+}

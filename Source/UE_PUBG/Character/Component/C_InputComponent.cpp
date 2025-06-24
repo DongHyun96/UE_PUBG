@@ -196,10 +196,14 @@ void UC_InputComponent::Move(const FInputActionValue& Value)
 	// Tutorial용 binding(WASD Movement tutorial)된 상황이라면, broadcast 처리
 	if (MovementTutorialDelegate.IsBound())
 	{
-		if (MovementVector.X == -1) MovementTutorialDelegate.Broadcast(0, 0);
-		if (MovementVector.X == 1)  MovementTutorialDelegate.Broadcast(0, 1);
-		if (MovementVector.Y == -1) MovementTutorialDelegate.Broadcast(0, 2);
-		if (MovementVector.Y == 1)  MovementTutorialDelegate.Broadcast(0, 3);
+		// Basic Movement Bind 처리
+		if (MovementVector.X == 1.f)	MovementTutorialDelegate.Execute(0, 0);
+		if (MovementVector.X == -1.f)	MovementTutorialDelegate.Execute(0, 1);
+		if (MovementVector.Y == 1.f)	MovementTutorialDelegate.Execute(0, 2);
+		if (MovementVector.Y == -1.f)	MovementTutorialDelegate.Execute(0, 3);
+
+		// Sprint movement 처리
+		if (Player->GetIsSprinting() && MovementVector.X == 1.f) MovementTutorialDelegate.Execute(1, -1);
 	}
 
 	if (Player->Controller != nullptr)
@@ -314,7 +318,12 @@ void UC_InputComponent::OnJump()
 	CancelTurnInPlaceMotion();
 
 	// 파쿠르 Action에 성공했다면 return
-	if (Player->GetParkourComponent()->TryExecuteParkourAction()) return;
+	if (Player->GetParkourComponent()->TryExecuteParkourAction())
+	{
+		if (MovementTutorialDelegate.IsBound())
+			MovementTutorialDelegate.Execute(2, -1);
+		return;
+	}
 
 	if (Player->GetPoseState() == EPoseState::CRAWL) // Crawl to crouch
 	{

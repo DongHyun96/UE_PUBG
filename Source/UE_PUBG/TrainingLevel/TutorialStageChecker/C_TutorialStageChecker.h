@@ -6,11 +6,14 @@
 #include "Components/ActorComponent.h"
 #include "C_TutorialStageChecker.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FGoalAchievedDelegate, uint8 /*TargetGoal*/, int /*SubGoalIndex*/);
-
+USTRUCT(BlueprintType)
 struct FGoalData
 {
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadOnly)
 	bool bMainGoalAchieved{};
+	
 	TArray<bool> SubGoalsAchieved{};
 };
 
@@ -32,6 +35,8 @@ public:
 
 	void SetOwnerTutorialManager(class AC_TutorialManager* InOwnerTutorialManager) { OwnerTutorialManager = InOwnerTutorialManager; }
 
+protected:
+	
 	/// <summary>
 	/// 각 TutorialStage에서 특정한 Tutorial Goal 행위를 완료했을 때 CallBack 받는 함수
 	/// </summary>
@@ -53,6 +58,16 @@ public:
 
 	UFUNCTION()
 	void OnStartTriggerBoxBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
+	/// <summary>
+	/// 첫 시작 시, 해당 Tutorial Stage에서 Gaol로 잡힌 행위들에 대한 Delegate 구독 처리
+	/// </summary>
+	virtual void InitDelegateSubscriptions();
+
+	/// <summary>
+	/// 구독한 Delegate 모두 해제 & SubscribedDelegates Array 정리
+	/// </summary>
+	void ClearSubscribedDelegates();
 	
 private:
 	
@@ -61,12 +76,12 @@ private:
 	bool bHasStart{}; // 현재 Stage가 TriggerBox Overlap에 의해 시작되었는지 체크
 
 protected:
-	
+
+	UPROPERTY(BlueprintReadOnly)
 	TArray<FGoalData> GoalData{};
 
 private:
 
 	// Delegate를 걸어둔 모든 Delegate들
-	TArray<TMulticastDelegate<void(uint8, int)>> SubscribedDelegates{};
-	
+	TArray<TDelegate<bool(uint8, int)>> SubscribedDelegates{};
 };

@@ -7,6 +7,11 @@
 UC_HealingTutorialChecker::UC_HealingTutorialChecker()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+}
+
+void UC_HealingTutorialChecker::BeginPlay()
+{
+	Super::BeginPlay();
 	
 	// 회복 아이템 획득하기
 	GoalData.Add(FGoalData());
@@ -19,11 +24,6 @@ UC_HealingTutorialChecker::UC_HealingTutorialChecker()
 
 	// 부스트 게이지 채우기
 	GoalData.Add(FGoalData());
-}
-
-void UC_HealingTutorialChecker::BeginPlay()
-{
-	Super::BeginPlay();
 }
 
 

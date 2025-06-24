@@ -5,6 +5,7 @@
 
 #include "Character/C_Player.h"
 #include "Components/BoxComponent.h"
+#include "TrainingLevel/C_TutorialManager.h"
 #include "Utility/C_Util.h"
 
 UC_TutorialStageChecker::UC_TutorialStageChecker()
@@ -30,7 +31,11 @@ bool UC_TutorialStageChecker::OnGoalAchieved(uint8 TargetGoal, int SubGoalIndex)
 	if (Data.bMainGoalAchieved) return false; // 이미 달성된 MainGoal일 때
 	
 	if (SubGoalIndex == -1) // SubGoal이 없는 Goal
+	{
+		FString Str = "MainGoal Achieved : " + FString::FromInt(TargetGoal);
+		UC_Util::Print(Str, FColor::Red, 10.f);
 		return MainGoalAchievedCheckingRoutine(Data); // MainGoalAchieved checking 일련 과정 수행
+	}
 	
 	if (SubGoalIndex >= Data.SubGoalsAchieved.Num()) return false;
 
@@ -44,13 +49,16 @@ bool UC_TutorialStageChecker::OnGoalAchieved(uint8 TargetGoal, int SubGoalIndex)
 		if (!SubGoalAchieved) return true; // 아직 남아있는 SubGoal이 있을 떄
 
 	// SubGoal 모두 달성, MainGoalAchieved checking 일련의 과정 수행
+	FString Str = "SubGoal All achieved -> MainGoal Achieved : " + FString::FromInt(TargetGoal);
+	UC_Util::Print(Str, FColor::Red, 10.f);
+	
 	return MainGoalAchievedCheckingRoutine(Data);
 }
 
 bool UC_TutorialStageChecker::MainGoalAchievedCheckingRoutine(FGoalData& TargetData)
 {
 	// MainGoal 달성 처리
-	TargetData.bMainGoalAchieved = true; 
+	TargetData.bMainGoalAchieved = true;
 		
 	// TODO : 해당되는 MainGoal UI 업데이트 (체크표시)
 
@@ -58,7 +66,7 @@ bool UC_TutorialStageChecker::MainGoalAchievedCheckingRoutine(FGoalData& TargetD
 		if (!GData.bMainGoalAchieved) return true;
 	
 	// 현재의 세부 Tutorial에서 모든 Main Goal을 달성함
-	// TODO : 다음 문 열기, Delegate 모두 해제
+	OwnerTutorialManager->SetStageToNextStage();
 	
 	return true;
 }
@@ -72,4 +80,22 @@ void UC_TutorialStageChecker::OnStartTriggerBoxBeginOverlap(AActor* OverlappedAc
 	UC_Util::Print("Triggered", FColor::Red, 10.f);
 	
 	// TODO : Tutorial 개요 UI 보여주기 & Player Input 잠시 꺼두고 UI 쪽(SpaceBar skip)에서만 사용
+	// 현재는 바로 시작 처리로 둠 (For testing)
+	InitDelegateSubscriptions();
+}
+
+void UC_TutorialStageChecker::InitDelegateSubscriptions()
+{
+	UC_Util::Print("Initing DelegateSubScription (parent side)", FColor::Red, 10.f);
+	
+	// 초기 clear 처리
+	ClearSubscribedDelegates();
+
+	// 나머지 구현부는 자식 단계에서 처리
+}
+
+void UC_TutorialStageChecker::ClearSubscribedDelegates()
+{
+	for (auto Delegate : SubscribedDelegates) Delegate.Unbind();
+	SubscribedDelegates.Empty();
 }

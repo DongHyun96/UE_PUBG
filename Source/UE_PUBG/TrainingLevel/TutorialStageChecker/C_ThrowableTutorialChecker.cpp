@@ -7,7 +7,12 @@
 UC_ThrowableTutorialChecker::UC_ThrowableTutorialChecker()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+}
 
+void UC_ThrowableTutorialChecker::BeginPlay()
+{
+	Super::BeginPlay();
+	
 	// 투척류 획득하기
 	GoalData.Add(FGoalData());
 
@@ -16,11 +21,6 @@ UC_ThrowableTutorialChecker::UC_ThrowableTutorialChecker()
 
 	// 수류탄 던지기
 	GoalData.Add(FGoalData());
-}
-
-void UC_ThrowableTutorialChecker::BeginPlay()
-{
-	Super::BeginPlay();
 }
 
 

@@ -122,6 +122,8 @@ public:
 	class UC_CrosshairWidgetComponent* GetCrosshairWidgetComponent() { return CrosshairWidgetComponent; }
 
 	class UC_PlayerDeafenedHandler* GetDeafenedHandler() const { return DeafenedHandler; }
+
+	class UC_InputComponent* GetInputComponent() const { return MyInputComponent; }
 		
 public:
 	bool GetIsHighEnoughToFall() override;
