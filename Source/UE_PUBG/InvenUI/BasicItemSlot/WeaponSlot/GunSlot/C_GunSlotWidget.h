@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -33,6 +33,16 @@ public:
 
 	void UpdateAttachableSlotVisibility();
 	
+	void  UpdateCurAmmo(AC_Gun* curWeapon);
+protected:
+
+	void UpdateLeftAmmo(AC_Gun* curWeapon);
+
+	void UpdateAmmoImage(AC_Gun* curWeapon, UTexture2D* InItemSlotImage);
+
+	void UpdateBulletTypeText(AC_Gun* curWeapon, FString InBulletTypeString);
+
+public:
 	bool SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, class AC_AttachableItem* InAttachableItem);
 
 	void SetOwnerPlayer(class AC_Player* InOwnerPlayer) override;
@@ -62,6 +72,18 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	UC_AttachableItemSlotWidget* WB_GripSlot = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UTextBlock* CurAmmo = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UTextBlock* LeftAmmo = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UImage* AmmoImage = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UTextBlock* BulletTypeText = nullptr;
 };
 
 
