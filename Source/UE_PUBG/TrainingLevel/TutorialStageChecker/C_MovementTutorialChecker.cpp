@@ -19,21 +19,17 @@ void UC_MovementTutorialChecker::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*FGoalData BasicMovementGoalData{};
-	BasicMovementGoalData.SubGoalsAchieved.Init(false, 4);
-	GoalData.Add(BasicMovementGoalData);*/
-	
 	// WASD 이동하기 Goal
 	GoalData.Add(FGoalData());
 	GoalData[0].SubGoalsAchieved.Init(false, 4);
-	
-	UC_Util::Print(GoalData[0].SubGoalsAchieved.Num(), FColor::MakeRandomColor(), 10.f);
 
 	// Shift 전력질주하기 Goal
 	GoalData.Add(FGoalData());
 
 	// 지형 지물 넘기
 	GoalData.Add(FGoalData());
+
+	UC_Util::Print(GoalData.Num(), FColor::MakeRandomColor(), 10.f);
 }
 
 

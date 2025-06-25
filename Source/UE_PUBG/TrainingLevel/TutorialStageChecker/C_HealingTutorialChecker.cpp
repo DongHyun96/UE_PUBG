@@ -12,7 +12,7 @@ UC_HealingTutorialChecker::UC_HealingTutorialChecker()
 void UC_HealingTutorialChecker::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	// 회복 아이템 획득하기
 	GoalData.Add(FGoalData());
 

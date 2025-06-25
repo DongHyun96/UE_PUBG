@@ -41,8 +41,6 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
-public:
-	
 	/// <summary>
 	/// 다음 Stage로 넘어가기 처리 
 	/// </summary>
@@ -52,11 +50,21 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	ETutorialStage CurrentStage{};
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TMap<ETutorialStage, class UC_TutorialStageChecker*> TutorialStageCheckers{};
-
+	
 	UPROPERTY(EditInstanceOnly)
 	TMap<ETutorialStage, class ATriggerBox*> StageStartTriggerBoxes{};
+
+	// 다음 Stage로 나아갈 Gate 저장
+	UPROPERTY(EditInstanceOnly)
+	TMap<ETutorialStage, class AC_TutorialGate*> TutorialGates{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_TutorialWidget* TutorialWidget{};
+	
+private:
+	
+	TMap<ETutorialStage, class UC_TutorialStageChecker*> TutorialStageCheckers{};
+
+	
 	
 };

@@ -4,7 +4,6 @@
 #include "C_TutorialStageChecker.h"
 
 #include "Character/C_Player.h"
-#include "Components/BoxComponent.h"
 #include "TrainingLevel/C_TutorialManager.h"
 #include "Utility/C_Util.h"
 
@@ -16,6 +15,10 @@ UC_TutorialStageChecker::UC_TutorialStageChecker()
 void UC_TutorialStageChecker::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	GoalData.Empty();
+
+	// Goal Data Init은 각 자식 클래스에서 결정
 }
 
 void UC_TutorialStageChecker::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -62,8 +65,22 @@ bool UC_TutorialStageChecker::MainGoalAchievedCheckingRoutine(FGoalData& TargetD
 		
 	// TODO : 해당되는 MainGoal UI 업데이트 (체크표시)
 
+	uint8 RemainingGoalCnt{};
 	for (const FGoalData& GData : GoalData) // 아직 남아있는 MainGoal이 있을 때
-		if (!GData.bMainGoalAchieved) return true;
+	{
+		if (!GData.bMainGoalAchieved)
+		{
+			RemainingGoalCnt++;
+			/*FString Str = FString::FromInt(Index++) + " Goal not achieved yet!";
+			UC_Util::Print(Str, FColor::MakeRandomColor(), 10.f);
+			return true;*/
+		}
+	}
+
+	FString Str = FString::FromInt(RemainingGoalCnt) + " Goals left";
+	UC_Util::Print(Str, FColor::Red, 10.f);
+
+	if (RemainingGoalCnt > 0) return true;
 	
 	// 현재의 세부 Tutorial에서 모든 Main Goal을 달성함
 	OwnerTutorialManager->SetStageToNextStage();

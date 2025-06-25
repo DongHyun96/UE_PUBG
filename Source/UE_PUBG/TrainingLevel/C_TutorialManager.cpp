@@ -3,12 +3,14 @@
 
 #include "C_TutorialManager.h"
 
+#include "Door/C_TutorialGate.h"
 #include "TutorialStageChecker/C_TutorialStageChecker.h"
 #include "Engine/TriggerBox.h"
 #include "TutorialStageChecker/C_HealingTutorialChecker.h"
 #include "TutorialStageChecker/C_MovementTutorialChecker.h"
 #include "TutorialStageChecker/C_ThrowableTutorialChecker.h"
 #include "TutorialStageChecker/C_WeaponTutorialChecker.h"
+#include "TutorialWidget/C_TutorialWidget.h"
 #include "Utility/C_Util.h"
 
 AC_TutorialManager::AC_TutorialManager()
@@ -20,6 +22,9 @@ AC_TutorialManager::AC_TutorialManager()
 	TutorialStageCheckers.Add(ETutorialStage::ThrowableTutorial, CreateDefaultSubobject<UC_ThrowableTutorialChecker>("ThrowableTutorialChecker"));
 	TutorialStageCheckers.Add(ETutorialStage::HealingTutorial, CreateDefaultSubobject<UC_HealingTutorialChecker>("HealingTutorialChecker"));
 	TutorialStageCheckers.Add(ETutorialStage::TutorialEnd, CreateDefaultSubobject<UC_TutorialStageChecker>("TutorialEndChecker"));
+
+	for (TTuple<ETutorialStage, UC_TutorialStageChecker*> TutorialStageChecker : TutorialStageCheckers)
+		TutorialStageChecker.Value->SetOwnerTutorialManager(this);
 }
 
 void AC_TutorialManager::BeginPlay()
@@ -45,6 +50,8 @@ void AC_TutorialManager::BeginPlay()
 		
 		StageStartTriggerBoxes[Stage]->OnActorBeginOverlap.AddDynamic(TutorialStageCheckers[Stage], &UC_TutorialStageChecker::OnStartTriggerBoxBeginOverlap);
 	}
+
+	if (TutorialWidget) TutorialWidget->AddToViewport(20);
 }
 
 void AC_TutorialManager::Tick(float DeltaTime)
@@ -54,20 +61,16 @@ void AC_TutorialManager::Tick(float DeltaTime)
 
 void AC_TutorialManager::SetStageToNextStage()
 {
+	UC_Util::Print("Set Current Stage to next stage", FColor::MakeRandomColor(), 10.f);
+	
 	// 현재 Stage Delegate 해제
 	if (CurrentStage != ETutorialStage::Max)
+	{
 		TutorialStageCheckers[CurrentStage]->ClearSubscribedDelegates();
+		
+		if (TutorialGates.Contains(CurrentStage))
+			TutorialGates[CurrentStage]->ToggleOpeningBoxTriggerEnabled(true);
+	}
 
-	UC_Util::Print("Set Current Stage to next stage", FColor::Red, 10.f);
-	
-	if (++CurrentStage != ETutorialStage::Max)
-	{
-		// TODO : 다음 문 열기
-		// 현재는 Delegate Init 처리로 두었음 (For Testing)
-		TutorialStageCheckers[CurrentStage]->InitDelegateSubscriptions();
-	}
-	else
-	{
-		// Tutorial End 처리
-	}
+	++CurrentStage;
 }
