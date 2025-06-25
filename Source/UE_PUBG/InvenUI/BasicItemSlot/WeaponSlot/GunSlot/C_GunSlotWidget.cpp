@@ -13,7 +13,8 @@
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Attachment/C_AttachableItem.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "Singleton/C_GameInstance.h"
+#include "Engine/DataTable.h"
 #include "Utility/C_Util.h"
 
 void UC_GunSlotWidget::NativeConstruct()
@@ -94,6 +95,102 @@ void UC_GunSlotWidget::UpdateWidget()
 	Super::UpdateWidget();
 
 	UpdateAttachableSlotVisibility();
+
+	UC_EquippedComponent* EquipComp = OwnerPlayer->GetEquippedComponent();
+	
+
+
+	AC_Gun* curWeapon = Cast<AC_Gun>(EquipComp->GetWeapons()[WeaponType]);
+
+	FName BulletTypeName = NAME_None;
+
+	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
+
+	UDataTable* ItemDataTable = nullptr;
+
+	FItemData* Row = nullptr;
+
+	UTexture2D* ItemSlotImage = nullptr;
+
+	FString ItemName;
+
+	if (curWeapon)
+	{
+		BulletTypeName = curWeapon->GetCurrentBulletTypeName();
+
+		ItemDataTable = *GameInstance->GetDataTables().Find(EDataTableType::Item);
+		Row = ItemDataTable->FindRow<FItemData>(BulletTypeName, TEXT("Looking for item data"));
+		ItemSlotImage = Row->ItemSlotImage;
+		ItemName = Row->ItemName;
+	}
+
+	UpdateCurAmmo(curWeapon);
+
+	UpdateLeftAmmo(curWeapon);
+
+	UpdateAmmoImage(curWeapon, ItemSlotImage);
+
+	UpdateBulletTypeText(curWeapon, ItemName);
+
+
+	//if (CurAmmo)
+	//{
+	//	if (curWeapon)
+	//	{
+	//		CurAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d"), curWeapon->GetCurBulletCount())));
+	//		CurAmmo->SetVisibility(ESlateVisibility::Visible);
+	//	}
+	//	else
+	//	{
+	//		CurAmmo->SetText(FText::FromString(TEXT("0")));
+	//		CurAmmo->SetVisibility(ESlateVisibility::Collapsed);
+	//	}
+	//}
+
+	//if (LeftAmmo)
+	//{
+	//	if (curWeapon)
+	//	{
+	//		int curStack = InvenComp->GetTotalStackByItemName(BulletTypeName);
+
+	//		LeftAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d"), curStack)));
+	//		LeftAmmo->SetVisibility(ESlateVisibility::Visible);
+	//	}
+	//	else
+	//	{
+	//		LeftAmmo->SetText(FText::FromString(TEXT("0")));
+	//		LeftAmmo->SetVisibility(ESlateVisibility::Collapsed);
+	//	}
+	//}
+
+	//if (AmmoImage)
+	//{
+	//	if (curWeapon)
+	//	{
+	//		AmmoImage->SetVisibility(ESlateVisibility::Visible);
+	//		AmmoImage->SetBrushFromTexture(ItemSlotImage);
+	//	}
+	//	else
+	//	{
+	//		AmmoImage->SetVisibility(ESlateVisibility::Collapsed);
+	//		AmmoImage->SetBrushFromTexture(nullptr);
+	//	}
+	//}
+
+	//if (BulletTypeText)
+	//{
+	//	if (curWeapon)
+	//	{
+	//		BulletTypeText->SetText(FText::FromString(ItemName));
+	//		BulletTypeText->SetVisibility(ESlateVisibility::Visible);
+	//	}
+	//	else
+	//	{
+	//		BulletTypeText->SetText(FText::FromString(TEXT("")));
+	//		BulletTypeText->SetVisibility(ESlateVisibility::Collapsed);
+	//	}
+	//}
+
 }
 
 void UC_GunSlotWidget::UpdateAttachableSlotVisibility()
@@ -114,6 +211,80 @@ void UC_GunSlotWidget::UpdateAttachableSlotVisibility()
 		}
 	}
 
+}
+
+void UC_GunSlotWidget::UpdateCurAmmo(AC_Gun* curWeapon)
+{
+	if (CurAmmo)
+	{
+		if (curWeapon)
+		{
+			CurAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d"), curWeapon->GetCurBulletCount())));
+			CurAmmo->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			CurAmmo->SetText(FText::FromString(TEXT("0")));
+			CurAmmo->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
+}
+
+void UC_GunSlotWidget::UpdateLeftAmmo(AC_Gun* curWeapon)
+{
+	if (LeftAmmo)
+	{
+		if (curWeapon)
+		{
+			UC_InvenComponent* InvenComp = OwnerPlayer->GetInvenComponent();
+
+			FName BulletTypeName = curWeapon->GetCurrentBulletTypeName();
+
+			int curStack = InvenComp->GetTotalStackByItemName(BulletTypeName);
+
+			LeftAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d"), curStack)));
+			LeftAmmo->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			LeftAmmo->SetText(FText::FromString(TEXT("0")));
+			LeftAmmo->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
+}
+
+void UC_GunSlotWidget::UpdateAmmoImage(AC_Gun* curWeapon, UTexture2D* InItemSlotImage)
+{
+	if (AmmoImage)
+	{
+		if (curWeapon)
+		{
+			AmmoImage->SetVisibility(ESlateVisibility::Visible);
+			AmmoImage->SetBrushFromTexture(InItemSlotImage);
+		}
+		else
+		{
+			AmmoImage->SetVisibility(ESlateVisibility::Collapsed);
+			AmmoImage->SetBrushFromTexture(nullptr);
+		}
+	}
+}
+
+void UC_GunSlotWidget::UpdateBulletTypeText(AC_Gun* curWeapon, FString InBulletTypeString)
+{
+	if (BulletTypeText)
+	{
+		if (curWeapon)
+		{
+			BulletTypeText->SetText(FText::FromString(InBulletTypeString));
+			BulletTypeText->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			BulletTypeText->SetText(FText::FromString(TEXT("")));
+			BulletTypeText->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
 }
 
 bool UC_GunSlotWidget::SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, AC_AttachableItem* InAttachableItem)
