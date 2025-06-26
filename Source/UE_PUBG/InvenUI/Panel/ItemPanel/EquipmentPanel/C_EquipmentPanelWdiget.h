@@ -18,8 +18,12 @@ public:
 
 	void UpdateWidget();
 
+public:
 	void SetOwnerPlayer(class AC_Player* InOwnerPlayer) override;
 
+	class UC_MainGunSlotWidget* GetMainGunSlot() { return MainGunSlot; }
+
+	class UC_SubGunSlotWidget* GetSubGunSlot() { return SubGunSlot; }
 protected:
 	bool HandleDrop(class AC_Item* DroppedItemBox) override;
 

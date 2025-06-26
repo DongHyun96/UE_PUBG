@@ -81,6 +81,8 @@ public:
 
 	class UC_BasicDivideItemPanelWidget* GetDivideItemInventoryDropWidget() { return DivideItemInventoryDropWidget; }
 
+	class UC_EquipmentPanelWdiget* GetEquipmentPanel() { return EquipmentPanel; }
+
 protected:
 
 
