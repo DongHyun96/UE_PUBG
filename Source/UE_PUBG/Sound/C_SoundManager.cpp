@@ -98,9 +98,29 @@ void AC_SoundManager::PlaySoundEffect(ESoundClassName EffectType, FVector Locati
 
 void AC_SoundManager::SetVolumeByName(ESoundClassName SoundClassName, float Volume)
 {
+	float InVolume = 0.01f;
+
+	if (
+		SoundClassName == ESoundClassName::MASTER  || 
+		SoundClassName == ESoundClassName::GLIDING || 
+		SoundClassName == ESoundClassName::AIRPLANE 
+		)
+	{
+		InVolume = Volume ? Volume : 0.01f;
+
+		//if (Volume == 0.f)
+		//	InVolume = 0.01f;
+		//else
+		//	InVolume = Volume;
+	}
+	else
+	{
+		InVolume = Volume;
+	}
+
 	if (USoundClass** FoundClass = SoundClassMap.Find(SoundClassName))
 	{
-		(*FoundClass)->Properties.Volume = FMath::Clamp(Volume, 0.f, 1.f);
+		(*FoundClass)->Properties.Volume = FMath::Clamp(InVolume, 0.f, 1.f);
 	}
 }
 
