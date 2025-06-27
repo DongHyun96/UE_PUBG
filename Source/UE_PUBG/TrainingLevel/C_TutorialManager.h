@@ -42,17 +42,27 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	/// <summary>
+	/// Tutorial 시작하기
+	/// </summary>
+	void StartTutorial();
+
+	/// <summary>
 	/// 다음 Stage로 넘어가기 처리 
 	/// </summary>
 	void SetStageToNextStage();
-	
+
+	/// <summary>
+	/// 현재 Stage 목표 행동 Delegate 구독 처리
+	/// </summary>
+	void InitCurrentStageDelegates();
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	ETutorialStage CurrentStage{};
 	
 	UPROPERTY(EditInstanceOnly)
-	TMap<ETutorialStage, class ATriggerBox*> StageStartTriggerBoxes{};
+	TMap<ETutorialStage, class AC_TutorialStageTriggerBox*> StageStartTriggerBoxes{};
 
 	// 다음 Stage로 나아갈 Gate 저장
 	UPROPERTY(EditInstanceOnly)
@@ -60,6 +70,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UC_TutorialWidget* TutorialWidget{};
+
+	UPROPERTY(EditInstanceOnly)
+	FTransform PlayerTutorialStartTransform{};
 	
 private:
 	

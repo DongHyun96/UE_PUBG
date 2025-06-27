@@ -3,14 +3,141 @@
 
 #include "C_TutorialWidget.h"
 
+#include "MediaPlayer.h"
+#include "Character/C_Player.h"
+#include "Character/Component/C_PlayerController.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/Image.h"
+#include "Components/TextBlock.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Singleton/C_GameSceneManager.h"
+#include "TrainingLevel/C_TutorialManager.h"
+#include "Utility/C_Util.h"
+
+
 void UC_TutorialWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	
+	const TMap<ETutorialStage, FString> TutorialStageExplanationPanelNames =
+	{
+		{ETutorialStage::MovementTutorial, "MovementTutorialExplanation"},
+		{ETutorialStage::MovementTutorial, "WeaponTutorialExplanation"},
+		{ETutorialStage::MovementTutorial, "ThrowableTutorialExplanation"},
+		{ETutorialStage::MovementTutorial, "HealingTutorialExplanation"}
+	};
+
+	for (const TTuple<ETutorialStage, FString>& PanelNameTuple : TutorialStageExplanationPanelNames)
+	{
+		UCanvasPanel* TargetPanel = Cast<UCanvasPanel>(GetWidgetFromName(FName(*PanelNameTuple.Value)));
+		if (!TargetPanel)
+		{
+			UC_Util::Print("From UC_TutorialWidget::NativeConstruct : Explanation panel casting failed!", FColor::Red, 10.f);
+			continue;
+		}
+		StageExplanations.Add(PanelNameTuple.Key, TargetPanel);
+	}
+
+	SetIsFocusable(true);
+
+	StageExplanationPanel->SetRenderOpacity(0.f);
 }
 
 void UC_TutorialWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	float NewOpacity = FMath::Lerp(StageExplanationPanel->GetRenderOpacity(), StageExplanationPanelOpacityDest, InDeltaTime * 10.f);
+	StageExplanationPanel->SetRenderOpacity(NewOpacity);
+
+	if (NewOpacity > 0.5f)
+	{
+		UpdateSpaceBarPercent();
+		
+		if (bSpaceBarDown)
+		{
+			float NewPercent = FMath::Min(SpaceBarPercent + InDeltaTime * 1.f, 1.f);
+			SetSpaceBarProgressBarPercent(NewPercent);
+
+			if (NewPercent >= 1.f)
+			{
+				bSpaceBarDown = false;
+				ToggleStageExplanationPanel(false);
+				
+				// 현 Stage Delegate 초기화
+				TutorialManager->InitCurrentStageDelegates();
+			}
+		}
+	}
+}
+
+void UC_TutorialWidget::SetStageExplanationPanel(ETutorialStage TutorialStage)
+{
+	// Set Title text
+	StageTitle->SetText(FText::FromString(TutorialStageTitles[TutorialStage]));
+
+	// 영상 setting
+	if (!MediaPlayer->OpenSource(MediaSources[TutorialStage]))
+		UC_Util::Print("MediaPlayer Opensource failed!", FColor::Red, 10.f);
+	
+	// Explanation 내용 setting
+	for (TTuple<ETutorialStage, UCanvasPanel*> Tuple : StageExplanations)
+		Tuple.Value->SetVisibility((TutorialStage == Tuple.Key) ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
+}
+
+void UC_TutorialWidget::ToggleStageExplanationPanel(bool InIsEnabled)
+{
+	AC_PlayerController* PC = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	
+	if (InIsEnabled)
+	{
+		StageExplanationPanelOpacityDest = 1.f;
+		
+		PC->SetInputMode(FInputModeUIOnly().SetWidgetToFocus(this->TakeWidget()));
+		PC->SetIgnoreLookInput(true);
+		PC->SetIgnoreMoveInput(true);
+
+		// 움직임은 멈추는데 이상하게 Move함수 호출은 직전에 움직였다면 계속 호출됨 / 동작 Animation을 멈추기 위한 처리
+		GAMESCENE_MANAGER->GetPlayer()->SetNextSpeed(0.f);
+		GAMESCENE_MANAGER->GetPlayer()->SetCanMove(false);
+		
+		if (!MediaPlayer->Rewind()) UC_Util::Print("Rewind failed!", FColor::Red, 10.f);
+		if (!MediaPlayer->Play()) UC_Util::Print("Play failed!", FColor::Red, 10.f);
+
+		SetSpaceBarProgressBarPercent(0.f);
+		TutorialVideoImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);				
+	}
+	else
+	{
+		StageExplanationPanelOpacityDest = 0.f;
+
+		PC->SetInputMode(FInputModeGameOnly());
+		PC->SetIgnoreLookInput(false);
+		PC->SetIgnoreMoveInput(false);
+
+		GAMESCENE_MANAGER->GetPlayer()->SetCanMove(true);
+		TutorialVideoImage->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+FReply UC_TutorialWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (InKeyEvent.GetKey() != EKeys::SpaceBar || InKeyEvent.IsRepeat()) return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+
+	// 키가 처음 눌리기 시작했을 때
+	bSpaceBarDown = true;
+	
+	return FReply::Handled();
+}
+
+FReply UC_TutorialWidget::NativeOnKeyUp(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (InKeyEvent.GetKey() != EKeys::SpaceBar) return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+
+	bSpaceBarDown = false;
+	SetSpaceBarProgressBarPercent(0.f);
+	
+	return FReply::Handled();
 }

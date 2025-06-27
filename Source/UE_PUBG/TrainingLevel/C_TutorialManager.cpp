@@ -3,9 +3,12 @@
 
 #include "C_TutorialManager.h"
 
+#include "C_TutorialStageTriggerBox.h"
+#include "Character/C_Player.h"
 #include "Door/C_TutorialGate.h"
 #include "TutorialStageChecker/C_TutorialStageChecker.h"
 #include "Engine/TriggerBox.h"
+#include "Singleton/C_GameSceneManager.h"
 #include "TutorialStageChecker/C_HealingTutorialChecker.h"
 #include "TutorialStageChecker/C_MovementTutorialChecker.h"
 #include "TutorialStageChecker/C_ThrowableTutorialChecker.h"
@@ -32,7 +35,8 @@ void AC_TutorialManager::BeginPlay()
 	Super::BeginPlay();
 
 	// Bind Start Trigger call back functions
-	for (int i = 0; i < static_cast<uint8>(ETutorialStage::Max); ++i)
+	// 첫 MovementTutorial Stage는 시간 차를 두고 automatic하게 시작함
+	for (int i = 1; i < static_cast<uint8>(ETutorialStage::Max); ++i)
 	{
 		ETutorialStage Stage = static_cast<ETutorialStage>(i);
 
@@ -51,12 +55,31 @@ void AC_TutorialManager::BeginPlay()
 		StageStartTriggerBoxes[Stage]->OnActorBeginOverlap.AddDynamic(TutorialStageCheckers[Stage], &UC_TutorialStageChecker::OnStartTriggerBoxBeginOverlap);
 	}
 
-	if (TutorialWidget) TutorialWidget->AddToViewport(20);
+	if (TutorialWidget)
+	{
+		TutorialWidget->AddToViewport(20);
+		TutorialWidget->SetTutorialManager(this);
+		StartTutorial();
+	}
 }
 
 void AC_TutorialManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AC_TutorialManager::StartTutorial()
+{
+	// Set Player Location
+	GAMESCENE_MANAGER->GetPlayer()->SetActorTransform(PlayerTutorialStartTransform);
+
+	// 2초 뒤에 MovementTutorial 시작
+	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+	{
+		TutorialWidget->SetStageExplanationPanel(CurrentStage);
+		TutorialWidget->ToggleStageExplanationPanel(true);
+	}, 2.f, false);
 }
 
 void AC_TutorialManager::SetStageToNextStage()
@@ -73,4 +96,9 @@ void AC_TutorialManager::SetStageToNextStage()
 	}
 
 	++CurrentStage;
+}
+
+void AC_TutorialManager::InitCurrentStageDelegates()
+{
+	TutorialStageCheckers[CurrentStage]->InitDelegateSubscriptions();
 }
