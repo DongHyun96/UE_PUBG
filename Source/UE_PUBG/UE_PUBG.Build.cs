@@ -31,8 +31,10 @@ public class UE_PUBG : ModuleRules
             "Water",
             "NavigationSystem",
             "PhysicsCore",
-            "LoadingScreenModule"
-            // "MoviePlayer"
+            "LoadingScreenModule",
+            "MoviePlayer",
+            "MediaAssets",
+            "HeadMountedDisplay"
         });
 
         /*
