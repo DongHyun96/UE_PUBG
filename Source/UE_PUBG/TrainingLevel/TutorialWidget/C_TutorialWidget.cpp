@@ -26,6 +26,7 @@ void UC_TutorialWidget::NativeConstruct()
 		{ETutorialStage::MovementTutorial, "MovementTutorialExplanation"},
 		{ETutorialStage::MovementTutorial, "WeaponTutorialExplanation"},
 		{ETutorialStage::MovementTutorial, "ThrowableTutorialExplanation"},
+		
 		{ETutorialStage::MovementTutorial, "HealingTutorialExplanation"}
 	};
 
