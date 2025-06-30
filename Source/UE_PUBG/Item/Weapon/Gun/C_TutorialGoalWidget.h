@@ -10,4 +10,10 @@ UCLASS()
 class UE_PUBG_API UC_TutorialGoalWidget : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+	virtual void NativeConstruct() override;
+
+protected:
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 };
