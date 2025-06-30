@@ -48,11 +48,10 @@ protected:
 private:
 	
 	/// <summary>
-	/// OnGoalAchieved 함수 내의 MainGoal Achieved 체크 처리 boilerplate code 정리 
+	/// OnGoalAchieved 함수 내의 MainGoal Achieved 되었을 때 일련의 체크 처리 boilerplate code 정리 
 	/// </summary>
 	/// <param name="TargetData"></param>
-	/// <returns></returns>
-	bool MainGoalAchievedCheckingRoutine(FGoalData& TargetData);
+	void MainGoalAchievedCheckingRoutine(FGoalData& TargetData);
 
 public:
 
@@ -60,9 +59,11 @@ public:
 	void OnStartTriggerBoxBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
 	/// <summary>
-	/// 첫 시작 시, 해당 Tutorial Stage에서 Gaol로 잡힌 행위들에 대한 Delegate 구독 처리
+	/// <para> Stage 첫 시작 시, 해당 Tutorial init 처리 </para>
+	/// <para> & 해당 Tutorial Stage에서 Gaol로 잡힌 행위들에 대한 Delegate 구독 처리 </para>
+	/// <para> Init 처리 시점 - 개요 UI를 닫았을 때  </para>
 	/// </summary>
-	virtual void InitDelegateSubscriptions();
+	virtual void InitStage();
 
 	/// <summary>
 	/// 구독한 Delegate 모두 해제 & SubscribedDelegates Array 정리
@@ -75,6 +76,9 @@ private:
 	AC_TutorialManager* OwnerTutorialManager{};
 	bool bHasStart{}; // 현재 Stage가 TriggerBox Overlap에 의해 시작되었는지 체크
 
+	// 현재 수행중인 MainGoal index - 현재 순서의 Main Goal이 아닌 미리 다음 Main Goal을 수행하여도 Sequence에 맞게끔 처리할 예정
+	uint8 CurrentMainGoalIndex{};
+	
 protected:
 
 	UPROPERTY(BlueprintReadOnly)

@@ -29,6 +29,9 @@ void UC_TutorialStageChecker::TickComponent(float DeltaTime, ELevelTick TickType
 
 bool UC_TutorialStageChecker::OnGoalAchieved(uint8 TargetGoal, int SubGoalIndex)
 {
+	// 실질적인 Main Goal sequence를 따르게끔 처리
+	if (TargetGoal != CurrentMainGoalIndex) return false;
+	
 	if (TargetGoal >= GoalData.Num()) return false;
 	FGoalData& Data = GoalData[TargetGoal];
 
@@ -38,7 +41,8 @@ bool UC_TutorialStageChecker::OnGoalAchieved(uint8 TargetGoal, int SubGoalIndex)
 	{
 		FString Str = "MainGoal Achieved : " + FString::FromInt(TargetGoal);
 		UC_Util::Print(Str, FColor::Red, 10.f);
-		return MainGoalAchievedCheckingRoutine(Data); // MainGoalAchieved checking 일련 과정 수행
+		MainGoalAchievedCheckingRoutine(Data); // MainGoalAchieved checking 일련 과정 수행
+		return true;
 	}
 	
 	if (SubGoalIndex >= Data.SubGoalsAchieved.Num()) return false;
@@ -56,37 +60,23 @@ bool UC_TutorialStageChecker::OnGoalAchieved(uint8 TargetGoal, int SubGoalIndex)
 	FString Str = "SubGoal All achieved -> MainGoal Achieved : " + FString::FromInt(TargetGoal);
 	UC_Util::Print(Str, FColor::Red, 10.f);
 	
-	return MainGoalAchievedCheckingRoutine(Data);
+	MainGoalAchievedCheckingRoutine(Data);
+	return true;
 }
 
-bool UC_TutorialStageChecker::MainGoalAchievedCheckingRoutine(FGoalData& TargetData)
+void UC_TutorialStageChecker::MainGoalAchievedCheckingRoutine(FGoalData& TargetData)
 {
 	// MainGoal 달성 처리
 	TargetData.bMainGoalAchieved = true;
+	++CurrentMainGoalIndex; 
 		
-	// TODO : 해당되는 MainGoal UI 업데이트 (체크표시)
+	// TODO : 해당되는 MainGoal UI 업데이트 (체크표시) && 남아있는 MainGoal이 있을 때, 다음 MainGoal focus 처리
 
-	uint8 RemainingGoalCnt{};
-	for (const FGoalData& GData : GoalData) // 아직 남아있는 MainGoal이 있을 때
-	{
-		if (!GData.bMainGoalAchieved)
-		{
-			RemainingGoalCnt++;
-			/*FString Str = FString::FromInt(Index++) + " Goal not achieved yet!";
-			UC_Util::Print(Str, FColor::MakeRandomColor(), 10.f);
-			return true;*/
-		}
-	}
-
-	FString Str = FString::FromInt(RemainingGoalCnt) + " Goals left";
-	UC_Util::Print(Str, FColor::Red, 10.f);
-
-	if (RemainingGoalCnt > 0) return true;
+	// 아직 남아있는 MainGoal이 있을 때
+	if (CurrentMainGoalIndex < GoalData.Num()) return;
 	
 	// 현재의 세부 Tutorial에서 모든 Main Goal을 달성함
 	OwnerTutorialManager->SetStageToNextStage();
-	
-	return true;
 }
 
 void UC_TutorialStageChecker::OnStartTriggerBoxBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
@@ -104,14 +94,18 @@ void UC_TutorialStageChecker::OnStartTriggerBoxBeginOverlap(AActor* OverlappedAc
 		TutorialStageTriggerBox->ToggleTriggerBox(false);
 }
 
-void UC_TutorialStageChecker::InitDelegateSubscriptions()
+void UC_TutorialStageChecker::InitStage()
 {
-	UC_Util::Print("Initing DelegateSubScription (parent side)", FColor::Red, 10.f);
+	UC_Util::Print("InitStage", FColor::Red, 10.f);
+
+	CurrentMainGoalIndex = 0;
+
+	// TODO : 첫 MainGoal Side Widget 및 가운데 MainGoal Explanation sequence anim(anim으로 할지는 미정) 보여주기
+	
 	
 	// 초기 clear 처리
 	ClearSubscribedDelegates();
-
-	// 나머지 구현부는 자식 단계에서 처리
+	// 나머지 Delegate 구독 구현부는 자식 단계에서 처리
 }
 
 void UC_TutorialStageChecker::ClearSubscribedDelegates()

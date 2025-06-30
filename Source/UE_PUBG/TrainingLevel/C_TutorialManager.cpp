@@ -98,7 +98,7 @@ void AC_TutorialManager::SetStageToNextStage()
 	++CurrentStage;
 }
 
-void AC_TutorialManager::InitCurrentStageDelegates()
+void AC_TutorialManager::InitCurrentStageChecker()
 {
-	TutorialStageCheckers[CurrentStage]->InitDelegateSubscriptions();
+	TutorialStageCheckers[CurrentStage]->InitStage();
 }

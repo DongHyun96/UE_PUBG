@@ -26,5 +26,5 @@ public:
 
 private:
 
-	virtual void InitDelegateSubscriptions() override;
+	virtual void InitStage() override;
 };

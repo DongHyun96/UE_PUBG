@@ -52,9 +52,13 @@ public:
 	void SetStageToNextStage();
 
 	/// <summary>
-	/// 현재 Stage 목표 행동 Delegate 구독 처리
+	/// 현재 Stage 초기화 & 목표 행동 Delegate 구독 처리
 	/// </summary>
-	void InitCurrentStageDelegates();
+	void InitCurrentStageChecker();
+
+public:
+
+	class UC_TutorialWidget* GetTutorialWidget() const { return TutorialWidget; }
 
 protected:
 
@@ -69,7 +73,7 @@ protected:
 	TMap<ETutorialStage, class AC_TutorialGate*> TutorialGates{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_TutorialWidget* TutorialWidget{};
+	UC_TutorialWidget* TutorialWidget{};
 
 	UPROPERTY(EditInstanceOnly)
 	FTransform PlayerTutorialStartTransform{};

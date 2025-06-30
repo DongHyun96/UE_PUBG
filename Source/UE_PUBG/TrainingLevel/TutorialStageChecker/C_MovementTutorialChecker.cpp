@@ -38,9 +38,9 @@ void UC_MovementTutorialChecker::TickComponent(float DeltaTime, ELevelTick TickT
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UC_MovementTutorialChecker::InitDelegateSubscriptions()
+void UC_MovementTutorialChecker::InitStage()
 {
-	Super::InitDelegateSubscriptions();
+	Super::InitStage();
 
 	UC_InputComponent* PlayerInputComponent = GAMESCENE_MANAGER->GetPlayer()->GetInputComponent();
 
