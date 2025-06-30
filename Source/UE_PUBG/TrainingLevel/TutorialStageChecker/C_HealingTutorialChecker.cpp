@@ -3,6 +3,8 @@
 
 #include "C_HealingTutorialChecker.h"
 
+#include "TrainingLevel/TutorialWidget/C_TutorialWidget.h"
+
 
 UC_HealingTutorialChecker::UC_HealingTutorialChecker()
 {
@@ -12,6 +14,8 @@ UC_HealingTutorialChecker::UC_HealingTutorialChecker()
 void UC_HealingTutorialChecker::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	TutorialStage = ETutorialStage::HealingTutorial;
 
 	// 회복 아이템 획득하기
 	GoalData.Add(FGoalData());

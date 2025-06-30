@@ -6,6 +6,7 @@
 #include "Character/C_Player.h"
 #include "TrainingLevel/C_TutorialManager.h"
 #include "TrainingLevel/C_TutorialStageTriggerBox.h"
+#include "TrainingLevel/TutorialWidget/C_TutorialWidget.h"
 #include "Utility/C_Util.h"
 
 UC_TutorialStageChecker::UC_TutorialStageChecker()
@@ -83,11 +84,11 @@ void UC_TutorialStageChecker::OnStartTriggerBoxBeginOverlap(AActor* OverlappedAc
 {
 	if (!Cast<AC_Player>(OtherActor)) return; // 오로지 Player만 StartTriggerBox 사용
 	
-	UC_Util::Print("Triggered", FColor::Red, 10.f);
+	UC_Util::Print("On Tutorial Stage Start TriggerBox Triggered", FColor::Red, 10.f);
 	
-	// TODO : Tutorial 개요 UI 보여주기 & Player Input 잠시 꺼두고 UI 쪽(SpaceBar skip)에서만 사용
-	// 현재는 바로 시작 처리로 둠 (For testing)
-	InitDelegateSubscriptions();
+	// Tutorial Stage 개요 보이기
+	OwnerTutorialManager->GetTutorialWidget()->SetStageExplanationPanel(TutorialStage);
+	OwnerTutorialManager->GetTutorialWidget()->ToggleStageExplanationPanel(true);
 
 	// 해당 Trigger 끄기
 	if (AC_TutorialStageTriggerBox* TutorialStageTriggerBox = Cast<AC_TutorialStageTriggerBox>(OtherActor))

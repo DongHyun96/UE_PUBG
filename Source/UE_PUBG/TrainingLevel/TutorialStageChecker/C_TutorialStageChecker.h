@@ -69,6 +69,11 @@ public:
 	/// 구독한 Delegate 모두 해제 & SubscribedDelegates Array 정리
 	/// </summary>
 	void ClearSubscribedDelegates();
+
+protected:
+
+	// 자기자신의 Stage 종류
+	ETutorialStage TutorialStage{};
 	
 private:
 	

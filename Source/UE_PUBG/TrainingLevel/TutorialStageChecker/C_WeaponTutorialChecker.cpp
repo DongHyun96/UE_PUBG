@@ -3,6 +3,8 @@
 
 #include "C_WeaponTutorialChecker.h"
 
+#include "TrainingLevel/TutorialWidget/C_TutorialWidget.h"
+
 UC_WeaponTutorialChecker::UC_WeaponTutorialChecker()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -11,6 +13,8 @@ UC_WeaponTutorialChecker::UC_WeaponTutorialChecker()
 void UC_WeaponTutorialChecker::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TutorialStage = ETutorialStage::WeaponTutorial;
 	
 	// 무기와 탄환 획득하기
 	GoalData.Add(FGoalData());

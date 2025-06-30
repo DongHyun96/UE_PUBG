@@ -68,7 +68,7 @@ void UC_TutorialWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 				ToggleStageExplanationPanel(false);
 				
 				// 현 Stage Delegate 초기화
-				TutorialManager->InitCurrentStageDelegates();
+				TutorialManager->InitCurrentStageChecker();
 			}
 		}
 	}

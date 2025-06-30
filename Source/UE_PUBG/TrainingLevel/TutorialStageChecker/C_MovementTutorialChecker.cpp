@@ -6,6 +6,7 @@
 #include "Character/C_Player.h"
 #include "Character/Component/C_InputComponent.h"
 #include "Singleton/C_GameSceneManager.h"
+#include "TrainingLevel/TutorialWidget/C_TutorialWidget.h"
 #include "Utility/C_Util.h"
 
 
@@ -18,6 +19,8 @@ UC_MovementTutorialChecker::UC_MovementTutorialChecker()
 void UC_MovementTutorialChecker::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TutorialStage = ETutorialStage::MovementTutorial;
 
 	// WASD 이동하기 Goal
 	GoalData.Add(FGoalData());
