@@ -58,6 +58,21 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateSpaceBarPercent();	
 
+public:
+	
+	/// <summary>
+	/// 현재 Stage의 TutorialGoalWidget 반환 
+	/// </summary>
+	/// <returns> : 현재 Stage의 TutorialGoalWidget이 존재하지 않다면 return nullptr </returns>
+	class UC_TutorialGoalWidget* GetCurrentTutorialGoalWidget() const;
+	
+	/// <summary>
+	/// 해당 TutorialGoalWidget 반환 
+	/// </summary>
+	/// <param name="TutorialStage"></param>
+	/// <returns> : 없다면 return nullptr </returns>
+	UC_TutorialGoalWidget* GetTutorialGoalWidget(ETutorialStage TutorialStage) const;
+	
 private:
 
 	AC_TutorialManager* TutorialManager{};
@@ -105,4 +120,19 @@ private:
 		{ETutorialStage::ThrowableTutorial, "THROWABLE TUTORIAL"},
 		{ETutorialStage::HealingTutorial,	"HEALING TUTORIAL"}
 	};
+
+	/* MainGoal side checker widget 관련 */
+
+private:
+	
+	TMap<ETutorialStage, UC_TutorialGoalWidget*> TutorialGoalWidgets{};
+	
+	const TMap<ETutorialStage, FString> TutorialGoalWidgetNames =
+	{
+		{ETutorialStage::MovementTutorial,	"MovementTutorialGoalWidget"},
+		{ETutorialStage::WeaponTutorial,	"WeaponTutorialGoalWidget"},
+		{ETutorialStage::ThrowableTutorial,	"ThrowableTutorialGoalWidget"},
+		{ETutorialStage::HealingTutorial,	"HealingTutorialGoalWidget"},
+	};
+	
 };

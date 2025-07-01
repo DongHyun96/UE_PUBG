@@ -7,10 +7,9 @@
 #include "Character/C_Player.h"
 #include "Character/Component/C_PlayerController.h"
 #include "Components/CanvasPanel.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "Item/Weapon/Gun/C_TutorialGoalWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "TrainingLevel/C_TutorialManager.h"
@@ -26,7 +25,6 @@ void UC_TutorialWidget::NativeConstruct()
 		{ETutorialStage::MovementTutorial, "MovementTutorialExplanation"},
 		{ETutorialStage::MovementTutorial, "WeaponTutorialExplanation"},
 		{ETutorialStage::MovementTutorial, "ThrowableTutorialExplanation"},
-		
 		{ETutorialStage::MovementTutorial, "HealingTutorialExplanation"}
 	};
 
@@ -39,6 +37,21 @@ void UC_TutorialWidget::NativeConstruct()
 			continue;
 		}
 		StageExplanations.Add(PanelNameTuple.Key, TargetPanel);
+	}
+
+	// Init TutorialGoalWidgets
+	for (uint8 i = 0; i < static_cast<uint8>(ETutorialStage::TutorialEnd); ++i)
+	{
+		ETutorialStage Stage = static_cast<ETutorialStage>(i);
+
+		UC_TutorialGoalWidget* TutorialGoalWidget = Cast<UC_TutorialGoalWidget>(GetWidgetFromName(*TutorialGoalWidgetNames[Stage]));
+		if (!IsValid(TutorialGoalWidget))
+		{
+			UC_Util::Print("From UC_TutorialWidget::NativeConstruct : TutorialGoalWidget casting failed!", FColor::Red, 10.f);
+			continue;
+		}
+
+		TutorialGoalWidgets.Add(Stage, TutorialGoalWidget);
 	}
 
 	SetIsFocusable(true);
@@ -67,7 +80,7 @@ void UC_TutorialWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 				bSpaceBarDown = false;
 				ToggleStageExplanationPanel(false);
 				
-				// 현 Stage Delegate 초기화
+				// 현 Stage Delegate 초기화 & 기본 Start setting
 				TutorialManager->InitCurrentStageChecker();
 			}
 		}
@@ -105,7 +118,7 @@ void UC_TutorialWidget::ToggleStageExplanationPanel(bool InIsEnabled)
 		GAMESCENE_MANAGER->GetPlayer()->SetCanMove(false);
 		
 		if (!MediaPlayer->Rewind()) UC_Util::Print("Rewind failed!", FColor::Red, 10.f);
-		if (!MediaPlayer->Play()) UC_Util::Print("Play failed!", FColor::Red, 10.f);
+		if (!MediaPlayer->Play())   UC_Util::Print("Play failed!", FColor::Red, 10.f);
 
 		SetSpaceBarProgressBarPercent(0.f);
 		TutorialVideoImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);				
@@ -141,4 +154,16 @@ FReply UC_TutorialWidget::NativeOnKeyUp(const FGeometry& InGeometry, const FKeyE
 	SetSpaceBarProgressBarPercent(0.f);
 	
 	return FReply::Handled();
+}
+
+UC_TutorialGoalWidget* UC_TutorialWidget::GetCurrentTutorialGoalWidget() const
+{
+	if (!TutorialGoalWidgets.Contains(TutorialManager->GetCurrentStage())) return nullptr;
+	return TutorialGoalWidgets[TutorialManager->GetCurrentStage()];
+}
+
+UC_TutorialGoalWidget* UC_TutorialWidget::GetTutorialGoalWidget(ETutorialStage TutorialStage) const
+{
+	if (!TutorialGoalWidgets.Contains(TutorialStage)) return nullptr;
+	return TutorialGoalWidgets[TutorialStage];	
 }

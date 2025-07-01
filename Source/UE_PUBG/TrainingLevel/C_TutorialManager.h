@@ -51,6 +51,8 @@ public:
 	/// </summary>
 	void SetStageToNextStage();
 
+	ETutorialStage GetCurrentStage() const { return CurrentStage; }
+
 	/// <summary>
 	/// 현재 Stage 초기화 & 목표 행동 Delegate 구독 처리
 	/// </summary>

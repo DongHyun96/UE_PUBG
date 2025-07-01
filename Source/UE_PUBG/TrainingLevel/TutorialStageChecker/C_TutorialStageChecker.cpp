@@ -4,6 +4,8 @@
 #include "C_TutorialStageChecker.h"
 
 #include "Character/C_Player.h"
+#include "Item/Weapon/Gun/C_TutorialGoalWidget.h"
+#include "Singleton/C_GameSceneManager.h"
 #include "TrainingLevel/C_TutorialManager.h"
 #include "TrainingLevel/C_TutorialStageTriggerBox.h"
 #include "TrainingLevel/TutorialWidget/C_TutorialWidget.h"
@@ -69,12 +71,27 @@ void UC_TutorialStageChecker::MainGoalAchievedCheckingRoutine(FGoalData& TargetD
 {
 	// MainGoal 달성 처리
 	TargetData.bMainGoalAchieved = true;
-	++CurrentMainGoalIndex; 
 		
-	// TODO : 해당되는 MainGoal UI 업데이트 (체크표시) && 남아있는 MainGoal이 있을 때, 다음 MainGoal focus 처리
+	// 남아있는 MainGoal이 있을 때 다음 MainGoal focus 처리
+	UC_TutorialGoalWidget* GoalWidget = OwnerTutorialManager->GetTutorialWidget()->GetCurrentTutorialGoalWidget();
 
+	// 해당 MainGoal UI Succeeded 처리 표시
+	if (GoalWidget)
+	{
+		// Focused 활성화 도중 성공 처리되었다면, Animation이 겹쳐서 이상하게 나옴, 미연의 상황을 방지하기 위해 FocusedAnimation Stop 처리
+		GoalWidget->StopFocusedAnimation(CurrentMainGoalIndex);
+		GoalWidget->PlaySucceededAnimation(CurrentMainGoalIndex);
+	}
+	
+	++CurrentMainGoalIndex;
+	
 	// 아직 남아있는 MainGoal이 있을 때
-	if (CurrentMainGoalIndex < GoalData.Num()) return;
+	if (CurrentMainGoalIndex < GoalData.Num())
+	{
+		// 다음 Goal Focus 처리 표시
+		if (GoalWidget) GoalWidget->PlayFocusedAnimation(CurrentMainGoalIndex);
+		return;
+	}
 	
 	// 현재의 세부 Tutorial에서 모든 Main Goal을 달성함
 	OwnerTutorialManager->SetStageToNextStage();
@@ -101,8 +118,26 @@ void UC_TutorialStageChecker::InitStage()
 
 	CurrentMainGoalIndex = 0;
 
-	// TODO : 첫 MainGoal Side Widget 및 가운데 MainGoal Explanation sequence anim(anim으로 할지는 미정) 보여주기
-	
+	//  GoalWidget Stage Start 처리
+	// StageStartAnimation 재생 1초 이 후, 첫 번째 Goal Focused Anim 처리
+	UC_TutorialGoalWidget* GoalWidget = OwnerTutorialManager->GetTutorialWidget()->GetCurrentTutorialGoalWidget();
+	if (GoalWidget)
+	{
+		GoalWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		
+		GoalWidget->PlayStageStartAnimation();
+		FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+		GetWorld()->GetTimerManager().SetTimer
+		(
+			TimerHandle,
+			[this, GoalWidget]()
+			{
+				// 2초의 텀 사이에 바로 첫 Goal을 달성했을 수도 있음, 따라서 현재 목표가 첫 번째 순서의 Goal인지 확인해서 처리함
+				if (CurrentMainGoalIndex == 0 && GoalWidget)
+					GoalWidget->PlayFocusedAnimation(0);
+			},
+		1.f, false);
+	}
 	
 	// 초기 clear 처리
 	ClearSubscribedDelegates();
