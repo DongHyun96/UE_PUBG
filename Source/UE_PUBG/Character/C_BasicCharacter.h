@@ -165,7 +165,7 @@ protected:
 	/// 구를 통해 아이템과의 충동을 감지하는 함수.
 	/// </summary>
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class USphereComponent* DetectionSphere;
+	class USphereComponent* DetectionSphere{};
 
 	/// <summary>
 	/// 아이템이 캐릭터의 근처에 있을 때.
