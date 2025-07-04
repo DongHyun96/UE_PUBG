@@ -13,6 +13,8 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Character/C_PreviewCharacter.h"
+
 #include "Character/Component/C_InputComponent.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
@@ -59,6 +61,7 @@
 #include "HUD/C_InformWidget.h"
 #include "Singleton/C_GameInstance.h"
 #include "Singleton/C_GameSceneManager.h"
+
 
 AC_Player::AC_Player()
 {
@@ -112,6 +115,30 @@ AC_Player::AC_Player()
 
 	DeafenedHandler = CreateDefaultSubobject<UC_PlayerDeafenedHandler>("DeafenedHandler");
 	DeafenedHandler->SetOwnerPlayer(this);
+
+	//TSubclassOf<AC_PreviewCharacter> PreviewCharacterClass = LoadClass<AC_PreviewCharacter>(nullptr, TEXT("/Game/.../BP_PreviewCharacter.BP_PreviewCharacter_C"));d
+
+	if (!PreviewCharacter)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+		// PreviewCharacter_BP는 블루프린트로 만든 Preview 캐릭터 클래스
+		TSubclassOf<AC_PreviewCharacter> PreviewCharacterClass = LoadClass<AC_PreviewCharacter>(nullptr, 
+			TEXT("/Game/Project_PUBG/Common/InvenUI/Character_Viewport/BPC_PreviewCharacter.BPC_PreviewCharacter")
+		);
+	
+		if (PreviewCharacterClass)
+		{
+			PreviewCharacter = GetWorld()->SpawnActor<AC_PreviewCharacter>(
+				PreviewCharacterClass,
+				FVector(100000.f, 0.f, 0.f), // 안 보이는 위치에 배치
+				FRotator::ZeroRotator,
+				SpawnParams
+			);
+		}
+	}
 }
 
 void AC_Player::BeginPlay()
