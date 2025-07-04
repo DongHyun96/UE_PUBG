@@ -125,6 +125,7 @@ public:
 
 	class UC_InputComponent* GetInputComponent() const { return MyInputComponent; }
 		
+	class AC_PreviewCharacter* GetPreviewCharacter() const { return PreviewCharacter; }
 public:
 	bool GetIsHighEnoughToFall() override;
 public:
@@ -380,6 +381,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UC_PlayerDeafenedHandler* DeafenedHandler{};
 	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class AC_PreviewCharacter* PreviewCharacter{};
 };
 
 
