@@ -29,7 +29,7 @@ public:
 	void SetTutorialManager(AC_TutorialManager* InTutorialManager) { TutorialManager = InTutorialManager; }
 	
 	/* Stage Explanation Panel 관련 */
-public: 
+public:
 
 	/// <summary>
 	/// TutorialStage에 따라 StageExplanation Panel 내용 세팅하기
