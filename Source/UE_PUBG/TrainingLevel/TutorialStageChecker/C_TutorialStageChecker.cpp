@@ -8,6 +8,7 @@
 #include "Singleton/C_GameSceneManager.h"
 #include "TrainingLevel/C_TutorialManager.h"
 #include "TrainingLevel/C_TutorialStageTriggerBox.h"
+#include "TrainingLevel/TutorialWidget/C_TutorialGoalExplanationContainer.h"
 #include "TrainingLevel/TutorialWidget/C_TutorialWidget.h"
 #include "Utility/C_Util.h"
 
@@ -74,6 +75,7 @@ void UC_TutorialStageChecker::MainGoalAchievedCheckingRoutine(FGoalData& TargetD
 		
 	// 남아있는 MainGoal이 있을 때 다음 MainGoal focus 처리
 	UC_TutorialGoalWidget* GoalWidget = OwnerTutorialManager->GetTutorialWidget()->GetCurrentTutorialGoalWidget();
+	UC_TutorialGoalExplanationContainer* GoalExplanation = OwnerTutorialManager->GetTutorialWidget()->GetCurrentStageGoalExplanationContainer();
 
 	// 해당 MainGoal UI Succeeded 처리 표시
 	if (GoalWidget)
@@ -84,16 +86,23 @@ void UC_TutorialStageChecker::MainGoalAchievedCheckingRoutine(FGoalData& TargetD
 	}
 	
 	++CurrentMainGoalIndex;
-	
+
 	// 아직 남아있는 MainGoal이 있을 때
 	if (CurrentMainGoalIndex < GoalData.Num())
 	{
 		// 다음 Goal Focus 처리 표시
 		if (GoalWidget) GoalWidget->PlayFocusedAnimation(CurrentMainGoalIndex);
+
+		// 다음 Goal Explanation 표시
+		if (GoalExplanation)
+			GoalExplanation->StartTargetGoalExplanation(CurrentMainGoalIndex);
+		
 		return;
 	}
 	
 	// 현재의 세부 Tutorial에서 모든 Main Goal을 달성함
+	if (GoalExplanation) GoalExplanation->StartStageEndExplanation();
+	
 	OwnerTutorialManager->SetStageToNextStage();
 }
 
@@ -107,8 +116,19 @@ void UC_TutorialStageChecker::OnStartTriggerBoxBeginOverlap(AActor* OverlappedAc
 	OwnerTutorialManager->GetTutorialWidget()->SetStageExplanationPanel(TutorialStage);
 	OwnerTutorialManager->GetTutorialWidget()->ToggleStageExplanationPanel(true);
 
+	// 이전 Stage가 존재했다면, 이전 Stage의 GoalWidget과 Goal Explanation Panel 감추기
+	int Prev = static_cast<int>(TutorialStage) - 1; 
+	if (Prev >= 0)
+	{
+		ETutorialStage PrevStage = static_cast<ETutorialStage>(Prev);
+		UC_TutorialWidget* TutorialWidget = OwnerTutorialManager->GetTutorialWidget(); 
+		TutorialWidget->StopTutorialGoalExplanation(PrevStage);
+		TutorialWidget->GetTutorialGoalWidget(PrevStage)->SetVisibility(ESlateVisibility::Hidden);
+	}
+		
+
 	// 해당 Trigger 끄기
-	if (AC_TutorialStageTriggerBox* TutorialStageTriggerBox = Cast<AC_TutorialStageTriggerBox>(OtherActor))
+	if (AC_TutorialStageTriggerBox* TutorialStageTriggerBox = Cast<AC_TutorialStageTriggerBox>(OverlappedActor))
 		TutorialStageTriggerBox->ToggleTriggerBox(false);
 }
 
@@ -121,6 +141,7 @@ void UC_TutorialStageChecker::InitStage()
 	//  GoalWidget Stage Start 처리
 	// StageStartAnimation 재생 1초 이 후, 첫 번째 Goal Focused Anim 처리
 	UC_TutorialGoalWidget* GoalWidget = OwnerTutorialManager->GetTutorialWidget()->GetCurrentTutorialGoalWidget();
+	
 	if (GoalWidget)
 	{
 		GoalWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -132,12 +153,15 @@ void UC_TutorialStageChecker::InitStage()
 			TimerHandle,
 			[this, GoalWidget]()
 			{
-				// 2초의 텀 사이에 바로 첫 Goal을 달성했을 수도 있음, 따라서 현재 목표가 첫 번째 순서의 Goal인지 확인해서 처리함
-				if (CurrentMainGoalIndex == 0 && GoalWidget)
+				// 1초의 텀 사이에 바로 첫 Goal을 달성했을 수도 있음, 따라서 현재 목표가 첫 번째 순서의 Goal인지 확인해서 처리함
+				if (CurrentMainGoalIndex == 0)
 					GoalWidget->PlayFocusedAnimation(0);
 			},
 		1.f, false);
 	}
+
+	// 첫 Goal Explanation 시작
+	OwnerTutorialManager->GetTutorialWidget()->StartTutorialGoalExplanation(OwnerTutorialManager->GetCurrentStage(), 0);
 	
 	// 초기 clear 처리
 	ClearSubscribedDelegates();

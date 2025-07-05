@@ -5,6 +5,7 @@
 
 #include "C_TutorialStageTriggerBox.h"
 #include "Character/C_Player.h"
+#include "Components/ShapeComponent.h"
 #include "Door/C_TutorialGate.h"
 #include "TutorialStageChecker/C_TutorialStageChecker.h"
 #include "Engine/TriggerBox.h"
@@ -84,18 +85,27 @@ void AC_TutorialManager::StartTutorial()
 
 void AC_TutorialManager::SetStageToNextStage()
 {
-	UC_Util::Print("Set Current Stage to next stage", FColor::MakeRandomColor(), 10.f);
-	
 	// 현재 Stage Delegate 해제
 	if (CurrentStage != ETutorialStage::Max)
 	{
 		TutorialStageCheckers[CurrentStage]->ClearSubscribedDelegates();
 		
 		if (TutorialGates.Contains(CurrentStage))
-			TutorialGates[CurrentStage]->ToggleOpeningBoxTriggerEnabled(true);
+		{
+			// TutorialGates[CurrentStage]->ToggleOpeningBoxTriggerEnabled(true);
+			TutorialGates[CurrentStage]->OpenGate();
+		}
 	}
 
+	// 현재 Stage의 Start TriggerBox 비활성화
+	if (StageStartTriggerBoxes.Contains(CurrentStage) && IsValid(StageStartTriggerBoxes[CurrentStage]))
+		StageStartTriggerBoxes[CurrentStage]->ToggleTriggerBox(false);
+
 	++CurrentStage;
+
+	// 다음 Stage의 Start TriggerBox가 있다면, Start Trigger Box 활성화
+	if (StageStartTriggerBoxes.Contains(CurrentStage) && IsValid(StageStartTriggerBoxes[CurrentStage]))
+		StageStartTriggerBoxes[CurrentStage]->ToggleTriggerBox(true);
 }
 
 void AC_TutorialManager::InitCurrentStageChecker()
