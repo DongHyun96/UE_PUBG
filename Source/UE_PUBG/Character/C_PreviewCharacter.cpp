@@ -15,7 +15,8 @@ AC_PreviewCharacter::AC_PreviewCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	SceneCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCapture"));
+	SceneCapture->SetupAttachment(GetMesh());
 }
 
 // Called when the game starts or when spawned
@@ -23,8 +24,7 @@ void AC_PreviewCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	previewMesh = this->GetMesh();
-	SceneCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCapture"));
-	SceneCapture->SetupAttachment(GetMesh());
+
 }
 
 // Called every frame
