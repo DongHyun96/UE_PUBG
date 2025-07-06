@@ -22,6 +22,17 @@ void UC_TutorialGoalExplanationContainer::NativeConstruct()
 		}
 		else break;
 	}
+
+	// Init GoalEnd Explanation
+	StageEndExplanation = Cast<UC_TutorialGoalExplanation>(GetWidgetFromName("StageEndExplanation"));
+	
+	if (!StageEndExplanation)
+		UC_Util::Print
+		(
+			"From UC_TutorialGoalExplanationContainer::NativeConstruct : Cannot find StageEndExplanation!",
+			FColor::Red,
+			10.f
+		);
 }
 
 bool UC_TutorialGoalExplanationContainer::StartTargetGoalExplanation(uint8 TargetGoalIndex)
@@ -46,4 +57,15 @@ bool UC_TutorialGoalExplanationContainer::StartTargetGoalExplanation(uint8 Targe
 void UC_TutorialGoalExplanationContainer::StopExplanations()
 {
 	this->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UC_TutorialGoalExplanationContainer::StartStageEndExplanation()
+{
+	// 이전 TutorialGoal 문구 모두 멈추기
+	for (UC_TutorialGoalExplanation* Explanation : TutorialGoalExplanations)
+		Explanation->StopExplanation();
+
+	UC_Util::Print("Start Stage End Explanation", FColor::Red, 10.f);
+
+	if (StageEndExplanation) StageEndExplanation->StartExplanation();
 }

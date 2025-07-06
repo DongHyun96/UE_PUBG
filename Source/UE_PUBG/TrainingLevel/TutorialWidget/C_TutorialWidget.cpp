@@ -3,6 +3,7 @@
 
 #include "C_TutorialWidget.h"
 
+#include "C_TutorialGoalExplanationContainer.h"
 #include "MediaPlayer.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_PlayerController.h"
@@ -22,10 +23,10 @@ void UC_TutorialWidget::NativeConstruct()
 
 	const TMap<ETutorialStage, FString> TutorialStageExplanationPanelNames =
 	{
-		{ETutorialStage::MovementTutorial, "MovementTutorialExplanation"},
-		{ETutorialStage::MovementTutorial, "WeaponTutorialExplanation"},
-		{ETutorialStage::MovementTutorial, "ThrowableTutorialExplanation"},
-		{ETutorialStage::MovementTutorial, "HealingTutorialExplanation"}
+		{ETutorialStage::MovementTutorial,  "MovementTutorialExplanation"},
+		{ETutorialStage::WeaponTutorial,	"WeaponTutorialExplanation"},
+		{ETutorialStage::ThrowableTutorial, "ThrowableTutorialExplanation"},
+		{ETutorialStage::HealingTutorial,	"HealingTutorialExplanation"}
 	};
 
 	for (const TTuple<ETutorialStage, FString>& PanelNameTuple : TutorialStageExplanationPanelNames)
@@ -39,19 +40,22 @@ void UC_TutorialWidget::NativeConstruct()
 		StageExplanations.Add(PanelNameTuple.Key, TargetPanel);
 	}
 
-	// Init TutorialGoalWidgets
+	// Init TutorialGoalWidgets & TutorialGoalExplanation Widgets
 	for (uint8 i = 0; i < static_cast<uint8>(ETutorialStage::TutorialEnd); ++i)
 	{
 		ETutorialStage Stage = static_cast<ETutorialStage>(i);
 
-		UC_TutorialGoalWidget* TutorialGoalWidget = Cast<UC_TutorialGoalWidget>(GetWidgetFromName(*TutorialGoalWidgetNames[Stage]));
-		if (!IsValid(TutorialGoalWidget))
-		{
-			UC_Util::Print("From UC_TutorialWidget::NativeConstruct : TutorialGoalWidget casting failed!", FColor::Red, 10.f);
-			continue;
-		}
+		
+		if (UC_TutorialGoalWidget* TutorialGoalWidget = Cast<UC_TutorialGoalWidget>(GetWidgetFromName(*TutorialGoalWidgetNames[Stage])))
+			TutorialGoalWidgets.Add(Stage, TutorialGoalWidget);
+		else UC_Util::Print("From UC_TutorialWidget::NativeConstruct : TutorialSideGoalWidget casting failed!", FColor::Red, 10.f);
 
-		TutorialGoalWidgets.Add(Stage, TutorialGoalWidget);
+		if (UC_TutorialGoalExplanationContainer* GoalExplanation =
+			Cast<UC_TutorialGoalExplanationContainer>(GetWidgetFromName(*TutorialGoalExplanationNames[Stage])))
+		{
+			TutorialGoalExplanations.Add(Stage, GoalExplanation);
+		}
+		else UC_Util::Print("From UC_TutorialWidget::NativeConstruct : TutorialGoalExplanation casting failed!", FColor::Red, 10.f);
 	}
 
 	SetIsFocusable(true);
@@ -75,7 +79,7 @@ void UC_TutorialWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 			float NewPercent = FMath::Min(SpaceBarPercent + InDeltaTime * 1.f, 1.f);
 			SetSpaceBarProgressBarPercent(NewPercent);
 
-			if (NewPercent >= 1.f)
+			if (NewPercent >= 1.f) // Stage Start
 			{
 				bSpaceBarDown = false;
 				ToggleStageExplanationPanel(false);
@@ -121,7 +125,7 @@ void UC_TutorialWidget::ToggleStageExplanationPanel(bool InIsEnabled)
 		if (!MediaPlayer->Play())   UC_Util::Print("Play failed!", FColor::Red, 10.f);
 
 		SetSpaceBarProgressBarPercent(0.f);
-		TutorialVideoImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);				
+		TutorialVideoImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 	else
 	{
@@ -166,4 +170,23 @@ UC_TutorialGoalWidget* UC_TutorialWidget::GetTutorialGoalWidget(ETutorialStage T
 {
 	if (!TutorialGoalWidgets.Contains(TutorialStage)) return nullptr;
 	return TutorialGoalWidgets[TutorialStage];	
+}
+
+UC_TutorialGoalExplanationContainer* UC_TutorialWidget::GetCurrentStageGoalExplanationContainer() const
+{
+	if (!TutorialGoalExplanations.Contains(TutorialManager->GetCurrentStage())) return nullptr;
+	return TutorialGoalExplanations[TutorialManager->GetCurrentStage()];
+}
+
+bool UC_TutorialWidget::StartTutorialGoalExplanation(ETutorialStage TargetTutorialStage, uint8 TargetGoalIndex)
+{
+	if (!TutorialGoalExplanations.Contains(TargetTutorialStage)) return false;
+	return TutorialGoalExplanations[TargetTutorialStage]->StartTargetGoalExplanation(TargetGoalIndex);
+}
+
+bool UC_TutorialWidget::StopTutorialGoalExplanation(ETutorialStage TargetTutorialStage)
+{
+	if (!TutorialGoalExplanations.Contains(TargetTutorialStage)) return false;
+	TutorialGoalExplanations[TargetTutorialStage]->StopExplanations();
+	return true;
 }

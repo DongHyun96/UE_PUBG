@@ -237,7 +237,7 @@ protected:
 
 public:
 
-	// Tutorial 진행용 Delegate
+	// Movement Tutorial 진행용 Delegate
 	FMovementTutorialDelegate MovementTutorialDelegate{};
 	
 };

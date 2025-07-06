@@ -72,6 +72,29 @@ public:
 	/// <param name="TutorialStage"></param>
 	/// <returns> : 없다면 return nullptr </returns>
 	UC_TutorialGoalWidget* GetTutorialGoalWidget(ETutorialStage TutorialStage) const;
+
+public:
+	
+	/// <summary>
+	/// 현재 Stage의 Tutorial Goal Explanation Widget 반환 
+	/// </summary>
+	/// <returns> : 현재 Stage의 Tutorial Goal Explanation Widget이 존재하지 않다면 return false </returns>
+	class UC_TutorialGoalExplanationContainer* GetCurrentStageGoalExplanationContainer() const;
+
+	/// <summary>
+	/// 해당 TutorialStage의 해당 MainGoal에 대한 설명문 Start
+	/// </summary>
+	/// <param name="TargetTutorialStage"></param>
+	/// <param name="TargetGoalIndex"></param>
+	/// <returns> : 만약 해당하는 TutorialStage에 대한 설명문 모음(Container)가 없거나, 해당하는 TargetGaolIndex가 valid하지 않으면 return false </returns>
+	bool StartTutorialGoalExplanation(ETutorialStage TargetTutorialStage, uint8 TargetGoalIndex);
+
+	/// <summary>
+	/// 해당 TutorialStage의 설명문 멈추기
+	/// </summary>
+	/// <param name="TargetTutorialStage"></param>
+	/// <returns> : 해당 TutorialStage의 설명문 모음(Container)가 없다면 return false </returns>
+	bool StopTutorialGoalExplanation(ETutorialStage TargetTutorialStage);
 	
 private:
 
@@ -132,7 +155,21 @@ private:
 		{ETutorialStage::MovementTutorial,	"MovementTutorialGoalWidget"},
 		{ETutorialStage::WeaponTutorial,	"WeaponTutorialGoalWidget"},
 		{ETutorialStage::ThrowableTutorial,	"ThrowableTutorialGoalWidget"},
-		{ETutorialStage::HealingTutorial,	"HealingTutorialGoalWidget"},
+		{ETutorialStage::HealingTutorial,	"HealingTutorialGoalWidget"}
+	};
+
+	/* TutorialGoalExplanation Panel(Container) 관련 */
+	
+private:
+
+	TMap<ETutorialStage, UC_TutorialGoalExplanationContainer*> TutorialGoalExplanations{};
+
+	const TMap<ETutorialStage, FString> TutorialGoalExplanationNames =
+	{
+		{ETutorialStage::MovementTutorial,	"MovementTutorialGoalExplanation"},
+		{ETutorialStage::WeaponTutorial,	"WeaponTutorialGoalExplanation"},
+		{ETutorialStage::ThrowableTutorial, "ThrowableTutorialGoalExplanation"},
+		{ETutorialStage::HealingTutorial,	"HealingTutorialGoalExplanation"}
 	};
 	
 };

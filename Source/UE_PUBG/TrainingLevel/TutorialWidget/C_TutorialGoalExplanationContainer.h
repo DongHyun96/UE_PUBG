@@ -32,8 +32,14 @@ public:
 	/// </summary>
 	void StopExplanations();
 
+	/// <summary>
+	/// Stage Goal을 모두 달성한 이후, Stage End 문구 띄우기
+	/// </summary>
+	void StartStageEndExplanation();
+
 private:
 
 	TArray<class UC_TutorialGoalExplanation*> TutorialGoalExplanations{};
-	
+
+	UC_TutorialGoalExplanation* StageEndExplanation{};
 };

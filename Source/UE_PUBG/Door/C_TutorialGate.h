@@ -28,8 +28,6 @@ public:
 	/// </summary>
 	void ToggleOpeningBoxTriggerEnabled(bool Enabled);
 
-protected:
-	
 	UFUNCTION(BlueprintImplementableEvent)
 	void OpenGate();
 
@@ -51,6 +49,6 @@ private:
 
 	UShapeComponent* GateOpeningBox{};
 	
-	class UWidgetComponent* TriangleWidgetComponent{};
+	class UWidgetComponent* TriangleWidgetComponent{}; // Goal 달성에 따라 Spawn dnld ddddd
 	
 };
