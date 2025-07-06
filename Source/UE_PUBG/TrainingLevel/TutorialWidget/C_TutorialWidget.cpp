@@ -23,10 +23,10 @@ void UC_TutorialWidget::NativeConstruct()
 
 	const TMap<ETutorialStage, FString> TutorialStageExplanationPanelNames =
 	{
-		{ETutorialStage::MovementTutorial, "MovementTutorialExplanation"},
-		{ETutorialStage::MovementTutorial, "WeaponTutorialExplanation"},
-		{ETutorialStage::MovementTutorial, "ThrowableTutorialExplanation"},
-		{ETutorialStage::MovementTutorial, "HealingTutorialExplanation"}
+		{ETutorialStage::MovementTutorial,  "MovementTutorialExplanation"},
+		{ETutorialStage::WeaponTutorial,	"WeaponTutorialExplanation"},
+		{ETutorialStage::ThrowableTutorial, "ThrowableTutorialExplanation"},
+		{ETutorialStage::HealingTutorial,	"HealingTutorialExplanation"}
 	};
 
 	for (const TTuple<ETutorialStage, FString>& PanelNameTuple : TutorialStageExplanationPanelNames)
