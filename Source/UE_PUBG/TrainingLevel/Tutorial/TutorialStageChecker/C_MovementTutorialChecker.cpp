@@ -6,7 +6,7 @@
 #include "Character/C_Player.h"
 #include "Character/Component/C_InputComponent.h"
 #include "Singleton/C_GameSceneManager.h"
-#include "TrainingLevel/TutorialWidget/C_TutorialWidget.h"
+#include "TrainingLevel/Tutorial/C_TutorialManager.h"
 #include "Utility/C_Util.h"
 
 

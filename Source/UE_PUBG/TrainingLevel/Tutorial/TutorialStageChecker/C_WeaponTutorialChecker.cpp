@@ -3,7 +3,7 @@
 
 #include "C_WeaponTutorialChecker.h"
 
-#include "TrainingLevel/TutorialWidget/C_TutorialWidget.h"
+#include "TrainingLevel/Tutorial/C_TutorialManager.h"
 
 UC_WeaponTutorialChecker::UC_WeaponTutorialChecker()
 {

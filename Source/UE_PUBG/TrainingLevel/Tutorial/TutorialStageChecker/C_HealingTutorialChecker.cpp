@@ -3,8 +3,7 @@
 
 #include "C_HealingTutorialChecker.h"
 
-#include "TrainingLevel/TutorialWidget/C_TutorialWidget.h"
-
+#include "TrainingLevel/Tutorial/C_TutorialManager.h"
 
 UC_HealingTutorialChecker::UC_HealingTutorialChecker()
 {
