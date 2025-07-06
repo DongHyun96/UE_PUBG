@@ -16,7 +16,7 @@
 
 #include "UMG.h"
 #include "AI/C_EnemyAIController.h"
-
+#include "Character/C_PreviewCharacter.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_InvenSystem.h"
@@ -193,8 +193,13 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 {
 	if (!IsValid(OwnerCharacter)) return false;
 
+	AC_PreviewCharacter* PreviewCharacter = nullptr;
+
 	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	{
 		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::NORIFLE);
+		PreviewCharacter = OwnerPlayer->GetPreviewCharacter();
+	}
 
 	EBackPackLevel BackPackLevel = OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel();
 
@@ -205,6 +210,7 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 		switch (CurState)
 		{
 		case EGunState::MAIN_GUN:
+			
 			return AttachToComponent
 			(
 				InParent,

@@ -26,4 +26,49 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void SetOwnerPlayer(class AC_Player* Player) { OwnerPlayer = Player; }
+
+	bool AttachWeaponMesh(class AC_Weapon* Weapon);
+
+	void AttachHelmetMesh(class AC_Weapon* Weapon);
+
+	void AttachArmorMesh(class AC_Weapon* Weapon);
+
+	void AttachBackMesh(class AC_Weapon* Weapon);
+
+	void AttachMeleeWeaponMesh(class AC_Weapon* Weapon);
+
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly)
+	USkeletalMeshComponent* PreviewWeaponMesh{};
+
+	UPROPERTY(BlueprintReadOnly)
+	UStaticMeshComponent* PreviewHelmetMesh{};
+
+	UPROPERTY(BlueprintReadOnly)
+	UStaticMeshComponent* PreviewArmorMesh{};
+
+	UPROPERTY(BlueprintReadOnly)
+	UStaticMeshComponent* PreviewBackpackMesh{};
+
+	UPROPERTY(BlueprintReadOnly)
+	UStaticMeshComponent* PreviewMeleeWeaponMesh{};
+
+	class AC_Player* OwnerPlayer{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class USceneCaptureComponent2D* SceneCapture{};
+protected:
+	// C_Gun
+	const FName SUB_HOLSTER_SOCKET_NAME = "SubGunSocket_NoBag"; // 무기집 socket 이름
+	const FName MAIN_HOLSTER_SOCKET_NAME = "MainGunSocket_NoBag"; // 무기집 socket 이름
+
+	const FName SUB_HOLSTER_BAG_SOCKET_NAME = "SubGunSocket_Bag"; // 무기집 socket 이름
+	const FName MAIN_HOLSTER_BAG_SOCKET_NAME = "MainGunSocket_Bag"; // 무기집 socket 이름
+
+	USkeletalMeshComponent* previewMesh{};
+
+
 };

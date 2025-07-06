@@ -116,29 +116,9 @@ AC_Player::AC_Player()
 	DeafenedHandler = CreateDefaultSubobject<UC_PlayerDeafenedHandler>("DeafenedHandler");
 	DeafenedHandler->SetOwnerPlayer(this);
 
-	//TSubclassOf<AC_PreviewCharacter> PreviewCharacterClass = LoadClass<AC_PreviewCharacter>(nullptr, TEXT("/Game/.../BP_PreviewCharacter.BP_PreviewCharacter_C"));d
+	//TSubclassOf<AC_PreviewCharacter> PreviewCharacterClass = LoadClass<AC_PreviewCharacter>(nullptr, TEXT("/Game/.../BP_PreviewCharacter.BP_PreviewCharacter_C"));
 
-	if (!PreviewCharacter)
-	{
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	
-		// PreviewCharacter_BP는 블루프린트로 만든 Preview 캐릭터 클래스
-		TSubclassOf<AC_PreviewCharacter> PreviewCharacterClass = LoadClass<AC_PreviewCharacter>(nullptr, 
-			TEXT("/Game/Project_PUBG/Common/InvenUI/Character_Viewport/BPC_PreviewCharacter.BPC_PreviewCharacter")
-		);
-	
-		if (PreviewCharacterClass)
-		{
-			PreviewCharacter = GetWorld()->SpawnActor<AC_PreviewCharacter>(
-				PreviewCharacterClass,
-				FVector(100000.f, 0.f, 0.f), // 안 보이는 위치에 배치
-				FRotator::ZeroRotator,
-				SpawnParams
-			);
-		}
-	}
+
 }
 
 void AC_Player::BeginPlay()
@@ -232,7 +212,38 @@ void AC_Player::BeginPlay()
 	
 	CharacterName = Cast<UC_GameInstance>(GetGameInstance())->GetPlayerNickName();
 
-	
+
+
+	// PreviewCharacter 생성
+	if (!PreviewCharacter)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		// PreviewCharacter_BP는 블루프린트로 만든 Preview 캐릭터 클래스
+		TSubclassOf<AC_PreviewCharacter> PreviewCharacterClass = LoadClass<AC_PreviewCharacter>(nullptr,
+			TEXT("/Game/Project_PUBG/Common/InvenUI/Character_Viewport/BPC_PreviewCharacter.BPC_PreviewCharacter_C")
+		);
+
+		if (PreviewCharacterClass)
+		{
+			UC_Util::Print("previewCharacter On");
+
+			PreviewCharacter = GetWorld()->SpawnActor<AC_PreviewCharacter>(
+				PreviewCharacterClass,
+				FVector(0.f, 0.f, 0.f), // 안 보이는 위치에 배치
+				FRotator::ZeroRotator,
+				SpawnParams
+			);
+
+			PreviewCharacter->SetOwnerPlayer(this);
+		}
+		else
+		{
+			UC_Util::Print("previewCharacter Nullptr");
+		}
+	}
 }
 
 void AC_Player::EndPlay(const EEndPlayReason::Type EndPlayReason)

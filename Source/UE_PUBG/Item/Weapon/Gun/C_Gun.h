@@ -247,12 +247,20 @@ public:
 	/// <returns></returns>
 	const FGunSoundData* GetGunSoundData() const { return GunSoundData; }
 
+
+
 protected:
 	//GunData 구조체를 const 포인터 변수로 가지고 있음.
 	const FGunData* GunDataRef = nullptr;
 
 	//Gun Sound Datas, TODO : 
 	const FGunSoundData* GunSoundData = nullptr;
+
+
+	const FName GetSUB_HOLSTER_SOCKET_NAME()  { return SUB_HOLSTER_SOCKET_NAME; }
+	const FName GetMAIN_HOLSTER_SOCKET_NAME()  { return MAIN_HOLSTER_SOCKET_NAME; }
+	const FName GetSUB_HOLSTER_BAG_SOCKET_NAME()  { return SUB_HOLSTER_BAG_SOCKET_NAME; }
+	const FName GetMAIN_HOLSTER_BAG_SOCKET_NAME()  { return MAIN_HOLSTER_BAG_SOCKET_NAME; }
 protected:
 	/// <summary>
 	/// 총알 발사 관련 변수들
@@ -385,6 +393,8 @@ protected:
 	//EGunType CurGunType = EGunType::MAX;
 public:
 	EGunType GetGunType() { return GunDataRef->CurGunType; }
+
+	EGunState GetGunState() { return CurState; }
 protected:
 	FVector2D IronSightWindowLocation{};
 
