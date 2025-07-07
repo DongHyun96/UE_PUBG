@@ -45,6 +45,10 @@ bool AC_PreviewCharacter::AttachWeaponMesh(AC_Weapon* Weapon)
 {
 	if (!OwnerPlayer) return false;
 
+	AC_Gun* Gun = Cast<AC_Gun>(Weapon);
+
+	if (!Gun) return false;
+
 	// 무기 없으면 제거만 하고 끝
 	if (!Weapon)
 	{
@@ -93,56 +97,12 @@ bool AC_PreviewCharacter::AttachWeaponMesh(AC_Weapon* Weapon)
 		SocketName = (CurState == EGunState::MAIN_GUN) ? MAIN_HOLSTER_BAG_SOCKET_NAME : SUB_HOLSTER_BAG_SOCKET_NAME;
 	}
 
-	//USkeletalMeshComponent* previewMesh = this->GetMesh();
-
-	//if (previewMesh)
-	//{
-	//	//UE_LOG(LogTemp, Warning, TEXT("Player Mesh: %s"), *Player->GetMesh()->SkeletalMesh->GetName());
-	//	//UE_LOG(LogTemp, Warning, TEXT("Preview Mesh: %s"), *previewMesh->SkeletalMesh->GetName());
-	//	UC_Util::Print(FString::Printf(TEXT("Preview Mesh: %s"), *previewMesh->GetName()), FColor::Green, 5.f);
-	//	UC_Util::Print(FString::Printf(TEXT("Preview Mesh: %s"), *OwnerPlayer->GetMesh()->GetName()), FColor::Green, 5.f);
-	//
-	//}
-	if (previewMesh && OwnerPlayer && OwnerPlayer->GetMesh())
-	{
-		UC_Util::Print(FString::Printf(TEXT("Preview Mesh Component Name: %s"), *previewMesh->GetName()), FColor::Green, 5.f);
-
-		if (previewMesh->SkeletalMesh)
-		{
-			UC_Util::Print(FString::Printf(TEXT("Preview SkeletalMesh Asset Name: %s"), *previewMesh->SkeletalMesh->GetName()), FColor::Green, 5.f);
-		}
-		else
-		{
-			UC_Util::Print(TEXT("Preview SkeletalMesh is nullptr!"), FColor::Red, 5.f);
-		}
-
-		UC_Util::Print(FString::Printf(TEXT("OwnerPlayer Mesh Component Name: %s"), *OwnerPlayer->GetMesh()->GetName()), FColor::Green, 5.f);
-
-		if (OwnerPlayer->GetMesh()->SkeletalMesh)
-		{
-			UC_Util::Print(FString::Printf(TEXT("OwnerPlayer SkeletalMesh Asset Name: %s"), *OwnerPlayer->GetMesh()->SkeletalMesh->GetName()), FColor::Green, 5.f);
-		}
-		else
-		{
-			UC_Util::Print(TEXT("OwnerPlayer SkeletalMesh is nullptr!"), FColor::Red, 5.f);
-		}
-	}
-	else
-	{
-		UC_Util::Print(TEXT("previewMesh or OwnerPlayer or OwnerPlayer->GetMesh() is nullptr!"), FColor::Red, 5.f);
-	}
-	//if (!previewMesh->DoesSocketExist(SocketName))
-	//{
-	//	UC_Util::Print(FString::Printf(TEXT("소켓 %s 이(가) 존재하지 않습니다."), *SocketName.ToString()), FColor::Red, 5.f);
-	//	//UE_LOG(LogTemp, Error, TEXT("소켓 %s 이(가) 존재하지 않습니다."), *SocketName.ToString());
-	//	return false;
-	//}
-
-
-
 	// 부착
 	PreviewWeaponMesh->AttachToComponent(previewMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), SocketName);
-
+	if (SceneCapture && PreviewWeaponMesh)
+	{
+		SceneCapture->ShowOnlyComponents.Add(PreviewWeaponMesh);
+	}
 	return true;
 
 }
