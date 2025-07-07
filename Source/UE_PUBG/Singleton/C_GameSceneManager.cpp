@@ -23,7 +23,7 @@
 #include "Item/ItemManager/C_ItemManager.h"
 #include "Sound/C_SoundManager.h"
 #include "Singleton/C_GameInstance.h"
-#include "TrainingLevel/C_TutorialManager.h"
+#include "TrainingLevel/Tutorial/C_TutorialManager.h"
 
 #include "Utility/C_TickRandomColorGenerator.h"
 

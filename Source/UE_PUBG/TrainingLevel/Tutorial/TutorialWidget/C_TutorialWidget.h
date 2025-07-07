@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "TrainingLevel/C_TutorialManager.h"
+#include "TrainingLevel/Tutorial/C_TutorialManager.h"
 #include "C_TutorialWidget.generated.h"
 
 enum class ETutorialStage : uint8;

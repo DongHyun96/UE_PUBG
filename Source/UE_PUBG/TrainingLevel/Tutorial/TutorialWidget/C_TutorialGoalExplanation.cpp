@@ -4,7 +4,6 @@
 #include "C_TutorialGoalExplanation.h"
 
 #include "Components/CanvasPanel.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
 #include "Utility/C_Util.h"
 

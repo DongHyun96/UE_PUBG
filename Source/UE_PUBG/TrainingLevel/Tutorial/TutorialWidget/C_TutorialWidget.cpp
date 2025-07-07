@@ -13,7 +13,7 @@
 #include "Item/Weapon/Gun/C_TutorialGoalWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Singleton/C_GameSceneManager.h"
-#include "TrainingLevel/C_TutorialManager.h"
+#include "TrainingLevel/Tutorial/C_TutorialManager.h"
 #include "Utility/C_Util.h"
 
 

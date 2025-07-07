@@ -6,10 +6,10 @@
 #include "Character/C_Player.h"
 #include "Item/Weapon/Gun/C_TutorialGoalWidget.h"
 #include "Singleton/C_GameSceneManager.h"
-#include "TrainingLevel/C_TutorialManager.h"
-#include "TrainingLevel/C_TutorialStageTriggerBox.h"
-#include "TrainingLevel/TutorialWidget/C_TutorialGoalExplanationContainer.h"
-#include "TrainingLevel/TutorialWidget/C_TutorialWidget.h"
+#include "TrainingLevel/Tutorial/C_TutorialManager.h"
+#include "TrainingLevel/Tutorial/C_TutorialStageTriggerBox.h"
+#include "TrainingLevel/Tutorial/TutorialWidget/C_TutorialGoalExplanationContainer.h"
+#include "TrainingLevel/Tutorial/TutorialWidget/C_TutorialWidget.h"
 #include "Utility/C_Util.h"
 
 UC_TutorialStageChecker::UC_TutorialStageChecker()
