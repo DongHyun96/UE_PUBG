@@ -105,6 +105,8 @@ void AC_ItemRespawnHandler::Tick(float DeltaTime)
 
 void AC_ItemRespawnHandler::OnItemPickedUp(AC_Item* PickedItem)
 {
+	UC_Util::Print("OnItemPickedUp", FColor::Red, 10.f);
+
 	PickedItem->OnRespawnableItemPickedUp.Unbind();
 
 	if (!SpawnedItems.Contains(PickedItem->GetClass()))
