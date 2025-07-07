@@ -40,6 +40,12 @@ void AC_Item::BeginPlay()
 	InitializeItem(ItemCode);
 }
 
+void AC_Item::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	OnRespawnableItemPickedUp.Unbind();
+}
+
 void AC_Item::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -170,13 +176,19 @@ bool AC_Item::MoveToInven(AC_BasicCharacter* Character, int32 InStack)
 		break;
 	}
 	
-	// 인벤에 넣으면 tick 켜주기.
-	if (bIsMoveItem == true) SetActorTickEnabled(true);
+	if (bIsMoveItem)
+	{
+		// 인벤에 넣으면 tick 켜주기.
+		SetActorTickEnabled(true);
+
+		// 정상적으로 파밍이 되었을 때, Respawn 처리가 걸린 아이템의 경우 Respawn 담당 Delegate 호출 처리
+		OnRespawnableItemPickedUp.ExecuteIfBound(this);
+	}
 
 	AC_BasicLoot* OwnerLootBox = Cast<AC_BasicLoot>(this->GetOwner());
 
 	//이 부분에 분명히 아이템 나눠지면서 생기는 문제가 생길 것 같음.
-	if (OwnerLootBox && bIsMoveItem == true)
+	if (OwnerLootBox && bIsMoveItem)
 	{
 		OwnerLootBox->RemoveLootItem(this);
 		if (Character->GetInvenComponent()->GetAroundItems().Contains(this))
@@ -235,8 +247,14 @@ bool AC_Item::MoveToSlot(AC_BasicCharacter* Character, int32 InStack)
 		break;
 	}
 
-	// 슬롯에 넣으면 tick 켜주기.
-	if (bIsMoveItem == true) SetActorTickEnabled(true);
+	if (bIsMoveItem)
+	{
+		// 인벤에 넣으면 tick 켜주기.
+		SetActorTickEnabled(true);
+
+		// 정상적으로 파밍이 되었을 때, Respawn 처리가 걸린 아이템의 경우 Respawn 담당 Delegate 호출 처리
+		OnRespawnableItemPickedUp.ExecuteIfBound(this);
+	}
 
 	AC_BasicLoot* OwnerLootBox = Cast<AC_BasicLoot>(this->GetOwner());
 

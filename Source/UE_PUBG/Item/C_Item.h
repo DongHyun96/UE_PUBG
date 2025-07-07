@@ -4,7 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "C_Item.generated.h"
 
-
+// Training Ground에서 사용할 Delegate 선언
+DECLARE_DELEGATE_OneParam(FRespawnableItemPickedUp, class AC_Item*);
 
 /// <summary>
 /// AttachableItem PartsName Enum class
@@ -133,6 +134,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame
@@ -341,6 +344,11 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Sound")
 	USoundBase* PickUpSound{};
+
+public:
+
+	// Respawn 처리되어야 할 아이템일 경우 해당 Delegate를 통해 파밍되었을 시, 파밍 이 후 Respawn 처리
+	FRespawnableItemPickedUp OnRespawnableItemPickedUp{};
 	
 };
 
