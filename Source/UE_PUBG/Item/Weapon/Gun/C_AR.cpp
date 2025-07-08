@@ -33,7 +33,7 @@ const TMap<FName, float> AC_AR::BODYPARTS_DAMAGERATE =
 	{"Spine1",		1.f},
 	{"Spine2",		1.f},
 
-	{"LeftArm",	0.9f},
+	{"LeftArm",		0.9f},
 	{"LeftHand",	0.9f},
 
 	{"RightArm",	0.9f},

@@ -43,7 +43,9 @@ void AC_Item::BeginPlay()
 void AC_Item::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	OnRespawnableItemPickedUp.Unbind();
+
+	/*if (EndPlayReason == EEndPlayReason::Type::)
+	OnRespawnableItemPickedUp.Unbind();*/
 }
 
 void AC_Item::Tick(float DeltaTime)
