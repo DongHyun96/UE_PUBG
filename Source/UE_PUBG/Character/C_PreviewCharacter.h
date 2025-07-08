@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "C_PreviewCharacter.generated.h"
 
+enum class EWeaponSlot : uint8;
+
 UCLASS()
 class UE_PUBG_API AC_PreviewCharacter : public ACharacter
 {
@@ -28,7 +30,12 @@ public:
 
 	void SetOwnerPlayer(class AC_Player* Player) { OwnerPlayer = Player; }
 
-	bool AttachWeaponMesh(class AC_Weapon* Weapon);
+	/// <summary>
+	/// Gun, MeleeWeapon의 메시를 PreviewCharacter에 부착합니다.
+	/// </summary>
+	/// <param name="Weapon"></param>
+	/// <returns></returns>
+	bool AttachWeaponMesh(class AC_Weapon* Weapon, EWeaponSlot InSlot);
 
 	void AttachHelmetMesh(class AC_Weapon* Weapon);
 
@@ -36,8 +43,9 @@ public:
 
 	void AttachBackMesh(class AC_Weapon* Weapon);
 
-	void AttachMeleeWeaponMesh(class AC_Weapon* Weapon);
+	bool AttachMeleeWeaponMesh(class AC_Weapon* Weapon);
 
+	bool DetachWeaponMesh(EWeaponSlot InSlot);
 
 protected:
 
@@ -71,7 +79,7 @@ protected:
 	const FName SUB_HOLSTER_BAG_SOCKET_NAME = "SubGunSocket_Bag"; // 무기집 socket 이름
 	const FName MAIN_HOLSTER_BAG_SOCKET_NAME = "MainGunSocket_Bag"; // 무기집 socket 이름
 
-	USkeletalMeshComponent* previewMesh{};
+	USkeletalMeshComponent* previewCharacterMesh{};
 
 
 };

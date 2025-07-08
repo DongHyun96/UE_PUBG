@@ -124,7 +124,7 @@ public:
 	UTexture2D* GetKillLogTexture() const { return KillLogTexture; }
 
 	UFUNCTION(BlueprintImplementableEvent)
-	USkeletalMeshComponent* GetWeaponMesh();
+	USceneComponent* GetWeaponMeshComp();
 
 public:
 

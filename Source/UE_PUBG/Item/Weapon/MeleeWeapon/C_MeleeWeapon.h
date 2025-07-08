@@ -103,7 +103,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnAttackEnd();
 	
-
+	const FName GetHolsterSocketName() const { return HOLSTER_SOCKET_NAME; }
+	const FName GetEquippedSocketName() const { return EQUIPPED_SOCKET_NAME; }
 protected:
 
 	UFUNCTION()

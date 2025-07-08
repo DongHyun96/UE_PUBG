@@ -50,11 +50,17 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 {
     AC_Weapon* PrevSlotWeapon = Weapons[InSlot];
 
+    AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
     // 들어온 슬롯의 이전 무기가 존재할 때 이전 무기 해제
     if (PrevSlotWeapon)
     {
         Weapons[InSlot]->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+
+        if (OwnerPlayer)
+        {
+			OwnerPlayer->GetPreviewCharacter()->DetachWeaponMesh(InSlot); // PreviewCharacter에서 무기 메시 해제
+        }
 
         // 이전 무기 해제에 대한 PoseTransitionEnd 델리게이트 해제
         OwnerCharacter->Delegate_OnPoseTransitionFin.RemoveAll(PrevSlotWeapon);
@@ -62,12 +68,11 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
     Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
 
-    AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
     
     if (OwnerPlayer)
     {
         OwnerPlayer->GetInvenSystem()->InitializeList(); 
-		OwnerPlayer->GetPreviewCharacter()->AttachWeaponMesh(Weapon); // PreviewCharacter에 무기 메시 장착
+		OwnerPlayer->GetPreviewCharacter()->AttachWeaponMesh(Weapon, InSlot); // PreviewCharacter에 무기 메시 장착
     }
 
     if (!Weapons[InSlot]) // Slot에 새로 지정한 무기가 nullptr -> early return
