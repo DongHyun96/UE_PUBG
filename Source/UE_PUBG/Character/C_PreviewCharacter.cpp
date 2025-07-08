@@ -52,39 +52,40 @@ bool AC_PreviewCharacter::AttachWeaponMesh(AC_Weapon* Weapon)
 	// 무기 없으면 제거만 하고 끝
 	if (!Weapon)
 	{
-		if (PreviewWeaponMesh)
+		if (PreviewMainWeaponMesh)
 		{
-			PreviewWeaponMesh->DestroyComponent();
-			PreviewWeaponMesh = nullptr;
+			PreviewMainWeaponMesh->DestroyComponent();
+			PreviewMainWeaponMesh = nullptr;
 		}
 		return true;
 	}
 
 	// 기존 메시 제거
-	if (PreviewWeaponMesh)
+	if (PreviewMainWeaponMesh)
 	{
-		PreviewWeaponMesh->DestroyComponent();
-		PreviewWeaponMesh = nullptr;
+		PreviewMainWeaponMesh->DestroyComponent();
+		PreviewMainWeaponMesh = nullptr;
 	}
 
 	// 메시 복사 생성
 	USkeletalMeshComponent* WeaponMesh = Weapon->GetWeaponMesh();
-	PreviewWeaponMesh = NewObject<USkeletalMeshComponent>(this, TEXT("PreviewWeaponMesh"));
-	PreviewWeaponMesh->RegisterComponent();
-	PreviewWeaponMesh->SetSkeletalMesh(WeaponMesh->SkeletalMesh);
-	PreviewWeaponMesh->SetVisibility(true);
-	PreviewWeaponMesh->SetHiddenInGame(false);
+	PreviewMainWeaponMesh = NewObject<USkeletalMeshComponent>(this, TEXT("PreviewWeaponMesh"));
+	PreviewMainWeaponMesh->RegisterComponent();
+	PreviewMainWeaponMesh->SetSkeletalMesh(WeaponMesh->SkeletalMesh);
+	PreviewMainWeaponMesh->SetVisibility(true);
+	PreviewMainWeaponMesh->SetHiddenInGame(false);
 
 	// 머티리얼 복사
 	int32 MatCount = Weapon->GetWeaponMesh()->GetNumMaterials();
 	for (int32 i = 0; i < MatCount; ++i)
 	{
-		PreviewWeaponMesh->SetMaterial(i, WeaponMesh->GetMaterial(i));
+		PreviewMainWeaponMesh->SetMaterial(i, WeaponMesh->GetMaterial(i));
 	}
 
 	// 부착 위치 결정
 	AC_EquipableItem* curBackPack = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK];
-	EGunState CurState = Cast<AC_Gun>(Weapon)->GetGunState();
+
+	EGunState CurState = Cast<AC_Gun>(Weapon)->GetCurrentWeaponState();
 
 	FName SocketName = NAME_None;
 
@@ -95,14 +96,25 @@ bool AC_PreviewCharacter::AttachWeaponMesh(AC_Weapon* Weapon)
 	else
 	{
 		SocketName = (CurState == EGunState::MAIN_GUN) ? MAIN_HOLSTER_BAG_SOCKET_NAME : SUB_HOLSTER_BAG_SOCKET_NAME;
+
+	}
+
+	if (CurState == EGunState::MAIN_GUN)
+	{
+		UC_Util::Print("CurState is Main Gun");
+	}
+	else
+	{
+		UC_Util::Print("CurState is Sub Gun");
 	}
 
 	// 부착
-	PreviewWeaponMesh->AttachToComponent(previewMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), SocketName);
-	if (SceneCapture && PreviewWeaponMesh)
+	PreviewMainWeaponMesh->AttachToComponent(previewMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), SocketName);
+	if (SceneCapture && PreviewMainWeaponMesh)
 	{
-		SceneCapture->ShowOnlyComponents.Add(PreviewWeaponMesh);
+		SceneCapture->ShowOnlyComponents.Add(PreviewMainWeaponMesh);
 	}
+
 	return true;
 
 }

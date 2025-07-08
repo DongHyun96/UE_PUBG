@@ -394,7 +394,7 @@ protected:
 public:
 	EGunType GetGunType() { return GunDataRef->CurGunType; }
 
-	EGunState GetGunState() { return CurState; }
+	//EGunState GetGunState() { return CurState; }
 protected:
 	FVector2D IronSightWindowLocation{};
 

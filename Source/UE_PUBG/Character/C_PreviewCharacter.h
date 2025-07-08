@@ -42,7 +42,10 @@ public:
 protected:
 
 	UPROPERTY(BlueprintReadOnly)
-	USkeletalMeshComponent* PreviewWeaponMesh{};
+	USkeletalMeshComponent* PreviewMainWeaponMesh{};
+
+	UPROPERTY(BlueprintReadOnly)
+	USkeletalMeshComponent* PreviewSubWeaponMesh{};
 
 	UPROPERTY(BlueprintReadOnly)
 	UStaticMeshComponent* PreviewHelmetMesh{};
