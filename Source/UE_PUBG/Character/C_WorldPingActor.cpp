@@ -79,8 +79,8 @@ void AC_WorldPingActor::HandleUpdateWorldPingScale()
 		return;
 	}
 	
-	// 30m 안팎이면 scale 1로 조정
-	if (DistanceToPlayer <= 300.f)
+	// 10m 안팎이면 scale 1로 조정
+	if (DistanceToPlayer <= 100.f)
 	{
 		PingWidgetComponent->GetUserWidgetObject()->SetRenderScale( {1.f, 1.f} );
 		return;

@@ -118,6 +118,8 @@ public:
 
 	AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
 
+	AC_Gun* GetFiredGun() const { return FiredGun; }
+	
 private:
 	
 	/// <summary>
@@ -136,7 +138,7 @@ protected:
 private:
 
 	// 해당 Bullet을 발사한 총기 
-	class AC_Gun* FiredGun{};
+	AC_Gun* FiredGun{};
 	
 };
 
