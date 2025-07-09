@@ -2,10 +2,16 @@
 
 
 #include "C_TrainingShootingTarget.h"
+
+#include "C_ShootingTargetWidgetsHolder.h"
+#include "Character/C_Player.h"
 #include "Components/ShapeComponent.h"
 #include "Item/Weapon/Gun/C_Bullet.h"
 #include "Item/Weapon/Gun/C_Gun.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utility/C_Util.h"
+
+AC_ShootingTargetWidgetsHolder* AC_TrainingShootingTarget::ShootingTargetWidgetsHolder{};
 
 AC_TrainingShootingTarget::AC_TrainingShootingTarget()
 {
@@ -16,6 +22,8 @@ void AC_TrainingShootingTarget::BeginPlay()
 {
 	Super::BeginPlay();
 
+	/* Init each body parts collider */
+	
 	if (UShapeComponent* HeadCollider = Cast<UShapeComponent>(GetDefaultSubobjectByName("HeadCollider")))
 		CorrespondingBodyPartNames.Add(HeadCollider, "Neck");
 	else UC_Util::Print("From AC_TrainingShootingTarget::BeginPlay : Cannot find Head Collider", FColor::Red, 10.f);
@@ -43,7 +51,29 @@ void AC_TrainingShootingTarget::BeginPlay()
 
 	for (const TPair<UShapeComponent*, FName>& Pair : CorrespondingBodyPartNames)
 		Pair.Key->OnComponentHit.AddDynamic(this, &AC_TrainingShootingTarget::OnCollisionPartHit);
-	
+
+	/* Init Shooting Target Widgets Holder  */
+	if (!IsValid(ShootingTargetWidgetsHolder))
+	{
+		AActor* HolderActor = UGameplayStatics::GetActorOfClass(GetWorld(), AC_ShootingTargetWidgetsHolder::StaticClass());
+		if (!HolderActor)
+		{
+			UC_Util::Print
+			(
+				"From AC_TrainingShootingTarget::BeginPlay : TrainingShootingTarget on current level but no ShootingTargetWidgetsHolder found!",
+				FColor::Red, 10.f
+			);
+			return;
+		}
+		ShootingTargetWidgetsHolder = Cast<AC_ShootingTargetWidgetsHolder>(HolderActor);		
+	}
+}
+
+void AC_TrainingShootingTarget::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (ShootingTargetWidgetsHolder) ShootingTargetWidgetsHolder = nullptr;
 }
 
 void AC_TrainingShootingTarget::Tick(float DeltaTime)
@@ -67,11 +97,12 @@ void AC_TrainingShootingTarget::OnCollisionPartHit
 		return;
 	}
 
-	UC_Util::Print("OnCollisionPartHit", FColor::MakeRandomColor(), 10.f);
-
 	// Other Actor가 Bullet인지 조사
 	AC_Bullet* Bullet = Cast<AC_Bullet>(OtherActor);
 	if (!Bullet) return;
+
+	// Bullet을 쏜 주체가 Player인지 조사
+	if (!Cast<AC_Player>(Bullet->GetOwnerCharacter())) return;
 
 	const float DamageBase = Bullet->GetFiredGun()->GetDamageBase();
 	const float DamageRate = Bullet->GetFiredGun()->GetDamageRateByBodyPart(CorrespondingBodyPartNames[PartCollider]);

@@ -43,7 +43,6 @@ void AC_ItemRespawnHandler::BeginPlay()
 			if (AC_Item* Item = Cast<AC_Item>(OverlappingItem))
 			{
 				// 파밍 시에 실행할 Delegate bind 처리
-				// TODO : Bind를 푸는 시점 -> ItemPickedUp 되었을 때 & Level 종료 시 bind 해제
 				Item->OnRespawnableItemPickedUp.BindUObject(this, &AC_ItemRespawnHandler::OnItemPickedUp);
 				
 				if (!InitialTransforms.Contains(Item->GetClass())) // 첫 Class detected

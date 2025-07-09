@@ -3,6 +3,9 @@
 
 #include "Utility/C_Util.h"
 
+#include "Animation/WidgetAnimation.h"
+#include "Blueprint/UserWidget.h"
+
 void UC_Util::Print(const FString& str, const FColor& InColor, const float& TimeToDisplay)
 {
 	GEngine->AddOnScreenDebugMessage(-1, TimeToDisplay, InColor, *str);
@@ -57,6 +60,22 @@ void UC_Util::Print(AActor* Actor, const FColor& InColor, const float& TimeToDis
 void UC_Util::PrintLogMessage(const FString& str)
 {
 	UE_LOG(LogTemp, Log, TEXT("&s"), *str);
+}
+
+UWidgetAnimation* UC_Util::GetWidgetAnimationByName(UUserWidget* TargetUserWidget, const FName& AnimationName)
+{
+	UClass* WidgetClass = TargetUserWidget->GetClass();
+	FProperty* Property = WidgetClass->FindPropertyByName(AnimationName);
+
+	if (FObjectProperty* ObjProp = CastField<FObjectProperty>(Property))
+	{
+		if (ObjProp->PropertyClass->IsChildOf(UWidgetAnimation::StaticClass()))
+		{
+			return Cast<UWidgetAnimation>(ObjProp->GetObjectPropertyValue_InContainer(TargetUserWidget));
+		}
+	}
+
+	return nullptr;
 }
 
 
