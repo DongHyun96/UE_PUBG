@@ -37,11 +37,11 @@ public:
 	/// <returns></returns>
 	bool AttachWeaponMesh(class AC_Weapon* Weapon, EWeaponSlot InSlot);
 
-	void AttachHelmetMesh(class AC_Weapon* Weapon);
+	void AttachHelmetMesh(class AC_EquipableItem* Weapon);
 
-	void AttachArmorMesh(class AC_Weapon* Weapon);
+	void AttachArmorMesh(class AC_EquipableItem* Weapon);
 
-	void AttachBackMesh(class AC_Weapon* Weapon);
+	void AttachBackMesh(class AC_EquipableItem* Weapon);
 
 	bool AttachMeleeWeaponMesh(class AC_Weapon* Weapon);
 

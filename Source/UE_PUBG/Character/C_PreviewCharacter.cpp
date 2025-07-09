@@ -52,6 +52,8 @@ bool AC_PreviewCharacter::AttachWeaponMesh(AC_Weapon* Weapon, EWeaponSlot InSlot
 
 	//if (!Weapon) return DetachWeaponMesh(InSlot); //이 부분은 현재 EquipComp의 SetSlotWeapon에서 처리됨
 
+	if (!Weapon) return false;
+
 	USkeletalMeshComponent* WeaponMesh = nullptr;
 	USkeletalMeshComponent* PreWeaponMesh = nullptr;
 
@@ -198,15 +200,15 @@ bool AC_PreviewCharacter::AttachWeaponMesh(AC_Weapon* Weapon, EWeaponSlot InSlot
 
 }
 
-void AC_PreviewCharacter::AttachHelmetMesh(AC_Weapon* Weapon)
+void AC_PreviewCharacter::AttachHelmetMesh(AC_EquipableItem* Weapon)
 {
 }
 
-void AC_PreviewCharacter::AttachArmorMesh(AC_Weapon* Weapon)
+void AC_PreviewCharacter::AttachArmorMesh(AC_EquipableItem* Weapon)
 {
 }
 
-void AC_PreviewCharacter::AttachBackMesh(AC_Weapon* Weapon)
+void AC_PreviewCharacter::AttachBackMesh(AC_EquipableItem* Weapon)
 {
 }
 
@@ -270,6 +272,6 @@ bool AC_PreviewCharacter::DetachWeaponMesh(EWeaponSlot InSlot)
 	default:
 		return false;
 	}
-	return true;
+	return true; //TODO : 뭘로 리턴 할지 고민
 }
 

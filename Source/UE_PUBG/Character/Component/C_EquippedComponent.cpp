@@ -67,7 +67,6 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
     }
 
     Weapons[InSlot] = Weapon; // 새로 들어온 무기로 교체
-
     
     if (OwnerPlayer)
     {
