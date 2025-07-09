@@ -60,7 +60,7 @@ void AC_TutorialManager::BeginPlay()
 	{
 		TutorialWidget->AddToViewport(20);
 		TutorialWidget->SetTutorialManager(this);
-		StartTutorial();
+		// StartTutorial();
 	}
 }
 
