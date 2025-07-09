@@ -41,8 +41,6 @@ protected:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-	UWidgetAnimation* GetAnimationByName(FName AnimationName) const;
-
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, meta = (BindWidgetAnim), Transient, Category = "Animations")

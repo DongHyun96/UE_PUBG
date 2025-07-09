@@ -16,14 +16,14 @@ void UC_TutorialGoalWidget::NativeConstruct()
 		// Try find FocusedAnim with current index
 		FString FocusedAnimName = FString::Printf(TEXT("GoalFocusedAnim%d"), index);
 
-		UWidgetAnimation* FocusedAnim = GetAnimationByName(*FocusedAnimName);
+		UWidgetAnimation* FocusedAnim = UC_Util::GetWidgetAnimationByName(this, *FocusedAnimName);
 		if (!IsValid(FocusedAnim)) break;
 
 		GoalFocusedAnimations.Add(FocusedAnim);
 		
 		FString SucceededAnimName = FString::Printf(TEXT("GoalSucceededAnim%d"), index);
 
-		UWidgetAnimation* SucceededAnim = GetAnimationByName(*SucceededAnimName);
+		UWidgetAnimation* SucceededAnim = UC_Util::GetWidgetAnimationByName(this, *SucceededAnimName);
 		if (!IsValid(SucceededAnim)) break;
 
 		GoalSucceededAnimations.Add(SucceededAnim);
@@ -64,20 +64,4 @@ bool UC_TutorialGoalWidget::StopFocusedAnimation(uint8 GoalIndex)
 void UC_TutorialGoalWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-}
-
-UWidgetAnimation* UC_TutorialGoalWidget::GetAnimationByName(FName AnimationName) const
-{
-	UClass* WidgetClass = GetClass();
-	FProperty* Property = WidgetClass->FindPropertyByName(AnimationName);
-
-	if (FObjectProperty* ObjProp = CastField<FObjectProperty>(Property))
-	{
-		if (ObjProp->PropertyClass->IsChildOf(UWidgetAnimation::StaticClass()))
-		{
-			return Cast<UWidgetAnimation>(ObjProp->GetObjectPropertyValue_InContainer(this));
-		}
-	}
-
-	return nullptr;
 }

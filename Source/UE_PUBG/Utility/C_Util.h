@@ -35,6 +35,17 @@ public:
 	/// FVector XY 성분 떼어서 FVector2D return
 	/// </summary>
 	static FVector2D GetXY(const FVector& InVector) { return FVector2D(InVector.X, InVector.Y); }
+
+public:
+	
+	/// <summary>
+	/// TargetUserWidget 내에서 만든 Widget Animation 이름으로 객체 찾기 
+	/// </summary>
+	/// <param name="TargetUserWidget"> : 해당 Widget Animation을 찾을 UserWidget </param>
+	/// <param name="AnimationName"> : Widget Animation name </param>
+	/// <returns> : 만약에 찾지 못했다면 return nullptr </returns>
+	static class UWidgetAnimation* GetWidgetAnimationByName(UUserWidget* TargetUserWidget, const FName& AnimationName);
+	
 };
 
 
