@@ -25,7 +25,10 @@ void AC_TrainingShootingTarget::BeginPlay()
 	/* Init each body parts collider */
 	
 	if (UShapeComponent* HeadCollider = Cast<UShapeComponent>(GetDefaultSubobjectByName("HeadCollider")))
+	{
 		CorrespondingBodyPartNames.Add(HeadCollider, "Neck");
+		HeadShapeComponent = HeadCollider;
+	}
 	else UC_Util::Print("From AC_TrainingShootingTarget::BeginPlay : Cannot find Head Collider", FColor::Red, 10.f);
 
 	if (UShapeComponent* HipCollider = Cast<UShapeComponent>(GetDefaultSubobjectByName("HipCollider")))
@@ -108,5 +111,12 @@ void AC_TrainingShootingTarget::OnCollisionPartHit
 	const float DamageRate = Bullet->GetFiredGun()->GetDamageRateByBodyPart(CorrespondingBodyPartNames[PartCollider]);
 	const float TotalDamage = DamageBase * DamageRate;
 
-	// TODO : TotalDamage 띄우기 (HeadShot의 경우, 빨간색 & 이미지)	
+	// Spawn TotalDamage Info Widget
+	if (!IsValid(ShootingTargetWidgetsHolder))
+	{
+		UC_Util::Print("From AC_TrainingShootingTarget::OnCollisionPartHit : Target hitted but invalid ShootingTargetWidgetsHolder", FColor::Red, 10.f);
+		return;
+	}
+
+	ShootingTargetWidgetsHolder->SpawnDamageInfoWidget(PartCollider == HeadShapeComponent, TotalDamage, Hit.ImpactPoint + FVector::UnitZ() * 20.f);
 }

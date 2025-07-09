@@ -51,6 +51,9 @@ private:
 	// 캐릭터의 실질적인 Hit bodyParts 이름 저장 / Damage 계산 시 사용
 	TMap<UShapeComponent*, FName> CorrespondingBodyPartNames{};
 
+	// HeadShot 부위 ShapeComponent
+	UShapeComponent* HeadShapeComponent{};
+
 private:
 
 	// Shooting Target 들이 모두 돌아가며 사용할 예정
