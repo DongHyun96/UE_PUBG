@@ -68,7 +68,7 @@ void AC_TrainingShootingTarget::BeginPlay()
 			);
 			return;
 		}
-		ShootingTargetWidgetsHolder = Cast<AC_ShootingTargetWidgetsHolder>(HolderActor);		
+		ShootingTargetWidgetsHolder = Cast<AC_ShootingTargetWidgetsHolder>(HolderActor);
 	}
 }
 

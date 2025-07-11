@@ -24,9 +24,9 @@ AC_EnemyAIController::AC_EnemyAIController()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	Blackboard			= CreateDefaultSubobject<UBlackboardComponent>("Blackboard");
-	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>("Perception"); // Sight에 들어왔을 때의 행동 정의
-	Sight				= CreateDefaultSubobject<UAISenseConfig_Sight>("Sight");		// 시야 | Perception, sight 둘이 세트로 씀
+	Blackboard			= CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard"));
+	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception"));	// Sight에 들어왔을 때의 행동 정의
+	Sight				= CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight"));			// 시야 | Perception, sight 둘이 세트로 씀
 
 	Sight->SightRadius								= SIGHT_RANGE_DISTANCE[ESightRangeLevel::Level4];
 	Sight->LoseSightRadius							= Sight->SightRadius + 100.f;
