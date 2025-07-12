@@ -49,6 +49,8 @@ public:
 	void SetItemLevel(EEquipableItemLevel inItemLevel) { ItemLevel = inItemLevel; }
 
 	EEquipableItemLevel GetItemLevel() const { return ItemLevel; }
+
+	FName GetSocketName() const { return SocketName; }
 	
 public:
 	/// <summary>

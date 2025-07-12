@@ -49,6 +49,8 @@ public:
 
 	bool DetachWeaponMesh(EWeaponSlot InSlot);
 
+	bool DetachEquippedMesh(EEquipSlot InSlot);
+
 	bool DetachHelmetMesh();
 
 	bool DetachArmorMesh();

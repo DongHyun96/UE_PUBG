@@ -3,6 +3,7 @@
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
+#include "Character/C_PreviewCharacter.h"
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
@@ -67,44 +68,6 @@ float UC_InvenComponent::LoopCheckVolume(AC_Item* item)
 	return 0;
 }
 
-/// <summary>
-/// 상호작용(F)함수 느낌으로 만들어봄.
-/// wilditem은 map에 떨어져있는 item을 의미.
-/// CheckVolume으로 내 인벤토리의 공간을 체크하고 아이템을 넣을 수 있는지 확인.
-/// true면 맵에서 해당 object를 제거하고 Player가 소유하도록 하고자 한다.
-/// AddActorComponentReplicatedSubObject 현재 이 함수가 어떤식으로 작용하고 결과를 주는지 잘 모르겠음.
-/// 그렇다면 상호작용은 object에서 내용을 만들고 플레이어는 그 함수를 작동시키는 방식으로 가야 할 것 같음.
-/// </summary>
-/// <param name="wilditem"></param>
-//void UC_InvenComponent::Interaction(AC_Item* wilditem)
-//{
-//	//AC_BasicCharacter* player = OwnerCharacter;
-//	
-//	//wilditem->Interaction(OwnerCharacter);
-//
-//	wilditem->Interaction(OwnerCharacter);
-//
-//
-//	if (CheckVolume(wilditem))
-//	{
-//		//상호작용된 아이템의 무게를 더해도 무게한도를 넘지 않는 경우.
-//		CurVolume += wilditem->GetOnceVolume();
-//
-//		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
-//			Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
-//		
-//		//서버와 동기화하는데 주로 사용한다고함. 서버와 클라이언트간에 컴포넌트 상태를 동기화하고, 소유한다.
-//		wilditem->AddActorComponentReplicatedSubObject(this, wilditem);
-//	}
-//	else
-//	{
-//		//상호작용된 아이템의 무게를 더했을 때, 무게한도를 넘는 경우.
-//
-//		//print("공간이 부족합니다"); 와 같은 멘트가 나오도록
-//		return;
-//	}
-//}
-
 float UC_InvenComponent::CheckBackPackVolume(uint32 backpacklevel)
 {
 	switch (backpacklevel)
@@ -149,23 +112,11 @@ float UC_InvenComponent::CheckBackPackVolume(EBackPackLevel backpacklevel)
 	}
 }
 
-//void UC_InvenComponent::RemoveBackPack()
-//{
-//	if (!MyBackPack) return;
-//
-//	MaxVolume -= CheckBackPackVolume(MyBackPack->GetLevel());
-//
-//	MyBackPack = nullptr;
-//
-//	CurBackPackLevel = EBackPackLevel::LV0;
-//
-//	CheckBackPackOnCharacter();
-//
-//}
-
 AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_EquipableItem* EquipItem)
 {
 	AC_EquipableItem* PrevSlotEquipItem = EquipmentItems[InSlot];
+
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
 	//기존의 장비가 있다면.
 	if (PrevSlotEquipItem)
@@ -176,11 +127,14 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 			MaxVolume -= CheckBackPackVolume(Cast<AC_BackPack>(PrevSlotEquipItem)->GetLevel());//TODO : MyBackPack을 GetEquipmentItems()[EEquipSlot::BACKPACK]로 대체하기.
 		else if (PrevSlotEquipItem->GetItemDatas()->ItemType == EItemTypes::VEST)
 			MaxVolume -= 50.f;
+
+		if (OwnerPlayer) OwnerPlayer->GetPreviewCharacter()->DetachEquippedMesh(InSlot); //프리뷰 캐릭터의 장착된 메시 제거
 		//AddItemToAroundList(PrevSlotEquipItem);// TODO : Collision을 키고 끄는 방식으로 할 지 아니면 강제로 넣고 빼줄지 생각
 	}
 	EquipmentItems[InSlot] = EquipItem;
 	
 	if (EquipmentItems[InSlot] == nullptr)	return PrevSlotEquipItem; //nullptr이면 종료.
+
 
 	if (EquipmentItems[InSlot]->GetItemDatas()->ItemType == EItemTypes::BACKPACK)
 	{
@@ -194,6 +148,8 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 	EquipmentItems[InSlot]->SetItemPlace(EItemPlace::SLOT);
 
 	EquipmentItems[InSlot]->AttachToSocket(OwnerCharacter);
+
+	if (OwnerPlayer) OwnerPlayer->GetPreviewCharacter()->UpdateEquippedMesh(InSlot); //프리뷰 캐릭터에 장착된 메시 업데이트
 
 	EquipmentItems[InSlot]->SetActorEnableCollision(false);
 

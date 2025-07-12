@@ -3,6 +3,7 @@
 
 #include "Character/C_PreviewCharacter.h"
 #include "C_PreviewCharacter.h"
+#include "Item/Equipment/C_EquipableItem.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
@@ -71,7 +72,7 @@ bool AC_PreviewCharacter::AttachWeaponMesh(AC_Weapon* Weapon, EWeaponSlot InSlot
 	switch (InSlot)
 	{
 	case EWeaponSlot::MAIN_GUN:
-		WeaponMesh = Cast<USkeletalMeshComponent>(Weapon->GetWeaponMeshComp());
+		WeaponMesh = Cast<USkeletalMeshComponent>(Weapon->GetItemMeshComp());
 
 		PreviewMainWeaponMesh = NewObject<USkeletalMeshComponent>(this, TEXT("PreviewMainWeaponMesh"));
 		PreviewMainWeaponMesh->RegisterComponent();
@@ -79,7 +80,7 @@ bool AC_PreviewCharacter::AttachWeaponMesh(AC_Weapon* Weapon, EWeaponSlot InSlot
 		PreWeaponMesh = PreviewMainWeaponMesh;
 		break;
 	case EWeaponSlot::SUB_GUN:
-		WeaponMesh = Cast<USkeletalMeshComponent>(Weapon->GetWeaponMeshComp());
+		WeaponMesh = Cast<USkeletalMeshComponent>(Weapon->GetItemMeshComp());
 
 		PreviewSubWeaponMesh = NewObject<USkeletalMeshComponent>(this, TEXT("PreviewSubWeaponMesh"));
 		PreviewSubWeaponMesh->RegisterComponent();
@@ -185,7 +186,7 @@ bool AC_PreviewCharacter::AttachMeleeWeaponMesh()
 	AC_MeleeWeapon* MeleeWeapon = Cast<AC_MeleeWeapon>(EquippedComp->GetWeapons()[EWeaponSlot::MELEE_WEAPON]);
 	if (!MeleeWeapon) return false; // 무기가 없으면 false 리턴
 
-	UStaticMeshComponent* SourceMesh = Cast<UStaticMeshComponent>(MeleeWeapon->GetWeaponMeshComp());
+	UStaticMeshComponent* SourceMesh = Cast<UStaticMeshComponent>(MeleeWeapon->GetItemMeshComp());
 	if (!SourceMesh || !SourceMesh->GetStaticMesh()) return false;
 
 	// Preview용 StaticMeshComponent 생성
@@ -221,6 +222,23 @@ bool AC_PreviewCharacter::DetachWeaponMesh(EWeaponSlot InSlot)
 
 		Comp->DestroyComponent();
 		WeaponMeshes[InSlot] = nullptr;
+		return true;
+	}
+
+	return false;
+}
+
+bool AC_PreviewCharacter::DetachEquippedMesh(EEquipSlot InSlot)
+{
+	if (UStaticMeshComponent* curMesh = EquipMeshes.FindRef(InSlot))
+	{
+		if (SceneCapture)
+		{
+			SceneCapture->ShowOnlyComponents.Remove(curMesh);
+		}
+
+		curMesh->DestroyComponent();
+		EquipMeshes.Remove(InSlot);
 		return true;
 	}
 
@@ -292,7 +310,7 @@ bool AC_PreviewCharacter::UpdateWeaponMesh(EWeaponSlot InSlot)
 	}
 
 	// 무기 메시 가져오기
-	USkeletalMeshComponent* WeaponMesh = Cast<USkeletalMeshComponent>(Weapon->GetWeaponMeshComp());
+	USkeletalMeshComponent* WeaponMesh = Cast<USkeletalMeshComponent>(Weapon->GetItemMeshComp());
 	if (!WeaponMesh || !WeaponMesh->SkeletalMesh)
 	{
 		UC_Util::Print("Weapon Mesh is nullptr");
@@ -313,7 +331,7 @@ bool AC_PreviewCharacter::UpdateWeaponMesh(EWeaponSlot InSlot)
 
 	InSlot == EWeaponSlot::MAIN_GUN ? Gun->ChangeGunState(EGunState::MAIN_GUN) : Gun->ChangeGunState(EGunState::SUB_GUN);
 
-	EGunState CurState = Cast<AC_Gun>(Weapon)->GetCurrentWeaponState();
+	EGunState CurState = Gun->GetCurrentWeaponState();
 
 	FName SocketName = NAME_None;
 
@@ -343,6 +361,40 @@ bool AC_PreviewCharacter::UpdateWeaponMesh(EWeaponSlot InSlot)
 
 bool AC_PreviewCharacter::UpdateEquippedMesh(EEquipSlot InSlot)
 {
-	return false;
+	if (!OwnerPlayer) return false;
+
+	UC_InvenComponent* InvenComp = OwnerPlayer->GetInvenComponent();
+	if (!InvenComp) return false;
+
+	AC_EquipableItem* Item = InvenComp->GetEquipmentItems()[InSlot];
+	if (!Item) return DetachEquippedMesh(InSlot);  // 장착된 아이템 없으면 제거
+
+	// 기존 메시 제거
+	DetachEquippedMesh(InSlot);
+
+	// 메시 가져오기
+	UStaticMeshComponent* SourceMesh = Cast<UStaticMeshComponent>(Item->GetItemMeshComp());
+	if (!SourceMesh || !SourceMesh->GetStaticMesh()) return false;
+
+	// Preview 메시 생성
+	FName CompName = *FString::Printf(TEXT("PreviewEquip_%d"), static_cast<int32>(InSlot));
+	UStaticMeshComponent* PreviewMesh = NewObject<UStaticMeshComponent>(this, CompName);
+	if (!PreviewMesh) return false;
+
+	PreviewMesh->RegisterComponent();
+	PreviewMesh->SetStaticMesh(SourceMesh->GetStaticMesh());
+
+	// 부착
+	PreviewMesh->AttachToComponent(previewCharacterMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), Item->GetSocketName());
+
+	// SceneCapture에 추가
+	if (SceneCapture)
+	{
+		SceneCapture->ShowOnlyComponents.Add(PreviewMesh);
+	}
+
+	// TMap에 저장
+	EquipMeshes.Add(InSlot, PreviewMesh);
+	return true;
 }
 

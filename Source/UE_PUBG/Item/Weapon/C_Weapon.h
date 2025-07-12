@@ -123,8 +123,7 @@ public:
 
 	UTexture2D* GetKillLogTexture() const { return KillLogTexture; }
 
-	UFUNCTION(BlueprintImplementableEvent)
-	USceneComponent* GetWeaponMeshComp();
+
 
 public:
 
