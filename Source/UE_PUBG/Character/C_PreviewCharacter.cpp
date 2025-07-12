@@ -88,7 +88,7 @@ bool AC_PreviewCharacter::AttachWeaponMesh(AC_Weapon* Weapon, EWeaponSlot InSlot
 		break;
 	case EWeaponSlot::MELEE_WEAPON:
 		// TODO : 근접 무기 메시 처리, 근접 무기는 SkeletalMesh가 아닌 StaticMesh로 처리할 예정
-		return AttachMeleeWeaponMesh(Weapon);
+		return AttachMeleeWeaponMesh();
 		break;
 	default:
 		return false;
@@ -207,37 +207,10 @@ bool AC_PreviewCharacter::AttachMeleeWeaponMesh()
 	// TMap에 저장
 	WeaponMeshes.Add(EWeaponSlot::MELEE_WEAPON, NewMesh);
 	return true;
-
-	//if (!Weapon) return false;
-
-	//AC_MeleeWeapon* MeleeWeapon = Cast<AC_MeleeWeapon>(Weapon);
-
-	//UStaticMeshComponent* WeaponMesh = Cast<UStaticMeshComponent>(MeleeWeapon->GetWeaponMeshComp());
-
-	//PreviewMeleeWeaponMesh = NewObject<UStaticMeshComponent>(this, TEXT("PreviewMeleeWeaponMesh"));
-	//PreviewMeleeWeaponMesh->RegisterComponent();
-	//PreviewMeleeWeaponMesh->SetStaticMesh(WeaponMesh->GetStaticMesh());
-
-	//PreviewMeleeWeaponMesh->AttachToComponent(previewCharacterMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), MeleeWeapon->GetHolsterSocketName());
-
-	//if (SceneCapture && PreviewMeleeWeaponMesh)
-	//{
-	//	SceneCapture->ShowOnlyComponents.Add(PreviewMeleeWeaponMesh);
-	//	return true;
-	//}
-	//else
-	//{
-	//	if (PreviewMeleeWeaponMesh)
-	//	{
-	//		PreviewMeleeWeaponMesh->DestroyComponent();
-	//	}
-	//	return false;
-	//}
 }
 
 bool AC_PreviewCharacter::DetachWeaponMesh(EWeaponSlot InSlot)
 {
-
 	if (WeaponMeshes.Contains(InSlot) && WeaponMeshes[InSlot])
 	{
 		UPrimitiveComponent* Comp = Cast<UPrimitiveComponent>(WeaponMeshes[InSlot]);
@@ -252,40 +225,6 @@ bool AC_PreviewCharacter::DetachWeaponMesh(EWeaponSlot InSlot)
 	}
 
 	return false;
-	//switch (InSlot)
-	//{
-	//case EWeaponSlot::MAIN_GUN:
-	//	if (PreviewMainWeaponMesh)
-	//	{
-	//		WeaponMeshes[InSlot]->DestroyComponent();
-	//		WeaponMeshes[InSlot] = nullptr; // 맵에서 제거
-	//		PreviewMainWeaponMesh->DestroyComponent();
-	//		PreviewMainWeaponMesh = nullptr;
-	//		return true;
-	//	}
-	//	break;
-	//case EWeaponSlot::SUB_GUN:
-	//	if (PreviewSubWeaponMesh)
-	//	{
-	//		WeaponMeshes[InSlot]->DestroyComponent();
-	//		WeaponMeshes[InSlot] = nullptr; // 맵에서 제거
-	//		PreviewSubWeaponMesh->DestroyComponent();
-	//		PreviewSubWeaponMesh = nullptr;
-	//		return true;
-	//	}
-	//	break;
-	//case EWeaponSlot::MELEE_WEAPON:
-	//	if (PreviewMeleeWeaponMesh)
-	//	{
-	//		PreviewMeleeWeaponMesh->DestroyComponent();
-	//		PreviewMeleeWeaponMesh = nullptr;
-	//		return true;
-	//	}
-	//	break;
-	//default:
-	//	return false;
-	//}
-	//return true; //TODO : 뭘로 리턴 할지 고민
 }
 
 bool AC_PreviewCharacter::DetachHelmetMesh()
@@ -349,7 +288,7 @@ bool AC_PreviewCharacter::UpdateWeaponMesh(EWeaponSlot InSlot)
 	// 근접 무기 예외 처리
 	if (InSlot == EWeaponSlot::MELEE_WEAPON)
 	{
-		return AttachMeleeWeaponMesh(Weapon);
+		return AttachMeleeWeaponMesh();
 	}
 
 	// 무기 메시 가져오기
@@ -369,6 +308,10 @@ bool AC_PreviewCharacter::UpdateWeaponMesh(EWeaponSlot InSlot)
 	if (!NewMesh) return false;
 
 	AC_EquipableItem* curBackPack = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK];
+
+	AC_Gun* Gun = Cast<AC_Gun>(Weapon);
+
+	InSlot == EWeaponSlot::MAIN_GUN ? Gun->ChangeGunState(EGunState::MAIN_GUN) : Gun->ChangeGunState(EGunState::SUB_GUN);
 
 	EGunState CurState = Cast<AC_Gun>(Weapon)->GetCurrentWeaponState();
 
