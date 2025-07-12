@@ -32,30 +32,11 @@ public:
 
 	void SetOwnerPlayer(class AC_Player* Player) { OwnerPlayer = Player; }
 
-	/// <summary>
-	/// Gun, MeleeWeapon의 메시를 PreviewCharacter에 부착합니다.
-	/// </summary>
-	/// <param name="Weapon"></param>
-	/// <returns></returns>
-	bool AttachWeaponMesh(class AC_Weapon* Weapon, EWeaponSlot InSlot);
-
-	bool AttachHelmetMesh(class AC_EquipableItem* InItem);
-
-	bool AttachArmorMesh(class AC_EquipableItem* InItem);
-
-	bool AttachBackMesh(class AC_EquipableItem* InItem);
-
 	bool AttachMeleeWeaponMesh();
 
 	bool DetachWeaponMesh(EWeaponSlot InSlot);
 
 	bool DetachEquippedMesh(EEquipSlot InSlot);
-
-	bool DetachHelmetMesh();
-
-	bool DetachArmorMesh();
-
-	bool DetachBackMesh();
 
 	bool UpdateWeaponMesh(EWeaponSlot InSlot);
 
