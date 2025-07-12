@@ -71,7 +71,8 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
     if (OwnerPlayer)
     {
         OwnerPlayer->GetInvenSystem()->InitializeList(); 
-		OwnerPlayer->GetPreviewCharacter()->AttachWeaponMesh(Weapon, InSlot); // PreviewCharacter에 무기 메시 장착
+		//OwnerPlayer->GetPreviewCharacter()->AttachWeaponMesh(Weapon, InSlot); // PreviewCharacter에 무기 메시 장착
+		OwnerPlayer->GetPreviewCharacter()->UpdateWeaponMesh(InSlot); // PreviewCharacter에 무기 메시 업데이트
     }
 
     if (!Weapons[InSlot]) // Slot에 새로 지정한 무기가 nullptr -> early return

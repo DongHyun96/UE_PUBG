@@ -7,6 +7,8 @@
 #include "C_PreviewCharacter.generated.h"
 
 enum class EWeaponSlot : uint8;
+enum class EEquipSlot : uint8;
+
 
 UCLASS()
 class UE_PUBG_API AC_PreviewCharacter : public ACharacter
@@ -37,15 +39,25 @@ public:
 	/// <returns></returns>
 	bool AttachWeaponMesh(class AC_Weapon* Weapon, EWeaponSlot InSlot);
 
-	void AttachHelmetMesh(class AC_EquipableItem* Weapon);
+	bool AttachHelmetMesh(class AC_EquipableItem* InItem);
 
-	void AttachArmorMesh(class AC_EquipableItem* Weapon);
+	bool AttachArmorMesh(class AC_EquipableItem* InItem);
 
-	void AttachBackMesh(class AC_EquipableItem* Weapon);
+	bool AttachBackMesh(class AC_EquipableItem* InItem);
 
-	bool AttachMeleeWeaponMesh(class AC_Weapon* Weapon);
+	bool AttachMeleeWeaponMesh();
 
 	bool DetachWeaponMesh(EWeaponSlot InSlot);
+
+	bool DetachHelmetMesh();
+
+	bool DetachArmorMesh();
+
+	bool DetachBackMesh();
+
+	bool UpdateWeaponMesh(EWeaponSlot InSlot);
+
+	bool UpdateEquippedMesh(EEquipSlot InSlot);	
 
 protected:
 
@@ -66,6 +78,10 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	UStaticMeshComponent* PreviewMeleeWeaponMesh{};
+
+	TMap<EWeaponSlot, USceneComponent*> WeaponMeshes{};
+
+	TMap<EEquipSlot, UStaticMeshComponent*> EquipMeshes{};
 
 	class AC_Player* OwnerPlayer{};
 
