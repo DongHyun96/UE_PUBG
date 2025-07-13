@@ -8,7 +8,7 @@
 
 enum class EWeaponSlot : uint8;
 enum class EEquipSlot : uint8;
-
+enum class EPoseState : uint8;
 
 UCLASS()
 class UE_PUBG_API AC_PreviewCharacter : public ACharacter
@@ -38,9 +38,14 @@ public:
 
 	bool DetachEquippedMesh(EEquipSlot InSlot);
 
+	UFUNCTION(BlueprintCallable)
 	bool UpdateWeaponMesh(EWeaponSlot InSlot);
 
+	UFUNCTION(BlueprintCallable)
 	bool UpdateEquippedMesh(EEquipSlot InSlot);	
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateHandPose(EHandState InHandState);
 
 protected:
 

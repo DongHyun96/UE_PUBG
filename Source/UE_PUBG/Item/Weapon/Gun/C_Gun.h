@@ -204,8 +204,8 @@ protected:
 	const FName SUB_HOLSTER_BAG_SOCKET_NAME = "SubGunSocket_Bag"; // 무기집 socket 이름
 	const FName MAIN_HOLSTER_BAG_SOCKET_NAME = "MainGunSocket_Bag"; // 무기집 socket 이름
 	const FName MAGAZINE_SOCKET_NAME = "Magazine_Socket";
-
-
+	
+	
 	FName EQUIPPED_SOCKET_NAME; 
 	//const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
 	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // 무기가 손에 부착될 socket 이름
@@ -261,6 +261,8 @@ protected:
 	const FName GetMAIN_HOLSTER_SOCKET_NAME()  { return MAIN_HOLSTER_SOCKET_NAME; }
 	const FName GetSUB_HOLSTER_BAG_SOCKET_NAME()  { return SUB_HOLSTER_BAG_SOCKET_NAME; }
 	const FName GetMAIN_HOLSTER_BAG_SOCKET_NAME()  { return MAIN_HOLSTER_BAG_SOCKET_NAME; }
+
+	FName GetEQUIPPED_SOCKET_NAME() const { return EQUIPPED_SOCKET_NAME; }
 protected:
 	/// <summary>
 	/// 총알 발사 관련 변수들

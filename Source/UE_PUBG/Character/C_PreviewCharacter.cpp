@@ -34,10 +34,6 @@ void AC_PreviewCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	previewCharacterMesh = this->GetMesh();
-
-
-
-
 }
 
 // Called every frame
@@ -73,9 +69,13 @@ bool AC_PreviewCharacter::AttachMeleeWeaponMesh()
 
 	NewMesh->RegisterComponent();
 	NewMesh->SetStaticMesh(SourceMesh->GetStaticMesh());
+	
+	FName SocketName = OwnerPlayer->GetHandState() == EHandState::WEAPON_MELEE ? MeleeWeapon->GetEquippedSocketName() : MeleeWeapon->GetHolsterSocketName();
+
+	UC_Util::Print(SocketName.ToString(), FColor::Blue, 10.f);
 
 	// 부착
-	NewMesh->AttachToComponent(previewCharacterMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), MeleeWeapon->GetHolsterSocketName());
+	NewMesh->AttachToComponent(previewCharacterMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), SocketName);
 
 	// SceneCapture에 추가
 	if (SceneCapture)
@@ -230,4 +230,5 @@ bool AC_PreviewCharacter::UpdateEquippedMesh(EEquipSlot InSlot)
 	EquipMeshes.Add(InSlot, PreviewMesh);
 	return true;
 }
+
 
