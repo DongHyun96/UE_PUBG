@@ -6,7 +6,11 @@
 #include "Components/ActorComponent.h"
 #include "C_TutorialStageChecker.generated.h"
 
+// MainGoal, SubGoal 순의 파라미터를 넘겨서 처리하는 MainGoal 전용 Delegate 선언
 DECLARE_DELEGATE_RetVal_TwoParams(bool, FTutorialStageGoalCheckerDelegate, uint8, int);
+
+// Goal을 달성할 시, 특정 GoalWidget이나 Goal Explanation Widget의 특정한 숫자를 업데이트할 떄 사용
+DECLARE_MULTICAST_DELEGATE_OneParam(FTutorialStageUpdateWidgetNumberDelegate, uint8);
 
 USTRUCT(BlueprintType)
 struct FGoalData
@@ -99,8 +103,12 @@ protected:
 
 protected:
 
-	// Delegate를 걸어둔 모든 Delegate들
+	// Goal 행위 체크용 Delegate를 걸어둔 모든 Delegate들
 	TArray<TDelegate<bool(uint8, int)>> SubscribedDelegates{};
+
+	// Widget의 특정 번호를 업데이트 시켜주는 Delegate를 걸어둔 모든 Delegate들
+	TArray<TMulticastDelegate<void(uint8)>> SubscribedWidgetNumberUpdaterDelegates{};
+	
 
 protected:
 
