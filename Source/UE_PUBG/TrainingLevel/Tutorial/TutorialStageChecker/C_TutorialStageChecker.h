@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "C_TutorialStageChecker.generated.h"
 
+DECLARE_DELEGATE_RetVal_TwoParams(bool, FTutorialStageGoalCheckerDelegate, uint8, int);
+
 USTRUCT(BlueprintType)
 struct FGoalData
 {
@@ -30,10 +32,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void SetOwnerTutorialManager(class AC_TutorialManager* InOwnerTutorialManager) { OwnerTutorialManager = InOwnerTutorialManager; }
+	void SetTutorialStage(ETutorialStage InTutorialStage) { TutorialStage = InTutorialStage; }
 
 protected:
 	
@@ -68,29 +73,37 @@ public:
 	/// <summary>
 	/// 구독한 Delegate 모두 해제 & SubscribedDelegates Array 정리
 	/// </summary>
-	void ClearSubscribedDelegates();
+	void ClearSubscribedDelegates(); // TODO : Tutorial 어떻게든 끝났을 때 꼭 각 TutorialStageChecker에 대해 호출해 주어야 함
 
 protected:
 
 	// 자기자신의 Stage 종류
 	ETutorialStage TutorialStage{};
 	
-private:
+protected:
 	
 	// 이 Component를 갖고 있는 TutorialManager
 	AC_TutorialManager* OwnerTutorialManager{};
+
+private:
+	
 	bool bHasStart{}; // 현재 Stage가 TriggerBox Overlap에 의해 시작되었는지 체크
 
 	// 현재 수행중인 MainGoal index - 현재 순서의 Main Goal이 아닌 미리 다음 Main Goal을 수행하여도 Sequence에 맞게끔 처리할 예정
 	uint8 CurrentMainGoalIndex{};
 	
-protected:
+protected: 
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FGoalData> GoalData{};
 
-private:
+protected:
 
 	// Delegate를 걸어둔 모든 Delegate들
 	TArray<TDelegate<bool(uint8, int)>> SubscribedDelegates{};
+
+protected:
+
+	// MainGoal 별 TriggerBoxes (만약에 TriggerBox가 필요없다면 nullptr / 대신 갯수는 MainGoal 개수와 동일)
+	TArray<class AC_TutorialStageTriggerBox*> GoalTriggerBoxes{};
 };
