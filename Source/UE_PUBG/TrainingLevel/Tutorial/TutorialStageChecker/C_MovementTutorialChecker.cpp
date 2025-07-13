@@ -13,14 +13,13 @@
 UC_MovementTutorialChecker::UC_MovementTutorialChecker()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	TutorialStage = ETutorialStage::MovementTutorial;
 }
 
 
 void UC_MovementTutorialChecker::BeginPlay()
 {
 	Super::BeginPlay();
-
-	TutorialStage = ETutorialStage::MovementTutorial;
 
 	// WASD 이동하기 Goal
 	GoalData.Add(FGoalData());
@@ -31,8 +30,6 @@ void UC_MovementTutorialChecker::BeginPlay()
 
 	// 지형 지물 넘기
 	GoalData.Add(FGoalData());
-
-	UC_Util::Print(GoalData.Num(), FColor::MakeRandomColor(), 10.f);
 }
 
 
@@ -48,7 +45,6 @@ void UC_MovementTutorialChecker::InitStage()
 	UC_InputComponent* PlayerInputComponent = GAMESCENE_MANAGER->GetPlayer()->GetInputComponent();
 
 	PlayerInputComponent->MovementTutorialDelegate.BindUObject(this, &UC_MovementTutorialChecker::OnGoalAchieved);
-
-	UC_Util::Print("Init MovementTutorial Delegate Finished", FColor::Red, 10.f);
+	SubscribedDelegates.Add(PlayerInputComponent->MovementTutorialDelegate);
 }
 

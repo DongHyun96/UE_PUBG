@@ -10,6 +10,7 @@
 #include "Templates/Tuple.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Item/ItemBullet/C_Item_Bullet.h"
+#include "TrainingLevel/Tutorial/TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_Gun.generated.h"
 
 UENUM(BlueprintType)
@@ -429,6 +430,11 @@ public:
 
 	virtual void SetActorHiddenInGame(bool bNewHidden) override;
 	virtual void CancelReload();
+
+public:
+
+	// Weapon Tutorial 진행용 Delegate
+	static FTutorialStageGoalCheckerDelegate WeaponTutorialDelegate;
 	
 };
 

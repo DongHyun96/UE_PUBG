@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "TrainingLevel/Tutorial/TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_TrainingShootingTarget.generated.h"
 
 /*UENUM(BlueprintType)
@@ -33,6 +34,8 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+	static void SetWeaponTutorialHitCount(uint8 InCount) { WeaponTutorialHitCount = InCount; }
+
 private:
 
 	UFUNCTION()
@@ -58,5 +61,14 @@ private:
 
 	// Shooting Target 들이 모두 돌아가며 사용할 예정
 	static class AC_ShootingTargetWidgetsHolder* ShootingTargetWidgetsHolder;
+
+public:
+
+	// ADS 모드에서 Target Hit Goal Delegate
+	static FTutorialStageGoalCheckerDelegate WeaponTutorialDelegate;
+
+private:
+
+	static uint8 WeaponTutorialHitCount;
 
 };

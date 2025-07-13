@@ -13,6 +13,9 @@
 
 AC_ShootingTargetWidgetsHolder* AC_TrainingShootingTarget::ShootingTargetWidgetsHolder{};
 
+FTutorialStageGoalCheckerDelegate AC_TrainingShootingTarget::WeaponTutorialDelegate{};
+uint8 AC_TrainingShootingTarget::WeaponTutorialHitCount{};
+
 AC_TrainingShootingTarget::AC_TrainingShootingTarget()
 {
 	PrimaryActorTick.bCanEverTick = true;
