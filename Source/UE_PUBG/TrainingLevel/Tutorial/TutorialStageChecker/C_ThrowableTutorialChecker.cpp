@@ -9,14 +9,13 @@
 UC_ThrowableTutorialChecker::UC_ThrowableTutorialChecker()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	TutorialStage = ETutorialStage::ThrowableTutorial;
 }
 
 void UC_ThrowableTutorialChecker::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TutorialStage = ETutorialStage::ThrowableTutorial;
-	
 	// 투척류 획득하기
 	GoalData.Add(FGoalData());
 
