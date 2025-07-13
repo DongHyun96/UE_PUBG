@@ -23,7 +23,6 @@ UC_DefaultItemSpawnerComponent::UC_DefaultItemSpawnerComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-
 void UC_DefaultItemSpawnerComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -34,7 +33,6 @@ void UC_DefaultItemSpawnerComponent::BeginPlay()
 	else
 		ToggleSpawnedItemsHiddenInGame(false);
 }
-
 
 void UC_DefaultItemSpawnerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {

@@ -67,6 +67,8 @@ public:
 	// ADS 모드에서 Target Hit Goal Delegate
 	static FTutorialStageGoalCheckerDelegate WeaponTutorialDelegate;
 
+	static FTutorialStageUpdateWidgetNumberDelegate TutorialUpdateWidgetNumberDelegate;
+
 private:
 
 	static uint8 WeaponTutorialHitCount;

@@ -14,6 +14,7 @@
 AC_ShootingTargetWidgetsHolder* AC_TrainingShootingTarget::ShootingTargetWidgetsHolder{};
 
 FTutorialStageGoalCheckerDelegate AC_TrainingShootingTarget::WeaponTutorialDelegate{};
+FTutorialStageUpdateWidgetNumberDelegate AC_TrainingShootingTarget::TutorialUpdateWidgetNumberDelegate{};
 uint8 AC_TrainingShootingTarget::WeaponTutorialHitCount{};
 
 AC_TrainingShootingTarget::AC_TrainingShootingTarget()
@@ -108,7 +109,21 @@ void AC_TrainingShootingTarget::OnCollisionPartHit
 	if (!Bullet) return;
 
 	// Bullet을 쏜 주체가 Player인지 조사
-	if (!Cast<AC_Player>(Bullet->GetOwnerCharacter())) return;
+	AC_Player* Player = Cast<AC_Player>(Bullet->GetOwnerCharacter());
+	if (!Player) return;
+
+	// WeaponTutorialDelegate가 Bound되어있고, ADS 모드일 때의 처리 (TODO : AimDown까지도 체크가 되어버리네?)
+	if (WeaponTutorialDelegate.IsBound() && Bullet->GetFiredGun()->GetIsAimPress())
+	{
+		if (WeaponTutorialDelegate.Execute(3, WeaponTutorialHitCount))
+		{
+			++WeaponTutorialHitCount;
+
+			// Widget Number update Delegate 호출 처리
+			if (TutorialUpdateWidgetNumberDelegate.IsBound())
+				TutorialUpdateWidgetNumberDelegate.Broadcast(WeaponTutorialHitCount);
+		}
+	}
 
 	const float DamageBase = Bullet->GetFiredGun()->GetDamageBase();
 	const float DamageRate = Bullet->GetFiredGun()->GetDamageRateByBodyPart(CorrespondingBodyPartNames[PartCollider]);
