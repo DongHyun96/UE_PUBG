@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/TriggerBox.h"
+#include "TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_TutorialStageTriggerBox.generated.h"
 
 UCLASS()
@@ -29,9 +30,35 @@ public:
 	/// <param name="InIsEnabled"></param>
 	void ToggleTriggerBox(bool InIsEnabled);
 
-protected:
+	void SetDelegateParam(const TPair<uint8, int>& InDelegateParam) { DelegateParam = InDelegateParam; }
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	UUserWidget* TriangleWidget{};
+private:
+
+	/*UFUNCTION()
+	void OnTriggerBoxBeginOverlap
+	(
+		UPrimitiveComponent*	OverlappedComponent,
+		AActor*					OtherActor,
+		UPrimitiveComponent*	OtherComp,
+		int32					OtherBodyIndex,
+		bool					bFromSweep,
+		const FHitResult&		SweepResult
+	);*/
+
+	UFUNCTION()
+	void OnTriggerBoxBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
+private:
+
+	class UWidgetComponent* TriangleWidgetComp{};
+
+public:
+
+	FTutorialStageGoalCheckerDelegate AreaArrivedDelegate{};
+
+private:
+
+	// Delegate 처리용 Param
+	TPair<uint8, int> DelegateParam{};
 	
 };

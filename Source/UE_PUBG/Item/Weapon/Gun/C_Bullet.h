@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Item/C_Item.h"
+#include "TrainingLevel/Tutorial/TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_Bullet.generated.h"
 
 /**
@@ -139,7 +140,7 @@ private:
 
 	// 해당 Bullet을 발사한 총기 
 	AC_Gun* FiredGun{};
-	
+
 };
 
 

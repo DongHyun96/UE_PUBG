@@ -17,6 +17,8 @@
 
 #include "Utility/C_Util.h"
 
+FTutorialStageGoalCheckerDelegate AC_Item_Bullet::WeaponTutorialDelegate{};
+
 const TMap<EBulletType, FName> AC_Item_Bullet::BulletTypeNameMap =
 {
 	{EBulletType::FIVEMM,  "Item_Ammo_556mm_C"},
@@ -62,6 +64,10 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InSta
         			Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("Cannot pick up item : Inventory is full");
 		return false; //인벤에 넣을 수 있는 아이템의 갯수가 0 이면 넣을 수 없으므로 return false;
 	}
+
+	// 이 아래부터 Inven에 옮기기 성공임
+	// WeaponTutorialDelegate 탄 파밍 처리
+	if (WeaponTutorialDelegate.IsBound()) WeaponTutorialDelegate.Execute(0, 1);
 
 	if (ItemStackCount == this->GetItemCurStack())
 	{

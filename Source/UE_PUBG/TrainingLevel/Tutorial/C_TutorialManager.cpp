@@ -26,6 +26,7 @@ AC_TutorialManager::AC_TutorialManager()
 	TutorialStageCheckers.Add(ETutorialStage::ThrowableTutorial, CreateDefaultSubobject<UC_ThrowableTutorialChecker>("ThrowableTutorialChecker"));
 	TutorialStageCheckers.Add(ETutorialStage::HealingTutorial, CreateDefaultSubobject<UC_HealingTutorialChecker>("HealingTutorialChecker"));
 	TutorialStageCheckers.Add(ETutorialStage::TutorialEnd, CreateDefaultSubobject<UC_TutorialStageChecker>("TutorialEndChecker"));
+	TutorialStageCheckers[ETutorialStage::TutorialEnd]->SetTutorialStage(ETutorialStage::TutorialEnd);
 
 	for (TTuple<ETutorialStage, UC_TutorialStageChecker*> TutorialStageChecker : TutorialStageCheckers)
 		TutorialStageChecker.Value->SetOwnerTutorialManager(this);
@@ -60,7 +61,7 @@ void AC_TutorialManager::BeginPlay()
 	{
 		TutorialWidget->AddToViewport(20);
 		TutorialWidget->SetTutorialManager(this);
-		// StartTutorial();
+		StartTutorial();
 	}
 }
 

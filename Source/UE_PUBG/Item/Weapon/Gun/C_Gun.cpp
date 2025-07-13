@@ -57,6 +57,7 @@
 
 #include "Item/ItemManager/C_ItemManager.h"
 
+FTutorialStageGoalCheckerDelegate AC_Gun::WeaponTutorialDelegate{};
 
 AC_Gun::AC_Gun()
 {
@@ -590,6 +591,9 @@ bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 	AC_Gun* currentMainGun = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]);
 	AC_Gun* currentSubGun  = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]);
 
+	// WeaponTutorial 무기 파밍 Delegate notify 처리
+	if (WeaponTutorialDelegate.IsBound()) WeaponTutorialDelegate.Execute(0, 0);	
+
 	if (!currentMainGun)
 	{
 		equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
@@ -805,8 +809,6 @@ bool AC_Gun::ReloadBullet()
 	OwnerCharacter->SetIsReloadingBullet(false);
 	int BeforeChangeAmmo = CurBulletCount;
 
-	UC_Util::Print(BeforeChangeAmmo);
-
 	int RemainAmmo;
 	int ChangedStack;
 	//AC_Item_Bullet* CarryingBullet;
@@ -834,8 +836,11 @@ bool AC_Gun::ReloadBullet()
 		//OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(CurBullet->GetItemCurStack(), true);
 		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
 	}
-	return true;
 
+	// 장전 성공
+	// WeaponTutorial 장전 Delegate
+	if (WeaponTutorialDelegate.IsBound()) WeaponTutorialDelegate.Execute(1, -1);
+	return true;
 }
 
 void AC_Gun::SetBulletSpeed()

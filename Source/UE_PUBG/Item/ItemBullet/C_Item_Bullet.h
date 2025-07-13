@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Item/C_Item.h"
+#include "TrainingLevel/Tutorial/TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_Item_Bullet.generated.h"
 
 /**
@@ -55,6 +56,10 @@ protected:
 private:
 
 	static const TMap<EBulletType, FName> BulletTypeNameMap;
+
+public:
+
+	static FTutorialStageGoalCheckerDelegate WeaponTutorialDelegate;
 	
 };
 

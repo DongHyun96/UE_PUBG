@@ -4,9 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "TrainingLevel/Tutorial/TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_InputComponent.generated.h"
-
-DECLARE_DELEGATE_RetVal_TwoParams(bool, FMovementTutorialDelegate, uint8, int);
 
 enum class EWeaponSlot : uint8;
 
@@ -238,8 +237,7 @@ protected:
 public:
 
 	// Movement Tutorial 진행용 Delegate
-	FMovementTutorialDelegate MovementTutorialDelegate{};
-	
+	 FTutorialStageGoalCheckerDelegate MovementTutorialDelegate{};
 };
 
 

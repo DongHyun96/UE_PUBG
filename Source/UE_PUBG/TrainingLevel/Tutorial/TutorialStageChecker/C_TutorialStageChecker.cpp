@@ -21,9 +21,39 @@ void UC_TutorialStageChecker::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Goal Data Init은 각 자식 클래스에서 결정
 	GoalData.Empty();
 
-	// Goal Data Init은 각 자식 클래스에서 결정
+	// Init GoalTriggerBoxes
+	GoalTriggerBoxes = OwnerTutorialManager->GetTriggerBoxesReference(TutorialStage);
+
+	FString Str{};
+	
+	switch (TutorialStage)
+	{
+	case ETutorialStage::MovementTutorial: Str = "MovementTutorial";
+		break;
+	case ETutorialStage::WeaponTutorial: Str = "WeaponTutorial";
+		break;
+	case ETutorialStage::ThrowableTutorial: Str = "ThrowableTutorial";
+		break;
+	case ETutorialStage::HealingTutorial: Str = "HealingTutorial";
+		break;
+	case ETutorialStage::TutorialEnd: Str = "TutorialEnd";
+		break;
+	case ETutorialStage::Max:
+		break;
+	}
+	
+	Str += " Boxes : " + FString::FromInt(GoalTriggerBoxes.Num());
+
+	UC_Util::Print(Str, FColor::MakeRandomColor(), 10.f);
+}
+
+void UC_TutorialStageChecker::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	ClearSubscribedDelegates();
 }
 
 void UC_TutorialStageChecker::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -84,6 +114,10 @@ void UC_TutorialStageChecker::MainGoalAchievedCheckingRoutine(FGoalData& TargetD
 		GoalWidget->StopFocusedAnimation(CurrentMainGoalIndex);
 		GoalWidget->PlaySucceededAnimation(CurrentMainGoalIndex);
 	}
+
+	// 해당 MainGoal용 TriggerBox가 존재한다면 Disabled 처리
+	if (CurrentMainGoalIndex < GoalData.Num() && IsValid(GoalTriggerBoxes[CurrentMainGoalIndex]))
+		GoalTriggerBoxes[CurrentMainGoalIndex]->ToggleTriggerBox(false);
 	
 	++CurrentMainGoalIndex;
 
@@ -96,6 +130,14 @@ void UC_TutorialStageChecker::MainGoalAchievedCheckingRoutine(FGoalData& TargetD
 		// 다음 Goal Explanation 표시
 		if (GoalExplanation)
 			GoalExplanation->StartTargetGoalExplanation(CurrentMainGoalIndex);
+
+		// 다음 Goal 전용 TriggerBox가 있다면, Enabled 처리
+		if (CurrentMainGoalIndex < GoalData.Num() && IsValid(GoalTriggerBoxes[CurrentMainGoalIndex]))
+		{
+			GoalTriggerBoxes[CurrentMainGoalIndex]->ToggleTriggerBox(true);
+			FString Str = FString::FromInt(CurrentMainGoalIndex) + " TriggerBox Enabled!";
+			UC_Util::Print(Str, FColor::MakeRandomColor(), 10.f);
+		}
 		
 		return;
 	}
@@ -165,6 +207,7 @@ void UC_TutorialStageChecker::InitStage()
 	
 	// 초기 clear 처리
 	ClearSubscribedDelegates();
+	
 	// 나머지 Delegate 구독 구현부는 자식 단계에서 처리
 }
 

@@ -27,6 +27,18 @@ inline ETutorialStage& operator++(ETutorialStage& Type)
 	return Type;
 }
 
+// 각 Stage별 TriggerBoxes Holder 구조체
+USTRUCT(BlueprintType)
+struct FTutorialStageTriggerBoxes
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditInstanceOnly)
+	TArray<class AC_TutorialStageTriggerBox*> TriggerBoxes{};
+
+	TArray<AC_TutorialStageTriggerBox*>& GetTriggerBoxesReference() { return TriggerBoxes; }
+};
+
 UCLASS()
 class UE_PUBG_API AC_TutorialManager : public AActor
 {
@@ -62,6 +74,9 @@ public:
 
 	class UC_TutorialWidget* GetTutorialWidget() const { return TutorialWidget; }
 
+	TArray<AC_TutorialStageTriggerBox*>& GetTriggerBoxesReference(ETutorialStage TutorialStage)
+	{ return TutorialStageTriggerBoxes[TutorialStage].GetTriggerBoxesReference(); }
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly)
@@ -84,6 +99,9 @@ private:
 	
 	TMap<ETutorialStage, class UC_TutorialStageChecker*> TutorialStageCheckers{};
 
-	
-	
+protected:
+
+	// 각 Stage별 Trigger Box들
+	UPROPERTY(EditInstanceOnly)
+	TMap<ETutorialStage, FTutorialStageTriggerBoxes> TutorialStageTriggerBoxes{};
 };

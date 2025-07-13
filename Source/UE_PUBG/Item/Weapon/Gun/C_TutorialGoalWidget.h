@@ -35,7 +35,13 @@ public:
 	/// <param name="GoalIndex"></param>
 	/// <returns> : Index가 valid하지 않다면 return false </returns>
 	bool StopFocusedAnimation(uint8 GoalIndex);
-	
+
+	/// <summary>
+	/// <para> GoalWidget에서 특정 Goal 내용 부분의 수를 업데이트할 때 사용 </para>
+	/// <para> 공교롭게도 WeaponStage의 ADS 모드 사격 표적지 명중 수만 Update하면 되어서 해당 GoalWidget에서만 Event를 구현 </para>
+	/// </summary>
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateNumberInfoOnGoalWidget(uint8 UpdatedNumber);
 
 protected:
 

@@ -8,14 +8,13 @@
 UC_HealingTutorialChecker::UC_HealingTutorialChecker()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	TutorialStage = ETutorialStage::HealingTutorial;
 }
 
 void UC_HealingTutorialChecker::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	TutorialStage = ETutorialStage::HealingTutorial;
-
 	// 회복 아이템 획득하기
 	GoalData.Add(FGoalData());
 
