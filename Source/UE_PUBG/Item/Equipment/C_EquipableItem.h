@@ -93,6 +93,7 @@ protected: // Equipable 내구도 관련
 
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	//class UProgressBar* DurabilityBar = nullptr;
+
 };
 
 

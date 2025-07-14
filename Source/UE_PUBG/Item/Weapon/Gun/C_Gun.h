@@ -177,7 +177,11 @@ protected:
 
 	void CheckPlayerIsRunning();
 
-
+	/// <summary>
+	/// PreviewCharacter의 무기 메시를 업데이트하는 함수.
+	/// </summary>
+	/// <param name="InSlot"></param>
+	void UpdatePreviewWeaponMesh();
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)

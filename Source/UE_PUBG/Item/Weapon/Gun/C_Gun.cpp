@@ -195,8 +195,9 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 	if (!IsValid(OwnerCharacter)) return false;
 
 	AC_PreviewCharacter* PreviewCharacter = nullptr;
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
-	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	if (OwnerPlayer)
 	{
 		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::NORIFLE);
 		PreviewCharacter = OwnerPlayer->GetPreviewCharacter();
@@ -206,26 +207,36 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 
 	AC_EquipableItem* curBackPack = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK];
 
+	bool IsAttached = false;
+
 	if (!curBackPack)
 	{
 		switch (CurState)
 		{
 		case EGunState::MAIN_GUN:
-			
-			return AttachToComponent
+
+			IsAttached = AttachToComponent
 			(
 				InParent,
 				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 				MAIN_HOLSTER_SOCKET_NAME
 			);
+
+			UpdatePreviewWeaponMesh();
+
+			return IsAttached;
 			break;
 		case EGunState::SUB_GUN:
-			return AttachToComponent
+			IsAttached = AttachToComponent
 			(
 				InParent,
 				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 				SUB_HOLSTER_SOCKET_NAME
 			);
+
+			UpdatePreviewWeaponMesh();
+
+			return IsAttached;
 			break;
 		default:
 			return false;
@@ -237,20 +248,28 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 		switch (CurState)
 		{
 		case EGunState::MAIN_GUN:
-			return AttachToComponent
+			IsAttached = AttachToComponent
 			(
 				InParent,
 				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 				MAIN_HOLSTER_BAG_SOCKET_NAME
 			);
+
+			UpdatePreviewWeaponMesh();
+
+			return IsAttached;
 			break;
 		case EGunState::SUB_GUN:
-			return AttachToComponent
+			IsAttached = AttachToComponent
 			(
 				InParent,
 				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 				SUB_HOLSTER_BAG_SOCKET_NAME
 			);
+
+			UpdatePreviewWeaponMesh();
+
+			return IsAttached;
 			break;
 		default:
 			return false;
@@ -290,6 +309,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 		AmmoWidget->SetMagazineText(CurBulletCount);
 	}
 
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
 	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(DrawMontage) && CurSocketName != SUB_DRAW_SOCKET_NAME)
 	{
@@ -297,21 +317,28 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 		//Crawl일 때는 모션이 달라 왼손에 어태치 안함
 		if (CurState == EGunState::SUB_GUN && OwnerCharacter->GetPoseState() != EPoseState::CRAWL)
 		{
-			return AttachToComponent
+			bool IsAttached = AttachToComponent
 			(
 				InParent,
 				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 				SUB_DRAW_SOCKET_NAME
 			);
+
+			UpdatePreviewWeaponMesh();
+
+			return IsAttached;
 		}
 	}
 	OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
-	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+
+
+	if (OwnerPlayer)
 	{
 		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
 		OwnerPlayer->SetRecoilTimelineValues(GunDataRef->BulletRPM);
 	}
 	FString TempSocketName = EQUIPPED_SOCKET_NAME.ToString();
+	
 	UC_Util::Print(TempSocketName);
 	bool SuccessToAttach;
 	SuccessToAttach = AttachToComponent(
@@ -320,6 +347,14 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 		EQUIPPED_SOCKET_NAME
 	);
 	UC_Util::Print(SuccessToAttach);
+
+	if (SuccessToAttach)
+	{
+		//CurSocketName
+
+		UpdatePreviewWeaponMesh();
+	}
+
 	OwnerCharacter->SetIsReloadingBullet(false);
 	return SuccessToAttach;
 }
@@ -442,6 +477,28 @@ void AC_Gun::CheckPlayerIsRunning()
 	}
 
 
+}
+
+void AC_Gun::UpdatePreviewWeaponMesh()
+{
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+
+	if (!OwnerPlayer) return;
+
+	if (GetCurrentWeaponState() == EGunState::MAIN_GUN)
+	{
+		if (IsValid(OwnerPlayer))
+		{
+			OwnerPlayer->GetPreviewCharacter()->UpdateWeaponMesh(EWeaponSlot::MAIN_GUN);
+		}
+	}
+	else if (GetCurrentWeaponState() == EGunState::SUB_GUN)
+	{
+		if (IsValid(OwnerPlayer))
+		{
+			OwnerPlayer->GetPreviewCharacter()->UpdateWeaponMesh(EWeaponSlot::SUB_GUN);
+		}
+	}
 }
 
 bool AC_Gun::Interaction(AC_BasicCharacter* Character)

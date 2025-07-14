@@ -176,17 +176,17 @@ bool AC_PreviewCharacter::UpdateWeaponMesh(EWeaponSlot InSlot)
 	{
 		SocketName = (CurState == EGunState::MAIN_GUN) ? MAIN_HOLSTER_BAG_SOCKET_NAME : SUB_HOLSTER_BAG_SOCKET_NAME;
 	}
-
+	SocketName = Weapon->GetAttachParentSocketName();
 	NewMesh->RegisterComponent();
 	NewMesh->SetSkeletalMesh(WeaponMesh->SkeletalMesh);
-	NewMesh->AttachToComponent(previewCharacterMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), SocketName);
+	NewMesh->AttachToComponent(previewCharacterMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), Weapon->GetAttachParentSocketName());
 
 	// SceneCapture에 추가
 	if (SceneCapture)
 	{
 		SceneCapture->ShowOnlyComponents.Add(NewMesh);
 	}
-
+	
 	// TMap에 등록
 	WeaponMeshes.Add(InSlot, NewMesh);
 	return true;

@@ -514,6 +514,10 @@ void UC_EquippedComponent::SetMainGunOrSubGun(EWeaponSlot InSlot)
     }
 }
 
+void UC_EquippedComponent::UpdatePreviewHandPose()
+{
+}
+
 
 
 

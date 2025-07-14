@@ -238,6 +238,7 @@ public: // Getters and setters
 	void SetMainState(EMainState InMainState) { MainState = InMainState; }
 	EMainState GetMainState() const { return MainState; }
 
+	UFUNCTION(BlueprintCallable)
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
 	void SetHandState(EHandState InHandState) { HandState = InHandState; }

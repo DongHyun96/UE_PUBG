@@ -32,20 +32,55 @@ public:
 
 	void SetOwnerPlayer(class AC_Player* Player) { OwnerPlayer = Player; }
 
+	/// <summary>
+	/// MeleeWeaponMesh를 장착합니다.
+	/// </summary>
+	/// <returns></returns>
 	bool AttachMeleeWeaponMesh();
 
+	/// <summary>
+	/// InSlot에 해당하는 장착 무기 메시를 때어 냅니다.
+	/// </summary>
+	/// <param name="InSlot"></param>
+	/// <returns></returns>
 	bool DetachWeaponMesh(EWeaponSlot InSlot);
 
+	/// <summary>
+	/// InSlot에 해당하는 장착 아이템 메시를 때어 냅니다..
+	/// </summary>
+	/// <param name="InSlot"></param>
+	/// <returns></returns>
 	bool DetachEquippedMesh(EEquipSlot InSlot);
 
+	/// <summary>
+	/// InSlot에 해당하는 장착 무기 메시를 업데이트합니다.
+	/// </summary>
+	/// <param name="InSlot"></param>
+	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
 	bool UpdateWeaponMesh(EWeaponSlot InSlot);
 
+	/// <summary>
+	/// InSlot에 해당하는 장착 아이템 메시를 업데이트합니다.
+	/// </summary>
+	/// <param name="InSlot"></param>
+	/// <returns></returns>
 	UFUNCTION(BlueprintCallable)
 	bool UpdateEquippedMesh(EEquipSlot InSlot);	
 
+	/// <summary>
+	/// 블루프린트에서 정의.
+	/// HandState에 따른 Pose Update 함수.
+	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent)
-	void UpdateHandPose(EHandState InHandState);
+	void UpdateHandPose();
+
+	//UFUNCTION(BlueprintImplementableEvent)
+	//void UpdateHandPose();
+
+public:
+	UFUNCTION(BlueprintCallable)
+	AC_Player* GetOwnerPlayer() const { return OwnerPlayer; }
 
 protected:
 
@@ -67,8 +102,14 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	UStaticMeshComponent* PreviewMeleeWeaponMesh{};
 
+	/// <summary>
+	/// WeaponMeshes는 EWeaponSlot에 따라 무기 메시를 저장하는 TMap입니다.
+	/// </summary>
 	TMap<EWeaponSlot, USceneComponent*> WeaponMeshes{};
 
+	/// <summary>
+	/// EquipMeshes는 EEquipSlot에 따라 장착 아이템 메시를 저장하는 TMap입니다.
+	/// </summary>
 	TMap<EEquipSlot, UStaticMeshComponent*> EquipMeshes{};
 
 	class AC_Player* OwnerPlayer{};

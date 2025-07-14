@@ -459,27 +459,27 @@ void UC_InputComponent::SetToNonAimCamera()
 void UC_InputComponent::OnNum1()
 {
 	OnNumKey(EWeaponSlot::MAIN_GUN);
-	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_GUN);
+	//Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_GUN);
 }
 
 void UC_InputComponent::OnNum2()
 {
 	OnNumKey(EWeaponSlot::SUB_GUN);
-	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_GUN);
+	//Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_GUN);
 
 }
 
 void UC_InputComponent::OnNum4()
 {
 	OnNumKey(EWeaponSlot::MELEE_WEAPON);
-	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_MELEE);
+	//Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_MELEE);
 
 }
 
 void UC_InputComponent::OnNum5()
 {
 	OnNumKey(EWeaponSlot::THROWABLE_WEAPON);
-	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_THROWABLE);
+	//Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_THROWABLE);
 
 }
 
@@ -496,12 +496,13 @@ void UC_InputComponent::OnNumKey(EWeaponSlot ChangeTo)
 	}
 
 	Player->GetEquippedComponent()->ChangeCurWeapon(ChangeTo);
+
 }
 
 void UC_InputComponent::OnXKey()
 {
 	Player->GetEquippedComponent()->ToggleArmed();
-	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
+	//Player->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
 
 }
 

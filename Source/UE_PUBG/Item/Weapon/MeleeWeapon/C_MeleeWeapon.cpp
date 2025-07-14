@@ -2,11 +2,11 @@
 
 
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
-
 #include "Item/Weapon/WeaponStrategy/C_MeleeWeaponStrategy.h"
 
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
+#include "Character/C_PreviewCharacter.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -96,6 +96,12 @@ void AC_MeleeWeapon::InitializeItem(FName NewItemCode)
 
 bool AC_MeleeWeapon::AttachToHolster(USceneComponent* InParent)
 {
+	AC_Player* Player = Cast<AC_Player>(OwnerCharacter);
+	if (Player)
+	{
+		Player->GetPreviewCharacter()->UpdateWeaponMesh(EWeaponSlot::MELEE_WEAPON);
+	}
+
 	return AttachToComponent
 	(
 		InParent,
@@ -107,6 +113,12 @@ bool AC_MeleeWeapon::AttachToHolster(USceneComponent* InParent)
 bool AC_MeleeWeapon::AttachToHand(USceneComponent* InParent)
 {
 	OwnerCharacter->SetHandState(EHandState::WEAPON_MELEE);
+
+	AC_Player* Player = Cast<AC_Player>(OwnerCharacter);
+	if (Player)
+	{
+		Player->GetPreviewCharacter()->UpdateWeaponMesh(EWeaponSlot::MELEE_WEAPON);
+	}
 
 	return AttachToComponent
 	(
