@@ -60,6 +60,13 @@ private:
 	/// <param name="ExplosionRad"> : 폭발 반경 </param>
 	void ExecuteExplosionEffectToCharacter(class AC_BasicCharacter* Character, FVector ExplosionLocation, float ExplosionRad);
 
+private: // Training Target 처리
+
+	/// <summary>
+	/// Overlapping Actors를 조사할 때, TrainingShootingTarget이 잡혔다면, 해당 TrainingShootingTarget에 대한 Damage 처리
+	/// </summary>
+	void HandleTrainingTargetOverlappedWithExplosionSphere(class AC_TrainingShootingTarget* TrainingTarget, AC_ThrowingWeapon* ThrowingWeapon, float ExplosionRad);
+
 private:
 
 	// 각 피격 부위별 Damage rate

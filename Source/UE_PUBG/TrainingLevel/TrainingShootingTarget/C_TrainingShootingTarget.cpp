@@ -74,6 +74,8 @@ void AC_TrainingShootingTarget::BeginPlay()
 		}
 		ShootingTargetWidgetsHolder = Cast<AC_ShootingTargetWidgetsHolder>(HolderActor);
 	}
+
+	ToggleStandState(true);
 }
 
 void AC_TrainingShootingTarget::EndPlay(const EEndPlayReason::Type EndPlayReason)
