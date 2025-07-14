@@ -6,6 +6,7 @@
 #include "Item/Equipment/C_EquipableItem.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
+#include "Item/Weapon/Gun/C_SR.h"
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
@@ -179,8 +180,25 @@ bool AC_PreviewCharacter::UpdateWeaponMesh(EWeaponSlot InSlot)
 	SocketName = Weapon->GetAttachParentSocketName();
 	NewMesh->RegisterComponent();
 	NewMesh->SetSkeletalMesh(WeaponMesh->SkeletalMesh);
-	NewMesh->AttachToComponent(previewCharacterMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), Weapon->GetAttachParentSocketName());
+	
 
+	if (AC_SR* SR = Cast<AC_SR>(Weapon))
+	{
+		//WeaponMesh->SetWorldScale3D(FVector(.6f, .6f, .6f));
+		NewMesh->SetRelativeScale3D(FVector(0.6f));
+		//NewMesh->SetWorldScale3D(FVector(.6f));
+	}
+
+
+	//NewMesh->AttachToComponent(previewCharacterMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), Weapon->GetAttachParentSocketName());
+	//NewMesh->AttachToComponent(previewCharacterMesh,
+	//	FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+	//	Weapon->GetAttachParentSocketName());
+	
+	NewMesh->AttachToComponent(previewCharacterMesh,
+		FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+		Weapon->GetAttachParentSocketName());
+	 
 	// SceneCapture에 추가
 	if (SceneCapture)
 	{
