@@ -36,8 +36,13 @@ public:
 
 	static void SetWeaponTutorialHitCount(uint8 InCount) { WeaponTutorialHitCount = InCount; }
 
-private:
+	TMap<UShapeComponent*, FName>& GetCorrespondingBodyPartNames() { return CorrespondingBodyPartNames; }
 
+private:
+	
+	/// <summary>
+	/// 총알 Collision 처리 
+	/// </summary>
 	UFUNCTION()
 	void OnCollisionPartHit
 	(
@@ -47,7 +52,11 @@ private:
 		FVector					NormalImpulse,
 		const FHitResult&		Hit
 	);
-	
+
+public:
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ToggleStandState(bool bSetToStand);
 
 private:
 
@@ -66,6 +75,8 @@ public:
 
 	// ADS 모드에서 Target Hit Goal Delegate
 	static FTutorialStageGoalCheckerDelegate WeaponTutorialDelegate;
+
+	static FTutorialStageUpdateWidgetNumberDelegate TutorialUpdateWidgetNumberDelegate;
 
 private:
 

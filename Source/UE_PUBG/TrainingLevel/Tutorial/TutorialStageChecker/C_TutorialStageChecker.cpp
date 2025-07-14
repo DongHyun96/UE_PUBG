@@ -215,4 +215,9 @@ void UC_TutorialStageChecker::ClearSubscribedDelegates()
 {
 	for (auto Delegate : SubscribedDelegates) Delegate.Unbind();
 	SubscribedDelegates.Empty();
+
+	for (auto Delegate : SubscribedWidgetNumberUpdaterDelegates)
+		Delegate.Clear();
+
+	SubscribedWidgetNumberUpdaterDelegates.Empty();
 }

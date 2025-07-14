@@ -22,6 +22,7 @@
 
 #include "PhysicsEngine/PhysicsAsset.h"
 #include "Singleton/C_GameSceneManager.h"
+#include "TrainingLevel/TrainingShootingTarget/C_TrainingShootingTarget.h"
 
 const TMap<FName, float> AC_GrenadeExplode::BodyPartsDamageRate =
 {
@@ -96,11 +97,18 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 	TArray<AActor*>				OverlappingActors{};
 	TArray<AC_BasicCharacter*>	OverlappedCharacters{};
 
-	ExplosionSphere->GetOverlappingActors(OverlappingActors, TSubclassOf<AC_BasicCharacter>());
+	ExplosionSphere->GetOverlappingActors(OverlappingActors, TSubclassOf<AActor>());
 
 	// 정확한 피격 판정을 위해 모든 캐릭터의 Physics Asset Colliders 꺼두고 조사할 피격 부위만 조사할 때 켜두기
 	for (AActor* Actor : OverlappingActors)
 	{
+		// Training Shooting Target이 잡혔을 때, 따로 상황 예외처리
+		if (AC_TrainingShootingTarget* TrainingTarget = Cast<AC_TrainingShootingTarget>(Actor))
+		{
+			HandleTrainingTargetOverlappedWithExplosionSphere(TrainingTarget, ThrowingWeapon, ExplosionRad);
+			continue;
+		}
+		
 		AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(Actor);
 		if (!IsValid(Character)) continue;
 
@@ -108,16 +116,7 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		if (!IsValid(PhysicsAsset)) continue;
 
 		OverlappedCharacters.Add(Character);
-
-		//SetPhysicsAssetCollidersEnabled(Character->GetMesh()->GetPhysicsAsset(), false);
 		SetPhysicsAssetCollidersEnabled(Character, false);
-
-		// Testing Debug Message
-		/*for (USkeletalBodySetup* BodySetup : Character->GetMesh()->GetPhysicsAsset()->SkeletalBodySetups)
-		{
-			if (BodySetup->AggGeom.SphylElems[0].GetCollisionEnabled() == ECollisionEnabled::NoCollision)
-				UC_Util::Print("NoCollision!", FColor::Cyan, 10.f);
-		}*/
 	}
 
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
@@ -291,4 +290,37 @@ void AC_GrenadeExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* Cha
 	// TODO : Enemy AI 또한 방해주기
 }
 
+void AC_GrenadeExplode::HandleTrainingTargetOverlappedWithExplosionSphere(AC_TrainingShootingTarget* TrainingTarget, AC_ThrowingWeapon* ThrowingWeapon, float ExplosionRad)
+{
+	FHitResult				HitResult{};
+	float					TotalDamage{};
+	FCollisionQueryParams	CollisionParams{};
 
+	CollisionParams.AddIgnoredActor(ThrowingWeapon);
+
+	FVector ExplosionLocation = ThrowingWeapon->GetActorLocation();
+	
+	for (const TPair<UShapeComponent*, FName>& Pair : TrainingTarget->GetCorrespondingBodyPartNames())
+	{
+		UShapeComponent* Collider = Pair.Key;
+		const FName& BodyPartName = Pair.Value;
+
+		HitResult = {};
+		
+		FVector DestLocation = Collider->GetComponentLocation();
+
+		bool bHasHit = ThrowingWeapon->GetWorld()->LineTraceSingleByChannel(HitResult, ExplosionLocation, DestLocation, ECC_Visibility, CollisionParams);
+		if (!bHasHit || HitResult.GetComponent() != Collider) continue;
+
+		DrawDebugLine(ThrowingWeapon->GetWorld(), ExplosionLocation, HitResult.ImpactPoint, FColor::Red, true);
+
+		// Calculate damage amount
+		float DamageAmount = DAMAGE_BASE * (ExplosionRad - HitResult.Distance) / ExplosionRad; // 거리 비례 Damage base
+		DamageAmount *= BodyPartsDamageRate[BodyPartName]; // 부위별 데미지 감소 적용
+		DamageAmount = FMath::Max(DamageAmount, 0.f);
+		TotalDamage  += DamageAmount;
+	}
+
+	FString Str = "TrainingShootingTarget Grenade total Damage : " + FString::SanitizeFloat(TotalDamage);
+	UC_Util::Print(Str, FColor::Red, 10.f);
+}
