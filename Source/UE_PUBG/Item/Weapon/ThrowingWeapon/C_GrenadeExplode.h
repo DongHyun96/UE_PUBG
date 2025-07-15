@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "I_ExplodeStrategy.h"
+#include "TrainingLevel/Tutorial/TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_GrenadeExplode.generated.h"
 
 UCLASS(Blueprintable)
@@ -76,6 +77,10 @@ private:
 	static const TArray<FName> LineTraceDestBoneNames;
 
 	static const float DAMAGE_BASE;
+
+public:
+
+	static FTutorialStageGoalCheckerDelegate ThrowableTutorialDelegate;
 
 };
 

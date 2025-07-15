@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Item/Weapon/C_Weapon.h"
+#include "TrainingLevel/Tutorial/TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_ThrowingWeapon.generated.h"
 
 USTRUCT(BlueprintType)
@@ -274,6 +275,13 @@ private:
 	/// OwnerPlayer의 Magazine Text(개수) 업데이트하기 (주의 : OwnerPlayer가 Valid할 때에만 사용)
 	/// </summary>
 	void UpdateAmmoWidgetMagazineText(AC_Player* Player);
+
+private:
+	
+	/// <summary>
+	/// Grenade Tutorial의 파밍 Goal Delegate 처리 일련의 Boilerplate code 정리 
+	/// </summary>
+	void ThrowableTutorialGrenadePickUpDelegateRoutine();
 	
 protected:
 
@@ -403,7 +411,9 @@ private:
 
 protected:
 	const FThrowingWeaponSoundData* ThrowingWeaponSoundData = nullptr;
+
+public:
+
+	static FTutorialStageGoalCheckerDelegate ThrowableTutorialDelegate;
+	
 };
-
-
-

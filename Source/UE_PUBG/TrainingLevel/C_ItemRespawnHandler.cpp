@@ -36,7 +36,7 @@ void AC_ItemRespawnHandler::BeginPlay()
 		
 		SpawnArea->GetOverlappingActors(OverlappingItems, AC_Item::StaticClass());
 
-		UC_Util::Print("Total Overlapped Items : " + FString::FromInt(OverlappingItems.Num()), FColor::Red, 10.f);
+		// UC_Util::Print("Total Overlapped Items : " + FString::FromInt(OverlappingItems.Num()), FColor::Red, 10.f);
 
 		for (AActor* OverlappingItem : OverlappingItems)
 		{

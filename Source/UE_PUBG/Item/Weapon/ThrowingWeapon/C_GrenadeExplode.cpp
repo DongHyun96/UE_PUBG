@@ -69,6 +69,8 @@ const TArray<FName> AC_GrenadeExplode::LineTraceDestBoneNames =
 
 const float AC_GrenadeExplode::DAMAGE_BASE = 50.f;
 
+FTutorialStageGoalCheckerDelegate AC_GrenadeExplode::ThrowableTutorialDelegate{};
+
 AC_GrenadeExplode::AC_GrenadeExplode()
 {
 }
@@ -92,6 +94,8 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		UC_Util::Print("From AC_GrenadeExplode::UseStrategy : Explosion Sphere casting failed!", FColor::Red, 5.f);
 		return false;
 	}
+
+	if (ThrowableTutorialDelegate.IsBound()) ThrowableTutorialDelegate.Execute(2, -1);
 
 	ExplosionSphere->SetWorldLocation(ExplosionLocation);
 	float ExplosionRad = ExplosionSphere->GetScaledSphereRadius();
@@ -319,7 +323,7 @@ void AC_GrenadeExplode::HandleTrainingTargetOverlappedWithExplosionSphere(AC_Tra
 		// if (!bHasHit || HitResult.GetComponent() != Collider) continue;
 		if (!bHasHit || HitResult.GetActor() != TrainingTarget) continue;
 			
-		DrawDebugLine(ThrowingWeapon->GetWorld(), ExplosionLocation, HitResult.ImpactPoint, FColor::Red, true);
+		// DrawDebugLine(ThrowingWeapon->GetWorld(), ExplosionLocation, HitResult.ImpactPoint, FColor::Red, true);
 
 		// Calculate damage amount
 		float DamageAmount = DAMAGE_BASE * (ExplosionRad - HitResult.Distance) / ExplosionRad; // 거리 비례 Damage base
