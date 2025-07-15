@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "C_ShootingTargetWidgetsHolder.generated.h"
 
+enum class EShootingTargetDamageInfoType : uint8;
+
 /// <summary>
 /// Shooting Target Damage 표기 Widgets Holder 클래스 (ShootingTarget들이 모두 돌아가며 이 객체를 통해 Damage를 표기 처리
 /// </summary>
@@ -26,11 +28,11 @@ public:
 	/// <summary>
 	/// Damage 정보 Widget 스폰시키기
 	/// </summary>
-	/// <param name="bIsHeadShot"> : HeadShot인지 여부 </param>
+	/// <param name="DamageInfoType"> : ShootingTarget 전용 Damage 종류 </param>
 	/// <param name="DamageAmount"> : Damage 총량 </param>
 	/// <param name="WorldLocation"> : Spawn시킬 World 위치 </param>
-	void SpawnDamageInfoWidget(bool bIsHeadShot, float DamageAmount, const FVector& WorldLocation);
-
+	void SpawnDamageInfoWidget(EShootingTargetDamageInfoType DamageInfoType, float DamageAmount, const FVector& WorldLocation);
+	
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)

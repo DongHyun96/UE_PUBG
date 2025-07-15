@@ -36,7 +36,7 @@ void AC_ShootingTargetWidgetsHolder::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AC_ShootingTargetWidgetsHolder::SpawnDamageInfoWidget(bool bIsHeadShot, float DamageAmount, const FVector& WorldLocation)
+void AC_ShootingTargetWidgetsHolder::SpawnDamageInfoWidget(EShootingTargetDamageInfoType DamageInfoType, float DamageAmount, const FVector& WorldLocation)
 {
 	// Queue 처리
 	UWidgetComponent* SpawnedWidgetComponent{};
@@ -55,5 +55,5 @@ void AC_ShootingTargetWidgetsHolder::SpawnDamageInfoWidget(bool bIsHeadShot, flo
 		UC_Util::Print("From AC_ShootingTargetWidgetsHolder::SpawnDamageInfoWidget : DamageInfoWidget casting failed!", FColor::Red, 10.f);
 		return;
 	}
-	DamageInfoWidget->Spawn(bIsHeadShot, DamageAmount);
+	DamageInfoWidget->Spawn(DamageInfoType, DamageAmount);
 }

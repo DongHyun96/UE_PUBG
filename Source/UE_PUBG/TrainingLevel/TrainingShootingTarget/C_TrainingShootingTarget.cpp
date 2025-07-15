@@ -3,6 +3,7 @@
 
 #include "C_TrainingShootingTarget.h"
 
+#include "C_ShootingTargetDamageInfoWidget.h"
 #include "C_ShootingTargetWidgetsHolder.h"
 #include "Character/C_Player.h"
 #include "Components/ShapeComponent.h"
@@ -88,6 +89,15 @@ void AC_TrainingShootingTarget::EndPlay(const EEndPlayReason::Type EndPlayReason
 void AC_TrainingShootingTarget::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (GrenadeDamagedLayDownTimer <= 0.f) return;
+	GrenadeDamagedLayDownTimer -= DeltaTime;
+
+	if (GrenadeDamagedLayDownTimer <= 0.f)
+	{
+		GrenadeDamagedLayDownTimer = 0.f;
+		ToggleStandState(true);
+	}
 }
 
 void AC_TrainingShootingTarget::OnCollisionPartHit
@@ -114,7 +124,7 @@ void AC_TrainingShootingTarget::OnCollisionPartHit
 	AC_Player* Player = Cast<AC_Player>(Bullet->GetOwnerCharacter());
 	if (!Player) return;
 
-	// WeaponTutorialDelegate가 Bound되어있고, ADS 모드일 때의 처리 (TODO : AimDown까지도 체크가 되어버리네?)
+	// WeaponTutorialDelegate가 Bound되어있고, ADS 모드일 때의 처리
 	if (WeaponTutorialDelegate.IsBound() && Bullet->GetFiredGun()->GetIsAimPress())
 	{
 		if (WeaponTutorialDelegate.Execute(3, WeaponTutorialHitCount))
@@ -138,5 +148,14 @@ void AC_TrainingShootingTarget::OnCollisionPartHit
 		return;
 	}
 
-	ShootingTargetWidgetsHolder->SpawnDamageInfoWidget(PartCollider == HeadShapeComponent, TotalDamage, Hit.ImpactPoint + FVector::UnitZ() * 20.f);
+	EShootingTargetDamageInfoType DamageInfoType =
+		(PartCollider == HeadShapeComponent) ? EShootingTargetDamageInfoType::HeadShot : EShootingTargetDamageInfoType::Normal;
+	
+	ShootingTargetWidgetsHolder->SpawnDamageInfoWidget(DamageInfoType, TotalDamage, Hit.ImpactPoint + FVector::UnitZ() * 20.f);
+}
+
+void AC_TrainingShootingTarget::ExecuteGrenadeDamaged()
+{
+	GrenadeDamagedLayDownTimer = 3.f;
+	ToggleStandState(false);
 }

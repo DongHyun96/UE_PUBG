@@ -25,7 +25,6 @@ class UE_PUBG_API AC_TrainingShootingTarget : public AActor
 
 public:
 	AC_TrainingShootingTarget();
-
 protected:
 	virtual void BeginPlay() override;
 
@@ -37,6 +36,8 @@ public:
 	static void SetWeaponTutorialHitCount(uint8 InCount) { WeaponTutorialHitCount = InCount; }
 
 	TMap<UShapeComponent*, FName>& GetCorrespondingBodyPartNames() { return CorrespondingBodyPartNames; }
+
+	static class AC_ShootingTargetWidgetsHolder* GetShootingTargetWidgetsHolder() { return ShootingTargetWidgetsHolder; }
 
 private:
 	
@@ -58,6 +59,11 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void ToggleStandState(bool bSetToStand);
 
+	/// <summary>
+	/// Grenade로 피격 당했을 때, 일정 시간 눞여놓기 처리 (3초)
+	/// </summary>
+	void ExecuteGrenadeDamaged();
+
 private:
 
 	// 캐릭터의 실질적인 Hit bodyParts 이름 저장 / Damage 계산 시 사용
@@ -68,8 +74,12 @@ private:
 
 private:
 
+	float GrenadeDamagedLayDownTimer{};
+
+private:
+
 	// Shooting Target 들이 모두 돌아가며 사용할 예정
-	static class AC_ShootingTargetWidgetsHolder* ShootingTargetWidgetsHolder;
+	static AC_ShootingTargetWidgetsHolder* ShootingTargetWidgetsHolder;
 
 public:
 
