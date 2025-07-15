@@ -91,10 +91,7 @@ void AC_ItemRespawnHandler::Tick(float DeltaTime)
 		for (int i = 0; i < Pair.Value.Num(); ++i)
 		{
 			if (Pair.Value[i])
-			{
-				UC_Util::Print("Occupied", FColor::Red, 10.f);
 				continue; // 해당 자리에 이미 아이템이 존재함
-			}
 
 			// 해당 자리에 아이템이 존재하지 않음 (초기 아이템 Transform을 적용하여 Spawn 처리)
 			AC_Item* NewItem = GetWorld()->SpawnActor<AC_Item>(Pair.Key, InitialTransforms[Pair.Key][i]);
@@ -119,7 +116,7 @@ void AC_ItemRespawnHandler::OnItemPickedUp(AC_Item* PickedItem)
 	{
 		UC_Util::Print
 		(
-			"From AC_ItemRespawnHandler::OnItemPickedUp : Delegate called but the item is not managed by this ItemRespawnerHandler!",
+			"From AC_ItemRespawnHandler::OnItemPickedUp : Delegate called but the item is not managed by this ItemRespawnHandler!",
 			FColor::MakeRandomColor(), 10.f
 		);
 		return;

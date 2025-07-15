@@ -57,25 +57,15 @@ void AC_TutorialStageTriggerBox::ToggleTriggerBox(bool InIsEnabled)
 	}
 }
 
-void OnTriggerBoxBeginOverlap
-(
-	UPrimitiveComponent*	OverlappedComponent,
-	AActor*					OtherActor,
-	UPrimitiveComponent*	OtherComp,
-	int32					OtherBodyIndex,
-	bool					bFromSweep,
-	const FHitResult&		SweepResult
-)
-{
-	
-}
-
 void AC_TutorialStageTriggerBox::OnTriggerBoxBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
 	// Overlapped된 Actor가 Player가 아닌 경우
 	if (!Cast<AC_Player>(OtherActor)) return;
+	
+	UC_Util::Print("OnTriggerBoxBeginOverlap", FColor::Red, 10.f);
 
 	ToggleTriggerBox(false);
+
 
 	if (AreaArrivedDelegate.IsBound()) AreaArrivedDelegate.Execute(DelegateParam.Key, DelegateParam.Value);
 }
