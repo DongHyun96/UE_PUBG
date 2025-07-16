@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "TrainingLevel/Tutorial/TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_StatComponent.generated.h"
 
 /// <summary>
@@ -226,6 +227,11 @@ private:
 	// 피격 판정 부위 Mapping TPair<PhysicsAssetBoneName, EDamagingPartType>
 	static const TMap<FName, EDamagingPartType> DAMAGINGPARTS_MAP;
 
+public:
+
+	// HealingTutorial 내의 Boost Amount Number 업데이트 처리 Delegate
+	FTutorialStageUpdateWidgetNumberDelegate HealingTutorialBoostAmountNumberDelegate{};
+	
 };
 
 

@@ -38,6 +38,10 @@ protected:
 
 	float BoostAmount{};
 
+public:
+
+	static FTutorialStageUpdateWidgetNumberDelegate HealingTutorialUpdateNumberDelegate;
+
 };
 
 

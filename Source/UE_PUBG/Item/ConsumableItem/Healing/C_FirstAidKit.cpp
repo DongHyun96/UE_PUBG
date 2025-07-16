@@ -62,6 +62,8 @@ void AC_FirstAidKit::OnStartUsing()
 
 void AC_FirstAidKit::OnActivatingFinish()
 {
+	Super::OnActivatingFinish();
+	
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::SYRINGE, false);
 	if (AC_Player* Player = Cast<AC_Player>(ItemUser))
 		Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("USED FIRST AID KIT");

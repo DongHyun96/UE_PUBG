@@ -246,8 +246,18 @@ void UC_StatComponent::UpdateBoostEffect(const float& DeltaTime)
 	
 	CurBoosting -= BOOST_ONE_BLOCK_AMOUNT;
 	if (CurBoosting <= 0.5f) CurBoosting = 0.f;
+
 	
-	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
+
+	if (OwnerHUDWidget) // Player일 경우
+	{
+		// HUD내의 Boost Gauge 업데이트
+		OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
+
+		// HealingTutorial 진행중인 경우, Healing Tutorial Goal widget에서의 Boost 량 정보 업데이트 Delegate 호출
+		if (HealingTutorialBoostAmountNumberDelegate.IsBound())
+			HealingTutorialBoostAmountNumberDelegate.Broadcast(CurBoosting);
+	}
 	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetBoostBar()->SetPercent(CurBoosting / MAX_BOOSTING);	
 }
 

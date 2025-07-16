@@ -172,6 +172,12 @@ UC_TutorialGoalWidget* UC_TutorialWidget::GetTutorialGoalWidget(ETutorialStage T
 	return TutorialGoalWidgets[TutorialStage];	
 }
 
+UC_TutorialGoalExplanationContainer* UC_TutorialWidget::GetTutorialGoalExplanationContainer(ETutorialStage TutorialStage) const
+{
+	if (!TutorialGoalExplanations.Contains(TutorialStage)) return nullptr;
+	return TutorialGoalExplanations[TutorialStage];
+}
+
 UC_TutorialGoalExplanationContainer* UC_TutorialWidget::GetCurrentStageGoalExplanationContainer() const
 {
 	if (!TutorialGoalExplanations.Contains(TutorialManager->GetCurrentStage())) return nullptr;

@@ -69,3 +69,9 @@ void UC_TutorialGoalExplanationContainer::StartStageEndExplanation()
 
 	if (StageEndExplanation) StageEndExplanation->StartExplanation();
 }
+
+UC_TutorialGoalExplanation* UC_TutorialGoalExplanationContainer::GetTutorialGoalExplanation(uint8 Index) const
+{
+	if (Index >= TutorialGoalExplanations.Num()) return nullptr;
+	return TutorialGoalExplanations[Index];	
+}

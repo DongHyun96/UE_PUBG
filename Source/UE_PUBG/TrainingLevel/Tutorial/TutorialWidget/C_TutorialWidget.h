@@ -73,6 +73,13 @@ public:
 	/// <returns> : 없다면 return nullptr </returns>
 	UC_TutorialGoalWidget* GetTutorialGoalWidget(ETutorialStage TutorialStage) const;
 
+	/// <summary>
+	/// 해당 TutorialGoalExplanationContainer 반환
+	/// </summary>
+	/// <param name="TutorialStage"></param>
+	/// <returns> : 해당 ExplanationContainer가 없다면 return nullptr </returns>
+	class UC_TutorialGoalExplanationContainer* GetTutorialGoalExplanationContainer(ETutorialStage TutorialStage) const; 
+
 public:
 	
 	/// <summary>

@@ -64,6 +64,8 @@ void AC_Bandage::OnStartUsing()
 
 void AC_Bandage::OnActivatingFinish()
 {
+	Super::OnActivatingFinish();
+	
 	ItemUser->GetConsumableUsageMeshComponent()->ToggleMeshUsageVisible(EConsumableUsageMeshType::BANDAGE, true);
 	
 	// 10초 뒤 팔에 감은 붕대 감추기

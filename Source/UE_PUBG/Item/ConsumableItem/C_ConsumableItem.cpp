@@ -35,6 +35,8 @@ const TMap<EConsumableItemType, FName> AC_ConsumableItem::ConsumableItemNameMap 
 	{EConsumableItemType::ENERGY_DRINK,		"Item_Boost_EnergyDrink_C"},
 };
 
+FTutorialStageGoalCheckerDelegate AC_ConsumableItem::HealingTutorialDelegate{};
+
 AC_ConsumableItem::AC_ConsumableItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -431,21 +433,6 @@ bool AC_ConsumableItem::MoveInvenToAround(AC_BasicCharacter* Character, int32 In
 	return true;
 }
 
-bool AC_ConsumableItem::MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack)
-{
-	return false;
-}
-
-bool AC_ConsumableItem::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack)
-{
-	return false;
-}
-
-bool AC_ConsumableItem::MoveAroundToAround(AC_BasicCharacter* Character, int32 InStack)
-{
-	return false;
-}
-
 bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
@@ -461,13 +448,16 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 		return false; //인벤에 넣을 수 있는 아이템의 갯수가 0 이면 넣을 수 없으므로 return false;
 	}
 
+	// 이 이후로 파밍 성공 처리
+
+	// HealingTutorial Looting Goal 처리 (HealingItem, BoostItem에 따른 LootingGoalIndex를 다르게 처리)
+	if (HealingTutorialDelegate.IsBound() && Cast<AC_Player>(Character))
+		HealingTutorialDelegate.Execute(HealingTutorialLootingGoalIndex, -1);
+
 	AC_Item* FoundItem = InvenComp->FindMyItem(this); //인벤에 같은 아이템을 찾아옴, 없다면 nullptr;
 
-
-
-	if (ItemCurStack == ItemStackCount)
+	if (ItemCurStack == ItemStackCount) //아이템 전부를 인벤에 넣을 수 있을 때.
 	{
-		//아이템 전부를 인벤에 넣을 수 있을 때.
 		if (IsValid(FoundItem))
 		{
 			//인벤에 해당 아이템이 존재 할 때.
@@ -478,9 +468,6 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 
 			this->SetActorEnableCollision(false);
 			this->SetActorHiddenInGame(true);
-
-
-
 			this->DestroyItem();
 		}
 		else
@@ -494,38 +481,36 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 			//던질 때 켜짐. 이걸로 만약 아이템의 오버랩이 안끝난다면 다른 방법 고민->ToInven에서 SetActorEnableCollision를 꺼주고 던질때 혹은 ToAround에서 켜주기.
 			//Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
-		if (InvenComp->FindMyItem(this))
-			InvenComp->RemoveItemToAroundList(this);
+		
+		if (InvenComp->FindMyItem(this)) InvenComp->RemoveItemToAroundList(this);
+		
 		return true;
 	}
-	else
+	
+	//아이템의 일부만 인벤에 넣을 수 있을 때.
+
+	if (IsValid(FoundItem)) // 인벤에 아이템이 이미 있을 때
 	{
-		//아이템의 일부만 인벤에 넣을 수 있을 때.
+		this->SetItemStack(ItemCurStack - ItemStackCount);
+		FoundItem->SetItemStack(FoundItem->GetItemCurStack() + ItemStackCount);
 
-		if (IsValid(FoundItem)) // 인벤에 아이템이 이미 있을 때
-		{
-			this->SetItemStack(ItemCurStack - ItemStackCount);
-			FoundItem->SetItemStack(FoundItem->GetItemCurStack() + ItemStackCount);
+		InvenComp->AddInvenCurVolume(this->ItemDataRef->ItemVolume * ItemStackCount);
 
-			InvenComp->AddInvenCurVolume(this->ItemDataRef->ItemVolume * ItemStackCount);
-
-			return true;
-		}
-		else // 인벤에 아이템이 없을 때
-		{
-			AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//아이템 복제 생성
-
-			NewItem->SetItemStack(ItemStackCount);
-			this->SetItemStack(ItemCurStack - ItemStackCount);
-
-			InvenComp->AddItemToMyList(NewItem);
-
-			NewItem->SetActorHiddenInGame(true);
-			//collider 관련 설정 추가해야 할 수 있음.
-			//만약 추가해야 된다면 MoveToInven에서 SetActorEnableCollision을 꺼주고 던질 때 켜주는 방식으로.
-			return true;
-		}
+		return true;
 	}
+	
+	// 인벤에 아이템이 없을 때
+	AC_ConsumableItem* NewItem = Cast<AC_ConsumableItem>(SpawnItem(Character));//아이템 복제 생성
+
+	NewItem->SetItemStack(ItemStackCount);
+	this->SetItemStack(ItemCurStack - ItemStackCount);
+
+	InvenComp->AddItemToMyList(NewItem);
+
+	NewItem->SetActorHiddenInGame(true);
+	//collider 관련 설정 추가해야 할 수 있음.
+	//만약 추가해야 된다면 MoveToInven에서 SetActorEnableCollision을 꺼주고 던질 때 켜주는 방식으로.
+	return true;
 }
 
 bool AC_ConsumableItem::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
