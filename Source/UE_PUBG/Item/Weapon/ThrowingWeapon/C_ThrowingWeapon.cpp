@@ -548,7 +548,7 @@ bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 		InvenComponent->AddItemToMyList(this);
 		TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
 
-		ThrowableTutorialGrenadePickUpDelegateRoutine();
+		ThrowableTutorialGrenadePickUpDelegateRoutine(Character);
 		
 		return true;
 	}
@@ -560,7 +560,7 @@ bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 	InvenComponent->AddItemToMyList(SpawnedItem);						 //inven에 추가.
 	TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
 	
-	ThrowableTutorialGrenadePickUpDelegateRoutine();
+	ThrowableTutorialGrenadePickUpDelegateRoutine(Character);
 	
 	return true;
 }
@@ -592,7 +592,7 @@ bool AC_ThrowingWeapon::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InS
 	}
 	TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
 
-	ThrowableTutorialGrenadePickUpDelegateRoutine();
+	ThrowableTutorialGrenadePickUpDelegateRoutine(Character);
 
 	return true;
 }
@@ -1006,10 +1006,12 @@ bool AC_ThrowingWeapon::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTarge
 	Player->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(MagazineCount);
  }
 
-void AC_ThrowingWeapon::ThrowableTutorialGrenadePickUpDelegateRoutine()
+void AC_ThrowingWeapon::ThrowableTutorialGrenadePickUpDelegateRoutine(AC_BasicCharacter* Character)
 {
 	if (!ThrowableTutorialDelegate.IsBound()) return;
 	if (ThrowableType != EThrowableType::GRENADE) return; // Grenade를 파밍했는지 체크
 
+	if (!Cast<AC_Player>(Character)) return;
+	
 	ThrowableTutorialDelegate.Execute(0, -1);
 }

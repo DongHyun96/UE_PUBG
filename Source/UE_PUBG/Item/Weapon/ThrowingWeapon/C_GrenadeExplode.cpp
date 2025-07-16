@@ -95,7 +95,8 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		return false;
 	}
 
-	if (ThrowableTutorialDelegate.IsBound()) ThrowableTutorialDelegate.Execute(2, -1);
+	if (ThrowableTutorialDelegate.IsBound() && Cast<AC_Player>(ThrowingWeapon->GetOwnerCharacter())) // 터트린 주체가 Player인지도 체크
+		ThrowableTutorialDelegate.Execute(2, -1);
 
 	ExplosionSphere->SetWorldLocation(ExplosionLocation);
 	float ExplosionRad = ExplosionSphere->GetScaledSphereRadius();

@@ -281,7 +281,8 @@ private:
 	/// <summary>
 	/// Grenade Tutorial의 파밍 Goal Delegate 처리 일련의 Boilerplate code 정리 
 	/// </summary>
-	void ThrowableTutorialGrenadePickUpDelegateRoutine();
+	/// <param name="Character"> : 파밍을 한 Character </param>
+	void ThrowableTutorialGrenadePickUpDelegateRoutine(AC_BasicCharacter* Character);
 	
 protected:
 

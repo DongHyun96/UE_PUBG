@@ -66,8 +66,8 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InSta
 	}
 
 	// 이 아래부터 Inven에 옮기기 성공임
-	// WeaponTutorialDelegate 탄 파밍 처리
-	if (WeaponTutorialDelegate.IsBound()) WeaponTutorialDelegate.Execute(0, 1);
+	// WeaponTutorialDelegate 탄 파밍 처리 & 해당 행위를 한 주체가 Player인지 체크
+	if (WeaponTutorialDelegate.IsBound() && Cast<AC_Player>(Character)) WeaponTutorialDelegate.Execute(0, 1);
 
 	if (ItemStackCount == this->GetItemCurStack())
 	{
