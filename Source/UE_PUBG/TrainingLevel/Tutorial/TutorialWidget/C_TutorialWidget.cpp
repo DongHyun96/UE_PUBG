@@ -159,13 +159,11 @@ void UC_TutorialWidget::ToggleStageExplanationPanel(bool InIsEnabled)
 
 void UC_TutorialWidget::OnSpaceBarDown()
 {
-	UC_Util::Print("OnSpaceBarDown", FColor::Red, 10.f);
 	bSpaceBarDown = true;
 }
 
 void UC_TutorialWidget::OnSpaceBarReleased()
 {
-	UC_Util::Print("OnSpaceBarReleased", FColor::Red, 10.f);
 	bSpaceBarDown = false;
 	SetSpaceBarProgressBarPercent(0.f);
 }
