@@ -32,7 +32,7 @@ public:
 
 	void SetLobbyWidget(class UC_LobbyWidget* InLobbyWidget) { LobbyWidget = InLobbyWidget; }
 	
-private:
+public:
 	
 	/// <summary>
 	/// IMC를 Subsystem에 추가 시도 
@@ -41,6 +41,13 @@ private:
 	/// <param name="Priority"> : IMC의 Priority </param>
 	/// <returns> : 실패했다면 return false </returns>
 	bool AddIMCToSubsystem(class UInputMappingContext* IMC, int Priority);
+
+	/// <summary>
+	/// IMC 제거
+	/// </summary>
+	/// <param name="IMC"></param>
+	/// <returns> : 실패했다면 return false </returns>
+	bool RemoveIMCFromSubsystem(UInputMappingContext* IMC);
 
 private: // LobbyMap 관련 Input 처리
 

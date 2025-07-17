@@ -43,11 +43,10 @@ public:
 	/// <param name="InIsEnabled"></param>
 	void ToggleStageExplanationPanel(bool InIsEnabled);
 
-private:
+private: /* SpaceBar Input 처리 (Stage Explanation Panel이 활성화 되었을 시에만 호출될 예정) */
 
-	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
-
-	virtual FReply NativeOnKeyUp(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+	void OnSpaceBarDown();
+	void OnSpaceBarReleased();
 
 protected:
 
@@ -138,6 +137,16 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* TutorialVideoImage{};
+
+protected:
+
+	// TutorialWidget 전용 IMC
+	// 특정 상황(Stage Explanation Panel ON 되었을 때, Space bar input 처리 등)에서 해당 IMC를 추가함으로써 Input 처리할 예정
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UInputMappingContext* IMC_TutorialWidget{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UInputAction* IA_TutorialSpaceBar{};
 	
 private:
 	
