@@ -79,7 +79,7 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	ETutorialStage CurrentStage{};
 	
 	UPROPERTY(EditInstanceOnly)

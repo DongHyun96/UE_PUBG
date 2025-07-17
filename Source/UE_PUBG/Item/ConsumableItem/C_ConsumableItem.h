@@ -6,6 +6,7 @@
 #include "Item/C_Item.h"
 
 #include "Character/C_BasicCharacter.h"
+#include "TrainingLevel/Tutorial/TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_ConsumableItem.generated.h"
 
 
@@ -136,10 +137,6 @@ protected:
 
 protected:
 	bool MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack) override;
-	bool MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack) override;
-	bool MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack) override;
-
-	bool MoveAroundToAround(AC_BasicCharacter* Character, int32 InStack) override;
 	bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack) override;
 	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 
@@ -206,6 +203,15 @@ private:
 private:
 
 	static const TMap<EConsumableItemType, FName> ConsumableItemNameMap;
+
+public:
+
+	static FTutorialStageGoalCheckerDelegate HealingTutorialDelegate;
+
+protected:
+
+	// HealItem과 Boost Item의 Looting하는 Goal Index가 서로 다름 / 하위 자식 클래스에서 해당 Goal Index 초기화 처리
+	uint8 HealingTutorialLootingGoalIndex{};
 
 };
 

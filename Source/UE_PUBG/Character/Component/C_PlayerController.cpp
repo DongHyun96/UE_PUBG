@@ -161,6 +161,26 @@ bool AC_PlayerController::AddIMCToSubsystem(UInputMappingContext* IMC, int Prior
 	return true;
 }
 
+bool AC_PlayerController::RemoveIMCFromSubsystem(UInputMappingContext* IMC)
+{
+	if (!IsValid(IMC))
+	{
+		UC_Util::Print("From AC_PlayerController::AddIMCToSubsystem : Invalid IMC received!", FColor::Red, 10.f);
+		return false;
+	}
+	
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+
+	if (!Subsystem)
+	{
+		UC_Util::Print("From AC_PlayerController::AddIMCToSubsystem : Subsystem not found", FColor::Red, 10.f);
+		return false;
+	}
+	
+	Subsystem->RemoveMappingContext(IMC);
+	return true;
+}
+
 void AC_PlayerController::OnLobbySpaceBarDown()
 {
 	if (!IsValid(LobbyWidget))

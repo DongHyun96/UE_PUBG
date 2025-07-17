@@ -75,6 +75,8 @@ const float AC_ThrowingWeapon::PROJECTILE_RADIUS		= 5.f;
 
 TMap<EThrowableType, II_AIThrowableAttackStrategy*> AC_ThrowingWeapon::AIAttackStrategies{};
 
+FTutorialStageGoalCheckerDelegate AC_ThrowingWeapon::ThrowableTutorialDelegate{};
+
 AC_ThrowingWeapon::AC_ThrowingWeapon()
 {
 	WeaponButtonStrategy = CreateDefaultSubobject<AC_ThrowingWeaponStrategy>("ThrowingWeaponStrategy");
@@ -545,6 +547,9 @@ bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 		//아이템을 전부 인벤에 넣을 수 있는 경우.
 		InvenComponent->AddItemToMyList(this);
 		TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
+
+		ThrowableTutorialGrenadePickUpDelegateRoutine(Character);
+		
 		return true;
 	}
 	
@@ -554,6 +559,9 @@ bool AC_ThrowingWeapon::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 	SpawnedItem->SetItemStack(ItemStackCount);						 //생성한 아이템 stack을 설정
 	InvenComponent->AddItemToMyList(SpawnedItem);						 //inven에 추가.
 	TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
+	
+	ThrowableTutorialGrenadePickUpDelegateRoutine(Character);
+	
 	return true;
 }
 
@@ -583,6 +591,9 @@ bool AC_ThrowingWeapon::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InS
 		EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
 	}
 	TryUpdateAmmoWidgetMagazineTextIfNecessary(Cast<AC_Player>(Character));
+
+	ThrowableTutorialGrenadePickUpDelegateRoutine(Character);
+
 	return true;
 }
 
@@ -995,4 +1006,12 @@ bool AC_ThrowingWeapon::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTarge
 	Player->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(MagazineCount);
  }
 
+void AC_ThrowingWeapon::ThrowableTutorialGrenadePickUpDelegateRoutine(AC_BasicCharacter* Character)
+{
+	if (!ThrowableTutorialDelegate.IsBound()) return;
+	if (ThrowableType != EThrowableType::GRENADE) return; // Grenade를 파밍했는지 체크
 
+	if (!Cast<AC_Player>(Character)) return;
+	
+	ThrowableTutorialDelegate.Execute(0, -1);
+}

@@ -22,6 +22,8 @@
 
 #include "PhysicsEngine/PhysicsAsset.h"
 #include "Singleton/C_GameSceneManager.h"
+#include "TrainingLevel/TrainingShootingTarget/C_ShootingTargetDamageInfoWidget.h"
+#include "TrainingLevel/TrainingShootingTarget/C_ShootingTargetWidgetsHolder.h"
 #include "TrainingLevel/TrainingShootingTarget/C_TrainingShootingTarget.h"
 
 const TMap<FName, float> AC_GrenadeExplode::BodyPartsDamageRate =
@@ -67,6 +69,8 @@ const TArray<FName> AC_GrenadeExplode::LineTraceDestBoneNames =
 
 const float AC_GrenadeExplode::DAMAGE_BASE = 50.f;
 
+FTutorialStageGoalCheckerDelegate AC_GrenadeExplode::ThrowableTutorialDelegate{};
+
 AC_GrenadeExplode::AC_GrenadeExplode()
 {
 }
@@ -90,6 +94,9 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		UC_Util::Print("From AC_GrenadeExplode::UseStrategy : Explosion Sphere casting failed!", FColor::Red, 5.f);
 		return false;
 	}
+
+	if (ThrowableTutorialDelegate.IsBound() && Cast<AC_Player>(ThrowingWeapon->GetOwnerCharacter())) // 터트린 주체가 Player인지도 체크
+		ThrowableTutorialDelegate.Execute(2, -1);
 
 	ExplosionSphere->SetWorldLocation(ExplosionLocation);
 	float ExplosionRad = ExplosionSphere->GetScaledSphereRadius();
@@ -299,7 +306,8 @@ void AC_GrenadeExplode::HandleTrainingTargetOverlappedWithExplosionSphere(AC_Tra
 	CollisionParams.AddIgnoredActor(ThrowingWeapon);
 
 	FVector ExplosionLocation = ThrowingWeapon->GetActorLocation();
-	
+
+	// TrainingShootingTarget의 각 충돌체에 RayTracing하여, 충돌했다면 Damage 추가
 	for (const TPair<UShapeComponent*, FName>& Pair : TrainingTarget->GetCorrespondingBodyPartNames())
 	{
 		UShapeComponent* Collider = Pair.Key;
@@ -310,9 +318,13 @@ void AC_GrenadeExplode::HandleTrainingTargetOverlappedWithExplosionSphere(AC_Tra
 		FVector DestLocation = Collider->GetComponentLocation();
 
 		bool bHasHit = ThrowingWeapon->GetWorld()->LineTraceSingleByChannel(HitResult, ExplosionLocation, DestLocation, ECC_Visibility, CollisionParams);
-		if (!bHasHit || HitResult.GetComponent() != Collider) continue;
 
-		DrawDebugLine(ThrowingWeapon->GetWorld(), ExplosionLocation, HitResult.ImpactPoint, FColor::Red, true);
+		// LineTrace hit with other Actor
+		// 기존에 ColliderComponent까지도 Check를 했는데 언리얼 잔버그 때문에 Actor만 체크
+		// if (!bHasHit || HitResult.GetComponent() != Collider) continue;
+		if (!bHasHit || HitResult.GetActor() != TrainingTarget) continue;
+			
+		// DrawDebugLine(ThrowingWeapon->GetWorld(), ExplosionLocation, HitResult.ImpactPoint, FColor::Red, true);
 
 		// Calculate damage amount
 		float DamageAmount = DAMAGE_BASE * (ExplosionRad - HitResult.Distance) / ExplosionRad; // 거리 비례 Damage base
@@ -321,6 +333,10 @@ void AC_GrenadeExplode::HandleTrainingTargetOverlappedWithExplosionSphere(AC_Tra
 		TotalDamage  += DamageAmount;
 	}
 
-	FString Str = "TrainingShootingTarget Grenade total Damage : " + FString::SanitizeFloat(TotalDamage);
-	UC_Util::Print(Str, FColor::Red, 10.f);
+	if (TotalDamage <= 0.f) return;
+	FVector DamageInfoSpawnLocation = TrainingTarget->GetActorLocation() + FVector::UnitZ() * 180.f;
+	AC_TrainingShootingTarget::GetShootingTargetWidgetsHolder()->SpawnDamageInfoWidget(EShootingTargetDamageInfoType::Grenade, TotalDamage, DamageInfoSpawnLocation);
+
+	// TrainingTarget 일정시간 눞여두기
+	TrainingTarget->ExecuteGrenadeDamaged();
 }

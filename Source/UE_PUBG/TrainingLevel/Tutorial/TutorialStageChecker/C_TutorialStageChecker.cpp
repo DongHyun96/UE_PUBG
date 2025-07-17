@@ -45,8 +45,6 @@ void UC_TutorialStageChecker::BeginPlay()
 		break;
 	}
 	
-	Str += " Boxes : " + FString::FromInt(GoalTriggerBoxes.Num());
-
 	UC_Util::Print(Str, FColor::MakeRandomColor(), 10.f);
 }
 
@@ -117,7 +115,18 @@ void UC_TutorialStageChecker::MainGoalAchievedCheckingRoutine(FGoalData& TargetD
 
 	// 해당 MainGoal용 TriggerBox가 존재한다면 Disabled 처리
 	if (CurrentMainGoalIndex < GoalData.Num() && IsValid(GoalTriggerBoxes[CurrentMainGoalIndex]))
-		GoalTriggerBoxes[CurrentMainGoalIndex]->ToggleTriggerBox(false);
+	{
+		FString Str = "MainGoal " + FString::FromInt(CurrentMainGoalIndex) + " Achieved and Setting Current GoalTriggerBox to false";
+		UC_Util::Print(Str, FColor::Red, 10.f);
+		// 이미 해당 GoalTriggerBox에 도착해 있을 때, 바로 Goal 달성 처리되면서 TriangleWidget이 안꺼지는 버그가 있음
+		// HiddenInGame을 바로 처리하면 버그가 있는 것으로 추정, 따라서 Pending 처리로 수정
+		FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+		uint8 CapturedIndex = CurrentMainGoalIndex;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, CapturedIndex]()
+		{
+			GoalTriggerBoxes[CapturedIndex]->ToggleTriggerBox(false);
+		}, 0.1f, false);
+	}
 	
 	++CurrentMainGoalIndex;
 
@@ -134,11 +143,10 @@ void UC_TutorialStageChecker::MainGoalAchievedCheckingRoutine(FGoalData& TargetD
 		// 다음 Goal 전용 TriggerBox가 있다면, Enabled 처리
 		if (CurrentMainGoalIndex < GoalData.Num() && IsValid(GoalTriggerBoxes[CurrentMainGoalIndex]))
 		{
+			FString Str = FString::FromInt(CurrentMainGoalIndex) + " Goal's Trigger Box set to true";
+			UC_Util::Print(Str, FColor::Red, 10.f);
 			GoalTriggerBoxes[CurrentMainGoalIndex]->ToggleTriggerBox(true);
-			FString Str = FString::FromInt(CurrentMainGoalIndex) + " TriggerBox Enabled!";
-			UC_Util::Print(Str, FColor::MakeRandomColor(), 10.f);
 		}
-		
 		return;
 	}
 	

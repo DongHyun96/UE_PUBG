@@ -6,6 +6,14 @@
 #include "Blueprint/UserWidget.h"
 #include "C_ShootingTargetDamageInfoWidget.generated.h"
 
+enum class EShootingTargetDamageInfoType : uint8
+{
+	Normal,		// 일반 부위 총기 피격
+	HeadShot,	// 총기 HeadShot 피격
+	Grenade,		// Grenade 피격
+	Max
+};
+
 /**
  * 
  */
@@ -14,6 +22,10 @@ class UE_PUBG_API UC_ShootingTargetDamageInfoWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+protected:
+
+	virtual void NativeConstruct() override;
+
 public:
 	
 	/// <summary>
@@ -21,7 +33,7 @@ public:
 	/// </summary>
 	/// <param name="bIsHeadShot"> : HeadShot 여부 </param>
 	/// <param name="DamageAmount"> : Damage 총량 </param>
-	void Spawn(bool bIsHeadShot, float DamageAmount);
+	void Spawn(EShootingTargetDamageInfoType DamageInfoType, float DamageAmount);
 
 protected:
 
@@ -31,6 +43,9 @@ protected:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* HeadShotSpawnAnimation{};
 
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* GrenadeDamageSpawnAnimation{};
+	
 protected:
 	
 	UPROPERTY(meta = (BindWidget))
@@ -38,5 +53,13 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* HeadShotDamageText{};
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* GrenadeDamageText{};
+
+private:
+
+	TMap<EShootingTargetDamageInfoType, TPair<UWidgetAnimation*, UTextBlock*>> WidgetAnimTextBlockPairs{};
+	
 
 };

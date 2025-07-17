@@ -4,6 +4,7 @@
 #include "C_TutorialWidget.h"
 
 #include "C_TutorialGoalExplanationContainer.h"
+#include "EnhancedInputComponent.h"
 #include "MediaPlayer.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_PlayerController.h"
@@ -58,14 +59,26 @@ void UC_TutorialWidget::NativeConstruct()
 		else UC_Util::Print("From UC_TutorialWidget::NativeConstruct : TutorialGoalExplanation casting failed!", FColor::Red, 10.f);
 	}
 
-	SetIsFocusable(true);
-
 	StageExplanationPanel->SetRenderOpacity(0.f);
+
+	// Setup Input Action
+	AC_PlayerController* PC = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PC->InputComponent))
+	{
+		EnhancedInput->BindAction(IA_TutorialSpaceBar, ETriggerEvent::Started, this, &UC_TutorialWidget::OnSpaceBarDown);
+		EnhancedInput->BindAction(IA_TutorialSpaceBar, ETriggerEvent::Completed, this, &UC_TutorialWidget::OnSpaceBarReleased);
+	}
 }
 
 void UC_TutorialWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	/*TSharedPtr<SWidget> FocusedWidget = FSlateApplication::Get().GetKeyboardFocusedWidget();
+	FString Str = "Focused Widget : " + FocusedWidget->ToString(); 
+	
+	if (FocusedWidget.IsValid()) UC_Util::Print(Str);*/
+	
 
 	float NewOpacity = FMath::Lerp(StageExplanationPanel->GetRenderOpacity(), StageExplanationPanelOpacityDest, InDeltaTime * 10.f);
 	StageExplanationPanel->SetRenderOpacity(NewOpacity);
@@ -101,8 +114,8 @@ void UC_TutorialWidget::SetStageExplanationPanel(ETutorialStage TutorialStage)
 		UC_Util::Print("MediaPlayer Opensource failed!", FColor::Red, 10.f);
 	
 	// Explanation 내용 setting
-	for (TTuple<ETutorialStage, UCanvasPanel*> Tuple : StageExplanations)
-		Tuple.Value->SetVisibility((TutorialStage == Tuple.Key) ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
+	for (TPair<ETutorialStage, UCanvasPanel*>& Pair : StageExplanations)
+		Pair.Value->SetVisibility((TutorialStage == Pair.Key) ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
 }
 
 void UC_TutorialWidget::ToggleStageExplanationPanel(bool InIsEnabled)
@@ -112,10 +125,12 @@ void UC_TutorialWidget::ToggleStageExplanationPanel(bool InIsEnabled)
 	if (InIsEnabled)
 	{
 		StageExplanationPanelOpacityDest = 1.f;
-		
-		PC->SetInputMode(FInputModeUIOnly().SetWidgetToFocus(this->TakeWidget()));
+
 		PC->SetIgnoreLookInput(true);
 		PC->SetIgnoreMoveInput(true);
+
+		// 전용 SpaceBar IMC 추가
+		PC->AddIMCToSubsystem(IMC_TutorialWidget, 1);
 
 		// 움직임은 멈추는데 이상하게 Move함수 호출은 직전에 움직였다면 계속 호출됨 / 동작 Animation을 멈추기 위한 처리
 		GAMESCENE_MANAGER->GetPlayer()->SetNextSpeed(0.f);
@@ -131,33 +146,26 @@ void UC_TutorialWidget::ToggleStageExplanationPanel(bool InIsEnabled)
 	{
 		StageExplanationPanelOpacityDest = 0.f;
 
-		PC->SetInputMode(FInputModeGameOnly());
 		PC->SetIgnoreLookInput(false);
 		PC->SetIgnoreMoveInput(false);
+
+		// 전용 IMC 삭제
+		PC->RemoveIMCFromSubsystem(IMC_TutorialWidget);
 
 		GAMESCENE_MANAGER->GetPlayer()->SetCanMove(true);
 		TutorialVideoImage->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
-FReply UC_TutorialWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+void UC_TutorialWidget::OnSpaceBarDown()
 {
-	if (InKeyEvent.GetKey() != EKeys::SpaceBar || InKeyEvent.IsRepeat()) return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
-
-	// 키가 처음 눌리기 시작했을 때
 	bSpaceBarDown = true;
-	
-	return FReply::Handled();
 }
 
-FReply UC_TutorialWidget::NativeOnKeyUp(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+void UC_TutorialWidget::OnSpaceBarReleased()
 {
-	if (InKeyEvent.GetKey() != EKeys::SpaceBar) return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
-
 	bSpaceBarDown = false;
 	SetSpaceBarProgressBarPercent(0.f);
-	
-	return FReply::Handled();
 }
 
 UC_TutorialGoalWidget* UC_TutorialWidget::GetCurrentTutorialGoalWidget() const
@@ -170,6 +178,12 @@ UC_TutorialGoalWidget* UC_TutorialWidget::GetTutorialGoalWidget(ETutorialStage T
 {
 	if (!TutorialGoalWidgets.Contains(TutorialStage)) return nullptr;
 	return TutorialGoalWidgets[TutorialStage];	
+}
+
+UC_TutorialGoalExplanationContainer* UC_TutorialWidget::GetTutorialGoalExplanationContainer(ETutorialStage TutorialStage) const
+{
+	if (!TutorialGoalExplanations.Contains(TutorialStage)) return nullptr;
+	return TutorialGoalExplanations[TutorialStage];
 }
 
 UC_TutorialGoalExplanationContainer* UC_TutorialWidget::GetCurrentStageGoalExplanationContainer() const

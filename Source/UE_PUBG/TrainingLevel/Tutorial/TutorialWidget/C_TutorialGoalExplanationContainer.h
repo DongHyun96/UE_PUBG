@@ -37,9 +37,14 @@ public:
 	/// </summary>
 	void StartStageEndExplanation();
 
+public:
+	
+	/// <returns> : 해당 Index가 Valid하지 않다면 return nullptr </returns>
+	class UC_TutorialGoalExplanation* GetTutorialGoalExplanation(uint8 Index) const;
+	
 private:
 
-	TArray<class UC_TutorialGoalExplanation*> TutorialGoalExplanations{};
+	TArray<UC_TutorialGoalExplanation*> TutorialGoalExplanations{};
 
 	UC_TutorialGoalExplanation* StageEndExplanation{};
 };

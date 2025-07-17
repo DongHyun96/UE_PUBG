@@ -648,8 +648,9 @@ bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 	AC_Gun* currentMainGun = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]);
 	AC_Gun* currentSubGun  = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]);
 
-	// WeaponTutorial 무기 파밍 Delegate notify 처리
-	if (WeaponTutorialDelegate.IsBound()) WeaponTutorialDelegate.Execute(0, 0);	
+	// WeaponTutorial 무기 파밍 Delegate notify 처리 (파밍 주체가 Player인지 체크도 추가)
+	if (WeaponTutorialDelegate.IsBound() && Cast<AC_Player>(Character))
+		WeaponTutorialDelegate.Execute(0, 0);	
 
 	if (!currentMainGun)
 	{
@@ -887,7 +888,9 @@ bool AC_Gun::ReloadBullet()
 	//장전한 총알 갯수만큼 curVolume 조절
 	OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CurBullet->GetItemDatas()->ItemVolume));
 
-	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	
+	if (OwnerPlayer)
 	{
 		OwnerPlayer->GetInvenSystem()->InitializeList();
 		//OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(CurBullet->GetItemCurStack(), true);
@@ -895,8 +898,8 @@ bool AC_Gun::ReloadBullet()
 	}
 
 	// 장전 성공
-	// WeaponTutorial 장전 Delegate
-	if (WeaponTutorialDelegate.IsBound()) WeaponTutorialDelegate.Execute(1, -1);
+	// WeaponTutorial 장전 Delegate & 장전을 한 주체가 OwnerPlayer인지 체크
+	if (WeaponTutorialDelegate.IsBound() && OwnerPlayer) WeaponTutorialDelegate.Execute(1, -1);
 	return true;
 }
 

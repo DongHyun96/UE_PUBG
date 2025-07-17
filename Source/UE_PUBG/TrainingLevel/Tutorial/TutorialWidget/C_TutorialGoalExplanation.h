@@ -33,6 +33,15 @@ public:
 	/// </summary>
 	void StopExplanation();
 
+public:
+	
+	/// <summary>
+	/// <para> GoalExplanationWidget에서 특정 Explanation 내의 숫자 Text를 업데이트할 때 구현 처리 및 사용 </para>
+	/// <para> HealingTutorialGoal의 Boost Gauge 90% 이상 채우기 Explanation에서 사용할 예정 </para>
+	/// </summary>
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateNumberInfoOnGoalWidget(uint8 UpdatedNumber);
+
 private:
 
 	// 실질적인 Explanation 내용 Panel들, Sequence 순서대로 집어넣고 사용

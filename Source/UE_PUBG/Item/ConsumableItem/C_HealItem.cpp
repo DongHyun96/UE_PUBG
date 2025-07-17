@@ -9,6 +9,7 @@
 AC_HealItem::AC_HealItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	HealingTutorialLootingGoalIndex = 0;
 }
 
 void AC_HealItem::BeginPlay()
@@ -19,6 +20,13 @@ void AC_HealItem::BeginPlay()
 void AC_HealItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AC_HealItem::OnActivatingFinish()
+{
+	// HealTutorial 내에서의 Heal Item 사용 Goal Delegate 호출 처리
+	if (HealingTutorialDelegate.IsBound() && Cast<AC_Player>(ItemUser))
+		HealingTutorialDelegate.Execute(1, -1);
 }
 
 void AC_HealItem::HandleActivateCompletedState()
