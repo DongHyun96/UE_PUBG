@@ -27,18 +27,19 @@ void UC_TutorialWidget::NativeConstruct()
 		{ETutorialStage::MovementTutorial,  "MovementTutorialExplanation"},
 		{ETutorialStage::WeaponTutorial,	"WeaponTutorialExplanation"},
 		{ETutorialStage::ThrowableTutorial, "ThrowableTutorialExplanation"},
-		{ETutorialStage::HealingTutorial,	"HealingTutorialExplanation"}
+		{ETutorialStage::HealingTutorial,	"HealingTutorialExplanation"},
+		{ETutorialStage::TutorialEnd,		"TutorialEndExplanation"}
 	};
 
-	for (const TTuple<ETutorialStage, FString>& PanelNameTuple : TutorialStageExplanationPanelNames)
+	for (const TPair<ETutorialStage, FString>& PanelNamePair : TutorialStageExplanationPanelNames)
 	{
-		UCanvasPanel* TargetPanel = Cast<UCanvasPanel>(GetWidgetFromName(FName(*PanelNameTuple.Value)));
+		UCanvasPanel* TargetPanel = Cast<UCanvasPanel>(GetWidgetFromName(FName(*PanelNamePair.Value)));
 		if (!TargetPanel)
 		{
 			UC_Util::Print("From UC_TutorialWidget::NativeConstruct : Explanation panel casting failed!", FColor::Red, 10.f);
 			continue;
 		}
-		StageExplanations.Add(PanelNameTuple.Key, TargetPanel);
+		StageExplanations.Add(PanelNamePair.Key, TargetPanel);
 	}
 
 	// Init TutorialGoalWidgets & TutorialGoalExplanation Widgets
@@ -83,25 +84,21 @@ void UC_TutorialWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	float NewOpacity = FMath::Lerp(StageExplanationPanel->GetRenderOpacity(), StageExplanationPanelOpacityDest, InDeltaTime * 10.f);
 	StageExplanationPanel->SetRenderOpacity(NewOpacity);
 
-	if (NewOpacity > 0.5f)
-	{
-		UpdateSpaceBarPercent();
-		
-		if (bSpaceBarDown)
-		{
-			float NewPercent = FMath::Min(SpaceBarPercent + InDeltaTime * 1.f, 1.f);
-			SetSpaceBarProgressBarPercent(NewPercent);
+	if (NewOpacity < 0.5f) return;
+	UpdateSpaceBarPercent();
 
-			if (NewPercent >= 1.f) // Stage Start
-			{
-				bSpaceBarDown = false;
-				ToggleStageExplanationPanel(false);
-				
-				// 현 Stage Delegate 초기화 & 기본 Start setting
-				TutorialManager->InitCurrentStageChecker();
-			}
-		}
-	}
+	if (!bSpaceBarDown) return;
+	
+	float NewPercent = FMath::Min(SpaceBarPercent + InDeltaTime * 1.f, 1.f);
+	SetSpaceBarProgressBarPercent(NewPercent);
+
+	if (NewPercent < 1.f) return;// Stage Start 처리 이전
+	
+	bSpaceBarDown = false;
+	ToggleStageExplanationPanel(false);
+	
+	// 현 Stage Delegate 초기화 & 기본 Start setting
+	TutorialManager->InitCurrentStageChecker();
 }
 
 void UC_TutorialWidget::SetStageExplanationPanel(ETutorialStage TutorialStage)
@@ -110,8 +107,11 @@ void UC_TutorialWidget::SetStageExplanationPanel(ETutorialStage TutorialStage)
 	StageTitle->SetText(FText::FromString(TutorialStageTitles[TutorialStage]));
 
 	// 영상 setting
-	if (!MediaPlayer->OpenSource(MediaSources[TutorialStage]))
+	
+	MediaPlayer->Close();
+	if (TutorialStage != ETutorialStage::TutorialEnd && !MediaPlayer->OpenSource(MediaSources[TutorialStage]))
 		UC_Util::Print("MediaPlayer Opensource failed!", FColor::Red, 10.f);
+
 	
 	// Explanation 내용 setting
 	for (TPair<ETutorialStage, UCanvasPanel*>& Pair : StageExplanations)
@@ -144,6 +144,9 @@ void UC_TutorialWidget::ToggleStageExplanationPanel(bool InIsEnabled)
 	}
 	else
 	{
+		/*MediaPlayer->Rewind();
+		MediaPlayer->Pause();*/
+		
 		StageExplanationPanelOpacityDest = 0.f;
 
 		PC->SetIgnoreLookInput(false);

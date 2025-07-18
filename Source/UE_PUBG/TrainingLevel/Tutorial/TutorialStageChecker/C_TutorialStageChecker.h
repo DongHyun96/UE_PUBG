@@ -65,7 +65,7 @@ private:
 public:
 
 	UFUNCTION()
-	void OnStartTriggerBoxBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+	virtual void OnStartTriggerBoxBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
 	/// <summary>
 	/// <para> Stage 첫 시작 시, 해당 Tutorial init 처리 </para>
