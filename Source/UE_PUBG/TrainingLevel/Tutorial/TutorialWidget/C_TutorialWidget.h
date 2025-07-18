@@ -150,14 +150,15 @@ protected:
 	
 private:
 	
-	TMap<ETutorialStage, UCanvasPanel*> StageExplanations{};	
+	TMap<ETutorialStage, UCanvasPanel*> StageExplanations{};
 
 	const TMap<ETutorialStage, FString> TutorialStageTitles =
 	{
 		{ETutorialStage::MovementTutorial,	"MOVEMENT TUTORIAL"},
 		{ETutorialStage::WeaponTutorial,	"WEAPON TUTORIAL"},
 		{ETutorialStage::ThrowableTutorial, "THROWABLE TUTORIAL"},
-		{ETutorialStage::HealingTutorial,	"HEALING TUTORIAL"}
+		{ETutorialStage::HealingTutorial,	"HEALING TUTORIAL"},
+		{ETutorialStage::TutorialEnd,		"BASIC TRAINING COMPLETED"}
 	};
 
 	/* MainGoal side checker widget 관련 */
