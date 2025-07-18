@@ -72,7 +72,7 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
     {
         OwnerPlayer->GetInvenSystem()->InitializeList(); 
 		//OwnerPlayer->GetPreviewCharacter()->AttachWeaponMesh(Weapon, InSlot); // PreviewCharacter에 무기 메시 장착
-		OwnerPlayer->GetPreviewCharacter()->UpdateWeaponMesh(InSlot); // PreviewCharacter에 무기 메시 업데이트
+		//OwnerPlayer->GetPreviewCharacter()->UpdateWeaponMesh(InSlot); // PreviewCharacter에 무기 메시 업데이트
     }
 
     if (!Weapons[InSlot]) // Slot에 새로 지정한 무기가 nullptr -> early return
@@ -158,6 +158,13 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
 
     OwnerCharacter->StopReloadBulletSound();
     OwnerCharacter->StopReloadMagazineSound();
+    
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	AC_PreviewCharacter* PreviewCharacter = nullptr;
+    if (OwnerPlayer)
+    {
+        PreviewCharacter = Cast<AC_PreviewCharacter>(OwnerPlayer->GetPreviewCharacter());
+    }
 
     if (IsValid(Weapons[CurWeaponType]))
     {
@@ -212,11 +219,18 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
             if (!NextThrowableWeapon) continue; // NextThrowable이 Inven에 없는 경우
 
             NextThrowableWeapon->MoveToSlot(OwnerCharacter, NextThrowableWeapon->GetItemCurStack());
-            if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter)) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
-
+            //if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter)) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+			if (OwnerPlayer) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
             // 바로 다음 투척류 꺼내기
             OwnerCharacter->PlayAnimMontage(NextThrowableWeapon->GetCurDrawMontage());
             bIsCurrentlyChangingWeapon = true;
+
+			if (PreviewCharacter)
+			{
+				PreviewCharacter->UpdateWeaponMesh(InChangeTo);
+                PreviewCharacter->UpdateHandPose();
+			}
+
             return true;
         }
     }
@@ -245,7 +259,8 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
             if (!ThrowingWeapon) continue;
 
             ThrowingWeapon->MoveToSlot(OwnerCharacter, ThrowingWeapon->GetItemCurStack());
-            if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter)) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+            //if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter)) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+			if (OwnerPlayer) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 
             bThrowableSetToTargetSlot = true;
             break;
@@ -274,6 +289,13 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
         // 다음 무기가 있을 때
         OwnerCharacter->PlayAnimMontage(Weapons[NextWeaponType]->GetCurDrawMontage());
         bIsCurrentlyChangingWeapon = true;
+
+        if (PreviewCharacter)
+        {
+            PreviewCharacter->UpdateWeaponMesh(InChangeTo);
+            PreviewCharacter->UpdateHandPose();
+        }
+
         return true;
     }
 
@@ -307,6 +329,13 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
     
     OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
     bIsCurrentlyChangingWeapon = true;
+
+    if (PreviewCharacter)
+    {
+        PreviewCharacter->UpdateWeaponMesh(InChangeTo);
+        PreviewCharacter->UpdateHandPose();
+    }
+
     return true;
 }
 
