@@ -40,8 +40,7 @@ public:
 	/// <summary>
 	/// StageExplanationPanel 감추기/보이기
 	/// </summary>
-	/// <param name="InIsEnabled"></param>
-	void ToggleStageExplanationPanel(bool InIsEnabled);
+	void ToggleStageExplanationPanel(bool InIsEnabled, bool bShowStageExplanationVideoOnEnabledTrue = true);
 
 private: /* SpaceBar Input 처리 (Stage Explanation Panel이 활성화 되었을 시에만 호출될 예정) */
 
@@ -137,6 +136,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* TutorialVideoImage{};
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* VideoBackgroundImage{};
 
 protected:
 

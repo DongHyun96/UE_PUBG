@@ -79,7 +79,6 @@ void UC_TutorialWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	FString Str = "Focused Widget : " + FocusedWidget->ToString(); 
 	
 	if (FocusedWidget.IsValid()) UC_Util::Print(Str);*/
-	
 
 	float NewOpacity = FMath::Lerp(StageExplanationPanel->GetRenderOpacity(), StageExplanationPanelOpacityDest, InDeltaTime * 10.f);
 	StageExplanationPanel->SetRenderOpacity(NewOpacity);
@@ -118,7 +117,7 @@ void UC_TutorialWidget::SetStageExplanationPanel(ETutorialStage TutorialStage)
 		Pair.Value->SetVisibility((TutorialStage == Pair.Key) ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
 }
 
-void UC_TutorialWidget::ToggleStageExplanationPanel(bool InIsEnabled)
+void UC_TutorialWidget::ToggleStageExplanationPanel(bool InIsEnabled, bool bShowStageExplanationVideoOnEnabledTrue)
 {
 	AC_PlayerController* PC = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	
@@ -140,7 +139,18 @@ void UC_TutorialWidget::ToggleStageExplanationPanel(bool InIsEnabled)
 		if (!MediaPlayer->Play())   UC_Util::Print("Play failed!", FColor::Red, 10.f);
 
 		SetSpaceBarProgressBarPercent(0.f);
-		TutorialVideoImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+		if (bShowStageExplanationVideoOnEnabledTrue)
+		{
+			TutorialVideoImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			VideoBackgroundImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		}
+		else
+		{
+			TutorialVideoImage->SetVisibility(ESlateVisibility::Hidden);
+			VideoBackgroundImage->SetVisibility(ESlateVisibility::Hidden);
+		}
+		
 	}
 	else
 	{

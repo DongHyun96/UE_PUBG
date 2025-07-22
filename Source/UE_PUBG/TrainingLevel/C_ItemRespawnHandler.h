@@ -48,5 +48,5 @@ private:
 	bool bRespawnTimerSet{};
 	
 	float RespawnTimer{};
-	float RespawnDelayMax = 5.f;
+	static const float RespawnDelayMax;
 };

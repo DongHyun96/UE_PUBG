@@ -29,6 +29,7 @@ void AC_TutorialGate::BeginPlay()
 	if (!TriangleWidgetComponent) UC_Util::Print("From AC_TutorialGate::BeginPlay : Cannot find TriangleWidget!", FColor::Red, 10.f);
 
 	ToggleOpeningBoxTriggerEnabled(false);
+	if (bOpenOnStart) OpenGate();
 }
 
 void AC_TutorialGate::Tick(float DeltaTime)

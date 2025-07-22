@@ -34,7 +34,8 @@ public class UE_PUBG : ModuleRules
             "LoadingScreenModule",
             "MoviePlayer",
             "MediaAssets",
-            "HeadMountedDisplay"
+            "HeadMountedDisplay",
+            "ChaosVehicles"
         });
 
         /*

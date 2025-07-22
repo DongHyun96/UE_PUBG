@@ -99,6 +99,7 @@ public:
 	TArray<AActor*>& GetAllCharacterActors() { return AllCharacterActors; }
 
 	class AC_TutorialManager* GetTutorialManager() const { return TutorialManager; }
+	class AC_TrainingGroundManager* GetTrainingGroundManager() const { return TrainingGroundManager; }
 	
 	/// <summary>
 	/// GameScene에서 GC로부터 보호된 Object들 추가 -> GameScene 끝날 때 일괄 삭제처리 예정
@@ -182,6 +183,7 @@ private:
 	AC_ItemManager*				ItemManager{};
 	AC_SoundManager*			SoundManager{};
 	AC_TutorialManager*			TutorialManager{};
+	AC_TrainingGroundManager*	TrainingGroundManager{};
 	
 	
 private:

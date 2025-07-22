@@ -164,7 +164,7 @@ void UC_TutorialStageChecker::OnStartTriggerBoxBeginOverlap(AActor* OverlappedAc
 	
 	// Tutorial Stage 개요 보이기
 	OwnerTutorialManager->GetTutorialWidget()->SetStageExplanationPanel(TutorialStage);
-	OwnerTutorialManager->GetTutorialWidget()->ToggleStageExplanationPanel(true);
+	OwnerTutorialManager->GetTutorialWidget()->ToggleStageExplanationPanel(true, bShowStageExplanationVideo);
 
 	// 이전 Stage가 존재했다면, 이전 Stage의 GoalWidget과 Goal Explanation Panel 감추기
 	int Prev = static_cast<int>(TutorialStage) - 1; 

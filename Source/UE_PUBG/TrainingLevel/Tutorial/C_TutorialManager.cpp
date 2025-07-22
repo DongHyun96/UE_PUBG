@@ -13,6 +13,7 @@
 #include "TutorialStageChecker/C_HealingTutorialChecker.h"
 #include "TutorialStageChecker/C_MovementTutorialChecker.h"
 #include "TutorialStageChecker/C_ThrowableTutorialChecker.h"
+#include "TutorialStageChecker/C_TutorialEndChecker.h"
 #include "TutorialStageChecker/C_WeaponTutorialChecker.h"
 #include "TutorialWidget/C_TutorialWidget.h"
 #include "Utility/C_Util.h"
@@ -25,7 +26,7 @@ AC_TutorialManager::AC_TutorialManager()
 	TutorialStageCheckers.Add(ETutorialStage::WeaponTutorial, CreateDefaultSubobject<UC_WeaponTutorialChecker>("WeaponTutorialChecker"));
 	TutorialStageCheckers.Add(ETutorialStage::ThrowableTutorial, CreateDefaultSubobject<UC_ThrowableTutorialChecker>("ThrowableTutorialChecker"));
 	TutorialStageCheckers.Add(ETutorialStage::HealingTutorial, CreateDefaultSubobject<UC_HealingTutorialChecker>("HealingTutorialChecker"));
-	TutorialStageCheckers.Add(ETutorialStage::TutorialEnd, CreateDefaultSubobject<UC_TutorialStageChecker>("TutorialEndChecker"));
+	TutorialStageCheckers.Add(ETutorialStage::TutorialEnd, CreateDefaultSubobject<UC_TutorialEndChecker>("TutorialEndChecker"));
 	TutorialStageCheckers[ETutorialStage::TutorialEnd]->SetTutorialStage(ETutorialStage::TutorialEnd);
 
 	for (TTuple<ETutorialStage, UC_TutorialStageChecker*> TutorialStageChecker : TutorialStageCheckers)
@@ -61,7 +62,7 @@ void AC_TutorialManager::BeginPlay()
 	{
 		TutorialWidget->AddToViewport(20);
 		TutorialWidget->SetTutorialManager(this);
-		StartTutorial();
+		// StartTutorial();
 	}
 }
 

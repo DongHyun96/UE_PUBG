@@ -8,6 +8,7 @@
 #include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
+const float AC_ItemRespawnHandler::RespawnDelayMax = 5.f;
 
 AC_ItemRespawnHandler::AC_ItemRespawnHandler()
 {
@@ -40,21 +41,21 @@ void AC_ItemRespawnHandler::BeginPlay()
 
 		for (AActor* OverlappingItem : OverlappingItems)
 		{
-			if (AC_Item* Item = Cast<AC_Item>(OverlappingItem))
+			AC_Item* Item = Cast<AC_Item>(OverlappingItem);
+			if (!Item) continue;
+			
+			// 파밍 시에 실행할 Delegate bind 처리
+			Item->OnRespawnableItemPickedUp.BindUObject(this, &AC_ItemRespawnHandler::OnItemPickedUp);
+			
+			if (!InitialTransforms.Contains(Item->GetClass())) // 첫 Class detected
 			{
-				// 파밍 시에 실행할 Delegate bind 처리
-				Item->OnRespawnableItemPickedUp.BindUObject(this, &AC_ItemRespawnHandler::OnItemPickedUp);
-				
-				if (!InitialTransforms.Contains(Item->GetClass())) // 첫 Class detected
-				{
-					InitialTransforms.Add(Item->GetClass(), {Item->GetActorTransform()});
-					SpawnedItems.Add(Item->GetClass(), {Item});
-					continue;
-				}
-
-				InitialTransforms[Item->GetClass()].Add(Item->GetActorTransform());
-				SpawnedItems[Item->GetClass()].Add(Item);
+				InitialTransforms.Add(Item->GetClass(), {Item->GetActorTransform()});
+				SpawnedItems.Add(Item->GetClass(), {Item});
+				continue;
 			}
+
+			InitialTransforms[Item->GetClass()].Add(Item->GetActorTransform());
+			SpawnedItems[Item->GetClass()].Add(Item);
 		}
 
 		// 첫 조사 이 후, SpawnArea collision 끄기
