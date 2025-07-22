@@ -50,5 +50,10 @@ private:
 	UShapeComponent* GateOpeningBox{};
 	
 	class UWidgetComponent* TriangleWidgetComponent{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bOpenOnStart{};
 	
 };
