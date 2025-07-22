@@ -59,8 +59,9 @@ public:
 	bool SwapSlotsWhileGunHandState();
 
 	void SetNextWeaponType(EWeaponSlot InNextWeaponType) { NextWeaponType = InNextWeaponType; }
+	UFUNCTION(BlueprintCallable)
 	EWeaponSlot GetNextWeaponType() const { return NextWeaponType; }
-	
+	UFUNCTION(BlueprintCallable)
 	EWeaponSlot GetCurWeaponType() const { return CurWeaponType; }
 
 	TMap<EWeaponSlot, AC_Weapon*> GetWeapons() { return Weapons; }

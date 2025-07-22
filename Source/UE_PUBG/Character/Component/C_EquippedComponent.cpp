@@ -109,6 +109,11 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
     // 새로 장착된 무기에 대한 PoseTransitionEnd 델리게이트 callback 걸기
     OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(Weapons[InSlot], &AC_Weapon::OnOwnerCharacterPoseTransitionFin);
+
+    //if (OwnerPlayer)
+    //{
+    //    OwnerPlayer->GetPreviewCharacter()->UpdateWeaponMesh(InSlot); // PreviewCharacter에 무기 메시 업데이트
+    //}
     
     return PrevSlotWeapon;
 }
@@ -147,6 +152,13 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
         // SubGun인 총기를 Holster에 집어넣기
         if (Weapons[EWeaponSlot::SUB_GUN])
             Weapons[EWeaponSlot::SUB_GUN]->AttachToHolster(OwnerCharacter->GetMesh());
+    }
+
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+
+    if (AC_PreviewCharacter* previewChar = OwnerPlayer->GetPreviewCharacter())
+    {
+
     }
 
     return true;
@@ -225,11 +237,11 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
             OwnerCharacter->PlayAnimMontage(NextThrowableWeapon->GetCurDrawMontage());
             bIsCurrentlyChangingWeapon = true;
 
-			if (PreviewCharacter)
-			{
-				PreviewCharacter->UpdateWeaponMesh(InChangeTo);
-                PreviewCharacter->UpdateHandPose();
-			}
+			//if (PreviewCharacter)
+			//{
+			//	PreviewCharacter->UpdateWeaponMesh(InChangeTo);
+            //    PreviewCharacter->UpdateHandPose();
+			//}
 
             return true;
         }
@@ -290,11 +302,11 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
         OwnerCharacter->PlayAnimMontage(Weapons[NextWeaponType]->GetCurDrawMontage());
         bIsCurrentlyChangingWeapon = true;
 
-        if (PreviewCharacter)
-        {
-            PreviewCharacter->UpdateWeaponMesh(InChangeTo);
-            PreviewCharacter->UpdateHandPose();
-        }
+        //if (PreviewCharacter)
+        //{
+        //    PreviewCharacter->UpdateWeaponMesh(InChangeTo);
+        //    PreviewCharacter->UpdateHandPose();
+        //}
 
         return true;
     }
@@ -330,11 +342,11 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
     OwnerCharacter->PlayAnimMontage(Weapons[CurWeaponType]->GetCurSheathMontage()); // 현 무기 집어넣는 동작에 Notify함수 걸어서 다음 무기로 전환
     bIsCurrentlyChangingWeapon = true;
 
-    if (PreviewCharacter)
-    {
-        PreviewCharacter->UpdateWeaponMesh(InChangeTo);
-        PreviewCharacter->UpdateHandPose();
-    }
+    //if (PreviewCharacter)
+    //{
+    //    PreviewCharacter->UpdateWeaponMesh(InChangeTo);
+    //    PreviewCharacter->UpdateHandPose();
+    //}
 
     return true;
 }

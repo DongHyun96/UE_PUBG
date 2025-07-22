@@ -181,7 +181,7 @@ protected:
 	/// PreviewCharacter의 무기 메시를 업데이트하는 함수.
 	/// </summary>
 	/// <param name="InSlot"></param>
-	void UpdatePreviewWeaponMesh();
+	void UpdatePreviewWeaponMesh(EWeaponSlot InSlot, FName InSocket);
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -261,7 +261,7 @@ protected:
 	//Gun Sound Datas, TODO : 
 	const FGunSoundData* GunSoundData = nullptr;
 
-
+public:
 	const FName GetSUB_HOLSTER_SOCKET_NAME()  { return SUB_HOLSTER_SOCKET_NAME; }
 	const FName GetMAIN_HOLSTER_SOCKET_NAME()  { return MAIN_HOLSTER_SOCKET_NAME; }
 	const FName GetSUB_HOLSTER_BAG_SOCKET_NAME()  { return SUB_HOLSTER_BAG_SOCKET_NAME; }

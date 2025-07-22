@@ -97,17 +97,20 @@ void AC_MeleeWeapon::InitializeItem(FName NewItemCode)
 bool AC_MeleeWeapon::AttachToHolster(USceneComponent* InParent)
 {
 	AC_Player* Player = Cast<AC_Player>(OwnerCharacter);
-	if (Player)
-	{
-		Player->GetPreviewCharacter()->UpdateWeaponMesh(EWeaponSlot::MELEE_WEAPON);
-	}
 
-	return AttachToComponent
+	bool bIsAttached = AttachToComponent
 	(
 		InParent,
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		HOLSTER_SOCKET_NAME
 	);
+
+	if (Player)
+	{
+		Player->GetPreviewCharacter()->AttachMeleeWeaponMesh();
+	}
+
+	return bIsAttached;
 }
 
 bool AC_MeleeWeapon::AttachToHand(USceneComponent* InParent)
@@ -115,17 +118,19 @@ bool AC_MeleeWeapon::AttachToHand(USceneComponent* InParent)
 	OwnerCharacter->SetHandState(EHandState::WEAPON_MELEE);
 
 	AC_Player* Player = Cast<AC_Player>(OwnerCharacter);
-	if (Player)
-	{
-		Player->GetPreviewCharacter()->UpdateWeaponMesh(EWeaponSlot::MELEE_WEAPON);
-	}
 
-	return AttachToComponent
+	bool bIsAttached = AttachToComponent
 	(
 		InParent,
 		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 		EQUIPPED_SOCKET_NAME
 	);
+
+	if (Player)
+	{
+		Player->GetPreviewCharacter()->AttachMeleeWeaponMesh();
+	}
+	return bIsAttached;
 }
 
 void AC_MeleeWeapon::PickUpItem(AC_BasicCharacter* Character)

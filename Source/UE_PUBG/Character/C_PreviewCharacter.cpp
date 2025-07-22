@@ -89,6 +89,75 @@ bool AC_PreviewCharacter::AttachMeleeWeaponMesh()
 	return true;
 }
 
+bool AC_PreviewCharacter::AttachGunMesh(EWeaponSlot InSlot, FName InSocket)
+{
+	if (!OwnerPlayer) return false;
+
+	UC_EquippedComponent* EquippedComponent = OwnerPlayer->GetEquippedComponent();
+	if (!EquippedComponent) return false;
+
+	AC_Weapon* Weapon = EquippedComponent->GetWeapons()[InSlot];
+	if (!Weapon)
+	{
+		return DetachWeaponMesh(InSlot); // 무기가 없으면 제거
+	}
+
+	// 무기 메시 가져오기
+	USkeletalMeshComponent* WeaponMesh = Cast<USkeletalMeshComponent>(Weapon->GetItemMeshComp());
+	if (!WeaponMesh || !WeaponMesh->SkeletalMesh)
+	{
+		UC_Util::Print("Weapon Mesh is nullptr");
+		return false;
+	}
+
+	// 기존 메시 제거
+	DetachWeaponMesh(InSlot);
+
+	// 프리뷰 메시 생성
+	FName MeshName = (InSlot == EWeaponSlot::MAIN_GUN) ? TEXT("PreviewMainWeaponMesh") : TEXT("PreviewSubWeaponMesh");
+	USkeletalMeshComponent* NewMesh = NewObject<USkeletalMeshComponent>(this, MeshName);
+	if (!NewMesh) return false;
+
+	AC_EquipableItem* curBackPack = OwnerPlayer->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK];
+
+	AC_Gun* Gun = Cast<AC_Gun>(Weapon);
+
+
+	//InSlot == EWeaponSlot::MAIN_GUN ? Gun->ChangeGunState(EGunState::MAIN_GUN) : Gun->ChangeGunState(EGunState::SUB_GUN);
+	//EGunState CurState = Gun->GetCurrentWeaponState();
+	
+	NewMesh->RegisterComponent();
+	NewMesh->SetSkeletalMesh(WeaponMesh->SkeletalMesh);
+
+
+	if (AC_SR* SR = Cast<AC_SR>(Weapon))
+	{
+		//WeaponMesh->SetWorldScale3D(FVector(.6f, .6f, .6f));
+		NewMesh->SetRelativeScale3D(FVector(0.6f));
+		//NewMesh->SetWorldScale3D(FVector(.6f));
+	}
+
+	//NewMesh->AttachToComponent(previewCharacterMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), Weapon->GetAttachParentSocketName());
+	//NewMesh->AttachToComponent(previewCharacterMesh,
+	//	FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+	//	Weapon->GetAttachParentSocketName());
+
+	NewMesh->AttachToComponent(previewCharacterMesh,
+		FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+		InSocket);
+
+	// SceneCapture에 추가
+	if (SceneCapture)
+	{
+		SceneCapture->ShowOnlyComponents.Add(NewMesh);
+	}
+
+	// TMap에 등록
+	WeaponMeshes.Add(InSlot, NewMesh);
+
+	return true;
+}
+
 bool AC_PreviewCharacter::DetachWeaponMesh(EWeaponSlot InSlot)
 {
 	if (WeaponMeshes.Contains(InSlot) && WeaponMeshes[InSlot])
@@ -246,6 +315,30 @@ bool AC_PreviewCharacter::UpdateEquippedMesh(EEquipSlot InSlot)
 
 	// TMap에 저장
 	EquipMeshes.Add(InSlot, PreviewMesh);
+	return true;
+}
+
+bool AC_PreviewCharacter::Update(EHandState InState, EWeaponSlot InSlot, FName InSocket)
+{
+	switch (InState)
+	{
+	case EHandState::UNARMED:
+		DetachWeaponMesh(OwnerPlayer->GetEquippedComponent()->GetCurWeaponType());
+		break;
+	case EHandState::WEAPON_GUN:
+		AttachGunMesh(InSlot, InSocket);
+		break;
+	case EHandState::WEAPON_MELEE:
+		AttachMeleeWeaponMesh();
+		break;
+	case EHandState::WEAPON_THROWABLE:
+		break;
+	case EHandState::HANDSTATE_MAX:
+		break;
+	default:
+		break;
+	}
+	UpdateHandPose(InState);
 	return true;
 }
 

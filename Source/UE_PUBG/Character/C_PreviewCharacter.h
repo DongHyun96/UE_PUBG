@@ -38,6 +38,8 @@ public:
 	/// <returns></returns>
 	bool AttachMeleeWeaponMesh();
 
+	bool AttachGunMesh(EWeaponSlot InSlot, FName InSocket);
+
 	/// <summary>
 	/// InSlot에 해당하는 장착 무기 메시를 때어 냅니다.
 	/// </summary>
@@ -73,7 +75,9 @@ public:
 	/// HandState에 따른 Pose Update 함수.
 	/// </summary>
 	UFUNCTION(BlueprintImplementableEvent)
-	void UpdateHandPose();
+	void UpdateHandPose(EHandState InState);
+
+	bool Update(EHandState InState,EWeaponSlot InSlot, FName InSocket);
 
 	//UFUNCTION(BlueprintImplementableEvent)
 	//void UpdateHandPose();
