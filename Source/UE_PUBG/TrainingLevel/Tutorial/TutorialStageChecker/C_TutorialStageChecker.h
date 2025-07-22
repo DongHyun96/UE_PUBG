@@ -114,4 +114,9 @@ protected:
 
 	// MainGoal 별 TriggerBoxes (만약에 TriggerBox가 필요없다면 nullptr / 대신 갯수는 MainGoal 개수와 동일)
 	TArray<class AC_TutorialStageTriggerBox*> GoalTriggerBoxes{};
+
+protected:
+
+	// 초기 Stage Explanation panel 내에서 Video를 보여줘야 하는지
+	bool bShowStageExplanationVideo = true;
 };
