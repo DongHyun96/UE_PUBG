@@ -32,6 +32,10 @@ public:
 
 	void SetOwnerPlayer(class AC_Player* Player) { OwnerPlayer = Player; }
 
+	//bool AttachGunToHand(AC_Weapon* InWeapon, FName InSocket);
+	//
+	//bool AttachGunToHolster(AC_Weapon* InWeapon, FName InSocket);
+
 	/// <summary>
 	/// MeleeWeaponMesh를 장착합니다.
 	/// </summary>
@@ -46,6 +50,8 @@ public:
 	/// <param name="InSlot"></param>
 	/// <returns></returns>
 	bool DetachWeaponMesh(EWeaponSlot InSlot);
+
+	//bool DetachToHand(AC_Weapon* InWeapon);
 
 	/// <summary>
 	/// InSlot에 해당하는 장착 아이템 메시를 때어 냅니다..
@@ -86,6 +92,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	AC_Player* GetOwnerPlayer() const { return OwnerPlayer; }
 
+	TMap<EWeaponSlot, USceneComponent*> GetWeaponMeshes() const { return WeaponMeshes; }
+
+	TMap<EEquipSlot, UStaticMeshComponent*> GetEquipMeshes() const { return EquipMeshes; }
 protected:
 
 	UPROPERTY(BlueprintReadOnly)

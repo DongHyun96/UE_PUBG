@@ -59,6 +59,7 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
         if (OwnerPlayer)
         {
+            OwnerPlayer->GetPreviewCharacter()->GetWeaponMeshes()[InSlot]->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
 			OwnerPlayer->GetPreviewCharacter()->DetachWeaponMesh(InSlot); // PreviewCharacter에서 무기 메시 해제
         }
 
@@ -123,6 +124,7 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
     AC_Gun* CurMainGun  = Cast<AC_Gun>(Weapons[EWeaponSlot::MAIN_GUN]);
     AC_Gun* CurSubGun   = Cast<AC_Gun>(Weapons[EWeaponSlot::SUB_GUN]);
 
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
     // 예외 상황이 아닌 상황
     if (!IsValid(CurMainGun) && !IsValid(CurSubGun))                                        return false;
@@ -143,7 +145,10 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
 
         // MainGun인 총기를 Holster에 집어넣기
         if (Weapons[EWeaponSlot::MAIN_GUN])
+        {
             Weapons[EWeaponSlot::MAIN_GUN]->AttachToHolster(OwnerCharacter->GetMesh());
+            //if (OwnerPlayer) OwnerPlayer->GetPreviewCharacter()->AttachGunMesh(Main)
+        }
     }
     else if (CurWeaponType == EWeaponSlot::SUB_GUN)
     {
@@ -151,15 +156,19 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
 
         // SubGun인 총기를 Holster에 집어넣기
         if (Weapons[EWeaponSlot::SUB_GUN])
+        {
             Weapons[EWeaponSlot::SUB_GUN]->AttachToHolster(OwnerCharacter->GetMesh());
+            //if (OwnerPlayer) OwnerPlayer->GetPreviewCharacter()->DetachWeaponMesh(EWeaponSlot::MAIN_GUN); // PreviewCharacter에서 무기 메시 해제
+            
+        }
     }
 
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-
-    if (AC_PreviewCharacter* previewChar = OwnerPlayer->GetPreviewCharacter())
-    {
-
-    }
+	//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+    //
+    //if (AC_PreviewCharacter* previewChar = OwnerPlayer->GetPreviewCharacter())
+    //{
+    //
+    //}
 
     return true;
 }
