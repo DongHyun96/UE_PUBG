@@ -21,7 +21,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	
+	/// <summary>
+	/// Spawn Area 영역에서 차량이 들어올 때 처리 
+	/// </summary>
 	UFUNCTION()
 	void OnSpawnAreaBeginOverlap
 	(
@@ -33,6 +35,9 @@ private:
 		const FHitResult&		SweepResult
 	);
 
+	/// <summary>
+	/// Spawn Area 영역에서 차량이 나갈 때 처리 
+	/// </summary>
 	UFUNCTION()
 	void OnSpawnAreaEndOverlap
 	(
@@ -42,15 +47,28 @@ private:
 		int32				 OtherBodyIndex
 	);
 
-private:
-
-	
+	/// <summary>
+	/// Respawn할 수 있는 위치들의 Indices 구하기
+	/// </summary>
+	/// <param name="PossibleIndices"> : 가능한 Indices로 초기화, 만약에 가능한 자리가 없다면 empty array로 set</param>
+	void GetPossibleSpaceIndicesForRespawn(TArray<uint8>& PossibleIndices);
 
 protected:
 
 	UPROPERTY(EditInstanceOnly)
 	class UBoxComponent* SpawnArea{};
 
+	// SpawnActor 처리시킬 car class 종류
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TSubclassOf<class AC_Vehicle> VehicleClass{};
+
+	// CarInitialOuterBox의 Collision Object type channel
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "CollisionChannel")
+	TEnumAsByte<ECollisionChannel> InitialOuterBoxObjectTypeChannel{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "CollisionChannel")
+	TArray<TEnumAsByte<ECollisionChannel>> AllTraceChannelUsed{};
+	
 private:
 
 	// Init 처리된 이후인지 체크
@@ -61,12 +79,12 @@ private:
 
 
 	TArray<FTransform> InitialTransforms{}; // Spawn Area에 주차된 차량들의 초기 Transforms (Index 순으로 위치를 기억해서 관리)
+
+protected:
 	
 	// Spawn Area에 주차된 차량들의 초기 OuterBox와 동일한 크기의 OuterBox를 두어, 해당 Box Component와 충돌되는 물체가 없는지 조사하여 Spawn처리할 예정
+	UPROPERTY(VisibleAnywhere)
 	TArray<UBoxComponent*> InitialCarOuterBoxes{};
-
-	// 해당 SpawnArea에 주차된 Vehicles (만약에 SpawnArea를 이탈한 차량이 존재한다면, 해당 Index는 nullptr로 체크)
-	TArray<class AC_Vehicle*> Vehicles{};
 
 private:
 	
