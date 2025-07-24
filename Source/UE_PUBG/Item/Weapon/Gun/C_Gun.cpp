@@ -222,7 +222,7 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 				MAIN_HOLSTER_SOCKET_NAME
 			);
 
-			UpdatePreviewWeaponMesh(this->GetWeaponSlot(), MAIN_HOLSTER_SOCKET_NAME);
+			//UpdatePreviewWeaponMesh(this->GetWeaponSlot(), MAIN_HOLSTER_SOCKET_NAME);
 
 			return IsAttached;
 			break;
@@ -234,7 +234,7 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 				SUB_HOLSTER_SOCKET_NAME
 			);
 
-			UpdatePreviewWeaponMesh(this->GetWeaponSlot(), SUB_HOLSTER_SOCKET_NAME);
+			//UpdatePreviewWeaponMesh(this->GetWeaponSlot(), SUB_HOLSTER_SOCKET_NAME);
 
 			return IsAttached;
 			break;
@@ -255,7 +255,7 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 				MAIN_HOLSTER_BAG_SOCKET_NAME
 			);
 
-			UpdatePreviewWeaponMesh(this->GetWeaponSlot(), MAIN_HOLSTER_BAG_SOCKET_NAME);
+			//UpdatePreviewWeaponMesh(this->GetWeaponSlot(), MAIN_HOLSTER_BAG_SOCKET_NAME);
 
 			return IsAttached;
 			break;
@@ -267,7 +267,7 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 				SUB_HOLSTER_BAG_SOCKET_NAME
 			);
 
-			UpdatePreviewWeaponMesh(this->GetWeaponSlot(), SUB_HOLSTER_BAG_SOCKET_NAME);
+			//UpdatePreviewWeaponMesh(this->GetWeaponSlot(), SUB_HOLSTER_BAG_SOCKET_NAME);
 
 			return IsAttached;
 			break;
@@ -324,7 +324,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 				SUB_DRAW_SOCKET_NAME
 			);
 
-			UpdatePreviewWeaponMesh(this->GetWeaponSlot(), SUB_DRAW_SOCKET_NAME);
+			//UpdatePreviewWeaponMesh(this->GetWeaponSlot(), SUB_DRAW_SOCKET_NAME);
 
 			return IsAttached;
 		}
@@ -352,7 +352,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 	{
 		//CurSocketName
 
-		UpdatePreviewWeaponMesh(this->GetWeaponSlot(), EQUIPPED_SOCKET_NAME);
+		//UpdatePreviewWeaponMesh(this->GetWeaponSlot(), EQUIPPED_SOCKET_NAME);
 	}
 
 	OwnerCharacter->SetIsReloadingBullet(false);

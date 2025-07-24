@@ -51,6 +51,30 @@ void AC_PreviewCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 }
 
+void AC_PreviewCharacter::SetWeaponMesh(EWeaponSlot InSlot, AC_Weapon* Weapon)
+{
+	AC_Weapon* PrevSlotWeapon = OwnerPlayer->GetEquippedComponent()->GetWeapons()[InSlot];
+
+	if (PrevSlotWeapon)
+	{
+		// 이전 무기 메시 제거
+		DetachWeaponMesh(InSlot);
+	}
+	if (Weapon)
+	{
+		if (WeaponMeshes.Contains(InSlot) && WeaponMeshes[InSlot])
+		{
+			// 기존 메시가 있다면 제거
+			WeaponMeshes[InSlot] = Weapon->GetItemMeshComp();
+		}
+		else return;
+	}
+
+	// 무기 메시가 nullptr이 아니면 새로운 메시를 장착
+
+
+}
+
 bool AC_PreviewCharacter::AttachMeleeWeaponMesh()
 {
 	UC_EquippedComponent* EquippedComp = OwnerPlayer->GetEquippedComponent();

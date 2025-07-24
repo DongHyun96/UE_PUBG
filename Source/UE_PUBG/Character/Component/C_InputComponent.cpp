@@ -496,7 +496,7 @@ void UC_InputComponent::OnNumKey(EWeaponSlot ChangeTo)
 	}
 
 	Player->GetEquippedComponent()->ChangeCurWeapon(ChangeTo);
-
+	Player->GetPreviewCharacter()->UpdateWeaponMesh(ChangeTo);
 
 }
 

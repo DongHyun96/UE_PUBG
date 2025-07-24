@@ -32,9 +32,7 @@ public:
 
 	void SetOwnerPlayer(class AC_Player* Player) { OwnerPlayer = Player; }
 
-	//bool AttachGunToHand(AC_Weapon* InWeapon, FName InSocket);
-	//
-	//bool AttachGunToHolster(AC_Weapon* InWeapon, FName InSocket);
+	void SetWeaponMesh(EWeaponSlot InSlot, class AC_Weapon* Weapon);
 
 	/// <summary>
 	/// MeleeWeaponMesh를 장착합니다.
@@ -51,7 +49,7 @@ public:
 	/// <returns></returns>
 	bool DetachWeaponMesh(EWeaponSlot InSlot);
 
-	//bool DetachToHand(AC_Weapon* InWeapon);
+	//bool DetachCurWeapon();
 
 	/// <summary>
 	/// InSlot에 해당하는 장착 아이템 메시를 때어 냅니다..

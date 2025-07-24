@@ -60,6 +60,7 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
         if (OwnerPlayer)
         {
             OwnerPlayer->GetPreviewCharacter()->GetWeaponMeshes()[InSlot]->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+            OwnerPlayer->GetPreviewCharacter()->GetWeaponMeshes()[InSlot]->DetachFromParent();
 			OwnerPlayer->GetPreviewCharacter()->DetachWeaponMesh(InSlot); // PreviewCharacter에서 무기 메시 해제
         }
 
@@ -73,7 +74,7 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
     {
         OwnerPlayer->GetInvenSystem()->InitializeList(); 
 		//OwnerPlayer->GetPreviewCharacter()->AttachWeaponMesh(Weapon, InSlot); // PreviewCharacter에 무기 메시 장착
-		//OwnerPlayer->GetPreviewCharacter()->UpdateWeaponMesh(InSlot); // PreviewCharacter에 무기 메시 업데이트
+		OwnerPlayer->GetPreviewCharacter()->UpdateWeaponMesh(InSlot); // PreviewCharacter에 무기 메시 업데이트
     }
 
     if (!Weapons[InSlot]) // Slot에 새로 지정한 무기가 nullptr -> early return
@@ -107,6 +108,7 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
  
     Weapons[InSlot]->SetRelativeTranformToInitial();
     Weapons[InSlot]->AttachToHolster(OwnerCharacter->GetMesh());
+    
 
     // 새로 장착된 무기에 대한 PoseTransitionEnd 델리게이트 callback 걸기
     OwnerCharacter->Delegate_OnPoseTransitionFin.AddUObject(Weapons[InSlot], &AC_Weapon::OnOwnerCharacterPoseTransitionFin);
