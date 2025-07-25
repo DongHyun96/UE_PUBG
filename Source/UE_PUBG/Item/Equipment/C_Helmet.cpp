@@ -127,3 +127,9 @@ float AC_Helmet::GetDamageReduceFactor() const
 	return	(ItemLevel == EEquipableItemLevel::LV1) ? 0.7f :
 			(ItemLevel == EEquipableItemLevel::LV2) ? 0.6f : 0.45f;
 }
+
+float AC_Helmet::GetDamageReduceFactor(EEquipableItemLevel EquipableItemLevel)
+{
+	return	(EquipableItemLevel == EEquipableItemLevel::LV1) ? 0.7f :
+			(EquipableItemLevel == EEquipableItemLevel::LV2) ? 0.6f : 0.45f;
+}

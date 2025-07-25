@@ -7,6 +7,8 @@
 #include "C_ShootingTargetWidgetsHolder.h"
 #include "Character/C_Player.h"
 #include "Components/ShapeComponent.h"
+#include "Item/Equipment/C_Helmet.h"
+#include "Item/Equipment/C_Vest.h"
 #include "Item/Weapon/Gun/C_Bullet.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Kismet/GameplayStatics.h"
@@ -139,7 +141,7 @@ void AC_TrainingShootingTarget::OnCollisionPartHit
 
 	const float DamageBase = Bullet->GetFiredGun()->GetDamageBase();
 	const float DamageRate = Bullet->GetFiredGun()->GetDamageRateByBodyPart(CorrespondingBodyPartNames[PartCollider]);
-	const float TotalDamage = DamageBase * DamageRate;
+	float TotalDamage = DamageBase * DamageRate; // 기본 Total Damage
 
 	// Spawn TotalDamage Info Widget
 	if (!IsValid(ShootingTargetWidgetsHolder))
@@ -148,8 +150,17 @@ void AC_TrainingShootingTarget::OnCollisionPartHit
 		return;
 	}
 
+	// HeadShot 여부 결정
 	EShootingTargetDamageInfoType DamageInfoType =
 		(PartCollider == HeadShapeComponent) ? EShootingTargetDamageInfoType::HeadShot : EShootingTargetDamageInfoType::Normal;
+	
+	// ArmorLevel이 0이 아닌 경우, TotalDamage ArmorLevel에 따라 줄이기
+	if (ArmorLevel != ETargetArmorLevel::Lv0)
+	{
+		EEquipableItemLevel EquipableItemLevel = static_cast<EEquipableItemLevel>(static_cast<uint8>(ArmorLevel) - 1);
+		TotalDamage *= (DamageInfoType == EShootingTargetDamageInfoType::HeadShot) ?
+			AC_Helmet::GetDamageReduceFactor(EquipableItemLevel) : AC_Vest::GetDamageReduceFactor(EquipableItemLevel); 
+	}
 	
 	ShootingTargetWidgetsHolder->SpawnDamageInfoWidget(DamageInfoType, TotalDamage, Hit.ImpactPoint + FVector::UnitZ() * 20.f);
 }
