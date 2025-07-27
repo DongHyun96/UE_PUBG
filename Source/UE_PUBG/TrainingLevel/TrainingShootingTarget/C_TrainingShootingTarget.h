@@ -18,6 +18,17 @@ enum class ETargetPartType : uint8
 	Max
 };*/
 
+// Shooting Target의 방어구 Level
+UENUM(BlueprintType)
+enum class ETargetArmorLevel : uint8
+{
+	Lv0,
+	Lv1,
+	Lv2,
+	Lv3,
+	Max
+};
+
 UCLASS()
 class UE_PUBG_API AC_TrainingShootingTarget : public AActor
 {
@@ -42,7 +53,7 @@ public:
 private:
 	
 	/// <summary>
-	/// 총알 Collision 처리 
+	/// 총알 Collision 처리 (수류탄 피격의 경우, GrenadeExplode Strategy에서 따로 처리, 이 함수는 총알 피격만 처리)
 	/// </summary>
 	UFUNCTION()
 	void OnCollisionPartHit
@@ -71,6 +82,11 @@ private:
 
 	// HeadShot 부위 ShapeComponent
 	UShapeComponent* HeadShapeComponent{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
+	ETargetArmorLevel ArmorLevel{};
 
 private:
 

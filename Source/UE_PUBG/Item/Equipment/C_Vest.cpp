@@ -123,4 +123,10 @@ float AC_Vest::GetDamageReduceFactor() const
 			(ItemLevel == EEquipableItemLevel::LV2) ? 0.6f : 0.45f;
 }
 
+float AC_Vest::GetDamageReduceFactor(EEquipableItemLevel EquipableItemLevel)
+{
+	return	(EquipableItemLevel == EEquipableItemLevel::LV1) ? 0.7f :
+			(EquipableItemLevel == EEquipableItemLevel::LV2) ? 0.6f : 0.45f;
+}
+
 

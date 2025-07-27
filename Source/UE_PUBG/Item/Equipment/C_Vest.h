@@ -36,6 +36,11 @@ public:
 
 	float GetDamageReduceFactor() const override;
 
+	/// <summary>
+	/// EquipableItemLevel에 따른 Static DamageReduceFactor 구하기
+	/// </summary>
+	static float GetDamageReduceFactor(EEquipableItemLevel EquipableItemLevel);
+
 public:
 	/// <summary>
 	/// EquipableItemLevel에 따른 ItemDatas 및 StaticMesh 초기화 하기

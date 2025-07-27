@@ -44,6 +44,11 @@ public:
 
 	float GetDamageReduceFactor() const override;
 
+	/// <summary>
+	/// EquipableItemLevel에 따른 Static DamageReduceFactor 구하기
+	/// </summary>
+	static float GetDamageReduceFactor(EEquipableItemLevel EquipableItemLevel);
+
 private:
 
 	class UStaticMeshComponent* HelmetMesh{};
