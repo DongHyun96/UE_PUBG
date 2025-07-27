@@ -271,7 +271,6 @@ bool AC_PreviewCharacter::UpdateWeaponMesh(EWeaponSlot InSlot)
 		SocketName = (CurState == EGunState::MAIN_GUN) ? MAIN_HOLSTER_BAG_SOCKET_NAME : SUB_HOLSTER_BAG_SOCKET_NAME;
 	}
 	SocketName = Weapon->GetAttachParentSocketName();
-	NewMesh->RegisterComponent();
 	NewMesh->SetSkeletalMesh(WeaponMesh->SkeletalMesh);
 	
 
@@ -291,7 +290,9 @@ bool AC_PreviewCharacter::UpdateWeaponMesh(EWeaponSlot InSlot)
 	NewMesh->AttachToComponent(previewCharacterMesh,
 		FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 		Weapon->GetAttachParentSocketName());
-	 
+
+	NewMesh->RegisterComponent();
+
 	// SceneCapture에 추가
 	if (SceneCapture)
 	{
