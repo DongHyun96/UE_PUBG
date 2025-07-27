@@ -37,6 +37,9 @@ void AC_Item::BeginPlay()
 	Super::BeginPlay();
 
 	InitializeItem(ItemCode);
+
+	// Init PrimitiveComponents
+	GetComponents<UPrimitiveComponent>(PrimitiveComponents);
 }
 
 void AC_Item::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -351,9 +354,6 @@ void AC_Item::SetItemStack(int32 inItemStack)
 
 void AC_Item::SetOutlineEffect(bool bEnable)
 {
-	TArray<UPrimitiveComponent*> PrimitiveComponents;
-	GetComponents<UPrimitiveComponent>(PrimitiveComponents);
-
 	for (UPrimitiveComponent* Comp : PrimitiveComponents)
 	{
 		if (Comp)
