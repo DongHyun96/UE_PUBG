@@ -10,20 +10,25 @@
 #include "Singleton/C_GameSceneManager.h"
 #include "Airplane/C_AirplaneManager.h"
 #include "Airplane/C_Airplane.h"
+#include "Character/Component/C_InvenComponent.h"
+#include "Item/Equipment/C_EquipableItem.h"
+#include "Singleton/C_GameInstance.h"
 
 const FName UC_SkyDivingComponent::PARABACKPACK_SOCKET_NAME = "ParachuteBackPackSocket";
 const FName UC_SkyDivingComponent::PARACHUTE_SOCKET_NAME    = "ParachuteSocket";
-
-// SKYDIVING 상태에서 고도를 측정할 때 고도 0m 기준으로 잡을 위치
-const float UC_SkyDivingComponent::ALTITUDE_ZERO_Z = 4000.f;
 
 // 원작 수치
 //const float PARACHUTE_DEPLOY_LIMIT_HEIGHT = 43000.f;
 //const float MAX_SKYDIVE_JUMP_ALTITUDE = 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
 
-const float UC_SkyDivingComponent::PARACHUTE_DEPLOY_LIMIT_HEIGHT = 10000.f;
 //const float MAX_SKYDIVE_JUMP_ALTITUDE		= 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
-const float UC_SkyDivingComponent::MAX_SKYDIVE_JUMP_ALTITUDE = 1e9; // Testing 값
+
+const TMap<ELevelType, FSkyDivingData> UC_SkyDivingComponent::SkyDivingDataMap =
+{
+	{ELevelType::ShantyTown, {4000.f, 10000.f, 1e9}},
+	{ELevelType::TrainingGround, {0.f, 6000.f, 1e9}}
+};
+
 
 UC_SkyDivingComponent::UC_SkyDivingComponent()
 {
@@ -36,6 +41,9 @@ UC_SkyDivingComponent::UC_SkyDivingComponent()
 void UC_SkyDivingComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GameInstance = Cast<UC_GameInstance>(OwnerCharacter->GetGameInstance());
+	if (!GameInstance) UC_Util::Print("From UC_SkyDivingComponent::BeginPlay : Invalid GameInstance", FColor::Red, 10.f);
 
 	if (ParachuteBackpackStaticMeshComponent)
 	{
@@ -74,7 +82,6 @@ void UC_SkyDivingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	// if (OwnerPlayer) UC_Util::Print("Speed : " + FString::SanitizeFloat(OwnerPlayer->GetVelocity().Length()));
 }
 
-// TODO : Template method으로 구멍 뚫어줄까 그냥 생각 중
 bool UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 {
 	if (InSkyDivingState == ESkyDivingState::MAX)
@@ -92,14 +99,17 @@ bool UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		return true;
 	case ESkyDivingState::SKYDIVING:
 	{
-		// SkyDiving 가능한지 체크
-		if (!GAMESCENE_MANAGER->GetAirplaneManager()->GetCanDive())
+		// 비행기가 존재하는 맵일 때, SkyDiving 가능한 상황인지 체크
+		if (GAMESCENE_MANAGER->GetAirplaneManager())
 		{
-			UC_Util::Print("Cannot SkyDive at the current pos");
-			return false;
-		}
+			if (!GAMESCENE_MANAGER->GetAirplaneManager()->GetCanDive())
+			{
+				UC_Util::Print("Cannot SkyDive at the current pos");
+				return false;
+			}
 
-		OwnerCharacter->SetActorLocation(GAMESCENE_MANAGER->GetAirplaneManager()->GetAirplane()->GetActorLocation());
+			OwnerCharacter->SetActorLocation(GAMESCENE_MANAGER->GetAirplaneManager()->GetAirplane()->GetActorLocation());
+		}
 		
 		OwnerCharacter->SetCanMove(true);
 
@@ -107,6 +117,20 @@ bool UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 
 		OwnerCharacter->SetActorHiddenInGame(false);
 		ParachuteBackpackStaticMeshComponent->SetVisibility(true);
+
+		// 낙하산 재사용 가능성 때문에 다시금 AttachToComponent 처리 해줌
+		if (ParachuteSkeletalMeshComponent)
+		{
+			ParachuteSkeletalMeshComponent->SetRelativeTransform(FTransform::Identity);
+			ParachuteSkeletalMeshComponent->AttachToComponent
+			(
+				OwnerCharacter->GetMesh(),
+				FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+				PARACHUTE_SOCKET_NAME
+			);
+
+			ParachuteSkeletalMeshComponent->SetVisibility(false);
+		}
 		
 		SetStateToSkyDivingState(); // Primitive operation
 		return true;
@@ -120,6 +144,13 @@ bool UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 		OwnerCharacter->PlayAnimMontage(DeployParachuteMontage);
 		ParachuteSkeletalMeshComponent->GetAnimInstance()->Montage_Play(ParachuteDeployMontage);
 
+		// Set CollisionParams for Height estimation LineTrace
+		ParachutingHeightCheckCollisionParams = {};
+		ParachutingHeightCheckCollisionParams.AddIgnoredActor(OwnerCharacter);
+		
+		if (GAMESCENE_MANAGER->GetAirplaneManager())
+			ParachutingHeightCheckCollisionParams.AddIgnoredActor(GAMESCENE_MANAGER->GetAirplaneManager()->GetAirplane());
+
 		SetStateToParachutingState(); // Primitive operation
 		return true;
 	}
@@ -132,6 +163,10 @@ bool UC_SkyDivingComponent::SetSkyDivingState(ESkyDivingState InSkyDivingState)
 
 		// 가방 숨기기
 		ParachuteBackpackStaticMeshComponent->SetVisibility(false);
+
+		// Equipment 배낭을 메고 있었다면 다시 HiddenInGame 꺼주기
+		if (AC_EquipableItem* BackPack = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK])
+			BackPack->SetActorHiddenInGame(false);
 
 		OwnerCharacter->PlayAnimMontage(LandingMontage);
 		SkyDivingState = ESkyDivingState::LANDING;
@@ -189,7 +224,7 @@ void UC_SkyDivingComponent::HandleStateTransitionByHeight()
 	{
 	case ESkyDivingState::SKYDIVING:
 	{
-		if (CurrentHeight < PARACHUTE_DEPLOY_LIMIT_HEIGHT)
+		if (CurrentHeight < SkyDivingDataMap[GameInstance->GetCurrentSelectedLevelType()].ParachuteDeployLimitHeight)
 			SetSkyDivingState(ESkyDivingState::PARACHUTING);
 		return;
 	}
@@ -206,21 +241,23 @@ void UC_SkyDivingComponent::UpdateCurrentHeight()
 	switch (SkyDivingState)
 	{
 	case ESkyDivingState::SKYDIVING:
-		CurrentHeight = OwnerCharacter->GetActorLocation().Z - ALTITUDE_ZERO_Z;
+		CurrentHeight = OwnerCharacter->GetActorLocation().Z - SkyDivingDataMap[GameInstance->GetCurrentSelectedLevelType()].AltitudeZeroZ;
 		return;
 	case ESkyDivingState::PARACHUTING:
 	{
-		FCollisionQueryParams CollisionParams{};
-		CollisionParams.AddIgnoredActor(OwnerCharacter);
-
-		CollisionParams.AddIgnoredActor(GAMESCENE_MANAGER->GetAirplaneManager()->GetAirplane());
-
 		FHitResult HitResult{};
 
 		FVector StartLocation = OwnerCharacter->GetActorLocation();
-		FVector DestLocation  = StartLocation - FVector::UnitZ() * MAX_SKYDIVE_JUMP_ALTITUDE;
+		FVector DestLocation  = StartLocation - FVector::UnitZ() * SkyDivingDataMap[GameInstance->GetCurrentSelectedLevelType()].MaxSkyDiveJumpAltitude;
 
-		bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECollisionChannel::ECC_Visibility, CollisionParams);
+		bool HasHit = GetWorld()->LineTraceSingleByChannel
+		(
+			HitResult,
+			StartLocation, DestLocation,
+			ECollisionChannel::ECC_Visibility,
+			ParachutingHeightCheckCollisionParams
+		);
+		
 		if (!HasHit) return;
 
 		// Update CurrentHeight

@@ -68,7 +68,7 @@ void AC_CarRespawnHandler::BeginPlay()
 			for (TEnumAsByte<ECollisionChannel> TraceCollisionChannel : AllTraceChannelUsed)
 				NewBoxComponent->SetCollisionResponseToChannel(TraceCollisionChannel, ECR_Ignore);
 
-			NewBoxComponent->SetHiddenInGame(false);
+			// NewBoxComponent->SetHiddenInGame(false);
 
 			InitialCarOuterBoxes.Add(NewBoxComponent);
 		}
@@ -103,7 +103,9 @@ void AC_CarRespawnHandler::Tick(float DeltaTime)
 	uint8 CarCount = CurrentCarCount;
 	for (uint8 PossibleSpaceIndex : PossibleSpaceIndices)
 	{
-		GetWorld()->SpawnActor<AC_Vehicle>(VehicleClass, InitialTransforms[PossibleSpaceIndex]);
+		AC_Vehicle* Vehicle = GetWorld()->SpawnActor<AC_Vehicle>(VehicleClass, InitialTransforms[PossibleSpaceIndex]);
+		Vehicle->SetActorScale3D(FVector(1.2f, 1.2f, 1.2f)); // Scale 값 오류가 있어서 직접 세팅
+
 		// CurrentCarCount를 여기서 증가시키지 않음 -> Spawn처리되면서 자연스럽게 BeginOverlap 호출에서 차 개수가 더해짐
 		if (++CarCount >= InitialCarCount) break;
 	}

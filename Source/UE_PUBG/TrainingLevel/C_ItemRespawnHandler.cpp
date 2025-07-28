@@ -37,8 +37,6 @@ void AC_ItemRespawnHandler::BeginPlay()
 		
 		SpawnArea->GetOverlappingActors(OverlappingItems, AC_Item::StaticClass());
 
-		// UC_Util::Print("Total Overlapped Items : " + FString::FromInt(OverlappingItems.Num()), FColor::Red, 10.f);
-
 		for (AActor* OverlappingItem : OverlappingItems)
 		{
 			AC_Item* Item = Cast<AC_Item>(OverlappingItem);
@@ -109,7 +107,7 @@ void AC_ItemRespawnHandler::Tick(float DeltaTime)
 
 void AC_ItemRespawnHandler::OnItemPickedUp(AC_Item* PickedItem)
 {
-	UC_Util::Print("OnItemPickedUp", FColor::Red, 10.f);
+	// UC_Util::Print("OnItemPickedUp : " + PickedItem->GetName(), FColor::Red, 10.f);
 
 	PickedItem->OnRespawnableItemPickedUp.Unbind();
 

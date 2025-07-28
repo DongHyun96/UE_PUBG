@@ -113,7 +113,7 @@ void UC_PlayerSkyDivingComponent::SetStateToSkyDivingState()
 
 	PlayerSkyDiveWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 	PlayerSkyDiveWidget->SetJumpedAltitude(CurrentHeight);
-	PlayerSkyDiveWidget->SetParachuteLimitAltitude(PARACHUTE_DEPLOY_LIMIT_HEIGHT); // TODO: 맵에 따른 parachute Limit 고도 설정(SkyDiveWidget에서 사용)
+	PlayerSkyDiveWidget->SetParachuteLimitAltitude(SkyDivingDataMap[GameInstance->GetCurrentSelectedLevelType()].ParachuteDeployLimitHeight);
 
 	// Player 마커 MainMap에 다시 표시하기
 	//UC_MainMapWidget* PlayerMainMapWidget = OwnerPlayer->GetHUDWidget()->GetMainMapWidget();

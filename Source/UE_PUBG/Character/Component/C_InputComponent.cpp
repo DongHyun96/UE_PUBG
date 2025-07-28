@@ -458,33 +458,32 @@ void UC_InputComponent::SetToNonAimCamera()
 
 void UC_InputComponent::OnNum1()
 {
-	OnNumKey(EWeaponSlot::MAIN_GUN);
+	if (!OnNumKey(EWeaponSlot::MAIN_GUN)) return;
 	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_GUN);
 }
 
 void UC_InputComponent::OnNum2()
 {
-	OnNumKey(EWeaponSlot::SUB_GUN);
+	if (!OnNumKey(EWeaponSlot::SUB_GUN)) return;
 	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_GUN);
-
 }
 
 void UC_InputComponent::OnNum4()
 {
-	OnNumKey(EWeaponSlot::MELEE_WEAPON);
+	if (!OnNumKey(EWeaponSlot::MELEE_WEAPON)) return;
 	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_MELEE);
-
 }
 
 void UC_InputComponent::OnNum5()
 {
-	OnNumKey(EWeaponSlot::THROWABLE_WEAPON);
+	if (!OnNumKey(EWeaponSlot::THROWABLE_WEAPON)) return;
 	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_THROWABLE);
-
 }
 
-void UC_InputComponent::OnNumKey(EWeaponSlot ChangeTo)
+bool UC_InputComponent::OnNumKey(EWeaponSlot ChangeTo)
 {
+	if (Player->GetMainState() != EMainState::IDLE) return false;
+	
 	if (Player->GetEquippedComponent()->GetWeapons()[ChangeTo] && Player->GetIsActivatingConsumableItem())
 	{
 		// 이전에 무기를 들고 있었던 상황이었을 경우(== 잠시 Holster에 붙인 경우) 현재 무기로 바꾸기 위한 처리 필요
@@ -495,13 +494,20 @@ void UC_InputComponent::OnNumKey(EWeaponSlot ChangeTo)
 		Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("ITEM USE INTERRUPTED");
 	}
 
-	Player->GetEquippedComponent()->ChangeCurWeapon(ChangeTo);
-	//Player->GetPreviewCharacter()->UpdateWeaponMesh(ChangeTo);
+	bool bChangeSucceeded = Player->GetEquippedComponent()->ChangeCurWeapon(ChangeTo);
 
+	if (bChangeSucceeded)
+	{
+		//Player->GetPreviewCharacter()->UpdateWeaponMesh(ChangeTo);
+		return true;
+	}
+	return false;
 }
 
 void UC_InputComponent::OnXKey()
 {
+	if (Player->GetMainState() != EMainState::IDLE) return;
+	
 	Player->GetEquippedComponent()->ToggleArmed();
 	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
 
@@ -586,7 +592,6 @@ void UC_InputComponent::OnWalkReleased()
 
 /// <summary>
 /// 상호작용(F)와 대응되는 키로 구상중.
-/// 봇도 상호작용함.
 /// </summary>
 void UC_InputComponent::OnFKey()
 {
@@ -615,6 +620,11 @@ void UC_InputComponent::OnFKey()
 		Player->GetCurActivatingConsumableItem()->CancelActivating();
 		return;
 	}
+	
+	// TrainingJumpTable Interaction 관련 FKey Delegate
+	// Bound되어있고 제대로 TrainingTable interaction이 처리되었다면 return
+	if (JumpTrainingTableInteractionDelegate.IsBound() && JumpTrainingTableInteractionDelegate.Execute())
+		return;
 
 	if (Player->GetCurOutLinedItem())
 	{

@@ -350,6 +350,11 @@ public:
 
 	// Respawn 처리되어야 할 아이템일 경우 해당 Delegate를 통해 파밍되었을 시, 파밍 이 후 Respawn 처리
 	FRespawnableItemPickedUp OnRespawnableItemPickedUp{};
+
+private:
+
+	// Outline effect처리에 쓰일 PrimitiveComponent들 모음
+	TArray<UPrimitiveComponent*> PrimitiveComponents{};
 	
 };
 

@@ -7,6 +7,10 @@
 #include "TrainingLevel/Tutorial/TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_InputComponent.generated.h"
 
+// TrainingGround JumpTrainingTable 관련 Delegate 선언
+// return 값은 Interaction 처리가 제대로 이루어졌다면 return true
+DECLARE_DELEGATE_RetVal(bool, FJumpTrainingTableInteraction_Delegate);
+
 enum class EWeaponSlot : uint8;
 
 UENUM(BlueprintType)
@@ -96,7 +100,8 @@ private:
 	/// <summary>
 	/// OnNumKey 종합 Boiler plate 코드 정리 
 	/// </summary>
-	void OnNumKey(EWeaponSlot ChangeTo);
+	/// <returns> : 무기를 바꾸는 처리가 제대로 시작되었지 않았거나 바꿀 수 없는 상황이라면 return false </returns>
+	bool OnNumKey(EWeaponSlot ChangeTo);
 
 	void OnXKey();
 	void OnBKey();
@@ -238,6 +243,9 @@ public:
 
 	// Movement Tutorial 진행용 Delegate
 	 FTutorialStageGoalCheckerDelegate MovementTutorialDelegate{};
+
+	// Training ground JumpTrainingTable F키 Interaction Delegate
+	FJumpTrainingTableInteraction_Delegate JumpTrainingTableInteractionDelegate{};
 };
 
 

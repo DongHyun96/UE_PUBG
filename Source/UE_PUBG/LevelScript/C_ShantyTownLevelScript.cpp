@@ -11,6 +11,7 @@
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Item/ItemManager/C_ItemManager.h"
+#include "Singleton/C_GameInstance.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
@@ -28,6 +29,10 @@ void AC_ShantyTownLevelScript::BeginPlay()
 	Super::BeginPlay();
 
 	if (!bUseCodeToInit) return;
+
+	if (UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance()))
+		GameInstance->SetCurrentSelectedLevelType(ELevelType::ShantyTown);
+	else UC_Util::Print("From AC_ShantyTownLevelScript::BeginPlay : GameInstance casting failed!", FColor::Red, 10.f);
 
 	UC_Util::Print("Using LevelScript to spawn level items", FColor::Red, 10.f);
 	//return;

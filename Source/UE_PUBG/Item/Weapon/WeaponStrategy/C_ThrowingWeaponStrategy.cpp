@@ -31,6 +31,9 @@ bool AC_ThrowingWeaponStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* Weapon
 
 	if (!IsValid(ThrowingWeapon)) return false;
 
+	// WeaponUser의 MainState가 IDLE이지 않을 떄
+	if (WeaponUser->GetMainState() != EMainState::IDLE) return false;
+
 	UAnimInstance* UserAnimInstance = WeaponUser->GetMesh()->GetAnimInstance();
 
 	// 아직 무기를 꺼내는 도중 or 무기를 집어넣는 중 (Priority 때문에 공격모션이 재생은 안되지만 bIsOnThrowProcess true를 막기 위함)
