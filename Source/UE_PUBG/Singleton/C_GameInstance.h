@@ -99,7 +99,9 @@ public:
 
 public:
 
+	UFUNCTION(BlueprintCallable)
 	void SetCurrentSelectedLevelType(ELevelType InLevelType) {CurrentSelectedLevelType = InLevelType; }
+	
 	ELevelType GetCurrentSelectedLevelType() const { return CurrentSelectedLevelType; }
 
 	/// <summary>

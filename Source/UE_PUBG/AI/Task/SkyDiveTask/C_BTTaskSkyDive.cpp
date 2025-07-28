@@ -167,7 +167,7 @@ void UC_BTTaskSkyDive::SetSkyDivingStateDestination(AC_Enemy* Enemy)
 {
 	UC_EnemySkyDivingComponent* SkyDivingComponent = Cast<UC_EnemySkyDivingComponent>(Enemy->GetSkyDivingComponent());
 	
-	const float ParachuteDeployLimitHeight = UC_SkyDivingComponent::GetParachuteDeployLimitHeight();
+	const float ParachuteDeployLimitHeight = SkyDivingComponent->GetParachuteDeployLimitHeight();
 	const FVector2D LandingTargetPosXY = UC_Util::GetXY(SkyDivingComponent->GetParachutingStateDestination());
 	if (!AirplaneJumpPosXYMap.Contains(Enemy))
 	{

@@ -68,7 +68,7 @@ void AC_CarRespawnHandler::BeginPlay()
 			for (TEnumAsByte<ECollisionChannel> TraceCollisionChannel : AllTraceChannelUsed)
 				NewBoxComponent->SetCollisionResponseToChannel(TraceCollisionChannel, ECR_Ignore);
 
-			NewBoxComponent->SetHiddenInGame(false);
+			// NewBoxComponent->SetHiddenInGame(false);
 
 			InitialCarOuterBoxes.Add(NewBoxComponent);
 		}

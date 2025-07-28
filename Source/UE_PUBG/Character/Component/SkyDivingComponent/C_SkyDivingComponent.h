@@ -5,8 +5,11 @@
 #include "CoreMinimal.h"
 #include "Character/C_BasicCharacter.h"
 #include "Components/ActorComponent.h"
+#include "Singleton/C_GameInstance.h"
 
 #include "C_SkyDivingComponent.generated.h"
+
+enum class ELevelType : uint8;
 
 UENUM(BlueprintType)
 enum class ESkyDivingState : uint8
@@ -16,6 +19,14 @@ enum class ESkyDivingState : uint8
 	PARACHUTING,
 	LANDING,			// 착지 동작 재생
 	MAX
+};
+
+// Level 종류에 따른 SKyDiving 관련 Data 구조체
+struct FSkyDivingData
+{
+	float AltitudeZeroZ{};				// SkyDiving 상태에서 고도를 측정할 때 고도 0m 기준으로 잡을 위치
+	float ParachuteDeployLimitHeight{};	// F키 interaction 없이 낙하산을 무조건 펼쳐야 할 고도 Limit
+	float MaxSkyDiveJumpAltitude{};		// SkyDive Jump 최대값 (SkyDive 상태일 때, 고도 측정용 LineTrace 길이에 쓰임)
 };
 
 
@@ -46,7 +57,7 @@ public:
 	/// <returns> : 원하는 값으로 setting되지 않았다면 return false </returns>
 	bool SetSkyDivingState(ESkyDivingState InSkyDivingState);
 
-	static float GetParachuteDeployLimitHeight() { return PARACHUTE_DEPLOY_LIMIT_HEIGHT; }
+	float GetParachuteDeployLimitHeight() const { return SkyDivingDataMap[GameInstance->GetCurrentSelectedLevelType()].ParachuteDeployLimitHeight; }
 
 	/// <summary>
 	/// 현재 Character Landing Montage가 재생 중인지
@@ -142,21 +153,24 @@ protected: // Parachute Skeletal Mesh AnimMontages
 
 protected:
 
-	static const float ALTITUDE_ZERO_Z;
-
 	// 원작 수치
 	//const float PARACHUTE_DEPLOY_LIMIT_HEIGHT = 43000.f;
 	//const float MAX_SKYDIVE_JUMP_ALTITUDE = 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
 
-	static const float PARACHUTE_DEPLOY_LIMIT_HEIGHT;
 	//const float MAX_SKYDIVE_JUMP_ALTITUDE		= 155000.f; // 원작 기준 8 x 8 맵 1.5km 상공 맥시멈에서 뛰어내림
-	static const float MAX_SKYDIVE_JUMP_ALTITUDE;
 
+	static const TMap<ELevelType, FSkyDivingData> SkyDivingDataMap;
+
+	class UC_GameInstance* GameInstance{};
 
 protected:
 	
 	// 현재 낙하 높이(고도)
 	float CurrentHeight{};
+
+private:
+
+	FCollisionQueryParams ParachutingHeightCheckCollisionParams{};
 
 };
 

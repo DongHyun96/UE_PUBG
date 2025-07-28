@@ -86,6 +86,7 @@ private:
 
 protected:
 
+	// Airplane 스폰처리 및 초기화는 Blueprint BeginPlay에서 처리
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class AC_Airplane* Airplane{};
 
