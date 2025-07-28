@@ -83,6 +83,12 @@ public:
 
 	bool Update(EHandState InState,EWeaponSlot InSlot, FName InSocket);
 
+	/// <summary>
+	/// PreviewCharacter의 Gun Mesh들을 스왑하는 함수.
+	/// </summary>
+	/// <returns></returns>
+	bool SwapSlotsWhileGunHandState();
+
 	//UFUNCTION(BlueprintImplementableEvent)
 	//void UpdateHandPose();
 

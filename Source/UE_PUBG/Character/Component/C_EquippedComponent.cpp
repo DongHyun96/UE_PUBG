@@ -59,9 +59,9 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
 
         if (OwnerPlayer)
         {
-            OwnerPlayer->GetPreviewCharacter()->GetWeaponMeshes()[InSlot]->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
-            OwnerPlayer->GetPreviewCharacter()->GetWeaponMeshes()[InSlot]->DetachFromParent();
-			OwnerPlayer->GetPreviewCharacter()->DetachWeaponMesh(InSlot); // PreviewCharacter에서 무기 메시 해제
+            //OwnerPlayer->GetPreviewCharacter()->GetWeaponMeshes()[InSlot]->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+            //OwnerPlayer->GetPreviewCharacter()->GetWeaponMeshes()[InSlot]->DetachFromParent();
+			//OwnerPlayer->GetPreviewCharacter()->DetachWeaponMesh(InSlot); // PreviewCharacter에서 무기 메시 해제
         }
 
         // 이전 무기 해제에 대한 PoseTransitionEnd 델리게이트 해제
@@ -134,6 +134,8 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
     
     Weapons[EWeaponSlot::SUB_GUN]   = CurMainGun;
     Weapons[EWeaponSlot::MAIN_GUN]  = CurSubGun;
+
+    if (OwnerPlayer) OwnerPlayer->GetPreviewCharacter()->SwapSlotsWhileGunHandState();
 
     if (CurMainGun) CurMainGun->ChangeGunState(EGunState::SUB_GUN);
     if (CurSubGun)  CurSubGun->ChangeGunState(EGunState::MAIN_GUN);

@@ -92,7 +92,6 @@ bool AC_PreviewCharacter::AttachMeleeWeaponMesh()
 	UStaticMeshComponent* NewMesh = NewObject<UStaticMeshComponent>(this, TEXT("PreviewMeleeWeaponMesh"));
 	if (!NewMesh) return false;
 
-	NewMesh->RegisterComponent();
 	NewMesh->SetStaticMesh(SourceMesh->GetStaticMesh());
 	
 	FName SocketName = OwnerPlayer->GetHandState() == EHandState::WEAPON_MELEE ? MeleeWeapon->GetEquippedSocketName() : MeleeWeapon->GetHolsterSocketName();
@@ -102,6 +101,7 @@ bool AC_PreviewCharacter::AttachMeleeWeaponMesh()
 	// 부착
 	NewMesh->AttachToComponent(previewCharacterMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), SocketName);
 
+	NewMesh->RegisterComponent();
 	// SceneCapture에 추가
 	if (SceneCapture)
 	{
@@ -150,7 +150,6 @@ bool AC_PreviewCharacter::AttachGunMesh(EWeaponSlot InSlot, FName InSocket)
 	//InSlot == EWeaponSlot::MAIN_GUN ? Gun->ChangeGunState(EGunState::MAIN_GUN) : Gun->ChangeGunState(EGunState::SUB_GUN);
 	//EGunState CurState = Gun->GetCurrentWeaponState();
 	
-	NewMesh->RegisterComponent();
 	NewMesh->SetSkeletalMesh(WeaponMesh->SkeletalMesh);
 
 
@@ -178,6 +177,8 @@ bool AC_PreviewCharacter::AttachGunMesh(EWeaponSlot InSlot, FName InSocket)
 
 	// TMap에 등록
 	WeaponMeshes.Add(InSlot, NewMesh);
+
+	NewMesh->RegisterComponent();
 
 	return true;
 }
@@ -326,12 +327,12 @@ bool AC_PreviewCharacter::UpdateEquippedMesh(EEquipSlot InSlot)
 	UStaticMeshComponent* PreviewMesh = NewObject<UStaticMeshComponent>(this, CompName);
 	if (!PreviewMesh) return false;
 
-	PreviewMesh->RegisterComponent();
 	PreviewMesh->SetStaticMesh(SourceMesh->GetStaticMesh());
 
 	// 부착
 	PreviewMesh->AttachToComponent(previewCharacterMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), Item->GetSocketName());
 
+	PreviewMesh->RegisterComponent();
 	// SceneCapture에 추가
 	if (SceneCapture)
 	{
@@ -364,6 +365,26 @@ bool AC_PreviewCharacter::Update(EHandState InState, EWeaponSlot InSlot, FName I
 		break;
 	}
 	UpdateHandPose(InState);
+	return true;
+}
+
+bool AC_PreviewCharacter::SwapSlotsWhileGunHandState()
+{
+	USceneComponent* CurMainGunMesh = WeaponMeshes[EWeaponSlot::MAIN_GUN];
+	USceneComponent*  CurSubGunMesh = WeaponMeshes[EWeaponSlot::SUB_GUN];
+
+	EWeaponSlot CurWeaponType = OwnerPlayer->GetEquippedComponent()->GetCurWeaponType();
+
+	// 예외 상황이 아닌 상황
+	//if (!IsValid(CurMainGunMesh) && !IsValid(CurSubGunMesh))                                return false;
+	//if (CurWeaponType != EWeaponSlot::MAIN_GUN && CurWeaponType != EWeaponSlot::SUB_GUN)    return false;
+
+	WeaponMeshes.Add(EWeaponSlot::SUB_GUN, CurMainGunMesh);
+	WeaponMeshes.Add(EWeaponSlot::MAIN_GUN, CurSubGunMesh);
+
+	//WeaponMeshes[EWeaponSlot::SUB_GUN]  = CurMainGunMesh;
+	//WeaponMeshes[EWeaponSlot::MAIN_GUN] = CurSubGunMesh;
+
 	return true;
 }
 
