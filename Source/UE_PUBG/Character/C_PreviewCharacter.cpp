@@ -125,6 +125,9 @@ bool AC_PreviewCharacter::AttachGunMesh(EWeaponSlot InSlot, FName InSocket)
 	{
 		return DetachWeaponMesh(InSlot); // 무기가 없으면 제거
 	}
+	
+	// 기존 메시 제거
+	//DetachWeaponMesh(InSlot);
 
 	// 무기 메시 가져오기
 	USkeletalMeshComponent* WeaponMesh = Cast<USkeletalMeshComponent>(Weapon->GetItemMeshComp());
@@ -134,8 +137,6 @@ bool AC_PreviewCharacter::AttachGunMesh(EWeaponSlot InSlot, FName InSocket)
 		return false;
 	}
 
-	// 기존 메시 제거
-	DetachWeaponMesh(InSlot);
 
 	// 프리뷰 메시 생성
 	FName MeshName = (InSlot == EWeaponSlot::MAIN_GUN) ? TEXT("PreviewMainWeaponMesh") : TEXT("PreviewSubWeaponMesh");
@@ -169,6 +170,8 @@ bool AC_PreviewCharacter::AttachGunMesh(EWeaponSlot InSlot, FName InSocket)
 		FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 		InSocket);
 
+	NewMesh->RegisterComponent();
+
 	// SceneCapture에 추가
 	if (SceneCapture)
 	{
@@ -178,7 +181,6 @@ bool AC_PreviewCharacter::AttachGunMesh(EWeaponSlot InSlot, FName InSocket)
 	// TMap에 등록
 	WeaponMeshes.Add(InSlot, NewMesh);
 
-	NewMesh->RegisterComponent();
 
 	return true;
 }
@@ -370,20 +372,27 @@ bool AC_PreviewCharacter::Update(EHandState InState, EWeaponSlot InSlot, FName I
 
 bool AC_PreviewCharacter::SwapSlotsWhileGunHandState()
 {
+	UC_EquippedComponent* EquipComp = OwnerPlayer->GetEquippedComponent();
+	if (!EquipComp) return false;
+
+	EWeaponSlot CurWeaponType = EquipComp->GetCurWeaponType();
+
+	// 기존 Mesh 포인터 스왑
 	USceneComponent* CurMainGunMesh = WeaponMeshes[EWeaponSlot::MAIN_GUN];
-	USceneComponent*  CurSubGunMesh = WeaponMeshes[EWeaponSlot::SUB_GUN];
+	USceneComponent* CurSubGunMesh = WeaponMeshes[EWeaponSlot::SUB_GUN];
 
-	EWeaponSlot CurWeaponType = OwnerPlayer->GetEquippedComponent()->GetCurWeaponType();
+	WeaponMeshes[EWeaponSlot::SUB_GUN] = CurMainGunMesh;
+	WeaponMeshes[EWeaponSlot::MAIN_GUN] = CurSubGunMesh;
 
-	// 예외 상황이 아닌 상황
-	//if (!IsValid(CurMainGunMesh) && !IsValid(CurSubGunMesh))                                return false;
-	//if (CurWeaponType != EWeaponSlot::MAIN_GUN && CurWeaponType != EWeaponSlot::SUB_GUN)    return false;
-
-	WeaponMeshes.Add(EWeaponSlot::SUB_GUN, CurMainGunMesh);
-	WeaponMeshes.Add(EWeaponSlot::MAIN_GUN, CurSubGunMesh);
-
-	//WeaponMeshes[EWeaponSlot::SUB_GUN]  = CurMainGunMesh;
-	//WeaponMeshes[EWeaponSlot::MAIN_GUN] = CurSubGunMesh;
+	// 현재 무기만 재장착
+	if (CurWeaponType == EWeaponSlot::MAIN_GUN)
+	{
+		AttachGunMesh(EWeaponSlot::SUB_GUN, Cast<AC_Gun>(EquipComp->GetWeapons()[EWeaponSlot::SUB_GUN])->GetEQUIPPED_SOCKET_NAME());
+	}
+	else if (CurWeaponType == EWeaponSlot::SUB_GUN)
+	{
+		AttachGunMesh(EWeaponSlot::MAIN_GUN, Cast<AC_Gun>(EquipComp->GetWeapons()[EWeaponSlot::MAIN_GUN])->GetEQUIPPED_SOCKET_NAME());
+	}
 
 	return true;
 }

@@ -276,9 +276,6 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 			break;
 		}
 	}
-
-	
-
 }
 
 bool AC_Gun::AttachToHand(USceneComponent* InParent)

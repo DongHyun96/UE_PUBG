@@ -166,14 +166,6 @@ bool UC_EquippedComponent::SwapSlotsWhileGunHandState()
             
         }
     }
-
-	//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-    //
-    //if (AC_PreviewCharacter* previewChar = OwnerPlayer->GetPreviewCharacter())
-    //{
-    //
-    //}
-
     return true;
 }
 

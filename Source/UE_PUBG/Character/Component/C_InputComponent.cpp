@@ -498,7 +498,7 @@ bool UC_InputComponent::OnNumKey(EWeaponSlot ChangeTo)
 
 	if (bChangeSucceeded)
 	{
-		//Player->GetPreviewCharacter()->UpdateWeaponMesh(ChangeTo);
+		Player->GetPreviewCharacter()->UpdateWeaponMesh(ChangeTo);
 		return true;
 	}
 	return false;
