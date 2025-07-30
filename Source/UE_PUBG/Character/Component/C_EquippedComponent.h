@@ -122,11 +122,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnDrawEnd();
 
-	UFUNCTION(BlueprintCallable)
-	void OnReloadEnd();
-	UFUNCTION(BlueprintCallable)
-	void OnSniperReloadEnd();
-
 	/// <summary>
 	/// 각 무기에 부착된 Attachment -> Param으로 들어온 CollisionParams ignoreActors에 추가
 	/// </summary>
@@ -135,7 +130,7 @@ public:
 
 protected:
 
-	class AC_BasicCharacter* OwnerCharacter{};
+	AC_BasicCharacter* OwnerCharacter{};
 
 protected:
 	

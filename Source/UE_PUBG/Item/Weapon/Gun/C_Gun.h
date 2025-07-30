@@ -407,8 +407,26 @@ protected:
 
 
 public:
-	//AI 총알 발사 관련 함수
-	virtual bool ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter) override;
+	
+	/// <summary>
+	/// AI 총알 발사 관련 함수 (final method) 
+	/// </summary>
+	bool ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter) override;
+
+	bool ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
+
+protected:
+	
+	bool CanAIAttack(AC_BasicCharacter* InTargetCharacter);
+
+	/// <summary>
+	/// Enemy AI 전용 총알 발사 처리 함수
+	/// </summary>
+	/// <param name="InTargetCharacter"> : Target Character </param>
+	/// <returns> : 제대로 총알이 발사되었다면 return true </returns>
+	virtual bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) PURE_VIRTUAL(AC_Gun::AIFireBullet, return false;);
+	
+	float AIFireTimer = 0.0f;
 
 public: 
 	/// <summary>
@@ -419,15 +437,13 @@ public:
 	virtual float GetDamageRateByBodyPart(const FName& BodyPart) PURE_VIRTUAL(AC_Gun::GetDamageRateByBodyPart, return 0.f;);
 
 	float GetDamageBase() const { return GunDataRef->DamageBase; }
-protected:
-	bool CanAIAttack(AC_BasicCharacter* InTargetCharacter);
-	virtual bool AIFireBullet(class AC_BasicCharacter* InTargetCharacter);
-	float AIFireTimer = 0.0f;
+	
 protected:
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	// UCapsuleComponent* CapsuleComponent{};
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UParticleSystem* MuzzleFlameEffectParticle{};
+	
 public:
 	UFUNCTION(BlueprintCallable)
 	FName GetCurrentBulletTypeName();
@@ -437,9 +453,22 @@ public:
 	virtual void CancelReload();
 
 public:
+	
+	/// <summary>
+	///  AN_ReloadEnd Callback 함수
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void OnReloadEnd();	
+
+public:
 
 	// Weapon Tutorial 진행용 Delegate
 	static FTutorialStageGoalCheckerDelegate WeaponTutorialDelegate;
+
+protected:
+
+	// AI Enemy가 총기를 발사할 때, 발사 사이의 텀 간격 시간
+	float AIAttackIntervalTime{};
 	
 };
 

@@ -1226,9 +1226,8 @@ void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
 
 bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
-	if (!CanAIAttack(InTargetCharacter)) return false;
+	/*if (!CanAIAttack(InTargetCharacter)) return false;
 	
-	//ExecuteReloadMontage();
 	int BackpackBulletStack = 0;
 	if (IsValid(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())))
 		BackpackBulletStack = OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())->GetItemCurStack();
@@ -1238,8 +1237,50 @@ bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 		// Back to wait condition
 		return false;
 	}
+	
+	return true;*/
 
-	return true;
+	// 기존에는 장전을 Inven에 있는 총알을 사용해서 장전함
+	// 수정 후 -> 장전용 총알은 무제한으로 두고 Inven의 총알은 안건드리는 식으로 수정
+	return CanAIAttack(InTargetCharacter);
+}
+
+bool AC_Gun::ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
+{
+	if (!CanAIAttack(InTargetCharacter)) return false;
+
+	// 탄창에 총알이 하나도 남지 않았고, Inven에도 총알이 없는 상황
+	/*int BackpackBulletStack = 0;
+	if (IsValid(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())))
+		BackpackBulletStack = OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())->GetItemCurStack();
+	if (CurBulletCount == 0 &&  BackpackBulletStack== 0)
+	{
+		UC_Util::Print("Back To Wait Condition");
+		return false;
+	}*/
+	
+	//ExecuteReloadMontage();
+	const FVector  EnemyLocation = InTargetCharacter->GetActorLocation();
+	const FVector  Direction     = (EnemyLocation - GetActorLocation()).GetSafeNormal();
+	const FRotator LookRotation  = Direction.Rotation();
+
+	// Enemy TargetCharacter 쪽으로 서서히 Lerp를 통해 OwnerCharacter 몸체 회전 시키기
+	static const float InterpSpeed     = 10.0f;
+	const FRotator	   CurrentRotation = OwnerCharacter->GetActorRotation();
+	
+	FRotator NewRotation	 = FMath::RInterpTo(CurrentRotation, LookRotation, DeltaTime, InterpSpeed);
+	NewRotation.Pitch		 = 0.f;
+	NewRotation.Roll		 = 0.f;
+	
+	OwnerCharacter->SetActorRotation(NewRotation);
+	
+	AIFireTimer += DeltaTime;
+
+	// 아직 발사 Delay 시간까지 남아있거나 몸체가 TargetCharacter를 향해 적정량 돌지 않았다면 continue
+	if (AIFireTimer < AIAttackIntervalTime || abs(NewRotation.Yaw - LookRotation.Yaw) > 10.f) return true;
+
+	// 총알이 제대로 발사되었다면 TickTask 지속 | 아니라면 AIAttackTickTask 종료
+	return AIFireBullet(InTargetCharacter);
 }
 
 bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)
@@ -1256,7 +1297,7 @@ bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)
 	}
 	if (InTargetCharacter->GetMainState() == EMainState::DEAD)
 	{
-		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid InTargetCharacter", FColor::MakeRandomColor(), 10.f);
+		UC_Util::Print("From AC_Gun::ExecuteAIAttack : InTargetCharacter already dead!", FColor::MakeRandomColor(), 10.f);
 
 		return false;
 	}
@@ -1279,17 +1320,18 @@ bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)
 	return true;
 }
 
-bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
-{
-	return false;
-}
-
 void AC_Gun::CancelReload()
 {
 	if (!IsValid(OwnerCharacter)) return;
 
 	OwnerCharacter->StopReloadBulletSound();
 	OwnerCharacter->StopReloadMagazineSound();
+}
+
+void AC_Gun::OnReloadEnd()
+{
+	this->ReloadBullet();
+	this->SetMagazineVisibility(true);
 }
 
 void AC_Gun::SetActorHiddenInGame(bool bNewHidden)

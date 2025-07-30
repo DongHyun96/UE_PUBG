@@ -24,12 +24,12 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	virtual bool ExecuteReloadMontage() override;
 
 public:
 	
-	virtual bool ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
-	virtual bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) override;
+	bool ExecuteReloadMontage() override;
+	
+	bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) override;
 
 	float GetDamageRateByBodyPart(const FName& BodyPart) override;
 

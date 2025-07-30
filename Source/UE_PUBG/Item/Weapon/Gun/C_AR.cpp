@@ -55,6 +55,7 @@ AC_AR::AC_AR()
 void AC_AR::BeginPlay()
 {
 	Super::BeginPlay();
+	AIAttackIntervalTime = GetBulletRPM(); 
 }
 
 void AC_AR::Tick(float DeltaTime)
@@ -90,50 +91,7 @@ bool AC_AR::ExecuteReloadMontage()
 	return true;
 }
 
-bool AC_AR::ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
-{
-	if (!CanAIAttack(InTargetCharacter)) return false;
-	
-	int BackpackBulletStack = 0;
-	if (IsValid(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())))
-		BackpackBulletStack = OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())->GetItemCurStack();
-	if (CurBulletCount == 0 &&  BackpackBulletStack== 0)
-	{
-		UC_Util::Print("Back To Wait Condition");
-		return false;
-	}
-	//ExecuteReloadMontage();
-	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter); 
-	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
-	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
-
-	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
-
-	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
-
-	//UC_Util::Print(FireLocation);
-	//UC_Util::Print(FireDirection);
-	FVector Direction = (EnemyLocation - GetActorLocation()).GetSafeNormal();
-	FRotator LookRotation = Direction.Rotation();
-	//float DeltaTime = GetWorld()->GetDeltaSeconds();
-	//UC_Util::Print("Change Rotation");
-	float InterpSpeed = 10.0f;
-	FRotator CurrentRotation =  OwnerCharacter->GetActorRotation();
-	FRotator NewRotation	= FMath::RInterpTo(CurrentRotation, LookRotation, DeltaTime, InterpSpeed);
-	NewRotation.Pitch		= 0.f;
-	NewRotation.Roll		= 0.f;
-	OwnerEnemy->SetActorRotation(NewRotation);
-	// UC_Util::Print("Trying To Attack");
-	AIFireTimer += DeltaTime;
-	//UC_Util::Print(AIFireTimer);
-	if (AIFireTimer > GetBulletRPM() && abs(NewRotation.Yaw - LookRotation.Yaw) < 10.0f)
-	{
-		return AIFireBullet(InTargetCharacter);
-	}
-	return true;
-}
-
-bool AC_AR::AIFireBullet(class AC_BasicCharacter* InTargetCharacter)
+bool AC_AR::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 {
 	FVector BulletSpreadRadius = FVector(100,100,100);
 	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
@@ -145,7 +103,7 @@ bool AC_AR::AIFireBullet(class AC_BasicCharacter* InTargetCharacter)
 		SpreadLocation = SmokeEnemyLocation;
 	
 	FVector FireDirection = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
-	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter);
+	
 	if (GetIsPlayingMontagesOfAny())
 	{
 		//UC_Util::Print("AI Cant Fire Gun",FColor::MakeRandomColor(), 1000);
@@ -160,7 +118,7 @@ bool AC_AR::AIFireBullet(class AC_BasicCharacter* InTargetCharacter)
 
 	//return true;
 	bool ApplyGravity = true;
-	for (auto& Bullet : OwnerEnemy->GetBullets())
+	for (auto& Bullet : OwnerCharacter->GetBullets())
 	{
 		if (CurBulletCount == 0)
 			break;
@@ -177,6 +135,7 @@ bool AC_AR::AIFireBullet(class AC_BasicCharacter* InTargetCharacter)
 
 
 		AIFireTimer = 0.0f;
+		// SR의 경우 여기에 ExecuteReloadMontage()가 들어감 (여기 하나만 다름)
 		return Succeeded;
 	
 		//Bullet->Fire(this, FireLocation, FireDirection);

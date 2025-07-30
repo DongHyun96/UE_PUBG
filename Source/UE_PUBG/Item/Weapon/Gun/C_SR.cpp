@@ -52,6 +52,7 @@ AC_SR::AC_SR()
 void AC_SR::BeginPlay()
 {
 	Super::BeginPlay();
+	AIAttackIntervalTime = 3.f;
 }
 
 void AC_SR::Tick(float DeltaTime)
@@ -68,32 +69,23 @@ bool AC_SR::ExecuteReloadMontage()
 	{
 		LeftAmmoCount = CurBullet->GetItemCurStack();
 	}
-	UC_Util::Print(LeftAmmoCount);
-	if (!IsValid(OwnerCharacter)) return false;
+	
+	if (!IsValid(OwnerCharacter))		return false;
 	if (SniperReloadMontages.IsEmpty()) return false;
 	//if (CurBulletCount == MaxBulletCount) return false;
+	
+	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))
+		return false;
 
-	AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
-	AC_Enemy* CurEnemy = Cast<AC_Enemy>(OwnerCharacter);
-	if (!IsValid(CurPlayer) && !IsValid(CurEnemy)) return false;
-	if (IsValid(CurPlayer))
-	{
-		if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
-	}
-
-	if (IsValid(CurEnemy))
-	{
-		if (CurEnemy->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
-	}
+	
 	UC_Util::Print(CurBulletCount, FColor::Green);
 	UC_Util::Print(bIsReloadingSR, FColor::Green);
 	//UC_Util::Print(CurBulletCount, FColor::Green);
 
 	if (CurBulletCount >= 1 && CurrentShootingMode == EShootingMode::SINGLE_SHOT &&!bIsReloadingSR)
 	{
-		UAnimMontage* DrawMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
 		OwnerCharacter->PlayAnimMontage(SniperReloadMontages[OwnerCharacter->GetPoseState()]);
-		UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+		
 		OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
 		bIsSniperReload = true;
 		OwnerCharacter->SetIsReloadingBullet(true);
@@ -108,16 +100,14 @@ bool AC_SR::ExecuteReloadMontage()
 			SR_RELOAD_LEFT_HAND_SOCKET_NAME
 		);
 	}
-	else
-	{
-		if (LeftAmmoCount == 0) return false;
-		UC_Util::Print(CurBulletCount);
-		UC_Util::Print(bIsReloadingSR);
-		OwnerCharacter->SetIsReloadingBullet(true);
-		OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
-		BackToMainCamera();
 	
-	}
+	if (LeftAmmoCount == 0) return false;
+	UC_Util::Print(CurBulletCount);
+	UC_Util::Print(bIsReloadingSR);
+	OwnerCharacter->SetIsReloadingBullet(true);
+	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
+	BackToMainCamera();
+	
 	return true;
 }	
 
@@ -159,64 +149,19 @@ void AC_SR::SetRelativeRotationOnCrawl()
 	}
 }
 
-bool AC_SR::ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
+bool AC_SR::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 {
-	if (!CanAIAttack(InTargetCharacter))
-	{
-		return false;
-	}
-	int BackpackBulletStack = 0;
-	if (IsValid(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())))
-		BackpackBulletStack = OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())->GetItemCurStack();
-	if (CurBulletCount == 0 &&  BackpackBulletStack== 0)
-	{
-		UC_Util::Print("Back To Wait Condition");
-		return false;
-	}
-	//ExecuteReloadMontage();
-	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter); 
-	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
-	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
-
-	FVector FireDirection = (EnemyLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
-
-	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
-
-	//UC_Util::Print(FireLocation);
-	//UC_Util::Print(FireDirection);
-	FVector Direction = (EnemyLocation - GetActorLocation()).GetSafeNormal();
-	FRotator LookRotation = Direction.Rotation();
-	//float DeltaTime = GetWorld()->GetDeltaSeconds();
-	//UC_Util::Print("Change Rotation");
-	float InterpSpeed = 10.0f;
-	FRotator CurrentRotation =  OwnerCharacter->GetActorRotation();
-	FRotator NewRotation	= FMath::RInterpTo(CurrentRotation, LookRotation, DeltaTime, InterpSpeed);
-	NewRotation.Pitch		= 0.f;
-	NewRotation.Roll		= 0.f;
-	OwnerEnemy->SetActorRotation(NewRotation);
-	//UC_Util::Print("Trying To Attack");
-	AIFireTimer += DeltaTime;
-	//UC_Util::Print(AIFireTimer);
-	if (AIFireTimer > 3.0f && abs(NewRotation.Yaw - LookRotation.Yaw) < 10.0f)
-	{
-		AIFireBullet(InTargetCharacter);
-	}
-	return true;
-}
-
-bool AC_SR::AIFireBullet(class AC_BasicCharacter* InTargetCharacter)
-{
-	FVector BulletSpreadRadius = FVector(100,100,100);
-	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
-	FVector SpreadLocation = UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation,BulletSpreadRadius);
-	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+	const FVector BulletSpreadRadius	= FVector(100,100,100);
+	const FVector EnemyLocation			= InTargetCharacter->GetActorLocation();
+	      FVector SpreadLocation		= UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation,BulletSpreadRadius);
+	const FVector FireLocation			= GunMesh->GetSocketLocation(FName("MuzzleSocket"));
 	
-	FVector SmokeEnemyLocation;
+	FVector SmokeEnemyLocation{};
 	if (InTargetCharacter->GetSmokeEnteredChecker()->GetRandomLocationInSmokeArea(SmokeEnemyLocation))
 		SpreadLocation = SmokeEnemyLocation;
 	
-	FVector FireDirection = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
-	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter);
+	const FVector FireDirection = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
+	
 	if (GetIsPlayingMontagesOfAny())
 	{
 		//UC_Util::Print("AI Cant Fire Gun",FColor::MakeRandomColor(), 1000);
@@ -231,7 +176,7 @@ bool AC_SR::AIFireBullet(class AC_BasicCharacter* InTargetCharacter)
 
 	//return true;
 	bool ApplyGravity = true;
-	for (auto& Bullet : OwnerEnemy->GetBullets())
+	for (auto& Bullet : OwnerCharacter->GetBullets())
 	{
 		if (CurBulletCount == 0)
 			break;
@@ -295,5 +240,11 @@ void AC_SR::CancelReload()
 	OwnerCharacter->SetIsReloadingBullet(false);
 
 	
+}
+
+void AC_SR::OnSniperReloadEnd()
+{
+	this->AttachToHand(OwnerCharacter->GetMesh());
+	OwnerCharacter->SetIsReloadingBullet(false);
 }
 
