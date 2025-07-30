@@ -6,9 +6,9 @@
 #include "BehaviorTree/Tasks/BTTask_Wait.h"
 #include "C_BTTaskWait.generated.h"
 
-/**
- * 
- */
+/// <summary>
+/// 기본 Enemy FSM 처리에 활용되고 있음 -> 기존에는 Service에서 FSM 처리 (Service의 Tick 주기가 빠르지 않아 Task에서 FSM 처리하도록 수정)
+/// </summary>
 UCLASS()
 class UE_PUBG_API UC_BTTaskWait : public UBTTaskNode
 {

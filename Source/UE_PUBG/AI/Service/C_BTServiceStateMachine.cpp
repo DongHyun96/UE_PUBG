@@ -15,6 +15,7 @@
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "MagneticField/C_MagneticFieldManager.h"
 #include "Singleton/C_GameSceneManager.h"
+#include "Utility/C_Util.h"
 
 UC_BTServiceStateMachine::UC_BTServiceStateMachine()
 {

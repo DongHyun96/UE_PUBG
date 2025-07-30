@@ -13,6 +13,9 @@ enum class EThrowableType : uint8;
 enum class EEquipableItemLevel : uint8;
 enum class EConsumableItemType : uint8;
 
+/// <summary>
+/// Enemy의 Default Weapon과 Item의 기본 Spawn 처리를 돕는 Component
+/// </summary>
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_DefaultItemSpawnerComponent : public UActorComponent
 {

@@ -71,57 +71,29 @@ bool AC_AR::ExecuteReloadMontage()
 		LeftAmmoCount = CurBullet->GetItemCurStack();
 	}
 	
-	if (!OwnerCharacter) return false;
-	if (LeftAmmoCount == 0) return false;
-	if (CurBulletCount == MaxBulletCount)
-	{
-		return false;
-	}
-	AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
-	AC_Enemy* CurEnemy = Cast<AC_Enemy>(OwnerCharacter);
-	if (!IsValid(CurPlayer) && !IsValid(CurEnemy)) return false;
+	if (!IsValid(OwnerCharacter))		  return false;
+	if (LeftAmmoCount == 0)				  return false;
+	if (CurBulletCount == MaxBulletCount) return false;
 	
 	if (CurBulletCount == MaxBulletCount) return false;
-	if (IsValid(CurPlayer))
-	{
-		if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
-		if (!CurPlayer->GetCanMove()) return false;
-	}
 
-	if (IsValid(CurEnemy))
-	{
-		if (CurEnemy->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
-		if (!CurEnemy->GetCanMove()) return false;
-	}
+	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))
+		return false;
+	if (!OwnerCharacter->GetCanMove()) return false;
+	
 	SetMagazineVisibility(false);
 	OwnerCharacter->SetIsReloadingBullet(true);
 	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
+	
 	BackToMainCamera();
+	
 	return true;
 }
 
-bool AC_AR::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
+bool AC_AR::ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
 {
-	// int LeftAmmoCount = 0;
-	// AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
-	// if (IsValid(CurBullet))
-	// {
-	// 	LeftAmmoCount = CurBullet->GetItemCurStack();
-	// }
-	// if (LeftAmmoCount == 0 && CurBulletCount == 0)
-	// {
-	// 	UC_Util::Print("Back To Wait Condition");
-	// 	return false;
-	// }
-	return Super::ExecuteAIAttack(InTargetCharacter);
-}
-
-bool AC_AR::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
-{
-	if (!CanAIAttack(InTargetCharacter))
-	{
-		return false;
-	}
+	if (!CanAIAttack(InTargetCharacter)) return false;
+	
 	int BackpackBulletStack = 0;
 	if (IsValid(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())))
 		BackpackBulletStack = OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())->GetItemCurStack();

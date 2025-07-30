@@ -596,42 +596,6 @@ bool AC_Gun::GetIsPlayingMontagesOfAny()
 	return IsPlayingMontagesOfAny;
 }
 
-bool AC_Gun::GetCanGunAction()
-{
-	bool CanAim = OwnerCharacter->GetCharacterMovement()->IsFalling();
-	return CanAim;
-}
-
-/*void AC_Gun::ChangeCurShootingMode()
-{
-	// Single_Shot 이전까지 단발, 연사, 점사를 모두 포함한 ShootingMode switching 기본 implementation
-	
-	int CurMode = static_cast<int>(CurrentShootingMode);
-	++CurMode %= 3;
-	CurrentShootingMode = static_cast<EShootingMode>(CurMode);
-
-	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
-	{
-		// AmmoWidget 업데이트
-		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetShootingMode(CurrentShootingMode);
-	}
-
-	//UC_Util::Print(CurMode);
-}*/
-
-bool AC_Gun::ExecuteReloadMontage()
-{
-	//AC_Player* CurPlayer = Cast<AC_Player>(OwnerCharacter);
-	//if (CurBulletCount == MaxBulletCount) return;
-	//if (!CurPlayer->GetCanMove()) return;
-	//if (CurPlayer->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return;
-	//SetMagazineVisibility(false);
-	//OwnerCharacter->SetIsReloadingBullet(true);
-	//OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
-	//BackToMainCamera();	
-	return true;
-}
-
 bool AC_Gun::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
@@ -779,19 +743,15 @@ bool AC_Gun::FireBullet()
 			}
 			if (IsValid(MuzzleFlameEffectParticle))
 			{
-				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, OwnerCharacter->GetActorLocation(),GunMesh->GetForwardVector().Rotation(),FVector(0.2f, 0.2f, 0.2f));
-				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, GunMesh->GetSocketLocation(FName("MuzzleSocket")) + GunMesh->GetForwardVector() *30, FRotator::MakeFromEuler(GunMesh->GetForwardVector()),FVector(0.2f, 0.2f, 0.2f));
-				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, GunMesh->GetSocketLocation(FName("MuzzleSocket")) , FRotator(0,0,0),FVector(0.2f, 0.2f, 0.2f));
-				UGameplayStatics::SpawnEmitterAttached(
-															MuzzleFlameEffectParticle,  // 파티클 시스템
-															GunMesh,      // 부착할 메쉬 (총)
-															TEXT("MuzzleSocket") // 총구 소켓에 부착
-															,FVector(0, 0, 0)
-															,FRotator(0, 0, 0),
-															FVector(0.2f, 0.2f, 0.2f)
-														);
-																	
-				
+				UGameplayStatics::SpawnEmitterAttached
+				(
+					MuzzleFlameEffectParticle,  // 파티클 시스템
+					GunMesh,					// 부착할 메쉬 (총)
+					TEXT("MuzzleSocket"),		// 총구 소켓에 부착
+					FVector(0.f),
+					FRotator(0.f),
+					FVector(0.2f)
+				);
 			}
 			return Succeeded;
 		}
@@ -820,16 +780,15 @@ bool AC_Gun::FireBullet()
 			}
 			if (IsValid(MuzzleFlameEffectParticle))
 			{
-				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, GunMesh->GetSocketLocation(FName("MuzzleSocket")), FRotator(0,0,0),FVector(0.2f, 0.2f, 0.2f));
-				//UGameplayStatics::SpawnEmitterAtLocation(this->GetWorld(), MuzzleFlameEffectParticle, Get, GunMesh->GetForwardVector().Rotation(),FVector(0.2f, 0.2f, 0.2f));
-				UGameplayStatics::SpawnEmitterAttached(
-												MuzzleFlameEffectParticle,  // 파티클 시스템
-												GunMesh,      // 부착할 메쉬 (총)
-												TEXT("MuzzleSocket") // 총구 소켓에 부착
-												,FVector(0	)
-												,FRotator(0	, 0, 0),
-												FVector(0.2f, 0.2f, 0.2f)
-											);
+				UGameplayStatics::SpawnEmitterAttached
+				(
+					MuzzleFlameEffectParticle,  // 파티클 시스템
+					GunMesh,					// 부착할 메쉬 (총)
+					TEXT("MuzzleSocket"),		// 총구 소켓에 부착
+					FVector(0.f),
+					FRotator(0.f),
+					FVector(0.2f)
+				);
 				// MuzzleFlameEffectParticle->SetWorldLocation(FireLocation);
 				// //MuzzleFlameEffectParticle->SetRelativeRotation(this->GetActorForwardVector().Rotation());
 				// MuzzleFlameEffectParticle->SetWorldRotation(OwnerCharacter->GetActorForwardVector().Rotation());
@@ -1270,37 +1229,20 @@ void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
 
 bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
-	if (!CanAIAttack(InTargetCharacter))
-	{
-		return false;
-	}
+	if (!CanAIAttack(InTargetCharacter)) return false;
 	
 	//ExecuteReloadMontage();
 	int BackpackBulletStack = 0;
 	if (IsValid(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())))
 		BackpackBulletStack = OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())->GetItemCurStack();
-	if (CurBulletCount == 0 &&  BackpackBulletStack== 0)
+	
+	if (CurBulletCount == 0 &&  BackpackBulletStack == 0)
 	{
-		UC_Util::Print("Back To Wait Condition");
+		// Back to wait condition
 		return false;
 	}
-	UC_Util::Print(CurBulletCount);
-	UC_Util::Print(BackpackBulletStack);
-
-	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
-
-	//UC_Util::Print(FireLocation);
-	//UC_Util::Print(FireDirection);
 
 	return true;
-
-}
-
-bool AC_Gun::ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
-{
-	return false;
-	//return Super::ExecuteAIAttackTickTask(InTargetCharacter, DeltaTime);
-	
 }
 
 bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)

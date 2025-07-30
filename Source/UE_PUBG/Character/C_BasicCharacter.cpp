@@ -505,9 +505,6 @@ bool AC_BasicCharacter::ExecutePoseTransitionAction(const FPriorityAnimMontage& 
 void AC_BasicCharacter::ExecuteGunTransitionAction(AC_Gun* CurGun, EPoseState InNextPoseState)
 {
 	AC_SR* TempSR = Cast<AC_SR>(CurGun);
-	TMap<EPoseState, FPriorityAnimMontage> TempMontages{};
-
-	if (IsValid(TempSR)) TempMontages = TempSR->SniperReloadMontages;
 	
 	if (bIsReloadingBullet && IsValid(CurGun))
 	{
@@ -532,7 +529,7 @@ void AC_BasicCharacter::ExecuteGunTransitionAction(AC_Gun* CurGun, EPoseState In
 			bool bIsReloadingSR = false;
 			if (IsValid(TempSR))
 			{
-				for (auto& PriorityMontage : TempMontages)
+				for (const TPair<EPoseState, FPriorityAnimMontage>& PriorityMontage : TempSR->GetSniperReloadMontages())
 				{
 					if(CurReloadMontage == PriorityMontage.Value.AnimMontage)
 					{

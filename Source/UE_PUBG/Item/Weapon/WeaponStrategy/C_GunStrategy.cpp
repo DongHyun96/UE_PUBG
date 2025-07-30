@@ -46,19 +46,24 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 {
 	//if (WeaponUser->GetIsHoldDirection()) return false;
 	if (WeaponUser->GetHandState() != EHandState::WEAPON_GUN) return false;
-	
-	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 
-	if (!IsValid(CurPlayer)) return false;
-	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
-	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( WeaponUser->GetInvenComponent()->FindMyItemByName(CurWeapon->GetCurrentBulletTypeName()));
-	int CurBulletStack = 0;
-	if (IsValid(CurBullet))
-		CurBulletStack = CurBullet->GetItemCurStack();
+	// UI 열려 있을 때 장전 불가 체크
+	if (AC_Player* Player = Cast<AC_Player>(WeaponUser))
+	{
+		if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.	
+	}
+	else return false; // Player가 아닌 다른 BasicCharacter 객체가 이 Button Strategy를 사용한 경우
+
+	
+	AC_Gun*	CurWeapon = Cast<AC_Gun>(Weapon);
 	if (!IsValid(CurWeapon)) return false;
+	
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>(WeaponUser->GetInvenComponent()->FindMyItemByName(CurWeapon->GetCurrentBulletTypeName()));
+	if (!IsValid(CurBullet)) return false;
+	
+	if ( CurBullet->GetItemCurStack() == 0) return false; // 현재 장전할 수 있는 총알이 남아있지 않을 때
+		
 	if (CurWeapon->GetMaxBulletCount() == CurWeapon->GetCurBulletCount()) return false;
-	if (CurBulletStack == 0) return false;
 	if (CurWeapon->GetIsPlayingMontagesOfAny()) return false;
 	//if (CurWeapon->GetIsPartAttached(EPartsName::GRIP))
 	//{
@@ -69,11 +74,11 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	// WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);
 	//WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::MUZZLE, EAttachmentNames::COMPENSATOR);
 
-	AC_SR* CurrentSR = Cast<AC_SR>(CurWeapon);
-	if (IsValid(CurrentSR))
-		CurrentSR->SetIsReloadingSR(true);
+	if (AC_SR* CurrentSR = Cast<AC_SR>(CurWeapon)) CurrentSR->SetIsReloadingSR(true);
+	
 	CurWeapon->ExecuteReloadMontage();
-	return false;
+	
+	return true;
 }
 
 bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
@@ -90,8 +95,12 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	
-	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
+	if (CurWeapon->GetIsPlayingMontagesOfAny() ||
+		WeaponUser->GetCharacterMovement()->IsFalling()) return false;
+	
 	MlbPressTimeCount = 0;
+
+	// 탄창에 한 발도 남지 않은 상황
 	if (CurWeapon->GetCurBulletCount() == 0)
 	{
 		if (CurWeapon->GetGunSoundData()->NullBulletSound)
@@ -104,6 +113,8 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 		CurWeapon->ExecuteReloadMontage();
 		return false;
 	}
+
+	// 탄창에 한 발 남은 상황이고, ShootingMode가 SingleShot일 경우
 	bool IsBulletFired = CurWeapon->FireBullet();
 	if (CurWeapon->GetCurBulletCount() > 0 && IsBulletFired)
 	{
@@ -126,7 +137,9 @@ bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
+	
+	if (CurWeapon->GetIsPlayingMontagesOfAny() ||
+		WeaponUser->GetCharacterMovement()->IsFalling()) return false;
 
 
 	//총알 연발
@@ -157,10 +170,10 @@ bool AC_GunStrategy::UseMlb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	if (CurPlayer->GetIsAimDown() && CurWeapon->GetCurrentShootingMode() == EShootingMode::SINGLE_SHOT && CurWeapon->GetCurBulletCount() >= 0)
 		CurWeapon->ExecuteReloadMontage();
-	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
+	if (CurWeapon->GetIsPlayingMontagesOfAny() || WeaponUser->GetCharacterMovement()->IsFalling()) return false;
 
 
-	return false;
+	return true;
 }
 
 bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
@@ -175,7 +188,10 @@ bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 
 	MrbPressTimeCount = 0;
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
+	
+	if (CurWeapon->GetIsPlayingMontagesOfAny() || WeaponUser->GetCharacterMovement()->IsFalling())
+		return false;
+	
 	if (WeaponUser->GetNextSpeed() != 0 && WeaponUser->GetPoseState() == EPoseState::CRAWL) return false;
 	
 	return CurWeapon->SetAimingPress();
@@ -193,7 +209,7 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
+	if (CurWeapon->GetIsPlayingMontagesOfAny() || WeaponUser->GetCharacterMovement()->IsFalling()) return false;
 
 
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurDrawMontage().AnimMontage)) return false;
@@ -206,9 +222,6 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 		//UC_Util::Print("False");
 		return true;
 	}
-
-
-
 	return true;
 }
 
@@ -227,7 +240,7 @@ bool AC_GunStrategy::UseMrb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 	if (WeaponUser->GetMesh()->GetAnimInstance()->Montage_IsPlaying(Weapon->GetCurSheathMontage().AnimMontage)) return false;
 	AC_Player* CurUser = Cast<AC_Player>(WeaponUser);
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	if (CurWeapon->GetIsPlayingMontagesOfAny() || CurWeapon->GetCanGunAction()) return false;
+	if (CurWeapon->GetIsPlayingMontagesOfAny() || WeaponUser->GetCharacterMovement()->IsFalling()) return false;
 
 
 	if (!IsValid(CurUser))   return false;
