@@ -16,47 +16,63 @@ class UE_PUBG_API AC_SR : public AC_Gun
 public:
 	AC_SR();
 protected:
-	// Called when the game starts or when spawned
+	
 	virtual void BeginPlay() override;
 
-
 public:
-	// Called every frame
 
 	virtual void Tick(float DeltaTime) override;
 	virtual bool ExecuteReloadMontage() override;
-	FName SR_RELOAD_LEFT_HAND_SOCKET_NAME ="Kar98ReloadSocket";
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TMap<EPoseState, FPriorityAnimMontage> SniperReloadMontages{};
-	virtual bool GetIsPlayingMontagesOfAny();
-	bool IsReloadingSR = false;
-	void SetIsReloadingSR(bool InIsReloadingSR) { IsReloadingSR = InIsReloadingSR; }
-	bool GetIsReloadingSR() { return IsReloadingSR; }
-protected:
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	FRotator RelativeRotationOnCrawl = FRotator(0.0f, 0.0f, 0.0f); // Pitch, Yaw, Roll
-	void SetRelativeRotationOnCrawl();
+
 public:
+	
+	virtual bool GetIsPlayingMontagesOfAny();
+	
+	void SetIsReloadingSR(bool InIsReloadingSR) { bIsReloadingSR = InIsReloadingSR; }
+	bool GetIsReloadingSR() { return bIsReloadingSR; }
+	
 	FRotator GetNewRelativeRotationOnCrawl() { return RelativeRotationOnCrawl; }
 
+	TMap<EPoseState, FPriorityAnimMontage>& GetSniperReloadMontages() { return SniperReloadMontages; }
+	
 protected:
-	//bool ReloadBullet() override;
+	
+	void SetRelativeRotationOnCrawl();
+	
 public:
-	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
-	virtual bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
-	virtual bool AIFireBullet(class AC_BasicCharacter* InTargetCharacter) override;
+	
+	virtual bool ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
+	virtual bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) override;
 
 	float GetDamageRateByBodyPart(const FName& BodyPart) override;
 
 protected:
 	
 	void ChangeCurShootingMode() override;
-	//특정 행동을 할 때 Reloading 모션 중지
-	virtual void CancelReload() override; 
 
+	/// <summary>
+	/// 특정 행동을 할 때 Reloading 모션 중지
+	/// </summary>
+	virtual void CancelReload() override;
+
+private:
+
+	static const FName SR_RELOAD_LEFT_HAND_SOCKET_NAME;
+
+protected:
 	
 	// 각 피격 부위별 Damage Rate
 	static const TMap<FName, float> BODYPARTS_DAMAGERATE;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EPoseState, FPriorityAnimMontage> SniperReloadMontages{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FRotator RelativeRotationOnCrawl = FRotator(0.0f, 0.0f, 0.0f); // Pitch, Yaw, Roll
+
+private:
+	
+	bool bIsReloadingSR = false;
 };
 
 

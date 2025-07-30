@@ -194,9 +194,9 @@ public:
 	TMap<EPoseState, FAnimationMontages> ReloadMontages{};
 
 	virtual bool GetIsPlayingMontagesOfAny();
-	bool GetCanGunAction();
+	
 	virtual void ChangeCurShootingMode() PURE_VIRTUAL(AC_Gun::ChangeCurShootingMode, );
-	virtual bool ExecuteReloadMontage();
+	virtual bool ExecuteReloadMontage() PURE_VIRTUAL(AC_Gun::ExecuteReloadMontage, return true; );
 	bool bIsSniperReload = false;
 	void SetIsSniperReload(bool InIsSniperReload) { bIsSniperReload = InIsSniperReload; }
 	class UCanvasPanelSlot* AimImage;
@@ -295,7 +295,7 @@ public:
 	float GetBulletRPM() { return GunDataRef->BulletRPM; }
 	virtual bool FireBullet();
 
-	virtual bool ReloadBullet();
+	bool ReloadBullet();
 
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//class AC_Bullet* Bullet;
@@ -408,8 +408,7 @@ protected:
 
 public:
 	//AI 총알 발사 관련 함수
-	virtual bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
-	virtual bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
+	virtual bool ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter) override;
 
 public: 
 	/// <summary>

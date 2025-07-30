@@ -312,7 +312,7 @@ void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 	// 속도 0으로 setting
 	UpdateMaxWalkSpeed({0.f, 0.f});
 	
-	AC_EnemyAIController* EnemyAIController = GetEnemyAIController();
+	AC_EnemyAIController* EnemyAIController = GetEnemyAIController(); 
 	EnemyAIController->GetPerceptionComponent()->Deactivate();
 	EnemyAIController->GetPerceptionComponent()->SetComponentTickEnabled(false);
 
@@ -321,7 +321,11 @@ void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_Enemy::DestroyCharacter, 5.f, false);
 
-	// Player만 남아있는지 체크
+	// 현재 Level이 Training Ground일 경우, 모든 Enemy가 사망했다고 하더라도 Winner가 없음
+	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
+	if (GameInstance->GetCurrentSelectedLevelType() == ELevelType::TrainingGround) return;
+	
+	// Player만 남은 상황이라면 Winner Winner Chicken Dinner UI Sequence 띄우기
 	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
 	if (!IsValid(Player)) return;
 	

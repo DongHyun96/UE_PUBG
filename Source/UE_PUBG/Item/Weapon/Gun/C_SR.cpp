@@ -12,6 +12,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Utility/C_Util.h"
 
+const FName AC_SR::SR_RELOAD_LEFT_HAND_SOCKET_NAME = "Kar98ReloadSocket";
+
 const TMap<FName, float> AC_SR::BODYPARTS_DAMAGERATE =
 {
 	{"Neck",		2.5f},
@@ -84,10 +86,10 @@ bool AC_SR::ExecuteReloadMontage()
 		if (CurEnemy->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))	return false;
 	}
 	UC_Util::Print(CurBulletCount, FColor::Green);
-	UC_Util::Print(IsReloadingSR, FColor::Green);
+	UC_Util::Print(bIsReloadingSR, FColor::Green);
 	//UC_Util::Print(CurBulletCount, FColor::Green);
 
-	if (CurBulletCount >= 1 && CurrentShootingMode == EShootingMode::SINGLE_SHOT &&!IsReloadingSR)
+	if (CurBulletCount >= 1 && CurrentShootingMode == EShootingMode::SINGLE_SHOT &&!bIsReloadingSR)
 	{
 		UAnimMontage* DrawMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
 		OwnerCharacter->PlayAnimMontage(SniperReloadMontages[OwnerCharacter->GetPoseState()]);
@@ -98,6 +100,7 @@ bool AC_SR::ExecuteReloadMontage()
 		BackToMainCamera();
 		UC_Util::Print("Nori hutoi",FColor::Cyan);
 		//OwnerPlayer->SetRecoilTimelineValues(BulletRPM);
+		
 		return 	AttachToComponent
 		(
 			OwnerCharacter->GetMesh(),
@@ -109,7 +112,7 @@ bool AC_SR::ExecuteReloadMontage()
 	{
 		if (LeftAmmoCount == 0) return false;
 		UC_Util::Print(CurBulletCount);
-		UC_Util::Print(IsReloadingSR);
+		UC_Util::Print(bIsReloadingSR);
 		OwnerCharacter->SetIsReloadingBullet(true);
 		OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
 		BackToMainCamera();
@@ -156,24 +159,7 @@ void AC_SR::SetRelativeRotationOnCrawl()
 	}
 }
 
-bool AC_SR::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
-{
-	// int LeftAmmoCount = 0;
-	// AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
-	// if (IsValid(CurBullet))
-	// {
-	// 	LeftAmmoCount = CurBullet->GetItemCurStack();
-	// }
-	// if (LeftAmmoCount == 0 && CurBulletCount == 0)
-	// {
-	// 	UC_Util::Print("Back To Wait Condition");
-	// 	return false;
-	// }
-	return Super::ExecuteAIAttack(InTargetCharacter);
-	
-}
-
-bool AC_SR::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
+bool AC_SR::ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
 {
 	if (!CanAIAttack(InTargetCharacter))
 	{
@@ -301,7 +287,7 @@ void AC_SR::CancelReload()
 
 	UAnimMontage* SniperReloadMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
 	UC_Util::Print("CancleReload : ", FColor::Red, 10.f);
-	IsReloadingSR = false;
+	bIsReloadingSR = false;
 	if (CurAnimInstance->Montage_IsPlaying(ReloadMontage) || CurAnimInstance->Montage_IsPlaying(SniperReloadMontage))
 	{
 		CurAnimInstance->Montage_Stop(0.02);
