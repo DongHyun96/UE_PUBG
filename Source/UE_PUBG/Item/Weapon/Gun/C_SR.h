@@ -27,8 +27,7 @@ public:
 	
 	bool GetIsPlayingMontagesOfAny() override;
 	
-	void SetIsReloadingSR(bool InIsReloadingSR) { bIsReloadingSR = InIsReloadingSR; }
-	bool GetIsReloadingSR() const { return bIsReloadingSR; }
+	void SetIsCurrentlyReloadingSRMagazine(bool InIsCurrentlyReloading) { bIsCurrentlyReloadingSRMagazine = InIsCurrentlyReloading; }
 	
 	FRotator GetNewRelativeRotationOnCrawl() { return RelativeRotationOnCrawl; }
 
@@ -36,7 +35,17 @@ public:
 
 public:
 	
-	bool ExecuteReloadMontage() override;
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns></returns>
+	bool ExecuteMagazineReloadMontage() override;
+
+	/// <summary>
+	/// SR Bolt action 장전 처리
+	/// </summary>
+	/// <returns> : Bolt action 장전 처리를 할 상황이 아니거나 제대로 처리가 되지 않았다면 return false </returns>
+	bool ExecuteBoltActionReloadMontage();
 	
 protected:
 	
@@ -83,7 +92,7 @@ protected:
 
 private:
 	
-	bool bIsReloadingSR = false;
+	bool bIsCurrentlyReloadingSRMagazine{};
 };
 
 

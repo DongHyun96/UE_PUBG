@@ -26,8 +26,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	
-	bool ExecuteReloadMontage() override;
+
+	/// <summary>
+	/// 탄창 재장전 실행
+	/// </summary>
+	/// <returns> : 제대로 실행되지 않았거나 실행될 수 없는 상황이라면 return false </returns>
+	bool ExecuteMagazineReloadMontage() override;
 	
 	bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) override;
 

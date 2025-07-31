@@ -183,7 +183,7 @@ protected:
 	/// <param name="InSlot"></param>
 	void UpdatePreviewWeaponMesh(EWeaponSlot InSlot, FName InSocket);
 
-public:
+protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages > DrawMontages{};
 
@@ -194,17 +194,25 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages> ReloadMontages{};
 
+public:
+	
+	/// <summary>
+	/// PoseState와 GunState에 맞는(해당하는) Reload Montage 반환
+	/// </summary>
+	/// <returns> : PriorityAnimMontage </returns>
+	FPriorityAnimMontage GetReloadMontage(EPoseState InPoseState, EGunState InGunState) const;
+
+public:
+	
 	virtual bool GetIsPlayingMontagesOfAny();
 	
 	virtual void ChangeCurShootingMode() PURE_VIRTUAL(AC_Gun::ChangeCurShootingMode, );
-	
-	virtual bool ExecuteReloadMontage() PURE_VIRTUAL(AC_Gun::ExecuteReloadMontage, return true; );
-	
-	bool bIsSniperReload = false;
-	void SetIsSniperReload(bool InIsSniperReload) { bIsSniperReload = InIsSniperReload; }
-	class UCanvasPanelSlot* AimImage;
-	float MilitaryOperationArea;
-	FVector2D PanelSize;
+
+	/// <summary>
+	/// 탄창 재장전 실행
+	/// </summary>
+	/// <returns> : 제대로 실행되지 않았거나 실행될 수 없는 상황이라면 return false </returns>
+	virtual bool ExecuteMagazineReloadMontage() PURE_VIRTUAL(AC_Gun::ExecuteReloadMontage, return true; );
 	
 protected: /* 무기집 Socket 이름들 */
 	

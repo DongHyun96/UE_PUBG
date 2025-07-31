@@ -518,6 +518,12 @@ AC_AttachableItem* AC_Gun::SetAttachableItemSlot(EPartsName InPartsName, AC_Atta
 	return PrevSlotAttachableItem;
 }
 
+FPriorityAnimMontage AC_Gun::GetReloadMontage(EPoseState InPoseState, EGunState InGunState) const
+{
+	if (InPoseState == EPoseState::POSE_MAX) return FPriorityAnimMontage();
+	return ReloadMontages[InPoseState].Montages[InGunState];
+}
+
 bool AC_Gun::GetIsPlayingMontagesOfAny()
 {
 	UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
@@ -765,8 +771,8 @@ bool AC_Gun::ReloadBullet()
 	//AC_Item_Bullet* CarryingBullet;
 	AC_SR* CurrentSR = Cast<AC_SR>(this);
 
-	if (IsValid(CurrentSR))
-		CurrentSR->SetIsReloadingSR(false);
+	if (IsValid(CurrentSR)) CurrentSR->SetIsCurrentlyReloadingSRMagazine(false);
+		
 	if (LeftAmmoCount == 0) return false;
 
 	CurMagazineBulletCount = FMath::Min(MaxMagazineBulletCount, LeftAmmoCount);
@@ -1068,11 +1074,7 @@ void AC_Gun::LoadMagazine()
 
 void AC_Gun::SetMagazineVisibility(bool InIsVisible)
 {
-	if (IsValid(Magazine))
-	{
-		Magazine->SetMeshVisibility(InIsVisible);
-		//UC_Util::Print("ASDaisujdfhaiseuehfaiesuhfaweiufh");
-	}
+	if (IsValid(Magazine)) Magazine->SetMeshVisibility(InIsVisible);
 }
 
 bool AC_Gun::GetGunHasGrip()
@@ -1173,7 +1175,7 @@ bool AC_Gun::ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const
 	// 탄창에 남은 총알이 없을 때
 	if (CurMagazineBulletCount == 0)
 	{
-		ExecuteReloadMontage(); // Template primitive method (탄창 재장전)
+		ExecuteMagazineReloadMontage(); // Template primitive method (탄창 재장전)
 		return false; // 장전 후 Attack Tick Task 우선은 종료
 	}
 	

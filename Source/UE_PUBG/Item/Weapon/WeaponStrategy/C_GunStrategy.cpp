@@ -74,9 +74,9 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	// WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);
 	//WeaponUser->GetAttachmentMeshComponent()->AttachToGun(CurWeapon->GetGunMesh(), EPartsName::MUZZLE, EAttachmentNames::COMPENSATOR);
 
-	if (AC_SR* CurrentSR = Cast<AC_SR>(CurWeapon)) CurrentSR->SetIsReloadingSR(true);
+	if (AC_SR* CurrentSR = Cast<AC_SR>(CurWeapon)) CurrentSR->SetIsCurrentlyReloadingSRMagazine(true);
 	
-	CurWeapon->ExecuteReloadMontage(); // 탄창 재장전
+	CurWeapon->ExecuteMagazineReloadMontage(); // 탄창 재장전
 	
 	return true;
 }
@@ -95,8 +95,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	
-	if (CurWeapon->GetIsPlayingMontagesOfAny() ||
-		WeaponUser->GetCharacterMovement()->IsFalling()) return false;
+	if (CurWeapon->GetIsPlayingMontagesOfAny() || WeaponUser->GetCharacterMovement()->IsFalling()) return false;
 	
 	MlbPressTimeCount = 0;
 
@@ -110,7 +109,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 		}
 		
 		if (CurPlayer) CurPlayer->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("THERE IS NO AMMUNITION");
-		CurWeapon->ExecuteReloadMontage(); // 탄창 재장전
+		CurWeapon->ExecuteMagazineReloadMontage(); // 탄창 재장전
 		return false;
 	}
 
@@ -122,7 +121,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (CurWeapon->GetCurMagazineBulletCount() > 0 && IsBulletFired)
 	{
 		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SR_SINGLE_SHOT && !CurPlayer->GetIsAimDown())
-			CurWeapon->ExecuteReloadMontage(); // 볼트액션 장전
+			Cast<AC_SR>(CurWeapon)->ExecuteBoltActionReloadMontage();
 	}
 	
 	return IsBulletFired;
@@ -152,7 +151,7 @@ bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 		MlbPressTimeCount -= CurWeapon->GetBulletRPM();
 		if (CurWeapon->GetCurMagazineBulletCount() == 0)
 		{
-			CurWeapon->ExecuteReloadMontage(); // 탄창 재장전
+			CurWeapon->ExecuteMagazineReloadMontage(); // 탄창 재장전
 			return false;
 		}
 		CurWeapon->FireBullet();
@@ -164,13 +163,15 @@ bool AC_GunStrategy::UseMlb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 {
 	AC_Player* CurPlayer = Cast<AC_Player>(WeaponUser);
 	if (!IsValid(CurPlayer)) return false;
+	
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	if (!WeaponUser->GetCanFireBullet()) return false;
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
 	if (CurPlayer->GetIsAimDown() && CurWeapon->GetCurrentShootingMode() == EShootingMode::SR_SINGLE_SHOT && CurWeapon->GetCurMagazineBulletCount() >= 0)
-		CurWeapon->ExecuteReloadMontage(); // 볼트액션 장전
+		Cast<AC_SR>(CurWeapon)->ExecuteBoltActionReloadMontage();
+	
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || WeaponUser->GetCharacterMovement()->IsFalling()) return false;
 	
 	return true;

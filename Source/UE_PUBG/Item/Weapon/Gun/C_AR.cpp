@@ -63,7 +63,7 @@ void AC_AR::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-bool AC_AR::ExecuteReloadMontage()
+bool AC_AR::ExecuteMagazineReloadMontage()
 {
 	if (!IsValid(OwnerCharacter)) return false;
 	
@@ -126,7 +126,7 @@ bool AC_AR::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 		return false;
 	}
 	
-	ExecuteReloadMontage(); // 탄창 재장전
+	ExecuteMagazineReloadMontage(); // 탄창 재장전
 	
 	// 현재 Bullet pool에 Available한 총알이 없을 때
 	return false;
