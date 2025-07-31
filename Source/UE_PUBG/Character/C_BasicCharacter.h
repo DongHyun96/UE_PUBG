@@ -512,7 +512,7 @@ protected: // 총알 Object Pooling(AC_Item으로 만들어진 Bullet은 사용X
 protected:
 	//총알 Object Pooling (World에서 작업할 예정)
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TArray<class AC_Bullet*> PooledBullets;
+	TArray<class AC_Bullet*> PooledBullets{};
 
 	void PoolingBullets();
 

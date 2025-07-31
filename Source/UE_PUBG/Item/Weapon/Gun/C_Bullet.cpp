@@ -141,7 +141,7 @@ void AC_Bullet::ActivateInstance()
 	IsActive = true;
 }
 
-bool AC_Bullet::Fire(AC_Gun* InOwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity, FVector InHitLocation)
+bool AC_Bullet::Fire(AC_Gun* InOwnerGun, FVector InLocation, FVector InVelocity, bool EnableGravity, FVector InHitLocation)
 {
 	FiredGun = InOwnerGun;
 	UNiagaraComponent* BulletParticle = FindComponentByClass<UNiagaraComponent>();
@@ -177,13 +177,13 @@ bool AC_Bullet::Fire(AC_Gun* InOwnerGun, FVector InLocation, FVector InDirection
 		USkeletalMeshComponent* GunMesh = InOwnerGun->GetGunMesh();
 
 		SetActorLocation(InLocation);
-		BulletProjectileMovement->Velocity = InDirection;
+		BulletProjectileMovement->Velocity = InVelocity;
 		//BulletProjectileMovement->UpdateComponentVelocity();
 		float BulletSpeedCheck = BulletProjectileMovement->Velocity.Size();
 		//UC_Util::Print(BulletSpeedCheck, FColor::Blue);
 
 		//Bullet->BulletProjectileMovement->SetActive(true);
-		InitialVelocityNormalized = InDirection.GetSafeNormal();
+		InitialVelocityNormalized = InVelocity.GetSafeNormal();
 		
 		if (BulletParticle)
 		{

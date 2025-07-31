@@ -63,7 +63,7 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	
 	if ( CurBullet->GetItemCurStack() == 0) return false; // 현재 장전할 수 있는 총알이 남아있지 않을 때
 		
-	if (CurWeapon->GetMaxBulletCount() == CurWeapon->GetCurBulletCount()) return false;
+	if (CurWeapon->GetMaxMagazineBulletCount() == CurWeapon->GetCurMagazineBulletCount()) return false;
 	if (CurWeapon->GetIsPlayingMontagesOfAny()) return false;
 	//if (CurWeapon->GetIsPartAttached(EPartsName::GRIP))
 	//{
@@ -76,7 +76,7 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 
 	if (AC_SR* CurrentSR = Cast<AC_SR>(CurWeapon)) CurrentSR->SetIsReloadingSR(true);
 	
-	CurWeapon->ExecuteReloadMontage();
+	CurWeapon->ExecuteReloadMontage(); // 탄창 재장전
 	
 	return true;
 }
@@ -101,7 +101,7 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	MlbPressTimeCount = 0;
 
 	// 탄창에 한 발도 남지 않은 상황
-	if (CurWeapon->GetCurBulletCount() == 0)
+	if (CurWeapon->GetCurMagazineBulletCount() == 0)
 	{
 		if (CurWeapon->GetGunSoundData()->NullBulletSound)
 		{
@@ -110,19 +110,19 @@ bool AC_GunStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 		}
 		
 		if (CurPlayer) CurPlayer->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("THERE IS NO AMMUNITION");
-		CurWeapon->ExecuteReloadMontage();
+		CurWeapon->ExecuteReloadMontage(); // 탄창 재장전
 		return false;
 	}
 
-	// 탄창에 한 발 남은 상황이고, ShootingMode가 SingleShot일 경우
+	// 총알 사격 개시
 	bool IsBulletFired = CurWeapon->FireBullet();
-	if (CurWeapon->GetCurBulletCount() > 0 && IsBulletFired)
+	
+	// 탄창에 한 발 이상 남은 상황이고, ShootingMode가 SingleShot일 경우
+	// SR AimDown, AimDownSight 모두 아닐 경우 & 총알이 1발 이상 남았을 경우 여기가 호출되는 중
+	if (CurWeapon->GetCurMagazineBulletCount() > 0 && IsBulletFired)
 	{
-		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SINGLE_SHOT && !CurPlayer->GetIsAimDown())
-		{
-			UC_Util::Print("BulletFired",FColor::Orange);
-			CurWeapon->ExecuteReloadMontage();
-		}
+		if(CurWeapon->GetCurrentShootingMode() == EShootingMode::SR_SINGLE_SHOT && !CurPlayer->GetIsAimDown())
+			CurWeapon->ExecuteReloadMontage(); // 볼트액션 장전
 	}
 	
 	return IsBulletFired;
@@ -145,13 +145,14 @@ bool AC_GunStrategy::UseMlb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	//총알 연발
 	//TODO: 총알의 연사율 받아와서 적용 + 총알 발사 모드에 따라 작동못하게 하기
 	if(CurWeapon->GetCurrentShootingMode() != EShootingMode::FULL_AUTO) return false;
+	
 	MlbPressTimeCount += WeaponUser->GetWorld()->GetDeltaSeconds();
 	if (MlbPressTimeCount > CurWeapon->GetBulletRPM())
 	{
 		MlbPressTimeCount -= CurWeapon->GetBulletRPM();
-		if (CurWeapon->GetCurBulletCount() == 0)
+		if (CurWeapon->GetCurMagazineBulletCount() == 0)
 		{
-			CurWeapon->ExecuteReloadMontage();
+			CurWeapon->ExecuteReloadMontage(); // 탄창 재장전
 			return false;
 		}
 		CurWeapon->FireBullet();
@@ -168,11 +169,10 @@ bool AC_GunStrategy::UseMlb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 	if (!WeaponUser->GetCanFireBullet()) return false;
 
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
-	if (CurPlayer->GetIsAimDown() && CurWeapon->GetCurrentShootingMode() == EShootingMode::SINGLE_SHOT && CurWeapon->GetCurBulletCount() >= 0)
-		CurWeapon->ExecuteReloadMontage();
+	if (CurPlayer->GetIsAimDown() && CurWeapon->GetCurrentShootingMode() == EShootingMode::SR_SINGLE_SHOT && CurWeapon->GetCurMagazineBulletCount() >= 0)
+		CurWeapon->ExecuteReloadMontage(); // 볼트액션 장전
 	if (CurWeapon->GetIsPlayingMontagesOfAny() || WeaponUser->GetCharacterMovement()->IsFalling()) return false;
-
-
+	
 	return true;
 }
 

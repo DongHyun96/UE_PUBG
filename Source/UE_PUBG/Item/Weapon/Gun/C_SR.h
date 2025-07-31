@@ -22,18 +22,21 @@ protected:
 public:
 
 	virtual void Tick(float DeltaTime) override;
-	virtual bool ExecuteReloadMontage() override;
 
 public:
 	
-	virtual bool GetIsPlayingMontagesOfAny();
+	bool GetIsPlayingMontagesOfAny() override;
 	
 	void SetIsReloadingSR(bool InIsReloadingSR) { bIsReloadingSR = InIsReloadingSR; }
-	bool GetIsReloadingSR() { return bIsReloadingSR; }
+	bool GetIsReloadingSR() const { return bIsReloadingSR; }
 	
 	FRotator GetNewRelativeRotationOnCrawl() { return RelativeRotationOnCrawl; }
 
 	TMap<EPoseState, FPriorityAnimMontage>& GetSniperReloadMontages() { return SniperReloadMontages; }
+
+public:
+	
+	bool ExecuteReloadMontage() override;
 	
 protected:
 	
@@ -41,8 +44,7 @@ protected:
 	
 public:
 	
-	virtual bool ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
-	virtual bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) override;
+	bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) override;
 
 	float GetDamageRateByBodyPart(const FName& BodyPart) override;
 
@@ -55,6 +57,14 @@ protected:
 	/// </summary>
 	virtual void CancelReload() override;
 
+public:
+	
+	/// <summary>
+	/// AN_SniperReloadEnd Callback 함수
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	void OnSniperReloadEnd();
+
 private:
 
 	static const FName SR_RELOAD_LEFT_HAND_SOCKET_NAME;
@@ -64,6 +74,7 @@ protected:
 	// 각 피격 부위별 Damage Rate
 	static const TMap<FName, float> BODYPARTS_DAMAGERATE;
 
+	// 볼트액션 장전 Montages
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> SniperReloadMontages{};
 

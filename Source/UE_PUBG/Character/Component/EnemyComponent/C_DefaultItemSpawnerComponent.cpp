@@ -72,13 +72,13 @@ void UC_DefaultItemSpawnerComponent::SpawnWeapons(const FActorSpawnParameters& P
 	AC_Gun* MainGun = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::MAIN_GUN], Param);
 	MainGun->MoveToSlot(OwnerEnemy, MainGun->GetItemCurStack());
 	MainGun->SetActorHiddenInGame(false); // 어디선가 Hidden처리가 되어 나옴
-	MainGun->SetCurBulletCount(30);
+	MainGun->SetCurMagazineBulletCount(30);
 	//EquippedComponent->SetSlotWeapon(EWeaponSlot::MAIN_GUN, MainGun);
 
 	AC_Gun* SubGun = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::SUB_GUN], Param);
 	SubGun->MoveToSlot(OwnerEnemy, SubGun->GetItemCurStack());
 	SubGun->SetActorHiddenInGame(false);
-	SubGun->SetCurBulletCount(5);
+	SubGun->SetCurMagazineBulletCount(5);
 	//EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, SubGun);
 
 	// Throwable Weapon setting 하기

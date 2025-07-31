@@ -81,7 +81,8 @@ public:
 	FVector InitialVelocityNormalized{};
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FVector LineTraceHitLocation{};
-	bool Fire(class AC_Gun* InOwnerGun, FVector InLocation, FVector InDirection, bool EnableGravity = true, FVector InHitLocation = FVector(0));
+	
+	bool Fire(class AC_Gun* InOwnerGun, FVector InLocation, FVector InVelocity, bool EnableGravity = true, FVector InHitLocation = FVector(0));
 
 	void SubSteppingMovementPhysics(float SebStepDeltaTime);
 

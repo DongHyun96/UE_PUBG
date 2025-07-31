@@ -18,18 +18,18 @@ class UE_PUBG_API AC_AR : public AC_Gun
 public:
 	AC_AR();
 protected:
-	// Called when the game starts or when spawned
+	
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
+	
 	virtual void Tick(float DeltaTime) override;
-	virtual bool ExecuteReloadMontage() override;
 
 public:
 	
-	virtual bool ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
-	virtual bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) override;
+	bool ExecuteReloadMontage() override;
+	
+	bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) override;
 
 	float GetDamageRateByBodyPart(const FName& BodyPart) override;
 

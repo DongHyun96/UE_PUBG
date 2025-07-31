@@ -507,28 +507,6 @@ void UC_EquippedComponent::OnDrawEnd()
     NextWeaponType = EWeaponSlot::NONE;
 }
 
-void UC_EquippedComponent::OnReloadEnd()
-{
-    AC_Gun* CurGun = Cast<AC_Gun>(Weapons[CurWeaponType]);
-    if (IsValid(CurGun))
-    {
-        CurGun->ReloadBullet();
-        CurGun->SetMagazineVisibility(true);
-    }
-}
-
-void UC_EquippedComponent::OnSniperReloadEnd()
-{
-    AC_Gun* CurGun = Cast<AC_Gun>(Weapons[CurWeaponType]);
-    if (IsValid(CurGun))
-    {
-        CurGun->AttachToHand(OwnerCharacter->GetMesh());
-        OwnerCharacter->SetIsReloadingBullet(false);
-
-        // UC_Util::Print("Attached To Hand???????????????????????????????????????????????????????");
-    }
-}
-
 void UC_EquippedComponent::AddAttachedPartsActorsToIgnoreActors(FCollisionQueryParams& CollisionParams)
 {
     for (auto& WeaponPair : Weapons)

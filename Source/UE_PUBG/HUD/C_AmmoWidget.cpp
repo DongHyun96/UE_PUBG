@@ -23,7 +23,7 @@ void UC_AmmoWidget::NativeConstruct()
 		{EShootingMode::SEMI_AUTO,		"Single"},
 		{EShootingMode::BURST,			"Burst"},
 		{EShootingMode::FULL_AUTO,		"Full"},
-		{EShootingMode::SINGLE_SHOT,	"Single"}
+		{EShootingMode::SR_SINGLE_SHOT,	"Single"}
 	};
 
 	// Init Shooting Mode Images
@@ -55,7 +55,7 @@ void UC_AmmoWidget::NativeConstruct()
 
 
 	ShootingModePanelSlots.Add(EShootingMode::SEMI_AUTO,	Cast<UCanvasPanelSlot>(SingleCanvasPanel->Slot));
-	ShootingModePanelSlots.Add(EShootingMode::SINGLE_SHOT,  Cast<UCanvasPanelSlot>(SingleCanvasPanel->Slot));
+	ShootingModePanelSlots.Add(EShootingMode::SR_SINGLE_SHOT,  Cast<UCanvasPanelSlot>(SingleCanvasPanel->Slot));
 	ShootingModePanelSlots.Add(EShootingMode::BURST,		Cast<UCanvasPanelSlot>(BurstCanvasPanel->Slot));
 	ShootingModePanelSlots.Add(EShootingMode::FULL_AUTO,	Cast<UCanvasPanelSlot>(FullAutoCanvasPanel->Slot));
 
@@ -108,7 +108,7 @@ void UC_AmmoWidget::SetShootingMode(EShootingMode Mode)
 		
 		// 들어온 Mode와 다르게 PrevShootingMode 세팅시키기
 		// Single_Shot과 Semi_auto의 이미지가 동일하기 때문에 생기는 버그 방지
-		if (CurrentShootingMode == EShootingMode::SINGLE_SHOT)
+		if (CurrentShootingMode == EShootingMode::SR_SINGLE_SHOT)
 			PrevShootingMode = EShootingMode::FULL_AUTO;
 		else
 		{
