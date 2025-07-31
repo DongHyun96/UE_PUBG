@@ -38,9 +38,11 @@ public:
 	/// MeleeWeaponMesh를 장착합니다.
 	/// </summary>
 	/// <returns></returns>
-	bool AttachMeleeWeaponMesh();
+	bool AttachMeleeWeaponMesh(FName InSocket);
 
 	bool AttachGunMesh(EWeaponSlot InSlot, FName InSocket);
+
+	bool AttachThrowableWeaponMesh(FName InSocket);
 
 	/// <summary>
 	/// InSlot에 해당하는 장착 무기 메시를 때어 냅니다.

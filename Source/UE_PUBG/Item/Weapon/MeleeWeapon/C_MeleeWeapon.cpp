@@ -107,7 +107,7 @@ bool AC_MeleeWeapon::AttachToHolster(USceneComponent* InParent)
 
 	if (Player)
 	{
-		Player->GetPreviewCharacter()->AttachMeleeWeaponMesh();
+		Player->GetPreviewCharacter()->AttachMeleeWeaponMesh(HOLSTER_SOCKET_NAME);
 	}
 
 	return bIsAttached;
@@ -128,7 +128,7 @@ bool AC_MeleeWeapon::AttachToHand(USceneComponent* InParent)
 
 	if (Player)
 	{
-		Player->GetPreviewCharacter()->AttachMeleeWeaponMesh();
+		Player->GetPreviewCharacter()->AttachMeleeWeaponMesh(EQUIPPED_SOCKET_NAME);
 	}
 	return bIsAttached;
 }

@@ -26,6 +26,8 @@
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/C_AnimBasicCharacter.h"
+#include "Character/C_Player.h"
+#include "Character/C_PreviewCharacter.h"
 
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_MainMapWidget.h"
@@ -230,12 +232,28 @@ void AC_ThrowingWeapon::HandleAfterCooked(float DeltaTime)
 
 	ProjectileMovement->Deactivate();
 
-	return AttachToComponent
+	bool bIsAttached = AttachToComponent
 	(
 		InParent,
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
 		HOLSTER_SOCKET_NAME
 	);
+
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+
+	if (OwnerPlayer)
+	{
+		OwnerPlayer->GetPreviewCharacter()->AttachThrowableWeaponMesh(HOLSTER_SOCKET_NAME);
+	}
+
+	return bIsAttached;
+
+	//return AttachToComponent
+	//(
+	//	InParent,
+	//	FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+	//	HOLSTER_SOCKET_NAME
+	//);
 }
 
 bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
@@ -263,13 +281,29 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 		UpdateAmmoWidgetMagazineText(OwnerPlayer);
 	}
 
-	return AttachToComponent
+	bool bIsAttached = AttachToComponent
 	(
 		InParent,
-		// FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
-		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 		EQUIPPED_SOCKET_NAMES[ThrowableType]
 	);
+
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+
+	if (OwnerPlayer)
+	{
+		OwnerPlayer->GetPreviewCharacter()->AttachThrowableWeaponMesh(EQUIPPED_SOCKET_NAMES[ThrowableType]);
+	}
+
+	return bIsAttached;
+
+	//return AttachToComponent
+	//(
+	//	InParent,
+	//	// FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
+	//	FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+	//	EQUIPPED_SOCKET_NAMES[ThrowableType]
+	//);
 }
 
 void AC_ThrowingWeapon::InitializeItem(FName NewItemCode)

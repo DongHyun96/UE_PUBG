@@ -446,7 +446,6 @@ void UC_EquippedComponent::OnSheathEnd()
 
     // 현재 무기 무기집에 붙이기
     GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
-
     // 총기류 예외처리
     if (CurWeaponType == EWeaponSlot::MAIN_GUN || CurWeaponType == EWeaponSlot::SUB_GUN)
     {

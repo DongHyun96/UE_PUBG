@@ -75,7 +75,7 @@ void AC_PreviewCharacter::SetWeaponMesh(EWeaponSlot InSlot, AC_Weapon* Weapon)
 
 }
 
-bool AC_PreviewCharacter::AttachMeleeWeaponMesh()
+bool AC_PreviewCharacter::AttachMeleeWeaponMesh(FName InSocket)
 {
 	UC_EquippedComponent* EquippedComp = OwnerPlayer->GetEquippedComponent();
 
@@ -94,7 +94,11 @@ bool AC_PreviewCharacter::AttachMeleeWeaponMesh()
 
 	NewMesh->SetStaticMesh(SourceMesh->GetStaticMesh());
 	
-	FName SocketName = OwnerPlayer->GetHandState() == EHandState::WEAPON_MELEE ? MeleeWeapon->GetEquippedSocketName() : MeleeWeapon->GetHolsterSocketName();
+	EHandState HandState = OwnerPlayer->GetHandState();
+
+	UC_Util::Print(FString::Printf(TEXT("HandState: %s"), *UEnum::GetValueAsString(HandState)), FColor::Blue, 10.f);
+
+	FName SocketName = InSocket;
 
 	UC_Util::Print(SocketName.ToString(), FColor::Blue, 10.f);
 
@@ -185,6 +189,46 @@ bool AC_PreviewCharacter::AttachGunMesh(EWeaponSlot InSlot, FName InSocket)
 	return true;
 }
 
+bool AC_PreviewCharacter::AttachThrowableWeaponMesh(FName InSocket)
+{
+	UC_EquippedComponent* EquippedComp = OwnerPlayer->GetEquippedComponent();
+
+	// 기존 메시 제거
+	DetachWeaponMesh(EWeaponSlot::MELEE_WEAPON);
+
+	AC_MeleeWeapon* MeleeWeapon = Cast<AC_MeleeWeapon>(EquippedComp->GetWeapons()[EWeaponSlot::MELEE_WEAPON]);
+	if (!MeleeWeapon) return false; // 무기가 없으면 false 리턴
+
+	UStaticMeshComponent* SourceMesh = Cast<UStaticMeshComponent>(MeleeWeapon->GetItemMeshComp());
+	if (!SourceMesh || !SourceMesh->GetStaticMesh()) return false;
+
+	// Preview용 StaticMeshComponent 생성
+	UStaticMeshComponent* NewMesh = NewObject<UStaticMeshComponent>(this, TEXT("PreviewMeleeWeaponMesh"));
+	if (!NewMesh) return false;
+
+	NewMesh->SetStaticMesh(SourceMesh->GetStaticMesh());
+
+	EHandState HandState = OwnerPlayer->GetHandState();
+
+	UC_Util::Print(FString::Printf(TEXT("HandState: %s"), *UEnum::GetValueAsString(HandState)), FColor::Blue, 10.f);
+
+	FName SocketName = InSocket;
+
+	NewMesh->AttachToComponent(previewCharacterMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), SocketName);
+	NewMesh->SetVisibility(true);
+	NewMesh->RegisterComponent();
+	// SceneCapture에 추가
+	if (SceneCapture)
+	{
+		SceneCapture->ShowOnlyComponents.Add(NewMesh);
+	}
+
+	// TMap에 저장
+	WeaponMeshes.Add(EWeaponSlot::THROWABLE_WEAPON, NewMesh);
+
+	return true;
+}
+
 bool AC_PreviewCharacter::DetachWeaponMesh(EWeaponSlot InSlot)
 {
 	if (WeaponMeshes.Contains(InSlot) && WeaponMeshes[InSlot])
@@ -234,10 +278,10 @@ bool AC_PreviewCharacter::UpdateWeaponMesh(EWeaponSlot InSlot)
 	}
 
 	// 근접 무기 예외 처리
-	if (InSlot == EWeaponSlot::MELEE_WEAPON)
-	{
-		return AttachMeleeWeaponMesh();
-	}
+	//if (InSlot == EWeaponSlot::MELEE_WEAPON)
+	//{
+	//	return AttachMeleeWeaponMesh(InSlot);
+	//}
 
 	// 무기 메시 가져오기
 	USkeletalMeshComponent* WeaponMesh = Cast<USkeletalMeshComponent>(Weapon->GetItemMeshComp());
@@ -357,9 +401,10 @@ bool AC_PreviewCharacter::Update(EHandState InState, EWeaponSlot InSlot, FName I
 		AttachGunMesh(InSlot, InSocket);
 		break;
 	case EHandState::WEAPON_MELEE:
-		AttachMeleeWeaponMesh();
+		AttachMeleeWeaponMesh(InSocket);
 		break;
 	case EHandState::WEAPON_THROWABLE:
+		AttachThrowableWeaponMesh(InSocket);
 		break;
 	case EHandState::HANDSTATE_MAX:
 		break;
