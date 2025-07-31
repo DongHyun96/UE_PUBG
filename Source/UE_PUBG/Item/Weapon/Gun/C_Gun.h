@@ -212,7 +212,7 @@ public:
 	/// 탄창 재장전 실행
 	/// </summary>
 	/// <returns> : 제대로 실행되지 않았거나 실행될 수 없는 상황이라면 return false </returns>
-	virtual bool ExecuteMagazineReloadMontage() PURE_VIRTUAL(AC_Gun::ExecuteReloadMontage, return true; );
+	bool ExecuteMagazineReloadMontage();
 	
 protected: /* 무기집 Socket 이름들 */
 	
@@ -334,8 +334,7 @@ protected:
 protected:
 	//탄창
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-
-	class AC_AttachableItem* Magazine{};
+	AC_AttachableItem* Magazine{};
 
 	void LoadMagazine();
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)

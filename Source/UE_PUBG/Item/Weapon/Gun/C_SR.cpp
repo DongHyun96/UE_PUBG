@@ -61,28 +61,6 @@ void AC_SR::Tick(float DeltaTime)
 	SetRelativeRotationOnCrawl();
 }
 
-bool AC_SR::ExecuteMagazineReloadMontage()
-{
-	if (!IsValid(OwnerCharacter)) return false;
-	
-	int InvenLeftAmmoCount = 0;
-	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
-	if (IsValid(CurBullet)) InvenLeftAmmoCount = CurBullet->GetItemCurStack();
-	
-
-	// 이미 탄창 장전 모션이 실행중일 때
-	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))
-		return false;
-	
-	if (InvenLeftAmmoCount == 0) return false;
-	
-	OwnerCharacter->SetIsReloadingBullet(true);
-	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
-	BackToMainCamera();
-	
-	return true;
-}
-
 bool AC_SR::ExecuteBoltActionReloadMontage()
 {
 	if (!IsValid(OwnerCharacter)) return false;

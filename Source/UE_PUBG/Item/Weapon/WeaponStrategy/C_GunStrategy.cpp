@@ -61,10 +61,14 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>(WeaponUser->GetInvenComponent()->FindMyItemByName(CurWeapon->GetCurrentBulletTypeName()));
 	if (!IsValid(CurBullet)) return false;
 	
-	if ( CurBullet->GetItemCurStack() == 0) return false; // 현재 장전할 수 있는 총알이 남아있지 않을 때
-		
+	if (CurBullet->GetItemCurStack() == 0) return false; // 현재 장전할 수 있는 총알이 남아있지 않을 때
+
+	// 현재 Magazine에 최대로 총알이 들어가 있을 때
 	if (CurWeapon->GetMaxMagazineBulletCount() == CurWeapon->GetCurMagazineBulletCount()) return false;
+
+	// Draw, Sheath, 탄창 재장전, SR의 경우 Bolt Action 재장전 -> 이 모션 중 하나라도 재생 중이라면 재장전 불가능
 	if (CurWeapon->GetIsPlayingMontagesOfAny()) return false;
+	
 	//if (CurWeapon->GetIsPartAttached(EPartsName::GRIP))
 	//{
 	//	WeaponUser->GetAttachmentMeshComponent()->DetachFromGun(CurWeapon->GetGunMesh(), EPartsName::GRIP, EAttachmentNames::VERTGRIP);

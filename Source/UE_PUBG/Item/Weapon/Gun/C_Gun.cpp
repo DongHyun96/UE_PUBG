@@ -540,6 +540,32 @@ bool AC_Gun::GetIsPlayingMontagesOfAny()
 	return IsPlayingMontagesOfAny;
 }
 
+bool AC_Gun::ExecuteMagazineReloadMontage()
+{
+	if (!IsValid(OwnerCharacter)) return false;
+	
+	int InvenLeftAmmoCount = 0;
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
+	if (IsValid(CurBullet)) InvenLeftAmmoCount = CurBullet->GetItemCurStack();
+
+	// Inven에 남은 총알이 없거나, 탄창 최대 장탄 수를 모두 채우고 있을 때
+	if (InvenLeftAmmoCount == 0 || CurMagazineBulletCount == MaxMagazineBulletCount) return false;
+
+	// 이미 장전 모션이 실행 중일 때(이미 장전이 실행 중인 상태일 때)
+	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))
+		return false;
+	
+	if (!OwnerCharacter->GetCanMove()) return false;
+	
+	SetMagazineVisibility(false);
+	OwnerCharacter->SetIsReloadingBullet(true);
+	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]); // 장전 모션 실행
+	
+	BackToMainCamera();
+	
+	return true;
+}
+
 bool AC_Gun::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
 	return false;
@@ -1034,10 +1060,8 @@ void AC_Gun::ShowAndHideWhileAiming()
 
 void AC_Gun::LoadMagazine()
 {
-	if (GunDataRef->CurGunType == EGunType::SR)
-	{
-		return;
-	}
+	if (GunDataRef->CurGunType == EGunType::SR) return;
+		
 	FString ClassPath = TEXT("/Game/Project_PUBG/Common/Weapon/GunWeapon/Magazine/BPC_Magazine.BPC_Magazine_C");
 	//Magazine = LoadObject<AC_AttachableItem>(nullptr, ));
 

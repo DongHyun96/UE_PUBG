@@ -34,12 +34,6 @@ public:
 	TMap<EPoseState, FPriorityAnimMontage>& GetSniperReloadMontages() { return SniperReloadMontages; }
 
 public:
-	
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <returns></returns>
-	bool ExecuteMagazineReloadMontage() override;
 
 	/// <summary>
 	/// SR Bolt action 장전 처리
