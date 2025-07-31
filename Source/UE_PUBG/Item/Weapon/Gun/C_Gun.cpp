@@ -545,11 +545,15 @@ bool AC_Gun::ExecuteMagazineReloadMontage()
 	if (!IsValid(OwnerCharacter)) return false;
 	
 	int InvenLeftAmmoCount = 0;
-	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
+	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
 	if (IsValid(CurBullet)) InvenLeftAmmoCount = CurBullet->GetItemCurStack();
 
-	// Inven에 남은 총알이 없거나, 탄창 최대 장탄 수를 모두 채우고 있을 때
-	if (InvenLeftAmmoCount == 0 || CurMagazineBulletCount == MaxMagazineBulletCount) return false;
+	// Inven에 남은 총알이 없을 때
+	// Player의 경우만 확인, Enemy의 경우 Inven의 총알로 재장전하지 않고 임의의 새로운 총알을 부여받아 장전 처리
+	if (Cast<AC_Player>(OwnerCharacter)) if (InvenLeftAmmoCount == 0) return false;
+
+	// 탄창 최대 장탄 수를 모두 채우고 있을 때
+	if (CurMagazineBulletCount == MaxMagazineBulletCount) return false;
 
 	// 이미 장전 모션이 실행 중일 때(이미 장전이 실행 중인 상태일 때)
 	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))
@@ -777,54 +781,65 @@ bool AC_Gun::FireBullet()
 	return false;
 }
 
-bool AC_Gun::ReloadBullet()
+bool AC_Gun::ReloadMagazine()
 {
+	OwnerCharacter->SetIsReloadingBullet(false);
+	
+	AC_SR* CurrentSR = Cast<AC_SR>(this);
+	if (IsValid(CurrentSR)) CurrentSR->SetIsCurrentlyReloadingSRMagazine(false);
+
+	// 이미 최대 장탄수로 Magazine 총알이 들어있을 때
 	if (CurMagazineBulletCount == MaxMagazineBulletCount) return false;
-	int LeftAmmoCount = 0;
-	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
-	UC_InvenComponent* InvenComp = OwnerCharacter->GetInvenComponent();
-	if (IsValid(CurBullet))
+
+	// OwnerCharacter가 Enemy일 경우, Inven의 총알 수 조정 없이 무조건 최대 장탄 수로 Magazine 장전 처리
+	if (Cast<AC_Enemy>(OwnerCharacter))
 	{
-		//LeftAmmoCount = CurBullet->GetItemCurStack();
-		LeftAmmoCount = InvenComp->GetTotalStackByItemName(CurBullet->GetItemCode());
+		CurMagazineBulletCount = MaxMagazineBulletCount;
+		return true;
 	}
 
-	OwnerCharacter->SetIsReloadingBullet(false);
-	int BeforeChangeAmmo = CurMagazineBulletCount;
-
-	int RemainAmmo;
-	int ChangedStack;
-	//AC_Item_Bullet* CarryingBullet;
-	AC_SR* CurrentSR = Cast<AC_SR>(this);
-
-	if (IsValid(CurrentSR)) CurrentSR->SetIsCurrentlyReloadingSRMagazine(false);
-		
-	if (LeftAmmoCount == 0) return false;
-
-	CurMagazineBulletCount = FMath::Min(MaxMagazineBulletCount, LeftAmmoCount);
-
-	RemainAmmo = -BeforeChangeAmmo + CurMagazineBulletCount;
-
-	ChangedStack = LeftAmmoCount - RemainAmmo;
-	
-	InvenComp->DecreaseItemStack(CurBullet->GetItemCode(), RemainAmmo);
-	//CurBullet->SetItemStack(ChangedStack); //TODO : InvenComponent에서 한번에 조절하는 기능 만들기.
-	// UC_Util::Print("Reload Bullet");
-	//장전한 총알 갯수만큼 curVolume 조절
-	OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(RemainAmmo * CurBullet->GetItemDatas()->ItemVolume));
+	// OwnerCharacter가 Player일 경우, Inven의 남은 총알 수 및 현재 Magazine에 남아있는 탄알 수에 따른 장전 처리를 요구함
+	// 이 밑으로 OwnerPlayer에 대한 장전 처리
 
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-	
-	if (OwnerPlayer)
+	if (!OwnerPlayer)
 	{
-		OwnerPlayer->GetInvenSystem()->InitializeList();
-		//OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(CurBullet->GetItemCurStack(), true);
-		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true);
+		UC_Util::Print("From AC_Gun::ReloadMagazine : OwnerCharacter has to be Player but casting failed!", FColor::Red, 10.f);
+		return false;
 	}
 
-	// 장전 성공
-	// WeaponTutorial 장전 Delegate & 장전을 한 주체가 OwnerPlayer인지 체크
-	if (WeaponTutorialDelegate.IsBound() && OwnerPlayer) WeaponTutorialDelegate.Execute(1, -1);
+	// Inven에 있는 남아있는 총알 개수 파악
+	int LeftAmmoCount = 0;
+	AC_Item_Bullet* CorrespondingBulletItemObject = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
+	UC_InvenComponent* InvenComponent = OwnerCharacter->GetInvenComponent();
+	if (IsValid(CorrespondingBulletItemObject)) LeftAmmoCount = InvenComponent->GetTotalStackByItemName(CorrespondingBulletItemObject->GetItemCode());
+
+	// 장전할 수 있는 탄알 수가 Inven에 존재하지 않을 때
+	if (LeftAmmoCount == 0) return false;
+
+	// 예외처리 끝 / 장전 하기
+
+	const int BeforeChangeAmmo = CurMagazineBulletCount;
+
+	// 장전 처리한 Magazine 총알 수로 현재 MagazineBulletCount 조정
+	CurMagazineBulletCount = FMath::Min(MaxMagazineBulletCount, LeftAmmoCount);
+
+	// 실질적으로 장전되어 들어간 탄알 수
+	// 해당 갯수를 파악해서 Inven의 탄알 수에서 제거 & Volume도 조정
+	const int ReloadedTotalBulletCount = CurMagazineBulletCount - BeforeChangeAmmo;
+	
+	//장전한 총알 갯수만큼 Inven의 총알 & curVolume 조절
+	InvenComponent->DecreaseItemStack(CorrespondingBulletItemObject->GetItemCode(), ReloadedTotalBulletCount);
+	OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(ReloadedTotalBulletCount * CorrespondingBulletItemObject->GetItemDatas()->ItemVolume));
+
+	/* OwnerCharacter가 Player 일 때의 추가 처리 */
+	OwnerPlayer->GetInvenSystem()->InitializeList();
+	//OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(CurBullet->GetItemCurStack(), true);
+	OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true);
+	
+	// WeaponTutorial 장전 Delegate
+	if (WeaponTutorialDelegate.IsBound()) WeaponTutorialDelegate.Execute(1, -1);
+	
 	return true;
 }
 
@@ -1145,7 +1160,7 @@ void AC_Gun::SetIsPartAttached(EPartsName InAttachmentName, bool bInIsAttached)
 	IsPartAttached[InAttachmentName] = bInIsAttached;
 }
 
-void AC_Gun::SetSightCameraSpringArmLocation(FVector4 InLocationAndArmLength)
+void AC_Gun::SetSightCameraSpringArmLocation(const FVector4& InLocationAndArmLength)
 {
 	FVector Location{};
 	Location.X = InLocationAndArmLength.X;
@@ -1256,7 +1271,7 @@ void AC_Gun::CancelReload()
 
 void AC_Gun::OnReloadEnd()
 {
-	this->ReloadBullet();
+	this->ReloadMagazine();
 	this->SetMagazineVisibility(true);
 }
 

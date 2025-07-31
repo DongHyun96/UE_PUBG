@@ -442,6 +442,7 @@ protected:
 	bool bIsHoldDirection = false;
 	// Alt키 눌렸었는지 체크
 	bool bIsAltPressed = false;
+	
 	bool bCanFireBullet = true;
 	bool bIsAimDownSight = false;
 	bool bIsAimingRifle = false;
