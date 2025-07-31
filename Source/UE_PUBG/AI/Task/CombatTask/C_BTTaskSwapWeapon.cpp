@@ -96,10 +96,10 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	int TotalFiveBulletCount	= Enemy->GetInvenComponent()->GetTotalStackByItemName(FiveBulletItemName);
 
 	AC_Gun* MainGun = Cast<AC_Gun>(Enemy->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN]);
-	TotalFiveBulletCount += MainGun->GetCurBulletCount();
+	TotalFiveBulletCount += MainGun->GetCurMagazineBulletCount();
 
 	AC_Gun* SubGun = Cast<AC_Gun>(Enemy->GetEquippedComponent()->GetWeapons()[EWeaponSlot::SUB_GUN]);
-	TotalSevenBulletCount += SubGun->GetCurBulletCount();
+	TotalSevenBulletCount += SubGun->GetCurMagazineBulletCount();
 
 	float DistanceToTargetCharacter = FVector::Distance(Enemy->GetActorLocation(), TargetCharacter->GetActorLocation());
 	

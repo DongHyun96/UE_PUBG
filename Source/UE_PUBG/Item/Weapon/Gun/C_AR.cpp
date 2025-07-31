@@ -55,7 +55,7 @@ AC_AR::AC_AR()
 void AC_AR::BeginPlay()
 {
 	Super::BeginPlay();
-	AIAttackIntervalTime = GetBulletRPM(); 
+	AIAttackIntervalTime = GetBulletRPM();
 }
 
 void AC_AR::Tick(float DeltaTime)
@@ -65,23 +65,22 @@ void AC_AR::Tick(float DeltaTime)
 
 bool AC_AR::ExecuteReloadMontage()
 {
-	int LeftAmmoCount = 0;
+	if (!IsValid(OwnerCharacter)) return false;
+	
+	int InvenLeftAmmoCount = 0;
 	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
-	if (IsValid(CurBullet))
-	{
-		LeftAmmoCount = CurBullet->GetItemCurStack();
-	}
-	
-	if (!IsValid(OwnerCharacter))		  return false;
-	if (LeftAmmoCount == 0)				  return false;
-	if (CurBulletCount == MaxBulletCount) return false;
-	
-	if (CurBulletCount == MaxBulletCount) return false;
+	if (IsValid(CurBullet)) InvenLeftAmmoCount = CurBullet->GetItemCurStack();
 
+	// Inven에 남은 총알이 없거나, 탄창 최대 장탄 수를 모두 채우고 있을 때
+	if (InvenLeftAmmoCount == 0 || CurMagazineBulletCount == MaxMagazineBulletCount) return false;
+
+	// 이미 장전 모션이 실행 중일 때(이미 장전이 실행 중인 상태일 때)
 	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))
 		return false;
-	if (!OwnerCharacter->GetCanMove()) return false;
 	
+	if (!OwnerCharacter->GetCanMove()) return false;
+
+	// 장전 모션 실행
 	SetMagazineVisibility(false);
 	OwnerCharacter->SetIsReloadingBullet(true);
 	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
@@ -93,58 +92,43 @@ bool AC_AR::ExecuteReloadMontage()
 
 bool AC_AR::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 {
-	FVector BulletSpreadRadius = FVector(100,100,100);
-	FVector EnemyLocation = InTargetCharacter->GetActorLocation();
-	FVector SpreadLocation = UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation,BulletSpreadRadius);
-	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+	if (GetIsPlayingMontagesOfAny()) return false;
 	
+	const FVector BulletSpreadRadius	= FVector(100,100,100);
+	const FVector EnemyLocation			= InTargetCharacter->GetActorLocation();
+	      FVector SpreadLocation		= UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation,BulletSpreadRadius);
+	const FVector FireLocation			= GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+
+	// Target Character가 연막 안에 있을 때, Spread location 재조정
 	FVector SmokeEnemyLocation;
 	if (InTargetCharacter->GetSmokeEnteredChecker()->GetRandomLocationInSmokeArea(SmokeEnemyLocation))
 		SpreadLocation = SmokeEnemyLocation;
 	
-	FVector FireDirection = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
+	FVector BulletVelocity = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
 	
-	if (GetIsPlayingMontagesOfAny())
-	{
-		//UC_Util::Print("AI Cant Fire Gun",FColor::MakeRandomColor(), 1000);
-		return false;
-	}
-
-
-	//if (!SetBulletDirection(FireLocation, FireDirection, HitLocation, HasHit)) return false;
-
-	//UC_Util::Print(FireLocation);
-	//UC_Util::Print(FireDirection);
-
-	//return true;
-	bool ApplyGravity = true;
 	for (auto& Bullet : OwnerCharacter->GetBullets())
 	{
-		if (CurBulletCount == 0)
-			break;
-		if (Bullet->GetIsActive())
+		if (CurMagazineBulletCount == 0) break;
+		
+		if (Bullet->GetIsActive()) continue;
+		
+		CurMagazineBulletCount--;
+
+		if (Bullet->Fire(this, FireLocation, BulletVelocity))
 		{
-			//UC_Util::Print("Can't fire");
-			continue;
+			if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
+			return true;
 		}
-		//UC_Util::Print("FIRE!!!!!!!");
-		CurBulletCount--;
-		bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
-		if (!Succeeded) UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
-		if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
 
-
+		// Fire failed
 		AIFireTimer = 0.0f;
 		// SR의 경우 여기에 ExecuteReloadMontage()가 들어감 (여기 하나만 다름)
-		return Succeeded;
-	
-		//Bullet->Fire(this, FireLocation, FireDirection);
-		//if (BulletCount > 100)
-		//	return true;
+		return false;
 	}
-	ExecuteReloadMontage();
-
-	//UC_Util::Print("No More Bullets in Pool", FColor::MakeRandomColor(), 10.f);
+	
+	ExecuteReloadMontage(); // 탄창 재장전
+	
+	// 현재 Bullet pool에 Available한 총알이 없을 때
 	return false;
 }
 

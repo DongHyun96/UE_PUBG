@@ -219,7 +219,7 @@ void UC_GunSlotWidget::UpdateCurAmmo(AC_Gun* curWeapon)
 	{
 		if (curWeapon)
 		{
-			CurAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d"), curWeapon->GetCurBulletCount())));
+			CurAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d"), curWeapon->GetCurMagazineBulletCount())));
 			CurAmmo->SetVisibility(ESlateVisibility::Visible);
 		}
 		else

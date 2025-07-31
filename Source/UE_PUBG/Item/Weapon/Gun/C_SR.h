@@ -25,10 +25,10 @@ public:
 
 public:
 	
-	virtual bool GetIsPlayingMontagesOfAny();
+	bool GetIsPlayingMontagesOfAny() override;
 	
 	void SetIsReloadingSR(bool InIsReloadingSR) { bIsReloadingSR = InIsReloadingSR; }
-	bool GetIsReloadingSR() { return bIsReloadingSR; }
+	bool GetIsReloadingSR() const { return bIsReloadingSR; }
 	
 	FRotator GetNewRelativeRotationOnCrawl() { return RelativeRotationOnCrawl; }
 
@@ -74,6 +74,7 @@ protected:
 	// 각 피격 부위별 Damage Rate
 	static const TMap<FName, float> BODYPARTS_DAMAGERATE;
 
+	// 볼트액션 장전 Montages
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FPriorityAnimMontage> SniperReloadMontages{};
 

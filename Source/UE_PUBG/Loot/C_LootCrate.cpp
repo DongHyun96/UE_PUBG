@@ -113,7 +113,7 @@ void AC_LootCrate::AddEquippedWeaponsToLoot(UC_EquippedComponent* EquipComp)
 
     if (MainGun)
     {
-        curAmmoCount = MainGun->GetCurBulletCount();
+        curAmmoCount = MainGun->GetCurMagazineBulletCount();
         if (curAmmoCount != 0) //장전된 총알이 없다면 총알을 스폰하지 않음.
         {
             AC_Item* LeftBullet = GAMESCENE_MANAGER->GetItemManager()->SpawnItem(MainGun->GetCurrentBulletTypeName(), FVector(0, 0, 0), curAmmoCount);
@@ -125,20 +125,20 @@ void AC_LootCrate::AddEquippedWeaponsToLoot(UC_EquippedComponent* EquipComp)
             LeftBullet->SetOwner(this);
             LeftBullet->SetActorEnableCollision(false);
             this->AddItemInLootItems(LeftBullet); 
-            MainGun->SetCurBulletCount(0);
+            MainGun->SetCurMagazineBulletCount(0);
         }
     }
 
     if (SubGun)
     {
-        curAmmoCount = SubGun->GetCurBulletCount();
+        curAmmoCount = SubGun->GetCurMagazineBulletCount();
         if (curAmmoCount != 0) //장전된 총알이 없다면 총알을 스폰하지 않음.
         {
             AC_Item* LeftBullet = GAMESCENE_MANAGER->GetItemManager()->SpawnItem(SubGun->GetCurrentBulletTypeName(), FVector(0, 0, 0), curAmmoCount);
             LeftBullet->SetOwner(this);
             LeftBullet->SetActorEnableCollision(false);
             this->AddItemInLootItems(LeftBullet);
-            SubGun->SetCurBulletCount(0);
+            SubGun->SetCurMagazineBulletCount(0);
         }
     }
 

@@ -39,7 +39,6 @@
 #include "Character/C_Enemy.h"
 
 #include "GameFramework/Actor.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 #include "HUD/C_HUDWidget.h"
@@ -48,7 +47,6 @@
 #include "Singleton/C_GameSceneManager.h"
 #include "Singleton/C_GameInstance.h"
 
-#include "InvenUI/Panel/ItemPanel/C_InventoryItemPanelWidget.h"
 #include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWdiget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_GunSlotWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_MainGunSlotWidget.h"
@@ -58,6 +56,16 @@
 #include "Item/ItemManager/C_ItemManager.h"
 
 FTutorialStageGoalCheckerDelegate AC_Gun::WeaponTutorialDelegate{};
+
+/* 무기집 Socket 이름들 */
+const FName AC_Gun::SUB_HOLSTER_SOCKET_NAME		 = "SubGunSocket_NoBag";	
+const FName AC_Gun::MAIN_HOLSTER_SOCKET_NAME	 = "MainGunSocket_NoBag";	
+
+const FName AC_Gun::SUB_HOLSTER_BAG_SOCKET_NAME  = "SubGunSocket_Bag";  	
+const FName AC_Gun::MAIN_HOLSTER_BAG_SOCKET_NAME = "MainGunSocket_Bag"; 	
+const FName AC_Gun::MAGAZINE_SOCKET_NAME		 = "Magazine_Socket";
+
+const FName AC_Gun::SUB_DRAW_SOCKET_NAME		 = "DrawRifleSocket"; // 무기가 손에 부착될 socket 이름
 
 AC_Gun::AC_Gun()
 {
@@ -194,88 +202,26 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 {
 	if (!IsValid(OwnerCharacter)) return false;
 
-	AC_PreviewCharacter* PreviewCharacter = nullptr;
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-
-	if (OwnerPlayer)
-	{
+	// Player이라면, CrossHair 모양 수정
+	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
 		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::NORIFLE);
-		PreviewCharacter = OwnerPlayer->GetPreviewCharacter();
-	}
 
-	EBackPackLevel BackPackLevel = OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel();
+	const bool bHasBackpack = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK] != nullptr;
 
-	AC_EquipableItem* curBackPack = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK];
+	// 배낭을 메고 있는지 여부 & MainGun인지 SubGun인지에 따라 AttackSocket 이름 지정
+	const FName AttachSocketName = (CurState == EGunState::MAIN_GUN) ?
+		(bHasBackpack ? MAIN_HOLSTER_BAG_SOCKET_NAME : MAIN_HOLSTER_SOCKET_NAME) :
+		(bHasBackpack ? SUB_HOLSTER_BAG_SOCKET_NAME  : SUB_HOLSTER_SOCKET_NAME);
 
-	bool IsAttached = false;
+	const bool IsAttached = AttachToComponent
+		(
+			InParent,
+			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+			AttachSocketName
+		);
 
-	if (!curBackPack)
-	{
-		switch (CurState)
-		{
-		case EGunState::MAIN_GUN:
-
-			IsAttached = AttachToComponent
-			(
-				InParent,
-				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-				MAIN_HOLSTER_SOCKET_NAME
-			);
-
-			UpdatePreviewWeaponMesh(this->GetWeaponSlot(), MAIN_HOLSTER_SOCKET_NAME);
-
-			return IsAttached;
-			break;
-		case EGunState::SUB_GUN:
-			IsAttached = AttachToComponent
-			(
-				InParent,
-				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-				SUB_HOLSTER_SOCKET_NAME
-			);
-
-			UpdatePreviewWeaponMesh(this->GetWeaponSlot(), SUB_HOLSTER_SOCKET_NAME);
-
-			return IsAttached;
-			break;
-		default:
-			return false;
-			break;	
-		}
-	}
-	else
-	{
-		switch (CurState)
-		{
-		case EGunState::MAIN_GUN:
-			IsAttached = AttachToComponent
-			(
-				InParent,
-				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-				MAIN_HOLSTER_BAG_SOCKET_NAME
-			);
-
-			UpdatePreviewWeaponMesh(this->GetWeaponSlot(), MAIN_HOLSTER_BAG_SOCKET_NAME);
-
-			return IsAttached;
-			break;
-		case EGunState::SUB_GUN:
-			IsAttached = AttachToComponent
-			(
-				InParent,
-				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-				SUB_HOLSTER_BAG_SOCKET_NAME
-			);
-
-			UpdatePreviewWeaponMesh(this->GetWeaponSlot(), SUB_HOLSTER_BAG_SOCKET_NAME);
-
-			return IsAttached;
-			break;
-		default:
-			return false;
-			break;
-		}
-	}
+	UpdatePreviewWeaponMesh(this->GetWeaponSlot(), AttachSocketName);
+	return IsAttached;
 }
 
 bool AC_Gun::AttachToHand(USceneComponent* InParent)
@@ -303,7 +249,7 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, true);
 		AmmoWidget->SetShootingMode(CurrentShootingMode);
 		//AmmoWidget->SetLeftAmmoText(LeftAmmoCount);
-		AmmoWidget->SetMagazineText(CurBulletCount);
+		AmmoWidget->SetMagazineText(CurMagazineBulletCount);
 	}
 
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
@@ -513,16 +459,10 @@ bool AC_Gun::Interaction(AC_BasicCharacter* Character)
 
 void AC_Gun::CheckBackPackLevelChange()
 {
-	AC_EquipableItem* curBackPack = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK];
-
-	//if (curBackPack)
-	//{
 	if(OwnerCharacter->GetEquippedComponent()->GetCurWeapon() != this)
 		AttachToHolster(OwnerCharacter->GetMesh());
 	
-
 	PrevBackPackLevel = OwnerCharacter->GetInvenComponent()->GetCurBackPackLevel();
-
 }
 
 void AC_Gun::DropItem(AC_BasicCharacter* Character)
@@ -585,11 +525,12 @@ bool AC_Gun::GetIsPlayingMontagesOfAny()
 	//UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 	UAnimMontage* SheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
 	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+	
 	bool IsPlayingMontagesOfAny = 
 		CurAnimInstance->Montage_IsPlaying(DrawMontage)   || 
 		CurAnimInstance->Montage_IsPlaying(SheathMontage) ||
 		CurAnimInstance->Montage_IsPlaying(ReloadMontage);
-	//UC_Util::Print(IsPlayingMontagesOfAny, FColor::Magenta, 10);
+	
 	return IsPlayingMontagesOfAny;
 }
 
@@ -655,7 +596,7 @@ bool AC_Gun::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 		UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
 		//equipComp->SetSlotWeapon(GetWeaponSlot(), nullptr);
 		//invenComp->AddItemToAroundList(this);
-		int32 LeftBulletCount = GetCurBulletCount();
+		int32 LeftBulletCount = GetCurMagazineBulletCount();
 		
 		if (LeftBulletCount == 0) return true;
 		
@@ -671,7 +612,7 @@ bool AC_Gun::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 		LeftBulletItem->MoveToInven(Character, LeftBulletCount);
 		LeftBulletItem->SetActorEnableCollision(true);
 		
-		SetCurBulletCount(0);
+		SetCurMagazineBulletCount(0);
 
 		return true;
 	}
@@ -694,11 +635,10 @@ bool AC_Gun::FireBullet()
 	//ExecuteReloadMontage();
 
 
-	FVector FireLocation;
-	FVector FireDirection;
-	FVector HitLocation;
+	FVector FireLocation{}, FireVelocity{}, HitLocation{};
+	
 	bool HasHit;
-	if (!SetBulletDirection(FireLocation, FireDirection,HitLocation, HasHit)) return false;
+	if (!SetBulletVelocity(FireLocation, FireVelocity, HitLocation, HasHit)) return false;
 
 	//UC_Util::Print(FireLocation);
 	//UC_Util::Print(FireDirection);
@@ -714,11 +654,11 @@ bool AC_Gun::FireBullet()
 		}
 		BulletCount++;
 		//UC_Util::Print("FIRE!!!!!!!");
-		CurBulletCount--;
+		CurMagazineBulletCount--;
 		OwnerPlayer->RecoilController();
 		if (HasHit)
 		{
-			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity, HitLocation);
+			bool Succeeded = Bullet->Fire(this, FireLocation, FireVelocity, ApplyGravity, HitLocation);
 			//if (Cast<AC_Player>(OwnerCharacter))
 			if (OwnerCharacter->IsLocallyControlled())
 			{
@@ -730,7 +670,7 @@ bool AC_Gun::FireBullet()
 			}
 			if (Succeeded) 
 			{ 
-				OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true); 
+				OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true); 
 
 				if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::MAIN_GUN )
 					OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot()->UpdateCurAmmo(this);
@@ -754,7 +694,7 @@ bool AC_Gun::FireBullet()
 		}
 		else
 		{
-			bool Succeeded = Bullet->Fire(this, FireLocation, FireDirection, ApplyGravity);
+			bool Succeeded = Bullet->Fire(this, FireLocation, FireVelocity, ApplyGravity);
 			//if (Cast<AC_Player>(OwnerCharacter))
 			if (OwnerCharacter->IsLocallyControlled())
 			{
@@ -767,7 +707,7 @@ bool AC_Gun::FireBullet()
 
 			if (Succeeded)
 			{
-				OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
+				OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true);
 
 				if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::MAIN_GUN)
 					OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot()->UpdateCurAmmo(this);
@@ -807,7 +747,7 @@ bool AC_Gun::FireBullet()
 
 bool AC_Gun::ReloadBullet()
 {
-	if (CurBulletCount == MaxBulletCount) return false;
+	if (CurMagazineBulletCount == MaxMagazineBulletCount) return false;
 	int LeftAmmoCount = 0;
 	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
 	UC_InvenComponent* InvenComp = OwnerCharacter->GetInvenComponent();
@@ -818,7 +758,7 @@ bool AC_Gun::ReloadBullet()
 	}
 
 	OwnerCharacter->SetIsReloadingBullet(false);
-	int BeforeChangeAmmo = CurBulletCount;
+	int BeforeChangeAmmo = CurMagazineBulletCount;
 
 	int RemainAmmo;
 	int ChangedStack;
@@ -829,9 +769,9 @@ bool AC_Gun::ReloadBullet()
 		CurrentSR->SetIsReloadingSR(false);
 	if (LeftAmmoCount == 0) return false;
 
-	CurBulletCount = FMath::Min(MaxBulletCount, LeftAmmoCount);
+	CurMagazineBulletCount = FMath::Min(MaxMagazineBulletCount, LeftAmmoCount);
 
-	RemainAmmo = -BeforeChangeAmmo + CurBulletCount;
+	RemainAmmo = -BeforeChangeAmmo + CurMagazineBulletCount;
 
 	ChangedStack = LeftAmmoCount - RemainAmmo;
 	
@@ -847,7 +787,7 @@ bool AC_Gun::ReloadBullet()
 	{
 		OwnerPlayer->GetInvenSystem()->InitializeList();
 		//OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(CurBullet->GetItemCurStack(), true);
-		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurBulletCount, true);
+		OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true);
 	}
 
 	// 장전 성공
@@ -859,27 +799,22 @@ bool AC_Gun::ReloadBullet()
 void AC_Gun::SetBulletSpeed()
 {
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-	if (!IsValid(OwnerPlayer))
-	{
-		return;
-	}
+	if (!IsValid(OwnerPlayer)) return;
+		
 	for (auto& Bullet : OwnerPlayer->GetBullets())
 	{
-		if (IsValid(Bullet))
+		if (!IsValid(Bullet)) continue;
+
+		UProjectileMovementComponent* ProjectileMovement = Bullet->FindComponentByClass<UProjectileMovementComponent>();
+		if (ProjectileMovement)
 		{
-			// UC_Util::Print("FindBullet");
-
-			UProjectileMovementComponent* ProjectileMovement = Bullet->FindComponentByClass<UProjectileMovementComponent>();
-			if (ProjectileMovement)
-			{
-				ProjectileMovement->InitialSpeed = GunDataRef->BulletSpeed;
-
-			}
+			ProjectileMovement->InitialSpeed = GunDataRef->BulletSpeed;
+			break;
 		}
 	}
 }
 
-bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVector &OutHitLocation, bool& OutHasHit)
+bool AC_Gun::SetBulletVelocity(FVector &OutLocation, FVector &OutDirection, FVector &OutHitLocation, bool& OutHasHit)
 {
 	FHitResult HitResult;
 	//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
@@ -912,7 +847,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	HitResult = {};
 	FVector WorldLocation, WorldDirection;
 	FVector CenterLocation, CenterDirection;
-	APlayerController* WolrdContorller = GetWorld()->GetFirstPlayerController();
+	APlayerController* WorldController = GetWorld()->GetFirstPlayerController();
 	TArray<UUserWidget*> FoundWidgets;
 	UUserWidget* MyWidget = AimWidget;
 	UImage* MyImage;
@@ -980,7 +915,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 		RandomPointOnScreen.Y = (0.5 * ViewportSize.Y + RandomPoint.Y);
 	}
 
-	WolrdContorller->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, WorldLocation, WorldDirection);
+	WorldController->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, WorldLocation, WorldDirection);
 	FVector DestLocation = WorldLocation + WorldDirection * 100000;
 	if (GetIsPartAttached(EPartsName::SCOPE))
 	{
@@ -1007,7 +942,7 @@ bool AC_Gun::SetBulletDirection(FVector &OutLocation, FVector &OutDirection, FVe
 	//UC_Util::Print(FireLocation);
 	//UC_Util::Print(FireLocation2, FColor::Blue);
 	FVector FireDirection;
-	WolrdContorller->DeprojectScreenPositionToWorld(0.5 * ViewportSize.X, 0.5 * ViewportSize.Y, CenterLocation,CenterDirection);
+	WorldController->DeprojectScreenPositionToWorld(0.5 * ViewportSize.X, 0.5 * ViewportSize.Y, CenterLocation,CenterDirection);
 	if (HitResult.Distance <= 1000 && HitResult.Distance >0)
 	{
 		//FireLocation.Z += 20;
@@ -1226,20 +1161,6 @@ void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
 
 bool AC_Gun::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
-	/*if (!CanAIAttack(InTargetCharacter)) return false;
-	
-	int BackpackBulletStack = 0;
-	if (IsValid(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())))
-		BackpackBulletStack = OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())->GetItemCurStack();
-	
-	if (CurBulletCount == 0 &&  BackpackBulletStack == 0)
-	{
-		// Back to wait condition
-		return false;
-	}
-	
-	return true;*/
-
 	// 기존에는 장전을 Inven에 있는 총알을 사용해서 장전함
 	// 수정 후 -> 장전용 총알은 무제한으로 두고 Inven의 총알은 안건드리는 식으로 수정
 	return CanAIAttack(InTargetCharacter);
@@ -1249,17 +1170,13 @@ bool AC_Gun::ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const
 {
 	if (!CanAIAttack(InTargetCharacter)) return false;
 
-	// 탄창에 총알이 하나도 남지 않았고, Inven에도 총알이 없는 상황
-	/*int BackpackBulletStack = 0;
-	if (IsValid(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())))
-		BackpackBulletStack = OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName())->GetItemCurStack();
-	if (CurBulletCount == 0 &&  BackpackBulletStack== 0)
+	// 탄창에 남은 총알이 없을 때
+	if (CurMagazineBulletCount == 0)
 	{
-		UC_Util::Print("Back To Wait Condition");
-		return false;
-	}*/
+		ExecuteReloadMontage(); // Template primitive method (탄창 재장전)
+		return false; // 장전 후 Attack Tick Task 우선은 종료
+	}
 	
-	//ExecuteReloadMontage();
 	const FVector  EnemyLocation = InTargetCharacter->GetActorLocation();
 	const FVector  Direction     = (EnemyLocation - GetActorLocation()).GetSafeNormal();
 	const FRotator LookRotation  = Direction.Rotation();
@@ -1279,43 +1196,26 @@ bool AC_Gun::ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const
 	// 아직 발사 Delay 시간까지 남아있거나 몸체가 TargetCharacter를 향해 적정량 돌지 않았다면 continue
 	if (AIFireTimer < AIAttackIntervalTime || abs(NewRotation.Yaw - LookRotation.Yaw) > 10.f) return true;
 
+	AIFireTimer -= AIAttackIntervalTime;
+	
 	// 총알이 제대로 발사되었다면 TickTask 지속 | 아니라면 AIAttackTickTask 종료
-	return AIFireBullet(InTargetCharacter);
+	return AIFireBullet(InTargetCharacter); // Template primitive method
 }
 
 bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)
 {
-	if (!IsValid(OwnerCharacter))
-	{
-		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid OwnerCharacter", FColor::MakeRandomColor(), 10.f);
-		return false;
-	}
-	if (!IsValid(InTargetCharacter))
-	{
-		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid InTargetCharacter", FColor::MakeRandomColor(), 10.f);
-		return false;
-	}
-	if (InTargetCharacter->GetMainState() == EMainState::DEAD)
-	{
-		UC_Util::Print("From AC_Gun::ExecuteAIAttack : InTargetCharacter already dead!", FColor::MakeRandomColor(), 10.f);
-
-		return false;
-	}
+	if (!IsValid(InTargetCharacter)) return false;
+	if (InTargetCharacter->GetMainState() == EMainState::DEAD) return false;
+	
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
-	if (!OnScreen)
-	{
-		UC_Util::Print("From AC_Gun::ExecuteAIAttack : OnScreen Failed", FColor::MakeRandomColor(), 10.f);
-		return false;
-	}
-	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter); 
-	if (!IsValid(OwnerEnemy))
-	{
-		UC_Util::Print("From AC_Gun::ExecuteAIAttack : Invalid OwnerEnemy", FColor::MakeRandomColor(), 10.f);
-		return false;
-	}
+	if (!OnScreen) return false;
+		
+	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter);
 	if (!OwnerEnemy->GetEnemyAIController()->IsCurrentlyOnSight(InTargetCharacter))
 		return false;
 
+	AC_EnemyAIController* EnemyAIController = Cast<AC_EnemyAIController>(OwnerCharacter->GetController());
+	if (!EnemyAIController->IsCurrentlyOnSight(InTargetCharacter)) return false;
 	
 	return true;
 }

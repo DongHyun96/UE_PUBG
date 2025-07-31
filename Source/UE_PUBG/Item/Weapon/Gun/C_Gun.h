@@ -34,7 +34,7 @@ enum class EShootingMode : uint8
 	SEMI_AUTO,		// 단발
 	FULL_AUTO,		// 연사
 	BURST,			// 점사
-	SINGLE_SHOT,	// SR용 Shooting Mode
+	SR_SINGLE_SHOT,	// SR용 Shooting Mode
 	MAX
 };
 
@@ -190,32 +190,41 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages> SheathMontages{};
 
+	// 자세별 탄창 장전 Montages
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages> ReloadMontages{};
 
 	virtual bool GetIsPlayingMontagesOfAny();
 	
 	virtual void ChangeCurShootingMode() PURE_VIRTUAL(AC_Gun::ChangeCurShootingMode, );
+	
 	virtual bool ExecuteReloadMontage() PURE_VIRTUAL(AC_Gun::ExecuteReloadMontage, return true; );
+	
 	bool bIsSniperReload = false;
 	void SetIsSniperReload(bool InIsSniperReload) { bIsSniperReload = InIsSniperReload; }
 	class UCanvasPanelSlot* AimImage;
 	float MilitaryOperationArea;
 	FVector2D PanelSize;
-protected:
-	const FName SUB_HOLSTER_SOCKET_NAME = "SubGunSocket_NoBag"; // 무기집 socket 이름
-	const FName MAIN_HOLSTER_SOCKET_NAME = "MainGunSocket_NoBag"; // 무기집 socket 이름
+	
+protected: /* 무기집 Socket 이름들 */
+	
+	static const FName SUB_HOLSTER_SOCKET_NAME;
+	static const FName MAIN_HOLSTER_SOCKET_NAME;
 
-	const FName SUB_HOLSTER_BAG_SOCKET_NAME = "SubGunSocket_Bag"; // 무기집 socket 이름
-	const FName MAIN_HOLSTER_BAG_SOCKET_NAME = "MainGunSocket_Bag"; // 무기집 socket 이름
-	const FName MAGAZINE_SOCKET_NAME = "Magazine_Socket";
+	static const FName SUB_HOLSTER_BAG_SOCKET_NAME;
+	static const FName MAIN_HOLSTER_BAG_SOCKET_NAME;
+	static const FName MAGAZINE_SOCKET_NAME;
 	
+protected:
 	
-	FName EQUIPPED_SOCKET_NAME; 
-	//const FName EQUIPPED_SOCKET_NAME = "Rifle_Equip"; // 무기가 손에 부착될 socket 이름
-	const FName SUB_DRAW_SOCKET_NAME = "DrawRifleSocket"; // 무기가 손에 부착될 socket 이름
+	FName EQUIPPED_SOCKET_NAME;
 	EGunState CurState = EGunState::MAIN_GUN;
+
+private:
+	
+	static const FName SUB_DRAW_SOCKET_NAME; // 무기가 손에 부착될 socket 이름
 	bool bIsAimDown = false;
+	
 protected:
 	//블루프린트에서 할당한 스켈레탈 메쉬를 저장하는 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -232,10 +241,10 @@ public:
 	UCameraComponent* AimSightCamera;
 
 	class USpringArmComponent* AimSightSpringArm{};
-	int GetCurBulletCount() { return CurBulletCount; }
-	int GetMaxBulletCount() { return MaxBulletCount; }
+	int GetCurMagazineBulletCount() const { return CurMagazineBulletCount; }
+	int GetMaxMagazineBulletCount() const { return MaxMagazineBulletCount; }
 
-	void SetCurBulletCount(int InCount) { CurBulletCount = InCount; }
+	void SetCurMagazineBulletCount(int InCount) { CurMagazineBulletCount = InCount; }
 
 	UFUNCTION(BlueprintCallable)
 	EBulletType GetCurBulletType() const { return GunDataRef->CurGunBulletType; }
@@ -262,20 +271,18 @@ protected:
 	const FGunSoundData* GunSoundData = nullptr;
 
 public:
-	const FName GetSUB_HOLSTER_SOCKET_NAME()  { return SUB_HOLSTER_SOCKET_NAME; }
-	const FName GetMAIN_HOLSTER_SOCKET_NAME()  { return MAIN_HOLSTER_SOCKET_NAME; }
-	const FName GetSUB_HOLSTER_BAG_SOCKET_NAME()  { return SUB_HOLSTER_BAG_SOCKET_NAME; }
-	const FName GetMAIN_HOLSTER_BAG_SOCKET_NAME()  { return MAIN_HOLSTER_BAG_SOCKET_NAME; }
 
 	FName GetEQUIPPED_SOCKET_NAME() const { return EQUIPPED_SOCKET_NAME; }
-protected:
-	/// <summary>
-	/// 총알 발사 관련 변수들
-	/// </summary>
+	
+protected: // 총알 발사 관련 변수들
+
+	// 현재 탄창에 남은 탄알 수
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int CurBulletCount;
+	int CurMagazineBulletCount{};
+
+	// 탄창 최대 장탄 수
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MaxBulletCount;
+	int MaxMagazineBulletCount{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EShootingMode CurrentShootingMode = EShootingMode::FULL_AUTO;
@@ -301,8 +308,8 @@ public:
 	//class AC_Bullet* Bullet;
 
 	//void SpawnBulletForTest();
-	virtual void SetBulletSpeed();
-	virtual bool SetBulletDirection(FVector& OutLocation, FVector& OutDirection, FVector& OutHitLocation, bool& OutHasHit);
+	void SetBulletSpeed();
+	bool SetBulletVelocity(FVector& OutLocation, FVector& OutDirection, FVector& OutHitLocation, bool& OutHasHit);
 
 
 	EBackPackLevel PrevBackPackLevel;
