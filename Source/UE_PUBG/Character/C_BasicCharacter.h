@@ -241,7 +241,9 @@ public: // Getters and setters
 	UFUNCTION(BlueprintCallable)
 	EHandState GetHandState() const { return HandState; }
 	EPoseState GetPoseState() const { return PoseState; }
-	void SetHandState(EHandState InHandState) { HandState = InHandState; }
+	//void SetHandState(EHandState InHandState) { HandState = InHandState; }
+	void SetHandState(EHandState InHandState);
+
 
 	void SetIsHitting(bool bHit) { bIsHitting = bHit; }
 

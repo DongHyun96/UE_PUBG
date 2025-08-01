@@ -276,8 +276,12 @@ bool AC_Gun::AttachToHand(USceneComponent* InParent)
 			return IsAttached;
 		}
 	}
-	OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
 
+	OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
+	//if (OwnerPlayer)
+	//{
+	//	OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_GUN);
+	//}
 
 	if (OwnerPlayer)
 	{

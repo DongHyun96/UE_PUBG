@@ -117,6 +117,13 @@ bool AC_MeleeWeapon::AttachToHand(USceneComponent* InParent)
 {
 	OwnerCharacter->SetHandState(EHandState::WEAPON_MELEE);
 
+	//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	//
+	//if (OwnerPlayer)
+	//{
+	//	OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_MELEE);
+	//}
+
 	AC_Player* Player = Cast<AC_Player>(OwnerCharacter);
 
 	bool bIsAttached = AttachToComponent

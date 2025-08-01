@@ -8,6 +8,7 @@
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/Gun/C_SR.h"
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
+#include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/C_Player.h"
@@ -194,16 +195,16 @@ bool AC_PreviewCharacter::AttachThrowableWeaponMesh(FName InSocket)
 	UC_EquippedComponent* EquippedComp = OwnerPlayer->GetEquippedComponent();
 
 	// 기존 메시 제거
-	DetachWeaponMesh(EWeaponSlot::MELEE_WEAPON);
+	DetachWeaponMesh(EWeaponSlot::THROWABLE_WEAPON);
 
-	AC_MeleeWeapon* MeleeWeapon = Cast<AC_MeleeWeapon>(EquippedComp->GetWeapons()[EWeaponSlot::MELEE_WEAPON]);
-	if (!MeleeWeapon) return false; // 무기가 없으면 false 리턴
+	AC_ThrowingWeapon* ThrowingWeapon = Cast<AC_ThrowingWeapon>(EquippedComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]);
+	if (!ThrowingWeapon) return false; // 무기가 없으면 false 리턴
 
-	UStaticMeshComponent* SourceMesh = Cast<UStaticMeshComponent>(MeleeWeapon->GetItemMeshComp());
+	UStaticMeshComponent* SourceMesh = Cast<UStaticMeshComponent>(ThrowingWeapon->GetItemMeshComp());
 	if (!SourceMesh || !SourceMesh->GetStaticMesh()) return false;
 
 	// Preview용 StaticMeshComponent 생성
-	UStaticMeshComponent* NewMesh = NewObject<UStaticMeshComponent>(this, TEXT("PreviewMeleeWeaponMesh"));
+	UStaticMeshComponent* NewMesh = NewObject<UStaticMeshComponent>(this, TEXT("PreviewThrowingWeaponMesh"));
 	if (!NewMesh) return false;
 
 	NewMesh->SetStaticMesh(SourceMesh->GetStaticMesh());

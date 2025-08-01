@@ -9,6 +9,7 @@
 
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Character/C_PreviewCharacter.h"
 
 #include "Component/C_StatComponent.h"
 #include "Component/C_ConsumableUsageMeshComponent.h"
@@ -429,6 +430,20 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 	}
 
 	GetCharacterMovement()->MaxWalkSpeed *= BoostingSpeedFactor;
+}
+
+void AC_BasicCharacter::SetHandState(EHandState InHandState)
+{
+	HandState = InHandState;
+
+	AC_Player* Player = Cast<AC_Player>(this);
+
+	if (Player)
+	{
+		Player->GetPreviewCharacter()->UpdateHandPose(HandState);
+	}
+
+
 }
 
 void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)

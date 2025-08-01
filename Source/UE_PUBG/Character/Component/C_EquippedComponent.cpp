@@ -85,7 +85,11 @@ AC_Weapon* UC_EquippedComponent::SetSlotWeapon(EWeaponSlot InSlot, AC_Weapon* We
             CurWeaponType   = EWeaponSlot::NONE;
             OwnerCharacter->SetHandState(EHandState::UNARMED);
 
-            if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetVisibility(ESlateVisibility::Hidden);
+            if (OwnerPlayer) 
+            {
+                OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetVisibility(ESlateVisibility::Hidden); 
+				//OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
+            }
         }
 
         return PrevSlotWeapon;
@@ -298,6 +302,10 @@ bool UC_EquippedComponent::ChangeCurWeapon(EWeaponSlot InChangeTo)
             CurWeaponType = EWeaponSlot::NONE;
             NextWeaponType = EWeaponSlot::NONE;
             OwnerCharacter->SetHandState(EHandState::UNARMED);
+            //if (OwnerPlayer)
+            //{
+            //    OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
+            //}
             return false;
         }
 
@@ -380,7 +388,6 @@ bool UC_EquippedComponent::ToggleArmed()
 bool UC_EquippedComponent::TryAttachCurWeaponToHolsterWithoutSheathMotion()
 {
     if (!GetCurWeapon()) return false;
-
     // 투척류 예외처리
     if (CurWeaponType == EWeaponSlot::THROWABLE_WEAPON)
     {
@@ -392,13 +399,17 @@ bool UC_EquippedComponent::TryAttachCurWeaponToHolsterWithoutSheathMotion()
                 return ThrowingWeapon->ReleaseOnGround();
         }
     }
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
     // 현재 들고 있는 무기가 존재한다면 무기 잠깐 몸 쪽에 붙이기
     GetCurWeapon()->AttachToHolster(OwnerCharacter->GetMesh());
     OwnerCharacter->SetHandState(EHandState::UNARMED);
-
+    //if (OwnerPlayer)
+    //{
+    //    OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
+    //}
     // Player 총기류 예외처리
-    if (IsValid(Cast<AC_Player>(OwnerCharacter))) if (AC_Gun* Gun = Cast<AC_Gun>(GetCurWeapon()))
+    if (IsValid(OwnerPlayer)) if (AC_Gun* Gun = Cast<AC_Gun>(GetCurWeapon()))
         Gun->BackToMainCamera();
 
     return true;
@@ -423,7 +434,7 @@ void UC_EquippedComponent::OnSheathEnd()
         UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
         AmmoWidget->SetVisibility(ESlateVisibility::Hidden);
     }
-
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
     // 무기를 바꾸는 도중에 SlotWeapon 장착 해제 예외 처리
     if (!GetCurWeapon())
     {
@@ -435,6 +446,11 @@ void UC_EquippedComponent::OnSheathEnd()
             CurWeaponType   = EWeaponSlot::NONE;
             NextWeaponType  = EWeaponSlot::NONE;
             
+            //if (OwnerPlayer)
+            //{
+            //    OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
+            //}
+
             bIsCurrentlyChangingWeapon = false;
             
             return;
@@ -459,6 +475,12 @@ void UC_EquippedComponent::OnSheathEnd()
     if (!IsValid(GetCurWeapon()))
     {
         OwnerCharacter->SetHandState(EHandState::UNARMED);
+
+        //if (OwnerPlayer)
+        //{
+        //    OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
+        //}
+
         bIsCurrentlyChangingWeapon = false;
         return;
     }
@@ -468,6 +490,8 @@ void UC_EquippedComponent::OnSheathEnd()
 
 void UC_EquippedComponent::OnDrawStart()
 {
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+
     // 무기를 바꾸는 도중에 SlotWeapon 장착 해제 예외 처리 -> 바꿔들 무기가 사라졌을 때
     if (!Weapons[NextWeaponType])
     {
@@ -476,6 +500,10 @@ void UC_EquippedComponent::OnDrawStart()
         NextWeaponType  = EWeaponSlot::NONE;
         CurWeaponType   = EWeaponSlot::NONE;
         OwnerCharacter->SetHandState(EHandState::UNARMED);
+        //if (OwnerPlayer)
+        //{
+        //    OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
+        //}
         return;
     }
 
@@ -497,6 +525,14 @@ void UC_EquippedComponent::OnDrawEnd()
         NextWeaponType  = EWeaponSlot::NONE;
         CurWeaponType   = EWeaponSlot::NONE;
         OwnerCharacter->SetHandState(EHandState::UNARMED);
+
+		//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+        //
+        //if (OwnerPlayer)
+        //{
+        //    OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
+        //}
+
         return;
     }
 

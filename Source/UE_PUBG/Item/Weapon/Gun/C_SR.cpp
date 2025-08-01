@@ -7,6 +7,7 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
+#include "Character/C_PreviewCharacter.h"
 #include "Character/Component/C_SmokeEnteredChecker.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -82,6 +83,14 @@ bool AC_SR::ExecuteReloadMontage()
 		OwnerCharacter->PlayAnimMontage(SniperReloadMontages[OwnerCharacter->GetPoseState()]);
 		
 		OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
+
+		//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+		//
+		//if (OwnerPlayer)
+		//{
+		//	OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_GUN);
+		//}
+
 		bIsSniperReload = true;
 		OwnerCharacter->SetIsReloadingBullet(true);
 		BackToMainCamera();

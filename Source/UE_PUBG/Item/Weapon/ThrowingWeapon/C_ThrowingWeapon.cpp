@@ -269,16 +269,20 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 
 	OwnerCharacter->SetHandState(EHandState::WEAPON_THROWABLE);
 	
+
+
 	// Self init
 	bIsCharging = false;
 	bIsOnThrowProcess = false;
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
-	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
+	if (OwnerPlayer)
 	{
 		UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
 		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, false);
 
 		UpdateAmmoWidgetMagazineText(OwnerPlayer);
+		OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_THROWABLE);
 	}
 
 	bool bIsAttached = AttachToComponent
@@ -288,7 +292,7 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 		EQUIPPED_SOCKET_NAMES[ThrowableType]
 	);
 
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter)7
 
 	if (OwnerPlayer)
 	{
