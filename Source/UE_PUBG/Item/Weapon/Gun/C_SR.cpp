@@ -62,56 +62,36 @@ void AC_SR::Tick(float DeltaTime)
 	SetRelativeRotationOnCrawl();
 }
 
-bool AC_SR::ExecuteReloadMontage()
+bool AC_SR::ExecuteBoltActionReloadMontage()
 {
 	if (!IsValid(OwnerCharacter)) return false;
-	
-	int InvenLeftAmmo = 0;
-	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
-	if (IsValid(CurBullet)) InvenLeftAmmo = CurBullet->GetItemCurStack();
-	
 
 	// 이미 탄창 장전 모션이 실행중일 때
 	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))
 		return false;
 
-	// 볼트액션 재장전 처리 부분
-	if (CurMagazineBulletCount >= 1 && !bIsReloadingSR)
-	{
-		if (SniperReloadMontages.IsEmpty()) return false;
-		
-		OwnerCharacter->PlayAnimMontage(SniperReloadMontages[OwnerCharacter->GetPoseState()]);
-		
-		OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
+	// Bolt Action 장전할 수 없는 상황일 때
+	if (CurMagazineBulletCount == 0 || bIsCurrentlyReloadingSRMagazine) return false;	
 
-		//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-		//
-		//if (OwnerPlayer)
-		//{
-		//	OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_GUN);
-		//}
-
-		bIsSniperReload = true;
-		OwnerCharacter->SetIsReloadingBullet(true);
-		BackToMainCamera();
-		//OwnerPlayer->SetRecoilTimelineValues(BulletRPM);
+	// 볼트액션 장전 Montage가 없을 때
+	if (SniperReloadMontages.IsEmpty()) return false;
 		
-		return AttachToComponent
-		(
-			OwnerCharacter->GetMesh(),
-			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-			SR_RELOAD_LEFT_HAND_SOCKET_NAME
-		);
-	}
-	
-	if (InvenLeftAmmo == 0) return false;
+	OwnerCharacter->PlayAnimMontage(SniperReloadMontages[OwnerCharacter->GetPoseState()]);
+		
+	OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
+
 	
 	OwnerCharacter->SetIsReloadingBullet(true);
-	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
 	BackToMainCamera();
-	
-	return true;
-}	
+	//OwnerPlayer->SetRecoilTimelineValues(BulletRPM);
+		
+	return AttachToComponent
+	(
+		OwnerCharacter->GetMesh(),
+		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+		SR_RELOAD_LEFT_HAND_SOCKET_NAME
+	);
+}
 
 bool AC_SR::GetIsPlayingMontagesOfAny()
 {
@@ -171,7 +151,7 @@ bool AC_SR::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 		CurMagazineBulletCount--;
 		if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
 		
-		ExecuteReloadMontage(); // 볼트액션 장전
+		ExecuteBoltActionReloadMontage();
 
 		return Succeeded;
 	}
@@ -205,10 +185,10 @@ void AC_SR::CancelReload()
 
 	UAnimMontage* SniperReloadMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
 	UC_Util::Print("CancelReload : ", FColor::Red, 10.f);
-	bIsReloadingSR = false;
+	bIsCurrentlyReloadingSRMagazine = false;
 	if (CurAnimInstance->Montage_IsPlaying(ReloadMontage) || CurAnimInstance->Montage_IsPlaying(SniperReloadMontage))
 	{
-		CurAnimInstance->Montage_Stop(0.02);
+		CurAnimInstance->Montage_Stop(0.02f);
 	}
 	OwnerCharacter->SetIsReloadingBullet(false);
 

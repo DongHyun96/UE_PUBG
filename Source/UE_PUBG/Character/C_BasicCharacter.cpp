@@ -525,7 +525,7 @@ void AC_BasicCharacter::ExecuteGunTransitionAction(AC_Gun* CurGun, EPoseState In
 	{
 		UAnimInstance* TempAnimInstance  = GetMesh()->GetAnimInstance();
 		UAnimMontage*  CurReloadMontage  = nullptr;
-		UAnimMontage*  NextReloadMontage = CurGun->ReloadMontages[InNextPoseState].Montages[CurGun->GetCurrentWeaponState()].AnimMontage;
+		UAnimMontage*  NextReloadMontage = CurGun->GetReloadMontage(InNextPoseState, CurGun->GetCurrentWeaponState()).AnimMontage;
 		if (IsValid(TempAnimInstance)  && IsValid(NextReloadMontage))
 		{
 			float HighestWeight = 0.0f;

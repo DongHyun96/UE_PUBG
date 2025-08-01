@@ -63,33 +63,6 @@ void AC_AR::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-bool AC_AR::ExecuteReloadMontage()
-{
-	if (!IsValid(OwnerCharacter)) return false;
-	
-	int InvenLeftAmmoCount = 0;
-	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
-	if (IsValid(CurBullet)) InvenLeftAmmoCount = CurBullet->GetItemCurStack();
-
-	// Inven에 남은 총알이 없거나, 탄창 최대 장탄 수를 모두 채우고 있을 때
-	if (InvenLeftAmmoCount == 0 || CurMagazineBulletCount == MaxMagazineBulletCount) return false;
-
-	// 이미 장전 모션이 실행 중일 때(이미 장전이 실행 중인 상태일 때)
-	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))
-		return false;
-	
-	if (!OwnerCharacter->GetCanMove()) return false;
-
-	// 장전 모션 실행
-	SetMagazineVisibility(false);
-	OwnerCharacter->SetIsReloadingBullet(true);
-	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]);
-	
-	BackToMainCamera();
-	
-	return true;
-}
-
 bool AC_AR::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 {
 	if (GetIsPlayingMontagesOfAny()) return false;
@@ -126,7 +99,7 @@ bool AC_AR::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 		return false;
 	}
 	
-	ExecuteReloadMontage(); // 탄창 재장전
+	ExecuteMagazineReloadMontage(); // 탄창 재장전
 	
 	// 현재 Bullet pool에 Available한 총알이 없을 때
 	return false;

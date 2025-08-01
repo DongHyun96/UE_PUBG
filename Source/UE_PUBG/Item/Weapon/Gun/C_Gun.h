@@ -103,10 +103,13 @@ USTRUCT(BlueprintType)
 struct FAnimationMontages
 {
 	GENERATED_BODY()
+	
 public:
+
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TMap<EGunState, FPriorityAnimMontage> Montages;
+	TMap<EGunState, FPriorityAnimMontage> Montages{};
 };
+
 UCLASS(Abstract)
 class UE_PUBG_API AC_Gun : public AC_Weapon
 {
@@ -183,7 +186,7 @@ protected:
 	/// <param name="InSlot"></param>
 	void UpdatePreviewWeaponMesh(EWeaponSlot InSlot, FName InSocket);
 
-public:
+protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages > DrawMontages{};
 
@@ -194,17 +197,25 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EPoseState, FAnimationMontages> ReloadMontages{};
 
+public:
+	
+	/// <summary>
+	/// PoseState와 GunState에 맞는(해당하는) Reload Montage 반환
+	/// </summary>
+	/// <returns> : PriorityAnimMontage </returns>
+	FPriorityAnimMontage GetReloadMontage(EPoseState InPoseState, EGunState InGunState) const;
+
+public:
+	
 	virtual bool GetIsPlayingMontagesOfAny();
 	
 	virtual void ChangeCurShootingMode() PURE_VIRTUAL(AC_Gun::ChangeCurShootingMode, );
-	
-	virtual bool ExecuteReloadMontage() PURE_VIRTUAL(AC_Gun::ExecuteReloadMontage, return true; );
-	
-	bool bIsSniperReload = false;
-	void SetIsSniperReload(bool InIsSniperReload) { bIsSniperReload = InIsSniperReload; }
-	class UCanvasPanelSlot* AimImage;
-	float MilitaryOperationArea;
-	FVector2D PanelSize;
+
+	/// <summary>
+	/// 탄창 재장전 실행
+	/// </summary>
+	/// <returns> : 제대로 실행되지 않았거나 실행될 수 없는 상황이라면 return false </returns>
+	bool ExecuteMagazineReloadMontage();
 	
 protected: /* 무기집 Socket 이름들 */
 	
@@ -302,7 +313,13 @@ public:
 	float GetBulletRPM() { return GunDataRef->BulletRPM; }
 	virtual bool FireBullet();
 
-	bool ReloadBullet();
+private:
+	
+	/// <summary>
+	/// Reload Montage 모션 끝난 이후, 실질적으로 탄창의 탄알 채우기 처리 함수
+	/// </summary>
+	/// <returns> : 제대로 Magazine이 장전되지 않았거나 장전될 수 없는 상황이라면 return false </returns>
+	bool ReloadMagazine();
 
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//class AC_Bullet* Bullet;
@@ -312,11 +329,14 @@ public:
 	bool SetBulletVelocity(FVector& OutLocation, FVector& OutDirection, FVector& OutHitLocation, bool& OutHasHit);
 
 
-	EBackPackLevel PrevBackPackLevel;
+	EBackPackLevel PrevBackPackLevel{};
 
 	void SetAimSightWidget();
 
+public:
+	
 	float GetBaseBulletSpreadDegree() { return GunDataRef->BaseBulletSpreadDegree; }
+	
 protected:
 	//Aim 위젯
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -326,8 +346,7 @@ protected:
 protected:
 	//탄창
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-
-	class AC_AttachableItem* Magazine{};
+	AC_AttachableItem* Magazine{};
 
 	void LoadMagazine();
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -398,7 +417,7 @@ public:
 	void SetIsPartAttached(EPartsName InAttachmentName, bool bInIsAttached);
 	EAttachmentNames GetAttachedItemName(EPartsName InPartName) { return AttachedItemName[InPartName]; }
 	void  SetAttachedItemNameInPart(EPartsName InPartName, EAttachmentNames InAttachmentName) { AttachedItemName[InPartName] = InAttachmentName; }
-	void SetSightCameraSpringArmLocation(FVector4 InLocationAndArmLength);
+	void SetSightCameraSpringArmLocation(const FVector4& InLocationAndArmLength);
 	//For Test
 	void SetScopeCameraMode(EAttachmentNames InAttachmentName);
 	void BackTo_RightHand();

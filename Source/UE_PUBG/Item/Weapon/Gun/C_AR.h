@@ -27,8 +27,6 @@ public:
 
 public:
 	
-	bool ExecuteReloadMontage() override;
-	
 	bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) override;
 
 	float GetDamageRateByBodyPart(const FName& BodyPart) override;
