@@ -260,9 +260,9 @@ public:
 	void ClearSpline();
 
 public:
-	bool ExecuteAIAttack(class AC_BasicCharacter* InTargetCharacter) override;
+	bool ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter) override;
 	
-	bool ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
+	bool ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) override;
 
 private:
 	

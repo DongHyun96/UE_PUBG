@@ -49,11 +49,7 @@ bool AC_GunStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* W
 
 	// UI 열려 있을 때 장전 불가 체크
 	if (AC_Player* Player = Cast<AC_Player>(WeaponUser))
-	{
 		if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.	
-	}
-	else return false; // Player가 아닌 다른 BasicCharacter 객체가 이 Button Strategy를 사용한 경우
-
 	
 	AC_Gun*	CurWeapon = Cast<AC_Gun>(Weapon);
 	if (!IsValid(CurWeapon)) return false;

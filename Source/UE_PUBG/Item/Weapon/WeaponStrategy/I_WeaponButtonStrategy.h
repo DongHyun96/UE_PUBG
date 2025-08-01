@@ -15,6 +15,7 @@ class UI_WeaponButtonStrategy : public UInterface
 
 /**
  * 각 버튼에 따른 Weapon 전략 알고리즘 interface
+ * Enemy도 때로 사용하기 때문에 WeaponUser형은 AC_BasicCharacter형으로 둠
  */
 class UE_PUBG_API II_WeaponButtonStrategy
 {

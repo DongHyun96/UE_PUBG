@@ -4,6 +4,8 @@
 #include "Item/Weapon/WeaponStrategy/C_MeleeWeaponStrategy.h"
 
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
+#include "Character/Component/C_InvenSystem.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/MeleeWeapon/C_MeleeWeapon.h"
 #include "Utility/C_Util.h"
@@ -21,6 +23,9 @@ bool AC_MeleeWeaponStrategy::UseRKeyStrategy(AC_BasicCharacter* WeaponUser, AC_W
 bool AC_MeleeWeaponStrategy::UseMlb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_Weapon* Weapon)
 {
 	if (WeaponUser->GetPoseState() == EPoseState::CRAWL) return false;
+
+	if (AC_Player* Player = Cast<AC_Player>(WeaponUser))
+		if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; // UI가 열려 있을 때 작동 금지
 
 	AC_MeleeWeapon* MeleeWeapon = Cast<AC_MeleeWeapon>(Weapon);
 
