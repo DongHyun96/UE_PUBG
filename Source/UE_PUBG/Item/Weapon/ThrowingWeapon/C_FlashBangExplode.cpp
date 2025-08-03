@@ -172,7 +172,7 @@ void AC_FlashBangExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* C
 
 	// Enemy일 경우
 	if (AC_Enemy* Enemy = Cast<AC_Enemy>(Character))
-		Enemy->GetEnemyAIController()->SetFlashBangEffectLeftTime(EffectDuration);
+		Enemy->GetController<AC_EnemyAIController>()->SetFlashBangEffectLeftTime(EffectDuration);
 
 }
 

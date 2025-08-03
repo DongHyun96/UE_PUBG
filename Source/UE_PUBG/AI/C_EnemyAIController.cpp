@@ -5,11 +5,12 @@
 
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
-#include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/C_Enemy.h"
 #include "AI/C_BehaviorComponent.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "Utility/C_Util.h"
 
 const TMap<ESightRangeLevel, float> AC_EnemyAIController::SIGHT_RANGE_DISTANCE =
 {
@@ -70,13 +71,23 @@ void AC_EnemyAIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	OwnerCharacter = Cast<AC_Enemy>(InPawn);
+
+	// 실질적인 BehaviorTree 초기화는 여기서 처리되는 중
+	if (!OwnerCharacter->GetBehaviorTree()) OwnerCharacter->InitBehaviorTreeBySelfBehaviorType();
+		
+	
 	BehaviorComponent->SetOwnerEnemy(OwnerCharacter);
 	BehaviorComponent->SetOwnerEnemyAIController(this);
 	
 	SetGenericTeamId(OwnerCharacter->GetGenericTeamId());
 
 	// PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &AC_EnemyAIController::OnPerceptionUpdated);
-	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AC_EnemyAIController::OnTargetPerceptionUpdated);
+	switch (OwnerCharacter->GetBehaviorType())
+	{
+	case EEnemyBehaviorType::InGamePlayable: case EEnemyBehaviorType::CombatTest: // 두 종류의 BehaviorType에 대해서만 시야 처리를 하여 TargetCharacter를 잡을 예정
+		PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AC_EnemyAIController::OnTargetPerceptionUpdated);
+		break;
+	}
 	
 	// Set Black board & Behavior tree
 
@@ -104,7 +115,7 @@ void AC_EnemyAIController::OnPossess(APawn* InPawn)
 	}
 }*/
 
-void AC_EnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, struct FAIStimulus Stimulus)
+void AC_EnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (Stimulus.Type != UAISense::GetSenseID<UAISense_Sight>()) return; // 시야 Sense가 아니라면 return
 

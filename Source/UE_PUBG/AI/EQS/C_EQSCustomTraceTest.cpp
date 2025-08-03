@@ -38,7 +38,7 @@ void UC_EQSCustomTraceTest::RunTest(FEnvQueryInstance& QueryInstance) const
 
 	// 자기자신 및 모든 캐릭터들 제외 (TargetCharacter만 배제)
 	AC_Enemy* Querier					= Cast<AC_Enemy>(DataOwner);
-	AActor* TargetCharacter 			= Querier->GetEnemyAIController()->GetBehaviorComponent()->GetTargetCharacter();
+	AActor* TargetCharacter 			= Querier->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->GetTargetCharacter();
 	TArray<AActor*> AllCharacterActors	= GAMESCENE_MANAGER->GetAllCharacterActors();
 	AllCharacterActors.Remove(TargetCharacter);
 	

@@ -34,7 +34,7 @@ bool UC_AIThrowingStrategy::ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingW
 		ThrowingWeapon->GetOwnerCharacter()->GetEquippedComponent()->ToggleArmed();
 		
 		if (AC_Enemy* WeaponOwnerEnemy = Cast<AC_Enemy>(ThrowingWeapon->GetOwnerCharacter()))
-			WeaponOwnerEnemy->GetEnemyAIController()->GetBehaviorComponent()->SetAfterAttackTaskWaitTime(3.f);			
+			WeaponOwnerEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetAfterAttackTaskWaitTime(3.f);			
 		else UC_Util::Print("From AIThrowingStrategy::ExecuteAIAttackTickTask : WeaponOwnerEnemy casting failed!", FColor::Red, 10.f);
 		
 		return false;
@@ -47,7 +47,7 @@ bool UC_AIThrowingStrategy::ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingW
 		ThrowingWeapon->GetOwnerCharacter()->GetEquippedComponent()->ToggleArmed();
 
 		if (AC_Enemy* WeaponOwnerEnemy = Cast<AC_Enemy>(ThrowingWeapon->GetOwnerCharacter()))
-			WeaponOwnerEnemy->GetEnemyAIController()->GetBehaviorComponent()->SetAfterAttackTaskWaitTime(3.f);			
+			WeaponOwnerEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetAfterAttackTaskWaitTime(3.f);			
 		else UC_Util::Print("From AIThrowingStrategy::ExecuteAIAttackTickTask : WeaponOwnerEnemy casting failed!", FColor::Red, 10.f);
 		
 		return false;
@@ -93,7 +93,7 @@ bool UC_AIThrowingStrategy::ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingW
 
 	// 던지기 실패 또는 던지기 성공 모두 AttackTask 이 후, 2초 기다리기(무기 집어넣는 시간 및 무기 던지는 모션 기다리기 시간 기다려주기)
 	if (AC_Enemy* WeaponOwnerEnemy = Cast<AC_Enemy>(ThrowingWeapon->GetOwnerCharacter()))
-		WeaponOwnerEnemy->GetEnemyAIController()->GetBehaviorComponent()->SetAfterAttackTaskWaitTime(4.f);			
+		WeaponOwnerEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetAfterAttackTaskWaitTime(4.f);			
 	else UC_Util::Print("From AIThrowingStrategy::ExecuteAIAttackTickTask : WeaponOwnerEnemy casting failed!", FColor::Red, 10.f);
 
 	if (UpdateProjectileLaunchValues(ThrowingWeapon, TargetThrowLocation, bUseRandomNearByThrowTargetLocation))

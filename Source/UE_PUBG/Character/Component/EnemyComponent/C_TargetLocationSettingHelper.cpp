@@ -22,7 +22,7 @@ UC_TargetLocationSettingHelper::UC_TargetLocationSettingHelper()
 void UC_TargetLocationSettingHelper::BeginPlay()
 {
 	Super::BeginPlay();
-	OwnerBehaviorComponent = OwnerEnemy->GetEnemyAIController()->GetBehaviorComponent();
+	OwnerBehaviorComponent = OwnerEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent();
 }
 
 void UC_TargetLocationSettingHelper::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

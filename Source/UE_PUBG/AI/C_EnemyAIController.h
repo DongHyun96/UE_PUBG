@@ -33,7 +33,9 @@ public:
 	void BeginPlay()				override;
 	void Tick(float DeltaTime)		override;
 
-	void OnPossess(APawn* InPawn)	override;
+private:
+
+	void OnPossess(APawn* InPawn) override;
 
 	/// <summary>
 	/// Sight Radius안에 들어오면 발동할 함수
@@ -49,6 +51,8 @@ public:
 	/// /// <param name="Stimulus"></param>
 	UFUNCTION()
 	void OnTargetPerceptionUpdated(AActor* Actor, struct FAIStimulus Stimulus);
+
+public:
 
 	class UC_BehaviorComponent* GetBehaviorComponent() const { return BehaviorComponent; }
 
@@ -83,7 +87,7 @@ public:
 
 	/// <summary>
 	/// <para> 우선순위에 따른 TargetCharacter 지정하기 </para>
-	/// <para> 현재 공격중인 TargetCharacter | Lv1 | 자신에게 피해를 입힌 캐릭터 | Lv2 | Lv3 | Lv4 </para>
+	/// <para> 우선순위 판단 : 현재 공격중인 TargetCharacter | Lv1 | 자신에게 피해를 입힌 캐릭터 | Lv2 | Lv3 | Lv4 </para>
 	/// </summary>
 	/// <returns> : TargetCharacter가 nullptr로 setting 되었다면 return false </returns>
 	bool TrySetTargetCharacterBasedOnPriority();
@@ -106,7 +110,7 @@ private:
 	/// </summary>
 	/// <param name="InCharacter"></param>
 	/// <returns> : 추가할 수 없는 거리라면 return false </returns>
-	bool AddCharacterToDetectedCharacters(class AC_BasicCharacter* InCharacter);
+	bool AddCharacterToDetectedCharacters(AC_BasicCharacter* InCharacter);
 
 private:
 	
@@ -117,20 +121,23 @@ public:
 	/// <summary>
 	/// 현재 Sight에 직접적으로 잡히는 Character인지 조사 (DetectedCharacters에 들어 있어도 엄폐물에 가려져 있으면 return false) 
 	/// </summary>
-	bool IsCurrentlyOnSight(class AC_BasicCharacter* TargetCharacter);
+	bool IsCurrentlyOnSight(AC_BasicCharacter* TargetCharacter);
+
+private:
+	
+	class AC_Enemy* OwnerCharacter{};
 	
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UAISenseConfig_Sight* Sight{};
 
-	class AC_Enemy* OwnerCharacter{};
 
 	/*UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	float BehaviorRange = 150.f;*/
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	class UC_BehaviorComponent* BehaviorComponent{};
+	UC_BehaviorComponent* BehaviorComponent{};
 
 private:
 
@@ -142,7 +149,7 @@ private:
 	static const TMap<ESightRangeLevel, float> SIGHT_RANGE_DISTANCE;
 
 	// Sight에 한 번 잡혔었고, SightRangeLevel 최대에서 아직 벗어나지 않는 캐릭터들
-	TMap<ESightRangeLevel, TSet<class AC_BasicCharacter*>> DetectedCharacters =
+	TMap<ESightRangeLevel, TSet<AC_BasicCharacter*>> DetectedCharacters =
 	{
 		{ESightRangeLevel::Level1, {}},
 		{ESightRangeLevel::Level2, {}},

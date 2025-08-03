@@ -242,7 +242,7 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 	// 바로 래그돌 적용
 	EnableRagdoll();
 
-	// 이 캐릭터가 TargetCharacter로 잡혀있는 Enemy에 대해 Delegate 호출 처리를 해줌
+	// 이 캐릭터가 TargetCharacter로 잡혀있는 Enemy에 대해 OnCharacter Dead Delegate 호출 처리를 해줌
 	if (Delegate_OnCharacterDead.IsBound()) Delegate_OnCharacterDead.Broadcast(this);
 	Delegate_OnCharacterDead.Clear();
 

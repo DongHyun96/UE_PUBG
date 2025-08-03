@@ -12,6 +12,18 @@ namespace EPathFollowingResult
 }
 
 enum class ESightRangeLevel : uint8;
+
+UENUM(BlueprintType)
+enum class EEnemyBehaviorType : uint8
+{
+	InGamePlayable,
+	MovementTest,
+	StatCareTest,
+	SkyDivingTest,
+	CombatTest,
+	Max
+};
+
 /**
  * 
  */
@@ -29,7 +41,16 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+public:
+	
+	/// <summary>
+	/// 자신의 BehaviorType에 따라 BehaviorTree 초기화 시키기 
+	/// </summary>
+	void InitBehaviorTreeBySelfBehaviorType();
+
 	class UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
+
+	EEnemyBehaviorType GetBehaviorType() const { return EnemyBehaviorType; }
 
 protected:
 	
@@ -44,8 +65,6 @@ public:
 
 	class UProgressBar* GetHPBar() const { return HPBar; }
 	UProgressBar*       GetBoostBar() const { return BoostBar; }
-
-	class AC_EnemyAIController* GetEnemyAIController() const;
 
 	class UC_DefaultItemSpawnerComponent* GetItemSpawnerHelper() const { return ItemSpawnerHelper; }
 
@@ -69,7 +88,7 @@ public:
 	/// <para> Behavior Tree FSM 처리 </para>
 	/// </summary>
 	/// <param name="DamageCauser"> : Damage를 준 캐릭터 </param>
-	void OnTakeDamage(class AC_BasicCharacter* DamageCauser);
+	void OnTakeDamage(AC_BasicCharacter* DamageCauser);
 
 private:
 	/// <summary>
@@ -101,14 +120,23 @@ private:
 	
 protected:
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UBehaviorTree* BehaviorTree{};
+	// 이 EnemyBehaviorType이 결정됨에 따라 BehaviorTree도 서로 다른 BehaviorTree로 초기화
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EEnemyBehaviorType EnemyBehaviorType{};
+
+private:
+
+	static const TMap<EEnemyBehaviorType, FString>		BehaviorTreeReferenceDirectories; 
+	static TMap<EEnemyBehaviorType, UBehaviorTree*>		BehaviorTrees;
+	
+	// 자신의 EnemyBehaviorType에 따라 사용할 BehaviorTree
+	UBehaviorTree* BehaviorTree{};
 	
 protected:
 
 	// 디버깅용 HPBar
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UProgressBar* HPBar{};
+	UProgressBar* HPBar{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UProgressBar* BoostBar{};
@@ -117,11 +145,11 @@ protected:
 
 	// Default 아이템 스폰 처리 Component
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	class UC_DefaultItemSpawnerComponent* ItemSpawnerHelper{};
+	UC_DefaultItemSpawnerComponent* ItemSpawnerHelper{};
 
 private:
 	
-	class UC_TargetLocationSettingHelper* TargetLocationSettingHelper{};
+	UC_TargetLocationSettingHelper* TargetLocationSettingHelper{};
 
 private:
 
@@ -135,5 +163,3 @@ private:
 	static const TMap<EPoseState, float> ActorZLocationOffsetFromBottom;
 
 };
-
-

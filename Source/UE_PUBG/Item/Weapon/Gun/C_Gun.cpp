@@ -1256,7 +1256,7 @@ bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)
 	if (!OnScreen) return false;
 		
 	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter);
-	if (!OwnerEnemy->GetEnemyAIController()->IsCurrentlyOnSight(InTargetCharacter))
+	if (!OwnerEnemy->GetController<AC_EnemyAIController>()->IsCurrentlyOnSight(InTargetCharacter))
 		return false;
 
 	AC_EnemyAIController* EnemyAIController = Cast<AC_EnemyAIController>(OwnerCharacter->GetController());

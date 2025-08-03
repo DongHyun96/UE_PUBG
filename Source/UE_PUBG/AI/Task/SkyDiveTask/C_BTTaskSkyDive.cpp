@@ -144,7 +144,7 @@ bool UC_BTTaskSkyDive::SetRandomLandingTargetLocationAndJumpPosXY(AC_Enemy* Enem
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, LineTraceStartLocation, LineTraceDestLocation,
 		ECollisionChannel::ECC_Visibility, CollisionParams);
 
-	UC_BehaviorComponent* BehaviorComponent = Enemy->GetEnemyAIController()->GetBehaviorComponent();
+	UC_BehaviorComponent* BehaviorComponent = Enemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent();
 	UC_EnemySkyDivingComponent* SkyDivingComponent = Cast<UC_EnemySkyDivingComponent>(Enemy->GetSkyDivingComponent());
 	
 	if (!HasHit)

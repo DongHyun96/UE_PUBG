@@ -7,7 +7,7 @@
 #include "C_BTServiceStateMachine.generated.h"
 
 /**
- * 
+ * Currently not in used (BTTaskWait에서 기본 FSM 처리 중)
  */
 UCLASS()
 class UE_PUBG_API UC_BTServiceStateMachine : public UBTService

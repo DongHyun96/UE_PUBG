@@ -55,10 +55,6 @@ private:
 	/// </summary>
 	void OnTargetCharacterDead(class AC_BasicCharacter* DeadCharacter);
 	
-protected:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName PlayerKey = "Player";
-
 public:
 
 	float GetWaitTime() const { return WaitTime; }
@@ -71,10 +67,10 @@ public:
 	/// </summary>
 	/// <param name="InTargetCharacter"> : 공격 대상, 회피 대상 등이 될 TargetCharacter </param>
 	/// <returns> nullptr나 valid하지 않은 Actor로 setting되었다면 return false </returns>
-	bool SetTargetCharacter(class AC_BasicCharacter* InTargetCharacter);
+	bool SetTargetCharacter(AC_BasicCharacter* InTargetCharacter);
 
 	UFUNCTION(BlueprintCallable)
-	class AC_BasicCharacter* GetTargetCharacter() const;
+	AC_BasicCharacter* GetTargetCharacter() const;
 
 public:
 
@@ -90,30 +86,24 @@ private:
 	AC_Enemy* OwnerEnemy{};
 	class AC_EnemyAIController* OwnerEnemyAIController{};
 	
-protected:
+private:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName ServiceKey = "Service";
+	static const FName PlayerKey;
+	static const FName ServiceKey;
 
 	// 현재 교전중인 Character
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName TargetCharacterKey = "TargetCharacter";
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName BasicTargetLocationKey = "BasicTargetLocation";
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName InCircleTargetLocationKey = "InCircleTargetLocation";
+	static const FName TargetCharacterKey;
 	
-protected:
+	static const FName BasicTargetLocationKey;
+	static const FName InCircleTargetLocationKey;
+	
+private:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName IdleTaskKey = "IdleTask";
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FName CombatTaskKey = "CombatTask";
+	static const FName IdleTaskKey;
+	static const FName CombatTaskKey;
 
 private:
+	
 	UBlackboardComponent* Blackboard{};
 
 private:

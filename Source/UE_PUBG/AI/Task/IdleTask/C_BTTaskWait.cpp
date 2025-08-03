@@ -77,13 +77,12 @@ void UC_BTTaskWait::OnWaitTimeRemain(UBehaviorTreeComponent& OwnerComp, AC_Enemy
 		}
 	}
 
-	bool bIsInSmokeArea = Enemy->GetSmokeEnteredChecker()->IsCurrentlyInSmokeArea();
-
 	// Update Detected Characters' Sight Range Level
 	EnemyAIController->UpdateDetectedCharactersRangeLevel();
 	
-	// Lv1 영역으로 다른 캐릭터가 들어왔다면 TargetCharacter로 set해서 공격 시도
-	if (EnemyAIController->TrySetTargetCharacterToLevel1EnteredCharacter() && !bIsInSmokeArea)
+	// Lv1 영역으로 다른 캐릭터가 들어왔다면 TargetCharacter로 set해서 공격 시도 (자기자신이 연막탄 안에 있다면 공격 X)
+	if (EnemyAIController->TrySetTargetCharacterToLevel1EnteredCharacter() &&
+		!Enemy->GetSmokeEnteredChecker()->IsCurrentlyInSmokeArea())
 	{
 		EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
@@ -108,7 +107,7 @@ void UC_BTTaskWait::OnWaitTimeFinished(UBehaviorTreeComponent& OwnerComp, AC_Ene
 	
 	if (AirplaneManager) if (!GAMESCENE_MANAGER->GetAirplaneManager()->GetHasAirplaneTakeOff())
 	{
-		ExecuteMoveToRandomLocation(Enemy, EnemyBehaviorComponent, false);
+		ExecuteMoveToRandomLocation(Enemy, 1000.f, false);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return;
 	}
@@ -134,7 +133,7 @@ void UC_BTTaskWait::OnWaitTimeFinished(UBehaviorTreeComponent& OwnerComp, AC_Ene
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	if (FMath::RandRange(0, 1)) // MoveToRandomPos
 	{
-		ExecuteMoveToRandomLocation(Enemy, EnemyBehaviorComponent, true);
+		ExecuteMoveToRandomLocation(Enemy, 1000.f, true);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return;
 	}
@@ -147,10 +146,10 @@ void UC_BTTaskWait::OnWaitTimeFinished(UBehaviorTreeComponent& OwnerComp, AC_Ene
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
-void UC_BTTaskWait::ExecuteMoveToRandomLocation(AC_Enemy* Enemy, UC_BehaviorComponent* EnemyBehaviorComponent, bool bHasToMoveInsideMainCircle)
+void UC_BTTaskWait::ExecuteMoveToRandomLocation(AC_Enemy* Enemy, float MaxRadius, bool bHasToMoveInsideMainCircle)
 {
-	if (bHasToMoveInsideMainCircle)	Enemy->GetTargetLocationSettingHelper()->SetRandomBasicTargetLocationInsideMainCircle(1000.f);
-	else							Enemy->GetTargetLocationSettingHelper()->SetRandomTargetLocation(1000.f);
-	
-	EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
+	if (bHasToMoveInsideMainCircle)	Enemy->GetTargetLocationSettingHelper()->SetRandomBasicTargetLocationInsideMainCircle(MaxRadius);
+	else							Enemy->GetTargetLocationSettingHelper()->SetRandomTargetLocation(MaxRadius);
+
+	Enemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
 }

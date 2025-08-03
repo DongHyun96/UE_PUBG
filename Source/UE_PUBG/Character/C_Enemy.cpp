@@ -8,6 +8,7 @@
 
 #include "AI/C_EnemyAIController.h"
 #include "AI/Service/C_BTServiceCombat.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -34,6 +35,17 @@ const TMap<EPoseState, float> AC_Enemy::ActorZLocationOffsetFromBottom =
 	{EPoseState::CRAWL,		22.4f},
 };
 
+const TMap<EEnemyBehaviorType, FString> AC_Enemy::BehaviorTreeReferenceDirectories =
+{
+	{EEnemyBehaviorType::InGamePlayable,	"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"},
+	{EEnemyBehaviorType::MovementTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_MovementTest.BT_MovementTest'"},
+	{EEnemyBehaviorType::StatCareTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"}, // TODO : 각 BehaviorType에 맞는 BehaviorTree로 초기화할 것
+	{EEnemyBehaviorType::SkyDivingTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"},
+	{EEnemyBehaviorType::CombatTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"},
+};
+
+TMap<EEnemyBehaviorType, UBehaviorTree*> AC_Enemy::BehaviorTrees{};
+
 AC_Enemy::AC_Enemy()
 {
 	//PrimaryActorTick.bCanEverTick = true;
@@ -50,12 +62,34 @@ AC_Enemy::AC_Enemy()
 	SkyDivingComponent = CreateDefaultSubobject<UC_EnemySkyDivingComponent>("EnemySkyDivingComponent");
 	SkyDivingComponent->SetOwnerCharacter(this);
 	EnemySkyDivingComponent = Cast<UC_EnemySkyDivingComponent>(SkyDivingComponent);
+
+	// Init Behavior Trees if empty
+	if (BehaviorTrees.IsEmpty())
+	{
+		for (uint8 i = 0; i < static_cast<uint8>(EEnemyBehaviorType::Max); ++i)
+		{
+			EEnemyBehaviorType Type = static_cast<EEnemyBehaviorType>(i);
+			const FString& Path = BehaviorTreeReferenceDirectories[Type];
+			
+			UBehaviorTree* LoadedBehaviorTree = Cast<UBehaviorTree>(StaticLoadObject(UBehaviorTree::StaticClass(), nullptr, *Path));
+			if (!LoadedBehaviorTree)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Failed to load BehaviorTree for index %d"), i);
+				continue;
+			}
+			else UE_LOG(LogTemp, Warning, TEXT("Succeeded to load BehaviorTree for index %d"), i);
+
+			BehaviorTrees.Add(Type, LoadedBehaviorTree);
+		}
+	}
 }
 
 void AC_Enemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!BehaviorTree) InitBehaviorTreeBySelfBehaviorType();
+	
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
 	GetMesh()->SetMaterial(0, GetMesh()->GetMaterial(1));
@@ -98,6 +132,18 @@ void AC_Enemy::Tick(float DeltaSeconds)
 	//float DistanceToPlayer = FVector::Distance(GAMESCENE_MANAGER->GetPlayer()->GetActorLocation(), this->GetActorLocation());
 	//UC_Util::Print(DistanceToPlayer * 0.01f);
 	// UC_Util::Print(GetVelocity().Size2D());
+}
+
+void AC_Enemy::InitBehaviorTreeBySelfBehaviorType()
+{
+	if (BehaviorTrees.IsEmpty())
+	{
+		UC_Util::Print("From AC_Enemy::InitBehaviorTreeBySelfBehaviorType : BehaviorTress static variable is empty!", FColor::Red, 10.f);
+		return;
+	}
+
+	BehaviorTree = BehaviorTrees[EnemyBehaviorType];
+	if (!IsValid(BehaviorTree)) UC_Util::Print("From AC_Enemy::InitBehaviorTreeBySelfBehaviorType : BehaviorTree initing failed!", FColor::Red, 10.f);
 }
 
 void AC_Enemy::Landed(const FHitResult& Hit)
@@ -197,11 +243,6 @@ bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 	}
 }
 
-AC_EnemyAIController* AC_Enemy::GetEnemyAIController() const
-{
-	return Cast<AC_EnemyAIController>(GetController());
-}
-
 void AC_Enemy::SetActorBottomLocation(const FVector& BottomLocation, ETeleportType TeleportType)
 {
 	SetActorLocation(BottomLocation + FVector::UnitZ() * ActorZLocationOffsetFromBottom[this->PoseState], false, nullptr, TeleportType);	
@@ -209,7 +250,7 @@ void AC_Enemy::SetActorBottomLocation(const FVector& BottomLocation, ETeleportTy
 
 void AC_Enemy::OnTakeDamage(AC_BasicCharacter* DamageCauser)
 {
-	UC_BehaviorComponent* BehaviorComponent = GetEnemyAIController()->GetBehaviorComponent();
+	UC_BehaviorComponent* BehaviorComponent = GetController<AC_EnemyAIController>()->GetBehaviorComponent();
 	
 	// Damage를 입힌 사람이 나 자신(자기가 던진 수류탄 등)이거나 nullptr(자기장 등)
 	if (DamageCauser == this || DamageCauser == nullptr) return;
@@ -255,7 +296,7 @@ void AC_Enemy::OnTakeDamage(AC_BasicCharacter* DamageCauser)
 
 bool AC_Enemy::TryUpdateTargetCharacterToDamageCauser(AC_BasicCharacter* DamageCauser)
 {
-	UC_BehaviorComponent*	BehaviorComponent	= GetEnemyAIController()->GetBehaviorComponent();
+	UC_BehaviorComponent*	BehaviorComponent	= GetController<AC_EnemyAIController>()->GetBehaviorComponent();
 	AC_BasicCharacter*		TargetCharacter		= BehaviorComponent->GetTargetCharacter();
 
 	// 이미 TargetCharacter가 해당 캐릭터로 잡혀 있다면
@@ -273,7 +314,7 @@ bool AC_Enemy::TryUpdateTargetCharacterToDamageCauser(AC_BasicCharacter* DamageC
 	}
 
 	// 현재 시야에 보이는 Damage Causer
-	if (GetEnemyAIController()->IsCurrentlyOnSight(DamageCauser))
+	if (GetController<AC_EnemyAIController>()->IsCurrentlyOnSight(DamageCauser))
 	{
 		BehaviorComponent->SetTargetCharacter(DamageCauser);
 		return true;
@@ -282,7 +323,7 @@ bool AC_Enemy::TryUpdateTargetCharacterToDamageCauser(AC_BasicCharacter* DamageC
 	// 시야에 보이지 않는 중
 	
 	// Detected Characters 중 Lv1 캐릭터가 한 명도 없을 때, DamageCauser로 바로 TargetCharacter 지정
-	if (!GetEnemyAIController()->HasAnyCharacterEnteredLevel1SightRange())
+	if (!GetController<AC_EnemyAIController>()->HasAnyCharacterEnteredLevel1SightRange())
 	{
 		BehaviorComponent->SetTargetCharacter(DamageCauser);
 		return true;
@@ -312,7 +353,7 @@ void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 	// 속도 0으로 setting
 	UpdateMaxWalkSpeed({0.f, 0.f});
 	
-	AC_EnemyAIController* EnemyAIController = GetEnemyAIController(); 
+	AC_EnemyAIController* EnemyAIController = GetController<AC_EnemyAIController>(); 
 	EnemyAIController->GetPerceptionComponent()->Deactivate();
 	EnemyAIController->GetPerceptionComponent()->SetComponentTickEnabled(false);
 
@@ -323,7 +364,8 @@ void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 
 	// 현재 Level이 Training Ground일 경우, 모든 Enemy가 사망했다고 하더라도 Winner가 없음
 	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
-	if (GameInstance->GetCurrentSelectedLevelType() == ELevelType::TrainingGround) return;
+	// if (GameInstance->GetCurrentSelectedLevelType() == ELevelType::TrainingGround) return;
+	if (GameInstance->GetCurrentSelectedLevelType() != ELevelType::ShantyTown) return;
 	
 	// Player만 남은 상황이라면 Winner Winner Chicken Dinner UI Sequence 띄우기
 	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();

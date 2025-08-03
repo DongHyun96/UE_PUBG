@@ -12,6 +12,17 @@
 #include "Utility/C_Util.h"
 
 
+const FName UC_BehaviorComponent::PlayerKey = "Player";
+const FName UC_BehaviorComponent::ServiceKey = "Service";
+
+const FName UC_BehaviorComponent::TargetCharacterKey = "TargetCharacter"; // 현재 교전중인 Character
+
+const FName UC_BehaviorComponent::BasicTargetLocationKey    = "BasicTargetLocation";
+const FName UC_BehaviorComponent::InCircleTargetLocationKey = "InCircleTargetLocation";
+
+const FName UC_BehaviorComponent::IdleTaskKey   = "IdleTask";
+const FName UC_BehaviorComponent::CombatTaskKey = "CombatTask";
+
 UC_BehaviorComponent::UC_BehaviorComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -23,6 +34,8 @@ void UC_BehaviorComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!OwnerEnemy->GetBehaviorTree()) OwnerEnemy->InitBehaviorTreeBySelfBehaviorType();
+		
 	SetServiceType(EServiceType::IDLE);
 	// SetServiceType(EServiceType::COMBAT);
 	SetIdleTaskType(EIdleTaskType::WAIT);
@@ -70,7 +83,7 @@ bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 	if (Type == EIdleTaskType::WAIT)
 	{
 		float RandBias = FMath::Pow(FMath::FRand(), 2.0f); // 0 ~ 1 -> 0에 더 가까운 값으로 조정 
-		WaitTime = FMath::Lerp(5.f, 30.f, RandBias); // 5 ~ 30 사이로 매핑
+		WaitTime = (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::MovementTest) ? 5.f : FMath::Lerp(5.f, 30.f, RandBias); // 5 ~ 30 사이로 매핑
 		// WaitTime = FMath::RandRange(5.f, 30.f);
 	}
 	
@@ -124,7 +137,7 @@ bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharact
 	// 새로운 TargetCharacter로 새로 setting 처리
 	
 	Blackboard->SetValueAsObject(TargetCharacterKey, InTargetCharacter);
-	
+
 	InTargetCharacter->Delegate_OnCharacterDead.AddUObject(this, &UC_BehaviorComponent::OnTargetCharacterDead);
 	
 	OwnerEnemy->SetTargetCharacterWidgetName(InTargetCharacter->GetCharacterName()); // TODO : 이 라인 지우기(For Testing)
