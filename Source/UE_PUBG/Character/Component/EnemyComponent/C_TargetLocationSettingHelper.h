@@ -71,15 +71,6 @@ private:
 	/// <param name="OutImpactPoints"> : 발견된 ImpactPoints들 </param>
 	/// <returns> : Hit되지 않았다면 return false </returns>
 	bool GetTraceMultiDownward(const FVector2D& TracePosition, TArray<FVector>& OutImpactPoints);
-	
-	/// <summary>
-	/// 해당 Location으로부터 가장 가까운 NavMesh가 존재하는지 조사 
-	/// </summary>
-	/// <param name="Location"> : 조사할 위치 지점 </param>
-	/// <param name="Extent"> : 조사 반경 </param>
-	/// <param name="ProjectedLocation"> : NavMesh위로 보정된 가장 가까운 위치 </param>
-	/// <returns> : Extent반경에 NavMesh가 없다면 return false </returns>
-	bool FindNearestNavMeshAtLocation(const FVector& Location, const FVector& Extent, FVector& ProjectedLocation);
 
 private:
 

@@ -4,6 +4,7 @@
 #include "Singleton/C_GameSceneManager.h"
 
 #include "EngineUtils.h"
+#include "NavigationSystem.h"
 #include "Character/C_Player.h"
 #include "Character/C_Enemy.h"
 #include "MagneticField/C_MagneticFieldManager.h"
@@ -168,6 +169,30 @@ AC_LootCrate* UC_GameSceneManager::SpawnLootCrateAt(FVector SpawnLocation, AC_Ba
 	}
 
 	return LootCrate;
+}
+
+bool UC_GameSceneManager::FindNearestNavMeshAtLocation(const FVector& Location, const FVector& Extent, FVector& ProjectedLocation)
+{
+	UNavigationSystemV1* NavSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	if (!NavSystem)
+	{
+		UC_Util::Print("From UC_GameSceneManager::FindNearestNavMeshAtLocation : NavSystem nullptr", FColor::Red, 10.f);
+		return false;
+	}
+	
+	FNavLocation NavLocation{};
+
+	bool Founded = NavSystem->ProjectPointToNavigation
+	(
+		Location,
+		NavLocation,
+		Extent
+	);
+
+	if (!Founded) return false;
+
+	ProjectedLocation = NavLocation.Location;
+	return true;
 }
 
 FTimerHandle& UC_GameSceneManager::GetTimerHandle()

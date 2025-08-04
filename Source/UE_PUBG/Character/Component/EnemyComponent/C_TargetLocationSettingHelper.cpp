@@ -159,7 +159,7 @@ bool UC_TargetLocationSettingHelper::PickRandomNavMeshLocationAtXYPos(const FVec
 		static const FVector Extent = {200.f, 200.f, 200.f}; // 2m 반경으로 조사 예정
 		FVector ProjectedLocation{};
 
-		if (FindNearestNavMeshAtLocation(ImpactPoint, Extent, ProjectedLocation))
+		if (GAMESCENE_MANAGER->FindNearestNavMeshAtLocation(ImpactPoint, Extent, ProjectedLocation))
 			PickedNavMeshLocations.Add(ProjectedLocation);
 	}
 
@@ -190,28 +190,3 @@ bool UC_TargetLocationSettingHelper::GetTraceMultiDownward(const FVector2D& Trac
 	
 	return HasHit;
 }
-
-bool UC_TargetLocationSettingHelper::FindNearestNavMeshAtLocation(const FVector& Location, const FVector& Extent, FVector& ProjectedLocation)
-{
-	UNavigationSystemV1* NavSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	if (!NavSystem)
-	{
-		UC_Util::Print("From UC_TargetLocationSettingHelper::FindNearestNavMeshAtLocation : NavSystem nullptr", FColor::Red, 10.f);
-		return false;
-	}
-	
-	FNavLocation NavLocation{};
-
-	bool Founded = NavSystem->ProjectPointToNavigation
-	(
-		Location,
-		NavLocation,
-		Extent
-	);
-
-	if (!Founded) return false;
-
-	ProjectedLocation = NavLocation.Location;
-	return true;
-}
-
