@@ -111,8 +111,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		if (!Enemy || Enemy->GetBehaviorType() != EEnemyBehaviorType::StatCareTest)
 			ItemCurStack--;
 		
-		FString Left = "Item Used: ItemStack -> " + FString::FromInt(ItemCurStack);
-		UC_Util::Print(Left, FColor::Red, 5.f);
+		UC_Util::Print("Item Used: ItemStack -> " + FString::FromInt(ItemCurStack), FColor::MakeRandomColor(), 20.f);
 
 		if (Player) Player->GetHUDWidget()->OnConsumableItemActivatingEnd();
 

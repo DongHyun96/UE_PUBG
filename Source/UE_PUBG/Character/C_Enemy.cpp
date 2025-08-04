@@ -271,6 +271,16 @@ void AC_Enemy::OnTakeDamage(AC_BasicCharacter* DamageCauser)
 		return; 
 	}
 
+	// TODO : 다른 Tester들에 대한 처리도 해주어야 함
+	// Stat-Care Tester용 처리
+	if (EnemyBehaviorType == EEnemyBehaviorType::StatCareTest)
+	{
+		// 플레이어가 아닌 다른 Enemy의 공격을 받은 경우라면 조치 x
+		if (DamageCauser == GAMESCENE_MANAGER->GetPlayer())
+			BehaviorComponent->SetIdleTaskType(EIdleTaskType::TAKE_COVER);
+		return;
+	}
+
 	bool bDamageCauserSetToTargetCharacter = TryUpdateTargetCharacterToDamageCauser(DamageCauser);
 
 	// Damage Causer가 제대로 잡히지 않았거나, 잡혔어도 피가 25 아래로 떨어졌다면 엄폐 시도

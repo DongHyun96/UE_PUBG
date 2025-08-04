@@ -5,6 +5,7 @@
 
 #include "AI/C_BehaviorComponent.h"
 #include "AI/C_EnemyAIController.h"
+#include "Utility/C_Util.h"
 
 void UC_BTTaskMovementTestWait::OnWaitTimeRemain(UBehaviorTreeComponent& OwnerComp,
                                                  AC_EnemyAIController* EnemyAIController, AC_Enemy* Enemy, UC_BehaviorComponent* EnemyBehaviorComponent)
@@ -15,7 +16,14 @@ void UC_BTTaskMovementTestWait::OnWaitTimeRemain(UBehaviorTreeComponent& OwnerCo
 void UC_BTTaskMovementTestWait::OnWaitTimeFinished(UBehaviorTreeComponent& OwnerComp,
 	AC_EnemyAIController* EnemyAIController, AC_Enemy* Enemy, UC_BehaviorComponent* EnemyBehaviorComponent)
 {
-	EnemyTimers[EnemyBehaviorComponent] -= EnemyAIController->GetBehaviorComponent()->GetWaitTime();
+	if (!EnemyTimers.Contains(EnemyBehaviorComponent))
+	{
+		UC_Util::Print("From UC_BTTaskMovementTestWait::OnWaitTimeFinished : EnemyTimers does not contains received EnemyBehaviorComponent!", FColor::Red, 10.f);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
+	
+	EnemyTimers[EnemyBehaviorComponent] -= EnemyBehaviorComponent->GetWaitTime();
 	
 	// 다음 Random Movement 처리
 	ExecuteMoveToRandomLocation(Enemy, 1000.f, false);

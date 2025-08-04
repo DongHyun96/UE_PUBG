@@ -170,6 +170,11 @@ void UC_DefaultItemSpawnerComponent::SpawnConsumableItems(const FActorSpawnParam
 	// Stat Care Test Enemy 용 Spawn Consumable 처리
 	if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest)
 	{
+		// MedKit 1개 Spawn
+		AC_ConsumableItem* MedKit = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::MEDKIT], Param);
+		MedKit->SetItemStack(1);
+		MedKit->MoveToInven(OwnerEnemy, MedKit->GetItemCurStack());
+		
 		// 구급 상자 1개 Spawn
 		AC_ConsumableItem* FirstAidKit = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::FIRST_AID_KIT], Param);
 		FirstAidKit->SetItemStack(1);

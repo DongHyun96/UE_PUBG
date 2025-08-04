@@ -58,10 +58,10 @@ void UC_BTTaskStatCare::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	
 	ExecutedConsumableItemMap.Remove(Enemy);
 
-	if (ExecutedItemState == EConsumableItemState::USED) UC_Util::Print("Consumable Used checked in BTTASK", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+	// if (ExecutedItemState == EConsumableItemState::USED) UC_Util::Print("Consumable Used checked in BTTASK", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 
 	FinishLatentTask(OwnerComp, (ExecutedItemState == EConsumableItemState::USED) ? EBTNodeResult::Succeeded : EBTNodeResult::Failed);
-
+	
 	Controller->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT); // 다시 Wait 상황으로 돌아가기
 }
 

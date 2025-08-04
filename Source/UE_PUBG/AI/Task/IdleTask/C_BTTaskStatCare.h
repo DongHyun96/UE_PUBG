@@ -22,20 +22,21 @@ public:
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
-private:
+protected:
+	
 	/// <summary>
 	/// Heal 아이템 사용 시도
 	/// </summary>
 	/// <returns> : 사용 시작 실패했다면 return false </returns>
-	bool TryUsingHealItem(class AC_Enemy* Enemy, class UC_InvenComponent* EnemyInvenComponent);
+	virtual bool TryUsingHealItem(class AC_Enemy* Enemy, class UC_InvenComponent* EnemyInvenComponent);
 
 	/// <summary>
 	/// Boost 아이템 사용 시도 
 	/// </summary>
 	/// <returns> : 사용 시작 실패했다면 return false </returns>
-	bool TryUsingBoostItem(AC_Enemy* Enemy, UC_InvenComponent* EnemyInvenComponent);
+	virtual bool TryUsingBoostItem(AC_Enemy* Enemy, UC_InvenComponent* EnemyInvenComponent);
 
-private:
+protected:
 
 	TMap<AC_Enemy*, class AC_ConsumableItem*> ExecutedConsumableItemMap{};
 };
