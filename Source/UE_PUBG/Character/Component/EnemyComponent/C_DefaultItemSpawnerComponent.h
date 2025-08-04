@@ -57,7 +57,7 @@ public:
 
 private:
 
-	class AC_Enemy* OwnerEnemy{};
+	AC_Enemy* OwnerEnemy{};
 
 protected: // Weapon 관련 Classes
 	

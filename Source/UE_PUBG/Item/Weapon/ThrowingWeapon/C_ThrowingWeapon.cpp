@@ -517,33 +517,40 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InSt
 	UC_EquippedComponent*	EquippedComponent = Character->GetEquippedComponent();
 	UC_InvenComponent*		InvenComponent = Character->GetInvenComponent();		
 
-	AC_Weapon* curWeapon = EquippedComponent->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
+	AC_Weapon* CurWeapon = EquippedComponent->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON];
 
-	if (curWeapon)
+	if (CurWeapon)
 	{
-		float prevVolume = InvenComponent->GetCurVolume() + curWeapon->GetOnceVolume() - this->GetOnceVolume();
-		if (prevVolume > InvenComponent->GetMaxVolume()) return false; //교체하는 아이템이 인벤에 들어오면서 MaxVolume을 넘으면 return.
+		float PrevVolume = InvenComponent->GetCurVolume() + CurWeapon->GetOnceVolume() - this->GetOnceVolume();
+		if (PrevVolume > InvenComponent->GetMaxVolume()) return false; //교체하는 아이템이 인벤에 들어오면서 MaxVolume을 넘으면 return.
 	}
 
 	if (ItemCurStack == 1)
 	{
-		curWeapon = EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
+		CurWeapon = EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
 		InvenComponent->RemoveItemToMyList(this);
 	}
 	else
 	{
-		this->DeductItemStack();
 		AC_ThrowingWeapon* SwapItem = Cast<AC_ThrowingWeapon>(SpawnItem(Character));
 		SwapItem->SetItemStack(1);
-		InvenComponent->AddInvenCurVolume(-SwapItem->GetItemDatas()->ItemVolume);
-		curWeapon = EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
+		
+		// Stat-care testing Enemy의 경우 개수 처리를 따로 하지 않음 (계속 Smoke Grenade를 들 수 있게끔)
+		AC_Enemy* Enemy = Cast<AC_Enemy>(Character);
+		if (!Enemy || Enemy->GetBehaviorType() != EEnemyBehaviorType::StatCareTest)
+		{
+			this->DeductItemStack();
+			InvenComponent->AddInvenCurVolume(-SwapItem->GetItemDatas()->ItemVolume);
+		}
+		
+		CurWeapon = EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, SwapItem);
 	}
 
 	// 손에 Throwable이 들려있는 상황에서 새로운 투척류로 slot을 교체했을 때
 	if (Character->GetHandState() == EHandState::WEAPON_THROWABLE)
 	{
 		// curWeapon == prevSlotWeapon
-		AC_ThrowingWeapon* prevThrowWeapon = Cast<AC_ThrowingWeapon>(curWeapon);
+		AC_ThrowingWeapon* prevThrowWeapon = Cast<AC_ThrowingWeapon>(CurWeapon);
 		if (!prevThrowWeapon) return false;
 
 		// 이전과 같은 종류의 Throwable일 때, this를 손에 붙임
@@ -552,14 +559,14 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InSt
 		else
 		{
 			// 이전과 같은 종류의 무기가 아닐 때에는 무기 전환 animation 처리
-			curWeapon->AttachToHolster(Character->GetMesh());
+			CurWeapon->AttachToHolster(Character->GetMesh());
 			EquippedComponent->SetNextWeaponType(EWeaponSlot::THROWABLE_WEAPON);
 			Character->PlayAnimMontage(this->GetCurDrawMontage());
 		}
 	}
 
 	//Character->PlayAnimMontage(this->GetCurDrawMontage());
-	InvenComponent->AddItemToMyList(curWeapon);//내부에서 매개변수 nullptr가 들어오면 return시켜버림.
+	InvenComponent->AddItemToMyList(CurWeapon);//내부에서 매개변수 nullptr가 들어오면 return시켜버림.
 	// TODO : curWeapon을 정의한 뒤에 equipComp->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]의 값이 바뀌었으므로 역참조를 하면 문제가 생김. 확인 할 것.
 	//if (curWeapon) //TODO : InvenComp->AddItemToMyList(nullptr)이 문제 생기면 활성화 
 	
@@ -767,7 +774,7 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 			UC_Util::Print("OnProcessEnd Change to Last New Throwing Weapon casting failed!", FColor::Red, 10.f);
 			return;
 		}
-		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter,TargetThrowWeapon->GetItemCurStack());
+		TargetThrowWeapon->MoveToSlot(PrevOwnerCharacter, TargetThrowWeapon->GetItemCurStack());
 
 		if (OwnerPlayer) OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 

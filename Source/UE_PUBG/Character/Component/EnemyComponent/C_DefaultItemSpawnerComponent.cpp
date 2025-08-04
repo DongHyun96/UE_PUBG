@@ -21,11 +21,18 @@
 UC_DefaultItemSpawnerComponent::UC_DefaultItemSpawnerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	
+	// /Game/Project_PUBG/Common/Item/Weapon/Gun/AR/BPC_AUG.uasset
 }
 
 void UC_DefaultItemSpawnerComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// MovementTest와 SkyDivingTest 용 Enemy의 경우, Default Item들을 Spawn시키지 않음
+	switch (OwnerEnemy->GetBehaviorType()) case EEnemyBehaviorType::MovementTest: case EEnemyBehaviorType::SkyDivingTest:
+		return;
+	
 	SpawnDefaultWeaponsAndItems();
 
 	if (GAMESCENE_MANAGER->GetItemManager())
@@ -47,7 +54,8 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 	SpawnEquipableItems(Param);
 	SpawnWeapons(Param);
 	SpawnConsumableItems(Param);
-	SpawnBullets(Param);
+	
+	if (OwnerEnemy->GetBehaviorType() != EEnemyBehaviorType::StatCareTest) SpawnBullets(Param);
 }
 
 void UC_DefaultItemSpawnerComponent::ToggleSpawnedItemsHiddenInGame(bool InHiddenInGame)
@@ -63,6 +71,15 @@ void UC_DefaultItemSpawnerComponent::SpawnWeapons(const FActorSpawnParameters& P
 	if (WeaponClasses.IsEmpty())
 	{
 		UC_Util::Print("WeaponClasses empty!", FColor::Red, 10.f);
+		return;
+	}
+
+	if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest)
+	{
+		// Smoke Grenade 3개 (이 개수가 ThrowingWeapon내의 MoveInvenToSlot에서 예외처리를 하기 간단해짐)
+		AC_ThrowingWeapon* SmokeGrenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::SMOKE], Param);
+		SmokeGrenade->SetItemStack(3);
+		SmokeGrenade->MoveToInven(OwnerEnemy, SmokeGrenade->GetItemCurStack());
 		return;
 	}
 	
@@ -102,41 +119,75 @@ void UC_DefaultItemSpawnerComponent::SpawnWeapons(const FActorSpawnParameters& P
 
 void UC_DefaultItemSpawnerComponent::SpawnEquipableItems(const FActorSpawnParameters& Param)
 {
-	// Body Armors and Backpack
-	AC_Vest* Vest = GetWorld()->SpawnActor<AC_Vest>(VestClass, Param);
+	switch (OwnerEnemy->GetBehaviorType())
+	{
+	case EEnemyBehaviorType::InGamePlayable: case EEnemyBehaviorType::CombatTest:
+	{
+		// Body Armors and Backpack
+		AC_Vest* Vest = GetWorld()->SpawnActor<AC_Vest>(VestClass, Param);
 
-	// 30% 확률로 3조끼 장착
-	if (FMath::RandRange(0.f, 1.f) > 0.7f)
-		Vest->SetItemLevel(EEquipableItemLevel::LV3);
-	else Vest->SetItemLevel(static_cast<EEquipableItemLevel>(FMath::RandRange(0, 1)));
+		// 30% 확률로 3조끼 장착
+		if (FMath::RandRange(0.f, 1.f) > 0.7f)
+			Vest->SetItemLevel(EEquipableItemLevel::LV3);
+		else Vest->SetItemLevel(static_cast<EEquipableItemLevel>(FMath::RandRange(0, 1)));
 
-	Vest->InitVestDatasAndStaticMesh();
-	
-	Vest->MoveToSlot(OwnerEnemy, Vest->GetItemCurStack());
-
-	// UC_Util::Print("Setting Vest Lv : " + FString::FromInt(static_cast<uint8>(Vest->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
-
-	// 20% 확률로 3가방 장착 & 장착 못하면 1, 2랩 가방은 각각 50%
-	EEquipableItemLevel BackPackLevel = (FMath::RandRange(0.f, 1.f) > 0.8f) ? EEquipableItemLevel::LV3 :
-										static_cast<EEquipableItemLevel>(FMath::RandRange(0, 1));
-	
-	AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[BackPackLevel]);
-	BackPack->MoveToSlot(OwnerEnemy, BackPack->GetItemCurStack());
-
-	// UC_Util::Print("Setting BackPack Lv : " + FString::FromInt(static_cast<uint8>(BackPack->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
-
-	// 10% 확률로 3헬멧 장착
-	EEquipableItemLevel HelmetLevel = (FMath::RandRange(0.f, 1.f) > 0.9f) ? EEquipableItemLevel::LV3 :
-										static_cast<EEquipableItemLevel>(FMath::RandRange(0, 1));
+		Vest->InitVestDatasAndStaticMesh();
 		
-	AC_Helmet* Helmet = GetWorld()->SpawnActor<AC_Helmet>(HelmetClasses[HelmetLevel]);
-	Helmet->MoveToSlot(OwnerEnemy, Helmet->GetItemCurStack());
+		Vest->MoveToSlot(OwnerEnemy, Vest->GetItemCurStack());
 
-	// UC_Util::Print("Setting Helmet Lv : " + FString::FromInt(static_cast<uint8>(Helmet->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
+		// UC_Util::Print("Setting Vest Lv : " + FString::FromInt(static_cast<uint8>(Vest->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
+
+		// 20% 확률로 3가방 장착 & 장착 못하면 1, 2랩 가방은 각각 50%
+		EEquipableItemLevel BackPackLevel = (FMath::RandRange(0.f, 1.f) > 0.8f) ? EEquipableItemLevel::LV3 :
+											static_cast<EEquipableItemLevel>(FMath::RandRange(0, 1));
+		
+		AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[BackPackLevel]);
+		BackPack->MoveToSlot(OwnerEnemy, BackPack->GetItemCurStack());
+
+		// UC_Util::Print("Setting BackPack Lv : " + FString::FromInt(static_cast<uint8>(BackPack->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
+
+		// 10% 확률로 3헬멧 장착
+		EEquipableItemLevel HelmetLevel = (FMath::RandRange(0.f, 1.f) > 0.9f) ? EEquipableItemLevel::LV3 :
+											static_cast<EEquipableItemLevel>(FMath::RandRange(0, 1));
+			
+		AC_Helmet* Helmet = GetWorld()->SpawnActor<AC_Helmet>(HelmetClasses[HelmetLevel]);
+		Helmet->MoveToSlot(OwnerEnemy, Helmet->GetItemCurStack());
+
+		// UC_Util::Print("Setting Helmet Lv : " + FString::FromInt(static_cast<uint8>(Helmet->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
+	}
+		return;
+	case EEnemyBehaviorType::StatCareTest: // 3가방만 장착
+	{
+		AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[EEquipableItemLevel::LV3]);
+		BackPack->MoveToSlot(OwnerEnemy, BackPack->GetItemCurStack());
+	}
+		return;
+	}
 }
 
 void UC_DefaultItemSpawnerComponent::SpawnConsumableItems(const FActorSpawnParameters& Param)
 {
+	// Stat Care Test Enemy 용 Spawn Consumable 처리
+	if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest)
+	{
+		// 구급 상자 1개 Spawn
+		AC_ConsumableItem* FirstAidKit = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::FIRST_AID_KIT], Param);
+		FirstAidKit->SetItemStack(1);
+		FirstAidKit->MoveToInven(OwnerEnemy, FirstAidKit->GetItemCurStack());
+
+		// 에너지 드링크 1개 Spawn
+		AC_ConsumableItem* Drink = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::ENERGY_DRINK], Param);
+		Drink->SetItemStack(1);
+		Drink->MoveToInven(OwnerEnemy, Drink->GetItemCurStack());
+
+		// 진통제 1개 spawn
+		AC_ConsumableItem* PainKiller = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::PAIN_KILLER], Param);
+		PainKiller->SetItemStack(1);
+		PainKiller->MoveToInven(OwnerEnemy, PainKiller->GetItemCurStack());
+
+		return;
+	}
+	
 	// 의료용 키트 0~1개 Random spawn
 	int MedKitCount = FMath::RandRange(0, 1);
 	if (MedKitCount == 1)

@@ -19,6 +19,7 @@
 #include "InvenUI/ItemBar/C_BasicItemBarWidget.h"
 //#include "InvenUserInterface/C_ItemBarWidget.h"
 
+#include "Character/C_Enemy.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/AudioComponent.h"
 #include "Utility/C_Util.h"
@@ -105,7 +106,11 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 
 		// Activating end
 
-		ItemCurStack--;
+		// ItemUser가 Stat care test Enemy가 아닌 경우, ItemCurStack을 정상적으로 하나 줄임
+		AC_Enemy* Enemy = Cast<AC_Enemy>(ItemUser);
+		if (!Enemy || Enemy->GetBehaviorType() != EEnemyBehaviorType::StatCareTest)
+			ItemCurStack--;
+		
 		FString Left = "Item Used: ItemStack -> " + FString::FromInt(ItemCurStack);
 		UC_Util::Print(Left, FColor::Red, 5.f);
 

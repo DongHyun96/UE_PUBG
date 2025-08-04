@@ -7,8 +7,10 @@
 #include "Character/C_BasicCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/C_Enemy.h"
+#include "Character/C_Player.h"
 
 #include "Service/C_BTServiceIdle.h"
+#include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
 
@@ -42,20 +44,16 @@ void UC_BehaviorComponent::BeginPlay()
 	// SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
 	// SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer());
 	// OwnerEnemyAIController->SetFocus(GAMESCENE_MANAGER->GetPlayer());
+
+	// OwnerEnemy가 Stat-Care 전용 Enemy인 경우, 항상 TargetCharacter를 Player로 둠 
+	if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest)
+		SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer());
 }
 
 void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	DrawDebugSphere(GetWorld(), GetBasicTargetLocation(), 15.f, 10, FColor::Red);
-
-	/*switch (static_cast<EIdleTaskType>(Blackboard->GetValueAsEnum(IdleTaskKey))) {
-	case EIdleTaskType::WAIT: UC_Util::Print("Wait"); break;
-	case EIdleTaskType::BASIC_MOVETO: UC_Util::Print("Move To"); break;
-	case EIdleTaskType::CHANGE_POSE: UC_Util::Print("Change Pose"); break;
-	case EIdleTaskType::MAX: UC_Util::Print("Max"); break;
-	}*/
+	// DrawDebugSphere(GetWorld(), GetBasicTargetLocation(), 15.f, 10, FColor::Red);
 }
 
 bool UC_BehaviorComponent::SetServiceType(EServiceType Type)

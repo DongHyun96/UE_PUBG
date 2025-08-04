@@ -113,8 +113,13 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 	if (CurHP <= 0.f) return false;
 	if (DamageAmount < 0.f) return false;
 
-	CurHP -= DamageAmount;
-	if (CurHP < 0.f) CurHP = 0.f;
+	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter);
+
+	CurHP = FMath::Max
+	(
+		CurHP - DamageAmount,
+		(OwnerEnemy && OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest) ? 1.f : 0.f // StatCare 테스팅용 Enemy의 경우 무적으로 둠
+	);
 
 	if (OwnerHUDWidget) 
 	{ 
@@ -122,7 +127,7 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 		if (HittingBlood) HittingBlood->ShowHitEffect();
 	}
 	
-	if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
+	if (OwnerEnemy)
 	{
 		OwnerEnemy->GetHPBar()->SetPercent(CurHP / MAX_HP);// TODO : 이 라인 지우기
 		OwnerEnemy->OnTakeDamage(KillFeedDescriptor.DamageCauser);

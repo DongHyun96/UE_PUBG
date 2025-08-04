@@ -35,7 +35,7 @@ class UE_PUBG_API AC_Enemy : public AC_BasicCharacter
 public:
 	AC_Enemy();
 
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 

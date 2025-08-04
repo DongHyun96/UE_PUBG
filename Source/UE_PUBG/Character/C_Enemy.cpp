@@ -35,11 +35,12 @@ const TMap<EPoseState, float> AC_Enemy::ActorZLocationOffsetFromBottom =
 	{EPoseState::CRAWL,		22.4f},
 };
 
+// TODO : 각 BehaviorType에 맞는 BehaviorTree로 초기화할 것
 const TMap<EEnemyBehaviorType, FString> AC_Enemy::BehaviorTreeReferenceDirectories =
 {
 	{EEnemyBehaviorType::InGamePlayable,	"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"},
 	{EEnemyBehaviorType::MovementTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_MovementTest.BT_MovementTest'"},
-	{EEnemyBehaviorType::StatCareTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"}, // TODO : 각 BehaviorType에 맞는 BehaviorTree로 초기화할 것
+	{EEnemyBehaviorType::StatCareTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_StatCareTest.BT_StatCareTest'"}, 
 	{EEnemyBehaviorType::SkyDivingTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"},
 	{EEnemyBehaviorType::CombatTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"},
 };
