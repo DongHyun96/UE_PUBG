@@ -109,7 +109,6 @@ EBTNodeResult::Type UC_BTTaskSmokeGrenade::ExecuteTask(UBehaviorTreeComponent& O
 	}
 	
 	AC_Enemy* Enemy = Cast<AC_Enemy>(Controller->GetPawn());
-	UC_BehaviorComponent* BehaviorComponent = Controller->GetBehaviorComponent();
 	UC_EquippedComponent* EquippedComponent = Enemy->GetEquippedComponent();
 
 	// Smoke Grenade 있다면 바꿔들고, 사용하기
@@ -128,8 +127,9 @@ EBTNodeResult::Type UC_BTTaskSmokeGrenade::ExecuteTask(UBehaviorTreeComponent& O
 	bHasSmokeGrenade = bHasSmokeGrenade || InvenSmokeGrenade;
 	if (!bHasSmokeGrenade) return EBTNodeResult::Succeeded; // Smoke grenade를 가지고 있지 않은 상황 -> 다음 Task sequence로 진행
 
-	// 30%의 확률로 SmokeGrenade 사용 처리 (TODO : 아래 주석 풀기)
-	// if (FMath::RandRange(0.f, 1.f) < 0.7f) return EBTNodeResult::Succeeded;
+	// 기본적으로 40%의 확률로 SmokeGrenade 사용 처리, but 만약 TargetCharacter가 시야에 들어오는 상황이라면 무조건 사용 시도
+	bool bIsTargetCharacterOnSight = Controller->IsCurrentlyOnSight(Controller->GetBehaviorComponent()->GetTargetCharacter()); 
+	if (!bIsTargetCharacterOnSight && FMath::RandRange(0.f, 1.f) < 0.6f) return EBTNodeResult::Succeeded;
 
 	if (CurrentSlotThrowableType == EThrowableType::SMOKE) // Slot에 이미 SmokeGrenade가 장착되어 있는 상황
 	{

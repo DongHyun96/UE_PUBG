@@ -22,7 +22,6 @@ public:
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
-private:
 
 private:
 
@@ -31,4 +30,9 @@ private:
 
 	// ChangingWeapon false 이후, 시간 재기 timer
 	TMap<AC_Enemy*, float> EnemyTickTaskTimer{};
+	
+protected:
+
+	
+	
 };
