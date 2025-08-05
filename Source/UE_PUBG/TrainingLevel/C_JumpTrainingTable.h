@@ -47,10 +47,17 @@ private:
 private:
 	
 	/// <summary>
-	/// Delegate 구독을 통해 Player F Key input action 처리용 static 함수  
+	/// Delegate 구독을 통해 Player Number 1 Key input action 처리용 static 함수 
 	/// </summary>
-	/// <returns> : TrainingGround내에 배치된 JumpTrainingTable 중 하나라도 interaction 처리가 되었다면 return true </returns>
-	static bool OnFKeyInteraction(); 
+	/// <returns> : TrainingGround내에 배치된 JumpTrainingTable 중 하나라도 Focused 처리된 상황이라면 return true </returns>
+	static bool OnNumber1KeyInteraction();
+
+	/// <summary>
+	/// <para> Delegate 구독을 통해 Player Number 2 Key input action 처리용 static 함수 </para>
+	/// <para> TrainingGround내의 SkyDivingTester SkyDiving 처리 </para>
+	/// </summary>
+	/// <returns> : IsFocused 처리되지 않은 JumpTrainingTable일 경우 return false </returns>
+	bool OnNumber2KeyInteraction();
 
 private:
 

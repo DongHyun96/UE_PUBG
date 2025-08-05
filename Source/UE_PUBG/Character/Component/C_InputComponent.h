@@ -244,8 +244,11 @@ public:
 	// Movement Tutorial 진행용 Delegate
 	 FTutorialStageGoalCheckerDelegate MovementTutorialDelegate{};
 
-	// Training ground JumpTrainingTable F키 Interaction Delegate
-	FJumpTrainingTableInteraction_Delegate JumpTrainingTableInteractionDelegate{};
+
+	// Training ground JumpTrainingTable Interaction Delegate
+	FJumpTrainingTableInteraction_Delegate JumpTrainingTableNum1KeyInteractionDelegate{};
+	FJumpTrainingTableInteraction_Delegate JumpTrainingTableNum2KeyInteractionDelegate{};
+	
 };
 
 

@@ -50,6 +50,8 @@
 #include "SkyDivingComponent/C_PlayerSkyDivingComponent.h"
 #include "InputMappingContext.h"
 #include "EnhancedActionKeyMapping.h"
+#include "TrainingLevel/C_AISkyDiveTesterManager.h"
+#include "TrainingLevel/C_TrainingGroundManager.h"
 
 // Sets default values for this component's properties
 UC_InputComponent::UC_InputComponent()
@@ -458,12 +460,22 @@ void UC_InputComponent::SetToNonAimCamera()
 
 void UC_InputComponent::OnNum1()
 {
+	// TrainingJumpTable Interaction 관련 Delegate
+	// Bound되어있고 제대로 TrainingTable interaction이 처리되었다면 return
+	if (JumpTrainingTableNum1KeyInteractionDelegate.IsBound() && JumpTrainingTableNum1KeyInteractionDelegate.Execute())
+		return;
+
 	if (!OnNumKey(EWeaponSlot::MAIN_GUN)) return;
 	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_GUN);
 }
 
 void UC_InputComponent::OnNum2()
 {
+	// TrainingJumpTable Interaction 관련 Delegate
+	// Bound되어있고 제대로 TrainingTable interaction이 처리되었다면 return
+	if (JumpTrainingTableNum2KeyInteractionDelegate.IsBound() && JumpTrainingTableNum2KeyInteractionDelegate.Execute())
+		return;
+	
 	if (!OnNumKey(EWeaponSlot::SUB_GUN)) return;
 	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_GUN);
 }
@@ -621,11 +633,6 @@ void UC_InputComponent::OnFKey()
 		return;
 	}
 	
-	// TrainingJumpTable Interaction 관련 FKey Delegate
-	// Bound되어있고 제대로 TrainingTable interaction이 처리되었다면 return
-	if (JumpTrainingTableInteractionDelegate.IsBound() && JumpTrainingTableInteractionDelegate.Execute())
-		return;
-
 	if (Player->GetCurOutLinedItem())
 	{
 		if (Player->GetCurOutLinedItem()->Interaction(Player))

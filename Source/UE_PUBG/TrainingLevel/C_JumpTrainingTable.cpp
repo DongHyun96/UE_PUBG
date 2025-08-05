@@ -3,12 +3,19 @@
 
 #include "C_JumpTrainingTable.h"
 
+#include "C_AISkyDiveTesterManager.h"
+#include "C_TrainingGroundManager.h"
+#include "AI/C_BehaviorComponent.h"
+#include "AI/C_EnemyAIController.h"
+#include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_InputComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/SkyDivingComponent/C_PlayerSkyDivingComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Components/WidgetComponent.h"
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_InformWidget.h"
 #include "Item/Equipment/C_EquipableItem.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
@@ -62,7 +69,8 @@ void AC_JumpTrainingTable::BeginPlay()
 	if (IsValid(GAMESCENE_MANAGER->GetPlayer()->GetInputComponent()))
 	{
 		UC_Util::Print("Player InputComponent Valid in Actor BeginPlay", FColor::MakeRandomColor(), 10.f);
-		GAMESCENE_MANAGER->GetPlayer()->GetInputComponent()->JumpTrainingTableInteractionDelegate.BindStatic(&AC_JumpTrainingTable::OnFKeyInteraction);
+		GAMESCENE_MANAGER->GetPlayer()->GetInputComponent()->JumpTrainingTableNum1KeyInteractionDelegate.BindStatic(&AC_JumpTrainingTable::OnNumber1KeyInteraction);
+		GAMESCENE_MANAGER->GetPlayer()->GetInputComponent()->JumpTrainingTableNum2KeyInteractionDelegate.BindUObject(this, &AC_JumpTrainingTable::OnNumber2KeyInteraction);
 	}
 }
 
@@ -140,7 +148,7 @@ void AC_JumpTrainingTable::OnBoxColliderEndOverlap
 	}
 }
 
-bool AC_JumpTrainingTable::OnFKeyInteraction()
+bool AC_JumpTrainingTable::OnNumber1KeyInteraction()
 {
 	for (AC_JumpTrainingTable* Table : JumpTrainingTables)
 	{
@@ -155,10 +163,30 @@ bool AC_JumpTrainingTable::OnFKeyInteraction()
 			AC_EquipableItem* BackPack = Player->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK];
 			if (!BackPack) return true;
 
-			// 배낭을 장착하고 있다면, 배낭 잠시 숨기기
+			// 배낭을 장착하고 있다면, 배낭 잠시 숨기기S
 			BackPack->SetActorHiddenInGame(true);
 			return true;
 		}
 	}
 	return false;
+}
+
+bool AC_JumpTrainingTable::OnNumber2KeyInteraction()
+{
+	if (!bIsFocused) return false;
+
+	AC_TrainingGroundManager* TrainingGroundManager = GAMESCENE_MANAGER->GetTrainingGroundManager();
+	if (!TrainingGroundManager) return false;
+	
+	AC_Enemy* SkyDivingTester = TrainingGroundManager->GetAISkyDiveTesterManager()->GetSkyDiveTester();
+	if (!SkyDivingTester) return false;
+
+	if (SkyDivingTester->GetMainState() == EMainState::SKYDIVING)
+	{
+		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("AI SkyDiving test already in progress. Look to the skies!");
+		return true;
+	}
+
+	SkyDivingTester->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetServiceType(EServiceType::SKYDIVE);
+	return true;
 }
