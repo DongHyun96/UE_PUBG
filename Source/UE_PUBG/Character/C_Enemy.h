@@ -117,6 +117,11 @@ private:
 	void CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor) override;
 
 	void DestroyCharacter() override;
+
+public:
+
+	UFUNCTION(BlueprintCallable)
+	void SetRotationToInitialRotation() { SetActorRotation(InitialRotation); }
 	
 protected:
 
@@ -129,7 +134,7 @@ private:
 	static const TMap<EEnemyBehaviorType, FString>		BehaviorTreeReferenceDirectories; 
 	static TMap<EEnemyBehaviorType, UBehaviorTree*>		BehaviorTrees;
 	
-	// 자신의 EnemyBehaviorType에 따라 사용할 BehaviorTree
+	// 자신의 EnemyBehaviorType에 따라 사용할 BehaviorTreef
 	UBehaviorTree* BehaviorTree{};
 	
 protected:
@@ -161,5 +166,10 @@ private:
 
 	// 바닥의 Z값이 0일 때, 각 자세별 ActorLocation Z 위치(또는 바닥으로부터 ActorLocation Z의 offset 값이라고 보면 됨)
 	static const TMap<EPoseState, float> ActorZLocationOffsetFromBottom;
+
+private:
+
+	// SkyDive Tester 처리 때에만 쓰일 예정
+	FRotator InitialRotation{};
 
 };

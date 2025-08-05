@@ -48,6 +48,10 @@ void UC_BehaviorComponent::BeginPlay()
 	// OwnerEnemy가 Stat-Care 전용 Enemy인 경우, 항상 TargetCharacter를 Player로 둠 
 	if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest)
 		SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer());
+
+	// SkyDivingTester의 경우, 첫 자리를 TargetLocation으로 고수
+	if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::SkyDivingTest)
+		SetBasicTargetLocation(OwnerEnemy->GetActorLocation());
 }
 
 void UC_BehaviorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

@@ -90,8 +90,8 @@ EBTNodeResult::Type UC_BTTaskSkyDive::ExecuteTask(UBehaviorTreeComponent& OwnerC
 
 	SkyDiveStartFlagMap.Add(Enemy, false);
 	
-	SetRandomLandingTargetLocationAndJumpPosXY(Enemy);	// SkyDiving 도착지점 세팅
-	SetSkyDivingStateDestination(Enemy);				// SKyDiveState 상태일 때 도달할 지점 setting
+	SetRandomLandingTargetLocationAndJumpPosXY(Enemy);	// Jump 지점 & SkyDiving 도착지점 세팅 (ParachutingState Destination)
+	SetSkyDivingStateDestination(Enemy);				// SKyDiveState 상태일 때 도달할 지점 setting (SkyDivingState Destination)
 
 	return EBTNodeResult::InProgress;
 }

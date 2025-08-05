@@ -115,11 +115,18 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 
 	AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter);
 
-	CurHP = FMath::Max
+	/*CurHP = FMath::Max
 	(
 		CurHP - DamageAmount,
 		(OwnerEnemy && OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest) ? 1.f : 0.f // StatCare 테스팅용 Enemy의 경우 무적으로 둠
-	);
+	);*/
+
+	// Testing용 AI에 따라 최소로 둘 수 있는 HP값 결정
+	float MinHP =  !OwnerEnemy ? 0.f : 
+					OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::SkyDivingTest ? 100.f :
+					OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest  ? 1.f : 0.f; 
+	
+	CurHP = FMath::Max(CurHP - DamageAmount, MinHP);
 
 	if (OwnerHUDWidget) 
 	{ 

@@ -12,10 +12,10 @@
 
 
 /*
-TODO :
 SkyDive할 목표지점 설정(땅)
 최단 거리가 되었을 때 비행기에서 내리기
 비행기에서 내린 이후 목표 지점으로 SkyDive 진행
+In Game Playable 전용 SkyDive
 */
 
 UCLASS()
@@ -43,7 +43,7 @@ private:
 	/// <summary>
 	/// LandingTargetLocation에 살짝 못 미치는 거리로 낙하산을 펼치기 전까지의 목표 지점 setting
 	/// </summary>
-	void SetSkyDivingStateDestination(class AC_Enemy* Enemy);
+	void SetSkyDivingStateDestination(AC_Enemy* Enemy);
 
 private:
 	

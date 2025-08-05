@@ -89,8 +89,8 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 		{
 			// Enemy->GetItemSpawnerHelper()->SpawnDefaultWeaponsAndItems(); // 기본으로 가지고 있을 무기와 Item 스폰 시키기 -> 이거 그냥 Hidden 처리로 바꾸기
 			
-			UC_BehaviorComponent* EnemyBehvaiorComponent = Enemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent(); 
-			EnemyBehvaiorComponent->SetServiceType(EServiceType::SKYDIVE);
+			UC_BehaviorComponent* EnemyBehaviorComponent = Enemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent(); 
+			EnemyBehaviorComponent->SetServiceType(EServiceType::SKYDIVE);
 		}
 	}
 

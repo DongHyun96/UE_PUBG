@@ -41,7 +41,7 @@ const TMap<EEnemyBehaviorType, FString> AC_Enemy::BehaviorTreeReferenceDirectori
 	{EEnemyBehaviorType::InGamePlayable,	"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"},
 	{EEnemyBehaviorType::MovementTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_MovementTest.BT_MovementTest'"},
 	{EEnemyBehaviorType::StatCareTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_StatCareTest.BT_StatCareTest'"}, 
-	{EEnemyBehaviorType::SkyDivingTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"},
+	{EEnemyBehaviorType::SkyDivingTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_SkyDiveTest.BT_SkyDiveTest'"},
 	{EEnemyBehaviorType::CombatTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"},
 };
 
@@ -94,6 +94,8 @@ void AC_Enemy::BeginPlay()
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 
 	GetMesh()->SetMaterial(0, GetMesh()->GetMaterial(1));
+
+	InitialRotation = GetActorRotation();
 
 	// GetMesh()->GetMaterials()[0];
 

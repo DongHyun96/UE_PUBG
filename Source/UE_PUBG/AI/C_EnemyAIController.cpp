@@ -337,6 +337,8 @@ void AC_EnemyAIController::DrawSightRange()
 
 bool AC_EnemyAIController::IsCurrentlyOnSight(AC_BasicCharacter* TargetCharacter)
 {
+	if (!IsValid(TargetCharacter)) return false;
+	
 	if (const FActorPerceptionInfo* ActorPerceptionInfo = PerceptionComponent->GetActorInfo(*TargetCharacter))
 		for (FAIStimulus Stimulus : ActorPerceptionInfo->LastSensedStimuli)
 			if (Stimulus.WasSuccessfullySensed()) return true;
