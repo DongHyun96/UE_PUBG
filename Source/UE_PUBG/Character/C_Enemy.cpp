@@ -42,7 +42,7 @@ const TMap<EEnemyBehaviorType, FString> AC_Enemy::BehaviorTreeReferenceDirectori
 	{EEnemyBehaviorType::MovementTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_MovementTest.BT_MovementTest'"},
 	{EEnemyBehaviorType::StatCareTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_StatCareTest.BT_StatCareTest'"}, 
 	{EEnemyBehaviorType::SkyDivingTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_SkyDiveTest.BT_SkyDiveTest'"},
-	{EEnemyBehaviorType::CombatTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"},
+	{EEnemyBehaviorType::CombatTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_CombatTest.BT_CombatTest'"},
 };
 
 TMap<EEnemyBehaviorType, UBehaviorTree*> AC_Enemy::BehaviorTrees{};
@@ -285,7 +285,7 @@ void AC_Enemy::OnTakeDamage(AC_BasicCharacter* DamageCauser)
 
 	bool bDamageCauserSetToTargetCharacter = TryUpdateTargetCharacterToDamageCauser(DamageCauser);
 
-	// Damage Causer가 제대로 잡히지 않았거나, 잡혔어도 피가 25 아래로 떨어졌다면 엄폐 시도
+	// Damage Causer가 TargetCharacter로 제대로 잡히지 않았거나, 잡혔어도 피가 25 아래로 떨어졌다면 엄폐 시도
 	if (!bDamageCauserSetToTargetCharacter || StatComponent->GetCurHP() < 25.f)
 	{
 		BehaviorComponent->SetServiceType(EServiceType::IDLE);

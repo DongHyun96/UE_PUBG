@@ -100,6 +100,13 @@ void UC_BTTaskWait::OnWaitTimeRemain(UBehaviorTreeComponent& OwnerComp, AC_Enemy
 
 void UC_BTTaskWait::OnWaitTimeFinished(UBehaviorTreeComponent& OwnerComp, AC_EnemyAIController* EnemyAIController, AC_Enemy* Enemy, UC_BehaviorComponent* EnemyBehaviorComponent)
 {
+	if (!EnemyTimers.Contains(EnemyBehaviorComponent))
+	{
+		UC_Util::Print("From UC_BTTaskWait::OnWaitTimeFinished : EnemyTimers does not contains received EnemyBehaviorComponent!", FColor::Red, 10.f);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
+	
 	EnemyTimers[EnemyBehaviorComponent] = 0.f;
 
 	// 만약 아직 비행기 이륙이 시작되지 않은 대기 시간 중이라면, MoveToRandomPos 처리만 걸어둠

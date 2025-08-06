@@ -82,12 +82,9 @@ void AC_EnemyAIController::OnPossess(APawn* InPawn)
 	SetGenericTeamId(OwnerCharacter->GetGenericTeamId());
 
 	// PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &AC_EnemyAIController::OnPerceptionUpdated);
-	switch (OwnerCharacter->GetBehaviorType())
-	{
-	case EEnemyBehaviorType::InGamePlayable: case EEnemyBehaviorType::CombatTest: // 두 종류의 BehaviorType에 대해서만 시야 처리를 하여 TargetCharacter를 잡을 예정
+	// 실질적인 InGamePlayable에 대해서만, 시야에 들어오거나 나간 캐릭터에 대한 DetectedCharacters 업데이트를 처리할 예정
+	if (OwnerCharacter->GetBehaviorType() == EEnemyBehaviorType::InGamePlayable)
 		PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AC_EnemyAIController::OnTargetPerceptionUpdated);
-		break;
-	}
 	
 	// Set Black board & Behavior tree
 

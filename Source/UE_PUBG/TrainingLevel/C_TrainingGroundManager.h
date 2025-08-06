@@ -26,6 +26,8 @@ public:
 
 	class AC_AISkyDiveTesterManager* GetAISkyDiveTesterManager() const { return AISkyDiveTesterManager; }
 
+	class AC_CombatFieldManager* GetCombatFieldManager() const { return CombatFieldManager; }
+
 protected:
 
 	// Training ground의 가장 기본 위치 저장 (Tutorial 끝난 이 후, 해당 위치로 이동하도록 처리)
@@ -34,4 +36,7 @@ protected:
 
 	UPROPERTY(EditInstanceOnly)
 	AC_AISkyDiveTesterManager* AISkyDiveTesterManager{};
+
+	UPROPERTY(EditInstanceOnly)
+	AC_CombatFieldManager* CombatFieldManager{};	
 };

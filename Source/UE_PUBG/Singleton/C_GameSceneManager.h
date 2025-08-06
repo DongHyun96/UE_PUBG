@@ -107,6 +107,8 @@ public:
 
 	class AC_TutorialManager* GetTutorialManager() const { return TutorialManager; }
 	class AC_TrainingGroundManager* GetTrainingGroundManager() const { return TrainingGroundManager; }
+
+	class AC_CombatFieldManager* GetCombatFieldManager() const { return CombatFieldManager;}
 	
 	/// <summary>
 	/// GameScene에서 GC로부터 보호된 Object들 추가 -> GameScene 끝날 때 일괄 삭제처리 예정
@@ -191,6 +193,7 @@ private:
 	AC_SoundManager*			SoundManager{};
 	AC_TutorialManager*			TutorialManager{};
 	AC_TrainingGroundManager*	TrainingGroundManager{};
+	AC_CombatFieldManager*		CombatFieldManager{}; // TODO : TrainingGroudManager내의 CombatFieldManager를 사용할 것 (Testing 때문에 GameSceneManager에 넣어둠)
 	
 	
 private:
@@ -202,6 +205,8 @@ private:
 private:
 
 	TArray<AC_Enemy*> Enemies{};
+
+	TArray<FName> EnemyNames{};
 
 private:
 

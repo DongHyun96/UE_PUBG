@@ -106,7 +106,7 @@ EBTNodeResult::Type UC_BTTaskAfterTakeCoverMoveTo::ExecuteTask(UBehaviorTreeComp
 	bool CrawlTraceHitted = HitResult.GetActor() == TargetCharacter;
 
 	// 만약에 불가피하게 도착지점에 아무 엄폐물도 없다하면(높이로 판단하기) TakeCover sequence 종료
-	// Stat Care용 Enemy의 경우 그냥 넘어감
+	// Stat Care용 Enemy의 경우, Sequence 계속 진행 (위의 조건 x)
 	if (Enemy->GetBehaviorType() != EEnemyBehaviorType::StatCareTest && CrouchTraceHitted && CrawlTraceHitted)
 	{
 		UC_Util::Print("From AfterTakeCover : TakeCover sequence failed!, Returning to wait task", FColor::Red, 20.f);
@@ -119,7 +119,7 @@ EBTNodeResult::Type UC_BTTaskAfterTakeCoverMoveTo::ExecuteTask(UBehaviorTreeComp
 
 	if (Enemy->GetPoseState() == ChangeTo) return EBTNodeResult::Succeeded;
 	
-	Enemy->SetPoseState(Enemy->GetPoseState(), EPoseState::CROUCH);
+	Enemy->SetPoseState(Enemy->GetPoseState(), ChangeTo);
 	
 	return EBTNodeResult::InProgress;
 }

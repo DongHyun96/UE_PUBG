@@ -38,7 +38,7 @@ bool UC_SmokeEnteredChecker::GetRandomLocationInSmokeArea(FVector& OutLocation)
 	return true;
 }
 
-void UC_SmokeEnteredChecker::AddEnteredSmoke(class UC_SmokeOverlappedHandler* InSmoke)
+void UC_SmokeEnteredChecker::AddEnteredSmoke(UC_SmokeOverlappedHandler* InSmoke)
 {
 	EnteredSmokes.Add(InSmoke);
 	InSmoke->Delegate_OnSmokeDurationFinished.AddUObject(this, &UC_SmokeEnteredChecker::RemoveEnteredSmoke);

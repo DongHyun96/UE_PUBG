@@ -48,14 +48,15 @@ void UC_DefaultItemSpawnerComponent::TickComponent(float DeltaTime, ELevelTick T
 
 void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 {
+	switch (OwnerEnemy->GetBehaviorType()) { case EEnemyBehaviorType::MovementTest: case EEnemyBehaviorType::SkyDivingTest: return; }
+	
 	FActorSpawnParameters Param{};
 	Param.Owner = OwnerEnemy;
 
 	SpawnEquipableItems(Param);
 	SpawnWeapons(Param);
 	SpawnConsumableItems(Param);
-	
-	if (OwnerEnemy->GetBehaviorType() != EEnemyBehaviorType::StatCareTest) SpawnBullets(Param);
+	SpawnBullets(Param);
 }
 
 void UC_DefaultItemSpawnerComponent::ToggleSpawnedItemsHiddenInGame(bool InHiddenInGame)
@@ -68,6 +69,9 @@ void UC_DefaultItemSpawnerComponent::ToggleSpawnedItemsHiddenInGame(bool InHidde
 
 void UC_DefaultItemSpawnerComponent::SpawnWeapons(const FActorSpawnParameters& Param)
 {
+	switch (OwnerEnemy->GetBehaviorType()) 
+	{ case EEnemyBehaviorType::MovementTest: case EEnemyBehaviorType::SkyDivingTest: return; }
+	
 	if (WeaponClasses.IsEmpty())
 	{
 		UC_Util::Print("WeaponClasses empty!", FColor::Red, 10.f);
@@ -100,19 +104,22 @@ void UC_DefaultItemSpawnerComponent::SpawnWeapons(const FActorSpawnParameters& P
 
 	// Throwable Weapon setting 하기
 
+	// CombatTestType의 경우, 갯수 1개로 setting
+	bool bIsCombatTestType = OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::CombatTest; 
+
 	// Grenade 1~3개
 	AC_ThrowingWeapon* Grenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::GRENADE], Param);
-	Grenade->SetItemStack(FMath::RandRange(1, 2));
+	Grenade->SetItemStack(bIsCombatTestType ? 1 : FMath::RandRange(1, 2));
 	Grenade->MoveToInven(OwnerEnemy, Grenade->GetItemCurStack());
 
 	// Smoke Grenade 1~2개
 	AC_ThrowingWeapon* SmokeGrenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::SMOKE], Param);
-	SmokeGrenade->SetItemStack(FMath::RandRange(1, 2));
+	SmokeGrenade->SetItemStack(bIsCombatTestType ? 1 : FMath::RandRange(1, 2));
 	SmokeGrenade->MoveToInven(OwnerEnemy, SmokeGrenade->GetItemCurStack());
 
 	// FlashBang 1~2개
 	AC_ThrowingWeapon* FlashBang = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::FLASH_BANG], Param);
-	FlashBang->SetItemStack(FMath::RandRange(1, 2));
+	FlashBang->SetItemStack(bIsCombatTestType ? 1 : FMath::RandRange(1, 2));
 	FlashBang->MoveToInven(OwnerEnemy, FlashBang->GetItemCurStack());
 
 }
@@ -121,7 +128,7 @@ void UC_DefaultItemSpawnerComponent::SpawnEquipableItems(const FActorSpawnParame
 {
 	switch (OwnerEnemy->GetBehaviorType())
 	{
-	case EEnemyBehaviorType::InGamePlayable: case EEnemyBehaviorType::CombatTest:
+	case EEnemyBehaviorType::InGamePlayable:
 	{
 		// Body Armors and Backpack
 		AC_Vest* Vest = GetWorld()->SpawnActor<AC_Vest>(VestClass, Param);
@@ -141,7 +148,7 @@ void UC_DefaultItemSpawnerComponent::SpawnEquipableItems(const FActorSpawnParame
 		EEquipableItemLevel BackPackLevel = (FMath::RandRange(0.f, 1.f) > 0.8f) ? EEquipableItemLevel::LV3 :
 											static_cast<EEquipableItemLevel>(FMath::RandRange(0, 1));
 		
-		AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[BackPackLevel]);
+		AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[BackPackLevel], Param);
 		BackPack->MoveToSlot(OwnerEnemy, BackPack->GetItemCurStack());
 
 		// UC_Util::Print("Setting BackPack Lv : " + FString::FromInt(static_cast<uint8>(BackPack->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
@@ -150,7 +157,7 @@ void UC_DefaultItemSpawnerComponent::SpawnEquipableItems(const FActorSpawnParame
 		EEquipableItemLevel HelmetLevel = (FMath::RandRange(0.f, 1.f) > 0.9f) ? EEquipableItemLevel::LV3 :
 											static_cast<EEquipableItemLevel>(FMath::RandRange(0, 1));
 			
-		AC_Helmet* Helmet = GetWorld()->SpawnActor<AC_Helmet>(HelmetClasses[HelmetLevel]);
+		AC_Helmet* Helmet = GetWorld()->SpawnActor<AC_Helmet>(HelmetClasses[HelmetLevel], Param);
 		Helmet->MoveToSlot(OwnerEnemy, Helmet->GetItemCurStack());
 
 		// UC_Util::Print("Setting Helmet Lv : " + FString::FromInt(static_cast<uint8>(Helmet->GetItemLevel()) + 1), FColor::MakeRandomColor(), 10.f);
@@ -158,15 +165,33 @@ void UC_DefaultItemSpawnerComponent::SpawnEquipableItems(const FActorSpawnParame
 		return;
 	case EEnemyBehaviorType::StatCareTest: // 3가방만 장착
 	{
-		AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[EEquipableItemLevel::LV3]);
+		AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[EEquipableItemLevel::LV3], Param);
 		BackPack->MoveToSlot(OwnerEnemy, BackPack->GetItemCurStack());
 	}
 		return;
+	case EEnemyBehaviorType::CombatTest: // 모두 3 Level Equipable로 장착
+	{
+		AC_Vest* Vest = GetWorld()->SpawnActor<AC_Vest>(VestClass, Param);
+		Vest->SetItemLevel(EEquipableItemLevel::LV3);
+		Vest->InitVestDatasAndStaticMesh();
+		Vest->MoveToSlot(OwnerEnemy, Vest->GetItemCurStack());
+
+		AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[EEquipableItemLevel::LV3], Param);
+		BackPack->MoveToSlot(OwnerEnemy, BackPack->GetItemCurStack());
+
+		AC_Helmet* Helmet = GetWorld()->SpawnActor<AC_Helmet>(HelmetClasses[EEquipableItemLevel::LV3], Param);
+		Helmet->MoveToSlot(OwnerEnemy, Helmet->GetItemCurStack());
+	}
 	}
 }
 
 void UC_DefaultItemSpawnerComponent::SpawnConsumableItems(const FActorSpawnParameters& Param)
 {
+	switch (OwnerEnemy->GetBehaviorType())
+	{
+	case EEnemyBehaviorType::MovementTest: case EEnemyBehaviorType::SkyDivingTest: case EEnemyBehaviorType::CombatTest: return;
+	}
+	
 	// Stat Care Test Enemy 용 Spawn Consumable 처리
 	if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest)
 	{
@@ -192,6 +217,8 @@ void UC_DefaultItemSpawnerComponent::SpawnConsumableItems(const FActorSpawnParam
 
 		return;
 	}
+
+	// InGamePlayable Spawn 처리
 	
 	// 의료용 키트 0~1개 Random spawn
 	int MedKitCount = FMath::RandRange(0, 1);
@@ -241,6 +268,9 @@ void UC_DefaultItemSpawnerComponent::SpawnConsumableItems(const FActorSpawnParam
 
 void UC_DefaultItemSpawnerComponent::SpawnBullets(const FActorSpawnParameters& Param)
 {
+	// InGamePlayable만 탄알 spawn 처리
+	if (OwnerEnemy->GetBehaviorType() != EEnemyBehaviorType::InGamePlayable) return;
+	
 	// 5.56mm 탄 200발, 7.62mm 탄 30발
 	for (int i = 0; i < 2; ++i)
 	{

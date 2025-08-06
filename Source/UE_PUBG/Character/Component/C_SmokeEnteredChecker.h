@@ -6,7 +6,10 @@
 #include "Components/ActorComponent.h"
 #include "C_SmokeEnteredChecker.generated.h"
 
-
+/// <summary>
+/// <para> OwnerCharacter가 현재 Smoke Area에 들어와 있는지 체크하는 ActorComponent Class </para>
+/// <para> OwnerCharacter가 현재 들어와 있는 Smoke Areas들의 Random한 Location을 구할 때에도 이 Component 사용 </para>
+/// </summary>
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class UE_PUBG_API UC_SmokeEnteredChecker : public UActorComponent
 {
@@ -66,7 +69,6 @@ private:
 
 private:
 
-	// TODO : TArray로 바꾸기
 	/// <summary>
 	/// 현재 안에 들어가져 있는 연막탄의 OverlappedHandlers
 	/// </summary>

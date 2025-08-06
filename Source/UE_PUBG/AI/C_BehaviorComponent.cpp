@@ -85,8 +85,9 @@ bool UC_BehaviorComponent::SetIdleTaskType(EIdleTaskType Type)
 	if (Type == EIdleTaskType::WAIT)
 	{
 		float RandBias = FMath::Pow(FMath::FRand(), 2.0f); // 0 ~ 1 -> 0에 더 가까운 값으로 조정 
-		WaitTime = (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::MovementTest) ? 5.f : FMath::Lerp(5.f, 30.f, RandBias); // 5 ~ 30 사이로 매핑
-		// WaitTime = FMath::RandRange(5.f, 30.f);
+		WaitTime =  (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::MovementTest) ? 	5.f :
+					(OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::CombatTest)   ?
+						FMath::Lerp(2.f, 5.f, RandBias) : FMath::Lerp(5.f, 30.f, RandBias); // 5 ~ 30 사이로 매핑
 	}
 	
 	Blackboard->SetValueAsEnum(IdleTaskKey, static_cast<uint8>(Type));
