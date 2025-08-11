@@ -95,7 +95,15 @@ void AC_Enemy::BeginPlay()
 
 	GetMesh()->SetMaterial(0, GetMesh()->GetMaterial(1));
 
+	// SkyDive Tester 초기 위치로 돌아올 때 회전도 초기 회전으로 주기 위해 저장해 둠
 	InitialRotation = GetActorRotation();
+
+	if (EnemyBehaviorType == EEnemyBehaviorType::CombatTest)
+	{
+		if (EquippedComponent->GetWeapons()[EWeaponSlot::MAIN_GUN])
+			EquippedComponent->ChangeCurWeapon(EWeaponSlot::MAIN_GUN);
+		else UC_Util::Print("From AC_Enemy : BeginPlay : CombatTest Enemy's MainGun Slot empty!", FColor::Red, 10.f);
+	}
 
 	// GetMesh()->GetMaterials()[0];
 
