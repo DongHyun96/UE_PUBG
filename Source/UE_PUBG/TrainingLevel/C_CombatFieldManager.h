@@ -32,21 +32,17 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TSubclassOf<class AC_Enemy> EnemyClass{};
 
-private:
+protected:
 
-	FActorSpawnParameters SpawnParameters{};
-	
-private:
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
+	TArray<AC_Enemy*> VersusAIEnemies{};   // Enemy vs Enemy Field Enemies
 
-	// Enemy vs Enemy Field Enemies
-	TArray<AC_Enemy*> VersusAIEnemies{};
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
+	AC_Enemy*         VersusPlayerEnemy{}; // Player vs Enemy 용 Enemy
 
-	// Player vs Enemy 용 Enemy
-	AC_Enemy* VersusPlayerEnemy{};
+private: // Spawn(Respawn) Transform 관련
 
-private: // Spawn(Respawn) Transform
-
-	TArray<class UCapsuleComponent*> EnemyVsEnemySpawnTransform{};
-	
-	TArray<UCapsuleComponent*> PlayerVsEnemySpawnTransform{};
+	// Spawn Transform 저장용
+	TArray<FTransform> EnemyVsEnemySpawnTransform{};
+	TArray<FTransform> PlayerVsEnemySpawnTransform{};
 };

@@ -79,13 +79,11 @@ EBTNodeResult::Type UC_BTTaskMoveTo::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	return Super::ExecuteTask(OwnerComp, NodeMemory);
 }
 
-void UC_BTTaskMoveTo::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
+/*void UC_BTTaskMoveTo::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 	EBTNodeResult::Type TaskResult)
 {
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
-
-	UC_Util::Print("OnMoveTask Finished", FColor::MakeRandomColor(), 50.f);
-}
+}*/
 
 bool UC_BTTaskMoveTo::IsAgentOnNavMesh(AActor* Agent)
 {

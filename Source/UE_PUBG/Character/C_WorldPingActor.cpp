@@ -42,9 +42,11 @@ bool AC_WorldPingActor::SpawnPingActorToWorld(FVector SpawnLocation)
 	this->SetActorLocation(SpawnLocation);
 
 	// TODO : 이 라인 지우기 (For Testing)
+	// TODO : MovementTester가 현재 Level에 있다면 MovementTester의 BasicTargetLocation으로 잡아줄 것
 	if (!GAMESCENE_MANAGER->GetEnemies().IsEmpty())
 	{
-		UC_BehaviorComponent* FirstEnemyBehaviorComponent = GAMESCENE_MANAGER->GetEnemies()[0]->GetController<AC_EnemyAIController>()->GetBehaviorComponent();
+		// TODO : index 0으로 바꾸기 (Testing으로 둘거면)
+		UC_BehaviorComponent* FirstEnemyBehaviorComponent = GAMESCENE_MANAGER->GetEnemies()[1]->GetController<AC_EnemyAIController>()->GetBehaviorComponent();
 
 		// 20cm 반경으로 해당 주변에 NavMesh가 있는지 조사
 		static const FVector Extent = {20.f, 20.f, 20.f}; 
@@ -52,7 +54,7 @@ bool AC_WorldPingActor::SpawnPingActorToWorld(FVector SpawnLocation)
 		if (GAMESCENE_MANAGER->FindNearestNavMeshAtLocation(SpawnLocation, Extent, ProjectedLocation))
 		{
 			// WorldPingActor 위치 주변에 NavMesh가 존재함
-			
+			UC_Util::Print("Nearest NavMesh found!", FColor::MakeRandomColor());
 			FirstEnemyBehaviorComponent->SetBasicTargetLocation(ProjectedLocation);
 			FirstEnemyBehaviorComponent->SetServiceType(EServiceType::IDLE);
 			FirstEnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);

@@ -8,6 +8,7 @@
 #include "Character/C_Enemy.h"
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 #include "Singleton/C_GameSceneManager.h"
+#include "Utility/C_Util.h"
 
 void UC_EQSCustomTraceTest::RunTest(FEnvQueryInstance& QueryInstance) const
 {
@@ -30,19 +31,15 @@ void UC_EQSCustomTraceTest::RunTest(FEnvQueryInstance& QueryInstance) const
 
 	FCollisionQueryParams TraceParams(SCENE_QUERY_STAT(EnvQueryTrace), TraceData.bTraceComplex);
 
+	// 자기자신 및 모든 캐릭터들 제외 (TargetCharacter만(TraceContext TargetCharacter) 배제)
+	TraceParams.AddIgnoredActors(GAMESCENE_MANAGER->GetAllCharacterActors());
+
+	// TraceContext TargetCharacter 배제
 	TArray<AActor*> IgnoredActors;
 	if (QueryInstance.PrepareContext(Context, IgnoredActors))
 	{
 		TraceParams.AddIgnoredActors(IgnoredActors);
 	}
-
-	// 자기자신 및 모든 캐릭터들 제외 (TargetCharacter만 배제)
-	AC_Enemy* Querier					= Cast<AC_Enemy>(DataOwner);
-	AActor* TargetCharacter 			= Querier->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->GetTargetCharacter();
-	TArray<AActor*> AllCharacterActors	= GAMESCENE_MANAGER->GetAllCharacterActors();
-	AllCharacterActors.Remove(TargetCharacter);
-	
-	TraceParams.AddIgnoredActors(AllCharacterActors);
 
 	// Querier 자기자신 Ignore 처리
 	/*AActor* QuerierActor = Cast<AActor>(DataOwner);
