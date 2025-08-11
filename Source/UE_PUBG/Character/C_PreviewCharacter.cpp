@@ -433,14 +433,14 @@ bool AC_PreviewCharacter::SwapSlotsWhileGunHandState()
 	// 현재 무기만 재장착
 	if (CurWeaponType == EWeaponSlot::MAIN_GUN)
 	{
-		AttachGunMesh(EWeaponSlot::SUB_GUN, Cast<AC_Gun>(EquipComp->GetWeapons()[EWeaponSlot::SUB_GUN])->GetEQUIPPED_SOCKET_NAME());
+		return AttachGunMesh(EWeaponSlot::SUB_GUN, Cast<AC_Gun>(EquipComp->GetWeapons()[EWeaponSlot::SUB_GUN])->GetEQUIPPED_SOCKET_NAME());
 	}
 	else if (CurWeaponType == EWeaponSlot::SUB_GUN)
 	{
-		AttachGunMesh(EWeaponSlot::MAIN_GUN, Cast<AC_Gun>(EquipComp->GetWeapons()[EWeaponSlot::MAIN_GUN])->GetEQUIPPED_SOCKET_NAME());
+		return AttachGunMesh(EWeaponSlot::MAIN_GUN, Cast<AC_Gun>(EquipComp->GetWeapons()[EWeaponSlot::MAIN_GUN])->GetEQUIPPED_SOCKET_NAME());
 	}
 
-	return true;
+	return false;
 }
 
 

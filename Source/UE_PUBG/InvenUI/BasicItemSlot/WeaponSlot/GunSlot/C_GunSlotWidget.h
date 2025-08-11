@@ -33,7 +33,7 @@ public:
 
 	void UpdateAttachableSlotVisibility();
 	
-	void  UpdateCurAmmo(AC_Gun* curWeapon);
+	void UpdateCurAmmo(AC_Gun* curWeapon);
 protected:
 
 	void UpdateLeftAmmo(AC_Gun* curWeapon);
