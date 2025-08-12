@@ -427,7 +427,7 @@ bool AC_PreviewCharacter::SwapSlotsWhileGunHandState()
 	USceneComponent* CurMainGunMesh = WeaponMeshes[EWeaponSlot::MAIN_GUN];
 	USceneComponent* CurSubGunMesh = WeaponMeshes[EWeaponSlot::SUB_GUN];
 
-	WeaponMeshes[EWeaponSlot::SUB_GUN] = CurMainGunMesh;
+	WeaponMeshes[EWeaponSlot::SUB_GUN]  = CurMainGunMesh;
 	WeaponMeshes[EWeaponSlot::MAIN_GUN] = CurSubGunMesh;
 
 	// 현재 무기만 재장착
