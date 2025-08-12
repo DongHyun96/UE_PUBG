@@ -37,6 +37,6 @@ public:
 	/// <param name="ThrowingWeapon"> : 이 전략 객체를 사용하는 투척류 객체 </param>
 	/// <param name="InTargetCharacter"> : 공격 대상 Character </param>
 	/// <returns> : TickTask처리가 끝났다면 return false (or TickTask처리가 필요하지 않다면 return false) </returns>
-	virtual bool ExecuteAIAttackTickTask(class AC_ThrowingWeapon* ThrowingWeapon, class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) = 0;
+	virtual bool ExecuteAIAttackTickTask(AC_ThrowingWeapon* ThrowingWeapon, AC_BasicCharacter* InTargetCharacter, const float& DeltaTime) = 0;
 	
 };

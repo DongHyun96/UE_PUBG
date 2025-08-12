@@ -408,7 +408,7 @@ private:
 	static TMap<EThrowableType, class II_AIThrowableAttackStrategy*> AIAttackStrategies;
 
 	// 현 Throwable 종류에 따른 AI Attack 전략
-	class II_AIThrowableAttackStrategy* AIAttackStrategy{};
+	II_AIThrowableAttackStrategy* AIAttackStrategy{};
 
 protected:
 	const FThrowingWeaponSoundData* ThrowingWeaponSoundData = nullptr;

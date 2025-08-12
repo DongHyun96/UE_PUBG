@@ -401,7 +401,15 @@ void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 
 void AC_Enemy::DestroyCharacter()
 {
+	if (EnemyBehaviorType == EEnemyBehaviorType::CombatTest)
+	{
+		// Combat Test enemy 한정, Destroy 처리하지 않고 재활용해서 리스폰 영역에 리스폰 처리
+		
+		return;
+	}
+	
 	Super::DestroyCharacter();
+	
 	UC_Util::Print("Destroying Enemy", FColor::Red, 10.f);
 	GAMESCENE_MANAGER->GetEnemies().Remove(this);
 	this->Destroy();

@@ -1024,7 +1024,7 @@ bool AC_ThrowingWeapon::ExecuteAIAttack(AC_BasicCharacter* InTargetCharacter)
 	return AIAttackStrategy->ExecuteAIAttack(this, InTargetCharacter);
 }
 
-bool AC_ThrowingWeapon::ExecuteAIAttackTickTask(class AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
+bool AC_ThrowingWeapon::ExecuteAIAttackTickTask(AC_BasicCharacter* InTargetCharacter, const float& DeltaTime)
 {
 	return AIAttackStrategy->ExecuteAIAttackTickTask(this, InTargetCharacter, DeltaTime);
 }

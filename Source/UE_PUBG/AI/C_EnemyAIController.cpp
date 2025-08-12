@@ -63,38 +63,38 @@ void AC_EnemyAIController::Tick(float DeltaTime)
 
 	// Update FlashBangEffectLeftTime
 	FlashBangEffectLeftTime = FMath::Max(FlashBangEffectLeftTime - DeltaTime, 0.f);
-	OwnerCharacter->SetStunnedTime(FlashBangEffectLeftTime);
+	OwnerEnemy->SetStunnedTime(FlashBangEffectLeftTime);
 }
 
 void AC_EnemyAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	OwnerCharacter = Cast<AC_Enemy>(InPawn);
+	OwnerEnemy = Cast<AC_Enemy>(InPawn);
 
 	// 실질적인 BehaviorTree 초기화는 여기서 처리되는 중
-	if (!OwnerCharacter->GetBehaviorTree()) OwnerCharacter->InitBehaviorTreeBySelfBehaviorType();
+	if (!OwnerEnemy->GetBehaviorTree()) OwnerEnemy->InitBehaviorTreeBySelfBehaviorType();
 		
 	
-	BehaviorComponent->SetOwnerEnemy(OwnerCharacter);
+	BehaviorComponent->SetOwnerEnemy(OwnerEnemy);
 	BehaviorComponent->SetOwnerEnemyAIController(this);
 	
-	SetGenericTeamId(OwnerCharacter->GetGenericTeamId());
+	SetGenericTeamId(OwnerEnemy->GetGenericTeamId());
 
 	// PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &AC_EnemyAIController::OnPerceptionUpdated);
 	// 실질적인 InGamePlayable에 대해서만, 시야에 들어오거나 나간 캐릭터에 대한 DetectedCharacters 업데이트를 처리할 예정
-	if (OwnerCharacter->GetBehaviorType() == EEnemyBehaviorType::InGamePlayable)
+	if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::InGamePlayable)
 		PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AC_EnemyAIController::OnTargetPerceptionUpdated);
 	
 	// Set Black board & Behavior tree
 
 	UBlackboardComponent* blackBoard = Blackboard;
 
-	UseBlackboard(OwnerCharacter->GetBehaviorTree()->GetBlackboardAsset(), blackBoard);
+	UseBlackboard(OwnerEnemy->GetBehaviorTree()->GetBlackboardAsset(), blackBoard);
 
 	BehaviorComponent->SetBlackboard(blackBoard);
 	
-	RunBehaviorTree(OwnerCharacter->GetBehaviorTree());
+	RunBehaviorTree(OwnerEnemy->GetBehaviorTree());
 }
 
 /*void AC_EnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
@@ -131,7 +131,7 @@ void AC_EnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus 
 	}
 
 	// Lose sight된 상황, Check distance
-	if (FVector::Distance(OwnerCharacter->GetActorLocation(), Actor->GetActorLocation()) > SIGHT_RANGE_DISTANCE[ESightRangeLevel::Level4])
+	if (FVector::Distance(OwnerEnemy->GetActorLocation(), Actor->GetActorLocation()) > SIGHT_RANGE_DISTANCE[ESightRangeLevel::Level4])
 	{
 		// Sight Range Level 최대거리에서 벗어난 캐릭터일 경우
 		if (BehaviorComponent->GetTargetCharacter() == Actor)
@@ -168,7 +168,7 @@ bool AC_EnemyAIController::TrySetTargetCharacterToLevel1EnteredCharacter()
 	// 시야에 포착되는 캐릭터가 없다면 거리가 가장 가까운 캐릭터로 세팅하기
 	TArray<AC_BasicCharacter*> Level1Characters = DetectedCharacters[ESightRangeLevel::Level1].Array();
 
-	FVector OwnerLocation = OwnerCharacter->GetActorLocation();
+	FVector OwnerLocation = OwnerEnemy->GetActorLocation();
 	
 	Level1Characters.Sort([OwnerLocation](const AC_BasicCharacter& A, const AC_BasicCharacter& B)
 	{
@@ -253,7 +253,7 @@ void AC_EnemyAIController::UpdateDetectedCharactersRangeLevel()
 			Str += "  ";
 		}
 
-		OwnerCharacter->SetSightRangeCharactersName(Pair.Key, Str);
+		OwnerEnemy->SetSightRangeCharactersName(Pair.Key, Str);
 	}
 }
 
@@ -275,7 +275,7 @@ bool AC_EnemyAIController::AddCharacterToDetectedCharacters(AC_BasicCharacter* I
 	if (!IsValid(InCharacter)) return false;
 	if (InCharacter->GetMainState() == EMainState::DEAD) return false;
 	
-	float DistanceBetweenTwoCharacters = FVector::Distance(OwnerCharacter->GetActorLocation(), InCharacter->GetActorLocation());
+	float DistanceBetweenTwoCharacters = FVector::Distance(OwnerEnemy->GetActorLocation(), InCharacter->GetActorLocation());
 	
 	for (int i = 0; i < static_cast<int>(ESightRangeLevel::Max); ++i)
 	{
@@ -293,9 +293,9 @@ bool AC_EnemyAIController::AddCharacterToDetectedCharacters(AC_BasicCharacter* I
 
 void AC_EnemyAIController::DrawSightRange()
 {
-	if (OwnerCharacter->GetMainState() == EMainState::DEAD) return;
+	if (OwnerEnemy->GetMainState() == EMainState::DEAD) return;
 	
-	FVector Center = OwnerCharacter->GetActorLocation();
+	FVector Center = OwnerEnemy->GetActorLocation();
 
 	for (int i = 0; i < static_cast<int>(ESightRangeLevel::Max); ++i)
 	{
@@ -310,8 +310,8 @@ void AC_EnemyAIController::DrawSightRange()
 			(i % 2 == 0) ? FColor::Green : FColor::Blue,
 			false,
 			-1.f, 0, 0,
-			OwnerCharacter->GetActorRightVector(),
-			OwnerCharacter->GetActorForwardVector()
+			OwnerEnemy->GetActorRightVector(),
+			OwnerEnemy->GetActorForwardVector()
 		);
 		
 		Center.Z += 1.f;
@@ -327,8 +327,8 @@ void AC_EnemyAIController::DrawSightRange()
 		FColor::Red,
 		false,
 		-1.f, 0, 0,
-		OwnerCharacter->GetActorRightVector(),
-		OwnerCharacter->GetActorForwardVector()
+		OwnerEnemy->GetActorRightVector(),
+		OwnerEnemy->GetActorForwardVector()
 	);
 }
 

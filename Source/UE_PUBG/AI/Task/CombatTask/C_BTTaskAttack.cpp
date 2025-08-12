@@ -19,41 +19,6 @@ UC_BTTaskAttack::UC_BTTaskAttack()
 	bNotifyTick = true;
 }
 
-void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
-{
-	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-
-	AC_EnemyAIController* EnemyAIController = Cast<AC_EnemyAIController>(OwnerComp.GetAIOwner());
-	if (!IsValid(EnemyAIController)) FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-	
-	AC_Enemy* Enemy = Cast<AC_Enemy>(EnemyAIController->GetPawn());
-	if (!IsValid(Enemy)) FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-
-	// 현재 FlashBang 피격 중인 상황(현상 유지)
-	if (EnemyAIController->IsFlashBangEffectTimeLeft()) return;
-
-	if (!AttackingWeapons.Contains(Enemy))
-	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-		return;
-	}
-	
-	AC_Weapon* CurrentAttackingWeapon = AttackingWeapons[Enemy];
-	if (!IsValid(CurrentAttackingWeapon))
-	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		AttackingWeapons.Remove(Enemy);
-		return;
-	}
-
-	// 지속적으로 몇 초간 현재 무기로 공격한다고 하면 TickTask 사용
-	if (!CurrentAttackingWeapon->ExecuteAIAttackTickTask(EnemyAIController->GetBehaviorComponent()->GetTargetCharacter(), DeltaSeconds))
-	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		AttackingWeapons.Remove(Enemy);
-	}
-}
-
 EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
@@ -104,6 +69,46 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	
 	AttackingWeapons.Add(Enemy, CurrentAttackingWeapon);
 	return EBTNodeResult::InProgress;
+}
+
+void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+{
+	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
+	AC_EnemyAIController* EnemyAIController = Cast<AC_EnemyAIController>(OwnerComp.GetAIOwner());
+	if (!IsValid(EnemyAIController)) FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	
+	AC_Enemy* Enemy = Cast<AC_Enemy>(EnemyAIController->GetPawn());
+	if (!IsValid(Enemy)) FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+
+	// 현재 FlashBang 피격 중인 상황(현상 유지)
+	if (EnemyAIController->IsFlashBangEffectTimeLeft()) return;
+
+	if (!AttackingWeapons.Contains(Enemy))
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
+	}
+	
+	AC_Weapon* CurrentAttackingWeapon = AttackingWeapons[Enemy];
+	if (!IsValid(CurrentAttackingWeapon))
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		AttackingWeapons.Remove(Enemy);
+		return;
+	}
+
+	// 지속적으로 몇 초간 현재 무기로 공격한다고 하면 TickTask 사용
+	if (!CurrentAttackingWeapon->ExecuteAIAttackTickTask(EnemyAIController->GetBehaviorComponent()->GetTargetCharacter(), DeltaSeconds))
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		AttackingWeapons.Remove(Enemy);
+	}
+}
+
+void UC_BTTaskAttack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
+{
+	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 }
 
 
