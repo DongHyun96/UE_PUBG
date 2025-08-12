@@ -125,7 +125,7 @@ public:
 
 private:
 	
-	class AC_Enemy* OwnerCharacter{};
+	class AC_Enemy* OwnerEnemy{};
 	
 protected:
 
