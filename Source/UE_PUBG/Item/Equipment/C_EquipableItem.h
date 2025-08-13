@@ -68,6 +68,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetCurDurabilityRate() const {return CurDurability / DURABILITY_MAX; }
+
+	/// <summary>
+	/// 내구도 최상으로 고치기
+	/// </summary>
+	void RepairDurabilityToMax() { CurDurability = DURABILITY_MAX; }
 	
 protected:
 	bool MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack) override;

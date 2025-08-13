@@ -165,8 +165,12 @@ public:
 	/// </summary>
 	/// <returns> : 제거한 이후 CurrentAliveCharacterCount 수 </returns>
 	int RemoveOneFromCurrentAliveCharacterCount() { return --CurrentAliveCharacterCount; }
-	
-	int GetCurrentAliveCharacterCount() const { return CurrentAliveCharacterCount; }
+
+	/// <summary>
+	/// CurrentAliveCount에서 하나 추가
+	/// </summary>
+	/// <returns> : 추가된 이후 CurrentAliveCharacterCount </returns>
+	int AddOneToCurrentAliveCharacterCount() { return ++CurrentAliveCharacterCount; }
 
 public:
 	
