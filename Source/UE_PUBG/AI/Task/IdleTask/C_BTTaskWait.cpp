@@ -7,8 +7,10 @@
 #include "AI/C_EnemyAIController.h"
 #include "Airplane/C_AirplaneManager.h"
 #include "Character/C_Enemy.h"
+#include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_SmokeEnteredChecker.h"
 #include "Character/Component/EnemyComponent/C_TargetLocationSettingHelper.h"
+#include "Item/ConsumableItem/C_ConsumableItem.h"
 #include "MagneticField/C_MagneticFieldManager.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
@@ -90,7 +92,17 @@ void UC_BTTaskWait::OnWaitTimeRemain(UBehaviorTreeComponent& OwnerComp, AC_Enemy
 	}
 
 	// 피 또는 부스트 량이 너무 없을 때 처리(STAT_CARE)
-	if (Enemy->GetStatComponent()->GetCurHP() < 50.f || Enemy->GetStatComponent()->GetCurBoosting() < 50.f)
+
+	// 피가 50 아래이고, Inven에 힐 아이템이 있으면 StatCare 처리
+	if (Enemy->GetStatComponent()->GetCurHP() < 50.f && IsHealingItemExist(Enemy->GetInvenComponent()))
+	{
+		EnemyBehaviorComponent->SetServiceType(EServiceType::IDLE);
+		EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::STAT_CARE);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);	
+	}
+
+	// Boost 량이 35 아래이고, Inven에 Boost 아이템이 있으면 StatCare 처리
+	if (Enemy->GetStatComponent()->GetCurBoosting() < 35.f && IsBoostItemExist(Enemy->GetInvenComponent()))
 	{
 		EnemyBehaviorComponent->SetServiceType(EServiceType::IDLE);
 		EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::STAT_CARE);
@@ -122,7 +134,7 @@ void UC_BTTaskWait::OnWaitTimeFinished(UBehaviorTreeComponent& OwnerComp, AC_Ene
 	// MoveToRandomPos or Attack trial or 다시 Wait 중 택 1
 	// Attack Trial 60% | MoveToRandomPos 20% | Wait 20%
 	
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////
 	bool bIsInSmokeArea = Enemy->GetSmokeEnteredChecker()->IsCurrentlyInSmokeArea();
 	if (FMath::RandRange(0.f, 1.f) < 0.6f && !bIsInSmokeArea) // SetTargetCharacter & AttackTrial
 	{
@@ -159,4 +171,29 @@ void UC_BTTaskWait::ExecuteMoveToRandomLocation(AC_Enemy* Enemy, float MaxRadius
 	else							Enemy->GetTargetLocationSettingHelper()->SetRandomTargetLocation(MaxRadius);
 
 	Enemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
+}
+
+bool UC_BTTaskWait::IsHealingItemExist(UC_InvenComponent* EnemyInvenComponent)
+{
+	const FName MedKitItemName = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::MEDKIT);
+	if (Cast<AC_ConsumableItem>(EnemyInvenComponent->FindMyItemByName(MedKitItemName))) return true;
+
+	const FName FirstAidKitItemName = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::FIRST_AID_KIT);
+	if (Cast<AC_ConsumableItem>(EnemyInvenComponent->FindMyItemByName(FirstAidKitItemName))) return true;
+	
+	const FName BandageItemName = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::BANDAGE);
+	if (Cast<AC_ConsumableItem>(EnemyInvenComponent->FindMyItemByName(BandageItemName))) return true;
+
+	return false;
+}
+
+bool UC_BTTaskWait::IsBoostItemExist(UC_InvenComponent* EnemyInvenComponent)
+{
+	const FName PainKillerItemName = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::PAIN_KILLER);
+	if (Cast<AC_ConsumableItem>(EnemyInvenComponent->FindMyItemByName(PainKillerItemName))) return true;
+
+	const FName DrinkItemName = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::ENERGY_DRINK);
+	if (Cast<AC_ConsumableItem>(EnemyInvenComponent->FindMyItemByName(DrinkItemName))) return true;
+	
+	return false;
 }

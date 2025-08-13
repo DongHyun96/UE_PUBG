@@ -45,6 +45,18 @@ protected:
 	/// <param name="bHasToMoveInsideMainCircle"> : Random한 지점이 MainCircle 내부의 지점이어야 하는지 체크 </param>
 	void ExecuteMoveToRandomLocation(AC_Enemy* Enemy, float MaxRadius, bool bHasToMoveInsideMainCircle);
 
+private:
+	
+	/// <summary>
+	/// 특정 Enemy의 InvenComponent에 HealingItem이 하나라도 존재하는지 조사 
+	/// </summary>
+	bool IsHealingItemExist(class UC_InvenComponent* EnemyInvenComponent);
+
+	/// <summary>
+	/// 특정 Enemy의 InvenComponent에 BoostItem 하나라도 존재하는지 조사 
+	/// </summary>
+	bool IsBoostItemExist(UC_InvenComponent* EnemyInvenComponent);
+	
 protected:
 
 	TMap<UC_BehaviorComponent*, float> EnemyTimers{};
