@@ -49,8 +49,13 @@ private:
 	void Deinitialize() override;
 
 public:
+	
+	/// <summary>
+	/// 시체상자 Spawn 시도 
+	/// </summary>
+	/// <returns> : 제대로 Spawn되었다면 Spawn된 상자 객체 return </returns>
 	UFUNCTION(BlueprintCallable)
-	class AC_LootCrate* SpawnLootCrateAt(FVector SpawnLocation, class AC_BasicCharacter* DeadCharacter);
+	class AC_LootCrate* TrySpawnLootCrateAt(FVector SpawnLocation, class AC_BasicCharacter* DeadCharacter);
 
 protected:
 	UPROPERTY(EditDefaultsOnly)

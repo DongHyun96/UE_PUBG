@@ -5,6 +5,7 @@
 
 #include "EngineUtils.h"
 #include "NavigationSystem.h"
+#include "AI/C_EnemyAIController.h"
 #include "Character/C_Player.h"
 #include "Character/C_Enemy.h"
 #include "MagneticField/C_MagneticFieldManager.h"
@@ -156,9 +157,13 @@ void UC_GameSceneManager::Deinitialize()
 	MiniMapWidget = nullptr;
 }
 
-AC_LootCrate* UC_GameSceneManager::SpawnLootCrateAt(FVector SpawnLocation, AC_BasicCharacter* DeadCharacter)
+AC_LootCrate* UC_GameSceneManager::TrySpawnLootCrateAt(FVector SpawnLocation, AC_BasicCharacter* DeadCharacter)
 {
 	if (!LootCrateClass || !DeadCharacter)
+		return nullptr;
+
+	// Combat Tester의 경우, 시체박스 생성 x
+	if (AC_Enemy* DeadEnemy = Cast<AC_Enemy>(DeadCharacter)) if (DeadEnemy->GetBehaviorType() == EEnemyBehaviorType::CombatTest)
 		return nullptr;
 
 	FActorSpawnParameters Params;
