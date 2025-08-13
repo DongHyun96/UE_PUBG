@@ -86,52 +86,17 @@ EBTNodeResult::Type UC_BTTaskSwapWeapon::ExecuteTask(UBehaviorTreeComponent& Own
 	// 도중에 상태가 바뀌었다면 Failed 처리하고 돌아가기
 	if (BehaviorComponent->GetServiceType() != EServiceType::COMBAT) return EBTNodeResult::Failed;
 
-	// TODO : /**/ --> 이 부분 주석 풀기
-	
 	// 총기류 먼저 바꾸기 시도
-	FName SevenBulletItemName	= AC_Item_Bullet::GetBulletTypeName(EBulletType::SEVENMM);
-	FName FiveBulletItemName	= AC_Item_Bullet::GetBulletTypeName(EBulletType::FIVEMM);
-	
-	int TotalSevenBulletCount	= Enemy->GetInvenComponent()->GetTotalStackByItemName(SevenBulletItemName);
-	int TotalFiveBulletCount	= Enemy->GetInvenComponent()->GetTotalStackByItemName(FiveBulletItemName);
-
-	AC_Gun* MainGun = Cast<AC_Gun>(Enemy->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN]);
-	TotalFiveBulletCount += MainGun->GetCurMagazineBulletCount();
-
-	AC_Gun* SubGun = Cast<AC_Gun>(Enemy->GetEquippedComponent()->GetWeapons()[EWeaponSlot::SUB_GUN]);
-	TotalSevenBulletCount += SubGun->GetCurMagazineBulletCount();
-
 	float DistanceToTargetCharacter = FVector::Distance(Enemy->GetActorLocation(), TargetCharacter->GetActorLocation());
 	
-	// 남은 5탄과 7탄이 모두 있을 때
-	if (TotalSevenBulletCount > 0 && TotalFiveBulletCount > 0)
-	{
+	// 거리가 50m를 넘어가면 SubGun으로 교체 시도
+	if (DistanceToTargetCharacter > 5000.f) 
+		return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent); 
 
-		// 거리가 50m를 넘어가면 SubGun으로 교체 시도
-		if (DistanceToTargetCharacter > 5000.f) 
-			return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent); 
-
-		// 거리 50m 이내 / 현재 시야에 보이는 중이라면 MainGun으로 교체 / 시야에 보이지 않는 중이라면 ThrowableWeapon 중 택 1 (역시 남은 장탄수 확인해서)
-		if (Controller->IsCurrentlyOnSight(TargetCharacter))
-			return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
-	}
-	else if (TotalSevenBulletCount > 0) // 7탄만 남았을 때
-	{
-		// 거리가 50m를 넘어가면 SubGun으로 교체 시도
-		if (DistanceToTargetCharacter > 5000.f)
-			return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent);
-
-		// 50m 이내일 때, 시야에 보이면 SubGun 교체 시도
-		if (Controller->IsCurrentlyOnSight(TargetCharacter))
-			return ExecuteWeaponSwapRoutine(EWeaponSlot::SUB_GUN, Enemy, BehaviorComponent);
-	}
-	else if (TotalFiveBulletCount > 0) // 5탄만 남았을 때
-	{
-		// 시야에 보이는지만 체크해서 AR 사용하기
-		if (Controller->IsCurrentlyOnSight(TargetCharacter))
-			return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
-	}
-
+	// 거리 50m 이내 / 현재 시야에 보이는 중이라면 MainGun으로 교체 / 시야에 보이지 않는 중이라면 ThrowableWeapon 중 택 1
+	if (Controller->IsCurrentlyOnSight(TargetCharacter))
+		return ExecuteWeaponSwapRoutine(EWeaponSlot::MAIN_GUN, Enemy, BehaviorComponent);
+	
 	// 시야에 보이지 않는 중, Inven에 있는 Throwable이랑 Slot에 있는 Throwable 모두 조사해야 함
 
 	// Init Throwable Swap Descriptor
