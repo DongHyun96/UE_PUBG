@@ -135,7 +135,7 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InSta
 	}
 	else
 	{
-		invenComp->RemoveItemToMyList(this);				 //내 아이템 리스트에서 아이템 제거.
+		invenComp->RemoveItemFromMyList(this);				 //내 아이템 리스트에서 아이템 제거.
 		//invenComp->AddInvenCurVolume(-this->GetAllVolume()); // 버리는 아이템만큼 curVolume 조절하기. TODO : Inven에서 아이템 버릴 때 문제 생기면 체크하기.
 		DropItem(Character);
 	}

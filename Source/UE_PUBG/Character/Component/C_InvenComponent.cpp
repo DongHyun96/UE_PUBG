@@ -274,7 +274,7 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 		Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
 }
 
-void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
+void UC_InvenComponent::RemoveItemFromMyList(AC_Item* item)
 {
 	if (MyItems.Contains(item->GetItemCode()))
 	{
@@ -308,7 +308,7 @@ void UC_InvenComponent::RemoveItemToMyList(AC_Item* item)
 
 void UC_InvenComponent::DestroyMyItem(AC_Item* DestroyedItem)
 {
-	RemoveItemToMyList(DestroyedItem);
+	RemoveItemFromMyList(DestroyedItem);
 
 	DestroyedItem->DestroyItem();
 

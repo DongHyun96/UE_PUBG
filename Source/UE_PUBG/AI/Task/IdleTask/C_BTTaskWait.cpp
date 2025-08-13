@@ -176,13 +176,13 @@ void UC_BTTaskWait::ExecuteMoveToRandomLocation(AC_Enemy* Enemy, float MaxRadius
 bool UC_BTTaskWait::IsHealingItemExist(UC_InvenComponent* EnemyInvenComponent)
 {
 	const FName MedKitItemName = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::MEDKIT);
-	if (Cast<AC_ConsumableItem>(EnemyInvenComponent->FindMyItemByName(MedKitItemName))) return true;
+	if (EnemyInvenComponent->FindMyItemByName(MedKitItemName)) return true;
 
 	const FName FirstAidKitItemName = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::FIRST_AID_KIT);
-	if (Cast<AC_ConsumableItem>(EnemyInvenComponent->FindMyItemByName(FirstAidKitItemName))) return true;
+	if (EnemyInvenComponent->FindMyItemByName(FirstAidKitItemName)) return true;
 	
 	const FName BandageItemName = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::BANDAGE);
-	if (Cast<AC_ConsumableItem>(EnemyInvenComponent->FindMyItemByName(BandageItemName))) return true;
+	if (EnemyInvenComponent->FindMyItemByName(BandageItemName)) return true;
 
 	return false;
 }
@@ -190,10 +190,10 @@ bool UC_BTTaskWait::IsHealingItemExist(UC_InvenComponent* EnemyInvenComponent)
 bool UC_BTTaskWait::IsBoostItemExist(UC_InvenComponent* EnemyInvenComponent)
 {
 	const FName PainKillerItemName = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::PAIN_KILLER);
-	if (Cast<AC_ConsumableItem>(EnemyInvenComponent->FindMyItemByName(PainKillerItemName))) return true;
+	if (EnemyInvenComponent->FindMyItemByName(PainKillerItemName)) return true;
 
 	const FName DrinkItemName = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::ENERGY_DRINK);
-	if (Cast<AC_ConsumableItem>(EnemyInvenComponent->FindMyItemByName(DrinkItemName))) return true;
+	if (EnemyInvenComponent->FindMyItemByName(DrinkItemName)) return true;
 	
 	return false;
 }

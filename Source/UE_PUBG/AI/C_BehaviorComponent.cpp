@@ -39,11 +39,7 @@ void UC_BehaviorComponent::BeginPlay()
 	if (!OwnerEnemy->GetBehaviorTree()) OwnerEnemy->InitBehaviorTreeBySelfBehaviorType();
 		
 	SetServiceType(EServiceType::IDLE);
-	// SetServiceType(EServiceType::COMBAT);
 	SetIdleTaskType(EIdleTaskType::WAIT);
-	// SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
-	// SetTargetCharacter(GAMESCENE_MANAGER->GetPlayer());
-	// OwnerEnemyAIController->SetFocus(GAMESCENE_MANAGER->GetPlayer());
 
 	// OwnerEnemy가 Stat-Care 전용 Enemy인 경우, 항상 TargetCharacter를 Player로 둠 
 	if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest)

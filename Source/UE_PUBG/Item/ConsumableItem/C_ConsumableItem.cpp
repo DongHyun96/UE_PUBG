@@ -153,7 +153,7 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 		if (ItemCurStack == 0)
 		{
 
-			ItemUser->GetInvenComponent()->RemoveItemToMyList(this);
+			ItemUser->GetInvenComponent()->RemoveItemFromMyList(this);
 			HandleDestroy(); // 각 아이템 별 Destroy 하는 시점이 다름 (Pure-virtual Primitive operation)
 			return;
 		}
@@ -419,7 +419,7 @@ bool AC_ConsumableItem::MoveInvenToAround(AC_BasicCharacter* Character, int32 In
 
 	if (!Character) return false;
 
-	Character->GetInvenComponent()->RemoveItemToMyList(this);
+	Character->GetInvenComponent()->RemoveItemFromMyList(this);
 	//TODO: 분할해서 버리는 경우 새로 스폰해주어야함.
 	ItemPlace = EItemPlace::AROUND;
 	SetOwnerCharacter(nullptr);

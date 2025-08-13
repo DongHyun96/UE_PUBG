@@ -304,7 +304,7 @@ bool UC_GunSlotWidget::SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, AC_Attac
 	
 	if (InAttachableItemPlace == EItemPlace::INVEN)
 	{
-		OwnerPlayer->GetInvenComponent()->RemoveItemToMyList(InAttachableItem);
+		OwnerPlayer->GetInvenComponent()->RemoveItemFromMyList(InAttachableItem);
 	}
 	else if (InAttachableItemPlace == EItemPlace::AROUND)
 	{

@@ -503,7 +503,7 @@ bool AC_ThrowingWeapon::MoveInvenToAround(AC_BasicCharacter* Character, int32 In
 		return false; 
 	}
 
-	InvenComponent->RemoveItemToMyList(this);				 //내 아이템 리스트에서 아이템 제거.
+	InvenComponent->RemoveItemFromMyList(this);				 //내 아이템 리스트에서 아이템 제거.
 														 
 	//invenComp->AddInvenCurVolume(-this->GetAllVolume()); //버리는 아이템만큼 curVolume 조절하기. TODO : Inven에서 아이템 버릴 때 문제 생기면 체크하기.
 
@@ -528,7 +528,7 @@ bool AC_ThrowingWeapon::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InSt
 	if (ItemCurStack == 1)
 	{
 		CurWeapon = EquippedComponent->SetSlotWeapon(EWeaponSlot::THROWABLE_WEAPON, this);
-		InvenComponent->RemoveItemToMyList(this);
+		InvenComponent->RemoveItemFromMyList(this);
 	}
 	else
 	{

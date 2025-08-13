@@ -113,7 +113,7 @@ bool AC_AttachableItem::MoveInvenToAround(AC_BasicCharacter* Character, int32 In
 
 	//인벤에 해당 아이템이 있는지 안전체크 해야 할까?
 
-	invenComp->RemoveItemToMyList(this);
+	invenComp->RemoveItemFromMyList(this);
 
 
 
@@ -257,7 +257,7 @@ bool AC_AttachableItem::AttachItemToWeaponAndMoveInven(AC_Gun* Weapon, UC_InvenC
 
 	SetOwnerGun(Weapon);
 
-	invenComp->RemoveItemToMyList(this);
+	invenComp->RemoveItemFromMyList(this);
 
 
 	// TODO: AroundList에서 사라지는지 확인하기

@@ -169,7 +169,7 @@ bool AC_Weapon::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
 
 	if (!invenComp->FindMyItem(this)) return false;
 
-	invenComp->RemoveItemToMyList(this);				 //내 아이템 리스트에서 아이템 제거.
+	invenComp->RemoveItemFromMyList(this);				 //내 아이템 리스트에서 아이템 제거.
 
 	//invenComp->AddInvenCurVolume(-this->GetAllVolume()); //버리는 아이템만큼 curVolume 조절하기. TODO : Inven에서 아이템 버릴 때 문제 생기면 체크하기.
 
@@ -203,7 +203,7 @@ bool AC_Weapon::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack)
 	if (ItemCurStack == 1)//MeleeWeapon의 갯수는 0으로 해놨음;; TODO : 새로운 방법 찾기, 찾지 못한다면 우선 MeleeWeapon의 stack을 1로 사용하기.
 	{
 		curWeapon = equipComp->SetSlotWeapon(curWeaponSlot, this);
-		invenComp->RemoveItemToMyList(this);
+		invenComp->RemoveItemFromMyList(this);
 	}
 	else
 	{
