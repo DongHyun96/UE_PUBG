@@ -4,11 +4,15 @@
 #include "Character/C_WorldPingActor.h"
 
 #include "C_Enemy.h"
+#include "NavigationSystem.h"
 #include "AI/C_BehaviorComponent.h"
 #include "AI/C_EnemyAIController.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Components/WidgetComponent.h"
 #include "Character/C_Player.h"
+#include "Kismet/GameplayStatics.h"
+#include "Singleton/C_GameInstance.h"
+#include "TrainingLevel/C_TrainingGroundManager.h"
 
 #include "Utility/C_Util.h"
 
@@ -35,33 +39,52 @@ void AC_WorldPingActor::Tick(float DeltaTime)
 	HandleUpdateWorldPingScale();
 }
 
-bool AC_WorldPingActor::SpawnPingActorToWorld(FVector SpawnLocation)
+void AC_WorldPingActor::SpawnPingActorToWorld(FVector SpawnLocation)
 {
 	PingWidgetComponent->SetVisibility(true);
 
 	this->SetActorLocation(SpawnLocation);
 
-	// TODO : 이 라인 지우기 (For Testing)
-	// TODO : MovementTester가 현재 Level에 있다면 MovementTester의 BasicTargetLocation으로 잡아줄 것
-	if (!GAMESCENE_MANAGER->GetEnemies().IsEmpty())
-	{
-		// TODO : index 0으로 바꾸기 (Testing으로 둘거면)
-		UC_BehaviorComponent* FirstEnemyBehaviorComponent = GAMESCENE_MANAGER->GetEnemies()[1]->GetController<AC_EnemyAIController>()->GetBehaviorComponent();
+	// Training Ground의 Movement Tester에 대해서만 Movement Test 처리
+	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (GameInstance->GetCurrentSelectedLevelType() != ELevelType::TrainingGround) return;
 
-		// 20cm 반경으로 해당 주변에 NavMesh가 있는지 조사
-		static const FVector Extent = {20.f, 20.f, 20.f}; 
-		FVector ProjectedLocation{};
-		if (GAMESCENE_MANAGER->FindNearestNavMeshAtLocation(SpawnLocation, Extent, ProjectedLocation))
-		{
-			// WorldPingActor 위치 주변에 NavMesh가 존재함
-			UC_Util::Print("Nearest NavMesh found!", FColor::MakeRandomColor());
-			FirstEnemyBehaviorComponent->SetBasicTargetLocation(ProjectedLocation);
-			FirstEnemyBehaviorComponent->SetServiceType(EServiceType::IDLE);
-			FirstEnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
-		}
-	}
+	if (GAMESCENE_MANAGER->GetEnemies().IsEmpty()) return;
 
-	return true;
+	AC_Enemy* MovementTester = GAMESCENE_MANAGER->GetTrainingGroundManager()->GetMovementTester(); 
+	AC_EnemyAIController* MovementTesterController = MovementTester->GetController<AC_EnemyAIController>();
+	
+	UC_BehaviorComponent* MovementTesterBehaviorComponent = MovementTesterController->GetBehaviorComponent();
+
+	static const FVector Extent = {20.f, 20.f, 20.f}; 
+	FVector ProjectedLocation{};
+	
+	if (!GAMESCENE_MANAGER->FindNearestNavMeshAtLocation(SpawnLocation, Extent, ProjectedLocation)) // 20cm 반경으로 해당 주변에 NavMesh가 있는지 조사
+		return;
+
+	/* Valid한 Path가 있는지 조사 */
+
+	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(MovementTesterController->GetWorld());
+	if (!NavSys) return;
+
+	const ANavigationData* NavData = NavSys->GetNavDataForProps(MovementTesterController->GetNavAgentPropertiesRef());
+	if (!NavData) return;
+
+	const FPathFindingQuery Query
+	(
+		MovementTesterController,                                       
+		*NavData,                                      
+		MovementTesterController->GetPawn()->GetNavAgentLocation(),
+		ProjectedLocation                                
+	);
+
+	// Valid한 Path가 없다면, MovementTester의 TargetLocation 수정 x
+	if (!NavSys->TestPathSync(Query, EPathFindingMode::Hierarchical)) return;
+
+	// WorldPingActor 위치 주변에 NavMesh가 존재함
+	MovementTesterBehaviorComponent->SetBasicTargetLocation(ProjectedLocation);
+	MovementTesterBehaviorComponent->SetServiceType(EServiceType::IDLE);
+	MovementTesterBehaviorComponent->SetIdleTaskType(EIdleTaskType::BASIC_MOVETO);
 }
 
 void AC_WorldPingActor::HideWorldPing()

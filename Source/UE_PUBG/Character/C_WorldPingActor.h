@@ -20,7 +20,7 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	bool SpawnPingActorToWorld(FVector SpawnLocation);
+	void SpawnPingActorToWorld(FVector SpawnLocation);
 	
 	void HideWorldPing();
 
