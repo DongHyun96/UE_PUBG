@@ -60,15 +60,26 @@ void AC_WorldPingActor::SpawnPingActorToWorld(FVector SpawnLocation)
 	FVector ProjectedLocation{};
 	
 	if (!GAMESCENE_MANAGER->FindNearestNavMeshAtLocation(SpawnLocation, Extent, ProjectedLocation)) // 20cm 반경으로 해당 주변에 NavMesh가 있는지 조사
+	{
+		UC_Util::Print("From AC_WorldPingActor::SpawnPingActorToWorld : No NavMesh found around ping point location", FColor::Red, 10.f);
 		return;
+	}
 
 	/* Valid한 Path가 있는지 조사 */
 
 	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(MovementTesterController->GetWorld());
-	if (!NavSys) return;
+	if (!NavSys)
+	{
+		UC_Util::Print("From AC_WorldPingActor::SpawnPingActorToWorld : Invalid NavSys!", FColor::Red, 10.f);
+		return;
+	}
 
 	const ANavigationData* NavData = NavSys->GetNavDataForProps(MovementTesterController->GetNavAgentPropertiesRef());
-	if (!NavData) return;
+	if (!NavData)
+	{
+		UC_Util::Print("From AC_WorldPingActor::SpawnPingActorToWorld : Invalid NavData!", FColor::Red, 10.f);
+		return;
+	}
 
 	const FPathFindingQuery Query
 	(
@@ -79,7 +90,13 @@ void AC_WorldPingActor::SpawnPingActorToWorld(FVector SpawnLocation)
 	);
 
 	// Valid한 Path가 없다면, MovementTester의 TargetLocation 수정 x
-	if (!NavSys->TestPathSync(Query, EPathFindingMode::Hierarchical)) return;
+	if (!NavSys->TestPathSync(Query, EPathFindingMode::Hierarchical))
+	{
+		UC_Util::Print("From AC_WorldPingActor::SpawnPingActorToWorld : No path exists to Ping point location!", FColor::Red, 10.f);
+		return;
+	}
+
+	UC_Util::Print("Setting MovementTester Basic TargetLocation and set to MoveTo Task", FColor::MakeRandomColor(), 10.f);
 
 	// WorldPingActor 위치 주변에 NavMesh가 존재함
 	MovementTesterBehaviorComponent->SetBasicTargetLocation(ProjectedLocation);
