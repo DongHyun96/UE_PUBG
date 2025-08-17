@@ -4,6 +4,7 @@
 #include "AI/Task/IdleTask/C_BTTaskMoveTo.h"
 
 #include "NavigationSystem.h"
+#include "AI/C_BehaviorComponent.h"
 #include "AI/C_EnemyAIController.h"
 #include "Character/C_Enemy.h"
 #include "Utility/C_Util.h"
@@ -79,10 +80,23 @@ EBTNodeResult::Type UC_BTTaskMoveTo::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	return Super::ExecuteTask(OwnerComp, NodeMemory);
 }
 
-/*void UC_BTTaskMoveTo::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
-	EBTNodeResult::Type TaskResult)
+/*void UC_BTTaskMoveTo::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
+
+	if (TaskResult != EBTNodeResult::Failed) return;
+	
+	UC_Util::Print("From UC_BTTaskMoveTo::OnTaskFinished : Task failed received", FColor::MakeRandomColor(), 20.f);
+	AC_EnemyAIController* EnemyAIController = Cast<AC_EnemyAIController>(OwnerComp.GetAIOwner());
+	
+	if (!EnemyAIController)
+	{
+		UC_Util::Print("From UC_BTTaskMoveTo::OnTaskFinished : EnemyAIController casting failed!", FColor::Red, 10.f);
+		return;
+	}
+
+	EnemyAIController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
+	EnemyAIController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 }*/
 
 bool UC_BTTaskMoveTo::IsAgentOnNavMesh(AActor* Agent)

@@ -27,6 +27,21 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
+private:
+	
+	/// <summary>
+	/// Enemy vs Enemy Round 다시 초기화 처리 및 재시작 (E Vs E Enemy 한 명이라도 사망 처리된 이후 Destroy될 때 호출) 
+	/// </summary>
+	/// <returns> : Init 할 수 없는 상황이라면(둘 다 아직 살아있는 경우), return false </returns>
+	bool RestartEnemyVsEnemyRound();
+
+	/// <summary>
+	/// E vs E 첫 시작 처리
+	/// </summary>
+	void StartEnemyVsEnemyRound();
+
+	
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -45,4 +60,22 @@ private: // Spawn(Respawn) Transform 관련
 	// Spawn Transform 저장용
 	TArray<FTransform> EnemyVsEnemySpawnTransform{};
 	TArray<FTransform> PlayerVsEnemySpawnTransform{};
+
+	FTransform EnemyMeshInitialRelativeTransform{};
+
+protected:
+
+	// Enemy vs Enemy 관전 처리를 돕는 ActorComponent
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_EnemyCombatFieldManager* EnemyCombatFieldManager{};
+
+	// Player vs Enemy 라운드 처리를 돕는 ActorComponent
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_PlayerCombatFieldManager* PlayerCombatFieldManager{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UC_CombatFieldWidget* CombatFieldWidget{};
+
 };

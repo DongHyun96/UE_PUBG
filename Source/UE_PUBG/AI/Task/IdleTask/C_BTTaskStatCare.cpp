@@ -76,16 +76,15 @@ EBTNodeResult::Type UC_BTTaskStatCare::ExecuteTask(UBehaviorTreeComponent& Owner
 		return EBTNodeResult::Failed;
 	}
 
-	AC_Enemy*				Enemy				= Cast<AC_Enemy>(Controller->GetPawn());
-	UC_StatComponent*		EnemyStatComponent	= Enemy->GetStatComponent();
-	UC_InvenComponent*		EnemyInvenComponent	= Enemy->GetInvenComponent();
+	AC_Enemy* Enemy = Cast<AC_Enemy>(Controller->GetPawn());
+	UC_InvenComponent* EnemyInvenComponent = Enemy->GetInvenComponent();
 	
 	// 처리 우선순위 HP > Boost -> HP 우선적으로 회복 시도
-	
-	if (EnemyStatComponent->GetCurHP() < 100.f &&
-		TryUsingHealItem(Enemy, EnemyInvenComponent)) return EBTNodeResult::InProgress;
-
+	if (TryUsingHealItem(Enemy, EnemyInvenComponent))  return EBTNodeResult::InProgress;
 	if (TryUsingBoostItem(Enemy, EnemyInvenComponent)) return EBTNodeResult::InProgress;
+
+	// Heal Boost 모두 사용 실패, Idle Wait으로 돌아가기
+	Controller->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 	
 	return EBTNodeResult::Failed;
 }

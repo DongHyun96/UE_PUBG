@@ -98,13 +98,6 @@ void AC_Enemy::BeginPlay()
 	// SkyDive Tester 초기 위치로 돌아올 때 회전도 초기 회전으로 주기 위해 저장해 둠
 	InitialRotation = GetActorRotation();
 
-	if (EnemyBehaviorType == EEnemyBehaviorType::CombatTest)
-	{
-		if (EquippedComponent->GetWeapons()[EWeaponSlot::MAIN_GUN])
-			EquippedComponent->ChangeCurWeapon(EWeaponSlot::MAIN_GUN);
-		else UC_Util::Print("From AC_Enemy : BeginPlay : CombatTest Enemy's MainGun Slot empty!", FColor::Red, 10.f);
-	}
-
 	// GetMesh()->GetMaterials()[0];
 
 	/* UDataTable* RandomNameDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Project_PUBG/DongHyun/Character/DataTable/DT_RandomNameTable"));
@@ -264,7 +257,7 @@ void AC_Enemy::OnTakeDamage(AC_BasicCharacter* DamageCauser)
 	UC_BehaviorComponent* BehaviorComponent = GetController<AC_EnemyAIController>()->GetBehaviorComponent();
 	
 	// Damage를 입힌 사람이 나 자신(자기가 던진 수류탄 등)이거나 nullptr(자기장 등)
-	if (DamageCauser == this || DamageCauser == nullptr) return;
+	if (DamageCauser == this || !DamageCauser) return;
 
 	// 이미 누군가를 공격 중이라면
 	if (BehaviorComponent->GetServiceType() == EServiceType::COMBAT)
@@ -273,7 +266,7 @@ void AC_Enemy::OnTakeDamage(AC_BasicCharacter* DamageCauser)
 		if (BehaviorComponent->GetTargetCharacter() == DamageCauser &&
 			StatComponent->GetCurHP() < 20.f && FMath::RandRange(0.f, 1.f) < 0.4f)
 		{
-			UC_Util::Print("Switching to TakeCover Task while attacking!", FColor::Red, 20.f);
+			UC_Util::Print("Switching to TakeCover Task while attacking!", FColor::MakeRandomColor(), 20.f);
 			BehaviorComponent->SetIdleTaskType(EIdleTaskType::TAKE_COVER);
 			BehaviorComponent->SetServiceType(EServiceType::IDLE);
 		}
@@ -380,9 +373,6 @@ void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 
 	EnemyAIController->GetBrainComponent()->StopLogic("Died");
 
-	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AC_Enemy::DestroyCharacter, 5.f, false);
-
 	// 현재 Level이 Training Ground일 경우, 모든 Enemy가 사망했다고 하더라도 Winner가 없음
 	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
 	// if (GameInstance->GetCurrentSelectedLevelType() == ELevelType::TrainingGround) return;
@@ -403,8 +393,10 @@ void AC_Enemy::DestroyCharacter()
 {
 	if (EnemyBehaviorType == EEnemyBehaviorType::CombatTest)
 	{
-		// Combat Test enemy 한정, Destroy 처리하지 않고 재활용해서 리스폰 영역에 리스폰 처리
-		
+		// Combat Test enemy 한정, Destroy 처리 x
+		UC_Util::Print("Respawning CombatTester", FColor::Red, 10.f);
+
+		if (Delegate_OnCombatCharacterDestroy.IsBound()) Delegate_OnCombatCharacterDestroy.Execute();
 		return;
 	}
 	

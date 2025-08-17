@@ -6,6 +6,10 @@
 #include "Character/C_BasicCharacter.h"
 #include "C_Enemy.generated.h"
 
+// CharacterDestroy 함수가 호출될 때 불려질 Delegate Type 선언
+// Combat Tester가 사용할 예정
+DECLARE_DELEGATE_RetVal(bool, FOnCombatCharacterDestroy_Delegate);
+
 namespace EPathFollowingResult
 {
 	enum Type : int;
@@ -112,7 +116,7 @@ public: // For Testing
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetStunnedTime(float Time);
 
-private:
+private: /* Dead 처리 관련 */
 
 	void CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor) override;
 
@@ -171,5 +175,9 @@ private:
 
 	// SkyDive Tester 처리 때에만 쓰일 예정
 	FRotator InitialRotation{};
+
+public:
+
+	FOnCombatCharacterDestroy_Delegate Delegate_OnCombatCharacterDestroy{};	
 
 };

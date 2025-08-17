@@ -105,7 +105,8 @@ void UC_StatComponent::SetCurBoosting(const float& InCurBoosting)
 	
 	CurBoosting = InCurBoosting;
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
-	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetBoostBar()->SetPercent(CurBoosting / MAX_BOOSTING);
+	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter))
+		if (IsValid(Enemy->GetBoostBar())) Enemy->GetBoostBar()->SetPercent(CurBoosting / MAX_BOOSTING);
 }
 
 bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDescriptor& KillFeedDescriptor)

@@ -5,6 +5,7 @@
 
 #include "EngineUtils.h"
 #include "NavigationSystem.h"
+#include "AI/C_EnemyAIController.h"
 #include "Character/C_Player.h"
 #include "Character/C_Enemy.h"
 #include "MagneticField/C_MagneticFieldManager.h"
@@ -24,7 +25,6 @@
 #include "Item/ItemManager/C_ItemManager.h"
 #include "Sound/C_SoundManager.h"
 #include "Singleton/C_GameInstance.h"
-#include "TrainingLevel/C_CombatFieldManager.h"
 #include "TrainingLevel/C_TrainingGroundManager.h"
 #include "TrainingLevel/Tutorial/C_TutorialManager.h"
 
@@ -119,9 +119,6 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		
 		if (AC_TutorialManager* Tutorial_Manager = Cast<AC_TutorialManager>(*Actor)) TutorialManager = Tutorial_Manager;
 		if (AC_TrainingGroundManager* TrainingGround_Manager = Cast<AC_TrainingGroundManager>(*Actor)) TrainingGroundManager = TrainingGround_Manager;
-
-		// TODO : 이 라인 지우기
-		if (AC_CombatFieldManager* CombatField_Manager = Cast<AC_CombatFieldManager>(*Actor)) CombatFieldManager = CombatField_Manager;
 	}
 
 	CurrentRanking = AllCharacters.Num();
@@ -156,9 +153,13 @@ void UC_GameSceneManager::Deinitialize()
 	MiniMapWidget = nullptr;
 }
 
-AC_LootCrate* UC_GameSceneManager::SpawnLootCrateAt(FVector SpawnLocation, AC_BasicCharacter* DeadCharacter)
+AC_LootCrate* UC_GameSceneManager::TrySpawnLootCrateAt(FVector SpawnLocation, AC_BasicCharacter* DeadCharacter)
 {
 	if (!LootCrateClass || !DeadCharacter)
+		return nullptr;
+
+	// Combat Tester의 경우, 시체박스 생성 x
+	if (AC_Enemy* DeadEnemy = Cast<AC_Enemy>(DeadCharacter)) if (DeadEnemy->GetBehaviorType() == EEnemyBehaviorType::CombatTest)
 		return nullptr;
 
 	FActorSpawnParameters Params;

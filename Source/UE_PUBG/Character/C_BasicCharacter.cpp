@@ -60,7 +60,8 @@ AC_BasicCharacter::AC_BasicCharacter()
 	//InvenSystem = CreateDefaultSubobject<UC_InvenSystem>("C_InvenSystem");
 	//InvenSystem->SetOwnerCharacter(this);
 
-	StatComponent = CreateDefaultSubobject<UC_StatComponent>("StatComponent");
+	StatComponent = CreateDefaultSubobject<UC_StatComponent>("StatComponent");\
+	StatComponent->SetOwnerCharacter(this);
 	
 	ConsumableUsageMeshComponent = CreateDefaultSubobject<UC_ConsumableUsageMeshComponent>("ConsumableUsageMeshComponent");
 	ConsumableUsageMeshComponent->SetOwnerCharacter(this);
@@ -106,7 +107,6 @@ void AC_BasicCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	GetPhysicsVolume()->FluidFriction = 2.5f;
-	StatComponent->SetOwnerCharacter(this);
 
 	PoolingBullets();
 	InitializeBloodParticleComponents();
@@ -204,6 +204,8 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 {
+	UC_Util::Print("Character Dead", FColor::MakeRandomColor(), 20.f);
+	
 	// 기존 처리 유지
 	if (GetMesh()->GetSkeletalMeshAsset() == ParkourComponent->GetRootedSkeletalMesh())
 		ParkourComponent->SwapMeshToMainSkeletalMesh();
@@ -222,8 +224,8 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 	// 여기에 Player의 BackToMainCamera 처리를 해야 함 (무기 장착 해제 이전에) / Player에서 CharacterDead override를 했지만, 처리 순서 때문에 여기서밖에 처리를 못함
 	if (Cast<AC_Player>(this)) if (AC_Gun* Gun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon())) Gun->BackToMainCamera();
 	
-	FVector SpawnLocation = GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
-	GAMESCENE_MANAGER->SpawnLootCrateAt(SpawnLocation, this);
+	const FVector LootCrateSpawnLocation = GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+	GAMESCENE_MANAGER->TrySpawnLootCrateAt(LootCrateSpawnLocation, this);
 
 	// 죽기 직전, 힘 제거 및 블렌딩 제거
 	//GetMesh()->bApplyImpulseOnDamage = false;

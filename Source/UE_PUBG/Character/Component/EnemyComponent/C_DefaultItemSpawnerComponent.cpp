@@ -189,11 +189,9 @@ void UC_DefaultItemSpawnerComponent::SpawnConsumableItems(const FActorSpawnParam
 {
 	switch (OwnerEnemy->GetBehaviorType())
 	{
-	case EEnemyBehaviorType::MovementTest: case EEnemyBehaviorType::SkyDivingTest: case EEnemyBehaviorType::CombatTest: return;
-	}
-	
-	// Stat Care Test Enemy 용 Spawn Consumable 처리
-	if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest)
+	case EEnemyBehaviorType::MovementTest: case EEnemyBehaviorType::SkyDivingTest: return;
+		
+	case EEnemyBehaviorType::StatCareTest: // Stat Care Test Enemy 용 Spawn Consumable 처리
 	{
 		// MedKit 1개 Spawn
 		AC_ConsumableItem* MedKit = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::MEDKIT], Param);
@@ -214,56 +212,54 @@ void UC_DefaultItemSpawnerComponent::SpawnConsumableItems(const FActorSpawnParam
 		AC_ConsumableItem* PainKiller = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::PAIN_KILLER], Param);
 		PainKiller->SetItemStack(1);
 		PainKiller->MoveToInven(OwnerEnemy, PainKiller->GetItemCurStack());
-
 		return;
 	}
-
-	// InGamePlayable Spawn 처리
-	
-	// 의료용 키트 0~1개 Random spawn
-	int MedKitCount = FMath::RandRange(0, 1);
-	if (MedKitCount == 1)
+		
+	case EEnemyBehaviorType::CombatTest:
 	{
-		AC_ConsumableItem* MedKit = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::MEDKIT], Param);
-		MedKit->MoveToInven(OwnerEnemy, MedKit->GetItemCurStack());
+		// 구급 상자 2개 spawn
+        AC_ConsumableItem* FirstAidKit = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::FIRST_AID_KIT], Param);
+        FirstAidKit->SetItemStack(2);
+        FirstAidKit->MoveToInven(OwnerEnemy, FirstAidKit->GetItemCurStack());
+
+		// 붕대 5개 Spawn
+		AC_ConsumableItem* Bandage = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::BANDAGE], Param);
+		Bandage->MoveToInven(OwnerEnemy, Bandage->GetItemCurStack());
+		
+		return;
 	}
-
-	// 구급 상자 4~6개 Random spawn
-	AC_ConsumableItem* FirstAidKit = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::FIRST_AID_KIT], Param);
-	FirstAidKit->SetItemStack(FMath::RandRange(4, 6));
-	FirstAidKit->MoveToInven(OwnerEnemy, FirstAidKit->GetItemCurStack());
-	
-	// 붕대 5개 spawn
-	AC_ConsumableItem* Bandage = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::BANDAGE], Param);
-	Bandage->MoveToInven(OwnerEnemy, Bandage->GetItemCurStack());
-
-	// 에너지드링크 3~5개 Random spawn
-	AC_ConsumableItem* Drink = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::ENERGY_DRINK], Param);
-	Drink->SetItemStack(FMath::RandRange(3, 5));
-	Drink->MoveToInven(OwnerEnemy, Drink->GetItemCurStack());
-
-	// 진통제 2~3개 Random spawn
-	AC_ConsumableItem* PainKiller = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::PAIN_KILLER], Param);
-	PainKiller->SetItemStack(FMath::RandRange(2, 3));
-	PainKiller->MoveToInven(OwnerEnemy, PainKiller->GetItemCurStack());
-
-	/*for (int i = 0; i < static_cast<int>(EConsumableItemType::MAX); ++i)
+		
+	case EEnemyBehaviorType::InGamePlayable:
 	{
-		FName ItemName = AC_ConsumableItem::GetConsumableItemName(static_cast<EConsumableItemType>(i));
-		AC_Item* ConsumableItem = OwnerEnemy->GetInvenComponent()->FindMyItemByName(ItemName);
-
-		FString Str{};
-		
-		if (!IsValid(ConsumableItem))
+		// 의료용 키트 0~1개 Random spawn
+		int MedKitCount = FMath::RandRange(0, 1);
+		if (MedKitCount == 1)
 		{
-			Str = ItemName.ToString() + " : does not exists.";
-			UC_Util::Print(Str, FColor::Red, 10.f);
-			continue;
+			AC_ConsumableItem* MedKit = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::MEDKIT], Param);
+			MedKit->MoveToInven(OwnerEnemy, MedKit->GetItemCurStack());
 		}
-		
-		Str = ItemName.ToString() + "'s Count : " + FString::FromInt(ConsumableItem->GetItemCurStack());
-		UC_Util::Print(Str, FColor::Red, 10.f);
-	}*/
+
+		// 구급 상자 4~6개 Random spawn
+		AC_ConsumableItem* FirstAidKit = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::FIRST_AID_KIT], Param);
+		FirstAidKit->SetItemStack(FMath::RandRange(4, 6));
+		FirstAidKit->MoveToInven(OwnerEnemy, FirstAidKit->GetItemCurStack());
+	
+		// 붕대 5개 spawn
+		AC_ConsumableItem* Bandage = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::BANDAGE], Param);
+		Bandage->MoveToInven(OwnerEnemy, Bandage->GetItemCurStack());
+
+		// 에너지드링크 3~5개 Random spawn
+		AC_ConsumableItem* Drink = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::ENERGY_DRINK], Param);
+		Drink->SetItemStack(FMath::RandRange(3, 5));
+		Drink->MoveToInven(OwnerEnemy, Drink->GetItemCurStack());
+
+		// 진통제 2~3개 Random spawn
+		AC_ConsumableItem* PainKiller = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::PAIN_KILLER], Param);
+		PainKiller->SetItemStack(FMath::RandRange(2, 3));
+		PainKiller->MoveToInven(OwnerEnemy, PainKiller->GetItemCurStack());
+		return;
+	}
+	}
 }
 
 void UC_DefaultItemSpawnerComponent::SpawnBullets(const FActorSpawnParameters& Param)

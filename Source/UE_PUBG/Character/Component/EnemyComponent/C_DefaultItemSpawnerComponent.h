@@ -55,6 +55,10 @@ public:
 
 	void SetOwnerEnemy(class AC_Enemy* InOwnerEnemy) { OwnerEnemy = InOwnerEnemy; }
 
+	TSubclassOf<class AC_Helmet> GetHelmetClass(EEquipableItemLevel InHelmetLevel) { return HelmetClasses[InHelmetLevel]; }
+	TSubclassOf<class AC_ConsumableItem> GetConsumableItemClass(EConsumableItemType InConsumableItemType) { return ConsumableItemClasses[InConsumableItemType]; }
+	TSubclassOf<class AC_ThrowingWeapon> GetThrowableClass(EThrowableType InThrowableType) { return ThrowableClasses[InThrowableType]; }
+
 private:
 
 	AC_Enemy* OwnerEnemy{};
@@ -65,7 +69,7 @@ protected: // Weapon 관련 Classes
 	TMap<EWeaponSlot, TSubclassOf<class AC_Weapon>> WeaponClasses{};
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TMap<EThrowableType, TSubclassOf<class AC_ThrowingWeapon>> ThrowableClasses{};
+	TMap<EThrowableType, TSubclassOf<AC_ThrowingWeapon>> ThrowableClasses{};
 
 protected: // Equipable 관련 Classes
 
@@ -73,13 +77,13 @@ protected: // Equipable 관련 Classes
 	TSubclassOf<class AC_Vest> VestClass{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TMap<EEquipableItemLevel, TSubclassOf<class AC_Helmet>> HelmetClasses{};
+	TMap<EEquipableItemLevel, TSubclassOf<AC_Helmet>> HelmetClasses{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EEquipableItemLevel, TSubclassOf<class AC_BackPack>> BackPackClasses{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TMap<EConsumableItemType, TSubclassOf<class AC_ConsumableItem>> ConsumableItemClasses{};
+	TMap<EConsumableItemType, TSubclassOf<AC_ConsumableItem>> ConsumableItemClasses{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EBulletType, TSubclassOf<class AC_Item_Bullet>> BulletClasses{};

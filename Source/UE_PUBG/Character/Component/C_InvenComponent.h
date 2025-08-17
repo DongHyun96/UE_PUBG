@@ -85,6 +85,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	class AC_EquipableItem* SetSlotEquipment(EEquipSlot InSlot, AC_EquipableItem* EquipItem);
 
+	AC_EquipableItem* GetSlotEquipment(EEquipSlot InSlot) const { return EquipmentItems[InSlot]; }
+
 	/// <summary>
 	/// 
 	/// </summary>
@@ -107,7 +109,7 @@ public:
 	void AddItemToMyList(AC_Item* item); //{ testMyItems.Add(item->GetItemDatas().ItemName, item); }
 
 	// MyItemList에 아이템을 제거하는 함수
-	void RemoveItemToMyList(AC_Item* item);// { testMyItems.Remove(item->GetItemDatas().ItemName); }
+	void RemoveItemFromMyList(AC_Item* item);// { testMyItems.Remove(item->GetItemDatas().ItemName); }
 
 	// MyItemList에 아이템을 Destroy하는 함수
 	void DestroyMyItem(AC_Item* DestroyedItem);

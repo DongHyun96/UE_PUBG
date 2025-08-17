@@ -49,8 +49,13 @@ private:
 	void Deinitialize() override;
 
 public:
+	
+	/// <summary>
+	/// 시체상자 Spawn 시도 
+	/// </summary>
+	/// <returns> : 제대로 Spawn되었다면 Spawn된 상자 객체 return </returns>
 	UFUNCTION(BlueprintCallable)
-	class AC_LootCrate* SpawnLootCrateAt(FVector SpawnLocation, class AC_BasicCharacter* DeadCharacter);
+	class AC_LootCrate* TrySpawnLootCrateAt(FVector SpawnLocation, class AC_BasicCharacter* DeadCharacter);
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -108,8 +113,6 @@ public:
 	class AC_TutorialManager* GetTutorialManager() const { return TutorialManager; }
 	class AC_TrainingGroundManager* GetTrainingGroundManager() const { return TrainingGroundManager; }
 
-	class AC_CombatFieldManager* GetCombatFieldManager() const { return CombatFieldManager;}
-	
 	/// <summary>
 	/// GameScene에서 GC로부터 보호된 Object들 추가 -> GameScene 끝날 때 일괄 삭제처리 예정
 	/// </summary>
@@ -160,8 +163,12 @@ public:
 	/// </summary>
 	/// <returns> : 제거한 이후 CurrentAliveCharacterCount 수 </returns>
 	int RemoveOneFromCurrentAliveCharacterCount() { return --CurrentAliveCharacterCount; }
-	
-	int GetCurrentAliveCharacterCount() const { return CurrentAliveCharacterCount; }
+
+	/// <summary>
+	/// CurrentAliveCount에서 하나 추가
+	/// </summary>
+	/// <returns> : 추가된 이후 CurrentAliveCharacterCount </returns>
+	int AddOneToCurrentAliveCharacterCount() { return ++CurrentAliveCharacterCount; }
 
 public:
 	
@@ -193,8 +200,6 @@ private:
 	AC_SoundManager*			SoundManager{};
 	AC_TutorialManager*			TutorialManager{};
 	AC_TrainingGroundManager*	TrainingGroundManager{};
-	AC_CombatFieldManager*		CombatFieldManager{}; // TODO : TrainingGroudManager내의 CombatFieldManager를 사용할 것 (Testing 때문에 GameSceneManager에 넣어둠)
-	
 	
 private:
 
