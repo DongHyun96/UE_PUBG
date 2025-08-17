@@ -61,8 +61,8 @@ EBTNodeResult::Type UC_BTTaskWaitAfterAttack::ExecuteTask(UBehaviorTreeComponent
 	{
 		BehaviorComponent->SetServiceType(EServiceType::IDLE);
 
-		// CombatTester 한정, 공격 이후 50%의 확률로 TakeCover Sequence 실행
-		const EIdleTaskType NextIdleTaskType = (Enemy->GetBehaviorType() == EEnemyBehaviorType::CombatTest && FMath::RandRange(0, 1)) ?
+		// CombatTester 한정, 공격 이후 20%의 확률로 TakeCover Sequence 실행
+		const EIdleTaskType NextIdleTaskType = (Enemy->GetBehaviorType() == EEnemyBehaviorType::CombatTest && FMath::RandRange(0.f, 1.f) < 0.2f) ?
 			EIdleTaskType::TAKE_COVER : EIdleTaskType::WAIT; 
 		
 		BehaviorComponent->SetIdleTaskType(NextIdleTaskType);

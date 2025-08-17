@@ -3,6 +3,9 @@
 
 #include "C_CombatFieldManager.h"
 
+#include "C_CombatFieldWidget.h"
+#include "C_EnemyCombatFieldManager.h"
+#include "C_PlayerCombatFieldManager.h"
 #include "AI/C_BehaviorComponent.h"
 #include "AI/C_EnemyAIController.h"
 #include "AI/Task/CombatTask/C_BTTaskSwapWeapon.h"
@@ -27,6 +30,12 @@
 AC_CombatFieldManager::AC_CombatFieldManager()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	EnemyCombatFieldManager  = CreateDefaultSubobject<UC_EnemyCombatFieldManager>(TEXT("EnemyVsEnemyCombatFieldManager"));
+	PlayerCombatFieldManager = CreateDefaultSubobject<UC_PlayerCombatFieldManager>(TEXT("PlayerVsEnemyCombatFieldManager"));
+
+	EnemyCombatFieldManager->SetOwnerCombatFieldManager(this);
+	PlayerCombatFieldManager->SetOwnerCombatFieldManager(this);
 }
 
 void AC_CombatFieldManager::BeginPlay()
@@ -70,6 +79,15 @@ void AC_CombatFieldManager::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_CombatFieldManager::StartEnemyVsEnemyRound, 3.f, false);
 
 	// VersusPlayerEnemy의 TargetCharacter 세팅은 P vs E 라운드가 시작되기 직전에 잡아주기 & Boost stat도 라운드가 시작되면 최대치로
+
+	if (!CombatFieldWidget)
+	{
+		UC_Util::Print("CombatFieldWidget not inited in BPC_CombatFieldManager!", FColor::Red, 10.f);
+		return;
+	}
+
+	CombatFieldWidget->AddToViewport(15);
+	CombatFieldWidget->SetOwnerCombatFieldManager(this);
 }
 
 void AC_CombatFieldManager::Tick(float DeltaTime)
@@ -83,62 +101,61 @@ bool AC_CombatFieldManager::RestartEnemyVsEnemyRound()
 	
 	for (AC_Enemy* Enemy : VersusAIEnemies)
 	{
-		if (Enemy->GetMainState() == EMainState::DEAD)
-		{
-			++DeadCount;
-
-			// 죽은 Enemy 리스폰 처리
-			Enemy->SetMainState(EMainState::IDLE);
-
-			// Dead 처리 역순으로 되돌리기
-
-			// 물리 시뮬레이션 끄기
-			Enemy->GetMesh()->SetSimulatePhysics(false);
-
-			// Root를 다시 Capsule로 변경
-			Enemy->SetRootComponent(Enemy->GetCapsuleComponent());
-			Enemy->GetMesh()->AttachToComponent(Enemy->GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
-
-			// Capsule 충돌 복원
-			Enemy->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-
-			// Mesh 충돌 프로필 복구
-			Enemy->GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
-
-			// Mesh Transform 초기화
-			Enemy->GetMesh()->SetRelativeTransform(EnemyMeshInitialRelativeTransform);
-
-			// MovementComponent 다시 켜기			
-			Enemy->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-
-			// 회전 초기화
-			//FRotator InitialRotation = FRotator(0.f, Enemy->GetActorRotation().Yaw, 0.f);
-			//Enemy->SetActorRotation(InitialRotation);
-
-			// AliveCount 업데이트
-			int LeftCharacterCount = GAMESCENE_MANAGER->AddOneToCurrentAliveCharacterCount();
-			GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetTimeBoxWidget()->SetAliveCountText(LeftCharacterCount);
-
-			// Default MaxWalkSpeed로 setting
-			Enemy->GetCharacterMovement()->MaxWalkSpeed = 600.f;
+		if (Enemy->GetMainState() != EMainState::DEAD) continue;
 			
-			// Stand 자세가 아니라면 Stand로 자세 변환 처리 시도
-			Enemy->SetPoseState(Enemy->GetPoseState(), EPoseState::STAND);
+		++DeadCount;
 
-			AC_EnemyAIController* EnemyAIController = Enemy->GetController<AC_EnemyAIController>();
-			if (!IsValid(EnemyAIController))
-				UC_Util::Print("From AC_CombatFieldManager::RestartEnemyVsEnemyRound : Invalid Enemy AI Controller", FColor::Red, 10.f);
-			else
-			{
-				EnemyAIController->GetPerceptionComponent()->Activate();
-				EnemyAIController->GetPerceptionComponent()->SetComponentTickEnabled(true);
-			}
+		// 죽은 Enemy 리스폰 처리
+		Enemy->SetMainState(EMainState::IDLE);
 
-			// BrainComponent 재시작
-			if (!IsValid(EnemyAIController->GetBrainComponent()))
-				UC_Util::Print("From AC_CombatFieldManager::RestartEnemyVsEnemyRound : Invalid BrainComponent", FColor::Red, 10.f);
-			else EnemyAIController->GetBrainComponent()->RestartLogic();
+		// Dead 처리 역순으로 되돌리기
+
+		// 물리 시뮬레이션 끄기
+		Enemy->GetMesh()->SetSimulatePhysics(false);
+
+		// Root를 다시 Capsule로 변경
+		Enemy->SetRootComponent(Enemy->GetCapsuleComponent());
+		Enemy->GetMesh()->AttachToComponent(Enemy->GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
+
+		// Capsule 충돌 복원
+		Enemy->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+		// Mesh 충돌 프로필 복구
+		Enemy->GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
+
+		// Mesh Transform 초기화
+		Enemy->GetMesh()->SetRelativeTransform(EnemyMeshInitialRelativeTransform);
+
+		// MovementComponent 다시 켜기			
+		Enemy->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+
+		// 회전 초기화
+		//FRotator InitialRotation = FRotator(0.f, Enemy->GetActorRotation().Yaw, 0.f);
+		//Enemy->SetActorRotation(InitialRotation);
+
+		// AliveCount 업데이트
+		int LeftCharacterCount = GAMESCENE_MANAGER->AddOneToCurrentAliveCharacterCount();
+		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetTimeBoxWidget()->SetAliveCountText(LeftCharacterCount);
+
+		// Default MaxWalkSpeed로 setting
+		Enemy->GetCharacterMovement()->MaxWalkSpeed = 600.f;
+		
+		// Stand 자세가 아니라면 Stand로 자세 변환 처리 시도
+		Enemy->SetPoseState(Enemy->GetPoseState(), EPoseState::STAND);
+
+		AC_EnemyAIController* EnemyAIController = Enemy->GetController<AC_EnemyAIController>();
+		if (!IsValid(EnemyAIController))
+			UC_Util::Print("From AC_CombatFieldManager::RestartEnemyVsEnemyRound : Invalid Enemy AI Controller", FColor::Red, 10.f);
+		else
+		{
+			EnemyAIController->GetPerceptionComponent()->Activate();
+			EnemyAIController->GetPerceptionComponent()->SetComponentTickEnabled(true);
 		}
+
+		// BrainComponent 재시작
+		if (!IsValid(EnemyAIController->GetBrainComponent()))
+			UC_Util::Print("From AC_CombatFieldManager::RestartEnemyVsEnemyRound : Invalid BrainComponent", FColor::Red, 10.f);
+		else EnemyAIController->GetBrainComponent()->RestartLogic();
 	}
 
 	if (DeadCount == 0) return false;
@@ -259,7 +276,7 @@ void AC_CombatFieldManager::StartEnemyVsEnemyRound()
 	VersusAIEnemies[1]->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(VersusAIEnemies[0]);
 
 	// Test Print
-	for (AC_Enemy* Enemy : VersusAIEnemies)
+	/*for (AC_Enemy* Enemy : VersusAIEnemies)
 	{
 		const FColor Color = FColor::MakeRandomColor();
 
@@ -310,7 +327,7 @@ void AC_CombatFieldManager::StartEnemyVsEnemyRound()
 		AC_Item* Bandage = Enemy->GetInvenComponent()->FindMyItemByName(AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::BANDAGE));
 		if (Bandage) UC_Util::Print("Bandage Count : " + FString::FromInt(Bandage->GetItemCurStack()), Color, 20.f);
 		UC_Util::Print("======================", Color, 20.f);
-	}
+	}*/
 
 	
 }

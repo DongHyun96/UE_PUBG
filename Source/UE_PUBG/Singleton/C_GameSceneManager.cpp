@@ -25,7 +25,6 @@
 #include "Item/ItemManager/C_ItemManager.h"
 #include "Sound/C_SoundManager.h"
 #include "Singleton/C_GameInstance.h"
-#include "TrainingLevel/C_CombatFieldManager.h"
 #include "TrainingLevel/C_TrainingGroundManager.h"
 #include "TrainingLevel/Tutorial/C_TutorialManager.h"
 
@@ -120,9 +119,6 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		
 		if (AC_TutorialManager* Tutorial_Manager = Cast<AC_TutorialManager>(*Actor)) TutorialManager = Tutorial_Manager;
 		if (AC_TrainingGroundManager* TrainingGround_Manager = Cast<AC_TrainingGroundManager>(*Actor)) TrainingGroundManager = TrainingGround_Manager;
-
-		// TODO : 이 라인 지우기
-		if (AC_CombatFieldManager* CombatField_Manager = Cast<AC_CombatFieldManager>(*Actor)) CombatFieldManager = CombatField_Manager;
 	}
 
 	CurrentRanking = AllCharacters.Num();
