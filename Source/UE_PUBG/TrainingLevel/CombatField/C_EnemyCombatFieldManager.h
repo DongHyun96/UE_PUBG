@@ -6,6 +6,42 @@
 #include "Components/ActorComponent.h"
 #include "C_EnemyCombatFieldManager.generated.h"
 
+// 관전 처리 Type
+enum class ESpectatorType : uint8
+{
+	Player,	// Player 시점 (기본 시점)
+	Enemy1,	// Enemy1 관전
+	Enemy2,	// Enemy2 관전
+	Free,	// Free 시점
+	Max
+};
+
+/// <summary>
+/// Prefix (++Type) overload
+/// </summary>
+inline ESpectatorType& operator++(ESpectatorType& Type)
+{
+	uint8 TypeToInt = static_cast<uint8>(Type);
+	uint8 MaxType   = static_cast<uint8>(ESpectatorType::Max);
+
+	Type = (TypeToInt >= MaxType - 1) ? static_cast<ESpectatorType>(0) :
+										static_cast<ESpectatorType>(static_cast<uint8>(Type) + 1);   
+	return Type;
+}
+
+/// <summary>
+/// Prefix (--Type) overload
+/// </summary>
+inline ESpectatorType& operator--(ESpectatorType& Type)
+{
+	uint8 TypeToInt = static_cast<uint8>(Type);
+	
+	Type = (TypeToInt == 0) ?	static_cast<ESpectatorType>(static_cast<uint8>(ESpectatorType::Max) - 1) :
+								static_cast<ESpectatorType>(static_cast<uint8>(Type) - 1);
+	return Type;
+}
+
+
 /// <summary>
 /// Enemy vs Enemy CombatField 관전 카메라 처리 Managing
 /// </summary>
@@ -28,27 +64,16 @@ public:
 
 	void SetOwnerCombatFieldManager(class AC_CombatFieldManager* InCombatFieldManager) { OwnerCombatFieldManager = InCombatFieldManager; }
 
-private:
+	void SetIsPlaying(bool InIsPlaying) { bIsPlaying = InIsPlaying; }
+	bool GetIsPlaying() const { return bIsPlaying; }
 
-	UFUNCTION()
-	void OnSpectatorBoxBeginOverlap
-	(
-		UPrimitiveComponent*	OverlappedComponent,
-		AActor*					OtherActor,
-		UPrimitiveComponent*	OtherComp,
-		int32					OtherBodyIndex,
-		bool					bFromSweep,
-		const FHitResult&		SweepResult
-	);
-
-	UFUNCTION()
-	void OnSpectatorBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	
 private:
 
 	AC_CombatFieldManager* OwnerCombatFieldManager{};
 
-	// Enemy vs Enemy 관전 위치 (관전 카메라 처리할 수 있는 위치의 Box Component)
-	TArray<class UBoxComponent*> SpectatorBoxes{};
+	ESpectatorType CurrentSpectatorType{};
 
+private:
+
+	bool bIsPlaying{};
 };

@@ -24,9 +24,16 @@ protected:
 public:
 
 	void SetOwnerCombatFieldManager(class AC_CombatFieldManager* InCombatFieldManager) { OwnerCombatFieldManager = InCombatFieldManager; }
+
+	class UCanvasPanel* GetCombatSimulationPanel() const { return CombatSimulationPanel; } 
 	
 private:
 
 	AC_CombatFieldManager* OwnerCombatFieldManager{};
+
+protected:
+
+	UPROPERTY(meta=(BindWidget))
+	UCanvasPanel* CombatSimulationPanel{};
 
 };

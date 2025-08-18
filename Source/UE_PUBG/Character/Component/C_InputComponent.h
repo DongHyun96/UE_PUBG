@@ -7,9 +7,9 @@
 #include "TrainingLevel/Tutorial/TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_InputComponent.generated.h"
 
-// TrainingGround JumpTrainingTable 관련 Delegate 선언
+// TrainingGround Interactable Table 관련 Delegate 선언
 // return 값은 Interaction 처리가 제대로 이루어졌다면 return true
-DECLARE_DELEGATE_RetVal(bool, FJumpTrainingTableInteraction_Delegate);
+DECLARE_DELEGATE_RetVal(bool, FInteractableTable_Delegate);
 
 enum class EWeaponSlot : uint8;
 
@@ -246,8 +246,11 @@ public:
 
 
 	// Training ground JumpTrainingTable Interaction Delegate
-	FJumpTrainingTableInteraction_Delegate JumpTrainingTableNum1KeyInteractionDelegate{};
-	FJumpTrainingTableInteraction_Delegate JumpTrainingTableNum2KeyInteractionDelegate{};
+	FInteractableTable_Delegate JumpTrainingTableNum1KeyInteractionDelegate{};
+	FInteractableTable_Delegate JumpTrainingTableNum2KeyInteractionDelegate{};
+
+	// Training ground CombatControlTable Interaction Delegate
+	FInteractableTable_Delegate CombatControlFKeyInteractionDelegate{};
 	
 };
 

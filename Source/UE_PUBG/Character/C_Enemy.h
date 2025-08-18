@@ -8,7 +8,9 @@
 
 // CharacterDestroy 함수가 호출될 때 불려질 Delegate Type 선언
 // Combat Tester가 사용할 예정
-DECLARE_DELEGATE_RetVal(bool, FOnCombatCharacterDestroy_Delegate);
+DECLARE_DELEGATE(FOnCombatCharacterDestroy_Delegate);
+// DECLARE_DELEGATE_RetVal(bool, FOnCombatCharacterDestroy_Delegate);
+
 
 namespace EPathFollowingResult
 {
@@ -138,7 +140,7 @@ private:
 	static const TMap<EEnemyBehaviorType, FString>		BehaviorTreeReferenceDirectories; 
 	static TMap<EEnemyBehaviorType, UBehaviorTree*>		BehaviorTrees;
 	
-	// 자신의 EnemyBehaviorType에 따라 사용할 BehaviorTreef
+	// 자신의 EnemyBehaviorType에 따라 사용할 BehaviorTree
 	UBehaviorTree* BehaviorTree{};
 	
 protected:

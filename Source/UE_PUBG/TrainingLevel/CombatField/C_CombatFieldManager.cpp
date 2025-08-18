@@ -75,9 +75,6 @@ void AC_CombatFieldManager::BeginPlay()
 		EnemyMeshInitialRelativeTransform = Enemy->GetMesh()->GetRelativeTransform();
 	}
 
-	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_CombatFieldManager::StartEnemyVsEnemyRound, 3.f, false);
-
 	// VersusPlayerEnemy의 TargetCharacter 세팅은 P vs E 라운드가 시작되기 직전에 잡아주기 & Boost stat도 라운드가 시작되면 최대치로
 
 	if (!CombatFieldWidget)
@@ -95,82 +92,17 @@ void AC_CombatFieldManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-bool AC_CombatFieldManager::RestartEnemyVsEnemyRound()
+void AC_CombatFieldManager::RestartEnemyVsEnemyRound()
 {
-	uint8 DeadCount{};
+	uint8 Index{};
 	
 	for (AC_Enemy* Enemy : VersusAIEnemies)
 	{
-		if (Enemy->GetMainState() != EMainState::DEAD) continue;
-			
-		++DeadCount;
+		// 죽은 Enemy에 한해 소생 처리
+		TryReviveEnemy(Enemy);
 
-		// 죽은 Enemy 리스폰 처리
-		Enemy->SetMainState(EMainState::IDLE);
-
-		// Dead 처리 역순으로 되돌리기
-
-		// 물리 시뮬레이션 끄기
-		Enemy->GetMesh()->SetSimulatePhysics(false);
-
-		// Root를 다시 Capsule로 변경
-		Enemy->SetRootComponent(Enemy->GetCapsuleComponent());
-		Enemy->GetMesh()->AttachToComponent(Enemy->GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
-
-		// Capsule 충돌 복원
-		Enemy->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-
-		// Mesh 충돌 프로필 복구
-		Enemy->GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
-
-		// Mesh Transform 초기화
-		Enemy->GetMesh()->SetRelativeTransform(EnemyMeshInitialRelativeTransform);
-
-		// MovementComponent 다시 켜기			
-		Enemy->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-
-		// 회전 초기화
-		//FRotator InitialRotation = FRotator(0.f, Enemy->GetActorRotation().Yaw, 0.f);
-		//Enemy->SetActorRotation(InitialRotation);
-
-		// AliveCount 업데이트
-		int LeftCharacterCount = GAMESCENE_MANAGER->AddOneToCurrentAliveCharacterCount();
-		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetTimeBoxWidget()->SetAliveCountText(LeftCharacterCount);
-
-		// Default MaxWalkSpeed로 setting
-		Enemy->GetCharacterMovement()->MaxWalkSpeed = 600.f;
-		
-		// Stand 자세가 아니라면 Stand로 자세 변환 처리 시도
-		Enemy->SetPoseState(Enemy->GetPoseState(), EPoseState::STAND);
-
-		AC_EnemyAIController* EnemyAIController = Enemy->GetController<AC_EnemyAIController>();
-		if (!IsValid(EnemyAIController))
-			UC_Util::Print("From AC_CombatFieldManager::RestartEnemyVsEnemyRound : Invalid Enemy AI Controller", FColor::Red, 10.f);
-		else
-		{
-			EnemyAIController->GetPerceptionComponent()->Activate();
-			EnemyAIController->GetPerceptionComponent()->SetComponentTickEnabled(true);
-		}
-
-		// BrainComponent 재시작
-		if (!IsValid(EnemyAIController->GetBrainComponent()))
-			UC_Util::Print("From AC_CombatFieldManager::RestartEnemyVsEnemyRound : Invalid BrainComponent", FColor::Red, 10.f);
-		else EnemyAIController->GetBrainComponent()->RestartLogic();
-	}
-
-	if (DeadCount == 0) return false;
-	StartEnemyVsEnemyRound();
-	return true;
-}
-
-void AC_CombatFieldManager::StartEnemyVsEnemyRound()
-{
-	for (int i = 0; i < VersusAIEnemies.Num(); ++i)
-	{
 		// Spawn Transform으로 위치 지정
-		VersusAIEnemies[i]->SetActorTransform(EnemyVsEnemySpawnTransform[i]);
-		
-		AC_Enemy* Enemy = VersusAIEnemies[i];
+		Enemy->SetActorTransform(EnemyVsEnemySpawnTransform[Index], false, nullptr, ETeleportType::TeleportPhysics);
 		
 		// Boost량과 체력 최대치 설정
 		Enemy->GetStatComponent()->SetCurBoosting(100.f);
@@ -269,11 +201,15 @@ void AC_CombatFieldManager::StartEnemyVsEnemyRound()
 			SpawnedBandage->SetItemStack(5);
 			SpawnedBandage->MoveToInven(Enemy, SpawnedBandage->GetItemCurStack());
 		}
-	}
 
+		++Index;
+	}
+		
 	// 서로 TargetCharacter로 잡도록 setting
 	VersusAIEnemies[0]->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(VersusAIEnemies[1]);
 	VersusAIEnemies[1]->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(VersusAIEnemies[0]);
+
+	EnemyCombatFieldManager->SetIsPlaying(true);
 
 	// Test Print
 	/*for (AC_Enemy* Enemy : VersusAIEnemies)
@@ -328,6 +264,77 @@ void AC_CombatFieldManager::StartEnemyVsEnemyRound()
 		if (Bandage) UC_Util::Print("Bandage Count : " + FString::FromInt(Bandage->GetItemCurStack()), Color, 20.f);
 		UC_Util::Print("======================", Color, 20.f);
 	}*/
+}
 
+void AC_CombatFieldManager::PauseEnemyVsEnemyRound()
+{
+	for (AC_Enemy* Enemy : VersusAIEnemies)
+	{
+		UC_BehaviorComponent* BehaviorComponent = Enemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent(); 
+		BehaviorComponent->SetTargetCharacter(nullptr);
+		BehaviorComponent->SetServiceType(EServiceType::IDLE);
+		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
+	}
+
+	EnemyCombatFieldManager->SetIsPlaying(false);
+}
+
+bool AC_CombatFieldManager::TryReviveEnemy(AC_Enemy* Enemy)
+{
+	if (Enemy->GetMainState() != EMainState::DEAD) return false;
+			
+	/* 죽은 Enemy 리스폰 처리 */
 	
+	Enemy->SetMainState(EMainState::IDLE);
+
+	// Dead 처리 역순으로 되돌리기
+
+	// 물리 시뮬레이션 끄기
+	Enemy->GetMesh()->SetSimulatePhysics(false);
+
+	// Root를 다시 Capsule로 변경
+	Enemy->SetRootComponent(Enemy->GetCapsuleComponent());
+	Enemy->GetMesh()->AttachToComponent(Enemy->GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
+
+	// Capsule 충돌 복원
+	Enemy->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	// Mesh 충돌 프로필 복구
+	Enemy->GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
+
+	// Mesh Transform 초기화
+	Enemy->GetMesh()->SetRelativeTransform(EnemyMeshInitialRelativeTransform);
+
+	// MovementComponent 다시 켜기			
+	Enemy->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+
+	// 회전 초기화
+	//FRotator InitialRotation = FRotator(0.f, Enemy->GetActorRotation().Yaw, 0.f);
+	//Enemy->SetActorRotation(InitialRotation);
+
+	// AliveCount 업데이트
+	int LeftCharacterCount = GAMESCENE_MANAGER->AddOneToCurrentAliveCharacterCount();
+	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetTimeBoxWidget()->SetAliveCountText(LeftCharacterCount);
+
+	// Default MaxWalkSpeed로 setting
+	Enemy->GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	
+	// Stand 자세가 아니라면 Stand로 자세 변환 처리 시도
+	Enemy->SetPoseState(Enemy->GetPoseState(), EPoseState::STAND);
+
+	AC_EnemyAIController* EnemyAIController = Enemy->GetController<AC_EnemyAIController>();
+	if (!IsValid(EnemyAIController))
+		UC_Util::Print("From AC_CombatFieldManager::RestartEnemyVsEnemyRound : Invalid Enemy AI Controller", FColor::Red, 10.f);
+	else
+	{
+		EnemyAIController->GetPerceptionComponent()->Activate();
+		EnemyAIController->GetPerceptionComponent()->SetComponentTickEnabled(true);
+	}
+
+	// BrainComponent 재시작
+	if (!IsValid(EnemyAIController->GetBrainComponent()))
+		UC_Util::Print("From AC_CombatFieldManager::RestartEnemyVsEnemyRound : Invalid BrainComponent", FColor::Red, 10.f);
+	else EnemyAIController->GetBrainComponent()->RestartLogic();
+	
+	return true;
 }
