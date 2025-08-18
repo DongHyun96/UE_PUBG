@@ -66,9 +66,9 @@ bool AC_CombatControlTable::OnFKeyInteraction()
 	AC_CombatFieldManager* CombatFieldManager = GAMESCENE_MANAGER->GetTrainingGroundManager()->GetCombatFieldManager();
 	
 	if (CombatFieldManager->GetEnemyCombatFieldManager()->GetIsPlaying())
-		CombatFieldManager->PauseEnemyVsEnemyRound();
+		CombatFieldManager->StopEnemyVsEnemyRound();
 	else
-		CombatFieldManager->RestartEnemyVsEnemyRound();
+		CombatFieldManager->StartEnemyVsEnemyRound();
 
 	return true;
 }

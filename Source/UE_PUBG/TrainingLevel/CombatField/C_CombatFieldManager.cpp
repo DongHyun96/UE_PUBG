@@ -69,7 +69,7 @@ void AC_CombatFieldManager::BeginPlay()
 		EnemyVsEnemySpawnTransform.Add(Enemy->GetActorTransform());
 
 		// 죽은 뒤, Destroy될 때 Delegate 지정
-		Enemy->Delegate_OnCombatCharacterDestroy.BindUObject(this, &AC_CombatFieldManager::RestartEnemyVsEnemyRound);
+		Enemy->Delegate_OnCombatCharacterDestroy.BindUObject(this, &AC_CombatFieldManager::StartEnemyVsEnemyRound);
 
 		// Initial Mesh Transform 저장
 		EnemyMeshInitialRelativeTransform = Enemy->GetMesh()->GetRelativeTransform();
@@ -92,7 +92,7 @@ void AC_CombatFieldManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AC_CombatFieldManager::RestartEnemyVsEnemyRound()
+void AC_CombatFieldManager::InitEnemyVsEnemyRound()
 {
 	uint8 Index{};
 	
@@ -204,12 +204,6 @@ void AC_CombatFieldManager::RestartEnemyVsEnemyRound()
 
 		++Index;
 	}
-		
-	// 서로 TargetCharacter로 잡도록 setting
-	VersusAIEnemies[0]->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(VersusAIEnemies[1]);
-	VersusAIEnemies[1]->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(VersusAIEnemies[0]);
-
-	EnemyCombatFieldManager->SetIsPlaying(true);
 
 	// Test Print
 	/*for (AC_Enemy* Enemy : VersusAIEnemies)
@@ -266,17 +260,24 @@ void AC_CombatFieldManager::RestartEnemyVsEnemyRound()
 	}*/
 }
 
-void AC_CombatFieldManager::PauseEnemyVsEnemyRound()
+void AC_CombatFieldManager::StartEnemyVsEnemyRound()
 {
-	for (AC_Enemy* Enemy : VersusAIEnemies)
-	{
-		UC_BehaviorComponent* BehaviorComponent = Enemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent(); 
-		BehaviorComponent->SetTargetCharacter(nullptr);
-		BehaviorComponent->SetServiceType(EServiceType::IDLE);
-		BehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
-	}
+	EnemyCombatFieldManager->SetIsPlaying(true);
+	InitEnemyVsEnemyRound();
 
+	// 서로 TargetCharacter로 잡도록 setting
+	VersusAIEnemies[0]->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(VersusAIEnemies[1]);
+	VersusAIEnemies[1]->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(VersusAIEnemies[0]);
+}
+
+void AC_CombatFieldManager::StopEnemyVsEnemyRound()
+{
 	EnemyCombatFieldManager->SetIsPlaying(false);
+	InitEnemyVsEnemyRound();
+
+	// 서로의 TargetCharacter 제거
+	for (AC_Enemy* Enemy : VersusAIEnemies)
+		Enemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(nullptr);
 }
 
 bool AC_CombatFieldManager::TryReviveEnemy(AC_Enemy* Enemy)

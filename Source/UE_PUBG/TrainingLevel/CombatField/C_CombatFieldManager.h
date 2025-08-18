@@ -34,17 +34,24 @@ public:
 	class UC_EnemyCombatFieldManager* GetEnemyCombatFieldManager() const { return EnemyCombatFieldManager; }
 	class UC_PlayerCombatFieldManager* GetPlayerCombatFieldManager() const { return PlayerCombatFieldManager; }
 
-public:
+private:
 	
 	/// <summary>
-	/// E vs E 시작 처리 (재시작도 이 함수를 통해 처리)
+	/// E vs E 시작 사전 준비
 	/// </summary>
-	void RestartEnemyVsEnemyRound();
+	void InitEnemyVsEnemyRound();
+
+public:
+
+	/// <summary>
+	/// Enemy vs Enemy 시작하기
+	/// </summary>
+	void StartEnemyVsEnemyRound();
 
 	/// <summary>
 	/// Enemy Vs Enemy Round 멈추기 (둘 다 Wait 상태로 두고, TargetCharacter 해제)
 	/// </summary>
-	void PauseEnemyVsEnemyRound();
+	void StopEnemyVsEnemyRound();
 	
 protected:
 	
