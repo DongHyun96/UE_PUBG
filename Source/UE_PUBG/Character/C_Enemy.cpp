@@ -396,7 +396,8 @@ void AC_Enemy::DestroyCharacter()
 		// Combat Test enemy 한정, Destroy 처리 x
 		UC_Util::Print("Respawning CombatTester", FColor::Red, 10.f);
 
-		if (Delegate_OnCombatCharacterDestroy.IsBound()) Delegate_OnCombatCharacterDestroy.Execute();
+		// if (Delegate_OnCombatCharacterDestroy.IsBound()) Delegate_OnCombatCharacterDestroy.Execute();
+		Delegate_OnCombatCharacterDestroy.ExecuteIfBound();
 		return;
 	}
 	

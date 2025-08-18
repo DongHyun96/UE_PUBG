@@ -26,7 +26,7 @@ void UC_BTTaskCombatTestWait::OnWaitTimeFinished(UBehaviorTreeComponent& OwnerCo
 	EnemyTimers[EnemyBehaviorComponent] -= EnemyBehaviorComponent->GetWaitTime();
 
 	const AC_BasicCharacter* TargetCharacter = EnemyBehaviorComponent->GetTargetCharacter();
-	if (IsValid(TargetCharacter) && TargetCharacter->GetMainState() != EMainState::DEAD)
+	if (IsValid(TargetCharacter) && TargetCharacter->GetMainState() != EMainState::DEAD) // TargetCharacter가 valid할 때에만 Combat Service로 넘어감
 	{
 		EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

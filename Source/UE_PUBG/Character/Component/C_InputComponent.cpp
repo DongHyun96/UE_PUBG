@@ -616,6 +616,10 @@ void UC_InputComponent::OnFKey()
 
 	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
 
+	// CombatControlFKeyInteractionDelegateBound 처리
+	if (CombatControlFKeyInteractionDelegate.IsBound() &&
+		CombatControlFKeyInteractionDelegate.Execute()) return;
+
 	// SkyDiving 관련 F키
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 	{

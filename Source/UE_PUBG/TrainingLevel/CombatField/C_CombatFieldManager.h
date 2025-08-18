@@ -27,25 +27,39 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
-private:
+public:
+
+	class UC_CombatFieldWidget* GetCombatFieldWidget() const { return CombatFieldWidget; }
+
+	class UC_EnemyCombatFieldManager* GetEnemyCombatFieldManager() const { return EnemyCombatFieldManager; }
+	class UC_PlayerCombatFieldManager* GetPlayerCombatFieldManager() const { return PlayerCombatFieldManager; }
+
+public:
 	
 	/// <summary>
-	/// Enemy vs Enemy Round 다시 초기화 처리 및 재시작 (E Vs E Enemy 한 명이라도 사망 처리된 이후 Destroy될 때 호출) 
+	/// E vs E 시작 처리 (재시작도 이 함수를 통해 처리)
 	/// </summary>
-	/// <returns> : Init 할 수 없는 상황이라면(둘 다 아직 살아있는 경우), return false </returns>
-	bool RestartEnemyVsEnemyRound();
+	void RestartEnemyVsEnemyRound();
 
 	/// <summary>
-	/// E vs E 첫 시작 처리
+	/// Enemy Vs Enemy Round 멈추기 (둘 다 Wait 상태로 두고, TargetCharacter 해제)
 	/// </summary>
-	void StartEnemyVsEnemyRound();
-
+	void PauseEnemyVsEnemyRound();
 	
+protected:
+	
+	/// <summary>
+	/// 죽은 Enemy 소생시키기 
+	/// </summary>
+	/// <param name="Enemy"> : 소생시키려 하는 Enemy </param>
+	/// <returns> : 아직 살아있는 상태라면(MainState != Dead) return false </returns>
+	bool TryReviveEnemy(class AC_Enemy* Enemy);
+
 
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSubclassOf<class AC_Enemy> EnemyClass{};
+	TSubclassOf<AC_Enemy> EnemyClass{};
 
 protected:
 
@@ -67,15 +81,15 @@ protected:
 
 	// Enemy vs Enemy 관전 처리를 돕는 ActorComponent
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_EnemyCombatFieldManager* EnemyCombatFieldManager{};
+	UC_EnemyCombatFieldManager* EnemyCombatFieldManager{};
 
 	// Player vs Enemy 라운드 처리를 돕는 ActorComponent
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_PlayerCombatFieldManager* PlayerCombatFieldManager{};
+	UC_PlayerCombatFieldManager* PlayerCombatFieldManager{};
 
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UC_CombatFieldWidget* CombatFieldWidget{};
+	UC_CombatFieldWidget* CombatFieldWidget{};
 
 };
