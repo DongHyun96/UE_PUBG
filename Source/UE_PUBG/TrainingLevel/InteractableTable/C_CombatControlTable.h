@@ -29,6 +29,12 @@ private:
 	/// <returns> : 이 Table이 Focused되어 있고, 제대로 Interaction 처리되었다면 return true </returns>
 	bool OnFKeyInteraction();
 
+	void OnArrowLeft();
+
+	void OnArrowRight();
+
+private:
+
 	void OnBoxColliderBeginOverlap
 	(
 		UPrimitiveComponent*	OverlappedComp,
@@ -51,4 +57,18 @@ private:
 
 	class UC_CombatFieldWidget* CombatFieldWidget{};
 
+protected: // Input 처리 관련
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UInputMappingContext* IMC_CombatSpectator{};
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	class UInputAction* ArrowLeftAction{};
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UInputAction* ArrowRightAction{};
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UInputAction* FKeyAction{};
+	
 };

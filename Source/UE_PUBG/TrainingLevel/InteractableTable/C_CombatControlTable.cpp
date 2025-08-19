@@ -3,9 +3,12 @@
 
 #include "C_CombatControlTable.h"
 
+#include "EnhancedInputComponent.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_InputComponent.h"
+#include "Character/Component/C_PlayerController.h"
 #include "Components/CanvasPanel.h"
+#include "Kismet/GameplayStatics.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "TrainingLevel/C_TrainingGroundManager.h"
 #include "TrainingLevel/CombatField/C_CombatFieldManager.h"
@@ -22,7 +25,13 @@ AC_CombatControlTable::AC_CombatControlTable()
 void AC_CombatControlTable::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	AC_PlayerController* PC = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PC->InputComponent))
+	{
+		EnhancedInputComponent->BindAction(ArrowLeftAction, ETriggerEvent::Started, this, &AC_CombatControlTable::OnArrowLeft);
+		EnhancedInputComponent->BindAction(ArrowRightAction, ETriggerEvent::Started, this, &AC_CombatControlTable::OnArrowRight);
+	}
 }
 
 void AC_CombatControlTable::Tick(float DeltaTime)
@@ -61,16 +70,24 @@ bool AC_CombatControlTable::OnFKeyInteraction()
 {
 	if (!bIsFocused) return false;
 
-	UC_Util::Print("Hi This is f Key interaction testing message!", FColor::MakeRandomColor());
-
 	AC_CombatFieldManager* CombatFieldManager = GAMESCENE_MANAGER->GetTrainingGroundManager()->GetCombatFieldManager();
-	
-	if (CombatFieldManager->GetEnemyCombatFieldManager()->GetIsPlaying())
-		CombatFieldManager->StopEnemyVsEnemyRound();
-	else
-		CombatFieldManager->StartEnemyVsEnemyRound();
+
+	CombatFieldManager->GetEnemyCombatFieldManager()->GetIsPlaying() ?
+		CombatFieldManager->StopEnemyVsEnemyRound() : CombatFieldManager->StartEnemyVsEnemyRound();
 
 	return true;
+}
+
+void AC_CombatControlTable::OnArrowLeft()
+{
+	UC_Util::Print("ArrowLeft");
+	GAMESCENE_MANAGER->GetTrainingGroundManager()->GetCombatFieldManager()->GetEnemyCombatFieldManager()->DecreaseSpectatorType();
+}
+
+void AC_CombatControlTable::OnArrowRight()
+{
+	UC_Util::Print("ArrowRight");
+	GAMESCENE_MANAGER->GetTrainingGroundManager()->GetCombatFieldManager()->GetEnemyCombatFieldManager()->IncreaseSpectatorType();
 }
 
 void AC_CombatControlTable::OnBoxColliderBeginOverlap
@@ -101,6 +118,16 @@ void AC_CombatControlTable::OnBoxColliderBeginOverlap
 	}
 	
 	Player->GetInputComponent()->CombatControlFKeyInteractionDelegate.BindUObject(this, &AC_CombatControlTable::OnFKeyInteraction);
+
+	// Spectator 전용키 Input Mapping Context 추가
+	AC_PlayerController* PlayerController = Player->GetController<AC_PlayerController>();
+	if (!PlayerController)
+	{
+		UC_Util::Print("From AC_CombatControlTable::OnBoxColliderBeginOverlap : Invalid PlayerController!", FColor::Red, 10.f);
+		return;
+	}
+
+	PlayerController->AddIMCToSubsystem(IMC_CombatSpectator, 1);
 }
 
 void AC_CombatControlTable::OnBoxColliderEndOverlap
@@ -129,5 +156,15 @@ void AC_CombatControlTable::OnBoxColliderEndOverlap
 	}
 
 	Player->GetInputComponent()->CombatControlFKeyInteractionDelegate.Unbind();
+
+	// Spectator 전용키 Input Mapping Context 제거
+	AC_PlayerController* PlayerController = Player->GetController<AC_PlayerController>();
+	if (!PlayerController)
+	{
+		UC_Util::Print("From AC_CombatControlTable::OnBoxColliderEndOverlap : Invalid PlayerController!", FColor::Red, 10.f);
+		return;
+	}
+
+	PlayerController->RemoveIMCFromSubsystem(IMC_CombatSpectator);
 }
 

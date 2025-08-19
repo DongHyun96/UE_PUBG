@@ -67,6 +67,13 @@ public:
 	void SetIsPlaying(bool InIsPlaying) { bIsPlaying = InIsPlaying; }
 	bool GetIsPlaying() const { return bIsPlaying; }
 
+	void IncreaseSpectatorType();
+	void DecreaseSpectatorType();
+
+private:
+
+	
+
 private:
 
 	AC_CombatFieldManager* OwnerCombatFieldManager{};
@@ -76,4 +83,14 @@ private:
 private:
 
 	bool bIsPlaying{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TSubclassOf<APawn> FreeSpectatorPawnClass{};
+
+private:
+
+	APawn* FreeSpectatorPawn{};
+	
 };

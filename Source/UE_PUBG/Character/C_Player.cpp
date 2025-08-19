@@ -291,7 +291,6 @@ void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	MyInputComponent->BindAction(PlayerInputComponent, this);
-
 }
 
 void AC_Player::SetPlayerMappingContext()
