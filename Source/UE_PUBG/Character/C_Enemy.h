@@ -87,6 +87,8 @@ public:
 
 	static float GetJumpVelocityZOrigin() { return JUMP_VELOCITYZ_ORIGIN; }
 
+	class UCameraComponent* GetSpectatorCameraComponent() const { return SpectatorCameraComponent; }
+
 public:
 	
 	/// <summary>
@@ -157,6 +159,10 @@ protected:
 	// Default 아이템 스폰 처리 Component
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	UC_DefaultItemSpawnerComponent* ItemSpawnerHelper{};
+
+private:
+	
+	class UCameraComponent* SpectatorCameraComponent{}; // CombatTester 용 CameraActor
 
 private:
 	

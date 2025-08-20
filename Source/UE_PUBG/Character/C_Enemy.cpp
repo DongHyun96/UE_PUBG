@@ -9,6 +9,7 @@
 #include "AI/C_EnemyAIController.h"
 #include "AI/Service/C_BTServiceCombat.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -97,6 +98,13 @@ void AC_Enemy::BeginPlay()
 
 	// SkyDive Tester 초기 위치로 돌아올 때 회전도 초기 회전으로 주기 위해 저장해 둠
 	InitialRotation = GetActorRotation();
+
+	if (EnemyBehaviorType == EEnemyBehaviorType::CombatTest)
+	{
+		// CombatTester용 Spectate 카메라 초기화
+		SpectatorCameraComponent = Cast<UCameraComponent>(GetDefaultSubobjectByName(TEXT("Camera")));
+		if (!SpectatorCameraComponent) UC_Util::Print("From AC_Enemy::BeginPlay : CombatTester Spectator Camera init failed!", FColor::Red, 10.f);
+	}
 
 	// GetMesh()->GetMaterials()[0];
 
