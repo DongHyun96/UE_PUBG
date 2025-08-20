@@ -88,6 +88,7 @@ public:
 	static float GetJumpVelocityZOrigin() { return JUMP_VELOCITYZ_ORIGIN; }
 
 	class UCameraComponent* GetSpectatorCameraComponent() const { return SpectatorCameraComponent; }
+	class USpringArmComponent* GetSpringArmComponent() const { return SpectatorSpringArmComponent; }
 
 public:
 	
@@ -162,7 +163,8 @@ protected:
 
 private:
 	
-	class UCameraComponent* SpectatorCameraComponent{}; // CombatTester 용 CameraActor
+	UCameraComponent* SpectatorCameraComponent{}; // CombatTester Spectate 용 CameraActor
+	USpringArmComponent* SpectatorSpringArmComponent{}; // CombatTester Spectate 용 SpringArmS
 
 private:
 	

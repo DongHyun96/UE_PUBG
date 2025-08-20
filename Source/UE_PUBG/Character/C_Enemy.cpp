@@ -20,6 +20,7 @@
 #include "Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "Component/EnemyComponent/C_TargetLocationSettingHelper.h"
 #include "Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "HUD/C_GameOverWidget.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Kismet/GameplayStatics.h"
@@ -104,6 +105,9 @@ void AC_Enemy::BeginPlay()
 		// CombatTester용 Spectate 카메라 초기화
 		SpectatorCameraComponent = Cast<UCameraComponent>(GetDefaultSubobjectByName(TEXT("Camera")));
 		if (!SpectatorCameraComponent) UC_Util::Print("From AC_Enemy::BeginPlay : CombatTester Spectator Camera init failed!", FColor::Red, 10.f);
+
+		SpectatorSpringArmComponent = Cast<USpringArmComponent>(GetDefaultSubobjectByName(TEXT("SpringArm")));
+		if (!SpectatorSpringArmComponent) UC_Util::Print("From AC_Enemy::BeginPlay : CombatTester Spectator SpringArm init failed!", FColor::Red, 10.f);
 	}
 
 	// GetMesh()->GetMaterials()[0];

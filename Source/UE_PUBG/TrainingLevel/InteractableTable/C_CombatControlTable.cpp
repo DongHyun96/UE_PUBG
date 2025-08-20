@@ -9,6 +9,7 @@
 #include "Character/Component/C_InputComponent.h"
 #include "Character/Component/C_PlayerController.h"
 #include "Components/CanvasPanel.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "TrainingLevel/C_TrainingGroundManager.h"
@@ -108,14 +109,16 @@ void AC_CombatControlTable::OnLookInput(const FInputActionValue& Value)
 															GetCombatFieldManager()->GetEnemyCombatFieldManager();
 	
 	// Enemy 관전 카메라 처리에만 쓰일 예정
-	AC_Enemy* CurrentSpectatingEnemy = EnemyCombatFieldManager->GetCurrentSpectatingEnemy();
+	const AC_Enemy* CurrentSpectatingEnemy = EnemyCombatFieldManager->GetCurrentSpectatingEnemy();
 	if (!CurrentSpectatingEnemy) return;
 
-	UC_Util::Print("OnLookInput");
-	
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
-	CurrentSpectatingEnemy->AddControllerYawInput(LookAxisVector.X);
-	CurrentSpectatingEnemy->AddControllerPitchInput(LookAxisVector.Y);
+
+	FRotator SpringArmRotation	 = CurrentSpectatingEnemy->GetSpringArmComponent()->GetRelativeRotation();
+	SpringArmRotation.Yaw		-= LookAxisVector.X;
+	SpringArmRotation.Pitch		 = FMath::Clamp(SpringArmRotation.Pitch - LookAxisVector.Y, -80.f, 80.f); // 상하 범위 제한
+
+	CurrentSpectatingEnemy->GetSpringArmComponent()->SetRelativeRotation(SpringArmRotation);
 }
 
 void AC_CombatControlTable::OnBoxColliderBeginOverlap
