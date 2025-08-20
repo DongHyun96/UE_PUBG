@@ -282,8 +282,8 @@ void AC_BasicCharacter::EnableRagdoll()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// 메쉬만 루트로 설정
-	GetMesh()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-	RootComponent = GetMesh();
+	//GetMesh()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	//RootComponent = GetMesh();
 	
 	// 💡 충돌 프로필 설정 → 지형과만 충돌
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));

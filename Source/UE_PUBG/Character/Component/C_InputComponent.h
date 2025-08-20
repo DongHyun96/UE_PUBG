@@ -149,6 +149,7 @@ private:
 
 public:
 
+	// Player Main InputMappingContext
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputMappingContext* MappingContext{};
 

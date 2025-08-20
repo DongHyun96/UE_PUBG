@@ -34,6 +34,9 @@ public:
 	class UC_EnemyCombatFieldManager* GetEnemyCombatFieldManager() const { return EnemyCombatFieldManager; }
 	class UC_PlayerCombatFieldManager* GetPlayerCombatFieldManager() const { return PlayerCombatFieldManager; }
 
+	/// <returns> : Index에 맞는 VersusAIEnemy 반환, Index가 Valid하지 않다면 return nullptr </returns>
+	class AC_Enemy* GetVersusAIEnemy(uint8 Index) const;
+
 private:
 	
 	/// <summary>

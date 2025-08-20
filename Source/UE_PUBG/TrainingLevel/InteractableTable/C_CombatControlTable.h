@@ -21,17 +21,31 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
-private:
+private: // IMC_CombatSpectator Actions
 	
 	/// <summary>
-	/// F Key Interaction 처리 (Toggle Start/Stop Simulating Enemy AI fight) 
+	/// <para> Player InputComponent의 F Key Delegate Callback 처리 </para>
+	/// <para> 담당 기능 : Toggle Start/Stop Simulating Enemy AI fight </para>
 	/// </summary>
 	/// <returns> : 이 Table이 Focused되어 있고, 제대로 Interaction 처리되었다면 return true </returns>
-	bool OnFKeyInteraction();
+	bool OnPlayerInputComponentFKeyDelegate();
 
+	void OnFKey();
+
+	/// <summary>
+	/// 왼쪽 방향키 Input callback함수 / 관전자 전환에 활용
+	/// </summary>
 	void OnArrowLeft();
 
+	/// <summary>
+	/// 오른쪽 방향키 Input callback함수 / 관전자 전환에 활용
+	/// </summary>
 	void OnArrowRight();
+
+	/// <summary>
+	/// 마우스 Input callback 함수
+	/// </summary>
+	void OnLookInput(const struct FInputActionValue& Value);
 
 private:
 
@@ -55,6 +69,7 @@ private:
 
 private:
 
+	// CombatFieldManager가 들고있는 CombatFieldWidget
 	class UC_CombatFieldWidget* CombatFieldWidget{};
 
 protected: // Input 처리 관련
@@ -70,5 +85,8 @@ protected: // Input 처리 관련
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UInputAction* FKeyAction{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UInputAction* LookAction{};	
 	
 };
