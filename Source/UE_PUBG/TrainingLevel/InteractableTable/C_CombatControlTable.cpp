@@ -10,6 +10,8 @@
 #include "Character/Component/C_PlayerController.h"
 #include "Components/CanvasPanel.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_InformWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "TrainingLevel/C_TrainingGroundManager.h"
@@ -75,9 +77,17 @@ bool AC_CombatControlTable::OnPlayerInputComponentFKeyDelegate()
 	if (!bIsFocused) return false;
 	AC_CombatFieldManager* CombatFieldManager = GAMESCENE_MANAGER->GetTrainingGroundManager()->GetCombatFieldManager();
 
-	CombatFieldManager->GetEnemyCombatFieldManager()->GetIsPlaying() ?
-		CombatFieldManager->StopEnemyVsEnemyRound() : CombatFieldManager->StartEnemyVsEnemyRound();
-
+	if (CombatFieldManager->GetEnemyCombatFieldManager()->GetIsPlaying())
+	{
+		CombatFieldManager->StopEnemyVsEnemyRound();
+		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("Stop Combat simulation");
+	}
+	else
+	{
+		CombatFieldManager->StartEnemyVsEnemyRound();
+		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("Combat simulation in progress");
+	}
+	
 	return true;
 }
 
