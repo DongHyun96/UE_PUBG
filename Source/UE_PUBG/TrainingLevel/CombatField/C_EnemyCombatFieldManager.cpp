@@ -5,10 +5,13 @@
 
 #include "C_CombatFieldManager.h"
 #include "Camera/CameraComponent.h"
+#include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
+#include "Character/Component/C_InputComponent.h"
 #include "Character/Component/C_PlayerController.h"
 #include "Components/BoxComponent.h"
 #include "Singleton/C_GameSceneManager.h"
+#include "Slate/SGameLayerManager.h"
 #include "Utility/C_Util.h"
 
 
@@ -28,11 +31,16 @@ void UC_EnemyCombatFieldManager::TickComponent(float DeltaTime, ELevelTick TickT
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UC_EnemyCombatFieldManager::IncreaseSpectatorType()
+AC_Enemy* UC_EnemyCombatFieldManager::GetCurrentSpectatingEnemy() const
 {
-	ESpectatorType PrevType = CurrentSpectatorType;
-	
-	switch (++CurrentSpectatorType)
+	switch (CurrentSpectatorType) { case ESpectatorType::Player: case ESpectatorType::Free: return nullptr;	}
+	uint8 EnemyIndex = static_cast<uint8>(CurrentSpectatorType) - 1;
+	return OwnerCombatFieldManager->GetVersusAIEnemy(EnemyIndex);
+}
+
+void UC_EnemyCombatFieldManager::ApplySpectatorChanges(ESpectatorType PrevSpectatorType)
+{
+	switch (CurrentSpectatorType)
 	{
 	case ESpectatorType::Player:
 	{
@@ -40,93 +48,88 @@ void UC_EnemyCombatFieldManager::IncreaseSpectatorType()
 		
 		AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
 		GetWorld()->GetFirstPlayerController()->Possess(Player);
+		
+		// Add Main IMC_Player
+		UInputMappingContext* PlayerMainIMC = GAMESCENE_MANAGER->GetPlayer()->GetInputComponent()->MappingContext;
+		GAMESCENE_MANAGER->GetPlayer()->GetController<AC_PlayerController>()->AddIMCToSubsystem(PlayerMainIMC, 0);
 
-		if (PrevType == ESpectatorType::Free)
+		/*if (PrevSpectatorType == ESpectatorType::Free)
 		{
 			GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
 			{
 				FreeSpectatorPawn->Destroy();
 				FreeSpectatorPawn = nullptr;
 			});
-		}
+		}*/
 	}	
-		break;
-	case ESpectatorType::Enemy1:
-		UC_Util::Print("Current Type : Enemy1", FColor::MakeRandomColor());
-		break;
-	case ESpectatorType::Enemy2:
-		UC_Util::Print("Current Type : Enemy2", FColor::MakeRandomColor());
-		break;
+		return;
+	case ESpectatorType::Enemy1: case ESpectatorType::Enemy2:
+	{
+		UC_Util::Print("Current Type : " + (CurrentSpectatorType == ESpectatorType::Enemy1) ? "Enemy1" : "Enemy2", FColor::MakeRandomColor());
+		
+		AC_Enemy* CombatTester = OwnerCombatFieldManager->GetVersusAIEnemy((CurrentSpectatorType == ESpectatorType::Enemy1) ? 0 : 1);
+		if (!CombatTester)
+		{
+			UC_Util::Print("From UC_EnemyCombatFieldManager::ApplySpectatorChanges : Invalid CombatTester!", FColor::Red, 10.f);
+			return;
+		}
+
+		if (!IsValid(CombatTester->GetSpectatorCameraComponent()))
+		{
+			UC_Util::Print("From UC_EnemyCombatFieldManager::ApplySpectatorChanges : Invalid CombatTester's Spectator Camera", FColor::Red, 10.f);
+			return;
+		}
+
+		GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(CombatTester, 0.5f);
+		CombatTester->GetSpectatorCameraComponent()->Activate();
+		// CombatTester->GetSpectatorCameraComponent()->Deactivate();
+
+		// Remove Main IMC_Player
+		// if (PrevSpectatorType == ESpectatorType::Free) return;
+		
+		UInputMappingContext* PlayerMainIMC = GAMESCENE_MANAGER->GetPlayer()->GetInputComponent()->MappingContext;
+		
+		if (AC_PlayerController* PlayerController = GAMESCENE_MANAGER->GetPlayer()->GetController<AC_PlayerController>())
+			PlayerController->RemoveIMCFromSubsystem(PlayerMainIMC);
+		
+		return;
+	}
 	case ESpectatorType::Free:
 	{
 		UC_Util::Print("Current Type : Free", FColor::MakeRandomColor());
-		AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
-		FTransform PlayerCameraTransform = Player->GetMainCamera()->GetComponentTransform();
+		
+		// Add Main IMC_Player
+		UInputMappingContext* PlayerMainIMC = GAMESCENE_MANAGER->GetPlayer()->GetInputComponent()->MappingContext;
+		
+		if (AC_PlayerController* PlayerController = GAMESCENE_MANAGER->GetPlayer()->GetController<AC_PlayerController>())
+			PlayerController->RemoveIMCFromSubsystem(PlayerMainIMC);
+			// PlayerController->AddIMCToSubsystem(PlayerMainIMC, 0);
+
+		FVector CameraLocation{};
+		FRotator CameraRotation{};
+		
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
+		FTransform CurrentCameraTransform(CameraRotation, CameraLocation);
+		
+		if (IsValid(FreeSpectatorPawn))
+		{
+			FreeSpectatorPawn->SetActorTransform(CurrentCameraTransform);
+			GetWorld()->GetFirstPlayerController()->Possess(FreeSpectatorPawn);
+			return;
+		}
 
 		FActorSpawnParameters SpawnParam{};
-		SpawnParam.Owner = Player;
+		SpawnParam.Owner = GAMESCENE_MANAGER->GetPlayer();
 		SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		
-		// Testing 용으로 Free 시점으로 바로 처리해보기
-		FreeSpectatorPawn = GetWorld()->SpawnActor<APawn>(FreeSpectatorPawnClass, PlayerCameraTransform, SpawnParam);
+		FreeSpectatorPawn = GetWorld()->SpawnActor<APawn>(FreeSpectatorPawnClass, CurrentCameraTransform, SpawnParam);
 		if (!IsValid(FreeSpectatorPawn))
 		{
-			UC_Util::Print("From UC_EnemyCombatFieldManager : FreeSpectatorPawn spawn failed!", FColor::Red, 10.f);
+			UC_Util::Print("From UC_EnemyCombatFieldManager::ApplySpectatorChanges : FreeSpectatorPawn spawn failed!", FColor::Red, 10.f);
 			return;
 		}
 		
 		GetWorld()->GetFirstPlayerController()->Possess(FreeSpectatorPawn);
-		break;
 	}
 	}
-}
-
-void UC_EnemyCombatFieldManager::DecreaseSpectatorType()
-{
-	/*ESpectatorType PrevType = CurrentSpectatorType;
-	
-	switch (--CurrentSpectatorType)
-	{
-	case ESpectatorType::Player:
-	{
-		AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
-		AC_PlayerController* PlayerController = Player->GetController<AC_PlayerController>();
-		PlayerController->Possess(Player);
-
-		if (PrevType == ESpectatorType::Free)
-		{
-			GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
-			{
-				FreeSpectatorPawn->Destroy();
-				FreeSpectatorPawn = nullptr;
-			});
-		}
-	}	
-		break;
-	case ESpectatorType::Enemy1:
-		break;
-	case ESpectatorType::Enemy2:
-		break;
-	case ESpectatorType::Free:
-	{
-		AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
-		FTransform PlayerCameraTransform = Player->GetMainCamera()->GetComponentTransform();
-
-		FActorSpawnParameters SpawnParam{};
-		SpawnParam.Owner = Player;
-		SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-		
-		// Testing 용으로 Free 시점으로 바로 처리해보기
-		FreeSpectatorPawn = GetWorld()->SpawnActor<APawn>(FreeSpectatorPawnClass, PlayerCameraTransform, SpawnParam);
-		if (!IsValid(FreeSpectatorPawn))
-		{
-			UC_Util::Print("From UC_EnemyCombatFieldManager : FreeSpectatorPawn spawn failed!", FColor::Red, 10.f);
-			return;
-		}
-
-		AC_PlayerController* PlayerController = Player->GetController<AC_PlayerController>();
-		PlayerController->Possess(FreeSpectatorPawn);
-		break;
-	}
-	}*/
 }

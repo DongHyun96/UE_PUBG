@@ -92,6 +92,12 @@ void AC_CombatFieldManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+AC_Enemy* AC_CombatFieldManager::GetVersusAIEnemy(uint8 Index) const
+{
+	if (Index >= VersusAIEnemies.Num()) return nullptr;
+	return VersusAIEnemies[Index];
+}
+
 void AC_CombatFieldManager::InitEnemyVsEnemyRound()
 {
 	uint8 Index{};

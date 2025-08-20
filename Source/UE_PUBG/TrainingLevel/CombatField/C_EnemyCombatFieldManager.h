@@ -67,12 +67,32 @@ public:
 	void SetIsPlaying(bool InIsPlaying) { bIsPlaying = InIsPlaying; }
 	bool GetIsPlaying() const { return bIsPlaying; }
 
-	void IncreaseSpectatorType();
-	void DecreaseSpectatorType();
+	ESpectatorType GetCurrentSpectatorType() const { return CurrentSpectatorType; }
+
+	/// <returns> : 현재 관전중인 Enemy가 없다면 return nullptr </returns>
+	class AC_Enemy* GetCurrentSpectatingEnemy() const; 
+
+	void IncreaseSpectatorType()
+	{
+		ESpectatorType PrevType = CurrentSpectatorType;
+		++CurrentSpectatorType;
+		ApplySpectatorChanges(PrevType);
+	}
+	
+	void DecreaseSpectatorType()
+	{
+		ESpectatorType PrevType = CurrentSpectatorType;
+		--CurrentSpectatorType;
+		ApplySpectatorChanges(PrevType);
+	}
 
 private:
-
 	
+	/// <summary>
+	/// CurrentSpectator enum 변경 값에 따른 관전 카메라 적용 
+	/// </summary>
+	/// <param name="PrevSpectatorType"> : 바꾸기 이전 Spectator Type </param>
+	void ApplySpectatorChanges(ESpectatorType PrevSpectatorType);
 
 private:
 
