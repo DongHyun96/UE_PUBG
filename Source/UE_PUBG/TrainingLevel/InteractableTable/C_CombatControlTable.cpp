@@ -4,6 +4,7 @@
 #include "C_CombatControlTable.h"
 
 #include "EnhancedInputComponent.h"
+#include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_InputComponent.h"
 #include "Character/Component/C_PlayerController.h"
@@ -31,6 +32,8 @@ void AC_CombatControlTable::BeginPlay()
 	{
 		EnhancedInputComponent->BindAction(ArrowLeftAction, ETriggerEvent::Started, this, &AC_CombatControlTable::OnArrowLeft);
 		EnhancedInputComponent->BindAction(ArrowRightAction, ETriggerEvent::Started, this, &AC_CombatControlTable::OnArrowRight);
+		EnhancedInputComponent->BindAction(FKeyAction, ETriggerEvent::Started, this, &AC_CombatControlTable::OnFKey);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AC_CombatControlTable::OnLookInput);
 	}
 }
 
@@ -66,16 +69,25 @@ void AC_CombatControlTable::Tick(float DeltaTime)
 	CombatFieldWidget->GetCombatSimulationPanel()->SetRenderOpacity(1.f - TriangleWidget->GetRenderOpacity());
 }
 
-bool AC_CombatControlTable::OnFKeyInteraction()
+bool AC_CombatControlTable::OnPlayerInputComponentFKeyDelegate()
 {
 	if (!bIsFocused) return false;
-
 	AC_CombatFieldManager* CombatFieldManager = GAMESCENE_MANAGER->GetTrainingGroundManager()->GetCombatFieldManager();
 
 	CombatFieldManager->GetEnemyCombatFieldManager()->GetIsPlaying() ?
 		CombatFieldManager->StopEnemyVsEnemyRound() : CombatFieldManager->StartEnemyVsEnemyRound();
 
 	return true;
+}
+
+void AC_CombatControlTable::OnFKey()
+{
+	ESpectatorType CurrentSpectatorType =	GAMESCENE_MANAGER->GetTrainingGroundManager()->
+											GetCombatFieldManager()->GetEnemyCombatFieldManager()->GetCurrentSpectatorType();
+	
+	if (CurrentSpectatorType == ESpectatorType::Player) return;
+	
+	OnPlayerInputComponentFKeyDelegate();
 }
 
 void AC_CombatControlTable::OnArrowLeft()
@@ -88,6 +100,22 @@ void AC_CombatControlTable::OnArrowRight()
 {
 	UC_Util::Print("ArrowRight");
 	GAMESCENE_MANAGER->GetTrainingGroundManager()->GetCombatFieldManager()->GetEnemyCombatFieldManager()->IncreaseSpectatorType();
+}
+
+void AC_CombatControlTable::OnLookInput(const FInputActionValue& Value)
+{
+	UC_EnemyCombatFieldManager* EnemyCombatFieldManager =	GAMESCENE_MANAGER->GetTrainingGroundManager()->
+															GetCombatFieldManager()->GetEnemyCombatFieldManager();
+	
+	// Enemy 관전 카메라 처리에만 쓰일 예정
+	AC_Enemy* CurrentSpectatingEnemy = EnemyCombatFieldManager->GetCurrentSpectatingEnemy();
+	if (!CurrentSpectatingEnemy) return;
+
+	UC_Util::Print("OnLookInput");
+	
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+	CurrentSpectatingEnemy->AddControllerYawInput(LookAxisVector.X);
+	CurrentSpectatingEnemy->AddControllerPitchInput(LookAxisVector.Y);
 }
 
 void AC_CombatControlTable::OnBoxColliderBeginOverlap
@@ -117,7 +145,7 @@ void AC_CombatControlTable::OnBoxColliderBeginOverlap
 		);
 	}
 	
-	Player->GetInputComponent()->CombatControlFKeyInteractionDelegate.BindUObject(this, &AC_CombatControlTable::OnFKeyInteraction);
+	Player->GetInputComponent()->CombatControlFKeyInteractionDelegate.BindUObject(this, &AC_CombatControlTable::OnPlayerInputComponentFKeyDelegate);
 
 	// Spectator 전용키 Input Mapping Context 추가
 	AC_PlayerController* PlayerController = Player->GetController<AC_PlayerController>();
@@ -127,7 +155,7 @@ void AC_CombatControlTable::OnBoxColliderBeginOverlap
 		return;
 	}
 
-	PlayerController->AddIMCToSubsystem(IMC_CombatSpectator, 1);
+	PlayerController->AddIMCToSubsystem(IMC_CombatSpectator, -1);
 }
 
 void AC_CombatControlTable::OnBoxColliderEndOverlap
