@@ -80,7 +80,7 @@ void UC_EnemyCombatFieldManager::ApplySpectatorChanges(ESpectatorType PrevSpecta
 			return;
 		}
 
-		GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(CombatTester, 0.5f);
+		GetWorld()->GetFirstPlayerController()->SetViewTargetWithBlend(CombatTester, 0.25f);
 		CombatTester->GetSpectatorCameraComponent()->Activate();
 		// CombatTester->GetSpectatorCameraComponent()->Deactivate();
 
