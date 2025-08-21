@@ -48,6 +48,7 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 		
 		return EBTNodeResult::Failed;
 	}
+	
 
 	// TargetCharacter가 없는 상황
 	AC_BasicCharacter* TargetCharacter = Cast<AC_BasicCharacter>(BehaviorComponent->GetTargetCharacter());
