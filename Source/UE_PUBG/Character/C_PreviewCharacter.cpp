@@ -19,8 +19,11 @@ AC_PreviewCharacter::AC_PreviewCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+
 	SceneCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCapture"));
 	SceneCapture->SetupAttachment(GetMesh());
+
 
 	WeaponMeshes.Add(EWeaponSlot::MAIN_GUN, PreviewMainWeaponMesh);
 	WeaponMeshes.Add(EWeaponSlot::SUB_GUN, PreviewSubWeaponMesh);
@@ -36,6 +39,7 @@ void AC_PreviewCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	previewCharacterMesh = this->GetMesh();
+
 }
 
 // Called every frame
