@@ -76,14 +76,14 @@ public:
 	{
 		ESpectatorType PrevType = CurrentSpectatorType;
 		++CurrentSpectatorType;
-		ApplySpectatorChanges(PrevType);
+		ApplySpectatorChanges();
 	}
 	
 	void DecreaseSpectatorType()
 	{
 		ESpectatorType PrevType = CurrentSpectatorType;
 		--CurrentSpectatorType;
-		ApplySpectatorChanges(PrevType);
+		ApplySpectatorChanges();
 	}
 
 private:
@@ -91,8 +91,7 @@ private:
 	/// <summary>
 	/// CurrentSpectator enum 변경 값에 따른 관전 카메라 적용 
 	/// </summary>
-	/// <param name="PrevSpectatorType"> : 바꾸기 이전 Spectator Type </param>
-	void ApplySpectatorChanges(ESpectatorType PrevSpectatorType);
+	void ApplySpectatorChanges();
 
 private:
 

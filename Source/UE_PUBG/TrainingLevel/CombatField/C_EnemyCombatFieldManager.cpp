@@ -4,6 +4,7 @@
 #include "C_EnemyCombatFieldManager.h"
 
 #include "C_CombatFieldManager.h"
+#include "C_CombatFieldWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
@@ -38,7 +39,7 @@ AC_Enemy* UC_EnemyCombatFieldManager::GetCurrentSpectatingEnemy() const
 	return OwnerCombatFieldManager->GetVersusAIEnemy(EnemyIndex);
 }
 
-void UC_EnemyCombatFieldManager::ApplySpectatorChanges(ESpectatorType PrevSpectatorType)
+void UC_EnemyCombatFieldManager::ApplySpectatorChanges()
 {
 	switch (CurrentSpectatorType)
 	{
@@ -52,15 +53,8 @@ void UC_EnemyCombatFieldManager::ApplySpectatorChanges(ESpectatorType PrevSpecta
 		// Add Main IMC_Player
 		UInputMappingContext* PlayerMainIMC = GAMESCENE_MANAGER->GetPlayer()->GetInputComponent()->MappingContext;
 		GAMESCENE_MANAGER->GetPlayer()->GetController<AC_PlayerController>()->AddIMCToSubsystem(PlayerMainIMC, 0);
-
-		/*if (PrevSpectatorType == ESpectatorType::Free)
-		{
-			GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
-			{
-				FreeSpectatorPawn->Destroy();
-				FreeSpectatorPawn = nullptr;
-			});
-		}*/
+		
+		OwnerCombatFieldManager->GetCombatFieldWidget()->SetSpectatorInfoVisibility(false);
 	}	
 		return;
 	case ESpectatorType::Enemy1: case ESpectatorType::Enemy2:
@@ -91,12 +85,18 @@ void UC_EnemyCombatFieldManager::ApplySpectatorChanges(ESpectatorType PrevSpecta
 		
 		if (AC_PlayerController* PlayerController = GAMESCENE_MANAGER->GetPlayer()->GetController<AC_PlayerController>())
 			PlayerController->RemoveIMCFromSubsystem(PlayerMainIMC);
+
+		OwnerCombatFieldManager->GetCombatFieldWidget()->SetSpectatorInfoVisibility(true);
+		OwnerCombatFieldManager->GetCombatFieldWidget()->SetSpectatorInfoText(CurrentSpectatorType);
 		
 		return;
 	}
 	case ESpectatorType::Free:
 	{
 		UC_Util::Print("Current Type : Free", FColor::MakeRandomColor());
+
+		OwnerCombatFieldManager->GetCombatFieldWidget()->SetSpectatorInfoVisibility(true);
+		OwnerCombatFieldManager->GetCombatFieldWidget()->SetSpectatorInfoText(CurrentSpectatorType);
 		
 		// Add Main IMC_Player
 		UInputMappingContext* PlayerMainIMC = GAMESCENE_MANAGER->GetPlayer()->GetInputComponent()->MappingContext;
