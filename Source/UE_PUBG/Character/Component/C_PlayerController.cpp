@@ -10,6 +10,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Character/C_Player.h"
 #include "LobbyUI/C_LobbyWidget.h"
+#include "Singleton/C_GameInstance.h"
 #include "Utility/C_Util.h"
 AC_PlayerController::AC_PlayerController()
 {
@@ -113,7 +114,7 @@ void AC_PlayerController::ToggleMainMenu()
 	
 	if (!Cast<AC_Player>(GetPawn())) // Lobby map에서의 예외처리
 	{
-		if (LobbyWidget->GetCurrentLobbyPageLocation() == ELobbyPageLocation::LogIn) return;
+		if (IsValid(LobbyWidget) && LobbyWidget->GetCurrentLobbyPageLocation() == ELobbyPageLocation::LogIn) return;
 	}
 
 	// TODO : Collapsed 는 메인메뉴창을 종료한 상태,

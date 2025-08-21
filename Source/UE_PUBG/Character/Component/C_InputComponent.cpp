@@ -539,6 +539,10 @@ void UC_InputComponent::OnRKey()
 
 void UC_InputComponent::OnMLBStarted()
 {
+	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
+
+	UC_Util::Print("PlayerInputMLB", FColor::MakeRandomColor());
+	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMlb_Started();
@@ -546,6 +550,8 @@ void UC_InputComponent::OnMLBStarted()
 
 void UC_InputComponent::OnMLBOnGoing()
 {
+	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
+	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	//if (Player->GetInvenSystem()->GetIsPanelOpend()) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMlb_OnGoing();
@@ -553,12 +559,16 @@ void UC_InputComponent::OnMLBOnGoing()
 
 void UC_InputComponent::OnMLBCompleted()
 {
+	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
+	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMlb_Completed();
 }
 
 void UC_InputComponent::OnMRBStarted()
 {
+	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
+	
 	if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return;
 
 	if (IsValid(Player->GetEquippedComponent()->GetCurWeapon()))  
@@ -567,12 +577,16 @@ void UC_InputComponent::OnMRBStarted()
 
 void UC_InputComponent::OnMRBOnGoing()
 {
+	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
+	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMrb_OnGoing();
 }
 
 void UC_InputComponent::OnMRBCompleted()
 {
+	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
+	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMrb_Completed();
 }
