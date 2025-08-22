@@ -22,8 +22,9 @@ AC_PreviewCharacter::AC_PreviewCharacter()
 
 
 	SceneCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCapture"));
-	SceneCapture->SetupAttachment(GetMesh());
-
+	
+	//SceneCapture->SetupAttachment(GetMesh());
+	SceneCapture->SetupAttachment(RootComponent);
 
 	WeaponMeshes.Add(EWeaponSlot::MAIN_GUN, PreviewMainWeaponMesh);
 	WeaponMeshes.Add(EWeaponSlot::SUB_GUN, PreviewSubWeaponMesh);

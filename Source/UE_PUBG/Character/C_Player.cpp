@@ -28,6 +28,9 @@
 
 #include "Components/CapsuleComponent.h"
 
+#include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWdiget.h"
+#include "InvenUI/C_CharacterPreviewWidget.h"
+
 #include "Item/C_Item.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
@@ -238,6 +241,14 @@ void AC_Player::BeginPlay()
 			);
 
 			PreviewCharacter->SetOwnerPlayer(this);
+			if (InvenSystem->GetInvenUI()->GetEquipmentPanel()->GetPreviewCharacterWidget())
+			{
+				InvenSystem->GetInvenUI()->GetEquipmentPanel()->GetPreviewCharacterWidget()->SetPreviewCharacter(PreviewCharacter);
+			}
+			else
+			{
+				UC_Util::Print("EquipmentPanel PreviewCharacterWidget Nullptr");
+			}
 		}
 		else
 		{

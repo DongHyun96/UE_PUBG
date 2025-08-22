@@ -12,6 +12,8 @@
 #include "InvenUI/BasicItemSlot/EquipmentSlot/C_VestSlotWidget.h"
 #include "InvenUI/BasicItemSlot/EquipmentSlot/C_BackPackSlotWidget.h"
 
+#include "InvenUI/C_CharacterPreviewWidget.h"
+
 #include "InvenUI/C_InventoryUIWidget.h"
 #include "Character/Component/C_InvenSystem.h"
 
@@ -86,6 +88,7 @@ void UC_EquipmentPanelWdiget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
 
 	VestSlot->SetOwnerPlayer(InOwnerPlayer);
 
+	PreviewCharacterWidget->SetPreviewCharacter(InOwnerPlayer->GetPreviewCharacter());
 }
 
 bool UC_EquipmentPanelWdiget::HandleDrop(AC_Item* DroppedItemBox)

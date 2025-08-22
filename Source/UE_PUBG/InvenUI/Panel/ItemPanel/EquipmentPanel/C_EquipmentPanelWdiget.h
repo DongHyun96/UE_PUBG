@@ -24,6 +24,8 @@ public:
 	class UC_MainGunSlotWidget* GetMainGunSlot() { return MainGunSlot; }
 
 	class UC_SubGunSlotWidget* GetSubGunSlot() { return SubGunSlot; }
+
+	class UC_CharacterPreviewWidget* GetPreviewCharacterWidget() { return PreviewCharacterWidget; }
 protected:
 	bool HandleDrop(class AC_Item* DroppedItemBox) override;
 
@@ -48,6 +50,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UC_VestSlotWidget* VestSlot = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	class UC_CharacterPreviewWidget* PreviewCharacterWidget = nullptr;
 };
 
 

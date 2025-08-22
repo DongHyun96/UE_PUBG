@@ -132,7 +132,7 @@ protected:
 	TMap<EEquipSlot, UStaticMeshComponent*> EquipMeshes{};
 
 	class AC_Player* OwnerPlayer{};
-
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class USceneCaptureComponent2D* SceneCapture{};
 protected:
