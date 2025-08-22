@@ -252,7 +252,10 @@ public:
 
 	// Training ground CombatControlTable Interaction Delegate
 	FInteractableTable_Delegate CombatControlFKeyInteractionDelegate{};
-	
+
+	// Training ground CombatControlTable Mouse inputs Delegate
+	FInteractableTable_Delegate CombatControlMouseInteractionDelegate{};
+
 };
 
 

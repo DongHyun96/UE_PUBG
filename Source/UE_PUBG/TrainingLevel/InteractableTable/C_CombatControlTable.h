@@ -21,7 +21,7 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
-private: // IMC_CombatSpectator Actions
+private: // Player Main IMC Callback 함수에 걸어둔 Delegate 함수들
 	
 	/// <summary>
 	/// <para> Player InputComponent의 F Key Delegate Callback 처리 </para>
@@ -30,17 +30,25 @@ private: // IMC_CombatSpectator Actions
 	/// <returns> : 이 Table이 Focused되어 있고, 제대로 Interaction 처리되었다면 return true </returns>
 	bool OnPlayerInputComponentFKeyDelegate();
 
+	/// <summary>
+	/// <para> MLB, MRB Started, OnGoing, Completed 처리 모두 이 Delegate 함수를 통해 처리될 예정 </para>
+	/// <para> (InputComponent 마우스 Input을 막기 위한 용도라고 보면 됨) </para>
+	/// </summary>
+	bool OnPlayerInputComponentMouseInputDelegate() { return bIsFocused; }
+
+private: // IMC_CombatSpectator Actions
+
 	void OnFKey();
 
 	/// <summary>
-	/// 왼쪽 방향키 Input callback함수 / 관전자 전환에 활용
+	/// 왼쪽 마우스 클릭 Input callback함수 / 관전자 전환에 활용
 	/// </summary>
-	void OnArrowLeft();
+	void OnMLB();
 
 	/// <summary>
-	/// 오른쪽 방향키 Input callback함수 / 관전자 전환에 활용
+	/// 오른쪽 마우스 클릭 Input callback함수 / 관전자 전환에 활용
 	/// </summary>
-	void OnArrowRight();
+	void OnMRB();
 
 	/// <summary>
 	/// 마우스 Input callback 함수
@@ -78,10 +86,10 @@ protected: // Input 처리 관련
 	class UInputMappingContext* IMC_CombatSpectator{};
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	class UInputAction* ArrowLeftAction{};
+	class UInputAction* SpectatorMLBAction{};
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	UInputAction* ArrowRightAction{};
+	UInputAction* SpectatorMRBAction{};
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UInputAction* FKeyAction{};

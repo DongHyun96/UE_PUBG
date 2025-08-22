@@ -33,8 +33,8 @@ void AC_CombatControlTable::BeginPlay()
 	AC_PlayerController* PC = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PC->InputComponent))
 	{
-		EnhancedInputComponent->BindAction(ArrowLeftAction, ETriggerEvent::Started, this, &AC_CombatControlTable::OnArrowLeft);
-		EnhancedInputComponent->BindAction(ArrowRightAction, ETriggerEvent::Started, this, &AC_CombatControlTable::OnArrowRight);
+		EnhancedInputComponent->BindAction(SpectatorMLBAction, ETriggerEvent::Started, this, &AC_CombatControlTable::OnMLB);
+		EnhancedInputComponent->BindAction(SpectatorMRBAction, ETriggerEvent::Started, this, &AC_CombatControlTable::OnMRB);
 		EnhancedInputComponent->BindAction(FKeyAction, ETriggerEvent::Started, this, &AC_CombatControlTable::OnFKey);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AC_CombatControlTable::OnLookInput);
 	}
@@ -95,21 +95,22 @@ void AC_CombatControlTable::OnFKey()
 {
 	ESpectatorType CurrentSpectatorType =	GAMESCENE_MANAGER->GetTrainingGroundManager()->
 											GetCombatFieldManager()->GetEnemyCombatFieldManager()->GetCurrentSpectatorType();
-	
+
+	// Player inputComponent의 F Key와 중복된 input 처리로 인한 두번 처리 방지
 	if (CurrentSpectatorType == ESpectatorType::Player) return;
 	
 	OnPlayerInputComponentFKeyDelegate();
 }
 
-void AC_CombatControlTable::OnArrowLeft()
+void AC_CombatControlTable::OnMLB()
 {
-	UC_Util::Print("ArrowLeft");
+	UC_Util::Print("OnMLB", FColor::MakeRandomColor());
 	GAMESCENE_MANAGER->GetTrainingGroundManager()->GetCombatFieldManager()->GetEnemyCombatFieldManager()->DecreaseSpectatorType();
 }
 
-void AC_CombatControlTable::OnArrowRight()
+void AC_CombatControlTable::OnMRB()
 {
-	UC_Util::Print("ArrowRight");
+	UC_Util::Print("OnMRB", FColor::MakeRandomColor());
 	GAMESCENE_MANAGER->GetTrainingGroundManager()->GetCombatFieldManager()->GetEnemyCombatFieldManager()->IncreaseSpectatorType();
 }
 
@@ -157,8 +158,21 @@ void AC_CombatControlTable::OnBoxColliderBeginOverlap
 			FColor::Red, 10.f
 		);
 	}
-	
+
+	// FKeyDelegate 함수 구독 처리
 	Player->GetInputComponent()->CombatControlFKeyInteractionDelegate.BindUObject(this, &AC_CombatControlTable::OnPlayerInputComponentFKeyDelegate);
+
+	if (Player->GetInputComponent()->CombatControlMouseInteractionDelegate.IsBound())
+	{
+		UC_Util::Print
+		(
+			"From AC_CombatControlTable::OnBoxColliderBeginOverlap : WARNING : MouseInteractionDelegate already bound to other table object!",
+			FColor::Red, 10.f
+		);
+	}
+
+	// MouseInputDelegate 함수 구독 처리
+	Player->GetInputComponent()->CombatControlMouseInteractionDelegate.BindUObject(this, &AC_CombatControlTable::OnPlayerInputComponentMouseInputDelegate);
 
 	// Spectator 전용키 Input Mapping Context 추가
 	AC_PlayerController* PlayerController = Player->GetController<AC_PlayerController>();
@@ -169,6 +183,9 @@ void AC_CombatControlTable::OnBoxColliderBeginOverlap
 	}
 
 	PlayerController->AddIMCToSubsystem(IMC_CombatSpectator, -1);
+	
+	Player->GetInputComponent()->MLBAction->bConsumeInput = false;
+	Player->GetInputComponent()->MRBAction->bConsumeInput = false;
 }
 
 void AC_CombatControlTable::OnBoxColliderEndOverlap
@@ -196,7 +213,21 @@ void AC_CombatControlTable::OnBoxColliderEndOverlap
 		return;
 	}
 
+	// Delegate 구독 해제
 	Player->GetInputComponent()->CombatControlFKeyInteractionDelegate.Unbind();
+
+	if (!Player->GetInputComponent()->CombatControlMouseInteractionDelegate.IsBound())
+	{
+		UC_Util::Print
+		(
+			"From AC_CombatControlTable::OnBoxColliderEndOverlap : WARNING : MouseInteractionDelegate not bound!",
+			FColor::Red, 10.f
+		);
+		return;
+	}
+
+	// Delegate 구독 해제
+	Player->GetInputComponent()->CombatControlMouseInteractionDelegate.Unbind();
 
 	// Spectator 전용키 Input Mapping Context 제거
 	AC_PlayerController* PlayerController = Player->GetController<AC_PlayerController>();
@@ -207,5 +238,8 @@ void AC_CombatControlTable::OnBoxColliderEndOverlap
 	}
 
 	PlayerController->RemoveIMCFromSubsystem(IMC_CombatSpectator);
+
+	Player->GetInputComponent()->MLBAction->bConsumeInput = true;
+	Player->GetInputComponent()->MRBAction->bConsumeInput = true;
 }
 
