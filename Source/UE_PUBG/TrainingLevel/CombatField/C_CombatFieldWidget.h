@@ -49,6 +49,11 @@ private:
 protected:
 
 	UPROPERTY(meta=(BindWidget))
+	class UC_PlayerCombatFieldWidget* PlayerCombatFieldWidget{};
+
+protected:
+
+	UPROPERTY(meta=(BindWidget))
 	UCanvasPanel* CombatSimulationPanel{};
 
 	UPROPERTY(meta=(BindWidget))
