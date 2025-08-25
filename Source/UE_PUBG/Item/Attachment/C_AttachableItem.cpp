@@ -149,9 +149,7 @@ bool AC_AttachableItem::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InSt
 
 bool AC_AttachableItem::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
-
-	GetOwnerGun()->SetAttachableItemSlot(this->Name, nullptr);
+	if (IsValid(OwnerGun)) OwnerGun->SetAttachableItemSlot(this->Name, nullptr);
 
 	SetOwnerGun(nullptr);
 
