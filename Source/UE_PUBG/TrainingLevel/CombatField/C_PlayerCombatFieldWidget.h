@@ -19,4 +19,14 @@ public:
     
 protected:
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+public:
+
+	void ToggleStartFKeyInstruction(bool Visible);
+
+protected:
+
+	UPROPERTY(meta=(BindWidget))
+	class UHorizontalBox* StartFKeyInstructionBox{};
+	
 };

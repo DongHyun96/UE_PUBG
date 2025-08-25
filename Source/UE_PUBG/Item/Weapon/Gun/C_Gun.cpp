@@ -47,7 +47,7 @@
 #include "Singleton/C_GameSceneManager.h"
 #include "Singleton/C_GameInstance.h"
 
-#include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWdiget.h"
+#include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_GunSlotWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_MainGunSlotWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_SubGunSlotWidget.h"

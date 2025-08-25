@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "InvenUI/Panel/C_BasicPanelWidget.h"
-#include "C_EquipmentPanelWdiget.generated.h"
+#include "C_EquipmentPanelWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE_PUBG_API UC_EquipmentPanelWdiget : public UC_BasicPanelWidget
+class UE_PUBG_API UC_EquipmentPanelWidget : public UC_BasicPanelWidget
 {
 	GENERATED_BODY()
 public:

@@ -35,6 +35,8 @@ public:
 
 	class UCanvasPanel* GetCombatSimulationPanel() const { return CombatSimulationPanel; }
 
+	class UC_PlayerCombatFieldWidget* GetPlayerCombatFieldWidget() const {return PlayerCombatFieldWidget; }
+
 private:
 	
 	/// <summary>

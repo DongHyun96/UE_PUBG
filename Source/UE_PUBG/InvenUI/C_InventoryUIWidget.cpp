@@ -11,7 +11,7 @@
 #include "InvenUI/BasicItemSlot/WeaponSlot/C_MeleeWeaponSlotWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/C_ThrowableWeaponSlotWidget.h"
 
-#include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWdiget.h"
+#include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWidget.h"
 #include "InvenUI/Panel/DivideItemPanel/C_BasicDivideItemPanelWidget.h"
 
 #include "Components/ProgressBar.h"

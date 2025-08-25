@@ -55,9 +55,13 @@ public:
 
 	void SetOwnerEnemy(class AC_Enemy* InOwnerEnemy) { OwnerEnemy = InOwnerEnemy; }
 
-	TSubclassOf<class AC_Helmet> GetHelmetClass(EEquipableItemLevel InHelmetLevel) { return HelmetClasses[InHelmetLevel]; }
-	TSubclassOf<class AC_ConsumableItem> GetConsumableItemClass(EConsumableItemType InConsumableItemType) { return ConsumableItemClasses[InConsumableItemType]; }
-	TSubclassOf<class AC_ThrowingWeapon> GetThrowableClass(EThrowableType InThrowableType) { return ThrowableClasses[InThrowableType]; }
+	TSubclassOf<class AC_Weapon>		 GetWeaponClass(EWeaponSlot InWeaponSlot)						  const { return WeaponClasses[InWeaponSlot]; }
+	TSubclassOf<class AC_ThrowingWeapon> GetThrowableClass(EThrowableType InThrowableType)				  const { return ThrowableClasses[InThrowableType]; }
+	TSubclassOf<class AC_Vest>			 GetVestClass()													  const { return VestClass; }
+	TSubclassOf<class AC_Helmet>		 GetHelmetClass(EEquipableItemLevel InHelmetLevel)				  const { return HelmetClasses[InHelmetLevel]; }
+	TSubclassOf<class AC_BackPack>		 GetBackPackClass(EEquipableItemLevel InBackPackLevel)			  const { return BackPackClasses[InBackPackLevel]; }
+	TSubclassOf<class AC_ConsumableItem> GetConsumableItemClass(EConsumableItemType InConsumableItemType) const { return ConsumableItemClasses[InConsumableItemType]; }
+	TSubclassOf<class AC_Item_Bullet>	 GetBulletClass(EBulletType InBulletType)						  const { return BulletClasses[InBulletType]; }
 
 private:
 
@@ -66,7 +70,7 @@ private:
 protected: // Weapon 관련 Classes
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TMap<EWeaponSlot, TSubclassOf<class AC_Weapon>> WeaponClasses{};
+	TMap<EWeaponSlot, TSubclassOf<AC_Weapon>> WeaponClasses{};
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EThrowableType, TSubclassOf<AC_ThrowingWeapon>> ThrowableClasses{};

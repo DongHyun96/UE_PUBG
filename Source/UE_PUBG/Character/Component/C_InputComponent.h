@@ -250,7 +250,7 @@ public:
 	FInteractableTable_Delegate JumpTrainingTableNum1KeyInteractionDelegate{};
 	FInteractableTable_Delegate JumpTrainingTableNum2KeyInteractionDelegate{};
 
-	// Training ground CombatControlTable Interaction Delegate
+	// Training ground CombatControlTable Interaction Delegate & Player Combat field start Interaction Delegate
 	FInteractableTable_Delegate CombatControlFKeyInteractionDelegate{};
 
 	// Training ground CombatControlTable Mouse inputs Delegate

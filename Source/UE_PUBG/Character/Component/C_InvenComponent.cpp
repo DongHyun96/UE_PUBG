@@ -371,6 +371,29 @@ void UC_InvenComponent::AddInvenCurVolume(float ItemVolume)
 		Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
 }
 
+void UC_InvenComponent::ClearInventory()
+{
+	for (TPair<FName, TArray<AC_Item*>>& Pair : MyItems)
+	{
+		for (AC_Item* Item : Pair.Value)
+		{
+			Item->MoveToAround(OwnerCharacter, Item->GetItemCurStack());
+			Item->DestroyItem();
+		}
+
+		Pair.Value.Empty();
+	}
+
+	// 일괄적으로 Inven UI 업데이트 처리
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick([Player]()
+		{
+			Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+		});
+	}
+}
+
 float UC_InvenComponent::GetVestVolume()
 {
 	if (!EquipmentItems[EEquipSlot::VEST]) return 0.0f;

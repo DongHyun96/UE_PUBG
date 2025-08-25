@@ -18,6 +18,8 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_AmmoWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/C_ThrowableWeaponSlotWidget.h"
+#include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWidget.h"
+#include "Item/Attachment/C_AttachableItem.h"
 #include "Singleton/C_GameSceneManager.h"
 
 #include "Utility/C_Util.h"
@@ -554,6 +556,52 @@ void UC_EquippedComponent::AddAttachedPartsActorsToIgnoreActors(FCollisionQueryP
 
         Weapon->GetAttachedActors(AttachedActors);
         CollisionParams.AddIgnoredActors(AttachedActors);
+    }
+}
+
+void UC_EquippedComponent::ClearEquippedWeapons()
+{
+    for (TPair<EWeaponSlot, AC_Weapon*>& Pair : Weapons)
+    {
+        AC_Weapon* Weapon = Pair.Value;
+        if (!Weapon) continue;
+
+        if (AC_Gun* Gun = Cast<AC_Gun>(Weapon))
+        {
+            // Gun인 경우, 부착물 또한 일괄 삭제 처리를 해주어야 함
+            if (AC_AttachableItem* Grip = Gun->GetAttachableItem()[EPartsName::GRIP])
+            {
+                Grip->MoveToAround(OwnerCharacter, Grip->GetItemCurStack());
+                Grip->DestroyItem();
+            }
+
+            if (AC_AttachableItem* Muzzle = Gun->GetAttachableItem()[EPartsName::MUZZLE])
+            {
+                Muzzle->MoveToAround(OwnerCharacter, Muzzle->GetItemCurStack());
+                Muzzle->DestroyItem();
+            }
+
+            if (AC_AttachableItem* Scope = Gun->GetAttachableItem()[EPartsName::SCOPE])
+            {
+                Scope->MoveToAround(OwnerCharacter, Scope->GetItemCurStack());
+                Scope->DestroyItem();
+            }
+
+            if (Gun->GetMagazineGameObject()) Gun->GetMagazineGameObject()->DestroyItem();
+        }
+
+        Weapon->MoveToAround(OwnerCharacter, Pair.Value->GetItemCurStack());
+        Weapon->DestroyItem();
+        
+        Pair.Value = nullptr;
+    }
+
+    if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+    {
+        GetWorld()->GetTimerManager().SetTimerForNextTick([Player]()
+        {
+            Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+        });
     }
 }
 

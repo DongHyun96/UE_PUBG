@@ -56,15 +56,14 @@ public:
 	/// </summary>
 	void StopEnemyVsEnemyRound();
 	
-protected:
+private:
 	
 	/// <summary>
-	/// 죽은 Enemy 소생시키기 
+	/// 죽은 Character 소생시도
 	/// </summary>
-	/// <param name="Enemy"> : 소생시키려 하는 Enemy </param>
-	/// <returns> : 아직 살아있는 상태라면(MainState != Dead) return false </returns>
-	bool TryReviveEnemy(class AC_Enemy* Enemy);
-
+	/// <param name="Character"> : 소생시킬 Character </param>
+	/// <returns> : 살아있는 상태라면 return false </returns>
+	bool TryReviveCharacter(class AC_BasicCharacter* Character);
 
 protected:
 
@@ -85,7 +84,7 @@ private: // Spawn(Respawn) Transform 관련
 	TArray<FTransform> EnemyVsEnemySpawnTransform{};
 	TArray<FTransform> PlayerVsEnemySpawnTransform{};
 
-	FTransform EnemyMeshInitialRelativeTransform{};
+	FTransform CharacterMeshInitialRelativeTransform{};
 
 protected:
 
