@@ -12,7 +12,7 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, TArray<AC_Item
     if (!IsValid(ItemListView1)) return;
 
     // 아이템 리스트 초기화
-    ItemListView1->ClearListItems();
+    //ItemListView1->ClearListItems();
     if (MyItemMap.Num() == 0) return;
 
     // 추가할 아이템 목록
@@ -70,7 +70,7 @@ void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& Aroun
 {
     if (!IsValid(ItemListView1)) return;
 
-    ItemListView1->ClearListItems(); // 기존 아이템 삭제
+    //ItemListView1->ClearListItems(); // 기존 아이템 삭제
     //ItemListView1->SetListItems
     if (!(AroundItemList.Num() > 0)) return;
 
@@ -98,6 +98,3 @@ void UC_BasicItemPanelWidget::RemoveItemInList(AC_Item* InItem)
 {
     ItemListView1->RemoveItem(InItem);
 }
-
-
-

@@ -16,7 +16,7 @@ class UE_PUBG_API UC_BasicItemPanelWidget : public UC_BasicPanelWidget
 	GENERATED_BODY()
 	
 public:
-	
+
     /// <summary>
     /// InventoryItemList의 Update함수
     /// </summary>

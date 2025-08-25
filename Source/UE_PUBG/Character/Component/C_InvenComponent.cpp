@@ -204,8 +204,22 @@ bool UC_InvenComponent::HandleItemStackOverflow(AC_Item* InItem)
 
 	AC_Item* LastItem = ItemArray.Last(); // 마지막 아이템 가져오기
 
+	if (!LastItem) return false;
+
 	int32 MaxStack = LastItem->GetItemDatas()->ItemMaxStack;
 	int32 NewStack = LastItem->GetItemCurStack() + InItem->GetItemCurStack();
+
+	if (LastItem->GetItemDatas()->ItemType == EItemTypes::ATTACHMENT)
+	{
+		AC_Item* NewItem = InItem->SpawnItem(OwnerCharacter);
+		NewItem->SetOwnerCharacter(OwnerCharacter);
+		NewItem->SetItemPlace(EItemPlace::INVEN);
+		NewItem->SetActorHiddenInGame(true);
+		NewItem->SetActorEnableCollision(false);
+		ItemArray.Add(InItem);
+		return false;
+	}// 부착물은 스택 개념이 없으므로 그냥 추가
+	//else if (MaxStack <= 0) return false; // 최대 스택이 0 이하인 경우 처리하지 않음
 
 	// 최대 스택 초과 여부 확인
 	if (NewStack > MaxStack)
