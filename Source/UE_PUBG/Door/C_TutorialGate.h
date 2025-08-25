@@ -20,6 +20,10 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+	UShapeComponent* GetGateOpeningBoxComponent() const { return GateOpeningBox; }
+
+public:
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void CloseGate();
 
@@ -44,6 +48,20 @@ private:
 		const FHitResult&		SweepResult
 	);
 
+	/// <summary>
+	/// <para> Tutorial에서 사용되는 Gate에서는 사용되지 않을 예정 </para>
+	/// <para> Player vs Enemy Field Gate에서 사용될 함수 </para>
+	/// </summary>
+	UFUNCTION()
+	void OnGateOpeningBoxEndOverlap
+	(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor*				 OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32				 OtherBodyIndex
+	);
+
+
 
 private:
 
@@ -55,5 +73,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bOpenOnStart{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bUseOpeningBoxEndOverlapToCloseGate{};	
 	
 };

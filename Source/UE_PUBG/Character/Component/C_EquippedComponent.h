@@ -128,6 +128,13 @@ public:
 	/// <param name="CollisionParams"> : Param </param>
 	void AddAttachedPartsActorsToIgnoreActors(FCollisionQueryParams& CollisionParams);
 
+public:
+	
+	/// <summary>
+	/// EquippedComponent에 장착된 모든 무기들 일괄 삭제 처리하기 
+	/// </summary>
+	void ClearEquippedWeapons();
+
 protected:
 
 	AC_BasicCharacter* OwnerCharacter{};

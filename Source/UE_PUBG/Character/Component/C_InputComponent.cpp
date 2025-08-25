@@ -314,6 +314,10 @@ void UC_InputComponent::Crawl()
 
 void UC_InputComponent::OnJump()
 {
+	// For Testing
+	Player->GetInvenComponent()->ClearInventory();
+	Player->GetEquippedComponent()->ClearEquippedWeapons();
+	
 	if (!Player->GetCanMove())									return;
 	if (Player->GetIsJumping() || PlayerMovement->IsFalling())	return;
 	if (Player->GetSwimmingComponent()->IsSwimming())			return;

@@ -260,6 +260,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EBulletType GetCurBulletType() const { return GunDataRef->CurGunBulletType; }
 
+	AC_AttachableItem* GetMagazineGameObject() const { return Magazine; }
+	
 	/// <summary>
 	/// const GunData*를 반환해주는 함수.
 	/// </summary>

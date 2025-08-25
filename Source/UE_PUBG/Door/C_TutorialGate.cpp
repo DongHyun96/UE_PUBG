@@ -22,7 +22,11 @@ void AC_TutorialGate::BeginPlay()
 	GateOpeningBox = Cast<UBoxComponent>(GetDefaultSubobjectByName("OpeningCollisionBox"));
 
 	if (!GateOpeningBox) UC_Util::Print("From AC_TutorialGate::BeginPlay : Cannot find OpeningCollisionBox!", FColor::Red, 10.f);
-	else				 GateOpeningBox->OnComponentBeginOverlap.AddDynamic(this, &AC_TutorialGate::OnGateOpeningBoxBeginOverlap);
+	else
+	{
+		GateOpeningBox->OnComponentBeginOverlap.AddDynamic(this, &AC_TutorialGate::OnGateOpeningBoxBeginOverlap);
+		GateOpeningBox->OnComponentEndOverlap.AddDynamic(this, &AC_TutorialGate::OnGateOpeningBoxEndOverlap);
+	}
 
 	TriangleWidgetComponent = Cast<UWidgetComponent>(GetDefaultSubobjectByName("TriangleWidget"));
 
@@ -67,4 +71,18 @@ void AC_TutorialGate::OnGateOpeningBoxBeginOverlap
 	
 	// Player entered
 	OpenGate();
+}
+
+void AC_TutorialGate::OnGateOpeningBoxEndOverlap
+(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor*				 OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32				 OtherBodyIndex
+)
+{
+	if (!Cast<AC_Player>(OtherActor)) return;
+	if (!bUseOpeningBoxEndOverlapToCloseGate) return;
+	
+	CloseGate();
 }

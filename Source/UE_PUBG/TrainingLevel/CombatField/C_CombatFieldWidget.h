@@ -35,6 +35,8 @@ public:
 
 	class UCanvasPanel* GetCombatSimulationPanel() const { return CombatSimulationPanel; }
 
+	class UC_PlayerCombatFieldWidget* GetPlayerCombatFieldWidget() const {return PlayerCombatFieldWidget; }
+
 private:
 	
 	/// <summary>
@@ -45,6 +47,11 @@ private:
 private:
 
 	AC_CombatFieldManager* OwnerCombatFieldManager{};
+
+protected:
+
+	UPROPERTY(meta=(BindWidget))
+	class UC_PlayerCombatFieldWidget* PlayerCombatFieldWidget{};
 
 protected:
 

@@ -81,7 +81,7 @@ public:
 
 	class UC_BasicDivideItemPanelWidget* GetDivideItemInventoryDropWidget() { return DivideItemInventoryDropWidget; }
 
-	class UC_EquipmentPanelWdiget* GetEquipmentPanel() { return EquipmentPanel; }
+	class UC_EquipmentPanelWidget* GetEquipmentPanel() { return EquipmentPanel; }
 
 protected:
 
@@ -95,7 +95,7 @@ protected:
 	class UC_InventoryItemPanelWidget* InventoryPanel = nullptr; // 나의 아이템 리스트 위젯
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-	class UC_EquipmentPanelWdiget* EquipmentPanel = nullptr;
+	class UC_EquipmentPanelWidget* EquipmentPanel = nullptr;
 
 	/// <summary>
 	/// 현재 사용중인 용량(아이템의 Volume의 합)

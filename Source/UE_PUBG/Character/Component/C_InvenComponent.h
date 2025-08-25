@@ -126,6 +126,13 @@ public:
 	// 현재 인벤의 용량에 용량을 추가하는 함수.
 	void AddInvenCurVolume(float ItemVolume);
 
+public:
+	
+	/// <summary>
+	/// <para> 인벤토리 내의 아이템 모두 일괄 삭제처리 </para>  // TODO : 추후 저장 및 다시 원상복구 처리할 수 있는 방안이 나오면 그렇게 할 것
+	/// <para> TrainingGround Player CombatField 시작 시 호출될 예정 </para>
+	/// </summary>
+	void ClearInventory();
 	
 public: //Getter and Seter
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; } 
@@ -195,7 +202,7 @@ protected:
 	TMap<EEquipSlot, AC_EquipableItem*> EquipmentItems = 
 	{
 	{EEquipSlot::HELMET, nullptr},
-	{EEquipSlot::BACKPACK, nullptr},//이건 현재 안쓰고 있음.
+	{EEquipSlot::BACKPACK, nullptr},
 	{EEquipSlot::VEST, nullptr}
 	};
 

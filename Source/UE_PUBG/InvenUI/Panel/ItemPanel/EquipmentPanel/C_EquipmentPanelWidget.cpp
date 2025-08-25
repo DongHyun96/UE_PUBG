@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWdiget.h"
+#include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_MainGunSlotWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_SubGunSlotWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/C_MeleeWeaponSlotWidget.h"
@@ -25,7 +25,7 @@
 
 #include "Utility/C_Util.h"
 
-bool UC_EquipmentPanelWdiget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+bool UC_EquipmentPanelWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	// 자식 위젯이 드롭을 처리하도록 우선 호출
 	if (SubGunSlot && SubGunSlot->IsHovered())
@@ -45,7 +45,7 @@ bool UC_EquipmentPanelWdiget::NativeOnDrop(const FGeometry& InGeometry, const FD
 	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation); // 부모 위젯에서 드롭 처리 완료
 }
 
-void UC_EquipmentPanelWdiget::UpdateWidget()
+void UC_EquipmentPanelWidget::UpdateWidget()
 {
 	if (MainGunSlot)
 		MainGunSlot->UpdateWidget();
@@ -70,7 +70,7 @@ void UC_EquipmentPanelWdiget::UpdateWidget()
 
 }
 
-void UC_EquipmentPanelWdiget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
+void UC_EquipmentPanelWidget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
 {
 	OwnerPlayer = InOwnerPlayer;
 
@@ -91,7 +91,7 @@ void UC_EquipmentPanelWdiget::SetOwnerPlayer(AC_Player* InOwnerPlayer)
 	PreviewCharacterWidget->SetPreviewCharacter(InOwnerPlayer->GetPreviewCharacter());
 }
 
-bool UC_EquipmentPanelWdiget::HandleDrop(AC_Item* DroppedItemBox)
+bool UC_EquipmentPanelWidget::HandleDrop(AC_Item* DroppedItemBox)
 {
 	UC_Util::Print("MoveToSlot");
 	if (DroppedItemBox->MoveToSlot(OwnerPlayer,DroppedItemBox->GetItemCurStack()))

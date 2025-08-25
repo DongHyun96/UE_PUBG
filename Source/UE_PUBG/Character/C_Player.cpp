@@ -28,7 +28,7 @@
 
 #include "Components/CapsuleComponent.h"
 
-#include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWdiget.h"
+#include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWidget.h"
 #include "InvenUI/C_CharacterPreviewWidget.h"
 
 #include "Item/C_Item.h"
