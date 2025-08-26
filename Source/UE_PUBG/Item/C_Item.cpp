@@ -382,7 +382,7 @@ AC_Item* AC_Item::DividItemSpawn(int32 DivideNum, AC_BasicCharacter* Character, 
 bool AC_Item::DestroyItem(bool bNetForce, bool bShouldModifyLevel)
 {
 	// 아이템 매니저에서 아이템 제거.
-	GAMESCENE_MANAGER->DeleteSpawnedItemToContainer(this);
+	GAMESCENE_MANAGER->DeleteSpawnedItemFromContainer(this);
 
 	// 아이템 객체 제거.
 	return this->Destroy(bNetForce, bShouldModifyLevel);

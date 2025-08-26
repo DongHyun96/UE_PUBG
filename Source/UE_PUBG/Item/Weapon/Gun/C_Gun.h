@@ -404,7 +404,9 @@ public:
 	/// 인벤에서 사용하는 부착물 TMap을 반환한다.(Mesh가 아님)
 	/// </summary>
 	/// <returns></returns>
-	TMap<EPartsName, class AC_AttachableItem*> GetAttachableItem() { return AttachableItem; }
+	TMap<EPartsName, class AC_AttachableItem*> GetAttachableItem() const { return AttachableItem; }
+
+	TMap<EPartsName, AC_AttachableItem*>& GetAttachableItemReference() { return AttachableItem; }
 
 public:
 	TMap<EAttachmentNames, FName> GetAttachmentPartsHolsterNames() { return AttachmentPartsHolsterNames; }

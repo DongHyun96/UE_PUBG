@@ -387,25 +387,33 @@ void UC_InvenComponent::AddInvenCurVolume(float ItemVolume)
 
 void UC_InvenComponent::ClearInventory()
 {
+	// Clear MyItems
 	for (TPair<FName, TArray<AC_Item*>>& Pair : MyItems)
 	{
 		for (AC_Item* Item : Pair.Value)
 		{
-			Item->MoveToAround(OwnerCharacter, Item->GetItemCurStack());
-			Item->DestroyItem();
+			// Item->MoveToAround(OwnerCharacter, Item->GetItemCurStack());
+			Item->Destroy();
 		}
 
 		Pair.Value.Empty();
 	}
 
+	// Clear EquipmentItems
+	for (TPair<EEquipSlot, AC_EquipableItem*>& Pair : EquipmentItems)
+	{
+		AC_EquipableItem* Item = Pair.Value;
+		if (!Item) continue;
+		
+		// Item->MoveToAround(OwnerCharacter, Item->GetItemCurStack());
+		Item->Destroy();
+		
+		Pair.Value = nullptr;
+	}
+
 	// 일괄적으로 Inven UI 업데이트 처리
 	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
-	{
-		GetWorld()->GetTimerManager().SetTimerForNextTick([Player]()
-		{
-			Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
-		});
-	}
+		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 }
 
 float UC_InvenComponent::GetVestVolume()

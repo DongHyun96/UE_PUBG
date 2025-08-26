@@ -180,7 +180,7 @@ public:
 	//}
 
 	UFUNCTION(BlueprintCallable)
-	void DeleteSpawnedItemToContainer(AC_Item* InItem);
+	void DeleteSpawnedItemFromContainer(AC_Item* InItem);
 
 	void ToggleItemsHiddenInGame(bool InHiddenInGame);
 

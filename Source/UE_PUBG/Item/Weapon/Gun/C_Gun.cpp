@@ -640,8 +640,7 @@ bool AC_Gun::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 		
 		if (LeftBulletCount == 0) return true;
 		
-		AC_Item* LeftBulletItem = 
-			GAMESCENE_MANAGER->GetItemManager()->SpawnItem(GetCurrentBulletTypeName(), GetGroundLocation(Character), LeftBulletCount);
+		AC_Item* LeftBulletItem = GAMESCENE_MANAGER->GetItemManager()->SpawnItem(GetCurrentBulletTypeName(), GetGroundLocation(Character), LeftBulletCount);
 		if (!LeftBulletItem)
 		{
 			UC_Util::Print("LeftBulletItem is nullptr");

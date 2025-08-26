@@ -568,41 +568,30 @@ void UC_EquippedComponent::ClearEquippedWeapons()
 
         if (AC_Gun* Gun = Cast<AC_Gun>(Weapon))
         {
-            // Gun인 경우, 부착물 또한 일괄 삭제 처리를 해주어야 함
-            if (AC_AttachableItem* Grip = Gun->GetAttachableItem()[EPartsName::GRIP])
+            // Gun인 경우, 부착물 또한 일괄 삭제 처리를 해주어야 함 & 탄창 탄수 비워두기
+            Gun->SetCurMagazineBulletCount(0);
+            
+            for (TPair<EPartsName, AC_AttachableItem*>& AttachablePair : Gun->GetAttachableItemReference())
             {
-                Grip->MoveToAround(OwnerCharacter, Grip->GetItemCurStack());
-                Grip->DestroyItem();
+                AC_AttachableItem* Item = AttachablePair.Value;
+                if (!IsValid(Item)) continue;
+
+                Item->MoveToAround(OwnerCharacter, Item->GetItemCurStack());
+                Item->Destroy();
+                AttachablePair.Value = nullptr;
             }
 
-            if (AC_AttachableItem* Muzzle = Gun->GetAttachableItem()[EPartsName::MUZZLE])
-            {
-                Muzzle->MoveToAround(OwnerCharacter, Muzzle->GetItemCurStack());
-                Muzzle->DestroyItem();
-            }
-
-            if (AC_AttachableItem* Scope = Gun->GetAttachableItem()[EPartsName::SCOPE])
-            {
-                Scope->MoveToAround(OwnerCharacter, Scope->GetItemCurStack());
-                Scope->DestroyItem();
-            }
-
-            if (Gun->GetMagazineGameObject()) Gun->GetMagazineGameObject()->DestroyItem();
+            if (Gun->GetMagazineGameObject()) Gun->GetMagazineGameObject()->Destroy();
         }
 
         Weapon->MoveToAround(OwnerCharacter, Pair.Value->GetItemCurStack());
-        Weapon->DestroyItem();
+        Weapon->Destroy();
         
         Pair.Value = nullptr;
     }
 
     if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
-    {
-        GetWorld()->GetTimerManager().SetTimerForNextTick([Player]()
-        {
-            Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
-        });
-    }
+        Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 }
 
 void UC_EquippedComponent::SetMainGunOrSubGun(EWeaponSlot InSlot)

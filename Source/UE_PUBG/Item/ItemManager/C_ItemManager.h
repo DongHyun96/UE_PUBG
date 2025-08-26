@@ -51,7 +51,7 @@ public:
     }
 
     UFUNCTION(BlueprintCallable)
-	void DeleteSpawnedItemToContainer(AC_Item* InItem)
+	void DeleteSpawnedItemFromContainer(AC_Item* InItem)
 	{
 		if (!InItem) return;
 		ItemContainer.Remove(InItem);

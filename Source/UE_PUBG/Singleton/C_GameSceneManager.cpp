@@ -336,11 +336,11 @@ void UC_GameSceneManager::AddSpawnedItemToContainer(AC_Item* InItem)
 	ItemManager->AddSpawnedItemToContainer(InItem);
 }
 
-void UC_GameSceneManager::DeleteSpawnedItemToContainer(AC_Item* InItem)
+void UC_GameSceneManager::DeleteSpawnedItemFromContainer(AC_Item* InItem)
 {
 	if (!ItemManager) return;
 	if (!InItem) return;
-	ItemManager->DeleteSpawnedItemToContainer(InItem);
+	ItemManager->DeleteSpawnedItemFromContainer(InItem);
 }
 
 void UC_GameSceneManager::ToggleItemsHiddenInGame(bool InHiddenInGame)

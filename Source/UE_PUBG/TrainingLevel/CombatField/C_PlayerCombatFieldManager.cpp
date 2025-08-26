@@ -178,22 +178,14 @@ void UC_PlayerCombatFieldManager::InitPlayerCombatItems()
 		
 		if (AC_Gun* CurrentGun = Cast<AC_Gun>(EquippedComponent->GetWeapons()[GunWeaponSlot]))
 		{
-			if (AC_AttachableItem* Grip = CurrentGun->GetAttachableItem()[EPartsName::GRIP])
+			for (TPair<EPartsName, AC_AttachableItem*>& Pair : CurrentGun->GetAttachableItemReference())
 			{
-				Grip->MoveToAround(Player, Grip->GetItemCurStack());
-				Grip->DestroyItem();
-			}
+				AC_AttachableItem* Item = Pair.Value;
+				if (!IsValid(Item)) continue;
 
-			if (AC_AttachableItem* Muzzle = CurrentGun->GetAttachableItem()[EPartsName::MUZZLE])
-			{
-				Muzzle->MoveToAround(Player, Muzzle->GetItemCurStack());
-				Muzzle->DestroyItem();
-			}
-
-			if (AC_AttachableItem* Scope = CurrentGun->GetAttachableItem()[EPartsName::SCOPE])
-			{
-				Scope->MoveToAround(Player, Scope->GetItemCurStack());
-				Scope->DestroyItem();
+				Item->MoveToAround(Player, Item->GetItemCurStack());
+				Item->DestroyItem();
+				Pair.Value = nullptr;
 			}
 		
 			CurrentGun->MoveToAround(Player, CurrentGun->GetItemCurStack());
