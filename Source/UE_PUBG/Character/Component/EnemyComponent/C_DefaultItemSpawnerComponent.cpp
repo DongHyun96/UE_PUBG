@@ -49,6 +49,12 @@ void UC_DefaultItemSpawnerComponent::TickComponent(float DeltaTime, ELevelTick T
 void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 {
 	switch (OwnerEnemy->GetBehaviorType()) { case EEnemyBehaviorType::MovementTest: case EEnemyBehaviorType::SkyDivingTest: return; }
+
+	if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::CombatTest)
+	{
+		SpawnDefaultWeaponsAndItemsForCombatFieldCharacter(OwnerEnemy);
+		return;
+	}
 	
 	FActorSpawnParameters Param{};
 	Param.Owner = OwnerEnemy;
@@ -57,6 +63,16 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 	SpawnWeapons(Param);
 	SpawnConsumableItems(Param);
 	SpawnBullets(Param);
+}
+
+void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItemsForCombatFieldCharacter(AC_BasicCharacter* CombatCharacter)
+{
+	FActorSpawnParameters Param{};
+	Param.Owner = CombatCharacter;
+
+	SpawnCombatCharacterWeapons(CombatCharacter, Param);
+	SpawnCombatCharacterEquipableItems(CombatCharacter, Param);
+	SpawnCombatCharacterConsumableItems(CombatCharacter, Param);
 }
 
 void UC_DefaultItemSpawnerComponent::ToggleSpawnedItemsHiddenInGame(bool InHiddenInGame)
@@ -104,24 +120,20 @@ void UC_DefaultItemSpawnerComponent::SpawnWeapons(const FActorSpawnParameters& P
 
 	// Throwable Weapon setting 하기
 
-	// CombatTestType의 경우, 갯수 1개로 setting
-	bool bIsCombatTestType = OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::CombatTest; 
-
 	// Grenade 1~3개
 	AC_ThrowingWeapon* Grenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::GRENADE], Param);
-	Grenade->SetItemStack(bIsCombatTestType ? 1 : FMath::RandRange(1, 2));
+	Grenade->SetItemStack(FMath::RandRange(1, 2));
 	Grenade->MoveToInven(OwnerEnemy, Grenade->GetItemCurStack());
 
 	// Smoke Grenade 1~2개
 	AC_ThrowingWeapon* SmokeGrenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::SMOKE], Param);
-	SmokeGrenade->SetItemStack(bIsCombatTestType ? 1 : FMath::RandRange(1, 2));
+	SmokeGrenade->SetItemStack(FMath::RandRange(1, 2));
 	SmokeGrenade->MoveToInven(OwnerEnemy, SmokeGrenade->GetItemCurStack());
 
 	// FlashBang 1~2개
 	AC_ThrowingWeapon* FlashBang = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::FLASH_BANG], Param);
-	FlashBang->SetItemStack(bIsCombatTestType ? 1 : FMath::RandRange(1, 2));
+	FlashBang->SetItemStack(FMath::RandRange(1, 2));
 	FlashBang->MoveToInven(OwnerEnemy, FlashBang->GetItemCurStack());
-
 }
 
 void UC_DefaultItemSpawnerComponent::SpawnEquipableItems(const FActorSpawnParameters& Param)
@@ -167,20 +179,7 @@ void UC_DefaultItemSpawnerComponent::SpawnEquipableItems(const FActorSpawnParame
 	{
 		AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[EEquipableItemLevel::LV3], Param);
 		BackPack->MoveToSlot(OwnerEnemy, BackPack->GetItemCurStack());
-	}
 		return;
-	case EEnemyBehaviorType::CombatTest: // 모두 3 Level Equipable로 장착
-	{
-		AC_Vest* Vest = GetWorld()->SpawnActor<AC_Vest>(VestClass, Param);
-		Vest->SetItemLevel(EEquipableItemLevel::LV3);
-		Vest->InitVestDatasAndStaticMesh();
-		Vest->MoveToSlot(OwnerEnemy, Vest->GetItemCurStack());
-
-		AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[EEquipableItemLevel::LV3], Param);
-		BackPack->MoveToSlot(OwnerEnemy, BackPack->GetItemCurStack());
-
-		AC_Helmet* Helmet = GetWorld()->SpawnActor<AC_Helmet>(HelmetClasses[EEquipableItemLevel::LV3], Param);
-		Helmet->MoveToSlot(OwnerEnemy, Helmet->GetItemCurStack());
 	}
 	}
 }
@@ -212,20 +211,6 @@ void UC_DefaultItemSpawnerComponent::SpawnConsumableItems(const FActorSpawnParam
 		AC_ConsumableItem* PainKiller = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::PAIN_KILLER], Param);
 		PainKiller->SetItemStack(1);
 		PainKiller->MoveToInven(OwnerEnemy, PainKiller->GetItemCurStack());
-		return;
-	}
-		
-	case EEnemyBehaviorType::CombatTest:
-	{
-		// 구급 상자 2개 spawn
-        AC_ConsumableItem* FirstAidKit = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::FIRST_AID_KIT], Param);
-        FirstAidKit->SetItemStack(2);
-        FirstAidKit->MoveToInven(OwnerEnemy, FirstAidKit->GetItemCurStack());
-
-		// 붕대 5개 Spawn
-		AC_ConsumableItem* Bandage = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::BANDAGE], Param);
-		Bandage->MoveToInven(OwnerEnemy, Bandage->GetItemCurStack());
-		
 		return;
 	}
 		
@@ -296,4 +281,68 @@ void UC_DefaultItemSpawnerComponent::SpawnBullets(const FActorSpawnParameters& P
 
 	Str = "Seven Bullet Spawned Count : " + FString::FromInt(SevenBulletItem->GetItemCurStack());
 	UC_Util::Print(Str, FColor::Red, 10.f);
+}
+
+void UC_DefaultItemSpawnerComponent::SpawnCombatCharacterWeapons(AC_BasicCharacter* CombatCharacter, const FActorSpawnParameters& Param)
+{
+	if (WeaponClasses.IsEmpty())
+	{
+		UC_Util::Print("WeaponClasses empty!", FColor::Red, 10.f);
+		return;
+	}
+	
+	AC_MeleeWeapon* MeleeWeapon = GetWorld()->SpawnActor<AC_MeleeWeapon>(WeaponClasses[EWeaponSlot::MELEE_WEAPON], Param);
+	CombatCharacter->GetEquippedComponent()->SetSlotWeapon(EWeaponSlot::MELEE_WEAPON, MeleeWeapon);
+
+	AC_Gun* MainGun = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::MAIN_GUN], Param);
+	MainGun->MoveToSlot(CombatCharacter, MainGun->GetItemCurStack());
+	MainGun->SetActorHiddenInGame(false); // 어디선가 Hidden처리가 되어 나옴
+	MainGun->SetCurMagazineBulletCount(30);
+	//EquippedComponent->SetSlotWeapon(EWeaponSlot::MAIN_GUN, MainGun);
+
+	AC_Gun* SubGun = GetWorld()->SpawnActor<AC_Gun>(WeaponClasses[EWeaponSlot::SUB_GUN], Param);
+	SubGun->MoveToSlot(CombatCharacter, SubGun->GetItemCurStack());
+	SubGun->SetActorHiddenInGame(false);
+	SubGun->SetCurMagazineBulletCount(5);
+	//EquippedComponent->SetSlotWeapon(EWeaponSlot::SUB_GUN, SubGun);
+
+	// Throwable Weapon setting 하기
+	AC_ThrowingWeapon* Grenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::GRENADE], Param);
+	Grenade->SetItemStack(1);
+	Grenade->MoveToInven(CombatCharacter, Grenade->GetItemCurStack());
+
+	AC_ThrowingWeapon* SmokeGrenade = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::SMOKE], Param);
+	SmokeGrenade->SetItemStack(1);
+	SmokeGrenade->MoveToInven(CombatCharacter, SmokeGrenade->GetItemCurStack());
+
+	AC_ThrowingWeapon* FlashBang = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableClasses[EThrowableType::FLASH_BANG], Param);
+	FlashBang->SetItemStack(1);
+	FlashBang->MoveToInven(CombatCharacter, FlashBang->GetItemCurStack());	
+}
+
+void UC_DefaultItemSpawnerComponent::SpawnCombatCharacterEquipableItems(AC_BasicCharacter* CombatCharacter, const FActorSpawnParameters& Param)
+{
+	// 모두 3 Level Equipable로 장착
+	AC_Vest* Vest = GetWorld()->SpawnActor<AC_Vest>(VestClass, Param);
+	Vest->SetItemLevel(EEquipableItemLevel::LV3);
+	Vest->InitVestDatasAndStaticMesh();
+	Vest->MoveToSlot(CombatCharacter, Vest->GetItemCurStack());
+
+	AC_BackPack* BackPack = GetWorld()->SpawnActor<AC_BackPack>(BackPackClasses[EEquipableItemLevel::LV3], Param);
+	BackPack->MoveToSlot(CombatCharacter, BackPack->GetItemCurStack());
+
+	AC_Helmet* Helmet = GetWorld()->SpawnActor<AC_Helmet>(HelmetClasses[EEquipableItemLevel::LV3], Param);
+	Helmet->MoveToSlot(CombatCharacter, Helmet->GetItemCurStack());
+}
+
+void UC_DefaultItemSpawnerComponent::SpawnCombatCharacterConsumableItems(AC_BasicCharacter* CombatCharacter, const FActorSpawnParameters& Param)
+{
+	// 구급 상자 2개 spawn
+	AC_ConsumableItem* FirstAidKit = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::FIRST_AID_KIT], Param);
+	FirstAidKit->SetItemStack(2);
+	FirstAidKit->MoveToInven(CombatCharacter, FirstAidKit->GetItemCurStack());
+
+	// 붕대 5개 Spawn
+	AC_ConsumableItem* Bandage = GetWorld()->SpawnActor<AC_ConsumableItem>(ConsumableItemClasses[EConsumableItemType::BANDAGE], Param);
+	Bandage->MoveToInven(CombatCharacter, Bandage->GetItemCurStack());
 }

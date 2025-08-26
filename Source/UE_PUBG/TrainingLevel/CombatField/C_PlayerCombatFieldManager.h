@@ -25,8 +25,9 @@ public:
 
 public:
 
+	class AC_Enemy* GetCombatFieldEnemy() const { return CombatFieldEnemy; }
+
 	void SetOwnerCombatFieldManager(class AC_CombatFieldManager* InCombatFieldManager) { OwnerCombatFieldManager = InCombatFieldManager; }
-	void SetCombatFieldEnemy(class AC_Enemy* InEnemy) { CombatFieldEnemy = InEnemy; }
 	void SetPlayerCombatFieldWidget(class UC_PlayerCombatFieldWidget* InPlayerCombatFieldWidget) { PlayerCombatFieldWidget = InPlayerCombatFieldWidget; }
 
 private: // Combat Start 처리 관련 (OpeningGate Interaction)
@@ -58,16 +59,19 @@ private: // Combat Start 처리 관련 (OpeningGate Interaction)
 	bool OnStartGateFKeyInteraction();
 
 private:
+
+	AC_CombatFieldManager* OwnerCombatFieldManager{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
+	AC_Enemy* CombatFieldEnemy{};
+
+private: // Spawn(Respawn) Transform 관련
 	
-	/// <summary>
-	/// Combat용 Item으로 Player inven 및 부착물, 무기 초기화
-	/// </summary>
-	void InitPlayerCombatItems();
-
+	TArray<FTransform> SpawnTransforms{};
+	
 private:
-
-	AC_CombatFieldManager*		OwnerCombatFieldManager{};
-	AC_Enemy*					CombatFieldEnemy{};
 	
 	UC_PlayerCombatFieldWidget* PlayerCombatFieldWidget{};
 

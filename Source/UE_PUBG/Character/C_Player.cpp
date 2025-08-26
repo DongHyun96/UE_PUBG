@@ -798,6 +798,7 @@ void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 
 	GAMESCENE_MANAGER->SetIsGameOver(true);
 
+		
 	// TODO : 밑의 if else 문으로 대체하기
 	GameOverWidget->ActivateLoseSequence();
 	//if (Ranking == 1) GameOverWidget->ActivateWinningSequence();

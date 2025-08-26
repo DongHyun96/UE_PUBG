@@ -29,63 +29,38 @@ public:
 
 public:
 
+	static void SetCharacterMeshInitialRelativeTransform(const FTransform& Transform) { CharacterMeshInitialRelativeTransform = Transform; }
+
 	class UC_CombatFieldWidget* GetCombatFieldWidget() const { return CombatFieldWidget; }
 
 	class UC_EnemyCombatFieldManager* GetEnemyCombatFieldManager() const { return EnemyCombatFieldManager; }
 	class UC_PlayerCombatFieldManager* GetPlayerCombatFieldManager() const { return PlayerCombatFieldManager; }
 
-	/// <returns> : Index에 맞는 VersusAIEnemy 반환, Index가 Valid하지 않다면 return nullptr </returns>
-	class AC_Enemy* GetVersusAIEnemy(uint8 Index) const;
-
-private:
-	
-	/// <summary>
-	/// E vs E 시작 사전 준비
-	/// </summary>
-	void InitEnemyVsEnemyRound();
-
 public:
-
-	/// <summary>
-	/// Enemy vs Enemy 시작하기
-	/// </summary>
-	void StartEnemyVsEnemyRound();
-
-	/// <summary>
-	/// Enemy Vs Enemy Round 멈추기 (둘 다 Wait 상태로 두고, TargetCharacter 해제)
-	/// </summary>
-	void StopEnemyVsEnemyRound();
 	
+	/// <summary>
+	/// Combat Character Round 시작 전, 사전 초기화 일괄 처리 
+	/// </summary>
+	/// <param name="CombatCharacter"> : Init시킬 Character </param>
+	/// <param name="SpawnTransform"> : Spawn 처리될 Transform </param>
+	void InitRoundForCombatCharacter(class AC_BasicCharacter* CombatCharacter, const FTransform& SpawnTransform);
+
 private:
-	
+
+	/// <summary>
+	/// <para> Round 시작 전, Equipment와 Inven 초기화 처리 </para>
+	/// <para> 주의 : Matching에 맞는 기본 아이템 종류로 세팅되어 있는 Character를 Round 시작 전 초기화 시킴 </para>
+	/// </summary>
+	/// <param name="Character"></param>
+	void InitRoundStartEquipmentAndInven(AC_BasicCharacter* Character);
+
 	/// <summary>
 	/// 죽은 Character 소생시도
 	/// </summary>
 	/// <param name="Character"> : 소생시킬 Character </param>
 	/// <returns> : 살아있는 상태라면 return false </returns>
-	bool TryReviveCharacter(class AC_BasicCharacter* Character);
-
-protected:
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSubclassOf<AC_Enemy> EnemyClass{};
-
-protected:
-
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
-	TArray<AC_Enemy*> VersusAIEnemies{};   // Enemy vs Enemy Field Enemies
-
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
-	AC_Enemy*         VersusPlayerEnemy{}; // Player vs Enemy 용 Enemy
-
-private: // Spawn(Respawn) Transform 관련
-
-	// Spawn Transform 저장용
-	TArray<FTransform> EnemyVsEnemySpawnTransform{};
-	TArray<FTransform> PlayerVsEnemySpawnTransform{};
-
-	FTransform CharacterMeshInitialRelativeTransform{};
-
+	bool TryReviveCharacter(AC_BasicCharacter* Character);
+	
 protected:
 
 	// Enemy vs Enemy 관전 처리를 돕는 ActorComponent
@@ -100,5 +75,14 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UC_CombatFieldWidget* CombatFieldWidget{};
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
+	class UC_DefaultItemSpawnerComponent* ItemSpawnerHelper{};
+
+private:
+
+	static FTransform CharacterMeshInitialRelativeTransform;
 
 };

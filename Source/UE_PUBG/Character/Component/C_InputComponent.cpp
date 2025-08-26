@@ -314,10 +314,6 @@ void UC_InputComponent::Crawl()
 
 void UC_InputComponent::OnJump()
 {
-	// For Testing
-	Player->GetInvenComponent()->ClearInventory();
-	Player->GetEquippedComponent()->ClearEquippedWeapons();
-	
 	if (!Player->GetCanMove())									return;
 	if (Player->GetIsJumping() || PlayerMovement->IsFalling())	return;
 	if (Player->GetSwimmingComponent()->IsSwimming())			return;
@@ -634,10 +630,6 @@ void UC_InputComponent::OnFKey()
 
 	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
 
-	// CombatControlFKeyInteractionDelegateBound 처리
-	if (CombatControlFKeyInteractionDelegate.IsBound() &&
-		CombatControlFKeyInteractionDelegate.Execute()) return;
-
 	// SkyDiving 관련 F키
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 	{
@@ -654,6 +646,10 @@ void UC_InputComponent::OnFKey()
 		Player->GetCurActivatingConsumableItem()->CancelActivating();
 		return;
 	}
+
+	// CombatControlFKeyInteractionDelegateBound 처리
+	if (CombatControlFKeyInteractionDelegate.IsBound() &&
+		CombatControlFKeyInteractionDelegate.Execute()) return;
 	
 	if (Player->GetCurOutLinedItem())
 	{

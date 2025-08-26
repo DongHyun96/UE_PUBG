@@ -40,6 +40,13 @@ private:
 public:
 	
 	/// <summary>
+	/// Combat Field Character 전용 Item 스폰시키기 
+	/// </summary>
+	/// <param name="CombatCharacter"> : Combat Tester 또는 Combat Field Character </param>
+	void SpawnDefaultWeaponsAndItemsForCombatFieldCharacter(class AC_BasicCharacter* CombatCharacter);
+	
+	
+	/// <summary>
 	/// 기본 Spawn 처리한 Item들 중 직접적으로 Attach되어 있는 Actor들의 HiddenInGame Toggle 처리 
 	/// </summary>
 	void ToggleSpawnedItemsHiddenInGame(bool InHiddenInGame);
@@ -50,18 +57,20 @@ private:
 	void SpawnEquipableItems(const FActorSpawnParameters& Param);
 	void SpawnConsumableItems(const FActorSpawnParameters& Param);
 	void SpawnBullets(const FActorSpawnParameters& Param);
+
+private:
+
+	void SpawnCombatCharacterWeapons(AC_BasicCharacter* CombatCharacter, const FActorSpawnParameters& Param);
+	void SpawnCombatCharacterEquipableItems(AC_BasicCharacter* CombatCharacter, const FActorSpawnParameters& Param);
+	void SpawnCombatCharacterConsumableItems(AC_BasicCharacter* CombatCharacter, const FActorSpawnParameters& Param);
 	
 public:
 
 	void SetOwnerEnemy(class AC_Enemy* InOwnerEnemy) { OwnerEnemy = InOwnerEnemy; }
 
-	TSubclassOf<class AC_Weapon>		 GetWeaponClass(EWeaponSlot InWeaponSlot)						  const { return WeaponClasses[InWeaponSlot]; }
 	TSubclassOf<class AC_ThrowingWeapon> GetThrowableClass(EThrowableType InThrowableType)				  const { return ThrowableClasses[InThrowableType]; }
-	TSubclassOf<class AC_Vest>			 GetVestClass()													  const { return VestClass; }
 	TSubclassOf<class AC_Helmet>		 GetHelmetClass(EEquipableItemLevel InHelmetLevel)				  const { return HelmetClasses[InHelmetLevel]; }
-	TSubclassOf<class AC_BackPack>		 GetBackPackClass(EEquipableItemLevel InBackPackLevel)			  const { return BackPackClasses[InBackPackLevel]; }
 	TSubclassOf<class AC_ConsumableItem> GetConsumableItemClass(EConsumableItemType InConsumableItemType) const { return ConsumableItemClasses[InConsumableItemType]; }
-	TSubclassOf<class AC_Item_Bullet>	 GetBulletClass(EBulletType InBulletType)						  const { return BulletClasses[InBulletType]; }
 
 private:
 
@@ -70,7 +79,7 @@ private:
 protected: // Weapon 관련 Classes
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TMap<EWeaponSlot, TSubclassOf<AC_Weapon>> WeaponClasses{};
+	TMap<EWeaponSlot, TSubclassOf<class AC_Weapon>> WeaponClasses{};
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<EThrowableType, TSubclassOf<AC_ThrowingWeapon>> ThrowableClasses{};
