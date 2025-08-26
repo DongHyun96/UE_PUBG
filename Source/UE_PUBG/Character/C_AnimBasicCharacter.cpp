@@ -37,8 +37,6 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	Speed = FMath::Lerp(Speed, OwnerCharacter->GetNextSpeed(), DeltaSeconds * 10.f);
 	Speed = FMath::Clamp(Speed, 0.f, 700.f);
 
-	UC_Util::Print(Speed);
-
 	const FRotator YawRotation(0, OwnerCharacter->GetActorRotation().Yaw, 0);
 
 	// Direction의 경우에도 부드러운 방향전환 Animation 처리를 위해 Lerp로 처리함
