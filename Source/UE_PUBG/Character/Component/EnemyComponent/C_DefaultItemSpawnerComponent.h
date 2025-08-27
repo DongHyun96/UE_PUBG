@@ -56,7 +56,7 @@ private:
 	void SpawnWeapons(const FActorSpawnParameters& Param);
 	void SpawnEquipableItems(const FActorSpawnParameters& Param);
 	void SpawnConsumableItems(const FActorSpawnParameters& Param);
-	void SpawnBullets(const FActorSpawnParameters& Param);
+	void SpawnBullets(AC_BasicCharacter* Character, const FActorSpawnParameters& Param);
 
 private:
 

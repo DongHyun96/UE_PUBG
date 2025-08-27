@@ -11,6 +11,7 @@
 #include "AI/Task/CombatTask/C_BTTaskSwapWeapon.h"
 #include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
+#include "Character/Component/C_InputComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -43,15 +44,12 @@ void AC_CombatFieldManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/* for (int i = 0; i < 2; ++i)
-	{
-		EnemyVsEnemySpawnTransform.Add(VersusAIEnemies[i]->GetActorTransform());
-		PlayerVsEnemySpawnTransform.Add(VersusPlayerEnemies[i]->GetActorTransform());
-	} */
-
-	// InitialMeshTransform 저장
+	// InitialMeshTransform 저장 및 ItemSpawnHelper 초기화
 	if (PlayerCombatFieldManager->GetCombatFieldEnemy())
+	{
 		CharacterMeshInitialRelativeTransform = PlayerCombatFieldManager->GetCombatFieldEnemy()->GetMesh()->GetRelativeTransform();
+		ItemSpawnHelper = PlayerCombatFieldManager->GetCombatFieldEnemy()->GetItemSpawnerHelper();
+	}
 	else UC_Util::Print("From AC_CombatFieldManager::BeginPlay : PlayerCombatFieldManager CombatEnemy nullptr!", FColor::Red, 10.f);
 
 	// VersusPlayerEnemy의 TargetCharacter 세팅은 P vs E 라운드가 시작되기 직전에 잡아주기 & Boost stat도 라운드가 시작되면 최대치로
@@ -85,16 +83,16 @@ void AC_CombatFieldManager::InitRoundForCombatCharacter(AC_BasicCharacter* Comba
 	CombatCharacter->GetStatComponent()->SetCurBoosting(100.f);
 	CombatCharacter->GetStatComponent()->SetCurHP(100.f);
 
-	// MainGun 상태로 시작
-	if (CombatCharacter->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN])
-		CombatCharacter->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::MAIN_GUN);
-	else UC_Util::Print("From AC_CombatFieldManager::InitRoundForCombatCharacter : " + CombatCharacter->GetName() + "'s Main gun slot empty!", FColor::Red, 10.f);
-
 	if (AC_EnemyAIController* EnemyController = CombatCharacter->GetController<AC_EnemyAIController>())
 	{
 		// Enemy의 경우, BehaviorTree Task Type을 Wait으로 setting
 		EnemyController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);	
-		EnemyController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);	
+		EnemyController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
+
+		// Enemy의 경우, Main Gun 상태로 시작
+		if (CombatCharacter->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN])
+			CombatCharacter->GetEquippedComponent()->ChangeCurWeapon(EWeaponSlot::MAIN_GUN);
+		else UC_Util::Print("From AC_CombatFieldManager::InitRoundForCombatCharacter : " + CombatCharacter->GetName() + "'s Main gun slot empty!", FColor::Red, 10.f);
 	}
 
 	/* 기본 장비 및 아이템 필요하다면 재정비 */
@@ -113,7 +111,7 @@ void AC_CombatFieldManager::InitRoundStartEquipmentAndInven(AC_BasicCharacter* C
 		Helmet->RepairDurabilityToMax();
 	else // 기존 Helmet의 내구도가 0이되어, Helmet이 없는 상황 / 새로운 Helmet 스폰 처리
 	{
-		TSubclassOf<AC_Helmet> HelmetClass = ItemSpawnerHelper->GetHelmetClass(EEquipableItemLevel::LV3);
+		TSubclassOf<AC_Helmet> HelmetClass = ItemSpawnHelper->GetHelmetClass(EEquipableItemLevel::LV3);
 		Helmet = GetWorld()->SpawnActor<AC_Helmet>(HelmetClass, SpawnParams);
 		Helmet->MoveToSlot(Character, Helmet->GetItemCurStack());
 	}
@@ -154,7 +152,7 @@ void AC_CombatFieldManager::InitRoundStartEquipmentAndInven(AC_BasicCharacter* C
 	{
 		if (!Pair.Value)
 		{
-			TSubclassOf<AC_ThrowingWeapon> ThrowableWeaponClass = ItemSpawnerHelper->GetThrowableClass(Pair.Key); 
+			TSubclassOf<AC_ThrowingWeapon> ThrowableWeaponClass = ItemSpawnHelper->GetThrowableClass(Pair.Key); 
 			AC_ThrowingWeapon* SpawnedThrowingWeapon = GetWorld()->SpawnActor<AC_ThrowingWeapon>(ThrowableWeaponClass, SpawnParams);
 			SpawnedThrowingWeapon->SetItemStack(1);
 			SpawnedThrowingWeapon->MoveToInven(Character, SpawnedThrowingWeapon->GetItemCurStack());
@@ -169,7 +167,7 @@ void AC_CombatFieldManager::InitRoundStartEquipmentAndInven(AC_BasicCharacter* C
 		FirstAidKit->SetItemStack(2);
 	else
 	{
-		TSubclassOf<AC_ConsumableItem> FirstAidKitClass = ItemSpawnerHelper->GetConsumableItemClass(EConsumableItemType::FIRST_AID_KIT);
+		TSubclassOf<AC_ConsumableItem> FirstAidKitClass = ItemSpawnHelper->GetConsumableItemClass(EConsumableItemType::FIRST_AID_KIT);
 		AC_ConsumableItem* SpawnedFirstAidKit = GetWorld()->SpawnActor<AC_ConsumableItem>(FirstAidKitClass, SpawnParams);
 		SpawnedFirstAidKit->SetItemStack(2);
 		SpawnedFirstAidKit->MoveToInven(Character, SpawnedFirstAidKit->GetItemCurStack());
@@ -179,7 +177,7 @@ void AC_CombatFieldManager::InitRoundStartEquipmentAndInven(AC_BasicCharacter* C
 		Bandage->SetItemStack(5);
 	else
 	{
-		TSubclassOf<AC_ConsumableItem> BandageClass = ItemSpawnerHelper->GetConsumableItemClass(EConsumableItemType::BANDAGE);
+		TSubclassOf<AC_ConsumableItem> BandageClass = ItemSpawnHelper->GetConsumableItemClass(EConsumableItemType::BANDAGE);
 		AC_ConsumableItem* SpawnedBandage = GetWorld()->SpawnActor<AC_ConsumableItem>(BandageClass, SpawnParams);
 		SpawnedBandage->SetItemStack(5);
 		SpawnedBandage->MoveToInven(Character, SpawnedBandage->GetItemCurStack());

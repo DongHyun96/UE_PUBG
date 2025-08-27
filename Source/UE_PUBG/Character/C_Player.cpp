@@ -1236,7 +1236,7 @@ void AC_Player::HandleCameraTransitionInterpolation(float Value)
 
 void AC_Player::OnCameraTransitionTimelineFinished()
 {
-	UC_Util::Print("Finished");
+	UC_Util::Print("OnCameraTransitionTimelineFinished", FColor::MakeRandomColor());
 	if (bIsAimDownSight)
 	{
 		AimCamera->SetActive(true);

@@ -76,10 +76,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UC_CombatFieldWidget* CombatFieldWidget{};
 
-protected:
+private:
 
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
-	class UC_DefaultItemSpawnerComponent* ItemSpawnerHelper{};
+	class UC_DefaultItemSpawnerComponent* ItemSpawnHelper{};
 
 private:
 

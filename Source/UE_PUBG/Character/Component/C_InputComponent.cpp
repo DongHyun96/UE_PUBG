@@ -541,8 +541,6 @@ void UC_InputComponent::OnMLBStarted()
 {
 	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
 
-	UC_Util::Print("PlayerInputMLB", FColor::MakeRandomColor());
-	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMlb_Started();

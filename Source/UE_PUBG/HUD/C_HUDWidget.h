@@ -90,6 +90,9 @@ public: // HUD event 관련
 public:
 
 	UFUNCTION(BlueprintImplementableEvent)
+	void ToggleCompassBarVisibility(bool Visible);	
+
+	UFUNCTION(BlueprintImplementableEvent)
 	void SpawnCompassBarPingMarker(FVector WorldPingMarkerLocation);
 
 	UFUNCTION(BlueprintImplementableEvent)

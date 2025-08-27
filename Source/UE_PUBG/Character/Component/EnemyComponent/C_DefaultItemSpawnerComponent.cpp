@@ -62,7 +62,9 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItems()
 	SpawnEquipableItems(Param);
 	SpawnWeapons(Param);
 	SpawnConsumableItems(Param);
-	SpawnBullets(Param);
+
+	if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::InGamePlayable)
+		SpawnBullets(OwnerEnemy, Param);
 }
 
 void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItemsForCombatFieldCharacter(AC_BasicCharacter* CombatCharacter)
@@ -73,6 +75,7 @@ void UC_DefaultItemSpawnerComponent::SpawnDefaultWeaponsAndItemsForCombatFieldCh
 	SpawnCombatCharacterWeapons(CombatCharacter, Param);
 	SpawnCombatCharacterEquipableItems(CombatCharacter, Param);
 	SpawnCombatCharacterConsumableItems(CombatCharacter, Param);
+	SpawnBullets(CombatCharacter, Param);
 }
 
 void UC_DefaultItemSpawnerComponent::ToggleSpawnedItemsHiddenInGame(bool InHiddenInGame)
@@ -247,26 +250,23 @@ void UC_DefaultItemSpawnerComponent::SpawnConsumableItems(const FActorSpawnParam
 	}
 }
 
-void UC_DefaultItemSpawnerComponent::SpawnBullets(const FActorSpawnParameters& Param)
+void UC_DefaultItemSpawnerComponent::SpawnBullets(AC_BasicCharacter* Character, const FActorSpawnParameters& Param)
 {
-	// InGamePlayable만 탄알 spawn 처리
-	if (OwnerEnemy->GetBehaviorType() != EEnemyBehaviorType::InGamePlayable) return;
-	
 	// 5.56mm 탄 200발, 7.62mm 탄 30발
 	for (int i = 0; i < 2; ++i)
 	{
 		AC_Item_Bullet* FiveMMBullet = GetWorld()->SpawnActor<AC_Item_Bullet>(BulletClasses[EBulletType::FIVEMM], Param);
-		FiveMMBullet->MoveToInven(OwnerEnemy, FiveMMBullet->GetItemCurStack());
+		FiveMMBullet->MoveToInven(Character, FiveMMBullet->GetItemCurStack());
 	}
 	
 	AC_Item_Bullet* SevenMMBullet = GetWorld()->SpawnActor<AC_Item_Bullet>(BulletClasses[EBulletType::SEVENMM], Param);
-	SevenMMBullet->MoveToInven(OwnerEnemy, SevenMMBullet->GetItemCurStack());
+	SevenMMBullet->MoveToInven(Character, SevenMMBullet->GetItemCurStack());
 
-	FName FiveBulletName = AC_Item_Bullet::GetBulletTypeName(EBulletType::FIVEMM);
+	/*FName FiveBulletName = AC_Item_Bullet::GetBulletTypeName(EBulletType::FIVEMM);
 	FName SevenBulletName = AC_Item_Bullet::GetBulletTypeName(EBulletType::SEVENMM);
 
-	AC_Item* FiveBulletItem		= OwnerEnemy->GetInvenComponent()->FindMyItemByName(FiveBulletName);
-	AC_Item* SevenBulletItem	= OwnerEnemy->GetInvenComponent()->FindMyItemByName(SevenBulletName);
+	AC_Item* FiveBulletItem		= Character->GetInvenComponent()->FindMyItemByName(FiveBulletName);
+	AC_Item* SevenBulletItem	= Character->GetInvenComponent()->FindMyItemByName(SevenBulletName);
 
 	if (!IsValid(FiveBulletItem)) return;
 	
@@ -280,7 +280,7 @@ void UC_DefaultItemSpawnerComponent::SpawnBullets(const FActorSpawnParameters& P
 	}
 
 	Str = "Seven Bullet Spawned Count : " + FString::FromInt(SevenBulletItem->GetItemCurStack());
-	UC_Util::Print(Str, FColor::Red, 10.f);
+	UC_Util::Print(Str, FColor::Red, 10.f);*/
 }
 
 void UC_DefaultItemSpawnerComponent::SpawnCombatCharacterWeapons(AC_BasicCharacter* CombatCharacter, const FActorSpawnParameters& Param)
