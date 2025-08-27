@@ -161,18 +161,16 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 
 AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 {
-	if (!item) return nullptr; // 유효성 검사
+	if (!IsValid(item)) return nullptr; // 유효성 검사
 
-	if (TArray<AC_Item*>* ItemArrayPtr = MyItems.Find(item->GetItemCode()))
-	{
-		if (AC_Item* FoundItemPtr = ItemArrayPtr->Last()) 
-		{
-			return FoundItemPtr; 
-		}
-	}
+	TArray<AC_Item*>* ItemArrayPtr = MyItems.Find(item->GetItemCode());
+	if (!ItemArrayPtr) return nullptr;
+	if (ItemArrayPtr->IsEmpty()) return nullptr; // 배열이 비어 있지 않은지 확인
+
+	AC_Item* FoundItemPtr = ItemArrayPtr->Last();
+	return IsValid(FoundItemPtr) ? FoundItemPtr : nullptr;
 
 	//TODO : CheckPoint - 장착, 사용 아이템의 위치가 어디에 있는지 확인할 것.
-	return nullptr;
 }
 
 AC_Item* UC_InvenComponent::FindMyItemByName(const FName& itemName)

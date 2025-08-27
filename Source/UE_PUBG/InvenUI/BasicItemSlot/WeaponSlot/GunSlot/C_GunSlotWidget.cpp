@@ -295,6 +295,12 @@ bool UC_GunSlotWidget::SetAttachmentSlotOnDrop(AC_Weapon* InSlotWeapon, AC_Attac
 
 	UC_Util::Print(SlotGun->GetItemName());
 
+	if (!IsValid(InAttachableItem))
+	{
+		UC_Util::Print("From UC_GunSlotWidget::SetAttachmentSlotOnDrop : Invalid InAttachableItem", FColor::Red, 10.f);
+		return false;
+	}
+
 	EItemPlace InAttachableItemPlace = InAttachableItem->GetItemPlace();
 
 
