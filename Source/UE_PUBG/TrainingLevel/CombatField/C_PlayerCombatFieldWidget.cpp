@@ -117,19 +117,15 @@ void UC_PlayerCombatFieldWidget::ExecuteRoundStart(uint8 InRoundNumber)
 	PlayAnimation(RoundStartAnimation);
 }
 
-void UC_PlayerCombatFieldWidget::ExecuteRoundEnd(const TArray<EPlayerCombatRoundResult>& InRoundResults, uint8 InCurrentRoundNumber)
+void UC_PlayerCombatFieldWidget::ExecuteRoundEnd
+(
+	EPlayerCombatRoundResult InRoundResult,
+	uint8 InCurrentRoundNumber,
+	uint8 PlayerWinCount, uint8 EnemyWinCount
+)
 {
-	if (InRoundResults.Num() < InCurrentRoundNumber)
-	{
-		UC_Util::Print("From UC_PlayerCombatFieldWidget::ExecuteRoundEnd : RoundNumber exceeds RoundResults Array!", FColor::Red, 10.f);
-		return;
-	}
-
 	/* 내용 Settings */
-	
-	EPlayerCombatRoundResult CurrentRoundResult = InRoundResults[InCurrentRoundNumber];
-
-	RoundResultWinLoseBlurImage->SetColorAndOpacity(RoundResultPanelBGBlurColors[CurrentRoundResult]);
+	RoundResultWinLoseBlurImage->SetColorAndOpacity(RoundResultPanelBGBlurColors[InRoundResult]);
 
 	RoundResultRoundText->SetText(FText::FromString("Round " + FString::FromInt(InCurrentRoundNumber)));
 	
@@ -141,47 +137,31 @@ void UC_PlayerCombatFieldWidget::ExecuteRoundEnd(const TArray<EPlayerCombatRound
 		{EPlayerCombatRoundResult::NotPlayed,	"NOTPLAYED"}
 	};
 	
-	RoundResultRoundWinLoseText->SetText(FText::FromString(RoundWinLoseTexts[CurrentRoundResult]));
+	RoundResultRoundWinLoseText->SetText(FText::FromString(RoundWinLoseTexts[InRoundResult]));
 		
 	// 현재 총 스코어 settings
-	uint8 EnemyWinCount{}, PlayerWinCount{};
-	for (int i = 1; i <= InCurrentRoundNumber; ++i)
-	{
-		if (InRoundResults[i] == EPlayerCombatRoundResult::EnemyWin)  ++EnemyWinCount;
-		if (InRoundResults[i] == EPlayerCombatRoundResult::PlayerWin) ++PlayerWinCount;
-
-		if (InRoundResults[i] == EPlayerCombatRoundResult::NotPlayed)
-		{
-			UC_Util::Print
-			(
-				"From UC_PlayerCombatFieldWidget::ExecuteRoundEnd : " + FString::FromInt(i) +
-				" Round result not inited correctly!", FColor::Red, 10.f
-			);
-		}
-	}
-
 	RoundResultPlayerWinCountText->SetText(FText::AsNumber(PlayerWinCount));
 	RoundResultEnemyWinCountText->SetText(FText::AsNumber(EnemyWinCount));
 
-	if (CurrentRoundResult == EPlayerCombatRoundResult::Draw)
+	if (InRoundResult == EPlayerCombatRoundResult::Draw)
 	{
 		RoundResultPlayerWinCountBar->SetVisibility(ESlateVisibility::Hidden);
 		RoundResultEnemyWinCountBar->SetVisibility(ESlateVisibility::Hidden);
 	}
-	else if (CurrentRoundResult == EPlayerCombatRoundResult::PlayerWin)
+	else if (InRoundResult == EPlayerCombatRoundResult::PlayerWin)
 	{
 		RoundResultPlayerWinCountBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		RoundResultEnemyWinCountBar->SetVisibility(ESlateVisibility::Hidden);
 	}
-	else if (CurrentRoundResult == EPlayerCombatRoundResult::EnemyWin)
+	else if (InRoundResult == EPlayerCombatRoundResult::EnemyWin)
 	{
 		RoundResultPlayerWinCountBar->SetVisibility(ESlateVisibility::Hidden);
 		RoundResultEnemyWinCountBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 
 	// Round Result dot settings
-	TopRoundResultDotImages[InCurrentRoundNumber]->SetColorAndOpacity(ResultDotColors[CurrentRoundResult]);
-	ResultPanelResultDotImages[InCurrentRoundNumber]->SetColorAndOpacity(ResultDotColors[CurrentRoundResult]);
+	TopRoundResultDotImages[InCurrentRoundNumber]->SetColorAndOpacity(ResultDotColors[InRoundResult]);
+	ResultPanelResultDotImages[InCurrentRoundNumber]->SetColorAndOpacity(ResultDotColors[InRoundResult]);
 
 	// Round result dot 크기 조정
 	for (int i = 1; i < InCurrentRoundNumber; ++i)
@@ -227,4 +207,9 @@ void UC_PlayerCombatFieldWidget::OnRoundEndAnimationEnd()
 {
 	RoundResultPanel->SetVisibility(ESlateVisibility::Hidden);
 	RoundResultBackgroundBlurPanel->SetVisibility(ESlateVisibility::Hidden);
+
+	UC_PlayerCombatFieldManager* PlayerCombatFieldManager = GAMESCENE_MANAGER->GetTrainingGroundManager()->
+															GetCombatFieldManager()->GetPlayerCombatFieldManager();
+
+	PlayerCombatFieldManager->OnRoundUIRoutineFinished();
 }

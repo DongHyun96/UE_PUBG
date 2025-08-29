@@ -27,6 +27,13 @@ enum class EPlayerCombatRoundResult : uint8
 	Draw
 };
 
+struct FPlayerCombatRoundResult
+{
+	EPlayerCombatRoundResult RoundResult{};
+
+	float RoundPlayTime{};
+};
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class UE_PUBG_API UC_PlayerCombatFieldManager : public UActorComponent
 {
@@ -52,7 +59,7 @@ public:
 
 	uint8 GetCurrentRound() const { return CurrentRound; }
 
-	const TArray<EPlayerCombatRoundResult>& GetRoundResults() const { return RoundResults; }
+	const TArray<FPlayerCombatRoundResult>& GetRoundResults() const { return RoundResults; }
 
 	/// <summary>
 	/// Combat enemy나 Combat Player 사망 시, Round Result 세팅 처리
@@ -63,6 +70,14 @@ public:
 	void SetPlayerCombatFieldState(EPlayerCombatFieldState FieldState);
 	EPlayerCombatFieldState GetPlayerCombatFieldState() const { return CombatFieldState; }
 
+public:
+	
+	/// <summary>
+	/// Round UI Animation Sequence 종료 이후, Match가 끝났는지, 아니면 다음 Round로 넘어가야 하는지 체크해서 PlayerCombatField 상태 변환 처리 
+	/// </summary>
+	void OnRoundUIRoutineFinished();
+
+	
 private: // Combat Start 처리 관련 (OpeningGate Interaction)
 	
 	UFUNCTION()
@@ -153,5 +168,7 @@ private:
 	uint8 CurrentRound = 1;
 
 	// Index 0은 사용하지 않음 (Dummy, Round1, Round2, Round3)
-	TArray<EPlayerCombatRoundResult> RoundResults{};
+	TArray<FPlayerCombatRoundResult> RoundResults{};
+
+	uint8 PlayerWinCount{}, EnemyWinCount{};
 };

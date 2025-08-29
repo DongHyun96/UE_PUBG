@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "C_PlayerCombatFieldManager.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
 #include "C_PlayerCombatFieldWidget.generated.h"
 
 enum class EPlayerCombatRoundResult : uint8;
@@ -29,6 +30,8 @@ public:
 	void ToggleTopRoundTimerPanelVisibility(bool Visible);
 
 public:
+
+	void SetTopRoundText(uint8 InRoundNumber) { TopRoundText->SetText(FText::FromString("Round " + FString::FromInt(InRoundNumber))); }
 	
 	/// <summary>
 	/// RoundStart 관련 Animation 및 내용 처리 
@@ -36,7 +39,7 @@ public:
 	/// <param name="InRoundNumber"> : 현재 시작할 라운드 수 </param>
 	void ExecuteRoundStart(uint8 InRoundNumber);
 
-	void ExecuteRoundEnd(const TArray<EPlayerCombatRoundResult>& InRoundResults, uint8 InCurrentRoundNumber);
+	void ExecuteRoundEnd(EPlayerCombatRoundResult InRoundResult, uint8 InCurrentRoundNumber, uint8 PlayerWinCount, uint8 EnemyWinCount);
 
 public: // Top Round Timer Text 관련
 
@@ -68,6 +71,9 @@ protected:
 
 protected: // Top Round Timer 쪽 관련
 
+	UPROPERTY(meta=(BindWidget))
+	class UTextBlock* TopRoundText{};
+	
 	UPROPERTY(meta=(BindWidget))
 	class UCanvasPanel* TopRoundTimerPanel{};
 

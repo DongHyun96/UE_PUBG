@@ -78,10 +78,10 @@ void UC_PlayerCombatFieldManager::BeginPlay()
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PC->InputComponent))
 			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &UC_PlayerCombatFieldManager::OnLookInput);
 	}
-	else UC_Util::Print("From AC_CombatFieldManager::BeginPlay : Invalid LookAction!", FColor::Red, 10.f);
+	else UC_Util::Print("From UC_PlayerCombatFieldManager::BeginPlay : Invalid LookAction!", FColor::Red, 10.f);
 
 	// Round 숫자로 Index를 맞출 예정이라 3판 2선이어도 4개를 집어넣음
-	RoundResults.Init(EPlayerCombatRoundResult::NotPlayed, 4);
+	RoundResults.Init(FPlayerCombatRoundResult(), 4);
 }
 
 void UC_PlayerCombatFieldManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -116,25 +116,23 @@ void UC_PlayerCombatFieldManager::TickComponent(float DeltaTime, ELevelTick Tick
 
 		// 남은 시간동안 CombatFieldCharacter 사망 처리 되어 Round Result가 처리되었을 때
 		// Round 끝 처리
-		if (RoundResults[CurrentRound] != EPlayerCombatRoundResult::NotPlayed)
+		if (RoundResults[CurrentRound].RoundResult != EPlayerCombatRoundResult::NotPlayed)
+		{
+			RoundResults[CurrentRound].RoundPlayTime = 60.f - CombatFieldTimer; // PlayTime 기록
 			SetPlayerCombatFieldState(EPlayerCombatFieldState::RoundEnd);
+		}
 		
 		if (CombatFieldTimer > 0.f) return;
 
 		// CombatFieldTimer 끝, Round 끝 처리
-		SetCurrentRoundResultOnCharacterDead(true); // Draw 처리
+		RoundResults[CurrentRound].RoundResult = EPlayerCombatRoundResult::Draw;
+		RoundResults[CurrentRound].RoundPlayTime = 60.f;
 		SetPlayerCombatFieldState(EPlayerCombatFieldState::RoundEnd);
 		return;
 	}
 	case EPlayerCombatFieldState::RoundEnd:
 	{
-		// 남은 Round Time 0으로 초기화
-		PlayerCombatFieldWidget->SetTopRoundTimerTextToZero();
-		
 		// Round 결과 처리
-		
-		
-		
 		return;
 	}
 	case EPlayerCombatFieldState::MatchingEnd:
@@ -171,18 +169,18 @@ bool UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead(bool bIsD
 
 	if (bIsDraw)
 	{
-		RoundResults[CurrentRound] = EPlayerCombatRoundResult::Draw;
+		RoundResults[CurrentRound].RoundResult = EPlayerCombatRoundResult::Draw;
 		return true;
 	}
 
 	if (Player->GetMainState() == EMainState::DEAD && CombatFieldEnemy->GetMainState() == EMainState::DEAD)
-		RoundResults[CurrentRound] = EPlayerCombatRoundResult::Draw;
+		RoundResults[CurrentRound].RoundResult = EPlayerCombatRoundResult::Draw;
 
 	if (Player->GetMainState() == EMainState::DEAD)
-		RoundResults[CurrentRound] = EPlayerCombatRoundResult::EnemyWin;
+		RoundResults[CurrentRound].RoundResult = EPlayerCombatRoundResult::EnemyWin;
 
 	if (CombatFieldEnemy->GetMainState() == EMainState::DEAD)
-		RoundResults[CurrentRound] = EPlayerCombatRoundResult::PlayerWin;
+		RoundResults[CurrentRound].RoundResult = EPlayerCombatRoundResult::PlayerWin;
 	
 	return true;
 }
@@ -199,8 +197,6 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 	{
 		// TODO : FKey Interaction으로 Toggle된 Start Box 활성화
 		// 상단 나침반 활성화 etc...
-		
-		
 		return;
 	}
 	case EPlayerCombatFieldState::WaitingRoundStart:
@@ -210,6 +206,8 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 		OwnerCombatFieldManager->InitRoundForCombatCharacter(CombatFieldEnemy, SpawnTransforms[1]);
 	
 		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+
+		PlayerCombatFieldWidget->SetTopRoundText(CurrentRound);
 
 		// Round Start Timer 초기화 및 초 세기 (UI 띄우기)
 		CombatFieldTimer = 5.f;
@@ -252,7 +250,7 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 		(this, &UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead);
 
 		// CombatFieldEnemy TargetCharacter 세팅
-		CombatFieldEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(Player);
+		// CombatFieldEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(Player);
 		
 		return;
 	}
@@ -269,10 +267,21 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 		case EPlayerCombatRoundResult::Draw: UC_Util::Print("Round Result : Draw!", FColor::MakeRandomColor(), 20.f);
 			break;
 		}*/
+
+		// 남은 Round Time 0으로 초기화
+		PlayerCombatFieldWidget->SetTopRoundTimerTextToZero();
+		
 		GAMESCENE_MANAGER->GetPlayer()->Delegate_PlayerCombatFieldCharacterDead.Unbind();
 		CombatFieldEnemy->Delegate_PlayerCombatFieldCharacterDead.Unbind();
 
-		PlayerCombatFieldWidget->ExecuteRoundEnd(RoundResults, CurrentRound);
+		// 현재 총 스코어 settings
+		if (RoundResults[CurrentRound].RoundResult == EPlayerCombatRoundResult::EnemyWin)  ++EnemyWinCount;
+		if (RoundResults[CurrentRound].RoundResult == EPlayerCombatRoundResult::PlayerWin) ++PlayerWinCount;
+
+		if (RoundResults[CurrentRound].RoundResult == EPlayerCombatRoundResult::NotPlayed)
+			UC_Util::Print("From UC_PlayerCombatFieldManager::SetPlayerCombatFieldState to RoundEnd -> RoundResult notPlayed received!", FColor::Red, 10.f);
+
+		PlayerCombatFieldWidget->ExecuteRoundEnd(RoundResults[CurrentRound].RoundResult, CurrentRound, PlayerWinCount, EnemyWinCount);
 
 		UC_BehaviorComponent* EnemyBehaviorComponent = CombatFieldEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent(); 
 		EnemyBehaviorComponent->SetTargetCharacter(nullptr);
@@ -282,8 +291,31 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 		return;
 	}
 	case EPlayerCombatFieldState::MatchingEnd:
+	{
+		UC_Util::Print("Matching End", FColor::MakeRandomColor(), 10.f);
+	}
+	}
+}
+
+void UC_PlayerCombatFieldManager::OnRoundUIRoutineFinished()
+{
+	if (CurrentRound >= 3) // 3판 2선 경기 (3판 모두 채웠을 때)
+	{
+		SetPlayerCombatFieldState(EPlayerCombatFieldState::MatchingEnd);
 		return;
 	}
+
+	// 3판을 아직 다 채우지 못한 상황
+	
+	if (PlayerWinCount > 1 || EnemyWinCount > 1) // 2승을 둘 중 한명이라도 거두었을 때
+	{
+		SetPlayerCombatFieldState(EPlayerCombatFieldState::MatchingEnd);
+		return;
+	}
+
+	// 라운드 수 올리고, 다음 라운드 준비 처리
+	++CurrentRound;
+	SetPlayerCombatFieldState(EPlayerCombatFieldState::WaitingRoundStart);
 }
 
 void UC_PlayerCombatFieldManager::OnGateOpeningBoxBeginOverlap
