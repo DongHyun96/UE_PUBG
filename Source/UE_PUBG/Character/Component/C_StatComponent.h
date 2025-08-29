@@ -109,6 +109,8 @@ public: // Getters and setters
 
 	float GetCurOxygen() const { return CurOxygen; }
 
+	AC_BasicCharacter* GetDeathDamageCauser() const { return DeathDamageCauser; }
+
 public:
 
 	/// <summary>
@@ -231,6 +233,12 @@ public:
 
 	// HealingTutorial 내의 Boost Amount Number 업데이트 처리 Delegate
 	FTutorialStageUpdateWidgetNumberDelegate HealingTutorialBoostAmountNumberDelegate{};
+
+private:
+
+	// 사망했을 때, 사망 피격을 준 DamageCauser 저장 (PlayerCombatField에서 누가 이겼는지 판단할 때 사용될 예정)
+	// Ex) 수류탄 피격의 경우, 한 번에 사망처리될 수 있음 -> 던진 주체가 이기도록 처리
+	AC_BasicCharacter* DeathDamageCauser{};
 	
 };
 

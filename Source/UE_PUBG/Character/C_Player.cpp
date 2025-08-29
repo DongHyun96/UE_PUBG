@@ -796,9 +796,13 @@ void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 	Super::CharacterDead(KillFeedDescriptor);
 	HUDWidget->GetInformWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
 
+	// Training Ground의 경우, GameOver 처리 X
+	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
+	if (GameInstance->GetCurrentSelectedLevelType() == ELevelType::TrainingGround)
+		return;
+	
 	GAMESCENE_MANAGER->SetIsGameOver(true);
-
-		
+	
 	// TODO : 밑의 if else 문으로 대체하기
 	GameOverWidget->ActivateLoseSequence();
 	//if (Ranking == 1) GameOverWidget->ActivateWinningSequence();

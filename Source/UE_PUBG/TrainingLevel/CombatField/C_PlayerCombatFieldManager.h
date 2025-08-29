@@ -50,14 +50,18 @@ public:
 
 public:
 
-	// TODO : 이 함수 필요없을지도?
+	uint8 GetCurrentRound() const { return CurrentRound; }
+
+	const TArray<EPlayerCombatRoundResult>& GetRoundResults() const { return RoundResults; }
+
 	/// <summary>
-	/// 현재 Round의 결과 setting (Player 또는 Enemy 사망 시 호출 처리될 예정)
+	/// Combat enemy나 Combat Player 사망 시, Round Result 세팅 처리
 	/// </summary>
-	/// <param name="RoundResult"></param>
-	void SetCurrentRoundResult(EPlayerCombatRoundResult RoundResult);
+	/// <returns> : Setting될 수 없는 상황이라면 return false </returns>
+	bool SetCurrentRoundResultOnCharacterDead(bool bIsDraw);
 
 	void SetPlayerCombatFieldState(EPlayerCombatFieldState FieldState);
+	EPlayerCombatFieldState GetPlayerCombatFieldState() const { return CombatFieldState; }
 
 private: // Combat Start 처리 관련 (OpeningGate Interaction)
 	

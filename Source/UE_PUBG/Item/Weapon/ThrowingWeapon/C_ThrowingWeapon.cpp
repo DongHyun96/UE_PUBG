@@ -49,8 +49,11 @@
 
 #include "Singleton/C_GameSceneManager.h"
 #include "Singleton/C_GameInstance.h"
+#include "TrainingLevel/C_TrainingGroundManager.h"
+#include "TrainingLevel/CombatField/C_CombatFieldManager.h"
+#include "TrainingLevel/CombatField/C_PlayerCombatFieldManager.h"
 
-const float AC_ThrowingWeapon::UP_DIR_BOOST_OFFSET = 500.f;
+  const float AC_ThrowingWeapon::UP_DIR_BOOST_OFFSET = 500.f;
 
 int AC_ThrowingWeapon::ThrowingWeaponCount{};
 
@@ -865,7 +868,27 @@ void AC_ThrowingWeapon::Explode()
 		return;
 	}
 
+	// TrainingGround의 경우이고, PlayerCombat이 진행 중인 경우, Grenade에 의한 Draw 처리를 위하여 Delegate 구독
+	if (AC_TrainingGroundManager* TrainingGroundManager = GAMESCENE_MANAGER->GetTrainingGroundManager())
+	{
+		UC_PlayerCombatFieldManager* PlayerCombatFieldManager =
+			TrainingGroundManager->GetCombatFieldManager()->GetPlayerCombatFieldManager();
+		
+		if (PlayerCombatFieldManager->GetPlayerCombatFieldState() == EPlayerCombatFieldState::PlayingRound)
+		{
+			AC_GrenadeExplode::OnPlayerCombatFieldRoundDrawByGrenadeExplode.BindUObject
+			(
+				PlayerCombatFieldManager,
+				&UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead
+			);
+		}
+	}
+	
 	bExploded = ExplodeStrategy->UseStrategy(this);
+
+	if (AC_GrenadeExplode::OnPlayerCombatFieldRoundDrawByGrenadeExplode.IsBound())
+		AC_GrenadeExplode::OnPlayerCombatFieldRoundDrawByGrenadeExplode.Unbind();
+	
 	if (GetAttachParentActor()) ReleaseOnGround(); // 손에서 아직 떠나지 않았을 때
 	
 	if (bExploded && ThrowingWeaponSoundData->ExplosionSound)

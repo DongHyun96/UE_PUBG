@@ -8,6 +8,8 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "AI/C_BehaviorComponent.h"
+#include "AI/C_EnemyAIController.h"
 #include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
@@ -112,9 +114,15 @@ void UC_PlayerCombatFieldManager::TickComponent(float DeltaTime, ELevelTick Tick
 		// 남은 Round Time UI로 띄우기
 		PlayerCombatFieldWidget->SetTopRoundTimerText(CombatFieldTimer);
 
+		// 남은 시간동안 CombatFieldCharacter 사망 처리 되어 Round Result가 처리되었을 때
+		// Round 끝 처리
+		if (RoundResults[CurrentRound] != EPlayerCombatRoundResult::NotPlayed)
+			SetPlayerCombatFieldState(EPlayerCombatFieldState::RoundEnd);
+		
 		if (CombatFieldTimer > 0.f) return;
 
-		// Round 끝 처리
+		// CombatFieldTimer 끝, Round 끝 처리
+		SetCurrentRoundResultOnCharacterDead(true); // Draw 처리
 		SetPlayerCombatFieldState(EPlayerCombatFieldState::RoundEnd);
 		return;
 	}
@@ -134,7 +142,7 @@ void UC_PlayerCombatFieldManager::TickComponent(float DeltaTime, ELevelTick Tick
 	}
 }
 
-void UC_PlayerCombatFieldManager::SetCurrentRoundResult(EPlayerCombatRoundResult RoundResult)
+/*void UC_PlayerCombatFieldManager::SetCurrentRoundResult(EPlayerCombatRoundResult RoundResult)
 {
 	if (CurrentRound > RoundResults.Num())
 	{
@@ -143,6 +151,40 @@ void UC_PlayerCombatFieldManager::SetCurrentRoundResult(EPlayerCombatRoundResult
 	}
 	
 	RoundResults[CurrentRound] = RoundResult;
+}*/
+
+bool UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead(bool bIsDraw)
+{
+	if (CurrentRound > RoundResults.Num())
+	{
+		UC_Util::Print("From UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead : CurrentRound exceeds total round count", FColor::Red, 10.f);		
+		return false;
+	}
+
+	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+	
+	if (CombatFieldEnemy->GetMainState() != EMainState::DEAD && Player->GetMainState() != EMainState::DEAD)
+	{
+		UC_Util::Print("From UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead : Nobody dead!", FColor::Red, 10.f);		
+		return false;
+	}
+
+	if (bIsDraw)
+	{
+		RoundResults[CurrentRound] = EPlayerCombatRoundResult::Draw;
+		return true;
+	}
+
+	if (Player->GetMainState() == EMainState::DEAD && CombatFieldEnemy->GetMainState() == EMainState::DEAD)
+		RoundResults[CurrentRound] = EPlayerCombatRoundResult::Draw;
+
+	if (Player->GetMainState() == EMainState::DEAD)
+		RoundResults[CurrentRound] = EPlayerCombatRoundResult::EnemyWin;
+
+	if (CombatFieldEnemy->GetMainState() == EMainState::DEAD)
+		RoundResults[CurrentRound] = EPlayerCombatRoundResult::PlayerWin;
+	
+	return true;
 }
 
 void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldState FieldState)
@@ -157,7 +199,7 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 	{
 		// TODO : FKey Interaction으로 Toggle된 Start Box 활성화
 		// 상단 나침반 활성화 etc...
-
+		
 		
 		return;
 	}
@@ -202,10 +244,43 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 		// Round Start Timer 세팅
 		CombatFieldTimer = 60.f;
 		
+		/* Combat Characters 사망 관련 Delegate 구독 */
+		GAMESCENE_MANAGER->GetPlayer()->Delegate_PlayerCombatFieldCharacterDead.BindUObject
+		(this, &UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead);
+		
+		CombatFieldEnemy->Delegate_PlayerCombatFieldCharacterDead.BindUObject
+		(this, &UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead);
+
+		// CombatFieldEnemy TargetCharacter 세팅
+		CombatFieldEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(Player);
+		
 		return;
 	}
 	case EPlayerCombatFieldState::RoundEnd:
+	{
+		/*switch (RoundResults[CurrentRound])
+		{
+		case EPlayerCombatRoundResult::NotPlayed: UC_Util::Print("Round Result : Not played!", FColor::MakeRandomColor(), 20.f);
+			break;
+		case EPlayerCombatRoundResult::PlayerWin: UC_Util::Print("Round Result : Player Win!", FColor::MakeRandomColor(), 20.f);
+			break;
+		case EPlayerCombatRoundResult::EnemyWin: UC_Util::Print("Round Result : EnemyWin!", FColor::MakeRandomColor(), 20.f);
+			break;
+		case EPlayerCombatRoundResult::Draw: UC_Util::Print("Round Result : Draw!", FColor::MakeRandomColor(), 20.f);
+			break;
+		}*/
+		GAMESCENE_MANAGER->GetPlayer()->Delegate_PlayerCombatFieldCharacterDead.Unbind();
+		CombatFieldEnemy->Delegate_PlayerCombatFieldCharacterDead.Unbind();
+
+		PlayerCombatFieldWidget->ExecuteRoundEnd(RoundResults, CurrentRound);
+
+		UC_BehaviorComponent* EnemyBehaviorComponent = CombatFieldEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent(); 
+		EnemyBehaviorComponent->SetTargetCharacter(nullptr);
+		EnemyBehaviorComponent->SetServiceType(EServiceType::IDLE);
+		EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
+		
 		return;
+	}
 	case EPlayerCombatFieldState::MatchingEnd:
 		return;
 	}

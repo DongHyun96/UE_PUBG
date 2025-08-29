@@ -14,6 +14,8 @@ DECLARE_MULTICAST_DELEGATE(FDele_PoseTransitionFin);
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FDele_CharacterDead, AC_BasicCharacter*);
 
+DECLARE_DELEGATE_RetVal_OneParam(bool, FDele_PlayerCombatFieldCharacterDead, bool);
+
 UENUM(BlueprintType)
 enum class EMainState : uint8
 {
@@ -431,10 +433,13 @@ protected: // Sprint walk state
 
 public:
 	// OnTransitionFinish에서 호출될 Multicast Delegate
-	FDele_PoseTransitionFin Delegate_OnPoseTransitionFin;
+	FDele_PoseTransitionFin Delegate_OnPoseTransitionFin{};
 
 	// CharacterDead에서 호출될 Multicast Delegate
-	FDele_CharacterDead Delegate_OnCharacterDead;
+	FDele_CharacterDead Delegate_OnCharacterDead{};
+
+	// Player CombatField에서 플레이 중인 Character가 사망했을 시, 호출될 Delegate
+	FDele_PlayerCombatFieldCharacterDead Delegate_PlayerCombatFieldCharacterDead{};
 
 protected:
 

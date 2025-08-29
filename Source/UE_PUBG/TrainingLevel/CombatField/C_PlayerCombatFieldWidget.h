@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "C_PlayerCombatFieldManager.h"
 #include "Blueprint/UserWidget.h"
 #include "C_PlayerCombatFieldWidget.generated.h"
 
+enum class EPlayerCombatRoundResult : uint8;
 /**
  * 
  */
@@ -34,6 +36,8 @@ public:
 	/// <param name="InRoundNumber"> : 현재 시작할 라운드 수 </param>
 	void ExecuteRoundStart(uint8 InRoundNumber);
 
+	void ExecuteRoundEnd(const TArray<EPlayerCombatRoundResult>& InRoundResults, uint8 InCurrentRoundNumber);
+
 public: // Top Round Timer Text 관련
 
 	/// <summary>
@@ -49,12 +53,20 @@ public: // Top Round Timer Text 관련
 	/// </summary>
 	void SetTopRoundTimerTextToZero();
 
+private:
+	
+	/// <summary>
+	/// Round End Animation이 모두 끝난 뒤 호출될 함수, 다음 Round로 진행 또는 Match End 처리 
+	/// </summary>
+	UFUNCTION()
+	void OnRoundEndAnimationEnd();
+
 protected:
 
 	UPROPERTY(meta=(BindWidget))
 	class UHorizontalBox* StartFKeyInstructionBox{};
 
-protected: // Top Round Timer 관련
+protected: // Top Round Timer 쪽 관련
 
 	UPROPERTY(meta=(BindWidget))
 	class UCanvasPanel* TopRoundTimerPanel{};
@@ -65,6 +77,11 @@ protected: // Top Round Timer 관련
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* RoundTimeSecText{};
 
+private:
+	
+	// RoundResult Dot / 각 Round에 맞게 Indexing / 주의 : Index 0는 Dummy 사용하지 말 것 
+	TArray<class UImage*> TopRoundResultDotImages{};
+	
 protected: // Round Start 관련
 
 	UPROPERTY(meta=(BindWidget))
@@ -72,5 +89,92 @@ protected: // Round Start 관련
 	
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* RoundStartAnimation{};
+
+private: // Round End 관련
+
+	// Round Result Dot image / 각 Round에 맞게 Indexing / 주의 : Index 0는 Dummy 사용하지 말 것
+	TArray<UImage*> ResultPanelResultDotImages{};
+
+protected:
+	
+	UPROPERTY(meta=(BindWidget))
+	UCanvasPanel* RoundResultPanel{};
+
+	UPROPERTY(meta=(BindWidget))
+	UCanvasPanel* RoundResultBackgroundBlurPanel{};
+	
+	UPROPERTY(meta=(BindWidget))
+	UImage* RoundResultWinLoseBlurImage{}; // Background Blur 색상 image
+	
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* RoundResultRoundText{}; // Round 1, 2, 3
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* RoundResultRoundWinLoseText{}; // Middle Round Result Text (WIN/LOSE/DRAW)
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* RoundResultPlayerNameText{}; // Round Result의 Player Name Text
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* RoundResultPlayerWinCountText{}; // Round Result의 Player Win count text
+	
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* RoundResultEnemyWinCountText{}; // Round Result의 Enemy Win count text
+
+	UPROPERTY(meta=(BindWidget))
+	UImage* RoundResultPlayerWinCountBar{}; // Player Win Count Text 하단의 Bar Image
+
+	UPROPERTY(meta=(BindWidget))
+	UImage* RoundResultEnemyWinCountBar{}; // Enemy Win Count Text 하단의 Bar Image
+	
+private:
+
+	const TMap<EPlayerCombatRoundResult, FLinearColor> ResultDotColors =
+	{
+		{EPlayerCombatRoundResult::Draw,		FLinearColor(0.f, 0.f, 0.f, 0.5f)},
+		{EPlayerCombatRoundResult::PlayerWin,	FLinearColor(0.f, 0.f, 1.f, 0.5f)},
+		{EPlayerCombatRoundResult::EnemyWin,	FLinearColor(1.f, 0.f, 0.f, 0.5f)},
+		{EPlayerCombatRoundResult::NotPlayed,	FLinearColor(0.f, 0.f, 0.f, 0.5f)}
+	};
+
+	const TMap<EPlayerCombatRoundResult, FLinearColor> RoundResultPanelBGBlurColors =
+	{
+		{EPlayerCombatRoundResult::Draw,		FLinearColor(0.f, 0.f, 0.f, 0.5f)},
+		{EPlayerCombatRoundResult::PlayerWin,	FLinearColor(0.f, 0.438498f, 1.f, 0.5f)},
+		{EPlayerCombatRoundResult::EnemyWin,	FLinearColor(1.f, 0.119792f, 0.161266f, 0.5f)},
+		{EPlayerCombatRoundResult::NotPlayed,	FLinearColor(0.f, 0.f, 0.f, 0.5f)}
+	};
+
+protected: // Animations
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* Round1ResultTopDotAnimation{};
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* Round2ResultTopDotAnimation{};
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* Round3ResultTopDotAnimation{};
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* Round1CompleteAnimation{};
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* Round2CompleteAnimation{};
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* Round3CompleteAnimation{};
+	
+private:
+
+	// Index 0 dummy (Round 수에 맞추어 초기화)
+	TArray<UWidgetAnimation*> TopRoundResultDotAnimations{};
+	
+	// Index 0 dummy (Round 수에 맞추어 초기화)
+	TArray<UWidgetAnimation*> RoundCompleteAnimations{};
+
+private:
+
+	FWidgetAnimationDynamicEvent RoundEndAnimationEndDelegate{};
 	
 };

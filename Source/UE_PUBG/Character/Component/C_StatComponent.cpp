@@ -16,6 +16,9 @@
 #include "HUD/C_BloodScreenWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Components/ProgressBar.h"
+#include "TrainingLevel/C_TrainingGroundManager.h"
+#include "TrainingLevel/CombatField/C_CombatFieldManager.h"
+#include "TrainingLevel/CombatField/C_PlayerCombatFieldManager.h"
 #include "Utility/C_Util.h"	
 
 const float UC_StatComponent::MAX_HP		= 100.f;
@@ -144,7 +147,16 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 	// 사망
 	if (CurHP <= 0.f)
 	{
-		if(Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠 ((현재 Enemy만 처리))
+		DeathDamageCauser = KillFeedDescriptor.DamageCauser;
+		
+		// if(Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠 ((현재 Enemy만 처리))
+		if (AC_TrainingGroundManager* TrainingGroundManager = GAMESCENE_MANAGER->GetTrainingGroundManager())
+		{
+			// TrainingGround의 PlayerCombatField fight 진행 중이지 않는 상황을 제외하고 사망 처리는 모두 꺼둠
+			if (TrainingGroundManager->GetCombatFieldManager()->GetPlayerCombatFieldManager()->
+				GetPlayerCombatFieldState() == EPlayerCombatFieldState::Idle)
+				return true;
+		}
 
 		if (GAMESCENE_MANAGER->GetIsGameOver()) return true;
 		
