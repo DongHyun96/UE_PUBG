@@ -43,9 +43,10 @@ void UC_PlayerCombatFieldWidget::NativeConstruct()
 		else UC_Util::Print("From UC_PlayerCombatFieldWidget::NativeConstruct : " + MiddleRoundResultDotWidgetString + " not found!", FColor::Red, 10.f);
 	}
 
-	// Set Player names // TODO : 나머지 Player 이름도 Setting을 해주어야 함
+	// Set Player names
 	FString PlayerName = GAMESCENE_MANAGER->GetPlayer()->GetCharacterName();
 	RoundResultPlayerNameText->SetText(FText::FromString(PlayerName));
+	MatchResultPanelPlayerName->SetText(FText::FromString(PlayerName));
 
 	// WidgetAnimation의 경우 BindWidgetAnim을 통하여서만 멤버변수를 초기화할 수 있기 때문에 아래처럼 초기화 시켜둠
 	TopRoundResultDotAnimations.Add(Round1ResultTopDotAnimation);
@@ -182,6 +183,64 @@ void UC_PlayerCombatFieldWidget::ExecuteRoundEnd
 		
 		PlayAnimation(RoundCompleteAnimations[InCurrentRoundNumber]);
 	}, 2.f, false);
+}
+
+void UC_PlayerCombatFieldWidget::ExecuteMatchEnd
+(
+	TArray<FPlayerCombatRoundResult>& RoundResults,
+	uint8 PlayerWinCount, uint8 EnemyWinCount
+)
+{
+	MatchResultPlayerScoreText->SetText(FText::AsNumber(PlayerWinCount));
+	MatchResultEnemyScoreText->SetText(FText::AsNumber(EnemyWinCount));
+
+	FString MatchResultString = (PlayerWinCount == EnemyWinCount) ? "Draw" : (PlayerWinCount > EnemyWinCount) ? "Win" : "Defeat"; 
+	MatchResultText->SetText(FText::FromString(MatchResultString));
+
+	if (RoundResults.Num() != MatchResultPanelRoundResults.Num())
+	{
+		UC_Util::Print
+		(
+			"From UC_PlayerCombatFieldWidget::ExecuteMatchEnd : Received RoundResults Array Num not matching with Widget RoundResults Num",
+			FColor::Red, 10.f
+		);
+		return;
+	}
+
+	for (int i = 1; i < MatchResultPanelRoundResults.Num(); ++i)
+	{
+		FMatchResultPanelRoundResult& RoundResultWidget = MatchResultPanelRoundResults[i];
+		
+		if (RoundResults[i].RoundResult == EPlayerCombatRoundResult::NotPlayed)
+		{
+			RoundResultWidget.PlayerRoundResultPanel->SetVisibility(ESlateVisibility::Hidden);			
+			RoundResultWidget.EnemyRoundResultPanel->SetVisibility(ESlateVisibility::Hidden);
+
+			RoundResultWidget.RoundSpentMinuteText->SetText(FText::FromString("00"));
+			RoundResultWidget.RoundSpentSecondText->SetText(FText::FromString("00"));
+			continue;
+		}
+
+		RoundResultWidget.PlayerRoundResultPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);			
+		RoundResultWidget.EnemyRoundResultPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+		const int SpentTime		= static_cast<int>(RoundResults[i].RoundPlayTime) + 1;
+		const int SpentMinute 	= SpentTime / 60.f;
+		const int SpentSecond 	= SpentTime % 60;
+		
+		RoundResultWidget.RoundSpentMinuteText->SetText(FText::AsNumber(SpentMinute));
+		RoundResultWidget.RoundSpentSecondText->SetText(FText::AsNumber(SpentSecond));
+
+		/*static const TMap<EPlayerCombatRoundResult, TPair<FString, FString>> RoundResultTexts =
+		{
+			{EPlayerCombatRoundResult::Draw, {"D", "DRAW"}},
+			{EPlayerCombatRoundResult::PlayerWin, {"D", "DRAW"}},
+			{EPlayerCombatRoundResult::Draw, {"D", "DRAW"}},
+		};*/
+
+		// FString PlayerResultMain = RoundResults[i].RoundResult == EPlayerCombatRoundResult::Draw ? "D"
+
+	}
 }
 
 void UC_PlayerCombatFieldWidget::SetTopRoundTimerText(float LeftRoundTime)

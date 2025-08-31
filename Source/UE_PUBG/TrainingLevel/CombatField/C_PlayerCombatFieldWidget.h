@@ -9,6 +9,23 @@
 #include "C_PlayerCombatFieldWidget.generated.h"
 
 enum class EPlayerCombatRoundResult : uint8;
+
+// MatchResult Panel의 각 Round 정보 Widget들 모음
+struct FMatchResultPanelRoundResult
+{
+	UTextBlock* RoundPlayerResultMainText{}; // W D L
+	UTextBlock* RoundPlayerResultSubText{}; // WIN DRAW LOSE
+
+	UTextBlock* RoundEnemyResultMainText{}; // W D L
+	UTextBlock* RoundEnemyResultSubText{};	// WIN DRAW LOSE
+
+	UTextBlock* RoundSpentMinuteText{};
+	UTextBlock* RoundSpentSecondText{};
+
+	class UCanvasPanel* PlayerRoundResultPanel{};
+	UCanvasPanel* EnemyRoundResultPanel{};
+};
+
 /**
  * 
  */
@@ -40,6 +57,8 @@ public:
 	void ExecuteRoundStart(uint8 InRoundNumber);
 
 	void ExecuteRoundEnd(EPlayerCombatRoundResult InRoundResult, uint8 InCurrentRoundNumber, uint8 PlayerWinCount, uint8 EnemyWinCount);
+
+	void ExecuteMatchEnd(TArray<FPlayerCombatRoundResult>& RoundResults, uint8 PlayerWinCount, uint8 EnemyWinCount);
 
 public: // Top Round Timer Text 관련
 
@@ -132,8 +151,27 @@ protected:
 
 	UPROPERTY(meta=(BindWidget))
 	UImage* RoundResultEnemyWinCountBar{}; // Enemy Win Count Text 하단의 Bar Image
+
+protected: // Match End 관련
 	
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* MatchResultPanelPlayerName{};
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* MatchResultPlayerScoreText{};
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* MatchResultEnemyScoreText{};
+	
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* MatchResultText{}; // Win Defeat Draw
+
 private:
+
+	// Match Result Panel의 각 Round ResultPanel 내용 (VerticalBox안의 내용들)
+	TArray<FMatchResultPanelRoundResult> MatchResultPanelRoundResults{};
+	
+private: // Colors
 
 	const TMap<EPlayerCombatRoundResult, FLinearColor> ResultDotColors =
 	{
