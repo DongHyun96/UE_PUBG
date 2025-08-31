@@ -161,18 +161,16 @@ AC_EquipableItem* UC_InvenComponent::SetSlotEquipment(EEquipSlot InSlot, AC_Equi
 
 AC_Item* UC_InvenComponent::FindMyItem(AC_Item* item)
 {
-	if (!item) return nullptr; // 유효성 검사
+	if (!IsValid(item)) return nullptr; // 유효성 검사
 
-	if (TArray<AC_Item*>* ItemArrayPtr = MyItems.Find(item->GetItemCode()))
-	{
-		if (AC_Item* FoundItemPtr = ItemArrayPtr->Last()) 
-		{
-			return FoundItemPtr; 
-		}
-	}
+	TArray<AC_Item*>* ItemArrayPtr = MyItems.Find(item->GetItemCode());
+	if (!ItemArrayPtr) return nullptr;
+	if (ItemArrayPtr->IsEmpty()) return nullptr; // 배열이 비어 있지 않은지 확인
+
+	AC_Item* FoundItemPtr = ItemArrayPtr->Last();
+	return IsValid(FoundItemPtr) ? FoundItemPtr : nullptr;
 
 	//TODO : CheckPoint - 장착, 사용 아이템의 위치가 어디에 있는지 확인할 것.
-	return nullptr;
 }
 
 AC_Item* UC_InvenComponent::FindMyItemByName(const FName& itemName)
@@ -387,25 +385,33 @@ void UC_InvenComponent::AddInvenCurVolume(float ItemVolume)
 
 void UC_InvenComponent::ClearInventory()
 {
+	// Clear MyItems
 	for (TPair<FName, TArray<AC_Item*>>& Pair : MyItems)
 	{
 		for (AC_Item* Item : Pair.Value)
 		{
-			Item->MoveToAround(OwnerCharacter, Item->GetItemCurStack());
-			Item->DestroyItem();
+			// Item->MoveToAround(OwnerCharacter, Item->GetItemCurStack());
+			Item->Destroy();
 		}
 
 		Pair.Value.Empty();
 	}
 
+	// Clear EquipmentItems
+	for (TPair<EEquipSlot, AC_EquipableItem*>& Pair : EquipmentItems)
+	{
+		AC_EquipableItem* Item = Pair.Value;
+		if (!Item) continue;
+		
+		// Item->MoveToAround(OwnerCharacter, Item->GetItemCurStack());
+		Item->Destroy();
+		
+		Pair.Value = nullptr;
+	}
+
 	// 일괄적으로 Inven UI 업데이트 처리
 	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
-	{
-		GetWorld()->GetTimerManager().SetTimerForNextTick([Player]()
-		{
-			Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
-		});
-	}
+		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 }
 
 float UC_InvenComponent::GetVestVolume()

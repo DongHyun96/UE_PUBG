@@ -60,11 +60,29 @@ public:
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+private:
+	
+	/// <summary>
+	/// 라운드 시작 전 사전 준비
+	/// </summary>
+	void InitRound();
+
+public:
+
+	/// <summary>
+	/// Enemy vs Enemy 라운드 시작하기
+	/// </summary>
+	void StartRound();
+
+	/// <summary>
+	/// Enemy Vs Enemy Round 멈추기 (둘 다 Wait 상태로 두고, TargetCharacter 해제)
+	/// </summary>
+	void StopRound();
+
 public:
 
 	void SetOwnerCombatFieldManager(class AC_CombatFieldManager* InCombatFieldManager) { OwnerCombatFieldManager = InCombatFieldManager; }
 
-	void SetIsPlaying(bool InIsPlaying) { bIsPlaying = InIsPlaying; }
 	bool GetIsPlaying() const { return bIsPlaying; }
 
 	ESpectatorType GetCurrentSpectatorType() const { return CurrentSpectatorType; }
@@ -93,6 +111,15 @@ private:
 	/// </summary>
 	void ApplySpectatorChanges();
 
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
+	TArray<AC_Enemy*> CombatEnemies{};
+
+private: // Spawn(Respawn) 관련
+
+	TArray<FTransform> SpawnTransforms{};
+
 private:
 
 	AC_CombatFieldManager* OwnerCombatFieldManager{};
@@ -106,7 +133,7 @@ private:
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSubclassOf<APawn> FreeSpectatorPawnClass{};
+	TSubclassOf<APawn> FreeSpectatorClass{};
 
 private:
 

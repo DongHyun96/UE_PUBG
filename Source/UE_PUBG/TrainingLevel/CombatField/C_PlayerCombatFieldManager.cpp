@@ -3,28 +3,34 @@
 
 #include "C_PlayerCombatFieldManager.h"
 
+#include "C_CombatFieldManager.h"
 #include "C_PlayerCombatFieldWidget.h"
+#include "EnhancedInputComponent.h"
+#include "InputActionValue.h"
+#include "InputMappingContext.h"
+#include "AI/C_BehaviorComponent.h"
+#include "AI/C_EnemyAIController.h"
 #include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
 #include "Character/Component/C_InputComponent.h"
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/Component/C_InvenSystem.h"
+#include "Character/Component/C_PlayerController.h"
 #include "Character/Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Door/C_TutorialGate.h"
+#include "HUD/C_AmmoWidget.h"
+#include "HUD/C_HUDWidget.h"
+#include "HUD/C_InformWidget.h"
+#include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_GunSlotWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_MainGunSlotWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_SubGunSlotWidget.h"
 #include "InvenUI/Panel/ItemPanel/EquipmentPanel/C_EquipmentPanelWidget.h"
 #include "Item/Attachment/C_AttachableItem.h"
-#include "Item/ConsumableItem/C_ConsumableItem.h"
-#include "Item/Equipment/C_BackPack.h"
-#include "Item/Equipment/C_EquipableItem.h"
-#include "Item/Equipment/C_Helmet.h"
-#include "Item/Equipment/C_Vest.h"
-#include "Item/Weapon/C_Weapon.h"
-#include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Kismet/GameplayStatics.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
@@ -37,6 +43,21 @@ UC_PlayerCombatFieldManager::UC_PlayerCombatFieldManager()
 void UC_PlayerCombatFieldManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	/* PlayerVsEnemySpawnTransform 저장 */
+	
+	const UCapsuleComponent* VersusPlayerSpawnCapsuleComponent =
+		Cast<UCapsuleComponent>(OwnerCombatFieldManager->GetDefaultSubobjectByName(TEXT("VersusPlayerSpawnTransform")));
+	
+	if (!VersusPlayerSpawnCapsuleComponent) UC_Util::Print("From AC_PlayerCombatFieldManager::BeginPlay : VersusPlayerSpawnCapsuleComponent missing!", FColor::Red, 10.f);
+	else SpawnTransforms.Add(VersusPlayerSpawnCapsuleComponent->GetComponentTransform());
+
+	if (CombatFieldEnemy)
+	{
+		SpawnTransforms.Add(CombatFieldEnemy->GetActorTransform());
+		if (CombatFieldEnemy->GetBehaviorType() != EEnemyBehaviorType::CombatTest)
+			UC_Util::Print("From AC_CombatFieldManager::BeginPlay : VersusPlayerEnemy Behavior Type is not COMBAT", FColor::Red, 10.f);
+	}
 
 	if (!CombatFieldStartGate)
 	{
@@ -51,11 +72,261 @@ void UC_PlayerCombatFieldManager::BeginPlay()
 		
 		CombatFieldStartGate->ToggleOpeningBoxTriggerEnabled(true);
 	});
+
+	if (IsValid(LookAction))
+	{
+		AC_PlayerController* PC = Cast<AC_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PC->InputComponent))
+			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &UC_PlayerCombatFieldManager::OnLookInput);
+	}
+	else UC_Util::Print("From UC_PlayerCombatFieldManager::BeginPlay : Invalid LookAction!", FColor::Red, 10.f);
+
+	// Round 숫자로 Index를 맞출 예정이라 3판 2선이어도 4개를 집어넣음
+	RoundResults.Init(FPlayerCombatRoundResult(), 4);
+	
+	// Enemy Character Destroy delegate 구독 (CharacterDestroy 처리를 막기 위함)
+	CombatFieldEnemy->Delegate_OnCombatCharacterDestroy.BindUObject(this, &UC_PlayerCombatFieldManager::OnCombatCharacterDestroy);
 }
 
 void UC_PlayerCombatFieldManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	switch (CombatFieldState)
+	{
+	case EPlayerCombatFieldState::Idle:
+		return;
+	case EPlayerCombatFieldState::WaitingRoundStart:
+	{
+		CombatFieldTimer -= DeltaTime;
+
+		// 게임 시작까지 남은 시간 UI로 띄우기
+		UC_InformWidget* InstructionWidget = GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget(); 
+		const int TimeLeft = static_cast<int>(CombatFieldTimer) + 1; 
+		InstructionWidget->SetGameStartTimerText(TimeLeft);
+
+		if (CombatFieldTimer > 0.f) return;
+
+		// Round 시작 처리
+		SetPlayerCombatFieldState(EPlayerCombatFieldState::PlayingRound);
+		return;
+	}
+	case EPlayerCombatFieldState::PlayingRound:
+	{
+		CombatFieldTimer -= DeltaTime;
+
+		// 남은 Round Time UI로 띄우기
+		PlayerCombatFieldWidget->SetTopRoundTimerText(CombatFieldTimer);
+
+		// 남은 시간동안 CombatFieldCharacter 사망 처리 되어 Round Result가 처리되었을 때
+		// Round 끝 처리
+		if (RoundResults[CurrentRound].RoundResult != EPlayerCombatRoundResult::NotPlayed)
+		{
+			RoundResults[CurrentRound].RoundPlayTime = 60.f - CombatFieldTimer; // PlayTime 기록
+			SetPlayerCombatFieldState(EPlayerCombatFieldState::RoundEnd);
+		}
+		
+		if (CombatFieldTimer > 0.f) return;
+
+		// CombatFieldTimer 끝, Round 끝 처리
+		RoundResults[CurrentRound].RoundResult = EPlayerCombatRoundResult::Draw;
+		RoundResults[CurrentRound].RoundPlayTime = 60.f;
+		SetPlayerCombatFieldState(EPlayerCombatFieldState::RoundEnd);
+		return;
+	}
+	case EPlayerCombatFieldState::RoundEnd:
+	{
+		// Round 결과 처리
+		return;
+	}
+	case EPlayerCombatFieldState::MatchingEnd:
+		return;
+	}
+}
+
+/*void UC_PlayerCombatFieldManager::SetCurrentRoundResult(EPlayerCombatRoundResult RoundResult)
+{
+	if (CurrentRound > RoundResults.Num())
+	{
+		UC_Util::Print("From UC_PlayerCombatFieldManager::SetCurrentRoundResult : CurrentRound exceeds total round count", FColor::Red, 10.f);		
+		return;
+	}
+	
+	RoundResults[CurrentRound] = RoundResult;
+}*/
+
+bool UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead(bool bIsDraw)
+{
+	if (CurrentRound > RoundResults.Num())
+	{
+		UC_Util::Print("From UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead : CurrentRound exceeds total round count", FColor::Red, 10.f);		
+		return false;
+	}
+
+	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+	
+	if (CombatFieldEnemy->GetMainState() != EMainState::DEAD && Player->GetMainState() != EMainState::DEAD)
+	{
+		UC_Util::Print("From UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead : Nobody dead!", FColor::Red, 10.f);		
+		return false;
+	}
+
+	if (bIsDraw)
+	{
+		RoundResults[CurrentRound].RoundResult = EPlayerCombatRoundResult::Draw;
+		return true;
+	}
+
+	if (Player->GetMainState() == EMainState::DEAD && CombatFieldEnemy->GetMainState() == EMainState::DEAD)
+		RoundResults[CurrentRound].RoundResult = EPlayerCombatRoundResult::Draw;
+
+	if (Player->GetMainState() == EMainState::DEAD)
+		RoundResults[CurrentRound].RoundResult = EPlayerCombatRoundResult::EnemyWin;
+
+	if (CombatFieldEnemy->GetMainState() == EMainState::DEAD)
+		RoundResults[CurrentRound].RoundResult = EPlayerCombatRoundResult::PlayerWin;
+	
+	return true;
+}
+
+void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldState FieldState)
+{
+	CombatFieldState = FieldState;
+
+	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+
+	switch (FieldState)
+	{
+	case EPlayerCombatFieldState::Idle:
+	{
+		// TODO : FKey Interaction으로 Toggle된 Start Box 활성화, Player OnCombatCharacter_Destroy delegate 구독 해제
+		// 상단 나침반 활성화 etc...
+		return;
+	}
+	case EPlayerCombatFieldState::WaitingRoundStart:
+	{
+		// Match Round에 맞추어 기본 설정들 처리
+		OwnerCombatFieldManager->InitRoundForCombatCharacter(Player, SpawnTransforms[0]);
+		OwnerCombatFieldManager->InitRoundForCombatCharacter(CombatFieldEnemy, SpawnTransforms[1]);
+	
+		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+
+		PlayerCombatFieldWidget->SetTopRoundText(CurrentRound);
+
+		// Round Start Timer 초기화 및 초 세기 (UI 띄우기)
+		CombatFieldTimer = 5.f;
+
+		UC_InformWidget* InformWidget = Player->GetHUDWidget()->GetInformWidget();
+		InformWidget->ToggleGameStartTimerVisibility(true);
+		InformWidget->SetGameStartTimerText(static_cast<int>(CombatFieldTimer) + 1);
+
+		GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
+
+		// Player Main IMC Round Start 이전까지 막고, 대체 IMC로 대체
+		AC_PlayerController* PlayerController = Player->GetController<AC_PlayerController>();
+		UInputMappingContext* PlayerMainIMC = Player->GetInputComponent()->MappingContext;
+		PlayerController->RemoveIMCFromSubsystem(PlayerMainIMC);
+		PlayerController->AddIMCToSubsystem(IMC_WaitRound, 0);
+
+		// 이전 Round에서 달리는 상태로 RoundWaiting이 걸렸을 때, 달리는 모션 방지
+		GetWorld()->GetTimerManager().SetTimerForNextTick([Player]()
+		{
+			Player->SetNextSpeed(0.f);
+		});
+		
+		
+		return;
+	}
+	case EPlayerCombatFieldState::PlayingRound:
+	{
+		AC_PlayerController* PlayerController = Player->GetController<AC_PlayerController>();
+		UInputMappingContext* PlayerMainIMC = Player->GetInputComponent()->MappingContext;
+		
+		PlayerController->RemoveIMCFromSubsystem(IMC_WaitRound);
+		PlayerController->AddIMCToSubsystem(PlayerMainIMC, 0);
+		
+		UC_InformWidget* InformWidget = Player->GetHUDWidget()->GetInformWidget();
+		InformWidget->ToggleGameStartTimerVisibility(false);
+
+		PlayerCombatFieldWidget->ExecuteRoundStart(CurrentRound);
+		
+		// Round Start Timer 세팅
+		CombatFieldTimer = 60.f;
+		
+		/* Combat Characters 사망 관련 Delegate 구독 */
+		GAMESCENE_MANAGER->GetPlayer()->Delegate_PlayerCombatFieldCharacterDead.BindUObject
+		(this, &UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead);
+		
+		CombatFieldEnemy->Delegate_PlayerCombatFieldCharacterDead.BindUObject
+		(this, &UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead);
+
+		// CombatFieldEnemy TargetCharacter 세팅
+		// CombatFieldEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(Player);
+		
+		return;
+	}
+	case EPlayerCombatFieldState::RoundEnd:
+	{
+		/*switch (RoundResults[CurrentRound])
+		{
+		case EPlayerCombatRoundResult::NotPlayed: UC_Util::Print("Round Result : Not played!", FColor::MakeRandomColor(), 20.f);
+			break;
+		case EPlayerCombatRoundResult::PlayerWin: UC_Util::Print("Round Result : Player Win!", FColor::MakeRandomColor(), 20.f);
+			break;
+		case EPlayerCombatRoundResult::EnemyWin: UC_Util::Print("Round Result : EnemyWin!", FColor::MakeRandomColor(), 20.f);
+			break;
+		case EPlayerCombatRoundResult::Draw: UC_Util::Print("Round Result : Draw!", FColor::MakeRandomColor(), 20.f);
+			break;
+		}*/
+
+		// 남은 Round Time 0으로 초기화
+		PlayerCombatFieldWidget->SetTopRoundTimerTextToZero();
+		
+		GAMESCENE_MANAGER->GetPlayer()->Delegate_PlayerCombatFieldCharacterDead.Unbind();
+		CombatFieldEnemy->Delegate_PlayerCombatFieldCharacterDead.Unbind();
+
+		// 현재 총 스코어 settings
+		if (RoundResults[CurrentRound].RoundResult == EPlayerCombatRoundResult::EnemyWin)  ++EnemyWinCount;
+		if (RoundResults[CurrentRound].RoundResult == EPlayerCombatRoundResult::PlayerWin) ++PlayerWinCount;
+
+		if (RoundResults[CurrentRound].RoundResult == EPlayerCombatRoundResult::NotPlayed)
+			UC_Util::Print("From UC_PlayerCombatFieldManager::SetPlayerCombatFieldState to RoundEnd -> RoundResult notPlayed received!", FColor::Red, 10.f);
+
+		PlayerCombatFieldWidget->ExecuteRoundEnd(RoundResults[CurrentRound].RoundResult, CurrentRound, PlayerWinCount, EnemyWinCount);
+
+		UC_BehaviorComponent* EnemyBehaviorComponent = CombatFieldEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent(); 
+		EnemyBehaviorComponent->SetTargetCharacter(nullptr);
+		EnemyBehaviorComponent->SetServiceType(EServiceType::IDLE);
+		EnemyBehaviorComponent->SetIdleTaskType(EIdleTaskType::WAIT);
+		
+		return;
+	}
+	case EPlayerCombatFieldState::MatchingEnd:
+	{
+		UC_Util::Print("Matching End", FColor::MakeRandomColor(), 10.f);
+	}
+	}
+}
+
+void UC_PlayerCombatFieldManager::OnRoundUIRoutineFinished()
+{
+	if (CurrentRound >= 3) // 3판 2선 경기 (3판 모두 채웠을 때)
+	{
+		SetPlayerCombatFieldState(EPlayerCombatFieldState::MatchingEnd);
+		return;
+	}
+
+	// 3판을 아직 다 채우지 못한 상황
+	
+	if (PlayerWinCount > 1 || EnemyWinCount > 1) // 2승을 둘 중 한명이라도 거두었을 때
+	{
+		SetPlayerCombatFieldState(EPlayerCombatFieldState::MatchingEnd);
+		return;
+	}
+
+	// 라운드 수 올리고, 다음 라운드 준비 처리
+	++CurrentRound;
+	SetPlayerCombatFieldState(EPlayerCombatFieldState::WaitingRoundStart);
 }
 
 void UC_PlayerCombatFieldManager::OnGateOpeningBoxBeginOverlap
@@ -95,186 +366,62 @@ bool UC_PlayerCombatFieldManager::OnStartGateFKeyInteraction()
 	// TODO : Match 끝난 뒤, 다시 활성화 시켜주기 (Match 끝나면 CombatField에서 나가되, OpeningGateBox 바깥에 Player 두기)
 	CombatFieldStartGate->ToggleOpeningBoxTriggerEnabled(false);
 
-	UC_Util::Print("START PLAYER COMBAT FIELD", FColor::MakeRandomColor(), 10.f);
+	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+	
+	// Player Character Destroy delegate 구독 (CharacterDestroy 처리를 막기 위함)
+	Player->Delegate_OnCombatCharacterDestroy.BindUObject(this, &UC_PlayerCombatFieldManager::OnCombatCharacterDestroy);
 
 	/* Init Matching */
 		
-	// Round Start 전처리 때 계속 사용될 예정
-	
-	/*
-	 * Player Inven check -> Combat에 필요한 아이템으로 초기화
-	 * 초기화할 때 이미 아이템(EquipmentItem, Weapon 등 모든 아이템들)이 존재한다면, 개수만 조정해서 재활용할 것
-	 * 없다면 새로 Spawn시켜서 Player inven 및 EquippedComponent에 장착해주기
-	 * 불필요한 아이템이 존재한다면 삭제 처리하기
-	 */
-	InitPlayerCombatItems();
-	
-	// Player Enemy Start 위치로 초기화
-	
-	// Player 특정 input들(공격 처리, 이동 등) Round Start 이전까지 막기
-	// Round Start Timer 초기화 및 초 세기 (UI 띄우기)
+	// Player Inven check -> Combat에 필요한 아이템으로 초기화
 
+
+	// Combat에 필요한 아이템으로 Player 아이템 초기화
+	Player->GetInvenComponent()->ClearInventory();
+	Player->GetEquippedComponent()->ClearEquippedWeapons();
+	CombatFieldEnemy->GetItemSpawnerHelper()->SpawnDefaultWeaponsAndItemsForCombatFieldCharacter(Player);
+
+	// Player 총기 부착물 추가 부착 처리
+	FActorSpawnParameters SpawnParam{};
+	SpawnParam.Owner = Player;
+	
+	// Spawn AR Attachables
+	AC_AttachableItem* VertGrip 	= GetWorld()->SpawnActor<AC_AttachableItem>(GunAttachmentClasses[EAttachmentNames::VERTGRIP],	 SpawnParam);
+	AC_AttachableItem* Compensator	= GetWorld()->SpawnActor<AC_AttachableItem>(GunAttachmentClasses[EAttachmentNames::COMPENSATOR], SpawnParam);
+	AC_AttachableItem* RedDot		= GetWorld()->SpawnActor<AC_AttachableItem>(GunAttachmentClasses[EAttachmentNames::REDDOT],		 SpawnParam);
+	
+	// Spawn SR Attachable
+	AC_AttachableItem* Scope = GetWorld()->SpawnActor<AC_AttachableItem>(GunAttachmentClasses[EAttachmentNames::SCOPE4], SpawnParam);
+	
+	UC_GunSlotWidget*	 MainGunSlotWidget	= Player->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot();
+	UC_SubGunSlotWidget* SubGunSlotWidget	= Player->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetSubGunSlot();
+	AC_Weapon* 	 		 MainGun			= Player->GetEquippedComponent()->GetWeapons()[EWeaponSlot::MAIN_GUN];
+	AC_Weapon* 	 		 SubGun				= Player->GetEquippedComponent()->GetWeapons()[EWeaponSlot::SUB_GUN];
+
+	if (MainGun)
+	{
+		MainGunSlotWidget->SetAttachmentSlotOnDrop(MainGun, VertGrip);
+		MainGunSlotWidget->SetAttachmentSlotOnDrop(MainGun, Compensator);
+		MainGunSlotWidget->SetAttachmentSlotOnDrop(MainGun, RedDot);
+	}
+	else UC_Util::Print("From UC_PlayerCombatFieldManager::OnStartGateFKeyInteraction : Main Gun spawned failed!", FColor::Red, 10.f);
+
+	if (SubGun) SubGunSlotWidget->SetAttachmentSlotOnDrop(SubGun, Scope);
+	else UC_Util::Print("From UC_PlayerCombatFieldManager::OnStartGateFKeyInteraction : Sub Gun spawned failed!", FColor::Red, 10.f);
+
+	// 상단 나침반 가리기 및 TopRoundTimerPanel 보이게끔 처리
+	PlayerCombatFieldWidget->ToggleTopRoundTimerPanelVisibility(true);
+	Player->GetHUDWidget()->ToggleCompassBarVisibility(false);
+	// GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
+	
+	SetPlayerCombatFieldState(EPlayerCombatFieldState::WaitingRoundStart);
 	return true;
 }
 
-void UC_PlayerCombatFieldManager::InitPlayerCombatItems()
+void UC_PlayerCombatFieldManager::OnLookInput(const FInputActionValue& Value)
 {
-	// TODO : 다 Spawn 및 초기화 이후, Inven UI 통합 초기화 처리를 해주어야 업데이트 됨 
-	
-	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
-	UC_InvenComponent* InvenComponent = Player->GetInvenComponent();
-	UC_EquippedComponent* EquippedComponent = Player->GetEquippedComponent();
-	
-	FActorSpawnParameters SpawnParam{};
-	SpawnParam.Owner = Player;
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	
-	if (!IsValid(CombatFieldEnemy))
-	{
-		UC_Util::Print("From UC_PlayerCombatFieldManager::InitPlayerCombatItems : Invalid CombatFieldEnemy", FColor::Red, 10.f);
-		return;
-	}
-	
-	UC_DefaultItemSpawnerComponent* DefaultItemSpawnerHelper = CombatFieldEnemy->GetItemSpawnerHelper();
-
-	/* Init Equipment items (Vest, Helmet, Backpack) */
-
-	// Init BackPack
-	AC_EquipableItem* CurrentBackPack = InvenComponent->GetSlotEquipment(EEquipSlot::BACKPACK);
-	AC_EquipableItem* Lv3BackPack = GetWorld()->SpawnActor<AC_EquipableItem>(DefaultItemSpawnerHelper->GetBackPackClass(EEquipableItemLevel::LV3), SpawnParam);
-	Lv3BackPack->MoveToSlot(Player, Lv3BackPack->GetItemCurStack());
-	if (CurrentBackPack) CurrentBackPack->DestroyItem();
-
-	// Init Helmet
-	AC_EquipableItem* CurrentHelmet = InvenComponent->GetSlotEquipment(EEquipSlot::HELMET);
-	AC_EquipableItem* Lv3Helmet = GetWorld()->SpawnActor<AC_EquipableItem>(DefaultItemSpawnerHelper->GetHelmetClass(EEquipableItemLevel::LV3), SpawnParam);
-	Lv3Helmet->MoveToSlot(Player, Lv3Helmet->GetItemCurStack());
-	if (CurrentHelmet) CurrentHelmet->DestroyItem();
-
-	// Init Vest
-	AC_EquipableItem* CurrentVest = InvenComponent->GetSlotEquipment(EEquipSlot::VEST);
-	AC_Vest* Lv3Vest = GetWorld()->SpawnActor<AC_Vest>(DefaultItemSpawnerHelper->GetVestClass(), SpawnParam);
-	Lv3Vest->SetItemLevel(EEquipableItemLevel::LV3);
-	Lv3Vest->InitVestDatasAndStaticMesh();
-	Lv3Vest->MoveToSlot(Player, Lv3Vest->GetItemCurStack());
-	if (CurrentVest) CurrentVest->DestroyItem();
-
-	/* Init Weapons */
-
-	// Init MeleeWeapon
-	AC_Weapon* MeleeWeapon = EquippedComponent->GetWeapons()[EWeaponSlot::MELEE_WEAPON];
-	if (!MeleeWeapon)
-	{
-		MeleeWeapon = GetWorld()->SpawnActor<AC_Weapon>(DefaultItemSpawnerHelper->GetWeaponClass(EWeaponSlot::MELEE_WEAPON), SpawnParam);
-		MeleeWeapon->MoveToSlot(Player, MeleeWeapon->GetItemCurStack());
-	}
-
-	// Init Guns
-
-	// Deleting Current Guns
-	for (int i = 1; i < 3; ++i)
-	{
-		const EWeaponSlot GunWeaponSlot = static_cast<EWeaponSlot>(i);
-		
-		if (AC_Gun* CurrentGun = Cast<AC_Gun>(EquippedComponent->GetWeapons()[GunWeaponSlot]))
-		{
-			if (AC_AttachableItem* Grip = CurrentGun->GetAttachableItem()[EPartsName::GRIP])
-			{
-				Grip->MoveToAround(Player, Grip->GetItemCurStack());
-				Grip->DestroyItem();
-			}
-
-			if (AC_AttachableItem* Muzzle = CurrentGun->GetAttachableItem()[EPartsName::MUZZLE])
-			{
-				Muzzle->MoveToAround(Player, Muzzle->GetItemCurStack());
-				Muzzle->DestroyItem();
-			}
-
-			if (AC_AttachableItem* Scope = CurrentGun->GetAttachableItem()[EPartsName::SCOPE])
-			{
-				Scope->MoveToAround(Player, Scope->GetItemCurStack());
-				Scope->DestroyItem();
-			}
-		
-			CurrentGun->MoveToAround(Player, CurrentGun->GetItemCurStack());
-			CurrentGun->DestroyItem();
-		}
-	}
-
-	// Spawn Aug and Attachables
-	AC_Gun* Aug						= GetWorld()->SpawnActor<AC_Gun>(DefaultItemSpawnerHelper->GetWeaponClass(EWeaponSlot::MAIN_GUN));
-	AC_AttachableItem* VertGrip 	= GetWorld()->SpawnActor<AC_AttachableItem>(GunAttachableClasses[EAttachmentNames::VERTGRIP], SpawnParam);
-	AC_AttachableItem* Compensator	= GetWorld()->SpawnActor<AC_AttachableItem>(GunAttachableClasses[EAttachmentNames::COMPENSATOR], SpawnParam);
-	AC_AttachableItem* RedDot		= GetWorld()->SpawnActor<AC_AttachableItem>(GunAttachableClasses[EAttachmentNames::REDDOT], SpawnParam);
-	
-	/*Aug->SetAttachableItemSlot(EPartsName::GRIP, VertGrip);
-	Aug->SetAttachableItemSlot(EPartsName::SCOPE, RedDot);
-	Aug->SetAttachableItemSlot(EPartsName::MUZZLE, Compensator);*/
-	
-	Aug->MoveToSlot(Player, Aug->GetItemCurStack());
-	Aug->SetActorHiddenInGame(false);
-	Aug->SetCurMagazineBulletCount(30);
-
-	UC_GunSlotWidget* MainGunSlotWidget = Player->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot();
-	UC_SubGunSlotWidget* SubGunSlotWidget = Player->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetSubGunSlot();
-	
-	MainGunSlotWidget->SetAttachmentSlotOnDrop(Aug, VertGrip);
-	MainGunSlotWidget->SetAttachmentSlotOnDrop(Aug, Compensator);
-	MainGunSlotWidget->SetAttachmentSlotOnDrop(Aug, RedDot);
-	
-	// Spawn MosinNagant and Attachables
-	AC_Gun* MosinNagant			= GetWorld()->SpawnActor<AC_Gun>(DefaultItemSpawnerHelper->GetWeaponClass(EWeaponSlot::SUB_GUN));
-	AC_AttachableItem* Scope	= GetWorld()->SpawnActor<AC_AttachableItem>(GunAttachableClasses[EAttachmentNames::SCOPE4], SpawnParam);
-
-	MosinNagant->MoveToSlot(Player, MosinNagant->GetItemCurStack());
-	MosinNagant->SetActorHiddenInGame(false);
-	MosinNagant->SetCurMagazineBulletCount(5);
-	
-	SubGunSlotWidget->SetAttachmentSlotOnDrop(MosinNagant, Scope);
-
-	// TODO : Ammo 넣고 끝에 처리해주기
-	
-	MainGunSlotWidget->UpdateWidget();
-	SubGunSlotWidget->UpdateWidget();
-
-	// Throwable 초기화
-
-	// Removing Slot throwable
-	AC_ThrowingWeapon* SlotThrowingWeapon = Cast<AC_ThrowingWeapon>(EquippedComponent->GetWeapons()[EWeaponSlot::THROWABLE_WEAPON]);
-	if (SlotThrowingWeapon)
-	{
-		SlotThrowingWeapon->MoveToAround(Player, SlotThrowingWeapon->GetItemCurStack());
-		SlotThrowingWeapon->DestroyItem();
-	}
-
-	// Resetting Inven Throwable
-	for (uint8 i = 0; i < static_cast<uint8>(EThrowableType::MAX); ++i)
-	{
-		const EThrowableType ThrowableType = static_cast<EThrowableType>(i);
-		const FName WeaponName = AC_ThrowingWeapon::GetThrowableItemName(ThrowableType);
-		AC_Item* ThrowableWeapon = InvenComponent->FindMyItemByName(WeaponName);
-
-		if (ThrowableWeapon)
-			ThrowableWeapon->SetItemStack(1); // 이미 Inven에 해당 종류의 Throwable이 존재한다면 하나로 개수 초기화
-		else
-		{
-			AC_ThrowingWeapon* SpawnedThrowable = GetWorld()->SpawnActor<AC_ThrowingWeapon>(DefaultItemSpawnerHelper->GetThrowableClass(ThrowableType), SpawnParam);
-			SpawnedThrowable->SetItemStack(1);
-			SpawnedThrowable->MoveToInven(Player, 1);
-		}
-	}
-
-	// Set Slot throwable to grenade
-	AC_Item* Grenade = InvenComponent->FindMyItemByName(AC_ThrowingWeapon::GetThrowableItemName(EThrowableType::GRENADE));
-	if (Grenade) Grenade->MoveToSlot(Player, Grenade->GetItemCurStack());
-
-	// Consumable Item 초기화
-
-	// Deleting Consumable Items
-	for (uint8 i = 0; i < static_cast<uint8>(EConsumableItemType::MAX); ++i)
-	{
-		const EConsumableItemType ConsumableItemType = static_cast<EConsumableItemType>(i);
-		const FName ItemName = AC_ConsumableItem::GetConsumableItemName(ConsumableItemType); 
-	}
-	
+	GAMESCENE_MANAGER->GetPlayer()->AddControllerYawInput(LookAxisVector.X);
+	GAMESCENE_MANAGER->GetPlayer()->AddControllerPitchInput(LookAxisVector.Y);
 }

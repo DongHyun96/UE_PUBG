@@ -34,8 +34,8 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	if (!OwnerCharacter) return;
 
 	//Speed = OwnerCharacter->GetVelocity().Size2D();
-	float SpeedDest = FMath::Clamp(OwnerCharacter->GetNextSpeed(), 0.f, 700.f);
-	Speed			= FMath::Lerp(Speed, SpeedDest, DeltaSeconds * 10.f);
+	Speed = FMath::Lerp(Speed, OwnerCharacter->GetNextSpeed(), DeltaSeconds * 10.f);
+	Speed = FMath::Clamp(Speed, 0.f, 700.f);
 
 	const FRotator YawRotation(0, OwnerCharacter->GetActorRotation().Yaw, 0);
 

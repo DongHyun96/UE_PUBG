@@ -40,6 +40,8 @@
 #include "Singleton/C_GameInstance.h"
 
 #include "Singleton/C_GameSceneManager.h"
+#include "TrainingLevel/C_TrainingGroundManager.h"
+#include "TrainingLevel/CombatField/C_CombatFieldManager.h"
 
 #include "Utility/C_Util.h"
 
@@ -204,8 +206,6 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 {
-	UC_Util::Print("Character Dead", FColor::MakeRandomColor(), 20.f);
-	
 	// 기존 처리 유지
 	if (GetMesh()->GetSkeletalMeshAsset() == ParkourComponent->GetRootedSkeletalMesh())
 		ParkourComponent->SwapMeshToMainSkeletalMesh();
@@ -248,6 +248,10 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 	if (Delegate_OnCharacterDead.IsBound()) Delegate_OnCharacterDead.Broadcast(this);
 	Delegate_OnCharacterDead.Clear();
 
+	// PlayerCombatField 사망 처리 관련 구독 실행
+	if (Delegate_PlayerCombatFieldCharacterDead.IsBound())
+		Delegate_PlayerCombatFieldCharacterDead.Execute(false);
+	
 	if (KillFeedDescriptor.DamageCauser)
 	{
 		if (KillFeedDescriptor.DamageCauser != KillFeedDescriptor.DamageTaker)

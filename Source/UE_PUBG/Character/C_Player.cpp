@@ -796,8 +796,13 @@ void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 	Super::CharacterDead(KillFeedDescriptor);
 	HUDWidget->GetInformWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
 
+	// Training Ground의 경우, GameOver 처리 X
+	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
+	if (GameInstance->GetCurrentSelectedLevelType() == ELevelType::TrainingGround)
+		return;
+	
 	GAMESCENE_MANAGER->SetIsGameOver(true);
-
+	
 	// TODO : 밑의 if else 문으로 대체하기
 	GameOverWidget->ActivateLoseSequence();
 	//if (Ranking == 1) GameOverWidget->ActivateWinningSequence();
@@ -819,6 +824,9 @@ void AC_Player::EnableRagdoll()
 
 void AC_Player::DestroyCharacter()
 {
+	// CombatTesting 중인 Player이라면, Destroy 처리를 실행하지 않음
+	if (Delegate_OnCombatCharacterDestroy.ExecuteIfBound()) return;
+	
 	Super::DestroyCharacter();
 	// Player의 경우, 터질 수 있는 경우를 미연에 방지하고자, 사망 처리되어도 DestroyActor처리하지 않고 객체는 살려둔채로 HiddenInGame 처리
 	this->SetActorHiddenInGame(true);
@@ -840,7 +848,6 @@ void AC_Player::SetAimPressCameraLocation()
 
 	//AimSpringArmTemp->SetRelativeLocation(NewLocation);
 }
-
 
 void AC_Player::HandleTurnInPlace() // Update함수 안에 있어서 좀 계속 호출이 되어서 버그가 있는듯?
 {
@@ -1235,7 +1242,7 @@ void AC_Player::HandleCameraTransitionInterpolation(float Value)
 
 void AC_Player::OnCameraTransitionTimelineFinished()
 {
-	UC_Util::Print("Finished");
+	UC_Util::Print("OnCameraTransitionTimelineFinished", FColor::MakeRandomColor());
 	if (bIsAimDownSight)
 	{
 		AimCamera->SetActive(true);

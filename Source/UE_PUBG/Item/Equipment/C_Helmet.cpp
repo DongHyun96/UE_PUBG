@@ -34,7 +34,7 @@ bool AC_Helmet::Interaction(AC_BasicCharacter* Character)
 	return true;
 }
 
-void AC_Helmet::AttachToSocket(class AC_BasicCharacter* InParent)
+void AC_Helmet::AttachToSocket(AC_BasicCharacter* InParent)
 {
 	SocketName = (ItemLevel == EEquipableItemLevel::LV1) ? "HelmetLv1Socket" :
 				 (ItemLevel == EEquipableItemLevel::LV2) ? "HelmetLv2Socket" : "HelmetLv3Socket";

@@ -6,6 +6,7 @@
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_StatComponent.h"
 #include "Character/Component/C_CameraEffectComponent.h"
@@ -22,6 +23,9 @@
 
 #include "PhysicsEngine/PhysicsAsset.h"
 #include "Singleton/C_GameSceneManager.h"
+#include "TrainingLevel/C_TrainingGroundManager.h"
+#include "TrainingLevel/CombatField/C_CombatFieldManager.h"
+#include "TrainingLevel/CombatField/C_PlayerCombatFieldManager.h"
 #include "TrainingLevel/TrainingShootingTarget/C_ShootingTargetDamageInfoWidget.h"
 #include "TrainingLevel/TrainingShootingTarget/C_ShootingTargetWidgetsHolder.h"
 #include "TrainingLevel/TrainingShootingTarget/C_TrainingShootingTarget.h"
@@ -70,6 +74,8 @@ const TArray<FName> AC_GrenadeExplode::LineTraceDestBoneNames =
 const float AC_GrenadeExplode::DAMAGE_BASE = 50.f;
 
 FTutorialStageGoalCheckerDelegate AC_GrenadeExplode::ThrowableTutorialDelegate{};
+
+FOnPlayerCombatFieldRoundDrawByGrenadeExplode AC_GrenadeExplode::OnPlayerCombatFieldRoundDrawByGrenadeExplode{};
 
 AC_GrenadeExplode::AC_GrenadeExplode()
 {
@@ -131,6 +137,25 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		// 캐릭터에게 Damage 입히기 시도 -> 성공했다면 폭발 effect 캐릭터에 적용시키기(ex 카메라 aim punching)
 		if (TryDamagingCharacter(Character, ThrowingWeapon, ExplosionSphere))
 			ExecuteExplosionEffectToCharacter(Character, ExplosionLocation, ExplosionRad);
+	}
+
+	// Training Ground의 Character가 수류탄 폭발에 의해 둘 다 사망했을 시, Delegate 실행
+	if (OnPlayerCombatFieldRoundDrawByGrenadeExplode.IsBound())
+	{
+		UC_GameSceneManager* GameSceneManager = UC_GameSceneManager::GetInstance(ThrowingWeapon->GetWorld()); 
+		
+		UC_PlayerCombatFieldManager* PlayerCombatFieldManager = GameSceneManager->GetTrainingGroundManager()->
+		GetCombatFieldManager()->GetPlayerCombatFieldManager();
+
+		AC_BasicCharacter* Player = GameSceneManager->GetPlayer();
+		AC_BasicCharacter* CombatFieldEnemy = PlayerCombatFieldManager->GetCombatFieldEnemy();
+
+		if (ThrowingWeapon->GetOwnerCharacter() == Player ||
+			ThrowingWeapon->GetOwnerCharacter() == CombatFieldEnemy)
+		{
+			if (Player->GetMainState() == EMainState::DEAD && CombatFieldEnemy->GetMainState() == EMainState::DEAD)
+				OnPlayerCombatFieldRoundDrawByGrenadeExplode.Execute(true);
+		}
 	}
 
 	// 모든 캐릭터의 Physics Asset Colliders 다시 켜두기

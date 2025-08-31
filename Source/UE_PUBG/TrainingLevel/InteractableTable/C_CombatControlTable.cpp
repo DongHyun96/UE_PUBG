@@ -79,12 +79,12 @@ bool AC_CombatControlTable::OnPlayerInputComponentFKeyDelegate()
 
 	if (CombatFieldManager->GetEnemyCombatFieldManager()->GetIsPlaying())
 	{
-		CombatFieldManager->StopEnemyVsEnemyRound();
+		CombatFieldManager->GetEnemyCombatFieldManager()->StopRound();
 		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("Stop Combat simulation");
 	}
 	else
 	{
-		CombatFieldManager->StartEnemyVsEnemyRound();
+		CombatFieldManager->GetEnemyCombatFieldManager()->StartRound();
 		GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("Combat simulation in progress");
 	}
 	

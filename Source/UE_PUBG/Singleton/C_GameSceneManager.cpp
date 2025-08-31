@@ -26,6 +26,8 @@
 #include "Sound/C_SoundManager.h"
 #include "Singleton/C_GameInstance.h"
 #include "TrainingLevel/C_TrainingGroundManager.h"
+#include "TrainingLevel/CombatField/C_CombatFieldManager.h"
+#include "TrainingLevel/CombatField/C_PlayerCombatFieldManager.h"
 #include "TrainingLevel/Tutorial/C_TutorialManager.h"
 
 #include "Utility/C_TickRandomColorGenerator.h"
@@ -161,6 +163,15 @@ AC_LootCrate* UC_GameSceneManager::TrySpawnLootCrateAt(FVector SpawnLocation, AC
 	// Combat Tester의 경우, 시체박스 생성 x
 	if (AC_Enemy* DeadEnemy = Cast<AC_Enemy>(DeadCharacter)) if (DeadEnemy->GetBehaviorType() == EEnemyBehaviorType::CombatTest)
 		return nullptr;
+
+	if (TrainingGroundManager)
+	{
+		const UC_PlayerCombatFieldManager* PlayerCombatFieldManager = TrainingGroundManager->GetCombatFieldManager()->GetPlayerCombatFieldManager();
+		
+		// 만약 TrainingGround의 Player Combat field가 진행중인 상황이고, Player가 사망했을 때 시체박스 생성 x
+		if (DeadCharacter == Player && PlayerCombatFieldManager->GetPlayerCombatFieldState() != EPlayerCombatFieldState::Idle)
+			return nullptr;
+	}
 
 	FActorSpawnParameters Params;
 	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
@@ -336,11 +347,11 @@ void UC_GameSceneManager::AddSpawnedItemToContainer(AC_Item* InItem)
 	ItemManager->AddSpawnedItemToContainer(InItem);
 }
 
-void UC_GameSceneManager::DeleteSpawnedItemToContainer(AC_Item* InItem)
+void UC_GameSceneManager::DeleteSpawnedItemFromContainer(AC_Item* InItem)
 {
 	if (!ItemManager) return;
 	if (!InItem) return;
-	ItemManager->DeleteSpawnedItemToContainer(InItem);
+	ItemManager->DeleteSpawnedItemFromContainer(InItem);
 }
 
 void UC_GameSceneManager::ToggleItemsHiddenInGame(bool InHiddenInGame)

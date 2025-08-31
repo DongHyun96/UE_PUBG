@@ -133,7 +133,7 @@ public:
 	/// <para> TrainingGround Player CombatField 시작 시 호출될 예정 </para>
 	/// </summary>
 	void ClearInventory();
-	
+
 public: //Getter and Seter
 	EBackPackLevel GetCurBackPackLevel() { return CurBackPackLevel; } 
 	//EBackPackLevel SetCurBackPackLevel(uint8 level) { CurBackPackLevel = (EBackPackLevel)level; }

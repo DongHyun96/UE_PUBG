@@ -8,6 +8,9 @@
 #include "TrainingLevel/Tutorial/TutorialStageChecker/C_TutorialStageChecker.h"
 #include "C_GrenadeExplode.generated.h"
 
+// Training Ground의 Player Combat field에서 수류탄 폭발에 의해 Draw 처리되는 함수를 binding할 때 쓰일 Delegate Declaration
+DECLARE_DELEGATE_RetVal_OneParam(bool, FOnPlayerCombatFieldRoundDrawByGrenadeExplode, bool);
+
 UCLASS(Blueprintable)
 class UE_PUBG_API AC_GrenadeExplode : public AActor, public II_ExplodeStrategy
 {
@@ -82,6 +85,8 @@ public:
 
 	static FTutorialStageGoalCheckerDelegate ThrowableTutorialDelegate;
 
+	static FOnPlayerCombatFieldRoundDrawByGrenadeExplode OnPlayerCombatFieldRoundDrawByGrenadeExplode;
+	
 };
 
 

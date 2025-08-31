@@ -6,9 +6,6 @@
 #include "Character/C_BasicCharacter.h"
 #include "C_Enemy.generated.h"
 
-// CharacterDestroy 함수가 호출될 때 불려질 Delegate Type 선언
-// Combat Tester가 사용할 예정
-DECLARE_DELEGATE(FOnCombatCharacterDestroy_Delegate);
 // DECLARE_DELEGATE_RetVal(bool, FOnCombatCharacterDestroy_Delegate);
 
 
@@ -185,9 +182,5 @@ private:
 
 	// SkyDive Tester 처리 때에만 쓰일 예정
 	FRotator InitialRotation{};
-
-public:
-
-	FOnCombatCharacterDestroy_Delegate Delegate_OnCombatCharacterDestroy{};	
 
 };
