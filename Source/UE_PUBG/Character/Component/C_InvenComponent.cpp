@@ -212,10 +212,10 @@ bool UC_InvenComponent::HandleItemStackOverflow(AC_Item* InItem)
 	if (LastItem->GetItemDatas()->ItemType == EItemTypes::ATTACHMENT)
 	{
 		AC_Item* NewItem = InItem->SpawnItem(OwnerCharacter);
-		NewItem->SetOwnerCharacter(OwnerCharacter);
-		NewItem->SetItemPlace(EItemPlace::INVEN);
-		NewItem->SetActorHiddenInGame(true);
-		NewItem->SetActorEnableCollision(false);
+		InItem->SetOwnerCharacter(OwnerCharacter);
+		InItem->SetItemPlace(EItemPlace::INVEN);
+		InItem->SetActorHiddenInGame(true);
+		InItem->SetActorEnableCollision(false);
 		ItemArray.Add(InItem);
 		return false;
 	}// 부착물은 스택 개념이 없으므로 그냥 추가

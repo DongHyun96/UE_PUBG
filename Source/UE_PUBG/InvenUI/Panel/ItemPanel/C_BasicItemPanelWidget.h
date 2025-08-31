@@ -37,8 +37,6 @@ public:
 protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
     UListView* ItemListView1 = nullptr;
-
-
 };
 
 
