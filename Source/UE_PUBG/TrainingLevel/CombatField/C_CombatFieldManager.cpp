@@ -11,8 +11,10 @@
 #include "AI/Task/CombatTask/C_BTTaskSwapWeapon.h"
 #include "Character/C_Enemy.h"
 #include "Character/C_Player.h"
+#include "Character/C_PreviewCharacter.h"
 #include "Character/Component/C_InputComponent.h"
 #include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_PlayerController.h"
 #include "Character/Component/EnemyComponent/C_DefaultItemSpawnerComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -23,6 +25,7 @@
 #include "Item/Equipment/C_Helmet.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
+#include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
@@ -86,7 +89,7 @@ void AC_CombatFieldManager::InitRoundForCombatCharacter(AC_BasicCharacter* Comba
 	if (AC_EnemyAIController* EnemyController = CombatCharacter->GetController<AC_EnemyAIController>())
 	{
 		// Enemy의 경우, BehaviorTree Task Type을 Wait으로 setting
-		EnemyController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);	
+		EnemyController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
 		EnemyController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 
 		// Enemy의 경우, Main Gun 상태로 시작
@@ -95,6 +98,16 @@ void AC_CombatFieldManager::InitRoundForCombatCharacter(AC_BasicCharacter* Comba
 		else UC_Util::Print("From AC_CombatFieldManager::InitRoundForCombatCharacter : " + CombatCharacter->GetName() + "'s Main gun slot empty!", FColor::Red, 10.f);
 	}
 
+	if (AC_Player* Player = Cast<AC_Player>(CombatCharacter))
+	{
+		// Player의 경우, UnArmed 상태로 시작 (HUD Widget Ammo Widget 업데이트 등의 문제가 있기 때문에 이렇게 처리)
+		if (Player->GetHandState() != EHandState::UNARMED)
+		{
+			Player->GetEquippedComponent()->ToggleArmed();
+			Player->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
+		}
+	}
+	
 	/* 기본 장비 및 아이템 필요하다면 재정비 */
 	InitRoundStartEquipmentAndInven(CombatCharacter);
 }
@@ -230,7 +243,12 @@ bool AC_CombatFieldManager::TryReviveCharacter(AC_BasicCharacter* Character)
 	// Player 처리
 	if (AC_Player* Player = Cast<AC_Player>(Character))
 	{
-		// TODO : Player Dead 관련 Widget 처리 끄기
+		// Player Controller 재활성
+		AC_PlayerController* PlayerController = Player->GetController<AC_PlayerController>(); 
+		Player->EnableInput(PlayerController);
+
+		Player->SetActorTickEnabled(true);
+		
 		return true;
 	}
 

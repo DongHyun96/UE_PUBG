@@ -206,13 +206,6 @@ float AC_BasicCharacter::PlayAnimMontage(const FPriorityAnimMontage& PAnimMontag
 
 void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 {
-	UC_Util::Print("Character Dead", FColor::MakeRandomColor(), 20.f);
-
-	/*if (GAMESCENE_MANAGER->GetTrainingGroundManager()->GetCombatFieldManager()->GetPlayerCombatFieldManager())
-	{
-		
-	}*/
-	
 	// 기존 처리 유지
 	if (GetMesh()->GetSkeletalMeshAsset() == ParkourComponent->GetRootedSkeletalMesh())
 		ParkourComponent->SwapMeshToMainSkeletalMesh();

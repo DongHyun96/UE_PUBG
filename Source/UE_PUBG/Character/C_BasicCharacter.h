@@ -16,6 +16,10 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FDele_CharacterDead, AC_BasicCharacter*);
 
 DECLARE_DELEGATE_RetVal_OneParam(bool, FDele_PlayerCombatFieldCharacterDead, bool);
 
+// CharacterDestroy 함수가 호출될 때 불려질 Delegate Type 선언
+// Combat Character들이 사용할 예정
+DECLARE_DELEGATE(FOnCombatCharacterDestroy_Delegate);
+
 UENUM(BlueprintType)
 enum class EMainState : uint8
 {
@@ -189,7 +193,6 @@ public:
 	/// <returns> Animation Montage Duration </returns>
 	float PlayAnimMontage(const FPriorityAnimMontage& PAnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
 
-	UFUNCTION(BlueprintCallable)
 	virtual void CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor);
 
 	virtual void EnableRagdoll();
@@ -598,6 +601,10 @@ protected:
 protected:
 
 	const FCharacterSounds* CharacterSounds{};
+
+public:
+
+	FOnCombatCharacterDestroy_Delegate Delegate_OnCombatCharacterDestroy{};
 
 };
 

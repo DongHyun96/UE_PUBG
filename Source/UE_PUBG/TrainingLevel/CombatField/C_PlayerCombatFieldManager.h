@@ -114,6 +114,13 @@ private:
 	void OnLookInput(const struct FInputActionValue& Value);
 
 private:
+	
+	/// <summary>
+	/// CharacterDestroy호출될 때, Destroy 처리를 피하기 위한 Dummy delegate callback Function
+	/// </summary>
+	void OnCombatCharacterDestroy() const {};
+
+private:
 
 	AC_CombatFieldManager* OwnerCombatFieldManager{};
 

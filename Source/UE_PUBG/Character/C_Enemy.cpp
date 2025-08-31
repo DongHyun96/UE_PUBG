@@ -403,15 +403,7 @@ void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 
 void AC_Enemy::DestroyCharacter()
 {
-	if (EnemyBehaviorType == EEnemyBehaviorType::CombatTest)
-	{
-		// Combat Test enemy 한정, Destroy 처리 x
-		UC_Util::Print("Respawning CombatTester", FColor::Red, 10.f);
-
-		// if (Delegate_OnCombatCharacterDestroy.IsBound()) Delegate_OnCombatCharacterDestroy.Execute();
-		Delegate_OnCombatCharacterDestroy.ExecuteIfBound();
-		return;
-	}
+	if (Delegate_OnCombatCharacterDestroy.ExecuteIfBound()) return;
 	
 	Super::DestroyCharacter();
 	

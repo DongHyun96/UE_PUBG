@@ -21,6 +21,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Door/C_TutorialGate.h"
+#include "HUD/C_AmmoWidget.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_InformWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_GunSlotWidget.h"
@@ -82,6 +83,9 @@ void UC_PlayerCombatFieldManager::BeginPlay()
 
 	// Round 숫자로 Index를 맞출 예정이라 3판 2선이어도 4개를 집어넣음
 	RoundResults.Init(FPlayerCombatRoundResult(), 4);
+	
+	// Enemy Character Destroy delegate 구독 (CharacterDestroy 처리를 막기 위함)
+	CombatFieldEnemy->Delegate_OnCombatCharacterDestroy.BindUObject(this, &UC_PlayerCombatFieldManager::OnCombatCharacterDestroy);
 }
 
 void UC_PlayerCombatFieldManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -195,7 +199,7 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 	{
 	case EPlayerCombatFieldState::Idle:
 	{
-		// TODO : FKey Interaction으로 Toggle된 Start Box 활성화
+		// TODO : FKey Interaction으로 Toggle된 Start Box 활성화, Player OnCombatCharacter_Destroy delegate 구독 해제
 		// 상단 나침반 활성화 etc...
 		return;
 	}
@@ -223,6 +227,13 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 		UInputMappingContext* PlayerMainIMC = Player->GetInputComponent()->MappingContext;
 		PlayerController->RemoveIMCFromSubsystem(PlayerMainIMC);
 		PlayerController->AddIMCToSubsystem(IMC_WaitRound, 0);
+
+		// 이전 Round에서 달리는 상태로 RoundWaiting이 걸렸을 때, 달리는 모션 방지
+		GetWorld()->GetTimerManager().SetTimerForNextTick([Player]()
+		{
+			Player->SetNextSpeed(0.f);
+		});
+		
 		
 		return;
 	}
@@ -355,13 +366,15 @@ bool UC_PlayerCombatFieldManager::OnStartGateFKeyInteraction()
 	// TODO : Match 끝난 뒤, 다시 활성화 시켜주기 (Match 끝나면 CombatField에서 나가되, OpeningGateBox 바깥에 Player 두기)
 	CombatFieldStartGate->ToggleOpeningBoxTriggerEnabled(false);
 
-	UC_Util::Print("START PLAYER COMBAT FIELD", FColor::MakeRandomColor(), 10.f);
+	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+	
+	// Player Character Destroy delegate 구독 (CharacterDestroy 처리를 막기 위함)
+	Player->Delegate_OnCombatCharacterDestroy.BindUObject(this, &UC_PlayerCombatFieldManager::OnCombatCharacterDestroy);
 
 	/* Init Matching */
 		
 	// Player Inven check -> Combat에 필요한 아이템으로 초기화
 
-	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
 
 	// Combat에 필요한 아이템으로 Player 아이템 초기화
 	Player->GetInvenComponent()->ClearInventory();
