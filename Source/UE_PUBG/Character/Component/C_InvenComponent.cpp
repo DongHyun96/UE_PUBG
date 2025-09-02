@@ -196,7 +196,7 @@ bool UC_InvenComponent::HandleItemStackOverflow(AC_Item* InItem)
 	if (ItemArray.Num() == 0)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("HandleItemStackOverflow: 아이템 배열이 비어 있음! ItemCode: %s"), *item->GetItemCode().ToString());
-		UC_Util::Print("ItemArray of HandleItemStackOverflow is NULL");
+		UC_Util::Print("ItemArray of HandleItemStackOverflow is NULL", FColor::Red, 10.f);
 		return false;
 	}
 
@@ -393,9 +393,10 @@ void UC_InvenComponent::ClearInventory()
 			// Item->MoveToAround(OwnerCharacter, Item->GetItemCurStack());
 			Item->Destroy();
 		}
-
 		Pair.Value.Empty();
 	}
+
+	MyItems.Empty();
 
 	// Clear EquipmentItems
 	for (TPair<EEquipSlot, AC_EquipableItem*>& Pair : EquipmentItems)
@@ -408,6 +409,14 @@ void UC_InvenComponent::ClearInventory()
 		
 		Pair.Value = nullptr;
 	}
+
+	// Volume 초기화
+	CurVolume = 0.f;
+	MaxVolume = 70.f;
+
+	// Backpack Level 초기화
+	CurBackPackLevel = EBackPackLevel::LV0;
+	PreBackPackLevel = EBackPackLevel::LV0;
 
 	// 일괄적으로 Inven UI 업데이트 처리
 	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))

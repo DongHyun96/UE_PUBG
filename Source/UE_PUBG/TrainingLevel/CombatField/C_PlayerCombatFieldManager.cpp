@@ -49,7 +49,8 @@ void UC_PlayerCombatFieldManager::BeginPlay()
 	const UCapsuleComponent* VersusPlayerSpawnCapsuleComponent =
 		Cast<UCapsuleComponent>(OwnerCombatFieldManager->GetDefaultSubobjectByName(TEXT("VersusPlayerSpawnTransform")));
 	
-	if (!VersusPlayerSpawnCapsuleComponent) UC_Util::Print("From AC_PlayerCombatFieldManager::BeginPlay : VersusPlayerSpawnCapsuleComponent missing!", FColor::Red, 10.f);
+	if (!VersusPlayerSpawnCapsuleComponent)
+		UC_Util::Print("From AC_PlayerCombatFieldManager::BeginPlay : VersusPlayerSpawnCapsuleComponent missing!", FColor::Red, 10.f);
 	else SpawnTransforms.Add(VersusPlayerSpawnCapsuleComponent->GetComponentTransform());
 
 	if (CombatFieldEnemy)
@@ -64,6 +65,14 @@ void UC_PlayerCombatFieldManager::BeginPlay()
 		UC_Util::Print("From UC_PlayerCombatFieldManager::BeginPlay : CombatFieldGate nullptr!", FColor::Red, 10.f);
 		return;
 	}
+
+	/* MatchingEnd Player Transform 저장 */
+	const UCapsuleComponent* AfterMatchingEndPlayerSpawnCapsuleComponent =
+		Cast<UCapsuleComponent>(OwnerCombatFieldManager->GetDefaultSubobjectByName(TEXT("AfterMatchingEndPlayerSpawnTransform")));
+
+	if (!AfterMatchingEndPlayerSpawnCapsuleComponent) 
+		UC_Util::Print("From AC_PlayerCombatFieldManager::BeginPlay : AfterMatchingEndPlayerSpawnTransform missing!", FColor::Red, 10.f);
+	else PlayerTransformAfterMatching = AfterMatchingEndPlayerSpawnCapsuleComponent->GetComponentTransform();
 
 	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
 	{
@@ -199,15 +208,43 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 	{
 	case EPlayerCombatFieldState::Idle:
 	{
-		// TODO : FKey Interaction으로 Toggle된 Start Box 활성화, Player OnCombatCharacter_Destroy delegate 구독 해제
-		// 상단 나침반 활성화 etc...
+		// 시작 TriggerBox 다시 Enable 처리
+		CombatFieldStartGate->ToggleOpeningBoxTriggerEnabled(true);
+
+		// Player Character Destroy delegate 구독 해제
+		Player->Delegate_OnCombatCharacterDestroy.Unbind();
+
+		// 상단 나침반 다시 띄우기 처리 & TopRoundTimerPanel 가리기
+		PlayerCombatFieldWidget->ToggleTopRoundTimerPanelVisibility(false);
+		Player->GetHUDWidget()->ToggleCompassBarVisibility(true);
+		
+		// OwnerCombatFieldManager->InitRoundForCombatCharacter(Player, )
+		OwnerCombatFieldManager->InitRoundForCombatCharacter(CombatFieldEnemy, SpawnTransforms[1]);
+		OwnerCombatFieldManager->InitRoundForCombatCharacter(Player, PlayerTransformAfterMatching); // 기본 처리 및 Matching 이후의 Transform으로 setting
+
+		// Player Combat Field 정보 초기화
+		CombatFieldTimer = 0.f;
+		CurrentRound = 1;
+
+		for (FPlayerCombatRoundResult& Result : RoundResults)
+		{
+			Result.RoundResult	 = EPlayerCombatRoundResult::NotPlayed;
+			Result.RoundPlayTime = 0.f;
+		}
+
+		PlayerWinCount = 0;
+		EnemyWinCount  = 0;
+		
 		return;
 	}
 	case EPlayerCombatFieldState::WaitingRoundStart:
 	{
 		// Match Round에 맞추어 기본 설정들 처리
-		OwnerCombatFieldManager->InitRoundForCombatCharacter(Player, SpawnTransforms[0]);
-		OwnerCombatFieldManager->InitRoundForCombatCharacter(CombatFieldEnemy, SpawnTransforms[1]);
+		// SpawnTransform은 위치를 서로 번갈아가며 Spawn
+		static bool Flag = true;
+		OwnerCombatFieldManager->InitRoundForCombatCharacter(Player, SpawnTransforms[Flag ? 0 : 1]);
+		OwnerCombatFieldManager->InitRoundForCombatCharacter(CombatFieldEnemy, SpawnTransforms[Flag ? 1 : 0]);
+		Flag = !Flag;
 	
 		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 
@@ -303,7 +340,7 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 	}
 	case EPlayerCombatFieldState::MatchingEnd:
 	{
-		UC_Util::Print("Matching End", FColor::MakeRandomColor(), 10.f);
+		PlayerCombatFieldWidget->ExecuteMatchEnd(RoundResults, PlayerWinCount, EnemyWinCount);
 	}
 	}
 }
@@ -363,7 +400,6 @@ void UC_PlayerCombatFieldManager::OnGateOpeningBoxEndOverlap
 
 bool UC_PlayerCombatFieldManager::OnStartGateFKeyInteraction()
 {
-	// TODO : Match 끝난 뒤, 다시 활성화 시켜주기 (Match 끝나면 CombatField에서 나가되, OpeningGateBox 바깥에 Player 두기)
 	CombatFieldStartGate->ToggleOpeningBoxTriggerEnabled(false);
 
 	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();

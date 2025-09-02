@@ -13,17 +13,17 @@ enum class EPlayerCombatRoundResult : uint8;
 // MatchResult Panel의 각 Round 정보 Widget들 모음
 struct FMatchResultPanelRoundResult
 {
-	UTextBlock* RoundPlayerResultMainText{}; // W D L
-	UTextBlock* RoundPlayerResultSubText{}; // WIN DRAW LOSE
+	UTextBlock* RoundPlayerResultMainText{};		// W D L - Round1PlayerResultMainText
+	UTextBlock* RoundPlayerResultSubText{};			// WIN DRAW LOSE - Round1PlayerResultSubText
 
-	UTextBlock* RoundEnemyResultMainText{}; // W D L
-	UTextBlock* RoundEnemyResultSubText{};	// WIN DRAW LOSE
+	UTextBlock* RoundEnemyResultMainText{}; 		// W D L - Round1EnemyResultMainText
+	UTextBlock* RoundEnemyResultSubText{};			// WIN DRAW LOSE - Round1EnemyResultSubText
 
-	UTextBlock* RoundSpentMinuteText{};
-	UTextBlock* RoundSpentSecondText{};
-
-	class UCanvasPanel* PlayerRoundResultPanel{};
-	UCanvasPanel* EnemyRoundResultPanel{};
+	UTextBlock* RoundSpentMinuteText{}; 			// Round1MinuteSpentText
+	UTextBlock* RoundSpentSecondText{}; 			// Round1SecondSpentText
+	
+	class UCanvasPanel* PlayerRoundResultPanel{};	// Round1PlayerResultPanel
+	UCanvasPanel* EnemyRoundResultPanel{};			// Round1EnemyResultPanel
 };
 
 /**
@@ -81,7 +81,13 @@ private:
 	/// Round End Animation이 모두 끝난 뒤 호출될 함수, 다음 Round로 진행 또는 Match End 처리 
 	/// </summary>
 	UFUNCTION()
-	void OnRoundEndAnimationEnd();
+	void OnRoundEndAnimationFinished();
+
+	/// <summary>
+	/// Match End Animation이 모두 끝난 뒤 호출될 함수, Matching End 실질적인 처리 Trigger
+	/// </summary>
+	UFUNCTION()
+	void OnMatchEndAnimationFinished();
 
 protected:
 
@@ -153,6 +159,9 @@ protected:
 	UImage* RoundResultEnemyWinCountBar{}; // Enemy Win Count Text 하단의 Bar Image
 
 protected: // Match End 관련
+
+	UPROPERTY(meta=(BindWidget))
+	UCanvasPanel* MatchCompleteBox{};
 	
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* MatchResultPanelPlayerName{};
@@ -170,6 +179,11 @@ private:
 
 	// Match Result Panel의 각 Round ResultPanel 내용 (VerticalBox안의 내용들)
 	TArray<FMatchResultPanelRoundResult> MatchResultPanelRoundResults{};
+
+protected:
+	
+	UPROPERTY(meta=(BindWidget))
+	UCanvasPanel* MatchCompleteTextPanel{};
 	
 private: // Colors
 
@@ -208,6 +222,9 @@ protected: // Animations
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* Round3CompleteAnimation{};
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* MatchEndAnimation{};
 	
 private:
 
@@ -217,8 +234,10 @@ private:
 	// Index 0 dummy (Round 수에 맞추어 초기화)
 	TArray<UWidgetAnimation*> RoundCompleteAnimations{};
 
-private:
+private: // Widget Animation End Delegates
 
 	FWidgetAnimationDynamicEvent RoundEndAnimationEndDelegate{};
+
+	FWidgetAnimationDynamicEvent MatchEndAnimationEndDelegate{};
 	
 };
