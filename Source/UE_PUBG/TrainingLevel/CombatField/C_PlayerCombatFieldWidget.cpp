@@ -7,6 +7,7 @@
 #include "IAutomationReport.h"
 #include "Animation/WidgetAnimation.h"
 #include "Character/C_Player.h"
+#include "Components/BackgroundBlur.h"
 #include "Components/CanvasPanel.h"
 #include "Components/HorizontalBox.h"
 #include "Components/Image.h"
@@ -365,6 +366,7 @@ void UC_PlayerCombatFieldWidget::OnMatchEndAnimationFinished()
 	// Init PlayerCombatFieldWidget to idle(this)
 	MatchCompleteTextPanel->SetVisibility(ESlateVisibility::Hidden);
 	MatchCompleteBox->SetVisibility(ESlateVisibility::Hidden);
+	MatchResultBackgroundBlur->SetRenderOpacity(0.f);
 
 	for (int i = 1; i < 4; ++i)
 	{

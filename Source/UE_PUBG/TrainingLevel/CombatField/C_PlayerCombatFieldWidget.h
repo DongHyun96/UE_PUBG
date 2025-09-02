@@ -161,6 +161,9 @@ protected:
 protected: // Match End 관련
 
 	UPROPERTY(meta=(BindWidget))
+	class UBackgroundBlur* MatchResultBackgroundBlur{}; 
+	
+	UPROPERTY(meta=(BindWidget))
 	UCanvasPanel* MatchCompleteBox{};
 	
 	UPROPERTY(meta=(BindWidget))
