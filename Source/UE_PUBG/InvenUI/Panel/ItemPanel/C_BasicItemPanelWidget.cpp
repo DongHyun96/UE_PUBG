@@ -94,6 +94,11 @@ void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& Aroun
 
 }
 
+void UC_BasicItemPanelWidget::UpdateAroundItemList(AC_Item* InItem)
+{
+
+}
+
 void UC_BasicItemPanelWidget::RemoveItemInList(AC_Item* InItem)
 {
     ItemListView1->RemoveItem(InItem);

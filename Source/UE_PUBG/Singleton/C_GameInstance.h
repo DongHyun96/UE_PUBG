@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "Character/C_BasicCharacter.h"
 #include "Engine/GameInstance.h"
+#include "UE_PUBG/Utility/CommonTypes.h"	
 #include "C_GameInstance.generated.h"
+
+
 
 UENUM(BlueprintType)
 enum class EDataTableType: uint8
@@ -125,6 +128,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	class UInputMappingContext* GetDefaultInputMappingContext() const { return DefaultInputMappingContext; }
 
+	/// <summary>
+	/// CacehdItemData에서 ItemRowName에 해당하는 FItemData 구조체를 찾아 반환.
+	/// 읽기전용
+	/// </summary>
+	/// <param name="ItemRowName"></param>
+	/// <returns></returns>
+	const FItemData* GetItemData(FName ItemRowName) const;
+protected:
+	/// <summary>
+	/// 멤버 변수 CachedItemData를 초기화.
+	/// </summary>
+	void InitItemDataCache();
 protected:
 
 	// 가장 첫 로그인 때 정한 NickName (한 번 정한 이후 변하지 않을 예정)
@@ -133,8 +148,17 @@ protected:
 	bool bPlayerNickNameSet{};
 
 protected:
+	/// <summary>
+	/// 게임에 사용되는 DataTable들을 모아놓은 맵
+	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<EDataTableType, UDataTable*> DataTables{};
+
+	/// <summary>
+	/// 아이템 데이터들을 캐싱해놓은 맵
+	/// </summary>
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<FName, FItemData> CachedItemData{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	class UInputMappingContext* DefaultInputMappingContext{};

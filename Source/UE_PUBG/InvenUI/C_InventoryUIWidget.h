@@ -66,6 +66,9 @@ public:
 	/// </summary>
 	/// <param name="InItem"></param>
 	void RemoveItemInList(AC_Item* InItem);
+
+	void UpdateAroundItemList(AC_Item* InItem);
+
 public:
 	bool GetIsDragging() { return bIsDragging; }
 

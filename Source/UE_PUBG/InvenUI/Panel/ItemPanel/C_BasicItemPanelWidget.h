@@ -30,6 +30,8 @@ public:
     UFUNCTION(BlueprintCallable)
     void UpdateAroundItemList(const TArray<AC_Item*>& AroundItemList);
 
+	void UpdateAroundItemList(AC_Item* InItem);
+
     void RemoveItemInList(AC_Item* InItem);
 
 public:
