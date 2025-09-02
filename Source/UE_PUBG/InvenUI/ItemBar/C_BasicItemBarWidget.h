@@ -50,6 +50,7 @@ public:
 
 
 	void UpdateWidget(AC_Item* MyItem);
+	void UpdateWidget(class UC_ItemDataObject* DataObj);
 
 
 	//void UpdateWidget();
@@ -94,7 +95,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_Item* CachedItem = nullptr;
 
-
+	UC_ItemDataObject* DataObj = nullptr;
 	//에디터에서 바인딩으로 처리한다면?
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//const FItemData* CachedItemData = nullptr; 

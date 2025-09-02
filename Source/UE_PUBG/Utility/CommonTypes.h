@@ -1,8 +1,12 @@
 #pragma once
-
+// 여러 곳에서 사용하는 공통 타입들 정의
+// 이 헤더파일을 고치면 라이브 코딩으로 처리 힘듬.
+// 이유는 100개가 넘는 검사가 이루어 지기 때문.
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "CommonTypes.generated.h"
+
+
 
 /// <summary>
 /// 아이템의 타입을 정해줘서 인벤토리에서 장착할때 알맞는 UI에 찾아가도록 하고자함.
@@ -22,6 +26,15 @@ enum class EItemTypes : uint8
 	THROWABLE,
 	ATTACHMENT,
 	MELEEWEAPON
+};
+
+UENUM(BlueprintType)
+enum class EItemPlace : uint8
+{
+	NONE,
+	AROUND,
+	INVEN,
+	SLOT
 };
 
 USTRUCT(BlueprintType)
@@ -52,6 +65,9 @@ struct FItemData : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	float SpawnProbability = .0f;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Sound")
+	USoundBase* PickUpSound{};
 };
 
 /// <summary>

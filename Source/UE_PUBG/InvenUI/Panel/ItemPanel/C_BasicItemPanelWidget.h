@@ -33,6 +33,8 @@ public:
 	void UpdateAroundItemList(AC_Item* InItem);
 
     void RemoveItemInList(AC_Item* InItem);
+    
+	void RemoveItemInList(class UC_ItemDataObject* InDataObj);
 
 public:
     UListView* GetItemListView() { return ItemListView1; }

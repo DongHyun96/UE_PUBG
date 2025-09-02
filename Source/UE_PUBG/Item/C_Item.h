@@ -65,14 +65,14 @@ enum class EAttachmentNames : uint8
 //	MELEEWEAPON
 //};
 
-UENUM(BlueprintType)
-enum class EItemPlace : uint8
-{
-	NONE,
-	AROUND,
-	INVEN,
-	SLOT
-};
+//UENUM(BlueprintType)
+//enum class EItemPlace : uint8
+//{
+//	NONE,
+//	AROUND,
+//	INVEN,
+//	SLOT
+//};
 
 UENUM(BlueprintType)
 enum class EItemNames : uint8

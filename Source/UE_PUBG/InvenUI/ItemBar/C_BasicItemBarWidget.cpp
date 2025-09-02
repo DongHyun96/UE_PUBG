@@ -13,6 +13,7 @@
 #include "Character/Component/C_InvenComponent.h"
 
 #include "Item/ConsumableItem/C_ConsumableItem.h"
+#include "Item/C_ItemDataObject.h"
 
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -156,17 +157,28 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
-	// ListItemObject를 UC_Item 클래스로 캐스팅하여 아이템 데이터 사용
-	CachedItem = Cast<AC_Item>(ListItemObject);
+	//// ListItemObject를 UC_Item 클래스로 캐스팅하여 아이템 데이터 사용
+	//CachedItem = Cast<AC_Item>(ListItemObject);
 
-	if (CachedItem)
-	{
-		UpdateWidget(CachedItem);
-		if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(CachedItem))
-			if (!ConsumableItem->GetLinkedItemBarWidget()) ConsumableItem->SetLinkedItemBarWidget(this);
+	//if (CachedItem)
+	//{
+	//	UpdateWidget(CachedItem);
+	//	if (AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(CachedItem))
+	//		if (!ConsumableItem->GetLinkedItemBarWidget()) ConsumableItem->SetLinkedItemBarWidget(this);
 
-		return;
-	}
+	//	return;
+	//}
+
+	DataObj = Cast<UC_ItemDataObject>(ListItemObject);
+
+	if (!DataObj) return;
+
+	CachedItem = DataObj->ItemRef;
+
+	DataObj->OnItemDataChanged.AddDynamic(this, &UC_BasicItemBarWidget::UpdateWidget);
+
+	// 초기 UI 세팅
+	UpdateWidget(DataObj);
 }
 
 void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
@@ -183,6 +195,19 @@ void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
 
 		ItemName->SetText(FText::FromString(CachedItemData->ItemName));
 
+		SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void UC_BasicItemBarWidget::UpdateWidget(UC_ItemDataObject* InDataObj)
+{
+	if (!InDataObj) return;
+
+	if (InDataObj->ItemDataRef)
+	{
+		ItemImage->SetBrushFromTexture(InDataObj->ItemDataRef->ItemBarIcon);
+		ItemName->SetText(FText::FromString(InDataObj->ItemDataRef->ItemName));
+		ItemType = InDataObj->ItemDataRef->ItemType;
 		SetVisibility(ESlateVisibility::Visible);
 	}
 }
