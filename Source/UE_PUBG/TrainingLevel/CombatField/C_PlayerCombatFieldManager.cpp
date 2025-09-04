@@ -95,6 +95,9 @@ void UC_PlayerCombatFieldManager::BeginPlay()
 	
 	// Enemy Character Destroy delegate 구독 (CharacterDestroy 처리를 막기 위함)
 	CombatFieldEnemy->Delegate_OnCombatCharacterDestroy.BindUObject(this, &UC_PlayerCombatFieldManager::OnCombatCharacterDestroy);
+
+	StartGateBlockerComponent = Cast<UShapeComponent>(OwnerCombatFieldManager->GetDefaultSubobjectByName(TEXT("StartGateBlocker")));
+	if (!StartGateBlockerComponent) UC_Util::Print("From UC_PlayerCombatFieldManager::BeginPlay : StartGateBlockerComponent init failed!", FColor::Red, 10.f);
 }
 
 void UC_PlayerCombatFieldManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -210,6 +213,7 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 	{
 		// 시작 TriggerBox 다시 Enable 처리
 		CombatFieldStartGate->ToggleOpeningBoxTriggerEnabled(true);
+		StartGateBlockerComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 		// Player Character Destroy delegate 구독 해제
 		Player->Delegate_OnCombatCharacterDestroy.Unbind();
@@ -391,6 +395,7 @@ void UC_PlayerCombatFieldManager::OnGateOpeningBoxEndOverlap
 bool UC_PlayerCombatFieldManager::OnStartGateFKeyInteraction()
 {
 	CombatFieldStartGate->ToggleOpeningBoxTriggerEnabled(false);
+	StartGateBlockerComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
 	

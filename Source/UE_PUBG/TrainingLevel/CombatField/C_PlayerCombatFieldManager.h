@@ -150,6 +150,11 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UInputAction* LookAction{};	
+
+private:
+
+	// PlayerCombatField 입구 Blocking Component
+	UShapeComponent* StartGateBlockerComponent{}; 
 	
 protected:
 
