@@ -288,34 +288,54 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 
 void UC_InvenComponent::RemoveItemFromMyList(AC_Item* item)
 {
-	if (MyItems.Contains(item->GetItemCode()))
+	if (!MyItems.Contains(item->GetItemCode())) return;
+	
+	TArray<AC_Item*>& ItemArray = MyItems[item->GetItemCode()]; // 해당 아이템 코드의 아이템 배열 가져오기
+
+	// 배열에서 아이템 찾기
+	//int32 i = ItemArray->Num() - 1; i >= 0; i--
+	for (int32 i = ItemArray.Num() - 1; i >= 0; --i)
 	{
-		TArray<AC_Item*>& ItemArray = MyItems[item->GetItemCode()]; // 해당 아이템 코드의 아이템 배열 가져오기
+		if (ItemArray[i] != item) continue;
 
-		// 배열에서 아이템 찾기
-		//int32 i = ItemArray->Num() - 1; i >= 0; i--
-		for (int32 i = ItemArray.Num() - 1; i >= 0; --i)
+		// 배열 내에서 일치하는 아이템 찾음
+		
+		CurVolume -= item->GetItemAllVolume(); // 아이템 볼륨 감소
+		ItemArray.RemoveAt(i); // 배열에서 아이템 제거
+
+		// 배열이 비어 있으면 MyItems에서 해당 키 삭제
+		if (ItemArray.Num() == 0)
 		{
-			if (ItemArray[i] == item) // 배열 내에서 일치하는 아이템 찾음
-			{
-				CurVolume -= item->GetItemAllVolume(); // 아이템 볼륨 감소
-				ItemArray.RemoveAt(i); // 배열에서 아이템 제거
-
-				// 배열이 비어 있으면 MyItems에서 해당 키 삭제
-				if (ItemArray.Num() == 0)
-				{
-					MyItems.Remove(item->GetItemCode());
-				}
-
-				// 백팩 용량 갱신
-				if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
-				{
-					Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
-				}
-				return;
-			}
+			MyItems.Remove(item->GetItemCode());
 		}
+
+		// 백팩 용량 갱신
+		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+		{
+			Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
+		}
+		return;
 	}
+}
+
+void UC_InvenComponent::ClearAllItemCodeItemsFromMyList(const FName& ItemCode)
+{
+	if (!MyItems.Contains(ItemCode)) return;
+	
+	TArray<AC_Item*>& ItemArray = MyItems[ItemCode];
+
+	for (AC_Item* Item : ItemArray)
+	{
+		CurVolume -= Item->GetItemAllVolume();
+		Item->Destroy();
+	}
+
+	ItemArray.Empty();
+	MyItems.Remove(ItemCode);
+
+	// 백팩 용량 갱신
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
 }
 
 void UC_InvenComponent::DestroyMyItem(AC_Item* DestroyedItem)

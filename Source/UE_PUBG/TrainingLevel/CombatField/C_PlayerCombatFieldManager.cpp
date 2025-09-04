@@ -298,23 +298,13 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 		(this, &UC_PlayerCombatFieldManager::SetCurrentRoundResultOnCharacterDead);
 
 		// CombatFieldEnemy TargetCharacter 세팅
-		// CombatFieldEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(Player);
+		CombatFieldEnemy->GetController<AC_EnemyAIController>()->GetBehaviorComponent()->SetTargetCharacter(Player);
 		
 		return;
 	}
 	case EPlayerCombatFieldState::RoundEnd:
 	{
-		/*switch (RoundResults[CurrentRound])
-		{
-		case EPlayerCombatRoundResult::NotPlayed: UC_Util::Print("Round Result : Not played!", FColor::MakeRandomColor(), 20.f);
-			break;
-		case EPlayerCombatRoundResult::PlayerWin: UC_Util::Print("Round Result : Player Win!", FColor::MakeRandomColor(), 20.f);
-			break;
-		case EPlayerCombatRoundResult::EnemyWin: UC_Util::Print("Round Result : EnemyWin!", FColor::MakeRandomColor(), 20.f);
-			break;
-		case EPlayerCombatRoundResult::Draw: UC_Util::Print("Round Result : Draw!", FColor::MakeRandomColor(), 20.f);
-			break;
-		}*/
+		GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
 
 		// 남은 Round Time 0으로 초기화
 		PlayerCombatFieldWidget->SetTopRoundTimerTextToZero();
@@ -410,7 +400,7 @@ bool UC_PlayerCombatFieldManager::OnStartGateFKeyInteraction()
 	/* Init Matching */
 		
 	// Player Inven check -> Combat에 필요한 아이템으로 초기화
-
+	
 
 	// Combat에 필요한 아이템으로 Player 아이템 초기화
 	Player->GetInvenComponent()->ClearInventory();
@@ -448,7 +438,7 @@ bool UC_PlayerCombatFieldManager::OnStartGateFKeyInteraction()
 	// 상단 나침반 가리기 및 TopRoundTimerPanel 보이게끔 처리
 	PlayerCombatFieldWidget->ToggleTopRoundTimerPanelVisibility(true);
 	Player->GetHUDWidget()->ToggleCompassBarVisibility(false);
-	// GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
+	GAMESCENE_MANAGER->SetCurrentHUDMode(EHUDMode::IDLE);
 	
 	SetPlayerCombatFieldState(EPlayerCombatFieldState::WaitingRoundStart);
 	return true;
