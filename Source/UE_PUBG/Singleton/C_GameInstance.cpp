@@ -67,18 +67,14 @@ void UC_GameInstance::InitItemDataCache()
 	// 먼저 CachedItemData 초기화
 	CachedItemData.Empty();
 
-	// DataTables에서 Item DataTable 가져오기
 	UDataTable** ItemTablePtr = DataTables.Find(EDataTableType::Item);
 	if (!ItemTablePtr || !*ItemTablePtr)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Item DataTable is not set!"));
 		UC_Util::Print("Item DataTable is not set!", FColor::Red, 20.f);
 		return;
 	}
 
 	UDataTable* ItemTable = *ItemTablePtr;
-
-	// RowName 가져오기
 	TArray<FName> RowNames = ItemTable->GetRowNames();
 
 	for (FName RowName : RowNames)
@@ -88,6 +84,19 @@ void UC_GameInstance::InitItemDataCache()
 		{
 			// 캐싱
 			CachedItemData.Add(RowName, *RowData);
+
+			// 아이콘 미리 로드 처리
+			if (RowData->ItemBarIcon)
+			{
+				RowData->ItemBarIcon->AddToRoot(); // GC 방지
+				RowData->ItemBarIcon->GetResourceSizeBytes(EResourceSizeMode::Exclusive); // 강제로 메모리에 로드
+			}
+
+			if (RowData->ItemSlotImage)
+			{
+				RowData->ItemSlotImage->AddToRoot();
+				RowData->ItemSlotImage->GetResourceSizeBytes(EResourceSizeMode::Exclusive);
+			}
 		}
 	}
 }

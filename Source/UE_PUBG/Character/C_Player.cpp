@@ -596,7 +596,7 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 			if (!IsValid(InvenComponent)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
 			if (InvenComponent->GetAroundItems().Contains(OverlappedItem)) return;
 			InvenComponent->AddItemToAroundList(OverlappedItem);
-			
+			InvenSystem->GetInvenUI()->AddItemToAroundItemList(OverlappedItem);
 			//Inventory->InitInvenUI();
 			//if (!IsValid(InvenSystem)) return;
 		}
@@ -613,7 +613,15 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 
 		InvenComponent->GetAroundItems().Append(OverlappedLootBox->GetLootItems());
 
-		InvenSystem->GetInvenUI()->UpdateAroundItemPanelWidget();
+		for (AC_Item* LootItem : OverlappedLootBox->GetLootItems())
+		{
+			if (!IsValid(LootItem)) continue;
+			if (InvenComponent->GetAroundItems().Contains(LootItem)) continue;
+			InvenComponent->AddItemToAroundList(LootItem);
+			InvenSystem->GetInvenUI()->AddItemToAroundItemList(LootItem);
+		}
+
+		InvenSystem->GetInvenUI()->AddItemToAroundItemList(OverlappedItem);
 	}
 
 	//TArray<AC_Item*> SortedItems = this->GetInvenComponent()->GetAroundItems();

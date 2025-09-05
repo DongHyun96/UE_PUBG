@@ -3,11 +3,47 @@
 
 #include "InvenUI/Panel/ItemPanel/C_BasicItemPanelWidget.h"
 #include "InvenUI/ItemBar/C_BasicItemBarWidget.h"
+#include "Character/C_Player.h"
+#include "Character/Component/C_InvenComponent.h"
 #include "Item/C_Item.h"
 #include "Item/ConsumableItem/C_ConsumableItem.h"
 #include "Item/C_ItemDataObject.h"
+#include "Singleton/C_GameInstance.h"
 #include "Utility/C_Util.h"
 
+
+void UC_BasicItemPanelWidget::NativeConstruct()
+{
+    Super::NativeConstruct();
+
+    // 풀 초기화
+    for (int32 i = 0; i < MaxPoolSize; ++i)
+    {
+        UC_ItemDataObject* Obj = NewObject<UC_ItemDataObject>(GetWorld());
+        DataObjectPool.Add(Obj);
+    }
+
+    UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
+    const FItemData* DummyData = nullptr;
+	FName DummyItemCode = "Item_Weapon_Kar98k_C";
+    DummyData = GI->GetItemData(DummyItemCode);
+    //for (int i = 0; i < MaxPoolSize; ++i)
+    //{
+    //    UC_BasicItemBarWidget* TempWidget = CreateWidget<UC_BasicItemBarWidget>(GetWorld(), ItemBarWidgetClass);
+    //
+    //    // 임시 데이터 객체 생성
+    //    UC_ItemDataObject* TempData = NewObject<UC_ItemDataObject>(TempWidget);
+    //    TempData->ItemDataRef = DummyData; // 혹은 더미 FItemData
+    //    TempWidget->NativeOnListItemObjectSet(TempData);
+    //
+    //    ItemListView->AddItem(TempData);
+    //    ItemListView->RemoveItem(TempData);
+    //}
+
+
+    ItemListView->SetVisibility(ESlateVisibility::Hidden);
+    ItemListView->SetVisibility(ESlateVisibility::Visible);
+}
 
 void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, TArray<AC_Item*>> MyItemMap)
 {
@@ -66,7 +102,7 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, TArray<AC_Item
     //        UC_Util::Print(Item->GetItemCurStack());
     //    }
     //}
-    if (!IsValid(ItemListView1)) return;
+    if (!IsValid(ItemListView)) return;
 
     TArray<UC_ItemDataObject*> ItemsToAdd;
 
@@ -96,7 +132,7 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, TArray<AC_Item
         });
 
     // ListView 갱신
-    ItemListView1->SetListItems(ItemsToAdd);
+    ItemListView->SetListItems(ItemsToAdd);
 }
 
 void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& AroundItemList)
@@ -124,8 +160,10 @@ void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& Aroun
     //{
     //    ItemListView1->SetListItems(SortedItems);
     //}
+    ItemListView->ClearListItems();
 
-    if (!IsValid(ItemListView1) || AroundItemList.Num() == 0) return;
+    if (!IsValid(ItemListView) || AroundItemList.Num() == 0) return;
+
 
     TArray<UC_ItemDataObject*> DataObjects;
     for (AC_Item* Item : AroundItemList)
@@ -149,23 +187,125 @@ void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& Aroun
             return A.ItemDataRef->ItemType < B.ItemDataRef->ItemType;
         });
 
-    ItemListView1->SetListItems(DataObjects);
+    ItemListView->SetListItems(DataObjects);
 
 }
 
-void UC_BasicItemPanelWidget::UpdateAroundItemList(AC_Item* InItem)
+void UC_BasicItemPanelWidget::AddItemToInventoryItemList(AC_Item* InItem)
 {
+    if (!IsValid(InItem) || !IsValid(ItemListView)) return;
 
+    UC_ItemDataObject* DataObj = GetDataObject();
+
+    DataObj->ItemDataRef = InItem->GetItemDatas();
+    DataObj->SetItemCode(InItem->GetItemCode());
+    DataObj->SetItemCurStack(InItem->GetItemCurStack());
+    DataObj->SetItemPlace(InItem->GetItemPlace());
+    DataObj->SetOwnerCharacter(InItem->GetOwnerCharacter());
+    DataObj->ItemRef = InItem;
+
+    ItemListView->AddItem(DataObj);
+    ActiveDataObjects.Add(DataObj);
+}
+
+void UC_BasicItemPanelWidget::AddItemToAroundItemList(AC_Item* InItem)
+{
+    if (!IsValid(InItem) || !IsValid(ItemListView)) return;
+
+    UC_ItemDataObject* DataObj = GetDataObject();
+
+    DataObj->ItemDataRef = InItem->GetItemDatas();
+    DataObj->SetItemCode(InItem->GetItemCode());
+    DataObj->SetItemCurStack(InItem->GetItemCurStack());
+    DataObj->SetItemPlace(InItem->GetItemPlace());
+    DataObj->SetOwnerCharacter(InItem->GetOwnerCharacter());
+    DataObj->ItemRef = InItem;
+
+    ItemListView->AddItem(DataObj);
+    ActiveDataObjects.Add(DataObj);
+}
+
+void UC_BasicItemPanelWidget::AddItemToList(AC_Item* InItem)
+{
+	//if (!IsValid(InItem) || !IsValid(ItemListView)) return;
+	//UC_ItemDataObject* DataObj = NewObject<UC_ItemDataObject>(this);
+	//DataObj->ItemDataRef = InItem->GetItemDatas();
+	//DataObj->SetItemCode(InItem->GetItemCode());
+	//DataObj->SetItemCurStack(InItem->GetItemCurStack());
+	//DataObj->SetItemPlace(InItem->GetItemPlace());
+	//DataObj->SetOwnerCharacter(InItem->GetOwnerCharacter());
+	//DataObj->ItemRef = InItem; // 원본 아이템 참조 설정
+	//ItemListView->AddItem(DataObj);
+    if (!IsValid(InItem) || !IsValid(ItemListView)) return;
+
+    UC_ItemDataObject* DataObj = GetDataObject();
+
+    DataObj->ItemDataRef = InItem->GetItemDatas();
+    DataObj->SetItemCode(InItem->GetItemCode());
+    DataObj->SetItemCurStack(InItem->GetItemCurStack());
+    DataObj->SetItemPlace(InItem->GetItemPlace());
+    DataObj->SetOwnerCharacter(InItem->GetOwnerCharacter());
+    DataObj->ItemRef = InItem;
+
+    ItemListView->AddItem(DataObj);
+    ActiveDataObjects.Add(DataObj);
 }
 
 void UC_BasicItemPanelWidget::RemoveItemInList(AC_Item* InItem)
 {
-    ItemListView1->RemoveItem(InItem);
+    //ItemListView1->RemoveItem(InItem);
+    TArray<UObject*> ItemList = ItemListView->GetListItems();
+
+	for (UObject* Obj : ItemList)
+	{
+		UC_ItemDataObject* DataObj = Cast<UC_ItemDataObject>(Obj);
+		if (IsValid(DataObj) && DataObj->ItemRef == InItem)
+		{
+			ItemListView->RemoveItem(DataObj);
+            ActiveDataObjects.Remove(DataObj);
+
+            ReturnDataObject(DataObj);
+			break;
+		}
+	}
 }
 
 void UC_BasicItemPanelWidget::RemoveItemInList(UC_ItemDataObject* InDataObj)
 {
-    if (!IsValid(InDataObj) || !IsValid(ItemListView1)) return;
+    //if (!IsValid(InDataObj) || !IsValid(ItemListView)) return;
+    //
+    //ItemListView->RemoveItem(InDataObj);
 
-    ItemListView1->RemoveItem(InDataObj);
+    if (!IsValid(InDataObj) || !IsValid(ItemListView)) return;
+
+    ItemListView->RemoveItem(InDataObj);
+    ActiveDataObjects.Remove(InDataObj);
+
+    ReturnDataObject(InDataObj);
+}
+
+UC_ItemDataObject* UC_BasicItemPanelWidget::GetDataObject()
+{
+    if (DataObjectPool.Num() > 0)
+    {
+        return DataObjectPool.Pop();
+    }
+
+    // 풀 부족 시 새로 생성
+    return NewObject<UC_ItemDataObject>(this);
+}
+
+void UC_BasicItemPanelWidget::ReturnDataObject(UC_ItemDataObject* Obj)
+{
+    if (!Obj) return;
+
+    if (ItemListView->GetListItems().Contains(Obj))
+    {
+        ItemListView->RemoveItem(Obj);
+    }
+
+    Obj->ItemDataRef = nullptr;
+    Obj->ItemRef = nullptr;
+
+    DataObjectPool.Add(Obj);
 }

@@ -25,6 +25,8 @@ void UC_InventoryUIWidget::NativeConstruct()
 {
     Super::NativeConstruct();
     GAMESCENE_MANAGER->SetHUDWidgetByHUDMode(EHUDMode::INVEN, this);
+    AroundItemPanel->NativeConstruct();
+	InventoryPanel->NativeConstruct();
 }
 
 void UC_InventoryUIWidget::SetVisibility(ESlateVisibility InVisibility)
@@ -148,9 +150,9 @@ void UC_InventoryUIWidget::UpdateWidget()
 
     UpdateVolumeBar(OwnerPlayer);
 
-    UpdateAroundItemPanelWidget();
-
-    UpdateInventroyItemPanelWidget();
+    //UpdateAroundItemPanelWidget();
+    //
+    //UpdateInventroyItemPanelWidget();
 }
 
 bool UC_InventoryUIWidget::GetIsPanelOpened()
@@ -214,6 +216,16 @@ void UC_InventoryUIWidget::CloseDivideItemWidget()
 void UC_InventoryUIWidget::RemoveItemInList(AC_Item* InItem)
 {
     AroundItemPanel->RemoveItemInList(InItem);
+}
+
+void UC_InventoryUIWidget::AddItemToAroundItemList(AC_Item* InItem)
+{
+	AroundItemPanel->AddItemToList(InItem);
+}
+
+void UC_InventoryUIWidget::AddItemToInventoryItemList(AC_Item* InItem)
+{
+	InventoryPanel->AddItemToList(InItem);
 }
 
 

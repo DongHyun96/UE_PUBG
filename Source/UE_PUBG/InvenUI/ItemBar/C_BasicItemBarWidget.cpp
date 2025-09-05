@@ -15,6 +15,8 @@
 #include "Item/ConsumableItem/C_ConsumableItem.h"
 #include "Item/C_ItemDataObject.h"
 
+#include "Singleton/C_GameInstance.h"
+
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
@@ -175,10 +177,12 @@ void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 	CachedItem = DataObj->ItemRef;
 
-	DataObj->OnItemDataChanged.AddDynamic(this, &UC_BasicItemBarWidget::UpdateWidget);
-
 	// 초기 UI 세팅
 	UpdateWidget(DataObj);
+
+	//DataObj->OnItemDataChanged.AddDynamic(this, &UC_BasicItemBarWidget::UpdateWidget);
+
+
 }
 
 void UC_BasicItemBarWidget::UpdateWidget(AC_Item* MyItem)
@@ -205,9 +209,17 @@ void UC_BasicItemBarWidget::UpdateWidget(UC_ItemDataObject* InDataObj)
 
 	if (InDataObj->ItemDataRef)
 	{
-		ItemImage->SetBrushFromTexture(InDataObj->ItemDataRef->ItemBarIcon);
-		ItemName->SetText(FText::FromString(InDataObj->ItemDataRef->ItemName));
-		ItemType = InDataObj->ItemDataRef->ItemType;
+		UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
+
+		if (!GI) return;
+
+		ItemImage->SetBrushFromSoftTexture(GI->GetItemData(InDataObj->GetItemCode())->ItemBarIcon);
+		ItemName->SetText(FText::FromString(GI->GetItemData(InDataObj->GetItemCode())->ItemName));
+		ItemType = GI->GetItemData(InDataObj->GetItemCode())->ItemType;
+
+		//ItemImage->SetBrushFromTexture(InDataObj->ItemDataRef->ItemBarIcon);
+		//ItemName->SetText(FText::FromString(InDataObj->ItemDataRef->ItemName));
+		//ItemType = InDataObj->ItemDataRef->ItemType;
 		SetVisibility(ESlateVisibility::Visible);
 	}
 }

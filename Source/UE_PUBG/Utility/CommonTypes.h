@@ -66,6 +66,9 @@ struct FItemData : public FTableRowBase
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	float SpawnProbability = .0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
+	bool bIsStackable = false;
+
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Sound")
 	USoundBase* PickUpSound{};
 };
