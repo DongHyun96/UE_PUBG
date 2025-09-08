@@ -119,6 +119,11 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InSta
 	}
 }
 
+bool AC_Item_Bullet::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
+{
+	return MoveAroundToInven(Character, InStack);
+}
+
 bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.

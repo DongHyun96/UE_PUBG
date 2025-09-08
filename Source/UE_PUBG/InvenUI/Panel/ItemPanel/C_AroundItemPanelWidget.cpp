@@ -13,6 +13,7 @@ bool UC_AroundItemPanelWidget::HandleDrop(AC_Item* DroppedItem)
     if (DroppedItem->MoveToAround(OwnerPlayer, DroppedItem->GetItemCurStack()))
     {
         UGameplayStatics::PlaySound2D(DroppedItem, DroppedItem->GetPickUpSound());
+		//OwnerPlayer->GetInvenSystem()->GetInvenUI()->UpdateWidget();
         return true;
     }
     return false;

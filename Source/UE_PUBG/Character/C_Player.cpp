@@ -610,18 +610,19 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 		if (OverlappedLootBox->GetLootItems().Num() == 0) return;
 			
 		OverlappedLootBox->SetActorTickEnabled(true);
-
-		InvenComponent->GetAroundItems().Append(OverlappedLootBox->GetLootItems());
-
-		for (AC_Item* LootItem : OverlappedLootBox->GetLootItems())
+		TArray<AC_Item*> AroundItemList = InvenComponent->GetAroundItems();
+		//InvenComponent->GetAroundItems().Append(OverlappedLootBox->GetLootItems());
+		AroundItemList.Append(OverlappedLootBox->GetLootItems());
+		TArray<AC_Item*> LootBoxItems = OverlappedLootBox->GetLootItems();
+		for (AC_Item* LootItem : LootBoxItems)
 		{
 			if (!IsValid(LootItem)) continue;
-			if (InvenComponent->GetAroundItems().Contains(LootItem)) continue;
+			//if (AroundItemList.Contains(LootItem)) continue;
 			InvenComponent->AddItemToAroundList(LootItem);
 			InvenSystem->GetInvenUI()->AddItemToAroundItemList(LootItem);
 		}
 
-		InvenSystem->GetInvenUI()->AddItemToAroundItemList(OverlappedItem);
+		//InvenSystem->GetInvenUI()->AddItemToAroundItemList(OverlappedItem);
 	}
 
 	//TArray<AC_Item*> SortedItems = this->GetInvenComponent()->GetAroundItems();

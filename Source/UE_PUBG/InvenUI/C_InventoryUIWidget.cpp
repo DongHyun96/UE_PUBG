@@ -150,9 +150,9 @@ void UC_InventoryUIWidget::UpdateWidget()
 
     UpdateVolumeBar(OwnerPlayer);
 
-    //UpdateAroundItemPanelWidget();
+    UpdateAroundItemPanelWidget();
     //
-    //UpdateInventroyItemPanelWidget();
+    UpdateInventroyItemPanelWidget();
 }
 
 bool UC_InventoryUIWidget::GetIsPanelOpened()
