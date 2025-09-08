@@ -141,6 +141,14 @@ void AC_CombatFieldManager::InitRoundStartEquipmentAndInven(AC_BasicCharacter* C
 	AC_Gun* SubGun = Cast<AC_Gun>(EquippedComponent->GetWeapons()[EWeaponSlot::SUB_GUN]);
 	SubGun->SetCurMagazineBulletCount(5);
 
+	// Inven의 Gun Bullet 재정비 (Player 전용)
+	if (AC_Player* Player = Cast<AC_Player>(Character))
+	{
+		Player->GetInvenComponent()->ClearAllItemCodeItemsFromMyList(AC_Item_Bullet::GetBulletTypeName(EBulletType::FIVEMM));	
+		Player->GetInvenComponent()->ClearAllItemCodeItemsFromMyList(AC_Item_Bullet::GetBulletTypeName(EBulletType::SEVENMM));
+		ItemSpawnHelper->SpawnBullets(Character, SpawnParams);
+	}
+
 	// Throwable 재정비 (Throwable 종류별 각각 1개씩 있어야 함)
 	// 개수 파악용 TMap
 	TMap<EThrowableType, bool> PossessThrowableMap =

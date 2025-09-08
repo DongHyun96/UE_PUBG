@@ -52,7 +52,6 @@ bool AC_Item_Bullet::Interaction(AC_BasicCharacter* Character)
 
 bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
 	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
 
 	uint8 ItemStackCount = invenComp->LoopCheckVolume(this); //아이템Stack을 몇개까지 인벤에 넣을 수 있는가?

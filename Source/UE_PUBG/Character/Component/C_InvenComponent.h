@@ -111,6 +111,11 @@ public:
 	// MyItemList에 아이템을 제거하는 함수
 	void RemoveItemFromMyList(AC_Item* item);// { testMyItems.Remove(item->GetItemDatas().ItemName); }
 
+	/// <summary>
+	/// 해당 ItemCode의 Item들 모두 삭제 (Item Destroy까지 직접 관여, TrainingGround의 Player Inven탄 초기화 시 사용하는 중)
+	/// </summary>
+	void ClearAllItemCodeItemsFromMyList(const FName& ItemCode);
+
 	// MyItemList에 아이템을 Destroy하는 함수
 	void DestroyMyItem(AC_Item* DestroyedItem);
 

@@ -132,6 +132,9 @@ protected:
 private: // Spawn(Respawn) Transform 관련
 	
 	TArray<FTransform> SpawnTransforms{};
+
+	// Matching 이후로 위치시킬 Player Transform
+	FTransform PlayerTransformAfterMatching{};
 	
 private:
 	
@@ -147,6 +150,11 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class UInputAction* LookAction{};	
+
+private:
+
+	// PlayerCombatField 입구 Blocking Component
+	UShapeComponent* StartGateBlockerComponent{}; 
 	
 protected:
 
