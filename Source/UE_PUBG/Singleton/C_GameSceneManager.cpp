@@ -16,11 +16,11 @@
 #include "Character/Component/C_InvenSystem.h"
 
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_MainMapWidget.h"
-#include "HUD/C_MapWidget.h"
+#include "HUD/MapWidget/C_MainMapWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
 #include "HUD/C_TimeBoxWidget.h"
+#include "HUD/MapWidget/C_MiniMapWidget.h"
 #include "Loot/C_LootCrate.h"
 #include "Item/ItemManager/C_ItemManager.h"
 #include "Sound/C_SoundManager.h"

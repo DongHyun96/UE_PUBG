@@ -30,7 +30,7 @@
 #include "Character/C_PreviewCharacter.h"
 
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_MainMapWidget.h"
+#include "HUD/MapWidget/C_MainMapWidget.h"
 #include "HUD/C_AmmoWidget.h"
 
 #include "I_ExplodeStrategy.h"

@@ -4,54 +4,36 @@
 #include "Character/Component/C_InputComponent.h"
 
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_MainMapWidget.h"
 
 #include "Character/Component/C_EquippedComponent.h"
-#include "Character/Component/C_StatComponent.h"
 #include "Character/Component/C_PingSystemComponent.h"
-#include "Character/Component/C_PoseColliderHandlerComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "Character/Component/C_InvenSystem.h"
 #include "Character/Component/C_ParkourComponent.h"
-#include "Character/Component/C_PlayerController.h"
 
 #include "Character/C_PreviewCharacter.h"
 
 #include "Components/ActorComponent.h"
-#include "Components/CapsuleComponent.h"
-
-#include "Character/C_Enemy.h"
 
 #include "UE_PUBG/Character/C_Player.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Item/ConsumableItem/C_ConsumableItem.h"
 #include "EnhancedInputComponent.h"
-#include "AI/C_BehaviorComponent.h"
-#include "AI/C_EnemyAIController.h"
-#include "AI/Service/C_BTServiceIdle.h"
 
 #include "UMG.h"
 
 #include "Utility/C_Util.h"
 
-#include "InputMappingContext.h"
 #include "InputAction.h"
 
-#include "GameFramework/PhysicsVolume.h"
-#include "HUD/C_GameOverWidget.h"
 #include "HUD/C_InformWidget.h"
 #include "HUD/C_MagneticFieldIndicatorWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "SkyDivingComponent/C_PlayerSkyDivingComponent.h"
-#include "InputMappingContext.h"
-#include "EnhancedActionKeyMapping.h"
-#include "TrainingLevel/C_AISkyDiveTesterManager.h"
-#include "TrainingLevel/C_TrainingGroundManager.h"
 
 // Sets default values for this component's properties
 UC_InputComponent::UC_InputComponent()

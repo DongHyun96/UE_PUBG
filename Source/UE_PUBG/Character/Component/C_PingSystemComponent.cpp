@@ -9,8 +9,8 @@
 #include "Character/C_Player.h"
 
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_MapWidget.h"
-#include "HUD/C_MainMapWidget.h"
+#include "HUD/MapWidget/C_MainMapWidget.h"
+#include "HUD/MapWidget/C_MiniMapWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 
 
