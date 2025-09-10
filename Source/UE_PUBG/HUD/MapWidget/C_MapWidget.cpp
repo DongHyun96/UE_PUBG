@@ -24,22 +24,14 @@ void UC_MapWidget::NativeConstruct()
 
 	if (CurrentSelectedMap == ELevelType::TrainingGround)
 	{
-		if (TrainingGroundMapImgTexture.IsValid())
-			MapImage->SetBrushFromSoftTexture(TrainingGroundMapImgTexture);
-		else UC_Util::Print("From UC_MapWidget::NativeConstruct : TrainingGroundMapImgTexture not valid!", FColor::Red, 10.f);
-
-		GridImage->SetBrushFromSoftTexture(TrainingGroundMapGridImgTexture);
+		MapImage->SetBrushFromTexture(TrainingGroundMapImageTexture);
+		GridImage->SetBrushFromTexture(TrainingGroundMapGridImgTexture);
 	}
 	else // ShantyTown
 	{
-		if (ShantyTownMapImgMaterialInstance.IsValid())
-		{
-			ShantyTownMapImgMaterialInstanceDynamic = UMaterialInstanceDynamic::Create(ShantyTownMapImgMaterialInstance.Get(), this);
-			MapImage->SetBrushFromMaterial(ShantyTownMapImgMaterialInstanceDynamic);
-		}
-		else UC_Util::Print("From UC_MapWidget::NativeConstruct : ShantyTownMapImgMaterialInstance not valid!", FColor::Red, 10.f);
-
-		GridImage->SetBrushFromSoftTexture(ShantyTownMapGridImgTexture);
+		ShantyTownMapImgMaterialInstanceDynamic = UMaterialInstanceDynamic::Create(ShantyTownMapMaterialInstance, this);
+		MapImage->SetBrushFromMaterial(ShantyTownMapImgMaterialInstanceDynamic);
+		GridImage->SetBrushFromTexture(ShantyTownMapGridImgTexture);
 	}
 
 	// 현재 Level에 따른 중앙점 위치 setting

@@ -140,16 +140,16 @@ protected:
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSoftObjectPtr<UMaterialInstance> ShantyTownMapImgMaterialInstance{};
+	UMaterialInstance* ShantyTownMapMaterialInstance{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSoftObjectPtr<UTexture2D> TrainingGroundMapImgTexture{};
+	UTexture2D* TrainingGroundMapImageTexture{};
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSoftObjectPtr<UTexture2D> ShantyTownMapGridImgTexture{};
+	UTexture2D* ShantyTownMapGridImgTexture{};
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	TSoftObjectPtr<UTexture2D> TrainingGroundMapGridImgTexture{};
+	UTexture2D* TrainingGroundMapGridImgTexture{};
 	
 private:
 	
