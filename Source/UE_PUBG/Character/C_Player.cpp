@@ -54,7 +54,7 @@
 #include "Engine/Texture2D.h"
 
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_MainMapWidget.h"
+#include "HUD/MapWidget/C_MainMapWidget.h"
 #include "HUD/C_SkyDiveWidget.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 #include "Component/C_PlayerDeafenedHandler.h"
@@ -62,6 +62,7 @@
 #include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "HUD/C_GameOverWidget.h"
 #include "HUD/C_InformWidget.h"
+#include "HUD/MapWidget/C_MiniMapWidget.h"
 #include "Singleton/C_GameInstance.h"
 #include "Singleton/C_GameSceneManager.h"
 
@@ -328,6 +329,10 @@ void AC_Player::OnPostWorldBeginPlay()
 	if (!IsValid(GAMESCENE_MANAGER->GetAirplaneManager())) return;
 	
 	TPair<FVector, FVector> PlaneStartDestPair = GAMESCENE_MANAGER->GetAirplaneManager()->GetPlaneRouteStartDestPair();
+
+	MainMapWidget->ToggleAirplaneRouteVisibility(true);
+	HUDWidget->GetMiniMapWidget()->ToggleAirplaneRouteVisibility(true);
+	
 	MainMapWidget->SetAirplaneRoute(PlaneStartDestPair);
 	HUDWidget->GetMiniMapWidget()->SetAirplaneRoute(PlaneStartDestPair);
 }

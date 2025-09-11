@@ -7,10 +7,11 @@
 #include "Character/C_BasicCharacter.h"
 #include "Character/C_Player.h"
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_MainMapWidget.h"
+#include "HUD/MapWidget/C_MainMapWidget.h"
 
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "Components/SceneComponent.h"
+#include "HUD/MapWidget/C_MiniMapWidget.h"
 
 // Sets default values
 AC_Airplane::AC_Airplane()

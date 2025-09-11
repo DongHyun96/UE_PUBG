@@ -13,6 +13,7 @@
 #include "Character/Component/C_InvenComponent.h"
 #include "Character/C_Player.h"
 #include "Components/SceneCaptureComponent2D.h"
+#include "Singleton/C_GameInstance.h"
 #include "Utility/C_Util.h"
 // Sets default values
 AC_PreviewCharacter::AC_PreviewCharacter()
@@ -41,6 +42,9 @@ void AC_PreviewCharacter::BeginPlay()
 	Super::BeginPlay();
 	previewCharacterMesh = this->GetMesh();
 
+	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
+	if (GameInstance->GetCurrentSelectedLevelType() == ELevelType::TrainingGround)
+		SetActorLocation(FVector(0.f, 0.f, -500.f));
 }
 
 // Called every frame
