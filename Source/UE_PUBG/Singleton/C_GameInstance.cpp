@@ -85,18 +85,18 @@ void UC_GameInstance::InitItemDataCache()
 			// 캐싱
 			CachedItemData.Add(RowName, *RowData);
 
-			// 아이콘 미리 로드 처리
-			if (RowData->ItemBarIcon)
-			{
-				RowData->ItemBarIcon->AddToRoot(); // GC 방지
-				RowData->ItemBarIcon->GetResourceSizeBytes(EResourceSizeMode::Exclusive); // 강제로 메모리에 로드
-			}
+			//// 아이콘 미리 로드 처리
+			//if (RowData->ItemBarIcon)
+			//{
+			//	RowData->ItemBarIcon->AddToRoot(); // GC 방지
+			//	RowData->ItemBarIcon->GetResourceSizeBytes(EResourceSizeMode::Exclusive); // 강제로 메모리에 로드
+			//}
 
-			if (RowData->ItemSlotImage)
-			{
-				RowData->ItemSlotImage->AddToRoot();
-				RowData->ItemSlotImage->GetResourceSizeBytes(EResourceSizeMode::Exclusive);
-			}
+			//if (RowData->ItemSlotImage)
+			//{
+			//	RowData->ItemSlotImage->AddToRoot();
+			//	RowData->ItemSlotImage->GetResourceSizeBytes(EResourceSizeMode::Exclusive);
+			//}
 		}
 	}
 }
