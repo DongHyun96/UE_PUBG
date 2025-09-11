@@ -79,6 +79,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UImage* ProhibitedLandImage{};
 
+	UPROPERTY(meta = (BindWidget))
+	class UCanvasPanel* TrainingGroundPlaceTextPanel{};
+
 private:
 
 	float WorldToMapImageSizeFactor{};

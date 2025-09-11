@@ -56,6 +56,9 @@ void UC_MiniMapWidget::UpdatePlayerMarkerAndBGPosition()
 	ProhibitedLandImage->SetRenderTranslation(PlayerTranslationOnMap);
 	MapImage->SetRenderTranslation(PlayerTranslationOnMap);
 
+	if (TrainingGroundPlaceTextPanel->GetVisibility() == ESlateVisibility::SelfHitTestInvisible)
+		TrainingGroundPlaceTextPanel->SetRenderTranslation(PlayerTranslationOnMap);
+
 	const FVector2D PingLocation = PingMarkerLocalLocation + PlayerTranslationOnMap; 
 	PingBorder->SetRenderTranslation(PingLocation);	
 }
