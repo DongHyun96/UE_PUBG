@@ -145,4 +145,6 @@ private:
 
 	// TrainingGroundPlaceTexts 기본 size 값 저장 (TPair<font size, slot size>)
 	TArray<TPair<float, FVector2D>> TrainingGroundPlaceTextSizeOrigins{};
+
+	TArray<FVector2D> TrainingGroundPlaceTextPositionOrigins{};
 };

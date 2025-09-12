@@ -60,6 +60,8 @@ void UC_MainMapWidget::NativeConstruct()
 				const float		FontSizeOrigin = TextBlock->GetFont().Size;
 				const FVector2D SlotSizeOrigin = CanvasPanelSlot->GetSize();
 				TrainingGroundPlaceTextSizeOrigins.Add({FontSizeOrigin, SlotSizeOrigin});
+
+				TrainingGroundPlaceTextPositionOrigins.Add(TextBlock->GetRenderTransform().Translation);
 			}
 		}
 	}
@@ -172,7 +174,8 @@ void UC_MainMapWidget::HandleUpdateTrainingGroundMarkers()
 		TrainingGroundPlaceTextPanelSlots[i]->SetSize(SlotSizeOrigin * MainMapScale);
 
 		// Set Font RenderTranslation
-		TrainingGroundPlaceTextBlocks[i]->SetRenderTranslation(MapImage->GetRenderTransform().Translation);
+		const FVector2D NewPosition = TrainingGroundPlaceTextPositionOrigins[i] * MainMapScale + MapImage->GetRenderTransform().Translation;
+		TrainingGroundPlaceTextBlocks[i]->SetRenderTranslation(NewPosition);
 	}
 	
 
