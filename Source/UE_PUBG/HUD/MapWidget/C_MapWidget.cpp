@@ -26,12 +26,16 @@ void UC_MapWidget::NativeConstruct()
 	{
 		MapImage->SetBrushFromTexture(TrainingGroundMapImageTexture);
 		GridImage->SetBrushFromTexture(TrainingGroundMapGridImgTexture);
+
+		TrainingGroundPlaceTextPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 	else // ShantyTown
 	{
 		ShantyTownMapImgMaterialInstanceDynamic = UMaterialInstanceDynamic::Create(ShantyTownMapMaterialInstance, this);
 		MapImage->SetBrushFromMaterial(ShantyTownMapImgMaterialInstanceDynamic);
 		GridImage->SetBrushFromTexture(ShantyTownMapGridImgTexture);
+
+		TrainingGroundPlaceTextPanel->SetVisibility(ESlateVisibility::Hidden);
 	}
 
 	// 현재 Level에 따른 중앙점 위치 setting

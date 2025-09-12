@@ -17,16 +17,14 @@
 
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 
-const float		UC_MainMapWidget::MAP_SCALE_MAX				= 5.f;
-const float		UC_MainMapWidget::SCROLL_DELTA_STEP			= 0.5f;
-const float		UC_MainMapWidget::CANVAS_SIZE				= 1080.f;
-const FVector2D UC_MainMapWidget::MID_POINT					= { 960.f, 540.f };
-// const float		UC_MainMapWidget::WORLD_MAP_SIZE			= 100000.f;
-
-// const float		UC_MainMapWidget::FIXED_LANDSCAPE_HEIGHT	= 3400.f;
-const float		UC_MainMapWidget::PING_BORDER_SIZE			= 30.f;
+const float		UC_MainMapWidget::MAP_SCALE_MAX		= 5.f;
+const float		UC_MainMapWidget::SCROLL_DELTA_STEP	= 0.5f;
+const float		UC_MainMapWidget::CANVAS_SIZE		= 1080.f;
+const FVector2D UC_MainMapWidget::MID_POINT			= { 960.f, 540.f };
+const float		UC_MainMapWidget::PING_BORDER_SIZE	= 30.f;
 
 void UC_MainMapWidget::NativeConstruct()
 {
@@ -47,6 +45,23 @@ void UC_MainMapWidget::NativeConstruct()
 	{
 		WorldMapSize		 = 50000.f;
 		FixedLandScapeHeight = 0.5f;
+
+		// Init TrainingGroundPlaceTextBlocks
+		for (int i = 0; i < TrainingGroundPlaceTextPanel->GetChildrenCount(); ++i)
+		{
+			UWidget* ChildWidget = TrainingGroundPlaceTextPanel->GetChildAt(i);
+			if (UTextBlock* TextBlock = Cast<UTextBlock>(ChildWidget))
+			{
+				TrainingGroundPlaceTextBlocks.Add(TextBlock);
+
+				UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(TextBlock->Slot);
+				if (CanvasPanelSlot) TrainingGroundPlaceTextPanelSlots.Add(CanvasPanelSlot);
+
+				const float		FontSizeOrigin = TextBlock->GetFont().Size;
+				const FVector2D SlotSizeOrigin = CanvasPanelSlot->GetSize();
+				TrainingGroundPlaceTextSizeOrigins.Add({FontSizeOrigin, SlotSizeOrigin});
+			}
+		}
 	}
 }
 
@@ -112,6 +127,7 @@ void UC_MainMapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	HandleUpdateMainMapImage(InDeltaTime);
+	HandleUpdateTrainingGroundMarkers();
 	HandleUpdateMarkers();
 }
 
@@ -132,6 +148,35 @@ void UC_MainMapWidget::HandleUpdateMainMapImage(float InDeltaTime)
 
 	MapImage->SetRenderTranslation(MainMapPos);
 	GridImage->SetRenderTranslation(MainMapPos);
+}
+
+void UC_MainMapWidget::HandleUpdateTrainingGroundMarkers()
+{
+	if (TrainingGroundPlaceTextPanel->GetVisibility() == ESlateVisibility::Hidden) return;
+
+	// TrainingGroundPlaceTextPanel->SetRenderTranslation(MapImage->GetRenderTransform().Translation);
+	// TrainingGroundPlaceTextPanel->SetRenderScale(MapImage->GetRenderTransform().Scale);
+
+	// Text의 RenderScale을 직접적으로 조정하면 Text가 뭉게지기 때문에 Text의 FontSize와 Slot Size를 직접적으로 조정 처리
+	for (int i = 0; i < TrainingGroundPlaceTextBlocks.Num(); ++i)
+	{
+		const float	    FontSizeOrigin = TrainingGroundPlaceTextSizeOrigins[i].Key;
+		const FVector2D SlotSizeOrigin = TrainingGroundPlaceTextSizeOrigins[i].Value;
+
+		// Set font size
+		FSlateFontInfo FontInfo = TrainingGroundPlaceTextBlocks[i]->GetFont();
+		FontInfo.Size = FontSizeOrigin * MainMapScale;
+		TrainingGroundPlaceTextBlocks[i]->SetFont(FontInfo);
+
+		// Set Slot size
+		TrainingGroundPlaceTextPanelSlots[i]->SetSize(SlotSizeOrigin * MainMapScale);
+
+		// Set Font RenderTranslation
+		TrainingGroundPlaceTextBlocks[i]->SetRenderTranslation(MapImage->GetRenderTransform().Translation);
+	}
+	
+
+	// TODO : 버튼 Panel도 처리해줄 것
 }
 
 void UC_MainMapWidget::HandleUpdateMarkers()

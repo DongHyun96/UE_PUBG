@@ -172,6 +172,10 @@ protected:
 
 	// AirplaneRouteImage의 size X를 조정하기 위함
 	class UCanvasPanelSlot* AirplaneRouteImageCanvasSlot{};
-	
+
+protected:
+
+	UPROPERTY(meta = (BindWidget))
+	class UCanvasPanel* TrainingGroundPlaceTextPanel{}; // TrainingGround의 Field Text Panel 
 };
 

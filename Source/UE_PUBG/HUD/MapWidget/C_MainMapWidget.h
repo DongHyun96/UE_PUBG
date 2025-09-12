@@ -20,12 +20,13 @@ public:
 	void SetVisibility(ESlateVisibility InVisibility) override;
 
 protected:
-
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 
 	void HandleUpdateMainMapImage(float InDeltaTime);
+	
+	void HandleUpdateTrainingGroundMarkers();
 
 	/// <summary>
 	/// MainMap Transform에 따른 Map요소들 위치 Update
@@ -135,7 +136,13 @@ private:
 	FVector2D PrevDragMousePos{};
 	const float DRAG_SPEED = 5.f;
 
+private:
 
+	// TrainingGroundPlaceTextPanel 하위 자식으로 들어있는 모든 TextBlock들
+	// RenderScale을 조정하면 폰트가 뭉게지기 때문에 FontSize와 Slot Size Y를 조정할 예정
+	TArray<class UTextBlock*> TrainingGroundPlaceTextBlocks{};
+	TArray<UCanvasPanelSlot*> TrainingGroundPlaceTextPanelSlots{};
+
+	// TrainingGroundPlaceTexts 기본 size 값 저장 (TPair<font size, slot size>)
+	TArray<TPair<float, FVector2D>> TrainingGroundPlaceTextSizeOrigins{};
 };
-
-
