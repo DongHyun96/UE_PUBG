@@ -22,6 +22,10 @@ public:
 protected:
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+public:
+
+	class UC_TrainingGroundButtonWidget* GetTrainingGroundButtonWidget() const { return TrainingGroundButtonWidget; }
+
 private:
 
 	void HandleUpdateMainMapImage(float InDeltaTime);
@@ -147,4 +151,10 @@ private:
 	TArray<TPair<float, FVector2D>> TrainingGroundPlaceTextSizeOrigins{};
 
 	TArray<FVector2D> TrainingGroundPlaceTextPositionOrigins{};
+	
+protected:
+
+	UPROPERTY(meta = (BindWidget))
+	UC_TrainingGroundButtonWidget* TrainingGroundButtonWidget{}; 
+	
 };

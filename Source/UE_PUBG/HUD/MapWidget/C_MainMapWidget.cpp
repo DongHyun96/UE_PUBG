@@ -4,6 +4,7 @@
 #include "HUD/MapWidget/C_MainMapWidget.h"
 
 #include "C_MiniMapWidget.h"
+#include "C_TrainingGroundButtonWidget.h"
 #include "Character/C_Player.h"
 #include "Character/Component/C_PingSystemComponent.h"
 #include "HUD/C_HUDWidget.h"
@@ -40,8 +41,10 @@ void UC_MainMapWidget::NativeConstruct()
 	{
 		WorldMapSize		 = 100000.f;
 		FixedLandScapeHeight = 3400.f;
+
+		TrainingGroundButtonWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
-	else // Training ground Map
+	else if (CurrentSelectedMap == ELevelType::TrainingGround) // Training ground Map
 	{
 		WorldMapSize		 = 50000.f;
 		FixedLandScapeHeight = 0.5f;
@@ -50,20 +53,22 @@ void UC_MainMapWidget::NativeConstruct()
 		for (int i = 0; i < TrainingGroundPlaceTextPanel->GetChildrenCount(); ++i)
 		{
 			UWidget* ChildWidget = TrainingGroundPlaceTextPanel->GetChildAt(i);
-			if (UTextBlock* TextBlock = Cast<UTextBlock>(ChildWidget))
-			{
-				TrainingGroundPlaceTextBlocks.Add(TextBlock);
+			UTextBlock* TextBlock = Cast<UTextBlock>(ChildWidget);
+			if (!TextBlock) continue;
+			
+			TrainingGroundPlaceTextBlocks.Add(TextBlock);
 
-				UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(TextBlock->Slot);
-				if (CanvasPanelSlot) TrainingGroundPlaceTextPanelSlots.Add(CanvasPanelSlot);
+			UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(TextBlock->Slot);
+			if (CanvasPanelSlot) TrainingGroundPlaceTextPanelSlots.Add(CanvasPanelSlot);
 
-				const float		FontSizeOrigin = TextBlock->GetFont().Size;
-				const FVector2D SlotSizeOrigin = CanvasPanelSlot->GetSize();
-				TrainingGroundPlaceTextSizeOrigins.Add({FontSizeOrigin, SlotSizeOrigin});
+			const float		FontSizeOrigin = TextBlock->GetFont().Size;
+			const FVector2D SlotSizeOrigin = CanvasPanelSlot->GetSize();
+			TrainingGroundPlaceTextSizeOrigins.Add({FontSizeOrigin, SlotSizeOrigin});
 
-				TrainingGroundPlaceTextPositionOrigins.Add(TextBlock->GetRenderTransform().Translation);
-			}
+			TrainingGroundPlaceTextPositionOrigins.Add(TextBlock->GetRenderTransform().Translation);
 		}
+
+		TrainingGroundButtonWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 }
 
@@ -179,7 +184,9 @@ void UC_MainMapWidget::HandleUpdateTrainingGroundMarkers()
 	}
 	
 
-	// TODO : 버튼 Panel도 처리해줄 것
+	// Button panel 처리
+	TrainingGroundButtonWidget->SetRenderTranslation(MapImage->GetRenderTransform().Translation);
+	TrainingGroundButtonWidget->SetRenderScale(MapImage->GetRenderTransform().Scale);
 }
 
 void UC_MainMapWidget::HandleUpdateMarkers()

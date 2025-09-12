@@ -110,7 +110,6 @@ public:
 	TArray<AC_BasicCharacter*>& GetAllCharacters() { return AllCharacters; }
 	TArray<AActor*>& GetAllCharacterActors() { return AllCharacterActors; }
 
-	class AC_TutorialManager* GetTutorialManager() const { return TutorialManager; }
 	class AC_TrainingGroundManager* GetTrainingGroundManager() const { return TrainingGroundManager; }
 
 	/// <summary>
@@ -198,7 +197,6 @@ private:
 	AC_AirplaneManager*			AirplaneManager{};
 	AC_ItemManager*				ItemManager{};
 	AC_SoundManager*			SoundManager{};
-	AC_TutorialManager*			TutorialManager{};
 	AC_TrainingGroundManager*	TrainingGroundManager{};
 	
 private:
