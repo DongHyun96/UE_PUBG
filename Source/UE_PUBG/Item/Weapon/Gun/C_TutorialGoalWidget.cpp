@@ -32,6 +32,26 @@ void UC_TutorialGoalWidget::NativeConstruct()
 	}
 }
 
+void UC_TutorialGoalWidget::InitTutorialGoalWidgetAnimations()
+{
+	SetAnimationCurrentTime(StageStartAnimation, 0.f);
+	PlayAnimation(StageStartAnimation);
+
+	for (UWidgetAnimation* Animation : GoalFocusedAnimations)
+	{
+		SetAnimationCurrentTime(Animation, 0.f);
+		PlayAnimation(Animation);	
+	}
+
+	for (UWidgetAnimation* Animation : GoalSucceededAnimations)
+	{
+		SetAnimationCurrentTime(Animation, 0.f);
+		PlayAnimation(Animation);
+	}
+
+	StopAllAnimations();
+}
+
 void UC_TutorialGoalWidget::PlayStageStartAnimation()
 {
 	PlayAnimation(StageStartAnimation);

@@ -76,7 +76,8 @@ void AC_TutorialManager::Tick(float DeltaTime)
 
 void AC_TutorialManager::StartTutorial()
 {
-	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer(); 
+	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+	
 	// Set Player Location
 	Player->SetActorTransform(PlayerTutorialStartTransform);
 
@@ -86,6 +87,16 @@ void AC_TutorialManager::StartTutorial()
 	// Player 인벤토리 초기화
 	Player->GetInvenComponent()->ClearInventory();
 	Player->GetEquippedComponent()->ClearEquippedWeapons();
+
+	// Init current stage
+	CurrentStage = ETutorialStage::MovementTutorial;
+
+	// Init Stage start trigger boxes
+	for (TPair<ETutorialStage, AC_TutorialStageTriggerBox*>& Pair : StageStartTriggerBoxes)
+		Pair.Value->ToggleTriggerBox(false);
+
+	// Init Tutorial gates
+	for (TPair<ETutorialStage, AC_TutorialGate*>& Pair : TutorialGates) Pair.Value->CloseGate();
 
 	// 2초 뒤에 MovementTutorial 시작
 	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();

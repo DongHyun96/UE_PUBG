@@ -188,6 +188,15 @@ void UC_TutorialStageChecker::InitStage()
 
 	CurrentMainGoalIndex = 0;
 
+	// Init Goal data
+	for (FGoalData& Data : GoalData)
+	{
+		Data.bMainGoalAchieved = false;
+		
+		for (bool& SubGoalAchieved : Data.SubGoalsAchieved)
+			SubGoalAchieved = false;
+	}
+
 	//  GoalWidget Stage Start 처리
 	// StageStartAnimation 재생 1초 이 후, 첫 번째 Goal Focused Anim 처리
 	UC_TutorialGoalWidget* GoalWidget = OwnerTutorialManager->GetTutorialWidget()->GetCurrentTutorialGoalWidget();
@@ -195,8 +204,11 @@ void UC_TutorialStageChecker::InitStage()
 	if (GoalWidget)
 	{
 		GoalWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+		GoalWidget->InitTutorialGoalWidgetAnimations();
 		
 		GoalWidget->PlayStageStartAnimation();
+		
 		FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
 		GetWorld()->GetTimerManager().SetTimer
 		(
