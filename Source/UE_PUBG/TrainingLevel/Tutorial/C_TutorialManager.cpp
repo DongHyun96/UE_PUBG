@@ -61,12 +61,7 @@ void AC_TutorialManager::BeginPlay()
 		StageStartTriggerBoxes[Stage]->OnActorBeginOverlap.AddDynamic(TutorialStageCheckers[Stage], &UC_TutorialStageChecker::OnStartTriggerBoxBeginOverlap);
 	}
 
-	if (TutorialWidget)
-	{
-		TutorialWidget->AddToViewport(20);
-		TutorialWidget->SetTutorialManager(this);
-		// StartTutorial();
-	}
+	if (TutorialWidget) TutorialWidget->SetTutorialManager(this);
 }
 
 void AC_TutorialManager::Tick(float DeltaTime)
@@ -90,6 +85,15 @@ void AC_TutorialManager::StartTutorial()
 
 	// Init current stage
 	CurrentStage = ETutorialStage::MovementTutorial;
+
+	// Init Tutorial Widget by adding to viewport
+	TutorialWidget = CreateWidget<UC_TutorialWidget>(GetWorld(), TutorialWidgetClass);
+	if (IsValid(TutorialWidget))
+	{
+		TutorialWidget->SetTutorialManager(this);
+		TutorialWidget->AddToViewport(20);
+	}
+	else UC_Util::Print("From AC_TutorialManager::StartTutorial : Creating TutorialWidget failed!", FColor::Red, 10.f);
 
 	// Init Stage start trigger boxes
 	for (TPair<ETutorialStage, AC_TutorialStageTriggerBox*>& Pair : StageStartTriggerBoxes)

@@ -27,7 +27,7 @@ protected:
 public:
 
 	void SetTutorialManager(AC_TutorialManager* InTutorialManager) { TutorialManager = InTutorialManager; }
-	
+
 	/* Stage Explanation Panel 관련 */
 public:
 
