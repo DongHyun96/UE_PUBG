@@ -24,6 +24,8 @@
 #include "HUD/C_AmmoWidget.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_InformWidget.h"
+#include "HUD/MapWidget/C_MainMapWidget.h"
+#include "HUD/MapWidget/C_TrainingGroundButtonWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_GunSlotWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_MainGunSlotWidget.h"
 #include "InvenUI/BasicItemSlot/WeaponSlot/GunSlot/C_SubGunSlotWidget.h"
@@ -226,6 +228,9 @@ void UC_PlayerCombatFieldManager::SetPlayerCombatFieldState(EPlayerCombatFieldSt
 		OwnerCombatFieldManager->InitRoundForCombatCharacter(CombatFieldEnemy, SpawnTransforms[1]);
 		OwnerCombatFieldManager->InitRoundForCombatCharacter(Player, PlayerTransformAfterMatching); // 기본 처리 및 Matching 이후의 Transform으로 setting
 
+		// MainMap Place Button 활성화
+		Player->GetMainMapWidget()->GetTrainingGroundButtonWidget()->ToggleButtonsEnabled(true);
+
 		// Player Combat Field 정보 초기화
 		CombatFieldTimer = 0.f;
 		CurrentRound = 1;
@@ -401,6 +406,9 @@ bool UC_PlayerCombatFieldManager::OnStartGateFKeyInteraction()
 	
 	// Player Character Destroy delegate 구독 (CharacterDestroy 처리를 막기 위함)
 	Player->Delegate_OnCombatCharacterDestroy.BindUObject(this, &UC_PlayerCombatFieldManager::OnCombatCharacterDestroy);
+
+	// MainMap Place Button 비활성화
+	Player->GetMainMapWidget()->GetTrainingGroundButtonWidget()->ToggleButtonsEnabled(false);
 
 	/* Init Matching */
 		

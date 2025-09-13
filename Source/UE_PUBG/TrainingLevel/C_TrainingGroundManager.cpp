@@ -32,3 +32,29 @@ void AC_TrainingGroundManager::SetPlayerToDefaultTrainingGroundTransform()
 	GAMESCENE_MANAGER->GetPlayer()->SetActorTransform(TrainingGroundDefaultPlayerTransform);
 }
 
+bool AC_TrainingGroundManager::AddTransformToTrainingGroundPlaceSpawnTransforms(ETrainingGroundPlace TargetPlace, const FTransform& Transform)
+{
+	if (TargetPlace == ETrainingGroundPlace::Max) return false;
+
+	if (TrainingGroundPlaceSpawnTransforms.Contains(TargetPlace))
+	{
+		UC_Util::Print
+		(
+			"From AC_TrainingGroundManager::AddTransformToTrainingGroundPlaceSpawnTransforms : TMap already contains Target place type transform!",
+			FColor::Red, 10.f
+		);
+		
+		return false;
+	}
+	TrainingGroundPlaceSpawnTransforms.Add(TargetPlace, Transform);
+	return true;
+}
+
+bool AC_TrainingGroundManager::MovePlayerToPlaceSpawnTransform(ETrainingGroundPlace TargetPlace)
+{
+	if (TargetPlace == ETrainingGroundPlace::Max) return false;
+	
+	GAMESCENE_MANAGER->GetPlayer()->SetActorTransform(TrainingGroundPlaceSpawnTransforms[TargetPlace]);
+	return true;
+}
+

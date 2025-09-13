@@ -5,7 +5,6 @@
 
 #include "EngineUtils.h"
 #include "NavigationSystem.h"
-#include "AI/C_EnemyAIController.h"
 #include "Character/C_Player.h"
 #include "Character/C_Enemy.h"
 #include "MagneticField/C_MagneticFieldManager.h"
@@ -28,7 +27,6 @@
 #include "TrainingLevel/C_TrainingGroundManager.h"
 #include "TrainingLevel/CombatField/C_CombatFieldManager.h"
 #include "TrainingLevel/CombatField/C_PlayerCombatFieldManager.h"
-#include "TrainingLevel/Tutorial/C_TutorialManager.h"
 
 #include "Utility/C_TickRandomColorGenerator.h"
 
@@ -119,7 +117,6 @@ void UC_GameSceneManager::OnWorldBeginPlay(UWorld& InWorld)
 		
 		if (AC_SoundManager* Sound_Manager = Cast<AC_SoundManager>(*Actor)) SoundManager = Sound_Manager;
 		
-		if (AC_TutorialManager* Tutorial_Manager = Cast<AC_TutorialManager>(*Actor)) TutorialManager = Tutorial_Manager;
 		if (AC_TrainingGroundManager* TrainingGround_Manager = Cast<AC_TrainingGroundManager>(*Actor)) TrainingGroundManager = TrainingGround_Manager;
 	}
 

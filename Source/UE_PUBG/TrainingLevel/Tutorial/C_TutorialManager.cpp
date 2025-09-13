@@ -5,10 +5,13 @@
 
 #include "C_TutorialStageTriggerBox.h"
 #include "Character/C_Player.h"
-#include "Components/ShapeComponent.h"
+#include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_InvenComponent.h"
 #include "Door/C_TutorialGate.h"
 #include "TutorialStageChecker/C_TutorialStageChecker.h"
-#include "Engine/TriggerBox.h"
+#include "HUD/C_HUDWidget.h"
+#include "HUD/MapWidget/C_MainMapWidget.h"
+#include "HUD/MapWidget/C_TrainingGroundButtonWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "TutorialStageChecker/C_HealingTutorialChecker.h"
 #include "TutorialStageChecker/C_MovementTutorialChecker.h"
@@ -73,8 +76,27 @@ void AC_TutorialManager::Tick(float DeltaTime)
 
 void AC_TutorialManager::StartTutorial()
 {
+	AC_Player* Player = GAMESCENE_MANAGER->GetPlayer();
+	
 	// Set Player Location
-	GAMESCENE_MANAGER->GetPlayer()->SetActorTransform(PlayerTutorialStartTransform);
+	Player->SetActorTransform(PlayerTutorialStartTransform);
+
+	// MainMap Place button 비활성화
+	Player->GetMainMapWidget()->GetTrainingGroundButtonWidget()->ToggleButtonsEnabled(false);
+
+	// Player 인벤토리 초기화
+	Player->GetInvenComponent()->ClearInventory();
+	Player->GetEquippedComponent()->ClearEquippedWeapons();
+
+	// Init current stage
+	CurrentStage = ETutorialStage::MovementTutorial;
+
+	// Init Stage start trigger boxes
+	for (TPair<ETutorialStage, AC_TutorialStageTriggerBox*>& Pair : StageStartTriggerBoxes)
+		Pair.Value->ToggleTriggerBox(false);
+
+	// Init Tutorial gates
+	for (TPair<ETutorialStage, AC_TutorialGate*>& Pair : TutorialGates) Pair.Value->CloseGate();
 
 	// 2초 뒤에 MovementTutorial 시작
 	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
