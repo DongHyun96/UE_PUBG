@@ -315,6 +315,7 @@ void UC_InvenComponent::RemoveItemFromMyList(AC_Item* item)
 		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
 		{
 			Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
+			Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 		}
 		return;
 	}

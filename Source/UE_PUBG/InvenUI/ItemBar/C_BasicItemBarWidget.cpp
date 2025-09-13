@@ -65,8 +65,8 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 				UGameplayStatics::PlaySound2D(CachedItem, CachedItem->GetPickUpSound());
 		}
 
-		UpdateWidget(CachedItem);
-
+		//UpdateWidget(CachedItem);
+		UpdateWidget(DataObj);
 		UpdateInvenUIWidget();
 
 		return FReply::Handled();
@@ -216,6 +216,11 @@ void UC_BasicItemBarWidget::UpdateWidget(UC_ItemDataObject* InDataObj)
 		ItemImage->SetBrushFromSoftTexture(GI->GetItemData(InDataObj->GetItemCode())->ItemBarIcon);
 		ItemName->SetText(FText::FromString(GI->GetItemData(InDataObj->GetItemCode())->ItemName));
 		ItemType = GI->GetItemData(InDataObj->GetItemCode())->ItemType;
+
+		if (AC_ConsumableItem* Consumable = Cast<AC_ConsumableItem>(CachedItem))
+		{
+			Consumable->SetLinkedItemBarWidget(this);
+		}
 
 		//ItemImage->SetBrushFromTexture(InDataObj->ItemDataRef->ItemBarIcon);
 		//ItemName->SetText(FText::FromString(InDataObj->ItemDataRef->ItemName));
