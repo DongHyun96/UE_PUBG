@@ -205,8 +205,6 @@ void UC_TutorialStageChecker::InitStage()
 	{
 		GoalWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
-		GoalWidget->InitTutorialGoalWidgetAnimations();
-		
 		GoalWidget->PlayStageStartAnimation();
 		
 		FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();

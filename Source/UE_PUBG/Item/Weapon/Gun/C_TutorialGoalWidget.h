@@ -13,11 +13,6 @@ class UE_PUBG_API UC_TutorialGoalWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	/// <summary>
-	/// 기존에 이미 재생된 Animation 멈추기 및 되감아두기
-	/// </summary>
-	void InitTutorialGoalWidgetAnimations();
-
 	void PlayStageStartAnimation();
 
 	/// <summary>
@@ -62,5 +57,20 @@ private:
 	TArray<UWidgetAnimation*> GoalFocusedAnimations{};
 
 	TArray<UWidgetAnimation*> GoalSucceededAnimations{};
-	
+
+private: // Animation 재생 이후로 Widget들의 초기화를 처리해야 함 / 따라서 Widget 객체들 저장
+
+	/*TArray<class UImage*> FocusedBackgroundImages{};
+
+	TArray<class UOverlay*> CheckBoxes{};
+
+	TArray<UImage*> CompletedWhiteImages{};
+
+	TArray<UImage*> CompletedBoxImages{};
+
+	TArray<UImage*> CheckedBoxImages{};
+
+	TArray<UImage*> CheckedBoxEffectImages{};
+
+	TArray<UOverlay*> Overlays{};*/
 };

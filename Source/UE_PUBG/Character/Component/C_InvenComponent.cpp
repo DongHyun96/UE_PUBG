@@ -441,9 +441,23 @@ void UC_InvenComponent::ClearInventory()
 	CurBackPackLevel = EBackPackLevel::LV0;
 	PreBackPackLevel = EBackPackLevel::LV0;
 
-	// 일괄적으로 Inven UI 업데이트 처리
+	// 일괄적으로 Inven UI 업데이트 처리 및 PreviewCharacter 초기화
 	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+	{
 		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+		
+		AC_PreviewCharacter* PreviewCharacter = Player->GetPreviewCharacter(); 
+		PreviewCharacter->DetachWeaponMesh(EWeaponSlot::MAIN_GUN);
+		PreviewCharacter->DetachWeaponMesh(EWeaponSlot::SUB_GUN);
+		
+		for (int i = 0; i < 3; ++i)
+		{
+			EEquipSlot EquipSlot = static_cast<EEquipSlot>(i);
+			PreviewCharacter->DetachEquippedMesh(EquipSlot);
+		}
+
+		PreviewCharacter->UpdateHandPose(EHandState::UNARMED);
+	}
 }
 
 float UC_InvenComponent::GetVestVolume()

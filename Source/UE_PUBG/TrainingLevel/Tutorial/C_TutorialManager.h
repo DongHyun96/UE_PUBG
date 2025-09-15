@@ -73,6 +73,7 @@ public:
 public:
 
 	class UC_TutorialWidget* GetTutorialWidget() const { return TutorialWidget; }
+	void SetTutorialWidget(UC_TutorialWidget* InTutorialWidget) { TutorialWidget = InTutorialWidget; }
 
 	TArray<AC_TutorialStageTriggerBox*>& GetTriggerBoxesReference(ETutorialStage TutorialStage)
 	{ return TutorialStageTriggerBoxes[TutorialStage].GetTriggerBoxesReference(); }
@@ -89,12 +90,18 @@ protected:
 	UPROPERTY(EditInstanceOnly)
 	TMap<ETutorialStage, class AC_TutorialGate*> TutorialGates{};
 
+	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	UC_TutorialWidget* TutorialWidget{};
+	TSubclassOf<UC_TutorialWidget> TutorialWidgetClass{};	
 
 	UPROPERTY(EditInstanceOnly)
 	FTransform PlayerTutorialStartTransform{};
+
+private:
 	
+	UC_TutorialWidget* TutorialWidget{};
+
 private:
 	
 	TMap<ETutorialStage, class UC_TutorialStageChecker*> TutorialStageCheckers{};
