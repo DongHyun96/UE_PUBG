@@ -61,7 +61,7 @@ Developed with Unreal Engine 5
     * WEAPON_MELEE - Crawl BS
     * WEAPON_THROWABLE - Stand BS
     * WEAPON_THROWABLE - Crouch BS 
-    * WEAPON_THROABLE - Stand BS
+    * WEAPON_THROABLE - Crawl BS
 
 * AnimMontage Priority에 따른 PlayAnimMontage 방식 수정
     * PriorityAnimMontage 구조 설계 및 구현
