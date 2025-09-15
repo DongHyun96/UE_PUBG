@@ -3,10 +3,15 @@
 
 #include "C_TutorialEndChecker.h"
 
+#include "Character/C_Player.h"
+#include "HUD/MapWidget/C_MainMapWidget.h"
+#include "HUD/MapWidget/C_TrainingGroundButtonWidget.h"
 #include "Item/Weapon/Gun/C_TutorialGoalWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "TrainingLevel/C_TrainingGroundManager.h"
+#include "TrainingLevel/Tutorial/C_TutorialManager.h"
 #include "TrainingLevel/Tutorial/C_TutorialStageTriggerBox.h"
+#include "TrainingLevel/Tutorial/TutorialWidget/C_TutorialWidget.h"
 #include "Utility/C_Util.h"
 
 UC_TutorialEndChecker::UC_TutorialEndChecker()
@@ -28,9 +33,13 @@ void UC_TutorialEndChecker::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 void UC_TutorialEndChecker::InitStage()
 {
-	// Super::InitStage();
-	UC_Util::Print("Tutorial End Stage InitStage called, Moving to Training Ground", FColor::Red, 10.f);
-	
 	// Training Ground Default 위치로 Player 배치 
 	GAMESCENE_MANAGER->GetTrainingGroundManager()->SetPlayerToDefaultTrainingGroundTransform();
+
+	// MainMap Place Button 활성화
+	GAMESCENE_MANAGER->GetPlayer()->GetMainMapWidget()->GetTrainingGroundButtonWidget()->ToggleButtonsEnabled(true);
+
+	// TutorialWidget 비활성화
+	GAMESCENE_MANAGER->GetTrainingGroundManager()->GetTutorialManager()->GetTutorialWidget()->RemoveFromParent();
+	GAMESCENE_MANAGER->GetTrainingGroundManager()->GetTutorialManager()->SetTutorialWidget(nullptr);
 }

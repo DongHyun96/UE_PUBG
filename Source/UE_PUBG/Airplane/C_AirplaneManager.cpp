@@ -16,9 +16,10 @@
 #include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_MainMapWidget.h"
+#include "HUD/MapWidget/C_MainMapWidget.h"
 #include "HUD/C_InformWidget.h"
 #include "HUD/C_TimeBoxWidget.h"
+#include "HUD/MapWidget/C_MiniMapWidget.h"
 #include "MagneticField/C_MagneticFieldManager.h"
 
 AC_AirplaneManager::AC_AirplaneManager()
@@ -44,6 +45,7 @@ void AC_AirplaneManager::BeginPlay()
 	// TODO : 주석 풀 것
 	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AC_AirplaneManager::StartTakeOffTimer, 5.f, false);
+
 	
 }
 

@@ -15,8 +15,9 @@
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_InformWidget.h"
 #include "HUD/C_MagneticFieldIndicatorWidget.h"
-#include "HUD/C_MapWidget.h"
-#include "HUD/C_MainMapWidget.h"
+#include "HUD/MapWidget/C_MapWidget.h"
+#include "HUD/MapWidget/C_MainMapWidget.h"
+#include "HUD/MapWidget/C_MiniMapWidget.h"
 
 
 AC_MagneticFieldManager::AC_MagneticFieldManager()

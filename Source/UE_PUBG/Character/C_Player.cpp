@@ -54,7 +54,7 @@
 #include "Engine/Texture2D.h"
 
 #include "HUD/C_HUDWidget.h"
-#include "HUD/C_MainMapWidget.h"
+#include "HUD/MapWidget/C_MainMapWidget.h"
 #include "HUD/C_SkyDiveWidget.h"
 #include "Character/Component/C_CrosshairWidgetComponent.h"
 #include "Component/C_PlayerDeafenedHandler.h"
@@ -62,6 +62,7 @@
 #include "Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "HUD/C_GameOverWidget.h"
 #include "HUD/C_InformWidget.h"
+#include "HUD/MapWidget/C_MiniMapWidget.h"
 #include "Singleton/C_GameInstance.h"
 #include "Singleton/C_GameSceneManager.h"
 
@@ -328,6 +329,10 @@ void AC_Player::OnPostWorldBeginPlay()
 	if (!IsValid(GAMESCENE_MANAGER->GetAirplaneManager())) return;
 	
 	TPair<FVector, FVector> PlaneStartDestPair = GAMESCENE_MANAGER->GetAirplaneManager()->GetPlaneRouteStartDestPair();
+
+	MainMapWidget->ToggleAirplaneRouteVisibility(true);
+	HUDWidget->GetMiniMapWidget()->ToggleAirplaneRouteVisibility(true);
+	
 	MainMapWidget->SetAirplaneRoute(PlaneStartDestPair);
 	HUDWidget->GetMiniMapWidget()->SetAirplaneRoute(PlaneStartDestPair);
 }
@@ -596,7 +601,7 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 			if (!IsValid(InvenComponent)) return;//이 부분들에서 계속 터진다면 아예 없을때 생성해버리기.
 			if (InvenComponent->GetAroundItems().Contains(OverlappedItem)) return;
 			InvenComponent->AddItemToAroundList(OverlappedItem);
-			
+			InvenSystem->GetInvenUI()->AddItemToAroundItemList(OverlappedItem);
 			//Inventory->InitInvenUI();
 			//if (!IsValid(InvenSystem)) return;
 		}
@@ -610,10 +615,19 @@ void AC_Player::HandleOverlapBegin(AActor* OtherActor)
 		if (OverlappedLootBox->GetLootItems().Num() == 0) return;
 			
 		OverlappedLootBox->SetActorTickEnabled(true);
+		TArray<AC_Item*> AroundItemList = InvenComponent->GetAroundItems();
+		//InvenComponent->GetAroundItems().Append(OverlappedLootBox->GetLootItems());
+		AroundItemList.Append(OverlappedLootBox->GetLootItems());
+		TArray<AC_Item*> LootBoxItems = OverlappedLootBox->GetLootItems();
+		for (AC_Item* LootItem : LootBoxItems)
+		{
+			if (!IsValid(LootItem)) continue;
+			//if (AroundItemList.Contains(LootItem)) continue;
+			InvenComponent->AddItemToAroundList(LootItem);
+			InvenSystem->GetInvenUI()->AddItemToAroundItemList(LootItem);
+		}
 
-		InvenComponent->GetAroundItems().Append(OverlappedLootBox->GetLootItems());
-
-		InvenSystem->GetInvenUI()->UpdateAroundItemPanelWidget();
+		//InvenSystem->GetInvenUI()->AddItemToAroundItemList(OverlappedItem);
 	}
 
 	//TArray<AC_Item*> SortedItems = this->GetInvenComponent()->GetAroundItems();

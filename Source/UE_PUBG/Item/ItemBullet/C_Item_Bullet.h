@@ -33,6 +33,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	bool Interaction(AC_BasicCharacter* Character) override;
 	bool MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack) override;
+	bool MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack) override;
 	bool MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack) override;
 
 	/// <summary>

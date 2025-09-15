@@ -18,6 +18,8 @@
 
 #include "Utility/C_Util.h"
 
+//Inven System Refactoring BackUp
+
 // Sets default values for this component's properties
 UC_InvenComponent::UC_InvenComponent()
 {
@@ -196,7 +198,7 @@ bool UC_InvenComponent::HandleItemStackOverflow(AC_Item* InItem)
 	if (ItemArray.Num() == 0)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("HandleItemStackOverflow: 아이템 배열이 비어 있음! ItemCode: %s"), *item->GetItemCode().ToString());
-		UC_Util::Print("ItemArray of HandleItemStackOverflow is NULL");
+		UC_Util::Print("ItemArray of HandleItemStackOverflow is NULL", FColor::Red, 10.f);
 		return false;
 	}
 
@@ -288,34 +290,55 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 
 void UC_InvenComponent::RemoveItemFromMyList(AC_Item* item)
 {
-	if (MyItems.Contains(item->GetItemCode()))
+	if (!MyItems.Contains(item->GetItemCode())) return;
+	
+	TArray<AC_Item*>& ItemArray = MyItems[item->GetItemCode()]; // 해당 아이템 코드의 아이템 배열 가져오기
+
+	// 배열에서 아이템 찾기
+	//int32 i = ItemArray->Num() - 1; i >= 0; i--
+	for (int32 i = ItemArray.Num() - 1; i >= 0; --i)
 	{
-		TArray<AC_Item*>& ItemArray = MyItems[item->GetItemCode()]; // 해당 아이템 코드의 아이템 배열 가져오기
+		if (ItemArray[i] != item) continue;
 
-		// 배열에서 아이템 찾기
-		//int32 i = ItemArray->Num() - 1; i >= 0; i--
-		for (int32 i = ItemArray.Num() - 1; i >= 0; --i)
+		// 배열 내에서 일치하는 아이템 찾음
+		
+		CurVolume -= item->GetItemAllVolume(); // 아이템 볼륨 감소
+		ItemArray.RemoveAt(i); // 배열에서 아이템 제거
+
+		// 배열이 비어 있으면 MyItems에서 해당 키 삭제
+		if (ItemArray.Num() == 0)
 		{
-			if (ItemArray[i] == item) // 배열 내에서 일치하는 아이템 찾음
-			{
-				CurVolume -= item->GetItemAllVolume(); // 아이템 볼륨 감소
-				ItemArray.RemoveAt(i); // 배열에서 아이템 제거
-
-				// 배열이 비어 있으면 MyItems에서 해당 키 삭제
-				if (ItemArray.Num() == 0)
-				{
-					MyItems.Remove(item->GetItemCode());
-				}
-
-				// 백팩 용량 갱신
-				if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
-				{
-					Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
-				}
-				return;
-			}
+			MyItems.Remove(item->GetItemCode());
 		}
+
+		// 백팩 용량 갱신
+		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+		{
+			Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
+			Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+		}
+		return;
 	}
+}
+
+void UC_InvenComponent::ClearAllItemCodeItemsFromMyList(const FName& ItemCode)
+{
+	if (!MyItems.Contains(ItemCode)) return;
+	
+	TArray<AC_Item*>& ItemArray = MyItems[ItemCode];
+
+	for (AC_Item* Item : ItemArray)
+	{
+		CurVolume -= Item->GetItemAllVolume();
+		Item->Destroy();
+	}
+
+	ItemArray.Empty();
+	MyItems.Remove(ItemCode);
+
+	// 백팩 용량 갱신
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+		Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentBackPackCapacityRate(CurVolume / MaxVolume);
 }
 
 void UC_InvenComponent::DestroyMyItem(AC_Item* DestroyedItem)
@@ -393,9 +416,10 @@ void UC_InvenComponent::ClearInventory()
 			// Item->MoveToAround(OwnerCharacter, Item->GetItemCurStack());
 			Item->Destroy();
 		}
-
 		Pair.Value.Empty();
 	}
+
+	MyItems.Empty();
 
 	// Clear EquipmentItems
 	for (TPair<EEquipSlot, AC_EquipableItem*>& Pair : EquipmentItems)
@@ -409,9 +433,31 @@ void UC_InvenComponent::ClearInventory()
 		Pair.Value = nullptr;
 	}
 
-	// 일괄적으로 Inven UI 업데이트 처리
+	// Volume 초기화
+	CurVolume = 0.f;
+	MaxVolume = 70.f;
+
+	// Backpack Level 초기화
+	CurBackPackLevel = EBackPackLevel::LV0;
+	PreBackPackLevel = EBackPackLevel::LV0;
+
+	// 일괄적으로 Inven UI 업데이트 처리 및 PreviewCharacter 초기화
 	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
+	{
 		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
+		
+		AC_PreviewCharacter* PreviewCharacter = Player->GetPreviewCharacter(); 
+		PreviewCharacter->DetachWeaponMesh(EWeaponSlot::MAIN_GUN);
+		PreviewCharacter->DetachWeaponMesh(EWeaponSlot::SUB_GUN);
+		
+		for (int i = 0; i < 3; ++i)
+		{
+			EEquipSlot EquipSlot = static_cast<EEquipSlot>(i);
+			PreviewCharacter->DetachEquippedMesh(EquipSlot);
+		}
+
+		PreviewCharacter->UpdateHandPose(EHandState::UNARMED);
+	}
 }
 
 float UC_InvenComponent::GetVestVolume()

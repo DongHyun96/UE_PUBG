@@ -7,6 +7,7 @@
 #include "IAutomationReport.h"
 #include "Animation/WidgetAnimation.h"
 #include "Character/C_Player.h"
+#include "Components/BackgroundBlur.h"
 #include "Components/CanvasPanel.h"
 #include "Components/HorizontalBox.h"
 #include "Components/Image.h"
@@ -63,10 +64,70 @@ void UC_PlayerCombatFieldWidget::NativeConstruct()
 	RoundResultBackgroundBlurPanel->SetVisibility(ESlateVisibility::Hidden);
 
 	/* Bind RoundEndAnimationEnd Delegate */
-	RoundEndAnimationEndDelegate.BindDynamic(this, &UC_PlayerCombatFieldWidget::OnRoundEndAnimationEnd);
+	RoundEndAnimationEndDelegate.BindDynamic(this, &UC_PlayerCombatFieldWidget::OnRoundEndAnimationFinished);
 
 	for (int i = 1; i < RoundCompleteAnimations.Num(); ++i)
 		BindToAnimationFinished(RoundCompleteAnimations[i], RoundEndAnimationEndDelegate);
+
+	// Dummy data
+	MatchResultPanelRoundResults.Add(FMatchResultPanelRoundResult());
+	
+	for (int i = 1; i < 4; ++i)
+	{
+		FMatchResultPanelRoundResult MatchResultPanelRoundResult{};
+
+		FString PlayerResultMainString = "Round" + FString::FromInt(i) + "PlayerResultMainText";
+		FString PlayerResultSubString  = "Round" + FString::FromInt(i) + "PlayerResultSubText";
+
+		FString EnemyResultMainString = "Round" + FString::FromInt(i) + "EnemyResultMainText";
+		FString EnemyResultSubString  = "Round" + FString::FromInt(i) + "EnemyResultSubText";
+
+		FString RoundSpentMinuteString = "Round" + FString::FromInt(i) + "MinuteSpentText";
+		FString RoundSpentSecondString = "Round" + FString::FromInt(i) + "SecondSpentText";
+
+		FString PlayerRoundResultPanelString = "Round" + FString::FromInt(i) + "PlayerResultPanel";
+		FString EnemyRoundResultPanelString  = "Round" + FString::FromInt(i) + "EnemyResultPanel";
+
+		if (UTextBlock* PlayerResultMainTextBlock = Cast<UTextBlock>(GetWidgetFromName(*PlayerResultMainString)))
+			MatchResultPanelRoundResult.RoundPlayerResultMainText = PlayerResultMainTextBlock;
+		else UC_Util::Print("From UC_PlayerCombatFieldWidget::NativeConstruct : PlayerResultMainText init failed", FColor::Red, 10.f);
+
+		if (UTextBlock* PlayerResultSubTextBlock = Cast<UTextBlock>(GetWidgetFromName(*PlayerResultSubString)))
+			MatchResultPanelRoundResult.RoundPlayerResultSubText = PlayerResultSubTextBlock;
+		else UC_Util::Print("From UC_PlayerCombatFieldWidget::NativeConstruct : PlayerResultSubText init failed", FColor::Red, 10.f);
+		
+
+		if (UTextBlock* EnemyResultMainTextBlock = Cast<UTextBlock>(GetWidgetFromName(*EnemyResultMainString)))
+			MatchResultPanelRoundResult.RoundEnemyResultMainText = EnemyResultMainTextBlock;
+		else UC_Util::Print("From UC_EnemyCombatFieldWidget::NativeConstruct : EnemyResultMainText init failed", FColor::Red, 10.f);
+
+		if (UTextBlock* EnemyResultSubTextBlock = Cast<UTextBlock>(GetWidgetFromName(*EnemyResultSubString)))
+			MatchResultPanelRoundResult.RoundEnemyResultSubText = EnemyResultSubTextBlock;
+		else UC_Util::Print("From UC_EnemyCombatFieldWidget::NativeConstruct : EnemyResultSubText init failed", FColor::Red, 10.f);
+
+		if (UTextBlock* MinuteTextBlock = Cast<UTextBlock>(GetWidgetFromName(*RoundSpentMinuteString)))
+			MatchResultPanelRoundResult.RoundSpentMinuteText = MinuteTextBlock;
+		else UC_Util::Print("From UC_EnemyCombatFieldWidget::NativeConstruct : RoundSpendMinuteText init failed", FColor::Red, 10.f);
+
+		if (UTextBlock* SecondTextBlock = Cast<UTextBlock>(GetWidgetFromName(*RoundSpentSecondString)))
+			MatchResultPanelRoundResult.RoundSpentSecondText = SecondTextBlock;
+		else UC_Util::Print("From UC_EnemyCombatFieldWidget::NativeConstruct : RoundSpendSecondText init failed", FColor::Red, 10.f);
+
+		if (UCanvasPanel* PlayerRoundResultPanel = Cast<UCanvasPanel>(GetWidgetFromName(*PlayerRoundResultPanelString)))
+			MatchResultPanelRoundResult.PlayerRoundResultPanel = PlayerRoundResultPanel;
+		else UC_Util::Print("From UC_EnemyCombatFieldWidget::NativeConstruct : PlayerRoundResultPanel init failed", FColor::Red, 10.f);
+
+		if (UCanvasPanel* EnemyRoundResultPanel = Cast<UCanvasPanel>(GetWidgetFromName(*EnemyRoundResultPanelString)))
+			MatchResultPanelRoundResult.EnemyRoundResultPanel = EnemyRoundResultPanel;
+		else UC_Util::Print("From UC_EnemyCombatFieldWidget::NativeConstruct : EnemyRoundResultPanel init failed", FColor::Red, 10.f);
+		
+		MatchResultPanelRoundResults.Add(MatchResultPanelRoundResult);
+	}
+
+	/* Bind MatchEndAnimationEnd Delegate */
+	MatchEndAnimationEndDelegate.BindDynamic(this, &UC_PlayerCombatFieldWidget::UC_PlayerCombatFieldWidget::OnMatchEndAnimationFinished);
+	BindToAnimationFinished(MatchEndAnimation, MatchEndAnimationEndDelegate);
+	
 }
 
 void UC_PlayerCombatFieldWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -191,6 +252,11 @@ void UC_PlayerCombatFieldWidget::ExecuteMatchEnd
 	uint8 PlayerWinCount, uint8 EnemyWinCount
 )
 {
+	MatchCompleteBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	MatchCompleteTextPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	
+	/* 내용 Setting */
+	
 	MatchResultPlayerScoreText->SetText(FText::AsNumber(PlayerWinCount));
 	MatchResultEnemyScoreText->SetText(FText::AsNumber(EnemyWinCount));
 
@@ -225,27 +291,49 @@ void UC_PlayerCombatFieldWidget::ExecuteMatchEnd
 		RoundResultWidget.EnemyRoundResultPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 		const int SpentTime		= static_cast<int>(RoundResults[i].RoundPlayTime) + 1;
-		const int SpentMinute 	= SpentTime / 60.f;
-		const int SpentSecond 	= SpentTime % 60;
-		
-		RoundResultWidget.RoundSpentMinuteText->SetText(FText::AsNumber(SpentMinute));
-		RoundResultWidget.RoundSpentSecondText->SetText(FText::AsNumber(SpentSecond));
+		const int SpentMinute 	= SpentTime / 60;
+		int SpentSecond 		= SpentTime % 60;
 
-		/*static const TMap<EPlayerCombatRoundResult, TPair<FString, FString>> RoundResultTexts =
-		{
-			{EPlayerCombatRoundResult::Draw, {"D", "DRAW"}},
-			{EPlayerCombatRoundResult::PlayerWin, {"D", "DRAW"}},
-			{EPlayerCombatRoundResult::Draw, {"D", "DRAW"}},
-		};*/
+		// 1분 1초 방지
+		if (SpentMinute == 1) SpentSecond = 0;
+
+		const FString MinuteText = "0" + FString::FromInt(SpentMinute);
+		const FString SecondText = (SpentSecond > 9) ? FString::FromInt(SpentSecond) : "0" + FString::FromInt(SpentSecond);
+		
+		RoundResultWidget.RoundSpentMinuteText->SetText(FText::FromString(MinuteText));
+		RoundResultWidget.RoundSpentSecondText->SetText(FText::FromString(SecondText));
 
 		// FString PlayerResultMain = RoundResults[i].RoundResult == EPlayerCombatRoundResult::Draw ? "D"
 
+		if (RoundResults[i].RoundResult == EPlayerCombatRoundResult::Draw)
+		{
+			RoundResultWidget.RoundPlayerResultMainText->SetText(FText::FromString("D"));
+			RoundResultWidget.RoundPlayerResultSubText ->SetText(FText::FromString("DRAW"));
+			RoundResultWidget.RoundEnemyResultMainText ->SetText(FText::FromString("D"));
+			RoundResultWidget.RoundEnemyResultSubText  ->SetText(FText::FromString("DRAW"));
+		}
+		else if (RoundResults[i].RoundResult == EPlayerCombatRoundResult::PlayerWin)
+		{
+			RoundResultWidget.RoundPlayerResultMainText->SetText(FText::FromString("W"));
+			RoundResultWidget.RoundPlayerResultSubText ->SetText(FText::FromString("WIN"));
+			RoundResultWidget.RoundEnemyResultMainText ->SetText(FText::FromString("L"));
+			RoundResultWidget.RoundEnemyResultSubText  ->SetText(FText::FromString("LOSE"));
+		}
+		else // EnemyWin
+		{
+			RoundResultWidget.RoundPlayerResultMainText->SetText(FText::FromString("L"));
+			RoundResultWidget.RoundPlayerResultSubText ->SetText(FText::FromString("LOSE"));
+			RoundResultWidget.RoundEnemyResultMainText ->SetText(FText::FromString("W"));
+			RoundResultWidget.RoundEnemyResultSubText  ->SetText(FText::FromString("WIN"));
+		}
 	}
+
+	PlayAnimation(MatchEndAnimation);
 }
 
 void UC_PlayerCombatFieldWidget::SetTopRoundTimerText(float LeftRoundTime)
 {
-	const int TimeLeftTotalSeconds = static_cast<int>(LeftRoundTime) + 1;
+	const int TimeLeftTotalSeconds = static_cast<int>(LeftRoundTime);
 	const int Minute = TimeLeftTotalSeconds / 60;
 	const int Second = TimeLeftTotalSeconds % 60;
 
@@ -262,7 +350,7 @@ void UC_PlayerCombatFieldWidget::SetTopRoundTimerTextToZero()
 	RoundTimeSecText->SetText(FText::FromString("00"));
 }
 
-void UC_PlayerCombatFieldWidget::OnRoundEndAnimationEnd()
+void UC_PlayerCombatFieldWidget::OnRoundEndAnimationFinished()
 {
 	RoundResultPanel->SetVisibility(ESlateVisibility::Hidden);
 	RoundResultBackgroundBlurPanel->SetVisibility(ESlateVisibility::Hidden);
@@ -271,4 +359,27 @@ void UC_PlayerCombatFieldWidget::OnRoundEndAnimationEnd()
 															GetCombatFieldManager()->GetPlayerCombatFieldManager();
 
 	PlayerCombatFieldManager->OnRoundUIRoutineFinished();
+}
+
+void UC_PlayerCombatFieldWidget::OnMatchEndAnimationFinished()
+{
+	// Init PlayerCombatFieldWidget to idle(this)
+	MatchCompleteTextPanel->SetVisibility(ESlateVisibility::Hidden);
+	MatchCompleteBox->SetVisibility(ESlateVisibility::Hidden);
+	MatchResultBackgroundBlur->SetRenderOpacity(0.f);
+
+	for (int i = 1; i < 4; ++i)
+	{
+		TopRoundResultDotImages[i]->SetColorAndOpacity(ResultDotColors[EPlayerCombatRoundResult::Draw]);
+		ResultPanelResultDotImages[i]->SetColorAndOpacity(ResultDotColors[EPlayerCombatRoundResult::Draw]);
+		TopRoundResultDotImages[i]->SetRenderScale(FVector2D(1.f));
+		ResultPanelResultDotImages[i]->SetRenderScale(FVector2D(1.f));
+	}
+
+	// Init PlayerCombatFieldManager
+	UC_PlayerCombatFieldManager* PlayerCombatFieldManager = GAMESCENE_MANAGER->GetTrainingGroundManager()->
+															GetCombatFieldManager()->GetPlayerCombatFieldManager();
+
+	PlayerCombatFieldManager->SetPlayerCombatFieldState(EPlayerCombatFieldState::Idle);
+
 }
