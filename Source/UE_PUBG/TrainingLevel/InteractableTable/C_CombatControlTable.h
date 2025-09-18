@@ -96,7 +96,5 @@ protected: // Input 처리 관련
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	UInputAction* LookAction{};	
-
-private:
 	
 };

@@ -33,6 +33,15 @@ public:
 
 	class AC_Enemy* GetSkyDiveTester() const { return SkyDiveTesterEnemy; }
 
+	class UC_JumpTrainingWidget* GetJumpTrainingWidget() const { return JumpTrainingWidget; }
+
+	/// <summary>
+	/// SkyDiveTester 관전 카메라 전환 켜기/끄기
+	/// </summary>
+	void ToggleSpectatingSkyDiveTester();
+
+	bool GetIsSpectatingSkyDiveTester() const { return bIsSpectatingSkyDiveTester; }
+
 private:
 
 	FVector GetRandomLocationInBox(class UBoxComponent* Box) const;
@@ -46,4 +55,12 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
 	AC_Enemy* SkyDiveTesterEnemy{};
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UC_JumpTrainingWidget* JumpTrainingWidget{};
+	
+private:
+
+	// 현재 SkyDiveTester를 관전 중인지
+	bool bIsSpectatingSkyDiveTester{};
 };

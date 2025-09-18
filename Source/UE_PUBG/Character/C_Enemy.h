@@ -66,9 +66,6 @@ public:
 
 	bool SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo) override;
 
-	class UProgressBar* GetHPBar() const { return HPBar; }
-	UProgressBar*       GetBoostBar() const { return BoostBar; }
-
 	class UC_DefaultItemSpawnerComponent* GetItemSpawnerHelper() const { return ItemSpawnerHelper; }
 
 	class UC_TargetLocationSettingHelper* GetTargetLocationSettingHelper() const { return TargetLocationSettingHelper; }
@@ -86,6 +83,8 @@ public:
 
 	class UCameraComponent* GetSpectatorCameraComponent() const { return SpectatorCameraComponent; }
 	class USpringArmComponent* GetSpringArmComponent() const { return SpectatorSpringArmComponent; }
+
+	class UC_EnemyHPWidget* GetEnemyHPWidget() const { return EnemyHPBarWidget; }
 
 public:
 	
@@ -106,17 +105,6 @@ private:
 protected:
 
 	void OnPoseTransitionFinish() override;
-
-public: // For Testing
-	
-	UFUNCTION(BlueprintImplementableEvent)
-	void SetTargetCharacterWidgetName(const FString& TargetCharacterName);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void SetSightRangeCharactersName(ESightRangeLevel SightRangeLevel, const FString& SightRangeCharactersName);	
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void SetStunnedTime(float Time);
 
 private: /* Dead 처리 관련 */
 
@@ -145,12 +133,8 @@ private:
 	
 protected:
 
-	// 디버깅용 HPBar
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	UProgressBar* HPBar{};
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	UProgressBar* BoostBar{};
+	class UC_EnemyHPWidget* EnemyHPBarWidget{};
 	
 protected:
 
@@ -160,8 +144,8 @@ protected:
 
 private:
 	
-	UCameraComponent* SpectatorCameraComponent{}; // CombatTester Spectate 용 CameraActor
-	USpringArmComponent* SpectatorSpringArmComponent{}; // CombatTester Spectate 용 SpringArmS
+	UCameraComponent* SpectatorCameraComponent{}; // Spectator 용 CameraActor
+	USpringArmComponent* SpectatorSpringArmComponent{}; // Spectator 용 SpringArm
 
 private:
 	
