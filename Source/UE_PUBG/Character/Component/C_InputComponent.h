@@ -249,6 +249,7 @@ public:
 	// Training ground JumpTrainingTable Interaction Delegate
 	FInteractableTable_Delegate JumpTrainingTableNum1KeyInteractionDelegate{};
 	FInteractableTable_Delegate JumpTrainingTableNum2KeyInteractionDelegate{};
+	FInteractableTable_Delegate JumpTrainingTableFKeyInteractionDelegate{};
 
 	// Training ground CombatControlTable Interaction Delegate & Player Combat field start Interaction Delegate
 	FInteractableTable_Delegate CombatControlFKeyInteractionDelegate{};

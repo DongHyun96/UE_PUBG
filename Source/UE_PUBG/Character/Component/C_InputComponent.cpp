@@ -630,6 +630,10 @@ void UC_InputComponent::OnFKey()
 	// CombatControlFKeyInteractionDelegateBound 처리
 	if (CombatControlFKeyInteractionDelegate.IsBound() &&
 		CombatControlFKeyInteractionDelegate.Execute()) return;
+
+	// JumpTrainingTableFKeyInteractionDelegateBound 처리
+	if (JumpTrainingTableFKeyInteractionDelegate.IsBound() &&
+		JumpTrainingTableFKeyInteractionDelegate.Execute()) return;
 	
 	if (Player->GetCurOutLinedItem())
 	{

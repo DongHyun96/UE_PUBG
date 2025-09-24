@@ -17,17 +17,11 @@ bool UC_BTTaskStatCareTestStatCare::TryUsingHealItem(AC_Enemy* Enemy, UC_InvenCo
 
 	// 피가 25 밑일 때에는 무조건 MedKit 사용 시도 처리
 	if (EnemyStatComponent->GetCurHP() < 25.f && TryUseMedKit(Enemy, EnemyInvenComponent))
-	{
-		EnemyStatComponent->SetCurBoosting(0.f); // For Testing : TODO : 이 라인 지우기
 		return true;
-	}
 
 	// MedKit과 FirstAidKit 양자택일
 	if (FMath::RandRange(0, 1)) if (TryUseMedKit(Enemy, EnemyInvenComponent))
-	{
-		EnemyStatComponent->SetCurBoosting(0.f); // For Testing : TODO : 이 라인 지우기
 		return true;
-	}
 	
 	// First aid kit 사용 시도
 	FName FirstAidKitItemName = AC_ConsumableItem::GetConsumableItemName(EConsumableItemType::FIRST_AID_KIT);
@@ -35,7 +29,6 @@ bool UC_BTTaskStatCareTestStatCare::TryUsingHealItem(AC_Enemy* Enemy, UC_InvenCo
 	if (IsValid(FirstAidKit)) if (FirstAidKit->StartUsingConsumableItem(Enemy))
 	{
 		ExecutedConsumableItemMap.Add(Enemy, FirstAidKit);
-		EnemyStatComponent->SetCurBoosting(0.f); // For Testing : TODO : 이 라인 지우기
 		return true;
 	}
 	

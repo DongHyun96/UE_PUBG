@@ -119,7 +119,6 @@ bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharact
 		if (IsValid(TargetCharacter)) TargetCharacter->Delegate_OnCharacterDead.RemoveAll(this);
 		
 		Blackboard->SetValueAsObject(TargetCharacterKey, nullptr);
-		OwnerEnemy->SetTargetCharacterWidgetName("NONE"); // TODO : 이 라인 지우기 (For Testing)
 		return false;
 	}
 
@@ -138,8 +137,6 @@ bool UC_BehaviorComponent::SetTargetCharacter(AC_BasicCharacter* InTargetCharact
 	Blackboard->SetValueAsObject(TargetCharacterKey, InTargetCharacter);
 
 	InTargetCharacter->Delegate_OnCharacterDead.AddUObject(this, &UC_BehaviorComponent::OnTargetCharacterDead);
-	
-	OwnerEnemy->SetTargetCharacterWidgetName(InTargetCharacter->GetCharacterName()); // TODO : 이 라인 지우기(For Testing)
 	
 	return true;
 }

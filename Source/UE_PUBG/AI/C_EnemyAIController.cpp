@@ -63,7 +63,6 @@ void AC_EnemyAIController::Tick(float DeltaTime)
 
 	// Update FlashBangEffectLeftTime
 	FlashBangEffectLeftTime = FMath::Max(FlashBangEffectLeftTime - DeltaTime, 0.f);
-	OwnerEnemy->SetStunnedTime(FlashBangEffectLeftTime);
 }
 
 void AC_EnemyAIController::OnPossess(APawn* InPawn)
@@ -238,22 +237,6 @@ void AC_EnemyAIController::UpdateDetectedCharactersRangeLevel()
 				
 			AddCharacterToDetectedCharacters(CurrentCharacter);
 		}
-	}
-
-	// TODO : 이 라인 지우기
-	for (TPair<ESightRangeLevel, TSet<AC_BasicCharacter*>>& Pair : DetectedCharacters)
-	{
-		FString Str =	(Pair.Key == ESightRangeLevel::Level1) ? "Lv1 : " :
-						(Pair.Key == ESightRangeLevel::Level2) ? "Lv2 : " :
-						(Pair.Key == ESightRangeLevel::Level3) ? "Lv3 : " : "Lv4 : ";
-
-		for (AC_BasicCharacter* CurrentCharacter : Pair.Value)
-		{
-			Str += CurrentCharacter->GetCharacterName();
-			Str += "  ";
-		}
-
-		OwnerEnemy->SetSightRangeCharactersName(Pair.Key, Str);
 	}
 }
 

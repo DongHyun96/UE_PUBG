@@ -22,6 +22,7 @@
 #include "Component/SkyDivingComponent/C_EnemySkyDivingComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "HUD/C_GameOverWidget.h"
+#include "HUD/EnemyWidget/C_EnemyHPWidget.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -100,15 +101,18 @@ void AC_Enemy::BeginPlay()
 	// SkyDive Tester 초기 위치로 돌아올 때 회전도 초기 회전으로 주기 위해 저장해 둠
 	InitialRotation = GetActorRotation();
 
-	if (EnemyBehaviorType == EEnemyBehaviorType::CombatTest)
+	// CombatTester와 SkyDivingTester의 Spectate 카메라 관련 초기화
+	if (EnemyBehaviorType == EEnemyBehaviorType::CombatTest || EnemyBehaviorType == EEnemyBehaviorType::SkyDivingTest)
 	{
-		// CombatTester용 Spectate 카메라 초기화
 		SpectatorCameraComponent = Cast<UCameraComponent>(GetDefaultSubobjectByName(TEXT("Camera")));
-		if (!SpectatorCameraComponent) UC_Util::Print("From AC_Enemy::BeginPlay : CombatTester Spectator Camera init failed!", FColor::Red, 10.f);
+		if (!SpectatorCameraComponent) UC_Util::Print("From AC_Enemy::BeginPlay : Spectator Enemy's Camera init failed!", FColor::Red, 10.f);
 
 		SpectatorSpringArmComponent = Cast<USpringArmComponent>(GetDefaultSubobjectByName(TEXT("SpringArm")));
-		if (!SpectatorSpringArmComponent) UC_Util::Print("From AC_Enemy::BeginPlay : CombatTester Spectator SpringArm init failed!", FColor::Red, 10.f);
+		if (!SpectatorSpringArmComponent) UC_Util::Print("From AC_Enemy::BeginPlay : Spectator Enemy's SpringArm init failed!", FColor::Red, 10.f);
 	}
+
+	EnemyHPBarWidget->SetOwnerEnemy(this);
+	if (EnemyBehaviorType != EEnemyBehaviorType::StatCareTest) EnemyHPBarWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	// GetMesh()->GetMaterials()[0];
 
@@ -135,17 +139,13 @@ void AC_Enemy::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	/*switch (HandState)
-	{
-	case EHandState::UNARMED: UC_Util::Print("UNARMED"); break;
-	case EHandState::WEAPON_GUN: UC_Util::Print("WEAPON_GUN"); break;
-	case EHandState::WEAPON_MELEE: UC_Util::Print("WEAPON_MELEE"); break;
-	case EHandState::WEAPON_THROWABLE: UC_Util::Print("WEAPON_THROWABLE"); break;
-	case EHandState::HANDSTATE_MAX: 
-		break;
-	}*/
-
-	//float DistanceToPlayer = FVector::Distance(GAMESCENE_MANAGER->GetPlayer()->GetActorLocation(), this->GetActorLocation());
+	// Handling Stat Care testing Enemy HP Bar Widget visibility by distanceToPlayer
+	if (EnemyBehaviorType != EEnemyBehaviorType::StatCareTest) return;
+	
+	float DistanceToPlayer = FVector::Distance(GAMESCENE_MANAGER->GetPlayer()->GetActorLocation(), this->GetActorLocation());
+	bool bPlayerInWidgetVisibleDistance = DistanceToPlayer < 3000.f; // 30m 이내에 들어와 있다면 HP Widget 보이기
+	EnemyHPBarWidget->SetWidgetRenderOpacityDest(bPlayerInWidgetVisibleDistance ? 1.f : 0.f);
+	
 	//UC_Util::Print(DistanceToPlayer * 0.01f);
 	// UC_Util::Print(GetVelocity().Size2D());
 }

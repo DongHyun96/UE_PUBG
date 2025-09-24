@@ -16,6 +16,8 @@
 #include "HUD/C_BloodScreenWidget.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Components/ProgressBar.h"
+#include "HUD/EnemyWidget/C_EnemyHPWidget.h"
+#include "Singleton/C_GameInstance.h"
 #include "TrainingLevel/C_TrainingGroundManager.h"
 #include "TrainingLevel/CombatField/C_CombatFieldManager.h"
 #include "TrainingLevel/CombatField/C_PlayerCombatFieldManager.h"
@@ -99,7 +101,7 @@ void UC_StatComponent::SetCurHP(const float& InCurHP)
 	CurHP = InCurHP;
 
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
-	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetHPBar()->SetPercent(CurHP / MAX_HP);
+	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetEnemyHPWidget()->SetHPBarPercent(CurHP / MAX_HP);
 }
 
 void UC_StatComponent::SetCurBoosting(const float& InCurBoosting)
@@ -108,8 +110,9 @@ void UC_StatComponent::SetCurBoosting(const float& InCurBoosting)
 	
 	CurBoosting = InCurBoosting;
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
+	
 	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter))
-		if (IsValid(Enemy->GetBoostBar())) Enemy->GetBoostBar()->SetPercent(CurBoosting / MAX_BOOSTING);
+		Enemy->GetEnemyHPWidget()->SetBoostBarPercent(CurBoosting / MAX_BOOSTING);
 }
 
 bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDescriptor& KillFeedDescriptor)
@@ -140,7 +143,10 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 	
 	if (OwnerEnemy)
 	{
-		OwnerEnemy->GetHPBar()->SetPercent(CurHP / MAX_HP);// TODO : 이 라인 지우기
+		// Stat care test용 Enemy만 HPBar 업데이트
+		if (OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest)
+			 OwnerEnemy->GetEnemyHPWidget()->SetHPBarPercent(CurHP / MAX_HP);
+		
 		OwnerEnemy->OnTakeDamage(KillFeedDescriptor.DamageCauser);
 	}
 
@@ -148,10 +154,12 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 	if (CurHP <= 0.f)
 	{
 		DeathDamageCauser = KillFeedDescriptor.DamageCauser;
+
 		
-		// if(Cast<AC_Player>(OwnerCharacter)) return true; // 잠깐 테스트 위해 Player만 Dead처리 꺼둠 ((현재 Enemy만 처리))
 		if (AC_TrainingGroundManager* TrainingGroundManager = GAMESCENE_MANAGER->GetTrainingGroundManager())
 		{
+			// TrainingGround Level 상황
+			
 			const AC_Player* Player = Cast<AC_Player>(OwnerCharacter);
 			const EPlayerCombatFieldState PlayerCombatFieldState = TrainingGroundManager->GetCombatFieldManager()->
 			GetPlayerCombatFieldManager()->GetPlayerCombatFieldState();
@@ -160,6 +168,11 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 			if (Player && PlayerCombatFieldState == EPlayerCombatFieldState::Idle) return true;
 		}
 
+		// Testing 용이하게 하기 위해 ShantyTown 및 TrainingGround을 제외한 Map에서는 사망 처리 x
+		UC_GameInstance* GameInstance = Cast<UC_GameInstance>(OwnerCharacter->GetGameInstance());
+		if (GameInstance->GetCurrentSelectedLevelType() != ELevelType::ShantyTown && Cast<AC_Player>(OwnerCharacter))
+			return true;
+		
 		if (GAMESCENE_MANAGER->GetIsGameOver()) return true;
 		
 		// 사망 처리 
@@ -226,7 +239,7 @@ bool UC_StatComponent::ApplyHeal(const float& HealAmount)
 	CurHP = FMath::Min(CurHP + HealAmount, MAX_HP);
 	
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateHP(CurHP);
-	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetHPBar()->SetPercent(CurHP / MAX_HP);
+	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetEnemyHPWidget()->SetHPBarPercent(CurHP / MAX_HP);
 	return true;
 }
 
@@ -239,7 +252,7 @@ bool UC_StatComponent::AddBoost(const float& BoostAmount)
 	CurBoosting = FMath::Min(CurBoosting + BoostAmount, MAX_BOOSTING);
 
 	if (OwnerHUDWidget) OwnerHUDWidget->OnUpdateBoosting(CurBoosting);
-	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetBoostBar()->SetPercent(CurBoosting / MAX_BOOSTING);
+	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetEnemyHPWidget()->SetBoostBarPercent(CurBoosting / MAX_BOOSTING);
 	return true;
 }
 
@@ -285,7 +298,7 @@ void UC_StatComponent::UpdateBoostEffect(const float& DeltaTime)
 		if (HealingTutorialBoostAmountNumberDelegate.IsBound())
 			HealingTutorialBoostAmountNumberDelegate.Broadcast(CurBoosting);
 	}
-	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetBoostBar()->SetPercent(CurBoosting / MAX_BOOSTING);	
+	if (AC_Enemy* Enemy = Cast<AC_Enemy>(OwnerCharacter)) Enemy->GetEnemyHPWidget()->SetBoostBarPercent(CurBoosting / MAX_BOOSTING);
 }
 
 void UC_StatComponent::HandleOxygenExhausted(const float& DeltaTime)
