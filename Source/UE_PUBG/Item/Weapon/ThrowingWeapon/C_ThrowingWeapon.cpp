@@ -288,6 +288,8 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 		OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_THROWABLE);
 	}
 
+	SetActorRelativeLocation(FVector::ZeroVector);
+	
 	bool bIsAttached = AttachToComponent
 	(
 		InParent,

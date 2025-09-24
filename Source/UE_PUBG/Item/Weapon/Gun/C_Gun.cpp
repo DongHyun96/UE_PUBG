@@ -681,7 +681,7 @@ bool AC_Gun::FireBullet()
 
 	//UC_Util::Print(FireLocation);
 	//UC_Util::Print(FireDirection);
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter); // TODO : OwnerPlayer -> Enemy도 총을 쏠 수 있으니 예외처리 시켜야 함
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter); 
 	bool ApplyGravity = OwnerPlayer->GetIsWatchingSight() || !HasHit;
 	int BulletCount = 0;
 	for (auto& Bullet : OwnerPlayer->GetBullets())
@@ -883,11 +883,11 @@ bool AC_Gun::SetBulletVelocity(FVector &OutLocation, FVector &OutDirection, FVec
 	CollisionParams.AddIgnoredActor(this);
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
 	CollisionParams.AddIgnoredActor(PlayerCamera);
-	for (auto AttachableMeshs : OwnerCharacter->GetAttachmentMeshComponent()->GetAttachableItemMeshs())
+	for (auto AttachableMeshes : OwnerCharacter->GetAttachmentMeshComponent()->GetAttachableItemMeshs())
 	{
-		for (auto MeshsTuple : AttachableMeshs.Value)
+		for (auto MeshesTuple : AttachableMeshes.Value)
 		{
-			for (auto Attachment : MeshsTuple.Value)
+			for (auto Attachment : MeshesTuple.Value)
 			{
 				CollisionParams.AddIgnoredActor(Attachment);
 			}
