@@ -12,7 +12,7 @@ Developed with Unreal Engine 5
 
 # 구현한 파트 및 구현 내용 정리
 
-## # 전상연
+# \# 전상연
 
 ### 구조 설계
 * 아이템 구조 설계
@@ -178,7 +178,7 @@ Developed with Unreal Engine 5
 
 <br/><br/><br/><br/><br/>
 
-## # 박현호
+# \# 박현호
 
 ### Animation System
 * AnimBasicCharacter
