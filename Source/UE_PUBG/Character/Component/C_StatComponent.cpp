@@ -129,7 +129,7 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 	);*/
 
 	// Testing용 AI에 따라 최소로 둘 수 있는 HP값 결정
-	float MinHP =  !OwnerEnemy ? 0.f : 
+	const float MinHP =  !OwnerEnemy ? 0.f : 
 					OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::SkyDivingTest ? 100.f :
 					OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest  ? 1.f : 0.f; 
 	
