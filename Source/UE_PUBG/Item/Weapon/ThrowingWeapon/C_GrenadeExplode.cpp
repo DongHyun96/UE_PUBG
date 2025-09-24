@@ -17,6 +17,7 @@
 
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
+#include "Engine/OverlapResult.h"
 #include "Item/Equipment/C_EquipableItem.h"
 
 #include "Utility/C_Util.h"
@@ -91,38 +92,47 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 	if (ThrowingWeapon->GetParticleExplodeEffect())
 		UGameplayStatics::SpawnEmitterAtLocation(ThrowingWeapon->GetWorld(), ThrowingWeapon->GetParticleExplodeEffect(), ThrowingWeapon->GetActorLocation());
 
-	FVector ExplosionLocation = ThrowingWeapon->GetActorLocation();
-
-	USphereComponent* ExplosionSphere = Cast<USphereComponent>(ThrowingWeapon->GetExplosionSphere());
-
-	if (!IsValid(ExplosionSphere))
-	{
-		UC_Util::Print("From AC_GrenadeExplode::UseStrategy : Explosion Sphere casting failed!", FColor::Red, 5.f);
-		return false;
-	}
 
 	if (ThrowableTutorialDelegate.IsBound() && Cast<AC_Player>(ThrowingWeapon->GetOwnerCharacter())) // 터트린 주체가 Player인지도 체크
 		ThrowableTutorialDelegate.Execute(2, -1);
 
-	ExplosionSphere->SetWorldLocation(ExplosionLocation);
-	float ExplosionRad = ExplosionSphere->GetScaledSphereRadius();
+	
+	const FVector ExplosionLocation = ThrowingWeapon->GetActorLocation();
+	const float   ExplosionRad      = ThrowingWeapon->GetExplosionSphereRadius();
 
-	TArray<AActor*>				OverlappingActors{};
-	TArray<AC_BasicCharacter*>	OverlappedCharacters{};
+	FCollisionShape ExplosionSphere = FCollisionShape::MakeSphere(ExplosionRad);
+	FCollisionQueryParams ExplosionSphereQueryParams{};
+	ExplosionSphereQueryParams.AddIgnoredActor(ThrowingWeapon); // 투척류 자신은 무시
 
-	ExplosionSphere->GetOverlappingActors(OverlappingActors, TSubclassOf<AActor>());
+	// Overlap Actor 조사 -> Overlap된 Character만 간추려서 피격 판정 처리
+	TArray<FOverlapResult> OverlapResults{};
+	bool bHit = ThrowingWeapon->GetWorld()->OverlapMultiByObjectType
+	(
+		OverlapResults,
+		ExplosionLocation,
+		FQuat::Identity,
+		FCollisionObjectQueryParams(ECC_Pawn),
+		ExplosionSphere,
+		ExplosionSphereQueryParams
+	);
+	// DrawDebugSphere(ThrowingWeapon->GetWorld(), ExplosionLocation, ExplosionRad, 30, FColor::MakeRandomColor(), true);
+
+	// Overlapped된 Actor가 없음
+	if (!bHit) return false;
+
+	TSet<AC_BasicCharacter*>	OverlappedCharacters{};
 
 	// 정확한 피격 판정을 위해 모든 캐릭터의 Physics Asset Colliders 꺼두고 조사할 피격 부위만 조사할 때 켜두기
-	for (AActor* Actor : OverlappingActors)
+	for (const FOverlapResult& OverlapResult : OverlapResults)
 	{
 		// Training Shooting Target이 잡혔을 때, 따로 상황 예외처리
-		if (AC_TrainingShootingTarget* TrainingTarget = Cast<AC_TrainingShootingTarget>(Actor))
+		if (AC_TrainingShootingTarget* TrainingTarget = Cast<AC_TrainingShootingTarget>(OverlapResult.GetActor()))
 		{
 			HandleTrainingTargetOverlappedWithExplosionSphere(TrainingTarget, ThrowingWeapon, ExplosionRad);
 			continue;
 		}
 		
-		AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(Actor);
+		AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(OverlapResult.GetActor());
 		if (!IsValid(Character)) continue;
 
 		UPhysicsAsset* PhysicsAsset = Character->GetMesh()->GetPhysicsAsset();
@@ -132,10 +142,12 @@ bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 		SetPhysicsAssetCollidersEnabled(Character, false);
 	}
 
+	UC_Util::Print("Overlapped Character count : " + FString::FromInt(OverlappedCharacters.Num()), FColor::MakeRandomColor(), 10.f);
+
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
 	{
 		// 캐릭터에게 Damage 입히기 시도 -> 성공했다면 폭발 effect 캐릭터에 적용시키기(ex 카메라 aim punching)
-		if (TryDamagingCharacter(Character, ThrowingWeapon, ExplosionSphere))
+		if (TryDamagingCharacter(Character, ThrowingWeapon, ExplosionRad))
 			ExecuteExplosionEffectToCharacter(Character, ExplosionLocation, ExplosionRad);
 	}
 
@@ -205,7 +217,7 @@ bool AC_GrenadeExplode::SetPhysicsAssetColliderEnabled(AC_BasicCharacter* Charac
 	return false;
 }
 
-bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_ThrowingWeapon* ThrowingWeapon, USphereComponent* ExplosionSphere)
+bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_ThrowingWeapon* ThrowingWeapon, const float ExplosionRad)
 {
 	FHitResult	HitResult{};
 	int			HitCount{};
@@ -213,7 +225,6 @@ bool AC_GrenadeExplode::TryDamagingCharacter(AC_BasicCharacter* Character, AC_Th
 	bool		Hitted{};
 
 	FVector ExplosionLocation = ThrowingWeapon->GetActorLocation();
-	float   ExplosionRad = ExplosionSphere->GetScaledSphereRadius();
 
 	// 각 피격 부위에 Ray casting 시도
 	for (const FName& DestBoneName : LineTraceDestBoneNames)

@@ -16,6 +16,8 @@
 
 #include "Character/C_Player.h"
 #include "Character/Component/C_CameraEffectComponent.h"
+#include "Engine/OverlapResult.h"
+#include "LevelInstance/LevelInstanceTypes.h"
 
 #include "PhysicsEngine/PhysicsAsset.h"
 #include "Singleton/C_GameSceneManager.h"
@@ -24,33 +26,39 @@ const float AC_FlashBangExplode::EFFECT_DURATION_MAX = 6.f;
 
 bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 {
-	// TODO : 반경에 있는 캐릭터 시야에 따른 시각 장애 주기
-	// 청각장애는 모두 동일 
-
 	if (ThrowingWeapon->GetParticleExplodeEffect())
 		UGameplayStatics::SpawnEmitterAtLocation(ThrowingWeapon->GetWorld(), ThrowingWeapon->GetParticleExplodeEffect(), ThrowingWeapon->GetActorLocation());
 	
-	FVector ExplosionLocation = ThrowingWeapon->GetActorLocation();
+	const FVector ExplosionLocation = ThrowingWeapon->GetActorLocation();
+	const float   ExplosionRad      = ThrowingWeapon->GetExplosionSphereRadius();
 
-	USphereComponent* ExplosionSphere = Cast<USphereComponent>(ThrowingWeapon->GetExplosionSphere());
-	if (!IsValid(ExplosionSphere))
-	{
-		UC_Util::Print("From AC_FlashBangExplode::UseStrategy : Explosion Sphere casting failed!", FColor::Red, 5.f);
-		return false;
-	}
+	FCollisionShape ExplosionSphere = FCollisionShape::MakeSphere(ExplosionRad);
+	FCollisionQueryParams ExplosionSphereQueryParams{};
+	ExplosionSphereQueryParams.AddIgnoredActor(ThrowingWeapon); // 투척류 자신은 무시
+	
+	// Overlap Actor 조사 -> Overlap된 Character만 간추려서 피격 판정 처리
+	TArray<FOverlapResult> OverlapResults{};
+	bool bHit = ThrowingWeapon->GetWorld()->OverlapMultiByObjectType
+	(
+		OverlapResults,
+		ExplosionLocation,
+		FQuat::Identity,
+		FCollisionObjectQueryParams(ECC_Pawn),
+		ExplosionSphere,
+		ExplosionSphereQueryParams
+	);
+	// DrawDebugSphere(ThrowingWeapon->GetWorld(), ExplosionLocation, ExplosionRad, 30, FColor::MakeRandomColor(), true);
 
-	ExplosionSphere->SetWorldLocation(ExplosionLocation);
-	float ExplosionRad = ExplosionSphere->GetScaledSphereRadius();
+	// Overlapped된 Actor가 없음
+	if (!bHit) return false;
 
-	TArray<AActor*>				OverlappingActors{};
-	TArray<AC_BasicCharacter*>	OverlappedCharacters{};
+	TSet<AC_BasicCharacter*> OverlappedCharacters{};
 
-	ExplosionSphere->GetOverlappingActors(OverlappingActors, TSubclassOf<AC_BasicCharacter>());
 
 	// 정확한 피격 판정을 위해 모든 캐릭터의 Physics Asset Collider 꺼두고 조사할 피격 부위만 조사할 때 켜두기
-	for (AActor* Actor : OverlappingActors)
+	for (const FOverlapResult& OverlapResult : OverlapResults)
 	{
-		AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(Actor);
+		AC_BasicCharacter* Character = Cast<AC_BasicCharacter>(OverlapResult.GetActor());
 		if (!IsValid(Character)) continue;
 
 		UPhysicsAsset* PhysicsAsset = Character->GetMesh()->GetPhysicsAsset();
@@ -70,9 +78,8 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 				UC_Util::Print("NoCollision!", FColor::Cyan, 10.f);
 		}*/
 	}
-
-	FString str = "Overlapped : " + FString::FromInt(OverlappingActors.Num());
-	UC_Util::Print(str, FColor::Red, 10.f);
+	
+	UC_Util::Print("Overlapped Character Count : " + FString::FromInt(OverlappedCharacters.Num()), FColor::MakeRandomColor(), 10.f);
 
 	for (AC_BasicCharacter* Character : OverlappedCharacters)
 	{

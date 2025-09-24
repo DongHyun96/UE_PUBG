@@ -52,9 +52,9 @@ private:
 	/// </summary>
 	/// <param name="Character"> : Target Character </param>
 	/// <param name="ThrowingWeapon"> : Damage를 입히려 하는 ThrowingWeapon </param>
-	/// <param name="ExplosionSphere"> : ThrowingWeapon의 Explosion Sphere </param>
+	/// <param name="ExplosionRad"> : ThrowingWeapon의 Explosion Rad </param>
 	/// <returns> : Damage를 입혔으면(LineTrace를 성공했다면) return true </returns>
-	bool TryDamagingCharacter(class AC_BasicCharacter* Character, class AC_ThrowingWeapon* ThrowingWeapon, class USphereComponent* ExplosionSphere);
+	bool TryDamagingCharacter(class AC_BasicCharacter* Character, class AC_ThrowingWeapon* ThrowingWeapon, const float ExplosionRad);
 
 	/// <summary>
 	/// 피격 판정이 난 Character에게 줄 피격 Effect 실행

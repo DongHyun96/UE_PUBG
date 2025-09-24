@@ -162,6 +162,8 @@ void AC_ThrowingWeapon::BeginPlay()
 	// 자기 자신의 AIAttack 전략 init
 	AIAttackStrategy = AIAttackStrategies[ThrowableType];
 
+	// Explosion Sphere 충돌처리 꺼놓기 (폭발 반경 체크용 ShapeComponent)
+	ExplosionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -824,6 +826,11 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	OwnerEquippedComponent->ChangeCurWeapon(EWeaponSlot::NONE);
 	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetVisibility(ESlateVisibility::Hidden);
 }
+
+  float AC_ThrowingWeapon::GetExplosionSphereRadius() const
+  {
+	return ExplosionSphere->GetScaledSphereRadius();
+  }
 
 void AC_ThrowingWeapon::StartCooking()
 {
