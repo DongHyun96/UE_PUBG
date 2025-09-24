@@ -48,85 +48,132 @@ Developed with Unreal Engine 5
 
 <br/><br/><br/><br/><br/>
 
-## # 김동현
-### 구조 설계
-* Character basic FSM 구조 설계
-    * Character MainState / HandState / PoseState
-* Weapon 기본 구조 및 Weapon Button strategy pattern 구조 설계
+# \# 김동현
+### **구조 설계**
+*   **Character basic FSM 구조 설계**
+    *   Character MainState / HandState / PoseState
+*   **Weapon 기본 구조 및 Weapon Button strategy pattern 구조 설계**
 
-### Character Implementation
-* Character HandState WEAPON_MELEE / WEAPON_THROWABLE BlendSpaces 구현
-    * WEAPON_MELEE - Stand BS
-    * WEAPON_MELEE - Crouch BS
-    * WEAPON_MELEE - Crawl BS
-    * WEAPON_THROWABLE - Stand BS
-    * WEAPON_THROWABLE - Crouch BS 
-    * WEAPON_THROABLE - Crawl BS
+### **Character Implementation**
+*   **Character HandState WEAPON\_MELEE / WEAPON\_THROWABLE Blendspaces 구현**
+    *   WEAPON\_MELEE - Stand BS
+    *   WEAPON\_MELEE - Crouch BS
+    *   WEAPON\_MELEE - Crawl BS
+    *   WEAPON\_THROWABLE - Stand BS
+    *   WEAPON\_THROWABLE - Crouch BS
+    *   WEAPON\_THROABLE - Stand BS
 
-* AnimMontage Priority에 따른 PlayAnimMontage 방식 수정
-    * PriorityAnimMontage 구조 설계 및 구현
-    * AnimMontage끼리의 우선순위에 따른 재생 구현
+*   **AnimMontage Priority에 따른 PlayAnimMontage 방식 수정**
+    *   PriorityAnimMontage 구조 설계 및 구현
+    *   AnimMontage끼리의 우선순위에 따른 재생 구현
 
-* PoseState별 Collider 처리 및 지형지물에 따른 자세전환 제한 구현
-* 자세 및 Boost 량에 따른 속도 조절
-* Swimming State 구현
-* SkyDiving State 구현
+*   **PoseState별 Collider 처리 및 지형지물에 따른 자세전환 제한 구현**
+*   자세 및 Boost 량에 따른 속도 조절
+*   **Swimming State** 구현
+*   **SkyDiving & Parachuting State** 구현
 
 ### 투척류 Implementation
-* Grenade
-* SmokeGrenade
-* FlashBang
-* 투척 예상 경로 그리기 구현
-* 투척류 폭발 Strategy에 따라 폭발 처리 구조 Strategy pattern 구현
-* 투척류 현 State에 따른 캐릭터 모션처리
+*   **Grenade**
+*   **SmokeGrenade**
+*   **FlashBang**
+*   **투척 예상 경로 그리기 구현**
+*   **투척류 폭발 Strategy에 따라 폭발 처리 구조 Strategy pattern 구현**
+*   **투척류 현 State에 따른 캐릭터 모션처리**
 
 ### Melee Weapon Implementation
-* 근접 무기 프라이팬 구현
+*   **근접 무기 프라이팬 구현**
 
 ### EquippedComponent Implementation
-* 캐릭터에 장착된 총기1, 2 / 투척류 / 근접무기 Slot 관리 구현
-    * 캐릭터 HandState 전환( ex) 총기1 상태에서 투척류 전환 or 무기 집어넣기/꺼내기)에 따른 무기 전환 처리 구현
+*   **캐릭터에 장착된 총기1, 2 / 투척류 / 근접무기 Slot 관리 구현**
+    *   캐릭터 HandState 전환( ex) 총기1 상태에서 투척류 전환 or 무기 집어넣기/꺼내기)에 따른 무기 전환 처리 구현
 
 ### StatComponent Implementation
-* 캐릭터 HP / Boosting Amount / Oxygen Amount(수영 시 산소량)에 따른 캐릭터 상태 처리
-* 부위별 피격 Damage에 따른 Damage량 조절
+*   **캐릭터 HP / Boosting Amount / Oxygen Amount(수영 시 산소량)에 따른 캐릭터 상태 처리**
+*   **부위별 피격 Damage에 따른 Damage량 조절**
 
 ### Consumable Item Usage Implementation
-* Template method pattern 구조를 통한 Consumable Item 사용 기능 구현
-* Heal Item Usage
-    * MedKit Usage(의료용 키트)
-    * FirstAidKit Usage(구급 상자)
-    * Bandage Usage(붕대)
-* Boost Item Usage
-    * PainKiller Usage(진통제)
-    * EnergyDrink Usage(에너지드링크)
+*   **Template method pattern 구조 및 FSM을 통한 Consumable Item 사용 기능 구현**
+    *   Consumable Item state
+        *   Idle / Activating / ActivateCompleted / Used
+*   **Heal Item Usage**
+    *   MedKit Usage(의료용 키트)
+    *   FirstAidKit Usage(구급 상자)
+    *   Bandage Usage(붕대)
+*   **Boost Item Usage**
+    *   PainKiller Usage(진통제)
+    *   EnergyDrink Usage(에너지드링크)
 
 ### Ping System Implementation
-* Ping marker 표시 기능 구현
-    * InGame Level에서 Player가 바라보는 지점 Ping 찍기 기능 구현
-    * Map에서 Ping 찍기 기능 구현
+*   **Ping marker 표시 기능 구현**
+    *   InGame Level에서 Player가 바라보는 지점 Ping 찍기 기능 구현
+    *   Map에서 Ping 찍기 기능 구현
 
-### Player HUD Implementation
-* 플레이어 Stat에 따른 Stat 표기
-    * Player HP / Boosting Amount / Oxygen Amount
-* MiniMap 기능 구현
-* MainMap 기능 구현
-* SkyDiving State 시 현재 고도 및 속력 측정계 구현
-* 상단 Compass Bar 구현
+### UI / Player HUD Implementation
+*   플레이어 Stat에 따른 Stat 표기
+    *   Player HP / Boosting Amount / Oxygen Amount
+*   MiniMap 기능 구현
+*   MainMap 기능 구현
+*   SkyDiving State 시 현재 고도 및 속력 측정계 구현
+*   상단 Compass Bar 구현
+*   Inform 및 warning 로그 메시지 구현
+*   킬로그 및 킬피드
+*   GameOver widget
+*   Tutorial Widgets
+*   Training ground widgets
+*   Lobby UI
 
 ### Airplane Manager Implementation
-* 게임 첫 시작 비행 관리 구현
-* Random한 비행 동선 및 비행기 객체 관리 구현
-* Character들 SkyDive State 전환 관리 구현
+*   게임 첫 시작 비행 관리 구현
+*   Random한 비행 동선 및 비행기 객체 관리 구현
+*   Character들 SkyDive State 전환 관리 구현
 
 ### 자기장 System Implementation
-* Random Next Circle 기능 구현
-* Current Circle -> Next Circle 줄어드는 알고리즘 구현
-* 자기장 페이즈 조절 구현
+*   Random Next Circle 기능 구현
+*   Current Circle -> Next Circle 줄어드는 알고리즘 구현
+*   자기장 페이즈 조절 구현
 
 ### Parkour System Implementation
-* Vaulting Low / High
-* Mantling Low / High
+*   지형지물 검사 및 각 지형지물에 맞는 Parkour action 종류 검사 pipeline 구현
+*   Parkour actions
+    *   Vaulting Low / High action
+    *   Mantling Low / High action
+
+### Enemy AI 구현
+*   **상황 별 기본 FSM 처리 구현**
+*   **Behavior tree 구현**
+    *   **Idle condition Task(Sequence)**
+        *   Custom wait task
+        *   Stat care task
+        *   Custom Move to task
+        *   Take cover & stat care sequence
+            1. Run EQS Query Task
+                1. Find best cover location from TargetCharacter location
+            2. Move To Cover location
+            3. Try change pose
+            4. Try using smoke grenade
+            5. Wait few seconds
+            6. Try stat care
+
+       *   **Combat condition sequence**
+        1. SwapWeapon task
+        2. Attack task
+        3. Wait task
+
+       *   **SkyDive task**
+
+*   **Custom EQS trace test 구현**
+    *   기본 EQS trace test에서 ignore actor 추가 기능이 없음
+    *   Custom EQS trace test 클래스(UC\_EQSCustomTraceTest)에서 필요한 ignore actor들 추가 처리
+
+*   **Training ground 각 TestField 기능에 해당하는 AI Tester 기능 구현**
+    *   AI movement tester
+    *   AI Stat-care & Take cover tester
+    *   AI Sky dive tester
+    *   AI Combat tester
+    *   InGame playable AI Enemy (게임플레이에서 사용하는 위의 기능 모두 통합 처리한 Enemy type)
+
+### Training ground Level / Lobby Level 구현
+
 
 
 <br/><br/><br/><br/><br/>
