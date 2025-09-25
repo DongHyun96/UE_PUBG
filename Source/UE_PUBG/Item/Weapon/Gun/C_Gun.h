@@ -138,7 +138,7 @@ public:
 	virtual void SetIsAimPress(bool InIsAimDown) { bIsAimDown = InIsAimDown; }
 	virtual bool GetIsAimPress() { return bIsAimDown; }
 	virtual void HandleSpringArmRotation();
-	virtual void GetPlayerIsAimDownOrNot();
+	
 	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter);
 
 	
@@ -245,9 +245,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FTransform LeftHandSocketLocation;
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	bool bIsPlayerAimDownPress = false;
 
 	UCameraComponent* AimSightCamera;
 

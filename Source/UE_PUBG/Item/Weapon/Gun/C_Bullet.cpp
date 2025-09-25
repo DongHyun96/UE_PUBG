@@ -145,15 +145,10 @@ bool AC_Bullet::Fire(AC_Gun* InOwnerGun, FVector InLocation, FVector InVelocity,
 {
 	FiredGun = InOwnerGun;
 	UNiagaraComponent* BulletParticle = FindComponentByClass<UNiagaraComponent>();
-	if (BulletParticle)
-	{
-		// UC_Util::Print("Found Effect");
-		BulletParticle->Deactivate();
-	}
-	if (EnableGravity)
-		BulletProjectileMovement->ProjectileGravityScale = 1.0f;
-	else
-		BulletProjectileMovement->ProjectileGravityScale = 0;
+	if (BulletParticle) BulletParticle->Deactivate();
+	
+	BulletProjectileMovement->ProjectileGravityScale = EnableGravity ? 1.0f : 0.f;
+	
 	LineTraceHitLocation = InHitLocation;
 	TestTickCount = 0;
 	TestTimeCount = 0;
@@ -164,40 +159,32 @@ bool AC_Bullet::Fire(AC_Gun* InOwnerGun, FVector InLocation, FVector InVelocity,
 		return false;
 	}
 	//SetActorHiddenInGame(false);
-	if (BulletProjectileMovement)
+	if (!BulletProjectileMovement) return false;
+	
+	FireLocation = InLocation;
+	if (BulletProjectileMovement->UpdatedComponent == NULL)
 	{
-		FireLocation = InLocation;
-		if (BulletProjectileMovement->UpdatedComponent == NULL)
-		{
-			BulletProjectileMovement->SetUpdatedComponent(RootComponent);
-		}
-
-		ActivateInstance();
-		//UC_Util::Print(BulletProjectileMovement->InitialSpeed);
-		USkeletalMeshComponent* GunMesh = InOwnerGun->GetGunMesh();
-
-		SetActorLocation(InLocation);
-		BulletProjectileMovement->Velocity = InVelocity;
-		//BulletProjectileMovement->UpdateComponentVelocity();
-		float BulletSpeedCheck = BulletProjectileMovement->Velocity.Size();
-		//UC_Util::Print(BulletSpeedCheck, FColor::Blue);
-
-		//Bullet->BulletProjectileMovement->SetActive(true);
-		InitialVelocityNormalized = InVelocity.GetSafeNormal();
-		
-		if (BulletParticle)
-		{
-			// UC_Util::Print("Found Effect");
-			BulletParticle->Activate();
-		}
-		return true;
+		BulletProjectileMovement->SetUpdatedComponent(RootComponent);
 	}
-	else
+
+	ActivateInstance();
+
+	SetActorLocation(InLocation);
+	BulletProjectileMovement->Velocity = InVelocity;
+	//BulletProjectileMovement->UpdateComponentVelocity();
+	float BulletSpeedCheck = BulletProjectileMovement->Velocity.Size();
+	//UC_Util::Print(BulletSpeedCheck, FColor::Blue);
+
+	//Bullet->BulletProjectileMovement->SetActive(true);
+	InitialVelocityNormalized = InVelocity.GetSafeNormal();
+	
+	if (BulletParticle)
 	{
-		//UC_Util::Print("No BulletProjectileMovement");
+		// UC_Util::Print("Found Effect");
+		BulletParticle->Activate();
 	}
 	
-	return false;
+	return true;
 }
 
 void AC_Bullet::SubSteppingMovementPhysics(float SebStepDeltaTime)
@@ -263,11 +250,8 @@ void AC_Bullet::CustomPhysics(float DeltaTime)
 
 void AC_Bullet::CalculateTravelDistanceAndDeactivate(float DeltaTime)
 {
-
-
-	if (!IsValid(BulletProjectileMovement))
-		return;
-	IsActive = BulletProjectileMovement->IsActive();
+	if (!IsValid(BulletProjectileMovement)) return;
+		
 	InstanceLifeTime -= DeltaTime;
 	if (InstanceLifeTime <= 0)
 	{
