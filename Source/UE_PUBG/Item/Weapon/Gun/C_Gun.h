@@ -344,7 +344,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UUserWidget* AimWidget;
 	FName WidgetFilePath;
-	void ShowAndHideWhileAiming();
+	void HandleAimWidgetShowAndHideWhileAiming();
 protected:
 	//탄창
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

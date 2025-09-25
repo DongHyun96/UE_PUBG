@@ -63,6 +63,7 @@
 #include "HUD/C_GameOverWidget.h"
 #include "HUD/C_InformWidget.h"
 #include "HUD/MapWidget/C_MiniMapWidget.h"
+#include "Item/Equipment/C_EquipableItem.h"
 #include "Singleton/C_GameInstance.h"
 #include "Singleton/C_GameSceneManager.h"
 
@@ -689,6 +690,7 @@ AC_Item* AC_Player::FindBestInteractable()
 {
 	if (InvenComponent->GetAroundItems().IsEmpty()) return nullptr;
 	if (bIsActivatingConsumableItem) return nullptr; // ConsumableItem을 사용중이라면 nullptr 처리
+	if (bIsAimDownSight) return nullptr; // 총기 ADS 상태에서는 nullptr 처리
 	AC_Item* TargetInteractableItem = nullptr;
 
 	float ItemDotProduct = 0.0f;
@@ -1161,6 +1163,11 @@ void AC_Player::SetToAimDownSight()
 	bIsWatchingSight = true;
 	bIsAimDownSight = true;
 	UC_Util::Print("AimDownNow");
+
+	// Helmet을 장착 중일 때 Crawl 자세에서의 AimDownSight 시야에 Helmet이 걸림
+	// Helmet hidden 처리
+	if (IsValid(InvenComponent->GetSlotEquipment(EEquipSlot::HELMET)))
+		InvenComponent->GetSlotEquipment(EEquipSlot::HELMET)->SetActorHiddenInGame(true);
 }
 
 void AC_Player::BackToMainCamera()
@@ -1181,6 +1188,9 @@ void AC_Player::BackToMainCamera()
 		//		UC_Util::Print(CameraTransitionTimelineComponent->IsPlaying());
 	}
 	//bIsAimDownSight = false;
+
+	if (IsValid(InvenComponent->GetSlotEquipment(EEquipSlot::HELMET)))
+		InvenComponent->GetSlotEquipment(EEquipSlot::HELMET)->SetActorHiddenInGame(false);
 }
 
 void AC_Player::HandleStatesWhileMovingCrawl()

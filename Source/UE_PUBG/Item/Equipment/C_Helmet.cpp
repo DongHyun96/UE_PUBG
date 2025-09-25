@@ -92,6 +92,7 @@ bool AC_Helmet::TakeDamage(float DamageAmount)
 	if (CurDurability == 0.f)
 	{
 		// 이 헬멧 날리기
+		SetActorHiddenInGame(false); // ADS 상태에서 HiddenInGame true 처리 했을 수 있기 때문에 다시 원상복구
 		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		SetActorEnableCollision(true);
 		HelmetMesh->SetSimulatePhysics(true);

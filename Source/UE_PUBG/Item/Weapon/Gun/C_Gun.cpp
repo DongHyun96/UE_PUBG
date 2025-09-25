@@ -160,7 +160,7 @@ void AC_Gun::Tick(float DeltaTime)
 	GetPlayerIsAimDownOrNot();
 	CheckPlayerIsRunning();
 	//CheckBackPackLevelChange();
-	ShowAndHideWhileAiming();
+	HandleAimWidgetShowAndHideWhileAiming();
 }
 
 void AC_Gun::InitializeItem(FName NewItemCode)
@@ -1042,7 +1042,7 @@ void AC_Gun::SetAimSightWidget()
 		AimWidget = OwnerPlayer->GetCrosshairWidgetComponent()->GetAimWidget();
 }
 
-void AC_Gun::ShowAndHideWhileAiming()
+void AC_Gun::HandleAimWidgetShowAndHideWhileAiming()
 {
 	if (!OwnerCharacter) return;
 	if (OwnerCharacter->GetEquippedComponent()->GetCurWeapon() != this) return;
@@ -1051,29 +1051,21 @@ void AC_Gun::ShowAndHideWhileAiming()
 	if (!IsValid(OwnerPlayer)) return;
 
 	if (!OwnerPlayer->GetIsWatchingSight()) return;
+	
 	FVector StartLocation = AimSightCamera->GetComponentLocation();
 	FVector ForwardVector = AimSightCamera->GetForwardVector() * 15;
 	FVector EndLocation = StartLocation + ForwardVector;
+	
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
+	
 	//if (GetIsPartAttached(EPartsName::SCOPE))
 	//	CollisionParams.AddIgnoredActor(AttachedItem[EPartsName::SCOPE]);
 	CollisionParams.AddIgnoredComponent(GunMesh);
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
-	if (HasHit )
-	{
-		
-		AimWidget->SetVisibility(ESlateVisibility::Visible);
-		//UC_Util::Print(HitResult.GetActor()->GetName());
-	}
-	else
-	{
-		AimWidget->SetVisibility(ESlateVisibility::Hidden);
 
-	}
-		//UC_Util::Print("No Hit");
-
+	AimWidget->SetVisibility(HasHit ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
 void AC_Gun::LoadMagazine()

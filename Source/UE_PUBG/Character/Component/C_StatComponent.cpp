@@ -130,8 +130,8 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 
 	// Testing용 AI에 따라 최소로 둘 수 있는 HP값 결정
 	const float MinHP =  !OwnerEnemy ? 0.f : 
-					OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::SkyDivingTest ? 100.f :
-					OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest  ? 1.f : 0.f; 
+						  OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::SkyDivingTest ? 100.f :
+						  OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest  ? 1.f : 0.f;
 	
 	CurHP = FMath::Max(CurHP - DamageAmount, MinHP);
 
@@ -174,6 +174,9 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 			return true;
 		
 		if (GAMESCENE_MANAGER->GetIsGameOver()) return true;
+
+		// For testing (TODO : 이 라인 지우기)
+		if (Cast<AC_Player>(OwnerCharacter)) return true;
 		
 		// 사망 처리 
 		OwnerCharacter->CharacterDead(KillFeedDescriptor);
