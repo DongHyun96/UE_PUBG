@@ -893,7 +893,8 @@ void AC_ThrowingWeapon::Explode()
 		}
 	}
 	
-	bExploded = ExplodeStrategy->UseStrategy(this);
+	ExplodeStrategy->UseStrategy(this);
+	bExploded = true;
 
 	if (AC_GrenadeExplode::OnPlayerCombatFieldRoundDrawByGrenadeExplode.IsBound())
 		AC_GrenadeExplode::OnPlayerCombatFieldRoundDrawByGrenadeExplode.Unbind();

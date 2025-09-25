@@ -50,7 +50,7 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 	// DrawDebugSphere(ThrowingWeapon->GetWorld(), ExplosionLocation, ExplosionRad, 30, FColor::MakeRandomColor(), true);
 
 	// Overlapped된 Actor가 없음
-	if (!bHit) return false;
+	if (!bHit) return true;
 
 	TSet<AC_BasicCharacter*> OverlappedCharacters{};
 
