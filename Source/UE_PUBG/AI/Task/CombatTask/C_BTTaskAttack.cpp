@@ -22,6 +22,8 @@ UC_BTTaskAttack::UC_BTTaskAttack()
 EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
+
+	UC_Util::Print("UC_BTTaskAttack::ExecuteTask", FColor::Red, 10.f);
 	
 	AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetOwner());
 	if (!IsValid(Controller))
