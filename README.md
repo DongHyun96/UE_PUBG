@@ -15,36 +15,60 @@ Developed with Unreal Engine 5
 # \# 전상연
 
 ### 구조 설계
-* 아이템 구조 설계
-* 캐릭터 Inventory 구조 설계
-
+*   아이템 구조 설계
+*   캐릭터 Inventory 구조 설계
+*   Player Inventory UI 설계 및 구현
 ### Character Implementation
-* Character basic input mapping
-    * Character Movement input mapping
-* Character HandState UNARMED Blendspace 구현
-    * UNARMED - Stand BS
-    * UNARMED - Crouch BS
-    * UNARMED - Crawl BS
-
-### AC_Item Implementation
-* MoveToInven, Around, Slot을 통해 아이템의 시스템 위치 이동을 구현
-* SpawnItem을 통해 새로운 아이템 객체 생성을 구현
-* FItemData를 통해 아이템의 기본 정보를 묶어 놓음
-
+*   Character basic input mapping
+    *   Character Movement input mapping
+*   Character HandState UNARMED Blendspace 구현
+    *   UNARMED - Stand BS
+    *   UNARMED - Crouch BS
+    *   UNARMED - Crawl BS
+*   Leg IK 구현
+### AC\_Item Implementation
+*   MoveToInven, Around, Slot을 통해 아이템의 시스템 위치 이동을 구현
+*   SpawnItem을 통해 새로운 아이템 객체 생성을 구현
+*   FItemData를 통해 아이템의 기본 정보를 묶어 놓음
+*   ItemManager를 통해 관리 가능하도록 구성
 ### Inven Implementation
-* 외부에서 들어오는 아이템에 대하여 VolumeCheck를 통한 아이템 습득 가/부를 결정
-* ItemList에 대한 출입함수 구현
-* BackPack에 따른 MaxVolume조절 구현
-* InvenUI와 상호 작용
+*   최대 용량(maxVolume)과 현재 용량(curVolume)으로 용량 허용치 설정
+*   외부에서 들어오는 아이템에 대하여 VolumeCheck를 통한 아이템 습득 가/부를 결정
+*   ItemList에 대한 출입함수 구현
+*   InvenUI와 상호 작용
+*   ItemList에 객체를 넣어 사용하지만 MaxStack까지는 해당 아이템은 하나만 존재
 
 ### InvenUI Implementation
-* Around Item List Widget 구현
-* Inventoru Item List Widget 구현
-* Volume System 구현
-* MainGunSlot, SubGunSlot Widget 구현(이미지만)
-* ThrowableWeaponSlot Widget 구현(이미지만)
-* SlotWidget들의 경우 블루프린트의 내용을 C++로 이전하면서 이미지만 띄우고 있음
-* 블루프린트에서는 우클릭까지 가능 했었음
+*   Around Item Panel 구현
+    *   ListView를 이용한 Around Item List 구현
+*   Inventory Item Panel 구현
+    *   ListView를 이용한 Inventory Item List 구현
+*   Equipment Item Panel 구현
+    *   Gun, Throwable, Helmet, Vest, BackPack등 장착 슬롯 구현
+*   Consumable Wheel, Throwable Wheel 구현
+*   아이템 분할 버리기 구현
+*   Volume System 구현
+*   ListView의 Entry Widget으로 사용할 C\_BasicItemBarWidget 구현
+*   ListView의 ItemBar와 3종류의 Panel과 Slot에 상호 작용 구현
+*   Preview Character 구현
+
+### Loot Box & Drop Box Implementation
+*   캐릭터 사망 시 모든 아이템을 담는 Loot Box 구현
+*   여러 아이템을 담은 Drop Box 구현
+
+### Sound Implementation
+*   Sound Manger 구현
+    *   PlaySoundEffect로 재생 가능
+    *   Sound Volume을 저장 및 불러오기 가능
+*   발에 닿는 지면의 Material에 따른 발소리 구현
+
+### Menu Implementation
+*   설정
+    *   Audio와 Key 설정 구현
+*   Key Guide를 통해서 현재 설정되어 있는 키를 확인 가능
+*   설정 저장, 불러오기 구현
+### Item Spawn ReFactoring In Shanty Town
+
 
 <br/><br/><br/><br/><br/>
 
