@@ -64,6 +64,9 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 		bIsHighEnoughToFall = false;
 	//UC_Util::Print(OwnerCharacter->GetDistanceToGround());
 
+	if (bIsFalling) MeasuredFallingTime += DeltaSeconds;
+	else MeasuredFallingTime = 0.f;
+
 	SwimmingState	  = OwnerCharacter->GetSwimmingComponent()->GetSwimmingState();
 	SkyDivingState	  = OwnerCharacter->GetSkyDivingComponent()->GetSkyDivingState();
 	//switch (SwimmingState)

@@ -56,6 +56,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsFalling{};
 
+	// bIsFalling상태 도합 시간 계산
+	UPROPERTY(BlueprintReadOnly)
+	float MeasuredFallingTime{};
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsJumping{};
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
