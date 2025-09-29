@@ -462,11 +462,6 @@ void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
 	PoseColliderHandlerComponent->SetColliderByPoseState(PoseState);
 }
 
-bool AC_BasicCharacter::GetIsHighEnoughToFall()
-{
-	return false;
-}
-
 bool AC_BasicCharacter::GetIsTooCloseToAimGun()
 {
 	if (EquippedComponent->GetCurWeaponType() != EWeaponSlot::MAIN_GUN && EquippedComponent->GetCurWeaponType() != EWeaponSlot::SUB_GUN) return false;
@@ -590,7 +585,7 @@ void AC_BasicCharacter::ExecuteGunTransitionAction(AC_Gun* CurGun, EPoseState In
 void AC_BasicCharacter::Jump()
 {
 	Super::Jump();
-	bIsJumping = true;
+	bHasJumped = true;
 }
 
 void AC_BasicCharacter::PoolingBullets()

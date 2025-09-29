@@ -111,6 +111,8 @@ public: // Getters and setters
 
 	AC_BasicCharacter* GetDeathDamageCauser() const { return DeathDamageCauser; }
 
+	float GetCurrentFallingHeight() const { return CurrentFallingHeight; }
+	
 public:
 
 	/// <summary>
@@ -185,6 +187,9 @@ private:
 	bool  bFallingFlag{};
 	float FallingStartedHeight{};
 	float FallDamageAmount{};
+
+	// 떨어지는 중이고, 현재까지 떨어진 높이 총량 (Anim Blueprint Hard Falling transition에서 사용할 값)
+	float CurrentFallingHeight{};
 
 protected:
 

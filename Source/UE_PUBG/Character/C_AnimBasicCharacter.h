@@ -60,7 +60,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	float MeasuredFallingTime{};
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	// 현재 떨어지고 있을 때, 떨어지기 시작한 위치로부터의 높이 (떨어지는 중이 아니라면 0)
+	UPROPERTY(BlueprintReadOnly)
+	float CurrentFallingHeight{};
+
+	UPROPERTY(BlueprintReadWrite)
 	bool bIsJumping{};
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bGunHasGrip{};
@@ -119,22 +123,39 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EGunType CurGunType{};
 
+//////////////////////////////////////////////////////////////////////////////////////////
+/// 얘네들 모두 사용 안할 예정
+	
+	// Not in used
 	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
 	void AnimNotify_OnStartTransition_Stand_To_Falling();
 
-
+	// Used in RunningJump_To_Falling transition
 	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
 	void AnimNotify_OnStartTransition_RunningJump_To_Falling();
 
+	// Used in HardLand to stand transition
 	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
 	void AnimNotify_OnEndTransition_HardLand_To_Stand();
 
-	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
-	void AnimNotify_OnEndTransition_Falling_To_Standing();
-
+	// Used in Falling to hardLand transition
 	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
 	void AnimNotify_OnEndTransition_Falling_To_HardLand();
 
+//////////////////////////////////////////////////////////////////////////////////////////
+
+protected: // Anim state Transition callback 관련
+	
+	// Jumping 또는 Falling State에서 Stand 자세로 돌아갈 때 CallBack 
+	UFUNCTION(BlueprintCallable)
+	void AnimNotify_OnAnyFallingOrJumpingStateToStand();
+
+	// FallingHard to HardLanding Transition callback
+	UFUNCTION(BlueprintCallable)
+	virtual void AnimNotify_OnFallingHardToHardLanding();	
+
+protected:
+	
 	void ControlHeadRotation();
 
 	void RilfeLeftHandIK();
@@ -153,8 +174,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float DeltaYaw = 0.0f;
-
-	float AimOffsetLerpDelayTime = 0.0f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FFeetData FeetData{};

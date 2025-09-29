@@ -126,8 +126,7 @@ public:
 	class UC_InputComponent* GetInputComponent() const { return MyInputComponent; }
 		
 	class AC_PreviewCharacter* GetPreviewCharacter() const { return PreviewCharacter; }
-public:
-	bool GetIsHighEnoughToFall() override;
+	
 public:
 	/// <summary>
 	/// 자세 바꾸기 통합 처리

@@ -296,9 +296,9 @@ void UC_InputComponent::Crawl()
 
 void UC_InputComponent::OnJump()
 {
-	if (!Player->GetCanMove())									return;
-	if (Player->GetIsJumping() || PlayerMovement->IsFalling())	return;
-	if (Player->GetSwimmingComponent()->IsSwimming())			return;
+	if (!Player->GetCanMove())						  return;
+	if (PlayerMovement->IsFalling())				  return;
+	if (Player->GetSwimmingComponent()->IsSwimming()) return;
 	//if (Player->GetParkourComponent()->GetIsCurrentlyWarping()) return;
 
 	CancelTurnInPlaceMotion();

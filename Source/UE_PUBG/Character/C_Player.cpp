@@ -413,31 +413,12 @@ void AC_Player::SetCanFireWhileCrawl()
 		bCanFireBullet = true;
 }
 
-bool AC_Player::GetIsHighEnoughToFall()
-{
-	FCollisionQueryParams CollisionParams{};
-	CollisionParams.AddIgnoredActor(this);
-
-	//CollisionParams.AddIgnoredActor(GAMESCENE_MANAGER->GetAirplaneManager()->GetAirplane());
-
-	FHitResult HitResult{};
-
-	FVector StartLocation = GetActorLocation();
-	FVector DestLocation = StartLocation - FVector::UnitZ() * (90.f+250.f);
-
-	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, DestLocation, ECollisionChannel::ECC_Visibility, CollisionParams);
-	//UC_Util::Print(HitResult.Distance);	
-	return !HasHit;
-}
-
-
-
 bool AC_Player::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 {
-	if (!bCanMove)											return false;
-	if (bIsJumping || GetCharacterMovement()->IsFalling())	return false;
-	if (InChangeFrom == InChangeTo)							return false;
-	if (SwimmingComponent->IsSwimming())					return false;
+	if (!bCanMove)							 return false;
+	if (GetCharacterMovement()->IsFalling()) return false;
+	if (InChangeFrom == InChangeTo)			 return false;
+	if (SwimmingComponent->IsSwimming())	 return false;
 
 	switch (InChangeTo)
 	{

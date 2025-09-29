@@ -172,10 +172,10 @@ void AC_Enemy::Landed(const FHitResult& Hit)
 
 bool AC_Enemy::SetPoseState(EPoseState InChangeFrom, EPoseState InChangeTo)
 {
-	if (!bCanMove)											return false;
-	if (bIsJumping || GetCharacterMovement()->IsFalling())	return false;
-	if (InChangeFrom == InChangeTo)							return false;
-	if (SwimmingComponent->IsSwimming())					return false;
+	if (!bCanMove)							 return false;
+	if (GetCharacterMovement()->IsFalling()) return false;
+	if (InChangeFrom == InChangeTo)			 return false;
+	if (SwimmingComponent->IsSwimming())	 return false;
 
 	switch (InChangeTo)
 	{

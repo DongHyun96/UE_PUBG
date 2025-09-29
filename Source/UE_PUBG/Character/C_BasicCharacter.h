@@ -279,7 +279,10 @@ public:
 
 	float GetNextSpeed() const { return NextSpeed; }
 	void SetNextSpeed(float InNextSpeed) { NextSpeed = InNextSpeed; }
-	bool GetIsJumping() const { return bIsJumping; }
+
+	bool GetHasJumped() const { return bHasJumped; }
+	void SetHasJumped(bool InHasJumped) { bHasJumped = InHasJumped; }
+	
 	UFUNCTION(BlueprintCallable)
 	class UC_EquippedComponent* GetEquippedComponent() const { return EquippedComponent; }
 
@@ -290,12 +293,10 @@ public:
 	bool GetIsWatchingSight() { return bIsWatchingSight; }
 	bool GetIsFiringBullet() { return bIsFiringBullet; }
 	bool GetCanFireBullet() { return bCanFireBullet; }
-	virtual bool GetIsHighEnoughToFall();
+	
 	virtual bool GetIsTooCloseToAimGun();
 	void SetIsAimDown(bool InIsAimDownSight) { bIsAimDownSight = InIsAimDownSight; }
 	void SetIsWatchingSight(bool InIsWatchingSight) { bIsWatchingSight = InIsWatchingSight; }
-	void SetIsJumping(bool InIsJumping) { bIsJumping = InIsJumping; }
-
 	
 	UFUNCTION(BlueprintCallable)
 	class UC_InvenComponent* GetInvenComponent() { return InvenComponent; }
@@ -387,8 +388,8 @@ public:
 
 public:
 
-	void Jump() override;
-
+	virtual void Jump() override;
+	
 protected:
 
 	FString CharacterName = "John Doe";
@@ -465,10 +466,12 @@ protected:
 	bool bCanMove = true;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	bool bIsJumping = false;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsHitting = false;
+
+private:
+
+	// bIsFalling 상태일 때, 해당 상태가 Jump에 의해 처리되었는지 체크
+	bool bHasJumped{};
 
 protected:
 	// 장착된 무기 및 장구류 component
