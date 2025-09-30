@@ -352,10 +352,8 @@ void AC_Player::HandleControllerRotation(float DeltaTime)
 	//}
 
 	if (Controller)
-	{
-		Controller->SetControlRotation(FMath::Lerp(Controller->GetControlRotation(), CharacterMovingDirection, DeltaTime * 10.0f));
-	}
-	//일정각도 이하로 차이나면 캐릭터 로테이션으로 정해버리기(가끔 적용이 안되는데 이유를 아직 못찾음)
+		Controller->SetControlRotation(UKismetMathLibrary::RLerp(Controller->GetControlRotation(), CharacterMovingDirection, DeltaTime * 10.0f, true));
+	
 	float DeltaYawTemp = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Yaw);
 	float DeltaPitchTemp = FMath::Abs(UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), CharacterMovingDirection).Pitch);
 
@@ -944,9 +942,7 @@ void AC_Player::HandleTurnInPlaceWhileAiming()
 	if (GetVelocity().Size() > 0.f) return;
 	if (bIsHoldDirection) return;
 
-	float Delta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), GetActorRotation()).Yaw;
-	float ControlRotation = GetControlRotation().Yaw;
-	float CapsuleRotation = GetCapsuleComponent()->GetComponentRotation().Yaw;
+	const float CapsuleRotation = GetCapsuleComponent()->GetComponentRotation().Yaw;
 	if (AimingTurnInPlaceTimeCount <= 0)
 	{
 		SavedYaw = CapsuleRotation;
@@ -1042,18 +1038,11 @@ void AC_Player::HandlePlayerRotationWhileAiming()
 	//	bUseControllerRotationYaw = false;
 
 	// 목표 회전값으로 Lerp
-	float DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(GetActorRotation(), GetControlRotation()).Yaw;
-
-	float LerpAlpha = UKismetMathLibrary::Abs(DeltaRotation);
-	//UC_Util::Print(LerpAlpha,FColor::Blue);
-	LerpAlpha = UKismetMathLibrary::FClamp(LerpAlpha, 0.6, 1);
-
-	FRotator NewRotationTemp = UKismetMathLibrary::RLerp(GetActorRotation(), GetControlRotation(), GetWorld()->DeltaTimeSeconds * 15.f, true);
-	float NewRotationYaw = NewRotationTemp.Yaw;
+	FRotator NewRotationTemp = UKismetMathLibrary::RLerp(GetActorRotation(), GetControlRotation(), GetWorld()->DeltaTimeSeconds * 25.f, true);
+	
 	// 캐릭터 회전 설정
-	FRotator NewRotation = FRotator(GetActorRotation().Pitch, NewRotationYaw, GetActorRotation().Roll);
+	FRotator NewRotation = FRotator(GetActorRotation().Pitch, NewRotationTemp.Yaw, GetActorRotation().Roll);
 	SetActorRotation(NewRotation);
-	//UC_Util::Print(float(GetActorRotation().Yaw));
 }
 
 void AC_Player::SetControllerPitchLimits(EPoseState InCurrentState)
@@ -1143,7 +1132,6 @@ void AC_Player::SetToAimDownSight()
 	AimCamera->SetActive(false);
 	bIsWatchingSight = true;
 	bIsAimDownSight = true;
-	UC_Util::Print("AimDownNow");
 
 	// Helmet을 장착 중일 때 Crawl 자세에서의 AimDownSight 시야에 Helmet이 걸림
 	// Helmet hidden 처리

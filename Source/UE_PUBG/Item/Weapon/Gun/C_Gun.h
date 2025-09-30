@@ -148,7 +148,6 @@ public:
 	TMap<EPoseState, FAnimationMontages > GetDrawMontages() { return DrawMontages; };
 	FTransform GetLeftHandSocketTransform() const { return LeftHandSocketLocation; }
 	EShootingMode GetCurrentShootingMode() { return CurrentShootingMode; }
-	class UCameraComponent* GetGunCamera() { return AimSightCamera; }
 
 	bool Interaction(AC_BasicCharacter* Character) override;
 
@@ -246,7 +245,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FTransform LeftHandSocketLocation;
 
-	UCameraComponent* AimSightCamera;
+	class UCameraComponent* AimSightCamera;
 
 	class USpringArmComponent* AimSightSpringArm{};
 	int GetCurMagazineBulletCount() const { return CurMagazineBulletCount; }

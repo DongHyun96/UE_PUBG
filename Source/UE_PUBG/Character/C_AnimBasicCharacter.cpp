@@ -103,47 +103,6 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_Stand_To_Falling()
-{
-	UC_Util::Print("AnimNotify_OnStartTransition_Stand_To_Falling");
-	AnimNotify_OnStartTransition_RunningJump_To_Falling();
-	OwnerCharacter->GetCharacterMovement()->Velocity.X = 0;
-	OwnerCharacter->GetCharacterMovement()->Velocity.Y = 0;
-	//OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = 0;
-	//OwnerCharacter->GetCharacterMovement()->MaxAcceleration = 1000000000000;
-}
-
-void UC_AnimBasicCharacter::AnimNotify_OnStartTransition_RunningJump_To_Falling()
-{
-	UC_Util::Print("wow");
-	// Start Transition 시 수행할 로직 추가
-	if (OwnerCharacter->GetIsAimDown())
-	{
-		AC_Gun* CurGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
-		if (IsValid(CurGun))
-		{
-			CurGun->BackToMainCamera();
-		}
-	}
-	//OwnerCharacter->SetCanMove(false);
-
-}
-
-void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_HardLand_To_Stand()
-{
-	// End Transition 시 수행할 로직 추가
-	OwnerCharacter->SetCanMove(true);
-	OwnerCharacter->SetHasJumped(false);
-}
-
-void UC_AnimBasicCharacter::AnimNotify_OnEndTransition_Falling_To_HardLand()
-{
-	OwnerCharacter->SetCanMove(false);
-	
-	// HardLanding 모션 중 PlayerCharacter 회전 방지
-	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter)) Player->SetStrafeRotationToIdleStop();
-}
-
 void UC_AnimBasicCharacter::AnimNotify_OnAnyFallingOrJumpingStateToStand()
 {
 	OwnerCharacter->SetCanMove(true);
@@ -213,38 +172,24 @@ void UC_AnimBasicCharacter::SetAimOffsetRotation()
 	float RotatorSizeX = LerpAlphaRotater.Roll  * LerpAlphaRotater.Roll  / 8100.f;
 	float RotatorSizeY = LerpAlphaRotater.Pitch * LerpAlphaRotater.Pitch / 8100.f;
 	float RotatorSizeZ = LerpAlphaRotater.Yaw   * LerpAlphaRotater.Yaw   / 8100.f;
-	float Size = 10* UKismetMathLibrary::Sqrt(RotatorSizeX + RotatorSizeY + RotatorSizeZ);*/
+	float Size = 10* UKismetMathLibrary::Sqrt(RotatorSizeX + RotatorSizeY + RotatorSizeZ);
 
-	// float LerpAlpha = UKismetMathLibrary::FClamp(Size, 0.6, 1);
+	float LerpAlpha = UKismetMathLibrary::FClamp(Size, 0.3, 1); // 원래 값 : 0.3 ~ 1*/
 	
-	if(!OwnerCharacter->GetIsAimDown())
-	{
-		CCurrentAimOffsetRotation = UKismetMathLibrary::RLerp(CCurrentAimOffsetRotation, CAimOffsetRotation, DeltaTime * 30.f, true);
-		CCurrentAimOffsetRotation.Yaw = FMath::Clamp(CCurrentAimOffsetRotation.Yaw, -0.1f, 0.1f);
-		CCurrentAimOffsetRotation.Pitch = FMath::Clamp(CCurrentAimOffsetRotation.Pitch, -1.f, 1.f);
-	}
-	else
+	if(OwnerCharacter->GetIsAimDown()) // 견착 또는 ADS 모드일 때
 	{
 		//FRotator TempRotator = UKismetMathLibrary::RLerp(CCurrentAimOffsetRotation, CAimOffsetRotation, DeltaTime * 15.f * LerpAlpha, true);
 		//CCurrentAimOffsetRotation.Pitch = TempRotator.Pitch;
 		//CCurrentAimOffsetRotation.Yaw = 0;
 		
-		//CCurrentAimOffsetRotation = CAimOffsetRotation;
-		//CCurrentAimOffsetRotation.Yaw = 0.f;
-
-		FRotator TempRotator = UKismetMathLibrary::RLerp(CCurrentAimOffsetRotation, CAimOffsetRotation, DeltaTime * 15.f, true);
+		 // FRotator TempRotator = UKismetMathLibrary::RLerp(CCurrentAimOffsetRotation, CAimOffsetRotation, DeltaTime * 15.f * LerpAlpha, true);
+		FRotator TempRotator = UKismetMathLibrary::RLerp(CCurrentAimOffsetRotation, CAimOffsetRotation, DeltaTime * 15.f, false);
 		CCurrentAimOffsetRotation.Pitch = TempRotator.Pitch;
 		CCurrentAimOffsetRotation.Yaw = 0;
+		// CCurrentAimOffsetRotation = CAimOffsetRotation;
 	}
-
-	
-	
-	//UC_Util::Print(float(CCurrentAimOffsetRotation.Yaw),FColor::Blue);
-
-	//UC_Util::Print(float(CCurrentAimOffsetRotation.Yaw));
-
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Green, *TheFloatStr);
-	
+	else CCurrentAimOffsetRotation = UKismetMathLibrary::RLerp(CCurrentAimOffsetRotation, CAimOffsetRotation, DeltaTime * 15.f, true);
+	// else CCurrentAimOffsetRotation = UKismetMathLibrary::RLerp(CCurrentAimOffsetRotation, CAimOffsetRotation, DeltaTime * 15.f * LerpAlpha, true); // 원래값
 }
 
 void UC_AnimBasicCharacter::SetAimingTurnInPlaceRotation()
