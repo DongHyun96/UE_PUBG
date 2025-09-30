@@ -323,7 +323,7 @@ bool AC_Gun::SetAimingDown()
 	if (!IsValid(OwnerPlayer))	              return false;
 	OwnerPlayer->SetToAimDownSight();
 	//CharacterMesh->HideBoneByName(FName("HeadBoneName"), EPhysBodyOp::PBO_None);
-
+	
 	//OwnerCharacter->bUseControllerRotationYaw = true;
 
 	//AimDown 일 때 머리숨기기

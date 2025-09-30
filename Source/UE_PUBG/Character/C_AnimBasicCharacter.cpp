@@ -2,6 +2,8 @@
 
 
 #include "Character/C_AnimBasicCharacter.h"
+
+#include "KismetAnimationLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -38,12 +40,7 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	Speed = FMath::Clamp(Speed, 0.f, 700.f);
 
 	const FRotator YawRotation(0, OwnerCharacter->GetActorRotation().Yaw, 0);
-
-	// Direction의 경우에도 부드러운 방향전환 Animation 처리를 위해 Lerp로 처리함
-	// BS로 기본 처리되지만, 180 -> -180으로 Direction이 한 번에 전환되는 과정에서 뚝뚝 끊기게 나오는 현상 때문에 Lerp를 사용했음
-	float DirectionDest = CalculateDirection(OwnerCharacter->GetVelocity().GetSafeNormal2D(), YawRotation);
-	Direction			= FMath::Lerp(Direction, DirectionDest, DeltaSeconds * 5.f);
-	
+	Direction = UKismetAnimationLibrary::CalculateDirection(OwnerCharacter->GetVelocity().GetSafeNormal2D(), YawRotation);
 
 	//FString TheFloatStr = FString::SanitizeFloat(Direction);
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);

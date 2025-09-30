@@ -18,6 +18,7 @@ public class UE_PUBG : ModuleRules
             "CoreUObject",
             "Engine",
             "InputCore",
+            "AnimGraphRuntime",
             "EnhancedInput",
             "UMG",
             "GameplayCameras",
