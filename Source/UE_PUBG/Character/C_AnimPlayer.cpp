@@ -57,4 +57,19 @@ void UC_AnimPlayer::SetAimOffsetRotation()
 
 }
 
+void UC_AnimPlayer::AnimNotify_OnFallingHardToHardLanding()
+{
+	Super::AnimNotify_OnFallingHardToHardLanding();
+	OwnerPlayer->SetStrafeRotationToIdleStop();
+	
+}
+
+void UC_AnimPlayer::AnimNotify_OnStandToJumpOrFalling()
+{
+	// BackToMainCam 처리
+	if (!OwnerCharacter->GetIsAimDown()) return;
+	AC_Gun* CurGun = Cast<AC_Gun>(OwnerCharacter->GetEquippedComponent()->GetCurWeapon());
+	if (IsValid(CurGun)) CurGun->BackToMainCamera();
+}
+
 

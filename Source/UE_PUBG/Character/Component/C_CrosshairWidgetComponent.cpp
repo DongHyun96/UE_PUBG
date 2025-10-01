@@ -19,7 +19,6 @@ void UC_CrosshairWidgetComponent::NativeConstruct()
 {
 	Super::NativeConstruct();
 	InitializeAimSightWidget();
-	UC_Util::Print("Created Widget");
 }
 
 void UC_CrosshairWidgetComponent::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -28,10 +27,6 @@ void UC_CrosshairWidgetComponent::NativeTick(const FGeometry& MyGeometry, float 
 	CountFullAutoFiringTime(InDeltaTime);
 	ManageAimWidgetImages();
 }
-
-
-// Called every frame
-
 
 void UC_CrosshairWidgetComponent::InitializeAimSightWidget()
 {

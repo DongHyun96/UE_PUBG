@@ -162,6 +162,8 @@ void AC_ThrowingWeapon::BeginPlay()
 	// 자기 자신의 AIAttack 전략 init
 	AIAttackStrategy = AIAttackStrategies[ThrowableType];
 
+	// Explosion Sphere 충돌처리 꺼놓기 (폭발 반경 체크용 ShapeComponent)
+	ExplosionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AC_ThrowingWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -288,6 +290,8 @@ bool AC_ThrowingWeapon::AttachToHand(USceneComponent* InParent)
 		OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_THROWABLE);
 	}
 
+	SetActorRelativeLocation(FVector::ZeroVector);
+	
 	bool bIsAttached = AttachToComponent
 	(
 		InParent,
@@ -823,6 +827,11 @@ void AC_ThrowingWeapon::OnThrowProcessEnd()
 	if (OwnerPlayer) OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetVisibility(ESlateVisibility::Hidden);
 }
 
+  float AC_ThrowingWeapon::GetExplosionSphereRadius() const
+  {
+	return ExplosionSphere->GetScaledSphereRadius();
+  }
+
 void AC_ThrowingWeapon::StartCooking()
 {
 	bIsCooked = true;
@@ -884,7 +893,8 @@ void AC_ThrowingWeapon::Explode()
 		}
 	}
 	
-	bExploded = ExplodeStrategy->UseStrategy(this);
+	ExplodeStrategy->UseStrategy(this);
+	bExploded = true;
 
 	if (AC_GrenadeExplode::OnPlayerCombatFieldRoundDrawByGrenadeExplode.IsBound())
 		AC_GrenadeExplode::OnPlayerCombatFieldRoundDrawByGrenadeExplode.Unbind();

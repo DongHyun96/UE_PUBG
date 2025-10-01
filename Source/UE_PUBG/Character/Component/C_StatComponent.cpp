@@ -129,9 +129,9 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 	);*/
 
 	// Testing용 AI에 따라 최소로 둘 수 있는 HP값 결정
-	float MinHP =  !OwnerEnemy ? 0.f : 
-					OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::SkyDivingTest ? 100.f :
-					OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest  ? 1.f : 0.f; 
+	const float MinHP =  !OwnerEnemy ? 0.f : 
+						  OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::SkyDivingTest ? 100.f :
+						  OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest  ? 1.f : 0.f;
 	
 	CurHP = FMath::Max(CurHP - DamageAmount, MinHP);
 
@@ -174,9 +174,12 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 			return true;
 		
 		if (GAMESCENE_MANAGER->GetIsGameOver()) return true;
+
+		// For testing (TODO : 이 라인 지우기)
+		// if (Cast<AC_Player>(OwnerCharacter)) return true;
 		
-		// 사망 처리 
-		OwnerCharacter->CharacterDead(KillFeedDescriptor);
+		// 사망 처리 TODO : 이 라인 다시 활성화
+		// OwnerCharacter->CharacterDead(KillFeedDescriptor);
 	}
 	
 	return true;
@@ -348,6 +351,9 @@ void UC_StatComponent::HandleFallingDamage()
 			bFallingFlag = true;
 			FallingStartedHeight = OwnerCharacter->GetActorLocation().Z;
 		}
+
+		CurrentFallingHeight = FallingStartedHeight - OwnerCharacter->GetActorLocation().Z;
+		
 		return;
 	}
 
@@ -384,20 +390,17 @@ void UC_StatComponent::HandleFallingDamage()
 		
 		float FallenHeight = FallingStartedHeight - OwnerCharacter->GetActorLocation().Z;
 
-		// UC_Util::Print("Fallen Height : " + FString::SanitizeFloat(FallenHeight * 0.01f) + "M", Color, 10.f);
-		
 		// 15m 이상
 		if (FallenHeight >= 1500.f)
 		{
 			FallDamageAmount = 100.f;
-			// UC_Util::Print("Damage Amount : " + FString::SanitizeFloat(FallDamageAmount), Color, 10.f);
 			return;
 		}
 
 		// 5m ~ 15m 사이 -> 비율에 따른 FallDamageAmount 설정
 		FallDamageAmount = FMath::GetMappedRangeValueClamped(FVector2D(500.f, 1500.f), FVector2D(0.f, 100.f), FallenHeight);
-		// UC_Util::Print("Damage Amount : " + FString::SanitizeFloat(FallDamageAmount), Color, 10.f);
 
-		// Deferred 방식으로 Damage를 Apply할지 결정 -> 수영 상태를 확인해야해서
+		// CurrentFallingHeight 초기화
+		CurrentFallingHeight = 0.f;
 	}
 }

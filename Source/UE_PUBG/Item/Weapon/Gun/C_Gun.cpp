@@ -157,10 +157,9 @@ void AC_Gun::Tick(float DeltaTime)
 		//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, *TheFloatStr);
 	}
 	HandleSpringArmRotation();
-	GetPlayerIsAimDownOrNot();
 	CheckPlayerIsRunning();
 	//CheckBackPackLevelChange();
-	ShowAndHideWhileAiming();
+	HandleAimWidgetShowAndHideWhileAiming();
 }
 
 void AC_Gun::InitializeItem(FName NewItemCode)
@@ -324,7 +323,7 @@ bool AC_Gun::SetAimingDown()
 	if (!IsValid(OwnerPlayer))	              return false;
 	OwnerPlayer->SetToAimDownSight();
 	//CharacterMesh->HideBoneByName(FName("HeadBoneName"), EPhysBodyOp::PBO_None);
-
+	
 	//OwnerCharacter->bUseControllerRotationYaw = true;
 
 	//AimDown 일 때 머리숨기기
@@ -392,16 +391,6 @@ void AC_Gun::HandleSpringArmRotation()
 	}
 	AimSightSpringArm->SetWorldRotation(NewRotation);
 }
-
-void AC_Gun::GetPlayerIsAimDownOrNot()
-{
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-	if (IsValid(OwnerPlayer))
-	{
-		bIsPlayerAimDownPress = OwnerPlayer->GetIsAimDown();
-	}
-}
-
 
 void AC_Gun::SetOwnerCharacter(AC_BasicCharacter * InOwnerCharacter)
 {
@@ -681,23 +670,24 @@ bool AC_Gun::FireBullet()
 
 	//UC_Util::Print(FireLocation);
 	//UC_Util::Print(FireDirection);
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter); // TODO : OwnerPlayer -> Enemy도 총을 쏠 수 있으니 예외처리 시켜야 함
-	bool ApplyGravity = OwnerPlayer->GetIsWatchingSight() || !HasHit;
+	
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter); 
+	// const bool ApplyGravity = OwnerPlayer->GetIsWatchingSight() || !HasHit;
+	const bool ApplyGravity = !HasHit;
+	
 	int BulletCount = 0;
+
 	for (auto& Bullet : OwnerPlayer->GetBullets())
 	{
-		if (Bullet->GetIsActive())
-		{
-			//UC_Util::Print("Can't fire");
-			continue;
-		}
+		if (Bullet->GetIsActive()) continue; 			
+
 		BulletCount++;
 		//UC_Util::Print("FIRE!!!!!!!");
 		CurMagazineBulletCount--;
 		OwnerPlayer->RecoilController();
 		if (HasHit)
 		{
-			bool Succeeded = Bullet->Fire(this, FireLocation, FireVelocity, ApplyGravity, HitLocation);
+			bool FireSucceeded = Bullet->Fire(this, FireLocation, FireVelocity, ApplyGravity, HitLocation);
 			//if (Cast<AC_Player>(OwnerCharacter))
 			if (OwnerCharacter->IsLocallyControlled())
 			{
@@ -707,7 +697,8 @@ bool AC_Gun::FireBullet()
 			{
 				if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
 			}
-			if (Succeeded) 
+			
+			if (FireSucceeded) 
 			{ 
 				OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true); 
 
@@ -715,8 +706,8 @@ bool AC_Gun::FireBullet()
 					OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot()->UpdateCurAmmo(this);
 				else if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::SUB_GUN)
 					OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetSubGunSlot()->UpdateCurAmmo(this);
-
 			}
+			
 			if (IsValid(MuzzleFlameEffectParticle))
 			{
 				UGameplayStatics::SpawnEmitterAttached
@@ -729,51 +720,51 @@ bool AC_Gun::FireBullet()
 					FVector(0.2f)
 				);
 			}
-			return Succeeded;
+			return FireSucceeded;
+		}
+
+		// Not has hit during Setting Bullet velocity
+		
+		const bool FireSucceeded = Bullet->Fire(this, FireLocation, FireVelocity, ApplyGravity);
+		//if (Cast<AC_Player>(OwnerCharacter))
+		if (OwnerCharacter->IsLocallyControlled())
+		{
+			if (GunSoundData->FireSound) UGameplayStatics::PlaySound2D(this, GunSoundData->FireSound);
 		}
 		else
 		{
-			bool Succeeded = Bullet->Fire(this, FireLocation, FireVelocity, ApplyGravity);
-			//if (Cast<AC_Player>(OwnerCharacter))
-			if (OwnerCharacter->IsLocallyControlled())
-			{
-				if (GunSoundData->FireSound) UGameplayStatics::PlaySound2D(this, GunSoundData->FireSound);
-			}
-			else
-			{
-				if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
-			}
-
-			if (Succeeded)
-			{
-				OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true);
-
-				if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::MAIN_GUN)
-					OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot()->UpdateCurAmmo(this);
-				else if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::SUB_GUN)
-					OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetSubGunSlot()->UpdateCurAmmo(this);
-
-			}
-			if (IsValid(MuzzleFlameEffectParticle))
-			{
-				UGameplayStatics::SpawnEmitterAttached
-				(
-					MuzzleFlameEffectParticle,  // 파티클 시스템
-					GunMesh,					// 부착할 메쉬 (총)
-					TEXT("MuzzleSocket"),		// 총구 소켓에 부착
-					FVector(0.f),
-					FRotator(0.f),
-					FVector(0.2f)
-				);
-				// MuzzleFlameEffectParticle->SetWorldLocation(FireLocation);
-				// //MuzzleFlameEffectParticle->SetRelativeRotation(this->GetActorForwardVector().Rotation());
-				// MuzzleFlameEffectParticle->SetWorldRotation(OwnerCharacter->GetActorForwardVector().Rotation());
-				//
-				// MuzzleFlameEffectParticle->Activate();
-				
-			}
-			return Succeeded;
+			if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
 		}
+
+		if (FireSucceeded)
+		{
+			OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true);
+
+			if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::MAIN_GUN)
+				OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot()->UpdateCurAmmo(this);
+			else if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::SUB_GUN)
+				OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetSubGunSlot()->UpdateCurAmmo(this);
+
+		}
+		if (IsValid(MuzzleFlameEffectParticle))
+		{
+			UGameplayStatics::SpawnEmitterAttached
+			(
+				MuzzleFlameEffectParticle,  // 파티클 시스템
+				GunMesh,					// 부착할 메쉬 (총)
+				TEXT("MuzzleSocket"),		// 총구 소켓에 부착
+				FVector(0.f),
+				FRotator(0.f),
+				FVector(0.2f)
+			);
+			// MuzzleFlameEffectParticle->SetWorldLocation(FireLocation);
+			// //MuzzleFlameEffectParticle->SetRelativeRotation(this->GetActorForwardVector().Rotation());
+			// MuzzleFlameEffectParticle->SetWorldRotation(OwnerCharacter->GetActorForwardVector().Rotation());
+			//
+			// MuzzleFlameEffectParticle->Activate();
+			
+		}
+		return FireSucceeded;
 
 		//Bullet->Fire(this, FireLocation, FireDirection);
 		//if (BulletCount > 100)
@@ -864,75 +855,49 @@ void AC_Gun::SetBulletSpeed()
 	}
 }
 
-bool AC_Gun::SetBulletVelocity(FVector &OutLocation, FVector &OutDirection, FVector &OutHitLocation, bool& OutHasHit)
+bool AC_Gun::SetBulletVelocity(FVector &OutLocation, FVector &OutVelocity, FVector &OutHitLocation, bool& OutHasHit)
 {
-	FHitResult HitResult;
-	//AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	if (!OwnerPlayer) return false;
 
-	// 동현 주석 : Enemy 총기 BulletDirection에 대한 처리가 필요함)
-	if (AC_Enemy* OwnerEnemy = Cast<AC_Enemy>(OwnerCharacter))
-		return false;
-
-	AController* Controller = OwnerCharacter->GetController();
 	APlayerCameraManager* PlayerCamera = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
-	FVector StartLocation = PlayerCamera->GetCameraLocation();
-	FRotator CameraRotation = PlayerCamera->GetCameraRotation();
 
-	FVector ForwardVector = CameraRotation.Vector().GetSafeNormal() * 10000;
 	FCollisionQueryParams CollisionParams{};
 	CollisionParams.AddIgnoredActor(this);
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
 	CollisionParams.AddIgnoredActor(PlayerCamera);
-	for (auto AttachableMeshs : OwnerCharacter->GetAttachmentMeshComponent()->GetAttachableItemMeshs())
+	
+	for (auto AttachableMeshes : OwnerCharacter->GetAttachmentMeshComponent()->GetAttachableItemMeshs())
 	{
-		for (auto MeshsTuple : AttachableMeshs.Value)
+		for (auto MeshesTuple : AttachableMeshes.Value)
 		{
-			for (auto Attachment : MeshsTuple.Value)
+			for (auto Attachment : MeshesTuple.Value)
 			{
 				CollisionParams.AddIgnoredActor(Attachment);
 			}
 
 		}
 	}
-	HitResult = {};
-	FVector WorldLocation, WorldDirection;
+	
+	FHitResult HitResult = {};
+	FVector CameraLocation, RandomWorldDirection;
 	FVector CenterLocation, CenterDirection;
 	APlayerController* WorldController = GetWorld()->GetFirstPlayerController();
 	TArray<UUserWidget*> FoundWidgets;
-	UUserWidget* MyWidget = AimWidget;
-	UImage* MyImage;
-	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(GetWorld(), FoundWidgets, UUserWidget::StaticClass(), true);
 
-	MyImage = Cast<UImage>(MyWidget->WidgetTree->FindWidget(FName("Crosshair_Base")));
+	UImage* CrosshairImage = OwnerPlayer->GetCrosshairWidgetComponent()->GetBaseCrosshairImage();
+	if (!IsValid(CrosshairImage)) return false;
 
-	UCanvasPanelSlot* ImageSlot;
-	FVector2D RandomPoint;
-	if (IsValid(MyImage))
-	{
-
-		ImageSlot = Cast<UCanvasPanelSlot>(MyImage->Slot);
-		if (ImageSlot)
-		{
-			// 이때, Cast<UPanelSlot>(ImageSlot)으로 다른 타입으로 캐스팅할 수 있음
-			FVector2D ImageSize = ImageSlot->GetSize();
-			
-			RandomPoint = FMath::RandPointInCircle(ImageSize.X * 0.5f * 0.373f);
-			//UC_Util::Print(ImageSize.X);
-			//UC_Util::Print(ImageSize.Y);
-
-		}
-		else
-		{
-			UC_Util::Print("Cant Find Slot");
-
-			return false;
-		}
-	}
-	else
-		return false;
-	FVector2D ViewportSize;
+	UCanvasPanelSlot* ImageSlot = Cast<UCanvasPanelSlot>(CrosshairImage->Slot);
+	if (!ImageSlot) return false;
+	
+	const FVector2D ImageSize = ImageSlot->GetSize();
+	const FVector2D RandomPoint = FMath::RandPointInCircle(ImageSize.X * 0.5f * 0.373f);
+		
+	FVector2D ViewportSize{};
 	GEngine->GameViewport->GetViewportSize(ViewportSize);
-	FVector2D RandomPointOnScreen;
+	
+	FVector2D RandomPointOnScreen{};
 
 	//TODO: 캐릭터 상태에 따라 탄퍼짐 or 직선
 	if (OwnerCharacter->GetIsWatchingSight())
@@ -964,9 +929,10 @@ bool AC_Gun::SetBulletVelocity(FVector &OutLocation, FVector &OutDirection, FVec
 		RandomPointOnScreen.X = (0.5 * ViewportSize.X + RandomPoint.X);
 		RandomPointOnScreen.Y = (0.5 * ViewportSize.Y + RandomPoint.Y);
 	}
-
-	WorldController->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, WorldLocation, WorldDirection);
-	FVector DestLocation = WorldLocation + WorldDirection * 100000;
+	
+	WorldController->DeprojectScreenPositionToWorld(RandomPointOnScreen.X, RandomPointOnScreen.Y, CameraLocation, RandomWorldDirection);
+	FVector DestLocation = CameraLocation + RandomWorldDirection * 100000; // Camera Location으로부터 1km 떨어진 Random location
+	
 	if (GetIsPartAttached(EPartsName::SCOPE))
 	{
 		if (
@@ -974,47 +940,31 @@ bool AC_Gun::SetBulletVelocity(FVector &OutLocation, FVector &OutDirection, FVec
 			GetAttachedItemName(EPartsName::SCOPE) == EAttachmentNames::SCOPE8
 			)
 		{
-			FVector AttachmentLocation = AttachedItem[EPartsName::SCOPE]->GetActorLocation();
-			FRotator AttachmentRotation = AttachedItem[EPartsName::SCOPE]->GetActorRotation();
-			FVector AttachmentForward = AttachmentRotation.Vector().GetSafeNormal();
+			const FVector  AttachmentLocation = AttachedItem[EPartsName::SCOPE]->GetActorLocation();
+			const FRotator AttachmentRotation = AttachedItem[EPartsName::SCOPE]->GetActorRotation();
+			const FVector  AttachmentForward  = AttachmentRotation.Vector().GetSafeNormal();
+			
 			DestLocation = AttachmentLocation + AttachmentForward * 100000;
 		}
 	}
 
-	//FVector ChildForward = TestDirection.Vector();
-	//DestLocation = TestLocation + ChildForward * 100000;
-	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, DestLocation, ECC_Visibility, CollisionParams);
+	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, DestLocation, ECC_Visibility, CollisionParams);
 
-	DrawDebugSphere(GetWorld(), HitResult.Location, 1.0f, 12, FColor::Red, true);
-	//UC_Util::Print(float(HitResult.Distance));
 	FVector FireLocation = GunMesh->GetSocketLocation(FName("MuzzleSocket"));
-	//FVector FireLocation2 = GunMesh->GetSocketLocation(FName("MuzzleSocke"));
-	//UC_Util::Print(FireLocation);
-	//UC_Util::Print(FireLocation2, FColor::Blue);
-	FVector FireDirection;
-	WorldController->DeprojectScreenPositionToWorld(0.5 * ViewportSize.X, 0.5 * ViewportSize.Y, CenterLocation,CenterDirection);
-	if (HitResult.Distance <= 1000 && HitResult.Distance >0)
-	{
-		//FireLocation.Z += 20;
-		
-		FireDirection = DestLocation - WorldLocation;
-		FireDirection = FireDirection.GetSafeNormal();
-		
-		//UC_Util::Print(HitResult.Location, FColor::Emerald);
-		//UC_Util::Print(HitResult.Distance, FColor::Cyan);
-	}
-	else
-	{
-		FireDirection = DestLocation - FireLocation;
-		FireDirection = FireDirection.GetSafeNormal();
-		//HasHit = false;
-		//UC_Util::Print(FireDirection, FColor::Blue);
+	FVector FireDirection{};
+	
+	WorldController->DeprojectScreenPositionToWorld(0.5 * ViewportSize.X, 0.5 * ViewportSize.Y, CenterLocation, CenterDirection);
+	
+	/*if (HitResult.Distance <= 1000 && HitResult.Distance >0)
+		FireDirection = DestLocation - CameraLocation;
+	else FireDirection = DestLocation - FireLocation;*/
 
-	}
+	FireDirection = HasHit ? HitResult.Location - FireLocation : DestLocation - FireLocation;
+	FireDirection = FireDirection.GetSafeNormal();
+	
 	//FRotator LocalRotation(0, 0, 5.6);
-	float RadianValue = 0;
-	if (HitResult.Distance >= 200)
-		 RadianValue= FMath::DegreesToRadians(0.06f);
+	float RadianValue{};
+	if (HitResult.Distance >= 200) RadianValue= FMath::DegreesToRadians(0.06f);
 
 	// 기존 벡터의 크기를 저장
 	float OriginalLength = FireDirection.Size();
@@ -1026,12 +976,13 @@ bool AC_Gun::SetBulletVelocity(FVector &OutLocation, FVector &OutDirection, FVec
 	FireDirection = FireDirection.GetSafeNormal();
 	// UC_Util::Print(FireDirection, FColor::Blue);
 
-	FireDirection *= 100;
-	FireDirection *= GunDataRef->BulletSpeed;
-	OutLocation = FireLocation;
-	OutDirection = FireDirection;
-	OutHasHit = HasHit;
-	OutHitLocation = HitResult.Location;
+	// DrawDebugSphere(GetWorld(), HitResult.Location, 1.0f, 12, FColor::Red, true);
+	// DrawDebugLine(GetWorld(), FireLocation, FireLocation + FireDirection * 1000.f, FColor::Red, true);
+	
+	OutLocation		= FireLocation;
+	OutVelocity		= FireDirection * GunDataRef->BulletSpeed * 100.f;
+	OutHasHit		= HasHit;
+	OutHitLocation	= HitResult.Location;
 	return true;
 }
 
@@ -1042,7 +993,7 @@ void AC_Gun::SetAimSightWidget()
 		AimWidget = OwnerPlayer->GetCrosshairWidgetComponent()->GetAimWidget();
 }
 
-void AC_Gun::ShowAndHideWhileAiming()
+void AC_Gun::HandleAimWidgetShowAndHideWhileAiming()
 {
 	if (!OwnerCharacter) return;
 	if (OwnerCharacter->GetEquippedComponent()->GetCurWeapon() != this) return;
@@ -1051,29 +1002,21 @@ void AC_Gun::ShowAndHideWhileAiming()
 	if (!IsValid(OwnerPlayer)) return;
 
 	if (!OwnerPlayer->GetIsWatchingSight()) return;
+	
 	FVector StartLocation = AimSightCamera->GetComponentLocation();
 	FVector ForwardVector = AimSightCamera->GetForwardVector() * 15;
 	FVector EndLocation = StartLocation + ForwardVector;
+	
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(OwnerCharacter);
+	
 	//if (GetIsPartAttached(EPartsName::SCOPE))
 	//	CollisionParams.AddIgnoredActor(AttachedItem[EPartsName::SCOPE]);
 	CollisionParams.AddIgnoredComponent(GunMesh);
 	bool HasHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
-	if (HasHit )
-	{
-		
-		AimWidget->SetVisibility(ESlateVisibility::Visible);
-		//UC_Util::Print(HitResult.GetActor()->GetName());
-	}
-	else
-	{
-		AimWidget->SetVisibility(ESlateVisibility::Hidden);
 
-	}
-		//UC_Util::Print("No Hit");
-
+	AimWidget->SetVisibility(HasHit ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
 void AC_Gun::LoadMagazine()

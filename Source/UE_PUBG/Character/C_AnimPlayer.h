@@ -20,9 +20,17 @@ private:
 
 	void SetAimOffsetRotation() override;
 
+	void AnimNotify_OnFallingHardToHardLanding() override;
+
+protected:
+
+	// Stand To Jump or falling transition callback 
+	UFUNCTION(BlueprintCallable)
+	void AnimNotify_OnStandToJumpOrFalling();
+
 private:
 
-	class AC_Player* OwnerPlayer{};
+	AC_Player* OwnerPlayer{};
 	
 };
 

@@ -126,8 +126,7 @@ public:
 	class UC_InputComponent* GetInputComponent() const { return MyInputComponent; }
 		
 	class AC_PreviewCharacter* GetPreviewCharacter() const { return PreviewCharacter; }
-public:
-	bool GetIsHighEnoughToFall() override;
+	
 public:
 	/// <summary>
 	/// 자세 바꾸기 통합 처리
@@ -174,6 +173,8 @@ protected:
 	/// 카메라에서 라인트레이스를 통해서 아이템을 감지하면 아이템의 outline을 그리고 감지에서 벗어나면 꺼주기
 	/// </summary>
 	void DrawingItemOutLine();
+
+	void PoolingBullets() override;
 
 private:
 	void CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor) override;

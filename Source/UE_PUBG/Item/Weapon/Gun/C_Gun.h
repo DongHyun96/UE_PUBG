@@ -138,7 +138,7 @@ public:
 	virtual void SetIsAimPress(bool InIsAimDown) { bIsAimDown = InIsAimDown; }
 	virtual bool GetIsAimPress() { return bIsAimDown; }
 	virtual void HandleSpringArmRotation();
-	virtual void GetPlayerIsAimDownOrNot();
+	
 	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter);
 
 	
@@ -148,7 +148,6 @@ public:
 	TMap<EPoseState, FAnimationMontages > GetDrawMontages() { return DrawMontages; };
 	FTransform GetLeftHandSocketTransform() const { return LeftHandSocketLocation; }
 	EShootingMode GetCurrentShootingMode() { return CurrentShootingMode; }
-	class UCameraComponent* GetGunCamera() { return AimSightCamera; }
 
 	bool Interaction(AC_BasicCharacter* Character) override;
 
@@ -246,10 +245,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FTransform LeftHandSocketLocation;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	bool bIsPlayerAimDownPress = false;
-
-	UCameraComponent* AimSightCamera;
+	class UCameraComponent* AimSightCamera;
 
 	class USpringArmComponent* AimSightSpringArm{};
 	int GetCurMagazineBulletCount() const { return CurMagazineBulletCount; }
@@ -328,7 +324,7 @@ private:
 
 	//void SpawnBulletForTest();
 	void SetBulletSpeed();
-	bool SetBulletVelocity(FVector& OutLocation, FVector& OutDirection, FVector& OutHitLocation, bool& OutHasHit);
+	bool SetBulletVelocity(FVector& OutLocation, FVector& OutVelocity, FVector& OutHitLocation, bool& OutHasHit);
 
 
 	EBackPackLevel PrevBackPackLevel{};
@@ -344,7 +340,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UUserWidget* AimWidget;
 	FName WidgetFilePath;
-	void ShowAndHideWhileAiming();
+	void HandleAimWidgetShowAndHideWhileAiming();
 protected:
 	//탄창
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

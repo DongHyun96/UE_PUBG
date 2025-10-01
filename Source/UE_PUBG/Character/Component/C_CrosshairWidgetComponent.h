@@ -45,6 +45,8 @@ public:
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
 
+	UImage* GetBaseCrosshairImage() const { return BaseCrosshairImage; }
+
 protected:
 	//크로스헤어 위젯
 	AC_BasicCharacter* OwnerCharacter;

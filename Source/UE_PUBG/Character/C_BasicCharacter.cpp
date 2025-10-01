@@ -31,6 +31,7 @@
 #include "Component/C_SmokeEnteredChecker.h"
 #include "HUD/C_InformWidget.h"
 #include "HUD/C_TimeBoxWidget.h"
+#include "Item/ConsumableItem/C_ConsumableItem.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/Gun/C_SR.h"
 #include "Item/Weapon/ThrowingWeapon/C_ThrowingWeapon.h"
@@ -220,6 +221,9 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 			ThrowingWeapon->StartCooking();
 			ThrowingWeapon->ReleaseOnGround();
 		}
+
+	// Consumable item 활성화 중이었을 때, 비활성화 처리
+	if (bIsActivatingConsumableItem) CurActivatingConsumableItem->CancelActivating();
 
 	// 여기에 Player의 BackToMainCamera 처리를 해야 함 (무기 장착 해제 이전에) / Player에서 CharacterDead override를 했지만, 처리 순서 때문에 여기서밖에 처리를 못함
 	if (Cast<AC_Player>(this)) if (AC_Gun* Gun = Cast<AC_Gun>(EquippedComponent->GetCurWeapon())) Gun->BackToMainCamera();
@@ -458,11 +462,6 @@ void AC_BasicCharacter::SetPoseState(EPoseState InPoseState)
 	PoseColliderHandlerComponent->SetColliderByPoseState(PoseState);
 }
 
-bool AC_BasicCharacter::GetIsHighEnoughToFall()
-{
-	return false;
-}
-
 bool AC_BasicCharacter::GetIsTooCloseToAimGun()
 {
 	if (EquippedComponent->GetCurWeaponType() != EWeaponSlot::MAIN_GUN && EquippedComponent->GetCurWeaponType() != EWeaponSlot::SUB_GUN) return false;
@@ -586,7 +585,7 @@ void AC_BasicCharacter::ExecuteGunTransitionAction(AC_Gun* CurGun, EPoseState In
 void AC_BasicCharacter::Jump()
 {
 	Super::Jump();
-	bIsJumping = true;
+	bHasJumped = true;
 }
 
 void AC_BasicCharacter::PoolingBullets()

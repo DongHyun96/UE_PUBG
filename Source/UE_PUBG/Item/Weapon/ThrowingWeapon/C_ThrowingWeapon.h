@@ -186,7 +186,7 @@ public: // Getters & Setters
 	void SetIsCooked(bool IsCooked) { bIsCooked = IsCooked; }
 	bool GetIsCooked() const { return bIsCooked; }
 
-	class UShapeComponent* GetExplosionSphere() const { return ExplosionSphere; }
+	float GetExplosionSphereRadius() const;
 
 	class UParticleSystem* GetParticleExplodeEffect() const { return ParticleExplodeEffect; }
 	class UNiagaraSystem* GetNiagaraExplodeEffect() const { return NiagaraExplodeEffect; }
@@ -396,7 +396,7 @@ protected:
 
 	// 폭발 반경 범위 collider
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	class UShapeComponent* ExplosionSphere{};
+	class USphereComponent* ExplosionSphere{};
 
 private:
 

@@ -58,14 +58,19 @@ void AC_Bullet::BeginPlay()
 	InitializeItem(ItemCode);
 	//DeactivateInstance();
 	//SetActorTickEnabled(false);
+
+	BulletParticleEffect = FindComponentByClass<UParticleSystemComponent>();
+	if (!IsValid(BulletParticleEffect))
+	{
+		UC_Util::Print("From AC_Bullet::BeginPlay : BulletParticleEffect init failed!", FColor::Red, 10.f);
+		return;
+	}
 }
 
 void AC_Bullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	CalculateTravelDistanceAndDeactivate(DeltaTime);
-
-	///adsdasdsadsadsadw
 }
 
 void AC_Bullet::InitializeItem(FName NewItemCode)
@@ -113,11 +118,9 @@ void AC_Bullet::DeactivateInstance()
 	SphereCollider->SetActive(false);
 	SphereCollider->SetComponentTickEnabled(false);
 	IsActive = false;
-	UNiagaraComponent* BulletParticle = FindComponentByClass<UNiagaraComponent>();
-	if (BulletParticle)
-	{
-		BulletParticle->Deactivate();
-	}
+	
+	// BulletParticleEffect->SetHiddenInGame(true);
+	BulletParticleEffect->Deactivate();
 }
 
 void AC_Bullet::ActivateInstance()
@@ -144,16 +147,11 @@ void AC_Bullet::ActivateInstance()
 bool AC_Bullet::Fire(AC_Gun* InOwnerGun, FVector InLocation, FVector InVelocity, bool EnableGravity, FVector InHitLocation)
 {
 	FiredGun = InOwnerGun;
-	UNiagaraComponent* BulletParticle = FindComponentByClass<UNiagaraComponent>();
-	if (BulletParticle)
-	{
-		// UC_Util::Print("Found Effect");
-		BulletParticle->Deactivate();
-	}
-	if (EnableGravity)
-		BulletProjectileMovement->ProjectileGravityScale = 1.0f;
-	else
-		BulletProjectileMovement->ProjectileGravityScale = 0;
+
+	BulletParticleEffect->Deactivate();
+	
+	BulletProjectileMovement->ProjectileGravityScale = EnableGravity ? 1.0f : 0.f;
+	
 	LineTraceHitLocation = InHitLocation;
 	TestTickCount = 0;
 	TestTimeCount = 0;
@@ -164,46 +162,33 @@ bool AC_Bullet::Fire(AC_Gun* InOwnerGun, FVector InLocation, FVector InVelocity,
 		return false;
 	}
 	//SetActorHiddenInGame(false);
-	if (BulletProjectileMovement)
-	{
-		FireLocation = InLocation;
-		if (BulletProjectileMovement->UpdatedComponent == NULL)
-		{
-			BulletProjectileMovement->SetUpdatedComponent(RootComponent);
-		}
-
-		ActivateInstance();
-		//UC_Util::Print(BulletProjectileMovement->InitialSpeed);
-		USkeletalMeshComponent* GunMesh = InOwnerGun->GetGunMesh();
-
-		SetActorLocation(InLocation);
-		BulletProjectileMovement->Velocity = InVelocity;
-		//BulletProjectileMovement->UpdateComponentVelocity();
-		float BulletSpeedCheck = BulletProjectileMovement->Velocity.Size();
-		//UC_Util::Print(BulletSpeedCheck, FColor::Blue);
-
-		//Bullet->BulletProjectileMovement->SetActive(true);
-		InitialVelocityNormalized = InVelocity.GetSafeNormal();
-		
-		if (BulletParticle)
-		{
-			// UC_Util::Print("Found Effect");
-			BulletParticle->Activate();
-		}
-		return true;
-	}
-	else
-	{
-		//UC_Util::Print("No BulletProjectileMovement");
-	}
+	if (!BulletProjectileMovement) return false;
 	
-	return false;
+	FireLocation = InLocation;
+	if (BulletProjectileMovement->UpdatedComponent == NULL)
+	{
+		BulletProjectileMovement->SetUpdatedComponent(RootComponent);
+	}
+
+	ActivateInstance();
+
+	SetActorLocation(InLocation);
+	BulletProjectileMovement->Velocity = InVelocity;
+	//BulletProjectileMovement->UpdateComponentVelocity();
+	float BulletSpeedCheck = BulletProjectileMovement->Velocity.Size();
+	//UC_Util::Print(BulletSpeedCheck, FColor::Blue);
+
+	//Bullet->BulletProjectileMovement->SetActive(true);
+	InitialVelocityNormalized = InVelocity.GetSafeNormal();
+
+	if (OwnerPlayer) BulletParticleEffect->Activate(true);
+	return true;
 }
 
-void AC_Bullet::SubSteppingMovementPhysics(float SebStepDeltaTime)
+void AC_Bullet::SubSteppingMovementPhysics(float SubStepDeltaTime)
 {
 	
-	float Speed = BulletProjectileMovement->Velocity.Size() * 0.01f;
+	float Speed = BulletProjectileMovement->Velocity.Size() * 0.01f; // m/s단위
 
 
 	float Drag_Force = 0.5 * Drag_Coefficient * Air_Density * Cross_Sectional_Area * FMath::Square(Speed);
@@ -215,29 +200,29 @@ void AC_Bullet::SubSteppingMovementPhysics(float SebStepDeltaTime)
 	FVector k1_Acceleration = -k1_Velocity * Drag_Force / Bullet_Mass;// + Gravity;
 
 	// 2. k2 계산 (절반 시간 스텝)
-	FVector k2_Velocity = BulletProjectileMovement->Velocity * 0.01f + k1_Acceleration * (SebStepDeltaTime * 0.5f);
+	FVector k2_Velocity = BulletProjectileMovement->Velocity * 0.01f + k1_Acceleration * (SubStepDeltaTime * 0.5f);
 	float k2_Speed = k2_Velocity.Size() / 100.0f;
 	float k2_Drag_Force = 0.5 * Drag_Coefficient * Air_Density * Cross_Sectional_Area * FMath::Square(k2_Speed);
 	FVector k2_Acceleration = -k2_Velocity * k2_Drag_Force / Bullet_Mass;// + Gravity;
 
 	// 3. k3 계산 (다시 절반 시간 스텝)
-	FVector k3_Velocity = BulletProjectileMovement->Velocity * 0.01f + k2_Acceleration * (SebStepDeltaTime * 0.5f);
+	FVector k3_Velocity = BulletProjectileMovement->Velocity * 0.01f + k2_Acceleration * (SubStepDeltaTime * 0.5f);
 	float k3_Speed = k3_Velocity.Size() / 100.0f;
 	float k3_Drag_Force = 0.5 * Drag_Coefficient * Air_Density * Cross_Sectional_Area * FMath::Square(k3_Speed);
 	FVector k3_Acceleration = -k3_Velocity * k3_Drag_Force / Bullet_Mass;// + Gravity;
 
 	// 4. k4 계산 (전체 시간 스텝)
-	FVector k4_Velocity = BulletProjectileMovement->Velocity * 0.01f + k3_Acceleration * SebStepDeltaTime;
+	FVector k4_Velocity = BulletProjectileMovement->Velocity * 0.01f + k3_Acceleration * SubStepDeltaTime;
 	float k4_Speed = k4_Velocity.Size() / 100.0f;
 	float k4_Drag_Force = 0.5 * Drag_Coefficient * Air_Density * Cross_Sectional_Area * FMath::Square(k4_Speed);
 	FVector k4_Acceleration = -k4_Velocity * k4_Drag_Force / Bullet_Mass;//+Gravity;
 
 	// 최종 속도 업데이트 (룽게-쿠타 공식에 따른 평균 계산)
-	FVector NewVelocity = BulletProjectileMovement->Velocity + (SebStepDeltaTime / 6.0f) * (k1_Acceleration + 2.0f * k2_Acceleration + 2.0f * k3_Acceleration + k4_Acceleration) * 100.0f;
+	FVector NewVelocity = BulletProjectileMovement->Velocity + (SubStepDeltaTime / 6.0f) * (k1_Acceleration + 2.0f * k2_Acceleration + 2.0f * k3_Acceleration + k4_Acceleration) * 100.0f;
 
 	// 최종 속도 적용
 	
-	BulletProjectileMovement->Velocity = NewVelocity;	
+	BulletProjectileMovement->Velocity = NewVelocity;
 
 	BulletProjectileMovement->UpdateComponentVelocity();
 
@@ -263,11 +248,8 @@ void AC_Bullet::CustomPhysics(float DeltaTime)
 
 void AC_Bullet::CalculateTravelDistanceAndDeactivate(float DeltaTime)
 {
-
-
-	if (!IsValid(BulletProjectileMovement))
-		return;
-	IsActive = BulletProjectileMovement->IsActive();
+	if (!IsValid(BulletProjectileMovement)) return;
+		
 	InstanceLifeTime -= DeltaTime;
 	if (InstanceLifeTime <= 0)
 	{
@@ -315,6 +297,8 @@ void AC_Bullet::OnProjectileStop(const FHitResult& ImpactResult)
 
 	if (HittedCharacter->GetStatComponent()->TakeDamage(TotalDamage, HittedBoneName, KillFeedDesc) != 0.f)
 		HittedCharacter->ActivateBloodParticle(ImpactResult.Location);
+
+	DeactivateInstance();
 }
 
 void AC_Bullet::PlaySound(const FHitResult& ImpactResult)

@@ -84,7 +84,7 @@ public:
 	
 	bool Fire(class AC_Gun* InOwnerGun, FVector InLocation, FVector InVelocity, bool EnableGravity = true, FVector InHitLocation = FVector(0));
 
-	void SubSteppingMovementPhysics(float SebStepDeltaTime);
+	void SubSteppingMovementPhysics(float SubStepDeltaTime);
 
 	void CustomPhysics(float DeltaTime);
 	float DragCoefficient;
@@ -114,8 +114,11 @@ protected:
 	float InstanceLifeTime = 0.0f;
 
 	AC_BasicCharacter* OwnerCharacter{};
+	class AC_Player* OwnerPlayer{};
+	
 public:
-	virtual void SetOwnerCharacter(class AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter) { OwnerCharacter = InOwnerCharacter; }
+	void SetOwnerPlayer(AC_Player* InPlayer) { OwnerPlayer = InPlayer; }
 	UFUNCTION(BlueprintCallable)
 
 	AC_BasicCharacter* GetOwnerCharacter() { return OwnerCharacter; }
@@ -142,6 +145,10 @@ private:
 	// 해당 Bullet을 발사한 총기 
 	AC_Gun* FiredGun{};
 
+private:
+	
+	class UParticleSystemComponent* BulletParticleEffect{};
+	
 };
 
 

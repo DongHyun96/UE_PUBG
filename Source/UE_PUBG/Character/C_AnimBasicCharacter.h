@@ -56,7 +56,15 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsFalling{};
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	// bIsFalling상태 도합 시간 계산
+	UPROPERTY(BlueprintReadOnly)
+	float MeasuredFallingTime{};
+
+	// 현재 떨어지고 있을 때, 떨어지기 시작한 위치로부터의 높이 (떨어지는 중이 아니라면 0)
+	UPROPERTY(BlueprintReadOnly)
+	float CurrentFallingHeight{};
+
+	UPROPERTY(BlueprintReadWrite)
 	bool bIsJumping{};
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bGunHasGrip{};
@@ -115,22 +123,18 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EGunType CurGunType{};
 
-	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
-	void AnimNotify_OnStartTransition_Stand_To_Falling();
+protected: // Anim state Transition callback 관련
+	
+	// Jumping 또는 Falling State에서 Stand 자세로 돌아갈 때 CallBack 
+	UFUNCTION(BlueprintCallable)
+	void AnimNotify_OnAnyFallingOrJumpingStateToStand();
 
+	// FallingHard to HardLanding Transition callback
+	UFUNCTION(BlueprintCallable)
+	virtual void AnimNotify_OnFallingHardToHardLanding();	
 
-	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
-	void AnimNotify_OnStartTransition_RunningJump_To_Falling();
-
-	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
-	void AnimNotify_OnEndTransition_HardLand_To_Stand();
-
-	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
-	void AnimNotify_OnEndTransition_Falling_To_Standing();
-
-	UFUNCTION(BlueprintCallable, Category = "CustomEvent")
-	void AnimNotify_OnEndTransition_Falling_To_HardLand();
-
+protected:
+	
 	void ControlHeadRotation();
 
 	void RilfeLeftHandIK();
@@ -149,8 +153,6 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float DeltaYaw = 0.0f;
-
-	float AimOffsetLerpDelayTime = 0.0f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FFeetData FeetData{};

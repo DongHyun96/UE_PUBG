@@ -81,14 +81,19 @@ void UC_BTTaskWait::OnWaitTimeRemain(UBehaviorTreeComponent& OwnerComp, AC_Enemy
 
 	// Update Detected Characters' Sight Range Level
 	EnemyAIController->UpdateDetectedCharactersRangeLevel();
+
+	EnemyAIController->IsCurrentlyOnSight(EnemyBehaviorComponent->GetTargetCharacter());
 	
-	// Lv1 영역으로 다른 캐릭터가 들어왔다면 TargetCharacter로 set해서 공격 시도 (자기자신이 연막탄 안에 있다면 공격 X)
-	if (EnemyAIController->TrySetTargetCharacterToLevel1EnteredCharacter() &&
-		!Enemy->GetSmokeEnteredChecker()->IsCurrentlyInSmokeArea())
+	// Lv1 영역으로 다른 캐릭터가 들어왔고 TargetCharacter로 제대로 세팅되어 시야에 보인다면, set해서 바로 공격 시도 (자기자신이 연막탄 안에 있다면 공격 X)
+	if (!Enemy->GetSmokeEnteredChecker()->IsCurrentlyInSmokeArea())
 	{
-		EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		return;
+		if (EnemyAIController->TrySetTargetCharacterToLevel1EnteredCharacter() &&
+			EnemyAIController->IsCurrentlyOnSight(EnemyBehaviorComponent->GetTargetCharacter()))
+		{
+			EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+			return;
+		}
 	}
 
 	// 피 또는 부스트 량이 너무 없을 때 처리(STAT_CARE)
@@ -141,7 +146,6 @@ void UC_BTTaskWait::OnWaitTimeFinished(UBehaviorTreeComponent& OwnerComp, AC_Ene
 		EnemyAIController->TrySetTargetCharacterBasedOnPriority();
 		if (IsValid(EnemyBehaviorComponent->GetTargetCharacter()))
 		{
-			// UC_Util::Print("WaitTask Time's up : Try Attack TargetCharacter!", FColor::Red, 10.f);
 			EnemyBehaviorComponent->SetServiceType(EServiceType::COMBAT);
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 			return;
