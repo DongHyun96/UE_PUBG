@@ -43,8 +43,8 @@ void AC_PreviewCharacter::BeginPlay()
 	previewCharacterMesh = this->GetMesh();
 
 	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
-	if (GameInstance->GetCurrentSelectedLevelType() == ELevelType::TrainingGround)
-		SetActorLocation(FVector(0.f, 0.f, -500.f));
+	if (!SpawnLocations.Contains(GameInstance->GetCurrentSelectedLevelType())) return;
+	SetActorLocation(SpawnLocations[GameInstance->GetCurrentSelectedLevelType()]);
 }
 
 // Called every frame

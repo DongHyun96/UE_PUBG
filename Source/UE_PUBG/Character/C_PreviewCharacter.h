@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "HUD/MapWidget/C_MapWidget.h"
 #include "C_PreviewCharacter.generated.h"
 
 enum class EWeaponSlot : uint8;
@@ -145,5 +146,11 @@ protected:
 
 	USkeletalMeshComponent* previewCharacterMesh{};
 
+private:
 
+	TMap<ELevelType, FVector> SpawnLocations =
+	{
+		{ELevelType::TrainingGround, {0.f, 0.f, -500.f}},	
+		{ELevelType::ShantyTown, {-790730.f, 790120.f, 51150.f}}	
+	};
 };
