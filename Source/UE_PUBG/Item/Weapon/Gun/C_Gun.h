@@ -324,7 +324,7 @@ private:
 
 	//void SpawnBulletForTest();
 	void SetBulletSpeed();
-	bool SetBulletVelocity(FVector& OutLocation, FVector& OutDirection, FVector& OutHitLocation, bool& OutHasHit);
+	bool SetBulletVelocity(FVector& OutLocation, FVector& OutVelocity, FVector& OutHitLocation, bool& OutHasHit);
 
 
 	EBackPackLevel PrevBackPackLevel{};

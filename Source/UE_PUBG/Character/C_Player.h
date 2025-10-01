@@ -174,6 +174,8 @@ protected:
 	/// </summary>
 	void DrawingItemOutLine();
 
+	void PoolingBullets() override;
+
 private:
 	void CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor) override;
 	void EnableRagdoll() override;

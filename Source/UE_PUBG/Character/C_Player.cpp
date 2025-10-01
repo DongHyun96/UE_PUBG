@@ -64,6 +64,7 @@
 #include "HUD/C_InformWidget.h"
 #include "HUD/MapWidget/C_MiniMapWidget.h"
 #include "Item/Equipment/C_EquipableItem.h"
+#include "Item/Weapon/Gun/C_Bullet.h"
 #include "Singleton/C_GameInstance.h"
 #include "Singleton/C_GameSceneManager.h"
 
@@ -784,6 +785,14 @@ void AC_Player::DrawingItemOutLine()
 		2.0f   // 선 두께
 	);
 
+}
+
+void AC_Player::PoolingBullets()
+{
+	Super::PoolingBullets();
+	
+	for (AC_Bullet* PooledBullet : PooledBullets)
+		PooledBullet->SetOwnerPlayer(this);
 }
 
 void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)

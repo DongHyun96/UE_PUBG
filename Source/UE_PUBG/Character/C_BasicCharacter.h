@@ -528,7 +528,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TArray<class AC_Bullet*> PooledBullets{};
 
-	void PoolingBullets();
+	virtual void PoolingBullets();
 
 public:
 	TArray<AC_Bullet*>& GetBullets() { return PooledBullets; }

@@ -855,7 +855,7 @@ void AC_Gun::SetBulletSpeed()
 	}
 }
 
-bool AC_Gun::SetBulletVelocity(FVector &OutLocation, FVector &OutDirection, FVector &OutHitLocation, bool& OutHasHit)
+bool AC_Gun::SetBulletVelocity(FVector &OutLocation, FVector &OutVelocity, FVector &OutHitLocation, bool& OutHasHit)
 {
 	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 	if (!OwnerPlayer) return false;
@@ -976,13 +976,11 @@ bool AC_Gun::SetBulletVelocity(FVector &OutLocation, FVector &OutDirection, FVec
 	FireDirection = FireDirection.GetSafeNormal();
 	// UC_Util::Print(FireDirection, FColor::Blue);
 
-	DrawDebugSphere(GetWorld(), HitResult.Location, 1.0f, 12, FColor::Red, true);
-	DrawDebugLine(GetWorld(), FireLocation, FireLocation + FireDirection * 1000.f, FColor::Red, true);
+	// DrawDebugSphere(GetWorld(), HitResult.Location, 1.0f, 12, FColor::Red, true);
+	// DrawDebugLine(GetWorld(), FireLocation, FireLocation + FireDirection * 1000.f, FColor::Red, true);
 	
-	FireDirection  *= 100;
-	FireDirection  *= GunDataRef->BulletSpeed;
 	OutLocation		= FireLocation;
-	OutDirection	= FireDirection;
+	OutVelocity		= FireDirection * GunDataRef->BulletSpeed * 100.f;
 	OutHasHit		= HasHit;
 	OutHitLocation	= HitResult.Location;
 	return true;
