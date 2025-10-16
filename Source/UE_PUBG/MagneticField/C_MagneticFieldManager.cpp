@@ -251,10 +251,7 @@ void AC_MagneticFieldManager::InitManager()
 	// Next Circle 설정해주기
 	SetRandomNextCircleAndSpeedDirection();
 
-	// TODO : 비행기 경로 도달 모두 끝낸 뒤 페이즈 시작
-
 	UpdateWalls(MainCircle.MidLocation, MainCircle.Radius);
-
 	
 	//UpdateNextCircleInfoOnMapUI();
 	//UpdateMainCircleInfoOnMapUI();

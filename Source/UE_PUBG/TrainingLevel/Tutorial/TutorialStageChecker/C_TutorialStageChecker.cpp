@@ -26,26 +26,6 @@ void UC_TutorialStageChecker::BeginPlay()
 
 	// Init GoalTriggerBoxes
 	GoalTriggerBoxes = OwnerTutorialManager->GetTriggerBoxesReference(TutorialStage);
-
-	FString Str{};
-	
-	switch (TutorialStage)
-	{
-	case ETutorialStage::MovementTutorial: Str = "MovementTutorial";
-		break;
-	case ETutorialStage::WeaponTutorial: Str = "WeaponTutorial";
-		break;
-	case ETutorialStage::ThrowableTutorial: Str = "ThrowableTutorial";
-		break;
-	case ETutorialStage::HealingTutorial: Str = "HealingTutorial";
-		break;
-	case ETutorialStage::TutorialEnd: Str = "TutorialEnd";
-		break;
-	case ETutorialStage::Max:
-		break;
-	}
-	
-	UC_Util::Print(Str, FColor::MakeRandomColor(), 10.f);
 }
 
 void UC_TutorialStageChecker::EndPlay(const EEndPlayReason::Type EndPlayReason)

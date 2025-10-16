@@ -18,7 +18,7 @@ enum class EIdleTaskType : uint8
 };
 
 /**
- * 
+ * Not in used
  */
 UCLASS()
 class UE_PUBG_API UC_BTServiceIdle : public UBTService

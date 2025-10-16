@@ -20,9 +20,6 @@ void UC_BTTaskSmokeGrenade::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* N
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	// TODO : Smoke Grenade로 바꾸는 중이라면 해당 동작 기다려야 함
-	// TODO : Smoke Grenade로 바꾸는 동작 이 후, AttackTask
-	
 	AC_EnemyAIController* Controller = Cast<AC_EnemyAIController>(OwnerComp.GetAIOwner());
 	if (!IsValid(Controller))
 	{

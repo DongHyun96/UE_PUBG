@@ -570,43 +570,43 @@ bool AC_Gun::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 
 bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_EquippedComponent* EquipComp = Character->GetEquippedComponent();
+	UC_InvenComponent* InvenComp = Character->GetInvenComponent();		
 
-	AC_Gun* currentMainGun = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]);
-	AC_Gun* currentSubGun  = Cast<AC_Gun>(equipComp->GetWeapons()[EWeaponSlot::SUB_GUN]);
+	AC_Gun* CurrentMainGun = Cast<AC_Gun>(EquipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]);
+	AC_Gun* CurrentSubGun  = Cast<AC_Gun>(EquipComp->GetWeapons()[EWeaponSlot::SUB_GUN]);
 
 	// WeaponTutorial 무기 파밍 Delegate notify 처리 (파밍 주체가 Player인지 체크도 추가)
 	if (WeaponTutorialDelegate.IsBound() && Cast<AC_Player>(Character))
 		WeaponTutorialDelegate.Execute(0, 0);	
 
-	if (!currentMainGun)
+	if (!CurrentMainGun)
 	{
-		equipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
+		EquipComp->SetSlotWeapon(EWeaponSlot::MAIN_GUN, this);
 
 		//SetRelativeTranformToInitial();
 		//AttachToHolster(OwnerCharacter->GetMesh());
 
-		invenComp->RemoveItemToAroundList(this);
+		InvenComp->RemoveItemToAroundList(this);
 		return true;
 	}
 
-	if (!currentSubGun)
+	if (!CurrentSubGun)
 	{
-		equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+		EquipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
 		//SetRelativeTranformToInitial();
 		//AttachToHolster(OwnerCharacter->GetMesh());
 
-		invenComp->RemoveItemToAroundList(this);
+		InvenComp->RemoveItemToAroundList(this);
 		return true;
 	}
 	else
 	{
-		AC_Weapon* DroppedGun = equipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
+		AC_Weapon* DroppedGun = EquipComp->SetSlotWeapon(EWeaponSlot::SUB_GUN, this);
 		//SetRelativeTranformToInitial();
 		//AttachToHolster(OwnerCharacter->GetMesh());
 
-		invenComp->RemoveItemToAroundList(this);
+		InvenComp->RemoveItemToAroundList(this);
 		DroppedGun->DropItem(Character);
 		return true;
 	}
@@ -621,10 +621,6 @@ bool AC_Gun::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 {
 	if (Super::MoveSlotToAround(Character, InStack))
 	{
-		UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-		UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
-		//equipComp->SetSlotWeapon(GetWeaponSlot(), nullptr);
-		//invenComp->AddItemToAroundList(this);
 		int32 LeftBulletCount = GetCurMagazineBulletCount();
 		
 		if (LeftBulletCount == 0) return true;
@@ -899,7 +895,6 @@ bool AC_Gun::SetBulletVelocity(FVector &OutLocation, FVector &OutVelocity, FVect
 	
 	FVector2D RandomPointOnScreen{};
 
-	//TODO: 캐릭터 상태에 따라 탄퍼짐 or 직선
 	if (OwnerCharacter->GetIsWatchingSight())
 	{
 		if (GetIsPartAttached(EPartsName::SCOPE))

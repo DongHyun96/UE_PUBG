@@ -276,7 +276,7 @@ protected:
 	//GunData 구조체를 const 포인터 변수로 가지고 있음.
 	const FGunData* GunDataRef = nullptr;
 
-	//Gun Sound Datas, TODO : 
+	
 	const FGunSoundData* GunSoundData = nullptr;
 
 public:

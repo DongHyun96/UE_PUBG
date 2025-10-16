@@ -154,8 +154,6 @@ void UC_CameraEffectComponent::HandleFlashBangEffect(const float& DeltaTime)
 
 		PostProcessVolume->Settings.BloomIntensity = FMath::Lerp(PostProcessVolume->Settings.BloomIntensity, PostProcessInitialIntensity, DeltaTime * 10.f);
 
-		// TODO : Capture된 잔상 남기기
-
 		// 효과음 효과 제거
 		if (!bHasStunnedAudioComponentFadeOutStart)
 		{

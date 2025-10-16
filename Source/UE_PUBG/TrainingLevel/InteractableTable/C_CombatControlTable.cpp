@@ -201,8 +201,6 @@ void AC_CombatControlTable::OnBoxColliderEndOverlap
 	AC_Player* Player = Cast<AC_Player>(OtherActor);
 	if (!Player) return;
 
-	// TODO : 맵으로 클릭해서 순간이동 처리 시, 잘못 처리될 수도 있을 것 같은 생각이 들긴 하네
-	
 	if (!Player->GetInputComponent()->CombatControlFKeyInteractionDelegate.IsBound())
 	{
 		UC_Util::Print

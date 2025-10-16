@@ -63,8 +63,6 @@ private:
 
 private:
 
-	// TODO : Parameter로 Start와 Dest Location 가져오기
-
 	/// <summary>
 	/// 캐릭터 현재 위치의 경사도 구하기 (Radian값)
 	/// </summary>

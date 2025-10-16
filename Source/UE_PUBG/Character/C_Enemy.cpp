@@ -38,7 +38,6 @@ const TMap<EPoseState, float> AC_Enemy::ActorZLocationOffsetFromBottom =
 	{EPoseState::CRAWL,		22.4f},
 };
 
-// TODO : 각 BehaviorType에 맞는 BehaviorTree로 초기화할 것
 const TMap<EEnemyBehaviorType, FString> AC_Enemy::BehaviorTreeReferenceDirectories =
 {
 	{EEnemyBehaviorType::InGamePlayable,	"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"},
@@ -286,7 +285,6 @@ void AC_Enemy::OnTakeDamage(AC_BasicCharacter* DamageCauser)
 		return; 
 	}
 
-	// TODO : 다른 Tester들에 대한 처리도 해주어야 함
 	// Stat-Care Tester용 처리
 	if (EnemyBehaviorType == EEnemyBehaviorType::StatCareTest)
 	{

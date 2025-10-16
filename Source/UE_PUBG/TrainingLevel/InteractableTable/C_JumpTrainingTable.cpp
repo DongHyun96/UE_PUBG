@@ -153,8 +153,6 @@ void AC_JumpTrainingTable::OnNum1Key()
 	// 관전 처리 해제
 	AISkyDiveTesterManager->ToggleSpectatingSkyDiveTester();
 
-	// TODO : UI 업데이트
-
 	// Player SkyDiveTesting 실행
 	OnNumber1KeyInteraction();
 }

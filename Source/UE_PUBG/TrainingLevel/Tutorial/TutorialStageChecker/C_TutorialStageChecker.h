@@ -77,7 +77,7 @@ public:
 	/// <summary>
 	/// 구독한 Delegate 모두 해제 & SubscribedDelegates Array 정리
 	/// </summary>
-	void ClearSubscribedDelegates(); // TODO : Tutorial 어떻게든 끝났을 때 꼭 각 TutorialStageChecker에 대해 호출해 주어야 함
+	void ClearSubscribedDelegates();
 
 protected:
 

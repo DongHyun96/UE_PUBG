@@ -84,7 +84,6 @@ AC_GrenadeExplode::AC_GrenadeExplode()
 
 bool AC_GrenadeExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 {
-	// TODO : 폭파 sfx / 
 	// 폭발 반경 내에 캐릭터가 존재한다면 ray cast -> ray cast hit -> damage 주기
 	// 반경 내에 캐릭터가 존재하면 aim punching & 플레이어의 경우 camera shake -> 거리별 Camera Shake 강도 조절
 
@@ -303,8 +302,6 @@ void AC_GrenadeExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* Cha
 {
 	if (AC_Player* Player = Cast<AC_Player>(Character))
 	{
-		// TODO : 현재 ADS 상태이면 실행x
-
 		// 거리 및 방향 계산
 		FVector PlayerToExplode = ExplosionLocation - Player->GetActorLocation();
 		PlayerToExplode.Normalize();
@@ -329,8 +326,6 @@ void AC_GrenadeExplode::ExecuteExplosionEffectToCharacter(AC_BasicCharacter* Cha
 		Player->GetCameraEffectComponent()->ExecuteCameraShake(CamShakeScale);
 		Player->GetDeafenedHandler()->ExecuteDeafenedEffect(DeafenedDuration);
 	}
-
-	// TODO : Enemy AI 또한 방해주기
 }
 
 void AC_GrenadeExplode::HandleTrainingTargetOverlappedWithExplosionSphere(AC_TrainingShootingTarget* TrainingTarget, AC_ThrowingWeapon* ThrowingWeapon, float ExplosionRad)

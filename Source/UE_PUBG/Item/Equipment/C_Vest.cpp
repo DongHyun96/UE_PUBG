@@ -104,9 +104,7 @@ bool AC_Vest::TakeDamage(float DamageAmount)
 	// OwnerCharacter가 Player인 경우, UI 업데이트
 	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter))
 	{
-		// TODO : Inven UI의 조끼 피도 업데이트 시키기
 		Player->GetHUDWidget()->GetArmorInfoWidget()->SetCurrentVestDurabilityRate(CurDurability / DURABILITY_MAX);
-		//UpdateDurabilityBar();
 		Player->GetInvenSystem()->InitializeList();
 	}
 

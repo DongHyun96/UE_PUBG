@@ -98,6 +98,10 @@ bool AC_Helmet::TakeDamage(float DamageAmount)
 		HelmetMesh->SetSimulatePhysics(true);
 		HelmetMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 		HelmetMesh->AddImpulse(FMath::VRand() * 2000.f);
+
+		// WorldStatic과 WorldDynamic channel response block으로 수정
+		HelmetMesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+		HelmetMesh->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
 		
 		// Item의 DropItem은 OwnerCharacter가 nullptr일 경우, 처리를 안함 -> DropItem 내에서 위치 조정하는 부분을 넘기면서 SlotEquipment 세팅
 		AC_BasicCharacter* PrevOwnerCharacter = OwnerCharacter;
@@ -106,7 +110,10 @@ bool AC_Helmet::TakeDamage(float DamageAmount)
 		{
 			PrevOwnerCharacter->GetInvenComponent()->SetSlotEquipment(EEquipSlot::HELMET, nullptr);
 			if (AC_Player* Player = Cast<AC_Player>(PrevOwnerCharacter))
+			{
 				Player->GetInvenSystem()->InitializeList();
+				Player->GetHUDWidget()->GetArmorInfoWidget()->SetHelmetInfo(0);
+			}
 		}
 		this->SetItemPlace(EItemPlace::NONE);
 		return true;

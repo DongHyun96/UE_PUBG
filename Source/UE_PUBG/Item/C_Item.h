@@ -173,7 +173,6 @@ public:
 
 	/// <summary>
 	/// Around -> MyItems로 아이템이 이동할 때, 이미 해당 아이템이 존재할때 ItemStack을 C_Item내에서 Set하는 함수.
-	/// TODO : 만약 내부적으로만 사용하는 함수라면 private로 바꿔야함.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void SetItemStack(int32 inItemStack);// { ItemDatas.ItemCurStack = inItemStack; }

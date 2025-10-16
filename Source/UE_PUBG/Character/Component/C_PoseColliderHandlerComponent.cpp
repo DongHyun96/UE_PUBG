@@ -329,44 +329,6 @@ float UC_PoseColliderHandlerComponent::GetCrawlSlopeDegree
 {
 	float SlopeAngle = GetCrawlSlopeAngle(HeadStartLocation, PelvisStartLocation, ImpactDistances, EnableDebugLine);
 	return FMath::RadiansToDegrees(SlopeAngle);
-	//FVector HeadDestLocation	= HeadStartLocation   - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
-	//FVector PelvisDestLocation	= PelvisStartLocation - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
-
-	//FCollisionQueryParams CollisionParams{};
-	//CollisionParams.AddIgnoredActor(OwnerCharacter);
-
-	//TArray<AActor*> AttachedActors{};
-	//OwnerCharacter->GetAttachedActors(AttachedActors);
-	//CollisionParams.AddIgnoredActors(AttachedActors);
-
-	//FHitResult HeadHitResult{};
-	//FHitResult PelvisHitResult{};
-
-	//bool HasHeadHit		= GetWorld()->LineTraceSingleByChannel(HeadHitResult, HeadStartLocation, HeadDestLocation, PoseCheckerChannel, CollisionParams);
-	//bool HasPelvisHit	= GetWorld()->LineTraceSingleByChannel(PelvisHitResult, PelvisStartLocation, PelvisDestLocation, PoseCheckerChannel, CollisionParams);
-
-	//if (EnableDebugLine)
-	//{
-	//	DrawDebugLine(GetWorld(), HeadStartLocation, HeadHitResult.ImpactPoint, FColor::Red, true);
-	//	DrawDebugLine(GetWorld(), PelvisStartLocation, PelvisHitResult.ImpactPoint, FColor::Red, true);
-	//}
-
-	//if (!HasHeadHit || !HasPelvisHit) return false;
-	//// TODO : Length 체크
-	////if (HeadHitResult.ImpactPoint.Length() )
-
-	//// 경사도 체크
-	////HeadHitResult.ImpactPoint
-	//float A				= (HeadHitResult.ImpactPoint - PelvisHitResult.ImpactPoint).Length();
-	//float B				= FMath::Abs(HeadHitResult.ImpactPoint.Z - PelvisHitResult.ImpactPoint.Z);
-	//float SlopeDegree	= FMath::RadiansToDegrees(FMath::Asin(B / A));
-
-	//// 부호 지정
-	//SlopeDegree = (HeadHitResult.Distance <= PelvisHitResult.Distance) ? SlopeDegree : -SlopeDegree;
-
-	//ImpactDistances = { HeadHitResult.Distance, PelvisHitResult.Distance };
-
-	//return SlopeDegree;
 }
 
 bool UC_PoseColliderHandlerComponent::CanCrawlOnSlope(const FVector& HeadStartLocation, const FVector& PelvisStartLocation)

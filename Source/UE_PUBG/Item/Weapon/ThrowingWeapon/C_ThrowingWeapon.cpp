@@ -354,15 +354,6 @@ void AC_ThrowingWeapon::InitializeItem(FName NewItemCode)
 	return THROWABLETYPE_ITEMNAME_MAP[TargetType];
   }
 
-//  void AC_ThrowingWeapon::PickUpItem(AC_BasicCharacter* Character)
-//{
-//	//여기서하는 용량체크는 인벤에서 이미 한번 처리 되었지만 혹시몰라 넣어 놓은것으로 확인후 제거할 것.
-//	//인벤에서 체크하지 않고 아이템에서 체크하는 방식으로 가야 할듯.
-//	
-//	//EquipToCharacter(Character);
-//	LegacyMoveToSlot(Character);
-//}
-
 void AC_ThrowingWeapon::DropItem(AC_BasicCharacter* Character)
 {
 	
