@@ -4,7 +4,7 @@
 #include "C_PlayerCombatFieldWidget.h"
 
 #include "C_CombatFieldManager.h"
-#include "IAutomationReport.h"
+// #include "IAutomationReport.h"
 #include "Animation/WidgetAnimation.h"
 #include "Character/C_Player.h"
 #include "Components/BackgroundBlur.h"

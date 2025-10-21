@@ -224,7 +224,7 @@ void AC_MagneticFieldManager::HandleDamagingCharacters(const float& DeltaTime)
 				{
 					EDamageType::BlueZone,
 					nullptr,
-					nullptr,
+					Character,
 					nullptr,
 					false,
 					0

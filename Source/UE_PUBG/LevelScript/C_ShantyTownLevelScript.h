@@ -52,7 +52,7 @@ protected:
 	
 private:
 	
-	TArray<AStaticMeshActor*> StaticMeshes{};
+	TArray<class AStaticMeshActor*> StaticMeshes{};
 	// TArray<UStaticMeshComponent*> StaticMeshComponents{}; // 이게 바닥면 StaticMeshComponent 였었음
 
 	TArray<UStaticMeshComponent*> FloorStaticMeshComponents{};

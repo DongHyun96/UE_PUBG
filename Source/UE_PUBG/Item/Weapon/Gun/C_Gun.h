@@ -69,7 +69,7 @@ struct FGunData : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float BulletSpeed;
+	float BulletSpeed{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float BulletRPM{};
@@ -96,7 +96,7 @@ struct FGunData : public FTableRowBase
 	EBulletType CurGunBulletType = EBulletType::NONE;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float SprintSpeedFactor = 0.0f;
+	float SprintSpeedFactor{};
 };
 
 USTRUCT(BlueprintType)

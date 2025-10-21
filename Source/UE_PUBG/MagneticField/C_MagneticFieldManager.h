@@ -30,10 +30,33 @@ struct FPhaseInfo
 {
 	GENERATED_BODY()
 
-	FPhaseInfo() {}
+	FPhaseInfo()
+		: PhaseRadius(0.f)
+		, ShrinkDelayTime(0.f)
+		, ShrinkTotalTime(0.f)
+		, DamagePerSecond(0.f)
+		, bShouldTryToAvoidWater(false)
+		, WaterTileCountLimit(0)
+		, bHasExactLocation(false)
+		, ExactPhaseLocation(FVector::ZeroVector)
+		, RadiusShrinkSpeed(0.f)
+		, MidPointMoveSpeed(0.f)
+		, MidPointMoveDirection(FVector::ZeroVector)
+	{}
 
 	FPhaseInfo(float _PhaseRadius, float _ShrinkDelayTime, float _ShrinkTotalTime, float _DamagePerSecond)
-		:PhaseRadius(_PhaseRadius), ShrinkDelayTime(_ShrinkDelayTime), ShrinkTotalTime(_ShrinkTotalTime), DamagePerSecond(_DamagePerSecond) {}
+		: PhaseRadius(_PhaseRadius)
+		, ShrinkDelayTime(_ShrinkDelayTime)
+		, ShrinkTotalTime(_ShrinkTotalTime)
+		, DamagePerSecond(_DamagePerSecond)
+		, bShouldTryToAvoidWater(false)
+		, WaterTileCountLimit(0)
+		, bHasExactLocation(false)
+		, ExactPhaseLocation(FVector::ZeroVector)
+		, RadiusShrinkSpeed(0.f)
+		, MidPointMoveSpeed(0.f)
+		, MidPointMoveDirection(FVector::ZeroVector)
+	{}
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float PhaseRadius{}; // 현재 페이즈의 Radius 크기
