@@ -109,7 +109,7 @@ public:
 
 	class UC_CameraEffectComponent* GetCameraEffectComponent() const { return CameraEffectComponent; }
 
-	AC_Item* GetCurOutLinedItem() { return CurOutLinedItem; }
+	class AC_Item* GetCurOutLinedItem() { return CurOutLinedItem; }
 
 	void SetCanFireWhileCrawl();
 
