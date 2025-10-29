@@ -44,6 +44,10 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+protected:
+
+	// virtual void PostInitializeComponents() override;
+
 public:
 	
 	/// <summary>
@@ -123,10 +127,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EEnemyBehaviorType EnemyBehaviorType{};
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TMap<EEnemyBehaviorType, UBehaviorTree*> BehaviorTrees{};
+	
 private:
-
-	static const TMap<EEnemyBehaviorType, FString>		BehaviorTreeReferenceDirectories; 
-	static TMap<EEnemyBehaviorType, UBehaviorTree*>		BehaviorTrees;
 	
 	// 자신의 EnemyBehaviorType에 따라 사용할 BehaviorTree
 	UBehaviorTree* BehaviorTree{};

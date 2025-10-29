@@ -351,14 +351,8 @@ void UC_GameSceneManager::DeleteSpawnedItemFromContainer(AC_Item* InItem)
 	ItemManager->DeleteSpawnedItemFromContainer(InItem);
 }
 
-void UC_GameSceneManager::ToggleItemsHiddenInGame(bool InHiddenInGame)
+void UC_GameSceneManager::ToggleVehiclesHiddenInGame(bool InHiddenInGame)
 {
-	for (AC_Item* SpawnedItem : ItemContainer)
-	{
-		SpawnedItem->SetActorHiddenInGame(InHiddenInGame);
-	}
-
-
 	for (APawn* SpawnedVehicle : VehicleContainer)
 	{
 		SpawnedVehicle->SetActorHiddenInGame(InHiddenInGame);

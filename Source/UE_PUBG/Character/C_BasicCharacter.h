@@ -517,17 +517,14 @@ protected: // Consumable 관련
 	UC_ConsumableUsageMeshComponent* ConsumableUsageMeshComponent{};
 
 
-protected: // 총알 Object Pooling(AC_Item으로 만들어진 Bullet은 사용X)
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TArray<class AC_Item*> Bullets;
-
-
-
 protected:
 	//총알 Object Pooling (World에서 작업할 예정)
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TArray<class AC_Bullet*> PooledBullets{};
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TSubclassOf<AC_Bullet> BulletClass{};
+	
 	virtual void PoolingBullets();
 
 public:

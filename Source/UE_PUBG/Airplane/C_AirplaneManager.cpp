@@ -20,6 +20,7 @@
 #include "HUD/C_InformWidget.h"
 #include "HUD/C_TimeBoxWidget.h"
 #include "HUD/MapWidget/C_MiniMapWidget.h"
+#include "Item/ItemManager/C_ItemManager.h"
 #include "MagneticField/C_MagneticFieldManager.h"
 
 AC_AirplaneManager::AC_AirplaneManager()
@@ -96,7 +97,8 @@ void AC_AirplaneManager::UpdateTakeOffTimer(const float& DeltaTime)
 		}
 	}
 
-	GAMESCENE_MANAGER->ToggleItemsHiddenInGame(false);
+	GAMESCENE_MANAGER->ToggleVehiclesHiddenInGame(false);
+	GAMESCENE_MANAGER->GetItemManager()->ToggleItemsHiddenInGame(false);
 }
 
 void AC_AirplaneManager::InitRandomStartDestPosition()

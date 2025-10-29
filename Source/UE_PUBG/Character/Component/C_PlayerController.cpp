@@ -96,7 +96,7 @@ void AC_PlayerController::ToggleMainMenu()
 
 	if (!InputMappingContext)
 	{
-		UC_Util::Print("InputMappingContext is nullptr", FColor::Red, 10.f);
+		UC_Util::Print("From AC_PlayerController::ToggleMainMenu : InputMappingContext is nullptr", FColor::Red, 10.f);
 		return;
 	}
 	//// 이미 열려 있으면 아무것도 하지 않고 리턴
@@ -108,7 +108,7 @@ void AC_PlayerController::ToggleMainMenu()
 
 	if (!MainMenuWidget)
 	{
-		UC_Util::Print("MainMenuWidget is nullptr", FColor::Red, 10.f);
+		UC_Util::Print("From AC_PlayerController::ToggleMainMenu : MainMenuWidget is nullptr", FColor::Red, 10.f);
 		return;
 	}
 	

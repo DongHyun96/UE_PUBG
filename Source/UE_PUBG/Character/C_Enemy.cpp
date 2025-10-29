@@ -38,17 +38,6 @@ const TMap<EPoseState, float> AC_Enemy::ActorZLocationOffsetFromBottom =
 	{EPoseState::CRAWL,		22.4f},
 };
 
-const TMap<EEnemyBehaviorType, FString> AC_Enemy::BehaviorTreeReferenceDirectories =
-{
-	{EEnemyBehaviorType::InGamePlayable,	"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_Enemy.BT_Enemy'"},
-	{EEnemyBehaviorType::MovementTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_MovementTest.BT_MovementTest'"},
-	{EEnemyBehaviorType::StatCareTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_StatCareTest.BT_StatCareTest'"}, 
-	{EEnemyBehaviorType::SkyDivingTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_SkyDiveTest.BT_SkyDiveTest'"},
-	{EEnemyBehaviorType::CombatTest,		"/Script/AIModule.BehaviorTree'/Game/Project_PUBG/Common/AI/BT_CombatTest.BT_CombatTest'"},
-};
-
-TMap<EEnemyBehaviorType, UBehaviorTree*> AC_Enemy::BehaviorTrees{};
-
 AC_Enemy::AC_Enemy()
 {
 	//PrimaryActorTick.bCanEverTick = true;
@@ -66,25 +55,6 @@ AC_Enemy::AC_Enemy()
 	SkyDivingComponent->SetOwnerCharacter(this);
 	EnemySkyDivingComponent = Cast<UC_EnemySkyDivingComponent>(SkyDivingComponent);
 
-	// Init Behavior Trees if empty
-	if (BehaviorTrees.IsEmpty())
-	{
-		for (uint8 i = 0; i < static_cast<uint8>(EEnemyBehaviorType::Max); ++i)
-		{
-			EEnemyBehaviorType Type = static_cast<EEnemyBehaviorType>(i);
-			const FString& Path = BehaviorTreeReferenceDirectories[Type];
-			
-			UBehaviorTree* LoadedBehaviorTree = Cast<UBehaviorTree>(StaticLoadObject(UBehaviorTree::StaticClass(), nullptr, *Path));
-			if (!LoadedBehaviorTree)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Failed to load BehaviorTree for index %d"), i);
-				continue;
-			}
-			else UE_LOG(LogTemp, Warning, TEXT("Succeeded to load BehaviorTree for index %d"), i);
-
-			BehaviorTrees.Add(Type, LoadedBehaviorTree);
-		}
-	}
 }
 
 void AC_Enemy::BeginPlay()
@@ -148,6 +118,31 @@ void AC_Enemy::Tick(float DeltaSeconds)
 	//UC_Util::Print(DistanceToPlayer * 0.01f);
 	// UC_Util::Print(GetVelocity().Size2D());
 }
+
+/*void AC_Enemy::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	// Init Behavior Trees if empty
+	if (BehaviorTrees.IsEmpty())
+	{
+		for (const TPair<EEnemyBehaviorType, FString>& Pair : BehaviorTreeReferenceDirectories)
+		{
+			const EEnemyBehaviorType Type = Pair.Key;
+			const FString& Path			  = Pair.Value;
+
+			UBehaviorTree* LoadedBehaviorTree = Cast<UBehaviorTree>(StaticLoadObject(UBehaviorTree::StaticClass(), nullptr, *Path));
+			if (!LoadedBehaviorTree)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Failed to load BehaviorTree: %s for type %d"), *Path, (int32)Type);
+				continue;
+			}
+
+			UE_LOG(LogTemp, Log, TEXT("Loaded BehaviorTree: %s for type %d"), *Path, (int32)Type);
+			BehaviorTrees.Add(Type, LoadedBehaviorTree);
+		}
+	}
+}*/
 
 void AC_Enemy::InitBehaviorTreeBySelfBehaviorType()
 {
