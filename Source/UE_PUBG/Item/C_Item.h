@@ -13,34 +13,34 @@ DECLARE_DELEGATE_OneParam(FRespawnableItemPickedUp, class AC_Item*);
 /// AttachableItem PartsName Enum class
 /// C_Gun에서 부착 가능 부위
 /// </summary>
-UENUM(BlueprintType)
-enum class EPartsName : uint8
-{
-	NONE,
-	SCOPE,
-	MUZZLE,
-	GRIP,
-	MAGAZINE,
-	GUNSTOCK,
-	MAX
-};
+//UENUM(BlueprintType)
+//enum class EPartsName : uint8
+//{
+//	NONE,
+//	SCOPE,
+//	MUZZLE,
+//	GRIP,
+//	MAGAZINE,
+//	GUNSTOCK,
+//	MAX
+//};
 
 /// <summary>
 /// Attachment 아이템 이름들
 /// </summary>
-UENUM(BlueprintType)
-enum class EAttachmentNames : uint8
-{
-	REDDOT,
-	SCOPE4,
-	SCOPE8,
-	VERTGRIP,
-	EXTENDMAG,
-	QUICKMAG,
-	COMPENSATOR,
-	SUPPRESSOR,
-	MAX
-};
+//UENUM(BlueprintType)
+//enum class EAttachmentNames : uint8
+//{
+//	REDDOT,
+//	SCOPE4,
+//	SCOPE8,
+//	VERTGRIP,
+//	EXTENDMAG,
+//	QUICKMAG,
+//	COMPENSATOR,
+//	SUPPRESSOR,
+//	MAX
+//};
 /// <summary>
 /// 현재 제대로 사용하지는 않고 있음.
 /// </summary>
@@ -74,20 +74,20 @@ enum class EAttachmentNames : uint8
 //	SLOT
 //};
 
-UENUM(BlueprintType)
-enum class EItemNames : uint8
-{
-	NONE,
-	HELMET,
-	ARMORE,
-	BACKPACK,
-	MAINGUN,
-	MELEEWEAPON,
-	THROWABLE,
-	ATTACHMENT,
-	CONSUMPTIONITEM,
-	BULLET
-};
+//UENUM(BlueprintType)
+//enum class EItemNames : uint8
+//{
+//	NONE,
+//	HELMET,
+//	ARMORE,
+//	BACKPACK,
+//	MAINGUN,
+//	MELEEWEAPON,
+//	THROWABLE,
+//	ATTACHMENT,
+//	CONSUMPTIONITEM,
+//	BULLET
+//};
 
 //USTRUCT(BlueprintType)
 //struct FItemData : public FTableRowBase

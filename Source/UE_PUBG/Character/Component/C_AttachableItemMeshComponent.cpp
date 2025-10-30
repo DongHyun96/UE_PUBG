@@ -1,41 +1,42 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/Component/C_AttachableItemMeshComponent.h"
-#include "Item/Weapon/Gun/C_Gun.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "UMG.h"
-#include "Components/CanvasPanelSlot.h"
-#include "Components/Image.h"
-#include "Character/Component/C_EquippedComponent.h"
-#include "Character/Component/C_InvenComponent.h"
-
-#include "Components/PanelWidget.h"
-#include "Components/NamedSlotInterface.h"
-#include "Utility/C_Util.h"
-#include "UObject/ConstructorHelpers.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Character/C_BasicCharacter.h"
+#include "Character/C_Player.h"
 #include "Character/Component/C_EquippedComponent.h"
-#include "GameFramework/Actor.h"
+//#include "Character/Component/C_InvenComponent.h"
+#include "Character/Component/C_EquippedComponent.h"
+#include "Character/Component/C_CrosshairWidgetComponent.h"
+
+#include "UObject/ConstructorHelpers.h"
+#include "Utility/C_Util.h"
+#include "Animation/AnimMontage.h"
+#include "Animation/AnimInstance.h"
+#include "Components/Image.h"
+#include "Components/PanelWidget.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/NamedSlotInterface.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Components/ShapeComponent.h"
 #include "Components/SceneComponent.h"
-#include "Animation/AnimInstance.h"
-#include "Animation/AnimMontage.h"
 #include "Components/MeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Character/C_Player.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "Character/Component/C_CrosshairWidgetComponent.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Actor.h"
 #include "GameFramework/SpringArmComponent.h"
+
 #include "Item/Weapon/WeaponStrategy/C_GunStrategy.h"
 #include "Item/Attachment/C_AttachableItem.h"
 #include "Item/AttachmentActors/AttachmentActor.h"
 
+#include "Item/Weapon/Gun/C_Gun.h"
 #include "Item/Weapon/Gun/C_Bullet.h"
 // Sets default values for this component's properties
 UC_AttachableItemMeshComponent::UC_AttachableItemMeshComponent()
@@ -65,55 +66,97 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 	//AttachableItemsMesh[EPartsName::SCOPE].Add(EAttachmentNames::SCOPE4);
 	
 
-	TArray<UObject*> AttachmentBluePrintAssets1;
-	EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/AttachmentBluePrints"), AttachmentBluePrintAssets1, EngineUtils::ATL_Regular);
-	TArray<UObject*> AttachmentBluePrintAssets2;
-	EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/AttachmentBluePrints"), AttachmentBluePrintAssets2, EngineUtils::ATL_Regular);
+	//TArray<UObject*> AttachmentBluePrintAssets1;
+	//EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/AttachmentBluePrints"), AttachmentBluePrintAssets1, EngineUtils::ATL_Regular);
+	//TArray<UObject*> AttachmentBluePrintAssets2;
+	//EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/AttachmentBluePrints"), AttachmentBluePrintAssets2, EngineUtils::ATL_Regular);
 
-	for (auto& Attachment : AttachmentBluePrintAssets1)
+	UDataTable* AttachmentDataTable = LoadObject<UDataTable>(
+		nullptr,
+		TEXT("/Game/Project_PUBG/Common/Item/ItemDataTables/DT_AttachmentActors.DT_AttachmentActors") 
+	);
+
+	if (!AttachmentDataTable)
 	{
+		UE_LOG(LogTemp, Error, TEXT("Attachment DataTable not found!"));
+		return;
+	}
 
-		UBlueprint* BlueprintAsset = Cast<UBlueprint>(Attachment);
-		if (BlueprintAsset && BlueprintAsset->GeneratedClass)
+	static const FString Context(TEXT("Attachment DataTable Context"));
+	TArray<FAttachmentTableRow*> Rows;
+	AttachmentDataTable->GetAllRows(Context, Rows);
+
+	for (auto Row : Rows)
+	{
+		if (!Row || !Row->AttachmentClass)
+			continue;
+
+		for (int i = 0; i < 2; ++i) // 🔹 각 부착물을 2개씩 스폰
 		{
-			UClass* ActorClass = BlueprintAsset->GeneratedClass;
-
+			UClass* ActorClass = Row->AttachmentClass;
 			AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
+
 			if (TempMesh)
 			{
-				if (AttachableItemsMesh[TempMesh->GetPartName()].IsEmpty())
+				if (!AttachableItemsMesh.Contains(Row->PartType))
 				{
-					AttachableItemsMesh[TempMesh->GetPartName()].Add(TempMesh->GetAttachmentName());
+					AttachableItemsMesh.Add(Row->PartType);
 				}
-				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
-				
-				//UC_Util::Print(TempMesh, FColor::Red, 100);
+
+				if (!AttachableItemsMesh[Row->PartType].Contains(Row->AttachmentName))
+				{
+					AttachableItemsMesh[Row->PartType].Add(Row->AttachmentName);
+				}
+
+				AttachableItemsMesh[Row->PartType][Row->AttachmentName].Add(TempMesh);
 			}
 		}
-		
 	}
 
-
-	for (auto& Attachment : AttachmentBluePrintAssets2)
-	{
-
-		UBlueprint* BlueprintAsset = Cast<UBlueprint>(Attachment);
-		if (BlueprintAsset && BlueprintAsset->GeneratedClass)
-		{
-			UClass* ActorClass = BlueprintAsset->GeneratedClass;
-
-			AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
-			if (TempMesh)
-			{
-				//AttachableItemsMesh[TempMesh->GetPartName()].Add(TempMesh->GetAttachmentName()).Emplace(TempMesh);
-
-				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
-
-				//UC_Util::Print(TempMesh, FColor::Red, 100);
-			}
-		}
-		
-	}
+	//for (auto& Attachment : AttachmentBluePrintAssets1)
+	//{
+	//
+	//	UBlueprint* BlueprintAsset = Cast<UBlueprint>(Attachment);
+	//	if (BlueprintAsset && BlueprintAsset->GeneratedClass)
+	//	{
+	//		UClass* ActorClass = BlueprintAsset->GeneratedClass;
+	//
+	//		AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
+	//		if (TempMesh)
+	//		{
+	//			if (AttachableItemsMesh[TempMesh->GetPartName()].IsEmpty())
+	//			{
+	//				AttachableItemsMesh[TempMesh->GetPartName()].Add(TempMesh->GetAttachmentName());
+	//			}
+	//			AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
+	//			
+	//			//UC_Util::Print(TempMesh, FColor::Red, 100);
+	//		}
+	//	}
+	//	
+	//}
+	//
+	//
+	//for (auto& Attachment : AttachmentBluePrintAssets2)
+	//{
+	//
+	//	UBlueprint* BlueprintAsset = Cast<UBlueprint>(Attachment);
+	//	if (BlueprintAsset && BlueprintAsset->GeneratedClass)
+	//	{
+	//		UClass* ActorClass = BlueprintAsset->GeneratedClass;
+	//
+	//		AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
+	//		if (TempMesh)
+	//		{
+	//			//AttachableItemsMesh[TempMesh->GetPartName()].Add(TempMesh->GetAttachmentName()).Emplace(TempMesh);
+	//
+	//			AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
+	//
+	//			//UC_Util::Print(TempMesh, FColor::Red, 100);
+	//		}
+	//	}
+	//	
+	//}
 	
 }
 
