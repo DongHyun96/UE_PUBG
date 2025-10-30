@@ -45,7 +45,7 @@ void AC_PlayerController::BeginPlay()
 	InputMappingContext = LoadObject<UInputMappingContext>(
 		nullptr, TEXT("/Game/Project_PUBG/Common/Character/Input/IMC_PlayerController.IMC_PlayerController"));
 	
-	if (!AddIMCToSubsystem(InputMappingContext, 0))
+	if (!AddIMCToSubsystem(InputMappingContext, 1))
 		UC_Util::Print("Adding IMC_PlayerController failed!", FColor::Red, 10.f);
 
 	if (IsLocalPlayerController())

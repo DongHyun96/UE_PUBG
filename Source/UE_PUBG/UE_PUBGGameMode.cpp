@@ -1,4 +1,4 @@
-﻿// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "UE_PUBGGameMode.h"
 #include "UE_PUBGCharacter.h"
@@ -8,7 +8,8 @@
 
 AUE_PUBGGameMode::AUE_PUBGGameMode()
 {
-	// Player Pawn
+	// 쿠킹 시작
+	// Player Pawn 
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Project_PUBG/Common/Character/BPC_Player"));
 	if (PlayerPawnBPClass.Class != nullptr)
 	{

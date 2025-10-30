@@ -1017,7 +1017,7 @@ void AC_Gun::HandleAimWidgetShowAndHideWhileAiming()
 void AC_Gun::LoadMagazine()
 {
 	if (GunDataRef->CurGunType == EGunType::SR) return;
-		
+	// 디렉토리 쿠킹 시작
 	FString ClassPath = TEXT("/Game/Project_PUBG/Common/Weapon/GunWeapon/Magazine/BPC_Magazine.BPC_Magazine_C");
 	//Magazine = LoadObject<AC_AttachableItem>(nullptr, ));
 
