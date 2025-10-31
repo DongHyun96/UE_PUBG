@@ -225,13 +225,11 @@ void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& D
 	if (OwnerCharacter->GetIsPoseTransitioning()) return;
 	if (OwnerCharacter->GetPoseState() != EPoseState::CRAWL) return;
 
-	static const float LERP_SPEED		= 20.f;
 	static const float HEIGHT_OFFSET	= 50.f;
 	TPair<float, float> ImpactDistances{};
 
-	FRotator CrawlRelativeRotation	= CrawlCapsuleComponent->GetRelativeRotation();
-	CrawlSlopeAngle					= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET);
-	float SlopeDegree				= FMath::RadiansToDegrees(CrawlSlopeAngle);
+	CrawlSlopeAngle		= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET);
+	float SlopeDegree	= FMath::RadiansToDegrees(CrawlSlopeAngle);
 
 	//UC_Util::Print(SlopeDegree);
 	if (!CanCrawlOnSlope(SlopeDegree, ImpactDistances))
@@ -342,7 +340,7 @@ bool UC_PoseColliderHandlerComponent::CanCrawlOnSlope(const FVector& HeadStartLo
 		ImpactDistances.Value		< CRAWL_GROUND_DIST_LIMIT;
 }
 
-bool UC_PoseColliderHandlerComponent::CanCrawlOnSlope(const float& SlopeDegree, TPair<float, float>& ImpactDistances)
+bool UC_PoseColliderHandlerComponent::CanCrawlOnSlope(const float& SlopeDegree, const TPair<float, float>& ImpactDistances)
 {
 	return FMath::Abs(SlopeDegree)	< CRAWL_DEGREE_LIMIT &&
 		ImpactDistances.Key			< CRAWL_GROUND_DIST_LIMIT &&
