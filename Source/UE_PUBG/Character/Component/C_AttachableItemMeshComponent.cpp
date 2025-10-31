@@ -65,12 +65,12 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 	//AttachableItemsMesh[EPartsName::SCOPE].Add(EAttachmentNames::SCOPE4);
 	
 
-	TArray<UObject*> AttachmentBluePrintAssets1;
-	EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/AttachmentBluePrints"), AttachmentBluePrintAssets1, EngineUtils::ATL_Regular);
+	TArray<UObject*> AttachmentBluePrintAssets;
+	EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/AttachmentBluePrints"), AttachmentBluePrintAssets, EngineUtils::ATL_Regular);
 	TArray<UObject*> AttachmentBluePrintAssets2;
 	EngineUtils::FindOrLoadAssetsByPath(TEXT("/Game/Project_PUBG/Hyunho/Weapon/Attatchments/AttachmentBluePrints"), AttachmentBluePrintAssets2, EngineUtils::ATL_Regular);
 
-	for (auto& Attachment : AttachmentBluePrintAssets1)
+	for (auto& Attachment : AttachmentBluePrintAssets)
 	{
 
 		UBlueprint* BlueprintAsset = Cast<UBlueprint>(Attachment);
@@ -78,14 +78,14 @@ void UC_AttachableItemMeshComponent::BeginPlay()
 		{
 			UClass* ActorClass = BlueprintAsset->GeneratedClass;
 
-			AAttachmentActor* TempMesh = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
-			if (TempMesh)
+			AAttachmentActor* AttachmentActor = GetWorld()->SpawnActor<AAttachmentActor>(ActorClass);
+			if (AttachmentActor)
 			{
-				if (AttachableItemsMesh[TempMesh->GetPartName()].IsEmpty())
+				if (AttachableItemsMesh[AttachmentActor->GetPartName()].IsEmpty())
 				{
-					AttachableItemsMesh[TempMesh->GetPartName()].Add(TempMesh->GetAttachmentName());
+					AttachableItemsMesh[AttachmentActor->GetPartName()].Add(AttachmentActor->GetAttachmentName());
 				}
-				AttachableItemsMesh[TempMesh->GetPartName()][TempMesh->GetAttachmentName()].Emplace(TempMesh);
+				AttachableItemsMesh[AttachmentActor->GetPartName()][AttachmentActor->GetAttachmentName()].Emplace(AttachmentActor);
 				
 				//UC_Util::Print(TempMesh, FColor::Red, 100);
 			}
