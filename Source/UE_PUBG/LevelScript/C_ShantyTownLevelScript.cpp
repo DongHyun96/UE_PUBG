@@ -196,6 +196,7 @@ void AC_ShantyTownLevelScript::LegacySpawnItem(const TArray<FName> ItemNameList)
 	}
 }
 
+/*
 void AC_ShantyTownLevelScript::SpawnItemInWorld(const TArray<FName> ItemNameList)
 {
 	const int32 MaxItemsPerFloor = 4;
@@ -275,4 +276,5 @@ void AC_ShantyTownLevelScript::SpawnItemInWorld(const TArray<FName> ItemNameList
 		}
 	}
 }
+*/
 

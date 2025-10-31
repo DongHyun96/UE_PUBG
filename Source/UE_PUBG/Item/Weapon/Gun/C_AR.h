@@ -35,7 +35,12 @@ private:
 
 	void ChangeCurShootingMode() override;
 	//특정 행동을 할 때 Reloading 모션 중지
-	virtual void CancelReload() override; 
+	virtual void CancelReload() override;
+
+public:
+
+	bool DestroyItem(bool bNetForce = false, bool bShouldModifyLevel = true) override;
+	
 private:
 
 	// 각 피격 부위별 Damage Rate

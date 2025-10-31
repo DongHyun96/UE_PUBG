@@ -36,7 +36,7 @@ private:
 	void LegacySpawnItem(const TArray<FName> ItemNameList);
 
 
-	void SpawnItemInWorld(const TArray<FName> ItemNameList);
+	// void SpawnItemInWorld(const TArray<FName> ItemNameList);
 
 
 protected:
