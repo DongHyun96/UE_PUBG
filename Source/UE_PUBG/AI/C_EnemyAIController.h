@@ -106,11 +106,25 @@ private:
 	bool RemoveCharacterFromDetectedCharacters(class AC_BasicCharacter* TargetCharacter);
 
 	/// <summary>
+	/// 해당 Character의 SightRangeLevel구하기
+	/// </summary>
+	/// <returns> : Sight Range를 완전히 벗어난다면 return ESightRangeLevel::Max, 나머지는 해당하는 SightRangeLevel return </returns>
+	ESightRangeLevel GetCharacterSightLevel(AC_BasicCharacter* InCharacter);
+
+	/// <summary>
 	/// Sight Range Level을 따져서 DetectedCharacters에 Character 추가
 	/// </summary>
 	/// <param name="InCharacter"></param>
 	/// <returns> : 추가할 수 없는 거리라면 return false </returns>
 	bool AddCharacterToDetectedCharacters(AC_BasicCharacter* InCharacter);
+
+	/// <summary>
+	/// 해당 Sight Range Level에 Character 추가
+	/// </summary>
+	/// <param name="InCharacter"> : 추가할 Character </param>
+	/// <param name="InLevel"> : 추가할 해당 Level </param>
+	/// <returns> : Level이 Max이거나, 이미 해당 level에 Character가 존재한다면 return false </returns>
+	bool AddCharacterToDetectedCharacters(AC_BasicCharacter* InCharacter, ESightRangeLevel InLevel);
 
 private:
 	

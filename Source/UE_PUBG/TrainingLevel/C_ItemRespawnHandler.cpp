@@ -5,6 +5,7 @@
 
 #include "Components/BoxComponent.h"
 #include "Item/C_Item.h"
+#include "Item/Weapon/Gun/C_AR.h"
 #include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
@@ -41,6 +42,14 @@ void AC_ItemRespawnHandler::BeginPlay()
 		{
 			AC_Item* Item = Cast<AC_Item>(OverlappingItem);
 			if (!Item) continue;
+
+			// Package된 게임의 TrainingGround에서 AR은 따로 SpawnActor 처리를 해주어야만 Socket의 위치가 맞음 (이유는 잘 모르겠음) 
+			if (AC_AR* AR = Cast<AC_AR>(Item))
+			{
+				AC_Item* NewAR = GetWorld()->SpawnActor<AC_Item>(AR->GetClass(), AR->GetActorTransform());
+				AR->DestroyItem();
+				Item = NewAR; // 새로이 Spawn된 AR로 Item 세팅
+			}
 			
 			// 파밍 시에 실행할 Delegate bind 처리
 			Item->OnRespawnableItemPickedUp.BindUObject(this, &AC_ItemRespawnHandler::OnItemPickedUp);
@@ -58,19 +67,6 @@ void AC_ItemRespawnHandler::BeginPlay()
 
 		// 첫 조사 이 후, SpawnArea collision 끄기
 		SpawnArea->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-		// For testing
-		/*for (const TPair<TSubclassOf<AC_Item>, TArray<FTransform>>& Pair : InitialTransforms)
-		{
-			FString Str = Pair.Key->GetName() + "'s Transform count : " + FString::FromInt(Pair.Value.Num());
-			UC_Util::Print(Str, FColor::Blue, 30.f);
-		}
-
-		for (const TPair<TSubclassOf<AC_Item>, TArray<AC_Item*>>& Pair : SpawnedItems)
-		{
-			FString Str = Pair.Key->GetName() + "'s object count : " + FString::FromInt(Pair.Value.Num());
-			UC_Util::Print(Str, FColor::Red, 30.f);
-		}*/
 		
 	}, 0.1f, false);
 }

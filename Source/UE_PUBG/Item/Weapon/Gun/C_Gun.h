@@ -242,8 +242,8 @@ protected:
 public:
 	void SetMainOrSubSlot(EGunState InState) { CurState = InState; }
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FTransform LeftHandSocketLocation;
+	UPROPERTY(BlueprintReadWrite)
+	FTransform LeftHandSocketLocation{};
 
 	class UCameraComponent* AimSightCamera;
 
@@ -343,7 +343,6 @@ protected:
 	void HandleAimWidgetShowAndHideWhileAiming();
 protected:
 	//탄창
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_AttachableItem* Magazine{};
 
 	void LoadMagazine();

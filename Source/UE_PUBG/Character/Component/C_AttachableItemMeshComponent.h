@@ -38,7 +38,7 @@ public:
 	void UseAttachmentStrategy(USceneComponent* InParent);
 protected:
 	class AC_BasicCharacter* OwnerCharacter;
-	TMap<EPartsName, TMap<EAttachmentNames,TArray<class AAttachmentActor*>>> AttachableItemsMesh;
+	TMap<EPartsName, TMap<EAttachmentNames, TArray<class AAttachmentActor*>>> AttachableItemsMesh;
 		
 };
 

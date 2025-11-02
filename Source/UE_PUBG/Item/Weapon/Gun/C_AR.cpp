@@ -15,6 +15,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "HUD/C_InformWidget.h"
+#include "Singleton/C_GameSceneManager.h"
 
 #include "Utility/C_Util.h"
 
@@ -157,6 +158,12 @@ void AC_AR::CancelReload()
 	}
 	OwnerCharacter->SetIsReloadingBullet(false);
 
+}
+
+bool AC_AR::DestroyItem(bool bNetForce, bool bShouldModifyLevel)
+{
+	if (IsValid(Magazine)) Magazine->Destroy();
+	return Super::DestroyItem(bNetForce, bShouldModifyLevel);
 }
 
 

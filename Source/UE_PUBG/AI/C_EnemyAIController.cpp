@@ -9,6 +9,7 @@
 #include "Character/C_Enemy.h"
 #include "AI/C_BehaviorComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "Chaos/ChaosNotifyHandlerInterface.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Utility/C_Util.h"
 
@@ -228,14 +229,31 @@ void AC_EnemyAIController::UpdateDetectedCharactersRangeLevel()
 			
 			Updated.Add(CurrentCharacter);
 
-			// 새로운 거리로 갱신 시키기
-			It.RemoveCurrent();
-			
 			// 이미 죽은 Character이거나 삭제된 캐릭터라면 빼버리고 진행
-			if (!IsValid(CurrentCharacter))								continue;
-			if (CurrentCharacter->GetMainState() == EMainState::DEAD)	continue; 
-				
-			AddCharacterToDetectedCharacters(CurrentCharacter);
+			if (!IsValid(CurrentCharacter))
+			{
+				It.RemoveCurrent();
+				continue;
+			}
+			if (CurrentCharacter->GetMainState() == EMainState::DEAD)
+			{
+				It.RemoveCurrent();
+				continue;
+			}
+
+			ESightRangeLevel CurrentSightRangeLevel = GetCharacterSightLevel(CurrentCharacter);
+
+			// 만약 새로 조사한 Level이 현재의 Level과 같다면 현상황 유지
+			if (CurrentSightRangeLevel == CurrentLevel) continue;
+
+			// 새로 조사한 Level이 현재 들어가있는 Level과 다르다면 현재 Level에서 제거하고 새로운 Level set에 집어넣기
+			// 단, Level이 Max인 경우 제거만 시킴
+			It.RemoveCurrent();
+
+			if (CurrentSightRangeLevel == ESightRangeLevel::Max) continue;
+
+			// 다른 새로운 Level인 상황 -> 해당 Set에 집어넣기
+			AddCharacterToDetectedCharacters(CurrentCharacter, CurrentSightRangeLevel);
 		}
 	}
 }
@@ -253,11 +271,8 @@ bool AC_EnemyAIController::RemoveCharacterFromDetectedCharacters(AC_BasicCharact
 	return Removed;
 }
 
-bool AC_EnemyAIController::AddCharacterToDetectedCharacters(AC_BasicCharacter* InCharacter)
+ESightRangeLevel AC_EnemyAIController::GetCharacterSightLevel(AC_BasicCharacter* InCharacter)
 {
-	if (!IsValid(InCharacter)) return false;
-	if (InCharacter->GetMainState() == EMainState::DEAD) return false;
-	
 	float DistanceBetweenTwoCharacters = FVector::Distance(OwnerEnemy->GetActorLocation(), InCharacter->GetActorLocation());
 	
 	for (int i = 0; i < static_cast<int>(ESightRangeLevel::Max); ++i)
@@ -266,12 +281,30 @@ bool AC_EnemyAIController::AddCharacterToDetectedCharacters(AC_BasicCharacter* I
 		float Distance = SIGHT_RANGE_DISTANCE[Level];
 
 		if (DistanceBetweenTwoCharacters < Distance)
-		{
-			DetectedCharacters[Level].Add(InCharacter);
-			return true;
-		}
+			return Level;
 	}
-	return false;
+	return ESightRangeLevel::Max;
+}
+
+bool AC_EnemyAIController::AddCharacterToDetectedCharacters(AC_BasicCharacter* InCharacter)
+{
+	if (!IsValid(InCharacter)) return false;
+	if (InCharacter->GetMainState() == EMainState::DEAD) return false;
+
+	ESightRangeLevel SightRangeLevel = GetCharacterSightLevel(InCharacter);
+	if (SightRangeLevel == ESightRangeLevel::Max) return false;
+
+	DetectedCharacters[SightRangeLevel].Add(InCharacter);
+	return true;
+}
+
+bool AC_EnemyAIController::AddCharacterToDetectedCharacters(AC_BasicCharacter* InCharacter, ESightRangeLevel InLevel)
+{
+	if (InLevel == ESightRangeLevel::Max) return false;
+	if (DetectedCharacters[InLevel].Contains(InCharacter)) return false;
+	
+	DetectedCharacters[InLevel].Add(InCharacter);
+	return true;
 }
 
 void AC_EnemyAIController::DrawSightRange()

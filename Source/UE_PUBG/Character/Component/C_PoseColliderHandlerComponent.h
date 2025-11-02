@@ -121,7 +121,7 @@ public:
 	/// <param name="SlopeDegree"></param>
 	/// <param name="ImpactDistances"></param>
 	/// <returns></returns>
-	bool CanCrawlOnSlope(const float& SlopeDegree, TPair<float, float>& ImpactDistances);
+	bool CanCrawlOnSlope(const float& SlopeDegree, const TPair<float, float>& ImpactDistances);
 
 
 private:

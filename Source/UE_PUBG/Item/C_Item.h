@@ -247,7 +247,7 @@ public:
 	/// <param name="bNetForce"></param>
 	/// <param name="bShouldModifyLevel"></param>
 	/// <returns></returns>
-	bool DestroyItem(bool bNetForce = false, bool bShouldModifyLevel = true);
+	virtual bool DestroyItem(bool bNetForce = false, bool bShouldModifyLevel = true);
 
 protected:
 	//MoveTo~에 사용되는 9개 함수.
