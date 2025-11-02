@@ -58,6 +58,8 @@ void UC_PoseColliderHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 
 	HandleLerpBodySizeByPose(DeltaTime);
 	HandleCrawlColliderRotation(DeltaTime);
+
+	UC_Util::Print(OwnerCharacter->GetCapsuleComponent()->GetComponentLocation().Z);
 }
 
 void UC_PoseColliderHandlerComponent::SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter)
@@ -185,9 +187,9 @@ void UC_PoseColliderHandlerComponent::HandleLerpBodySizeByPose(const float& Delt
 	float MeshZPos = MeshLocation.Z;
 
 	// Lerp Finish
-	if (FMath::Abs(Height - RootColliderHeightRadiusLerpDest.Key)	< LERP_DIFF_EPSILON &&
+	if (FMath::Abs(Height - RootColliderHeightRadiusLerpDest.Key)	 < LERP_DIFF_EPSILON &&
 		FMath::Abs(Radius - RootColliderHeightRadiusLerpDest.Value)  < LERP_DIFF_EPSILON &&
-		FMath::Abs(MeshZPos - MeshZPosLerpDest)						< LERP_DIFF_EPSILON)
+		FMath::Abs(MeshZPos - MeshZPosLerpDest)						 < LERP_DIFF_EPSILON)
 	{
 		OwnerCharacter->GetCapsuleComponent()->SetCapsuleSize
 		(
@@ -228,7 +230,7 @@ void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& D
 	static const float HEIGHT_OFFSET	= 50.f;
 	TPair<float, float> ImpactDistances{};
 
-	CrawlSlopeAngle		= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET);
+	CrawlSlopeAngle		= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET, true);
 	float SlopeDegree	= FMath::RadiansToDegrees(CrawlSlopeAngle);
 
 	//UC_Util::Print(SlopeDegree);
@@ -281,11 +283,11 @@ float UC_PoseColliderHandlerComponent::GetCrawlSlopeAngle
 
 	if (EnableDebugLine)
 	{
-		DrawDebugLine(GetWorld(), HeadStartLocation, HeadHitResult.ImpactPoint, FColor::Red, true);
-		DrawDebugLine(GetWorld(), PelvisStartLocation, PelvisHitResult.ImpactPoint, FColor::Red, true);
+		DrawDebugLine(GetWorld(), HeadStartLocation, HeadHitResult.ImpactPoint, FColor::Red, false, 0.5f);
+		DrawDebugLine(GetWorld(), PelvisStartLocation, PelvisHitResult.ImpactPoint, FColor::Red, false, 0.5f);
 	}
 
-	if (!HasHeadHit || !HasPelvisHit) return false;
+	if (!HasHeadHit || !HasPelvisHit) return 0.f;
 	// TODO : Length 체크
 	//if (HeadHitResult.ImpactPoint.Length() )
 
