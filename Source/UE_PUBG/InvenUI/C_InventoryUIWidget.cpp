@@ -25,8 +25,8 @@ void UC_InventoryUIWidget::NativeConstruct()
 {
     Super::NativeConstruct();
     GAMESCENE_MANAGER->SetHUDWidgetByHUDMode(EHUDMode::INVEN, this);
-    AroundItemPanel->NativeConstruct();
-	InventoryPanel->NativeConstruct();
+    //AroundItemPanel->NativeConstruct();
+	//InventoryPanel->NativeConstruct();
 }
 
 void UC_InventoryUIWidget::SetVisibility(ESlateVisibility InVisibility)
@@ -65,7 +65,8 @@ void UC_InventoryUIWidget::SetVisibility(ESlateVisibility InVisibility)
         PlayerController->SetInputMode
         (
             FInputModeGameAndUI()
-            .SetWidgetToFocus(this->TakeWidget())
+            .SetWidgetToFocus(nullptr)
+            //.SetWidgetToFocus(this->TakeWidget())
             .SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock)
             .SetHideCursorDuringCapture(false)
         );
@@ -76,7 +77,7 @@ void UC_InventoryUIWidget::SetVisibility(ESlateVisibility InVisibility)
         //PlayerController->bEnableTouchEvents = true; // 터치 이벤트 활성화
         //PlayerController->bEnableMouseOverEvents = true; // 마우스 오버 이벤트 활성화
         //SetIsFocusable(true);
-
+        //FSlateApplication::Get().SetUserFocus(0, TakeWidget(), EFocusCause::SetDirectly);
     }
 
     if (InVisibility == ESlateVisibility::Hidden)
