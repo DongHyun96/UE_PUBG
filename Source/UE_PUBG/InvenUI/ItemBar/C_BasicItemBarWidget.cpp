@@ -29,6 +29,7 @@
 void UC_BasicItemBarWidget::NativeConstruct()
 {
 	bIsFocusable = false;
+	
 }
 
 FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -42,6 +43,7 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 		if (HalfStackItemInteraction()) // true면 return, false면 남은 코드 실행.
 		{
 			UpdateInvenUIWidget();
+
 			return FReply::Handled(); 
 		}
 	}
@@ -170,7 +172,7 @@ void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 	//	return;
 	//}
-
+	//SetPercent(0.f, 1.f);
 	DataObj = Cast<UC_ItemDataObject>(ListItemObject);
 
 	if (!DataObj) return;
@@ -222,6 +224,8 @@ void UC_BasicItemBarWidget::UpdateWidget(UC_ItemDataObject* InDataObj)
 			Consumable->SetLinkedItemBarWidget(this);
 		}
 
+		ItemUsingTimer->SetPercent(InDataObj->UseProgress);
+
 		//ItemImage->SetBrushFromTexture(InDataObj->ItemDataRef->ItemBarIcon);
 		//ItemName->SetText(FText::FromString(InDataObj->ItemDataRef->ItemName));
 		//ItemType = InDataObj->ItemDataRef->ItemType;
@@ -231,6 +235,7 @@ void UC_BasicItemBarWidget::UpdateWidget(UC_ItemDataObject* InDataObj)
 
 void UC_BasicItemBarWidget::SetPercent(float curTime, float endTime)
 {
+	CachedItem->SetUseProgress(curTime / endTime);
 	ItemUsingTimer->SetPercent(curTime / endTime);
 }
 

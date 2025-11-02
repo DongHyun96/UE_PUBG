@@ -311,6 +311,13 @@ public:
 	// 현재 구조로는 아이템을 만들 때 마다 해당 블루프린트에 정의된 GetItemMeshComp()를 오버라이드 해야함.
 	UFUNCTION(BlueprintImplementableEvent)
 	USceneComponent* GetItemMeshComp();
+
+	float GetUseProgress() const { return UseProgress; }
+
+	void SetUseProgress(float NewProgress)
+	{
+		UseProgress = NewProgress;
+	}
 protected:
 
 	/// <summary>
@@ -331,6 +338,12 @@ protected:
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	int32 ItemCurStack = 0;
+
+	/// <summary>
+	/// Time Progress Bar percent
+	/// </summary>
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	float UseProgress = 0.f;
 
 	/// <summary>
 	/// 아이템 데이터 구조체

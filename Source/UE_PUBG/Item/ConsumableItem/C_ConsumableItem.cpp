@@ -92,7 +92,11 @@ void AC_ConsumableItem::Tick(float DeltaTime)
 			{
 				if (UserAnimInstance->Montage_IsPlaying(Pair.Value.AnimMontage)) // 방해 받지 않았을 때 (즉, 활성화 Animation이 진행 중일 때)
 				{
-					if (Player && LinkedItemBarWidget) LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime); 
+					if (Player && LinkedItemBarWidget)
+					{
+						//UseProgress = UsingTimer / UsageTime; 
+						LinkedItemBarWidget->SetPercent(UsingTimer, UsageTime);
+					}
 					return;
 				}
 			}
@@ -250,6 +254,9 @@ bool AC_ConsumableItem::CancelActivating()
 
 	//사운드 중지.
 	StopUsingSound();
+
+	if (LinkedItemBarWidget)
+		LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 
 	UAnimInstance* UserAnimInstance = ItemUser->GetMesh()->GetAnimInstance();
 
