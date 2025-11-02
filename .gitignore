@@ -96,3 +96,6 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+
+# Unreal Engine build file order logs (자동 생성, 공유 불필요)
+Build/Windows/FileOpenOrder/
