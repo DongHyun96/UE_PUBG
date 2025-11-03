@@ -31,48 +31,63 @@ void UC_BasicItemBarWidget::NativeConstruct()
 	Super::NativeConstruct();
 	bIsFocusable = false;
 	this->SetIsFocusable(false);
+	// 혹시라도 포커스를 받았다면 즉시 해제
+	//if (HasUserFocus(GetOwningPlayer()))
+	//{
+	//	FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::Cleared);
+	//}
+}
+
+FReply UC_BasicItemBarWidget::NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent)
+{
+	// 그냥 포커스를 무시하고 즉시 반납
+	return FReply::Unhandled();
+}
+
+void UC_BasicItemBarWidget::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
+{
 }
 
 FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
+	if (!OwnerPlayer) return FReply::Unhandled();
 
-	if (OwnerPlayer->GetIsActivatingConsumableItem()) return FReply::Unhandled();
+	// Consumable 아이템 사용 중이면 무시
+	if (OwnerPlayer->GetIsActivatingConsumableItem())
+		return FReply::Unhandled();
 
-	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton) && InMouseEvent.IsLeftAltDown())
+	// 우클릭 처리
+	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		if (HalfStackItemInteraction()) // true면 return, false면 남은 코드 실행.
+		if (!CachedItem) return FReply::Unhandled();
+
+		if (InMouseEvent.IsAltDown() && HalfStackItemInteraction())
 		{
 			UpdateInvenUIWidget();
 			return FReply::Unhandled();
-			//return FReply::Handled(); 
 		}
-	}
-
-	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
-	{
-		//우클릭 이벤트 실행
-		//TODO : 구현
-		if (!CachedItem) return FReply::Unhandled(); //return FReply::Handled();
-
-		if (InMouseEvent.IsAltDown())
-			if (HalfStackItemInteraction()) return FReply::Unhandled(); //return FReply::Handled(); //참이면 return, 거짓이면 남은 코드 실행.
 
 		if (CachedItem->Interaction(OwnerPlayer))
 		{
-			// Consumable Usage 처리일 떄에는 SFX 재생 x 처리를 위함
 			AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(CachedItem);
-			if (!ConsumableItem)
+			if (!ConsumableItem || ConsumableItem->GetConsumableItemState() != EConsumableItemState::ACTIVATING)
+			{
 				UGameplayStatics::PlaySound2D(CachedItem, CachedItem->GetPickUpSound());
-			else if (ConsumableItem->GetConsumableItemState() != EConsumableItemState::ACTIVATING)
-				UGameplayStatics::PlaySound2D(CachedItem, CachedItem->GetPickUpSound());
+			}
 		}
 
-		//UpdateWidget(CachedItem);
 		UpdateWidget(DataObj);
 		UpdateInvenUIWidget();
 
-		return FReply::Unhandled(); //return FReply::Handled();
+		return FReply::Unhandled(); // 우클릭 후에도 키보드 입력 유지
+	}
+
+	// 좌클릭 드래그 감지
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && CachedItem)
+	{
+		// DetectDragIfPressed 호출 (드래그 시작)
+		return UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton).NativeReply;
 	}
 
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
@@ -80,38 +95,17 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 
 FReply UC_BasicItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
-
-	if (OwnerPlayer->GetIsActivatingConsumableItem()) return FReply::Unhandled();
-
-	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-	{
-
-
-		if (CachedItem)
-		{
-			//드래그 이벤트 실행.
-			//드래그를 시작하고 반응함
-			FEventReply RePlyResult =
-				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-			//AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)); //TODO : 게임 신 매니저에서 플레이어 가져오기
-			//UC_Util::Print("LeftMouseButton");
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
-			//FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
-			return RePlyResult.NativeReply;
-		}
-	}
 	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
 
 }
 
 void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
+	UE_LOG(LogTemp, Warning, TEXT(">>> NativeOnDragDetected Called"));
 	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
-	//OwnerPlayer->SetIgnoreMoveInput(false); // 이동 비허용
 
-	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
-	PlayerController->SetIgnoreMoveInput(false); // 이동 허용
+	//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
+	//PlayerController->SetIgnoreMoveInput(false); // 이동 허용
 	//dragdrop class를 새로 만들어 사용해야 할 수 있음.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 

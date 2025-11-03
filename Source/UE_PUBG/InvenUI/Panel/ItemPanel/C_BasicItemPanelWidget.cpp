@@ -17,34 +17,20 @@ void UC_BasicItemPanelWidget::NativeConstruct()
 {
     Super::NativeConstruct();
     
-    // 풀 초기화
+    // DataObject 풀 초기화
     for (int32 i = 0; i < MaxPoolSize; ++i)
     {
-        UC_ItemDataObject* Obj = NewObject<UC_ItemDataObject>(GetWorld());
+        UC_ItemDataObject* Obj = NewObject<UC_ItemDataObject>(this);
         DataObjectPool.Add(Obj);
     }
-    UC_GameInstance* GI = Cast<UC_GameInstance>(GetGameInstance());
-    const FItemData* DummyData = nullptr;
-	FName DummyItemCode = "Item_Weapon_Kar98k_C";
-    DummyData = GI->GetItemData(DummyItemCode);
-    //for (int i = 0; i < MaxPoolSize; ++i)
-    //{
-    //    UC_BasicItemBarWidget* TempWidget = CreateWidget<UC_BasicItemBarWidget>(GetWorld(), ItemBarWidgetClass);
-    //
-    //    // 임시 데이터 객체 생성
-    //    UC_ItemDataObject* TempData = NewObject<UC_ItemDataObject>(TempWidget);
-    //    TempData->ItemDataRef = DummyData; // 혹은 더미 FItemData
-    //    TempWidget->NativeOnListItemObjectSet(TempData);
-    //
-    //    ItemListView->AddItem(TempData);
-    //    ItemListView->RemoveItem(TempData);
-    //}
 
+    if (ItemListView)
+    {
+        ItemListView->SetVisibility(ESlateVisibility::Visible);
+        ItemListView->SetSelectionMode(ESelectionMode::None); // 포커스 방지
+        ItemListView->ClearListItems();
 
-    ItemListView->SetVisibility(ESlateVisibility::Hidden);
-    ItemListView->SetVisibility(ESlateVisibility::Visible);
-	ItemListView->SetSelectionMode(ESelectionMode::None);
-    //SetIsFocusable(false);
+    }
 }
 //현재 이 업데이트 구조는 쓰레기임.
 //나중에 바꾼다면 델리게이트를 적극활용하든 해서 업데이트가 필요한 ItemBarWidget들만 업데이트하도록 해야 한다.
@@ -53,81 +39,66 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, TArray<AC_Item
 {
     if (!IsValid(ItemListView)) return;
 
-    //ItemListView->ClearListItems();
-	//ItemListView->SetUserFocus(GetOwningPlayer());
-
     TArray<UC_ItemDataObject*> ItemsToAdd;
 
-    // AC_Item → UC_ItemDataObject 래핑
     for (const auto& MyItemPair : MyItemMap)
     {
         for (AC_Item* Item : MyItemPair.Value)
         {
             if (!IsValid(Item)) continue;
 
-            UC_ItemDataObject* DataObj = NewObject<UC_ItemDataObject>(ItemListView);
+            UC_ItemDataObject* DataObj = GetDataObject();
             DataObj->ItemDataRef = Item->GetItemDatas();
             DataObj->SetItemCode(Item->GetItemCode());
             DataObj->SetItemCurStack(Item->GetItemCurStack());
             DataObj->SetItemPlace(Item->GetItemPlace());
             DataObj->SetOwnerCharacter(Item->GetOwnerCharacter());
-			DataObj->ItemRef = Item; // 원본 아이템 참조 설정
+            DataObj->ItemRef = Item;
             DataObj->UseProgress = Item->GetUseProgress();
 
             ItemsToAdd.Add(DataObj);
         }
     }
 
-    // ItemType 기준 정렬
-    /*ItemsToAdd.Sort([](UC_ItemDataObject& A, UC_ItemDataObject& B)
-        {
-            return A.ItemDataRef->ItemType < B.ItemDataRef->ItemType;
-        });*/
     ItemsToAdd.Sort([](const UC_ItemDataObject& A, const UC_ItemDataObject& B)
         {
             return A.ItemDataRef->ItemType < B.ItemDataRef->ItemType;
         });
-    // ListView 갱신
+
     ItemListView->SetListItems(ItemsToAdd);
     ItemListView->RequestRefresh();
-    //if (GAMESCENE_MANAGER->GetCurrentHUDMode() == EHUDMode::INVEN) FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
-
+    ItemListView->ClearSelection();
 }
 
 void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& AroundItemList)
 {
     if (!IsValid(ItemListView) || AroundItemList.Num() == 0) return;
 
-    //ItemListView->ClearListItems();
-    //ItemListView->SetUserFocus(GetOwningPlayer());
-	
-
     TArray<UC_ItemDataObject*> DataObjects;
     for (AC_Item* Item : AroundItemList)
     {
         if (!IsValid(Item)) continue;
 
-        UC_ItemDataObject* DataObj = NewObject<UC_ItemDataObject>(this);
+        UC_ItemDataObject* DataObj = GetDataObject();
         DataObj->ItemDataRef = Item->GetItemDatas();
         DataObj->SetItemCode(Item->GetItemCode());
         DataObj->SetItemCurStack(Item->GetItemCurStack());
         DataObj->SetItemPlace(Item->GetItemPlace());
         DataObj->SetOwnerCharacter(Item->GetOwnerCharacter());
-        DataObj->ItemRef = Item; // 원본 아이템 참조 설정
-		DataObj->UseProgress = Item->GetUseProgress();
+        DataObj->ItemRef = Item;
+        DataObj->UseProgress = Item->GetUseProgress();
 
         DataObjects.Add(DataObj);
     }
 
-    // 정렬 가능
-    DataObjects.Sort([](UC_ItemDataObject& A, UC_ItemDataObject& B)
+    DataObjects.Sort([](const UC_ItemDataObject& A, const UC_ItemDataObject& B)
         {
             return A.ItemDataRef->ItemType < B.ItemDataRef->ItemType;
         });
 
     ItemListView->SetListItems(DataObjects);
-    //if (GAMESCENE_MANAGER->GetCurrentHUDMode() == EHUDMode::INVEN) FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
-
+    ItemListView->RequestRefresh();
+    ItemListView->ClearSelection();
 
 }
 
@@ -136,7 +107,6 @@ void UC_BasicItemPanelWidget::AddItemToInventoryItemList(AC_Item* InItem)
     if (!IsValid(InItem) || !IsValid(ItemListView)) return;
 
     UC_ItemDataObject* DataObj = GetDataObject();
-
     DataObj->ItemDataRef = InItem->GetItemDatas();
     DataObj->SetItemCode(InItem->GetItemCode());
     DataObj->SetItemCurStack(InItem->GetItemCurStack());
@@ -150,20 +120,7 @@ void UC_BasicItemPanelWidget::AddItemToInventoryItemList(AC_Item* InItem)
 
 void UC_BasicItemPanelWidget::AddItemToAroundItemList(AC_Item* InItem)
 {
-    if (!IsValid(InItem) || !IsValid(ItemListView)) return;
-
-    UC_ItemDataObject* DataObj = GetDataObject();
-
-    DataObj->ItemDataRef = InItem->GetItemDatas();
-    DataObj->SetItemCode(InItem->GetItemCode());
-    DataObj->SetItemCurStack(InItem->GetItemCurStack());
-    DataObj->SetItemPlace(InItem->GetItemPlace());
-    DataObj->SetOwnerCharacter(InItem->GetOwnerCharacter());
-    DataObj->ItemRef = InItem;
-
-    ItemListView->AddItem(DataObj);
-
-    ActiveDataObjects.Add(DataObj);
+    AddItemToInventoryItemList(InItem);
 }
 
 void UC_BasicItemPanelWidget::AddItemToList(AC_Item* InItem)
@@ -230,57 +187,49 @@ void UC_BasicItemPanelWidget::RemoveItemInList(AC_Item* InItem)
 
 void UC_BasicItemPanelWidget::RemoveItemInList(UC_ItemDataObject* InDataObj)
 {
-    //if (!IsValid(InDataObj) || !IsValid(ItemListView)) return;
-    //
-    //ItemListView->RemoveItem(InDataObj);
-
     if (!IsValid(InDataObj) || !IsValid(ItemListView)) return;
 
     ItemListView->RemoveItem(InDataObj);
     ActiveDataObjects.Remove(InDataObj);
-
     ReturnDataObject(InDataObj);
 }
 
 void UC_BasicItemPanelWidget::PreInitializeItemBars()
 {
     if (!ItemListView) return;
+
     ItemListView->ClearListItems();
 
-    const int32 PoolSize = 30; // 한 번에 표시할 최대 아이템 수 예상
-    for (int32 i = 0; i < PoolSize; ++i)
+    for (int32 i = 0; i < MaxPoolSize; ++i)
     {
-        UC_ItemDataObject* DataObj = NewObject<UC_ItemDataObject>(this);
-        DataObjectPool.Add(DataObj);
+        UC_ItemDataObject* DataObj = GetDataObject();
         ItemListView->AddItem(DataObj);
     }
 
     ItemListView->RequestRefresh();
-    ItemListView->ClearListItems(); // 미리 Slate 구조만 빌드 후 비우기
+    ItemListView->ClearListItems(); // Slate 구조만 미리 빌드
 }
 
 UC_ItemDataObject* UC_BasicItemPanelWidget::GetDataObject()
 {
-    if (DataObjectPool.Num() > 0)
+    for (UC_ItemDataObject* Obj : DataObjectPool)
     {
-        return DataObjectPool.Pop();
+        if (!ActiveDataObjects.Contains(Obj))
+        {
+            ActiveDataObjects.Add(Obj);
+            return Obj;
+        }
     }
-
     // 풀 부족 시 새로 생성
-    return NewObject<UC_ItemDataObject>(this);
+    UC_ItemDataObject* NewObj = NewObject<UC_ItemDataObject>(this);
+    ActiveDataObjects.Add(NewObj);
+    return NewObj;
 }
 
 void UC_BasicItemPanelWidget::ReturnDataObject(UC_ItemDataObject* Obj)
 {
     if (!Obj) return;
-
-    if (ItemListView->GetListItems().Contains(Obj))
-    {
-        ItemListView->RemoveItem(Obj);
-    }
-
-    Obj->ItemDataRef = nullptr;
+    ActiveDataObjects.Remove(Obj);
+    // 필요 시 초기화
     Obj->ItemRef = nullptr;
-
-    DataObjectPool.Add(Obj);
 }

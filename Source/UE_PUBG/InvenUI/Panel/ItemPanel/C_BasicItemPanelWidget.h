@@ -19,6 +19,10 @@ public:
 
 	void NativeConstruct() override;
 
+    class UC_ItemDataObject* GetDataObject();
+
+    void ReturnDataObject(UC_ItemDataObject* Obj);
+
     /// <summary>
     /// InventoryItemList의 Update함수
     /// </summary>
@@ -60,16 +64,13 @@ protected:
 
     // 풀 크기
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemPanel")
-    int32 MaxPoolSize = 30;
+    int32 MaxPoolSize = 60;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UUserWidget> ItemBarWidgetClass;
 
 protected:
-    // DataObject 생성 함수
-    UC_ItemDataObject* GetDataObject();
 
-    void ReturnDataObject(UC_ItemDataObject* Obj);
 };
 
 
