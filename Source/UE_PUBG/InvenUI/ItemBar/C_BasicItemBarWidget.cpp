@@ -28,8 +28,9 @@
 
 void UC_BasicItemBarWidget::NativeConstruct()
 {
+	Super::NativeConstruct();
 	bIsFocusable = false;
-	
+	this->SetIsFocusable(false);
 }
 
 FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -96,7 +97,7 @@ FReply UC_BasicItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& In
 			//AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)); //TODO : 게임 신 매니저에서 플레이어 가져오기
 			//UC_Util::Print("LeftMouseButton");
 			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
-
+			//FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
 			return RePlyResult.NativeReply;
 		}
 	}
@@ -107,6 +108,7 @@ FReply UC_BasicItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& In
 void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
 	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
+	//OwnerPlayer->SetIgnoreMoveInput(false); // 이동 비허용
 
 	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
 	PlayerController->SetIgnoreMoveInput(false); // 이동 허용

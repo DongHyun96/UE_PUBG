@@ -46,6 +46,7 @@ public:
 	/// <param name="OutOperation"></param>
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 
+
 	// 이벤트 함수 선언
 	// ListView에서 항목 객체가 설정될 때 호출되는 함수
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
@@ -101,7 +102,6 @@ protected:
 	//에디터에서 바인딩으로 처리한다면?
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//const FItemData* CachedItemData = nullptr; 
-
 };
 
 

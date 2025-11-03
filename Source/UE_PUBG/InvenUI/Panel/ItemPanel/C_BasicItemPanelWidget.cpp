@@ -43,6 +43,7 @@ void UC_BasicItemPanelWidget::NativeConstruct()
 
     ItemListView->SetVisibility(ESlateVisibility::Hidden);
     ItemListView->SetVisibility(ESlateVisibility::Visible);
+	ItemListView->SetSelectionMode(ESelectionMode::None);
     //SetIsFocusable(false);
 }
 //현재 이 업데이트 구조는 쓰레기임.
