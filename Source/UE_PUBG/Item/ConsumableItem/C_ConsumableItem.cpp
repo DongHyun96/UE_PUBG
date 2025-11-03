@@ -285,7 +285,7 @@ bool AC_ConsumableItem::CancelActivating()
 		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 
 		Player->GetHUDWidget()->GetInformWidget()->DeActivateConsumableInstruction();
-		
+		Player->SetCanMove(true);
 		if (LinkedItemBarWidget)
 			LinkedItemBarWidget->SetPercent(0.f, UsageTime);
 	}

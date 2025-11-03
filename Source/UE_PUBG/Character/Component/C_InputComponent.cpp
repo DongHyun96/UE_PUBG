@@ -695,8 +695,3 @@ void UC_InputComponent::OnTKey()
 {
 	Player->ToggleConsumableWheel();
 }
-
-void UC_InputComponent::ResetAllActions()
-{
-
-}

@@ -9,6 +9,7 @@
 #include "Item/ConsumableItem/C_ConsumableItem.h"
 #include "Item/C_ItemDataObject.h"
 #include "Singleton/C_GameInstance.h"
+#include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
 
@@ -88,11 +89,8 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, TArray<AC_Item
     // ListView 갱신
     ItemListView->SetListItems(ItemsToAdd);
     ItemListView->RequestRefresh();
-    if (IsInViewport())
-    {
-        ItemListView->ClearSelection();
-        FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
-    }
+    //if (GAMESCENE_MANAGER->GetCurrentHUDMode() == EHUDMode::INVEN) FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
+
 }
 
 void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& AroundItemList)
@@ -127,11 +125,9 @@ void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& Aroun
         });
 
     ItemListView->SetListItems(DataObjects);
-    if (IsInViewport())
-    {
-        ItemListView->ClearSelection();
-        FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
-    }
+    //if (GAMESCENE_MANAGER->GetCurrentHUDMode() == EHUDMode::INVEN) FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
+
+
 }
 
 void UC_BasicItemPanelWidget::AddItemToInventoryItemList(AC_Item* InItem)

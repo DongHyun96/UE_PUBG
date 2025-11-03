@@ -43,8 +43,8 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 		if (HalfStackItemInteraction()) // true면 return, false면 남은 코드 실행.
 		{
 			UpdateInvenUIWidget();
-
-			return FReply::Handled(); 
+			return FReply::Unhandled();
+			//return FReply::Handled(); 
 		}
 	}
 
@@ -52,10 +52,10 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 	{
 		//우클릭 이벤트 실행
 		//TODO : 구현
-		if (!CachedItem) return FReply::Handled();
+		if (!CachedItem) return FReply::Unhandled(); //return FReply::Handled();
 
 		if (InMouseEvent.IsAltDown())
-			if (HalfStackItemInteraction()) return FReply::Handled(); //참이면 return, 거짓이면 남은 코드 실행.
+			if (HalfStackItemInteraction()) return FReply::Unhandled(); //return FReply::Handled(); //참이면 return, 거짓이면 남은 코드 실행.
 
 		if (CachedItem->Interaction(OwnerPlayer))
 		{
@@ -71,7 +71,7 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 		UpdateWidget(DataObj);
 		UpdateInvenUIWidget();
 
-		return FReply::Handled();
+		return FReply::Unhandled(); //return FReply::Handled();
 	}
 
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
