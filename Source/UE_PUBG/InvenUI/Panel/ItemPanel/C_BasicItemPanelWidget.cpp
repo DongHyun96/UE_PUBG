@@ -99,7 +99,7 @@ void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& Aroun
 {
     if (!IsValid(ItemListView) || AroundItemList.Num() == 0) return;
 
-    ItemListView->ClearListItems();
+    //ItemListView->ClearListItems();
     //ItemListView->SetUserFocus(GetOwningPlayer());
 	
 
@@ -243,6 +243,23 @@ void UC_BasicItemPanelWidget::RemoveItemInList(UC_ItemDataObject* InDataObj)
     ActiveDataObjects.Remove(InDataObj);
 
     ReturnDataObject(InDataObj);
+}
+
+void UC_BasicItemPanelWidget::PreInitializeItemBars()
+{
+    if (!ItemListView) return;
+    ItemListView->ClearListItems();
+
+    const int32 PoolSize = 30; // 한 번에 표시할 최대 아이템 수 예상
+    for (int32 i = 0; i < PoolSize; ++i)
+    {
+        UC_ItemDataObject* DataObj = NewObject<UC_ItemDataObject>(this);
+        DataObjectPool.Add(DataObj);
+        ItemListView->AddItem(DataObj);
+    }
+
+    ItemListView->RequestRefresh();
+    ItemListView->ClearListItems(); // 미리 Slate 구조만 빌드 후 비우기
 }
 
 UC_ItemDataObject* UC_BasicItemPanelWidget::GetDataObject()

@@ -139,7 +139,7 @@ private:
 
 	void OnTKey();
 
-
+	void ResetAllActions();
 private:
 
 	AC_Player* Player{};

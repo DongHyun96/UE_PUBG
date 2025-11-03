@@ -27,6 +27,10 @@ void UC_InventoryUIWidget::NativeConstruct()
     GAMESCENE_MANAGER->SetHUDWidgetByHUDMode(EHUDMode::INVEN, this);
     //AroundItemPanel->NativeConstruct();
 	//InventoryPanel->NativeConstruct();
+    AroundItemPanel->PreInitializeItemBars();
+    InventoryPanel->PreInitializeItemBars();
+
+
 }
 
 void UC_InventoryUIWidget::SetVisibility(ESlateVisibility InVisibility)

@@ -42,6 +42,8 @@ public:
     
 	void RemoveItemInList(class UC_ItemDataObject* InDataObj);
 
+    void PreInitializeItemBars();
+
 public:
     UListView* GetItemListView() { return ItemListView; }
 protected:

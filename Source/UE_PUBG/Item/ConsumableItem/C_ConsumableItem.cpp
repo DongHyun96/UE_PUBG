@@ -12,7 +12,7 @@
 #include "Character/Component/C_ConsumableUsageMeshComponent.h"
 #include "Character/Component/C_SwimmingComponent.h"
 #include "Character/Component/C_InvenSystem.h"
-
+#include "Character/Component/C_InputComponent.h"
 #include "Item/Weapon/C_Weapon.h"
 #include "Item/Weapon/Gun/C_Gun.h"
 //#include "Item/ConsumableItem/C_ConsumableItem.h"
@@ -300,6 +300,7 @@ bool AC_ConsumableItem::CancelActivating()
 	//SetActorTickEnabled(false);
 
 	return true;
+
 }
 
 bool AC_ConsumableItem::Interaction(AC_BasicCharacter* Character)
