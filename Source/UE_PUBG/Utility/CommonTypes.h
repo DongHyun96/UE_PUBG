@@ -129,13 +129,13 @@ struct FAttachmentTableRow : public FTableRowBase
 	GENERATED_BODY();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EPartsName PartType;
+	EPartsName PartType{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EAttachmentNames AttachmentName;
+	EAttachmentNames AttachmentName{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class AAttachmentActor> AttachmentClass;
+	TSubclassOf<class AAttachmentActor> AttachmentClass{};
 };
 
 /// <summary>

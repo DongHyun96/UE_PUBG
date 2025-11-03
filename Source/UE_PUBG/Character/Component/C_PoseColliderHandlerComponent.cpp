@@ -58,8 +58,6 @@ void UC_PoseColliderHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 
 	HandleLerpBodySizeByPose(DeltaTime);
 	HandleCrawlColliderRotation(DeltaTime);
-
-	UC_Util::Print(OwnerCharacter->GetCapsuleComponent()->GetComponentLocation().Z);
 }
 
 void UC_PoseColliderHandlerComponent::SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter)
@@ -230,13 +228,16 @@ void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& D
 	static const float HEIGHT_OFFSET	= 50.f;
 	TPair<float, float> ImpactDistances{};
 
-	CrawlSlopeAngle		= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET, true);
+	CrawlSlopeAngle		= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET);
 	float SlopeDegree	= FMath::RadiansToDegrees(CrawlSlopeAngle);
 
 	//UC_Util::Print(SlopeDegree);
 	if (!CanCrawlOnSlope(SlopeDegree, ImpactDistances))
 	{
 		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter)) Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
+
+		CrawlSlopeAngle = 0.f;
+		
 		// 자세 전환 시도하기
 		if (OwnerCharacter->SetPoseState(EPoseState::CRAWL, EPoseState::STAND))		return;
 		if (OwnerCharacter->SetPoseState(EPoseState::CRAWL, EPoseState::CROUCH))	return;
