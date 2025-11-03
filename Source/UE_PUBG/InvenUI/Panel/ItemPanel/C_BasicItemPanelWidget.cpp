@@ -66,7 +66,14 @@ void UC_BasicItemPanelWidget::UpdateInventoryItemList(TMap<FName, TArray<AC_Item
         });
 
     ItemListView->SetListItems(ItemsToAdd);
-    ItemListView->RequestRefresh();
+    FTimerHandle TempHandle;
+    GetWorld()->GetTimerManager().SetTimer(TempHandle, [this]()
+        {
+            if (IsValid(ItemListView))
+            {
+                ItemListView->RequestRefresh();
+            }
+        }, 0.05f, false); // 1프레임 뒤에 Refresh
     ItemListView->ClearSelection();
 }
 
@@ -97,13 +104,21 @@ void UC_BasicItemPanelWidget::UpdateAroundItemList(const TArray<AC_Item*>& Aroun
         });
 
     ItemListView->SetListItems(DataObjects);
-    ItemListView->RequestRefresh();
+    FTimerHandle TempHandle;
+    GetWorld()->GetTimerManager().SetTimer(TempHandle, [this]()
+        {
+            if (IsValid(ItemListView))
+            {
+                ItemListView->RequestRefresh();
+            }
+        }, 0.05f, false); // 1프레임 뒤에 Refresh
     ItemListView->ClearSelection();
 
 }
 
 void UC_BasicItemPanelWidget::AddItemToInventoryItemList(AC_Item* InItem)
 {
+
     if (!IsValid(InItem) || !IsValid(ItemListView)) return;
 
     UC_ItemDataObject* DataObj = GetDataObject();
