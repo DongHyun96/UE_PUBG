@@ -92,6 +92,11 @@ void UC_InventoryUIWidget::SetVisibility(ESlateVisibility InVisibility)
 
         PlayerController->bShowMouseCursor = false;
         PlayerController->SetIgnoreLookInput(false);
+        bIsDragging = false;
+        if (FSlateApplication::IsInitialized() && FSlateApplication::Get().IsDragDropping())
+        {
+            FSlateApplication::Get().CancelDragDrop();
+        }
     }
 
     if (InVisibility == ESlateVisibility::Collapsed)
@@ -102,6 +107,11 @@ void UC_InventoryUIWidget::SetVisibility(ESlateVisibility InVisibility)
 
         PlayerController->bShowMouseCursor = false;
         PlayerController->SetIgnoreLookInput(false);
+        bIsDragging = false;
+        if (FSlateApplication::IsInitialized() && FSlateApplication::Get().IsDragDropping())
+        {
+            FSlateApplication::Get().CancelDragDrop();
+        }
     }
 }
 
