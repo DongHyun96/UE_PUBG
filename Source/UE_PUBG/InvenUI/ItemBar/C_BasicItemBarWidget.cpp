@@ -103,6 +103,8 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 {
 	UE_LOG(LogTemp, Warning, TEXT(">>> NativeOnDragDetected Called"));
 	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
+	FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
+
 
 	//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
 	//PlayerController->SetIgnoreMoveInput(false); // 이동 허용
@@ -115,7 +117,7 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
 	Border->SetBrushColor(BorderColor);
 
-	UImage* DragVisual = NewObject<UImage>(Texture);
+	UImage* DragVisual = NewObject<UImage>(this);
 
 	DragVisual->SetBrushFromTexture(Texture);
 	DragVisual->Brush.ImageSize = FVector2D(64.f, 64.f);
