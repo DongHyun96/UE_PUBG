@@ -6,8 +6,10 @@
 #include "Character/C_Player.h"
 #include "Components/CapsuleComponent.h"
 #include "Character/Component/C_EquippedComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/C_HUDWidget.h"
 #include "HUD/C_InformWidget.h"
+#include "Singleton/C_GameSceneManager.h"
 #include "Utility/C_Util.h"
 
 const ECollisionChannel UC_PoseColliderHandlerComponent::PoseCheckerChannel = ECC_GameTraceChannel1;
@@ -58,6 +60,14 @@ void UC_PoseColliderHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 
 	HandleLerpBodySizeByPose(DeltaTime);
 	HandleCrawlColliderRotation(DeltaTime);
+	
+	/*UC_Util::Print(OwnerCharacter->GetCapsuleComponent()->GetComponentLocation().Z, FColor::Red);
+	UC_Util::Print(OwnerCharacter->GetMesh()->GetComponentLocation().Z, FColor::Blue);
+	UC_Util::Print(OwnerCharacter->GetMesh()->GetRelativeLocation().Z, FColor::Yellow);*/
+
+	/*FVector HipSocketLocation = OwnerCharacter->GetMesh()->GetSocketLocation("Hips");
+	UC_Util::Print("HipSocketLocation : " + FString::FromInt(HipSocketLocation.Z), FColor::Red);
+	UC_Util::Print("Character Location : " + FString::FromInt(OwnerCharacter->GetActorLocation().Z), FColor::Blue);*/
 }
 
 void UC_PoseColliderHandlerComponent::SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter)
@@ -197,9 +207,39 @@ void UC_PoseColliderHandlerComponent::HandleLerpBodySizeByPose(const float& Delt
 
 		OwnerCharacter->GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, MeshZPosLerpDest));
 
-		OwnerCharacter->GetCapsuleComponent()->SetSimulatePhysics(true);
-		CrawlCapsuleComponent->SetCollisionEnabled((OwnerCharacter->GetPoseState() == EPoseState::CRAWL) ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
-		OwnerCharacter->GetCapsuleComponent()->SetSimulatePhysics(false);
+		// TODO : Swimming 상태일 경우 생략
+		if (OwnerCharacter->GetPoseState() == EPoseState::CRAWL)
+		{
+			OwnerCharacter->GetCapsuleComponent()->SetSimulatePhysics(true);
+			CrawlCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			OwnerCharacter->GetCapsuleComponent()->SetSimulatePhysics(false);
+		}
+		else
+		{
+			// 5 10
+			CrawlCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+			// 자세 전환 이후 바닥면에 끼이는 상황 방지
+			// 자세별 Hips의 위치와 Character의 상대적 위치를 보아, ActorLocation을 조정해야하는 상황이면 조정하여 골반 위치로 ActorLocation을 동기화 처리시킴
+			static const TMap<EPoseState, TPair<float, float>> PoseByHipActorDiffLimitAndAdjustValue =
+			{
+				{EPoseState::STAND,  {20.f, 15.f}},
+				{EPoseState::CROUCH, {25.f, 20.f}}
+			};
+
+			const float HipLocation   = OwnerCharacter->GetMesh()->GetSocketLocation("Hips").Z;  
+			const float HipActorZDiff = OwnerCharacter->GetActorLocation().Z - HipLocation;
+			
+			if (HipActorZDiff < PoseByHipActorDiffLimitAndAdjustValue[OwnerCharacter->GetPoseState()].Key)
+			{
+				UC_Util::Print("Adjusting Character Location", FColor::Red, 10.f);
+				
+				FVector NewLocation = OwnerCharacter->GetActorLocation();
+				NewLocation.Z       = HipLocation + PoseByHipActorDiffLimitAndAdjustValue[OwnerCharacter->GetPoseState()].Value;
+				
+				OwnerCharacter->SetActorLocation(NewLocation);
+			}
+		}
 
 		OwnerCharacter->SetCanMove(true);
 		PoseBySizeLerpFlag = false;
@@ -228,7 +268,7 @@ void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& D
 	static const float HEIGHT_OFFSET	= 50.f;
 	TPair<float, float> ImpactDistances{};
 
-	CrawlSlopeAngle		= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET);
+	CrawlSlopeAngle		= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET, true);
 	float SlopeDegree	= FMath::RadiansToDegrees(CrawlSlopeAngle);
 
 	//UC_Util::Print(SlopeDegree);
@@ -282,8 +322,22 @@ float UC_PoseColliderHandlerComponent::GetCrawlSlopeAngle
 	bool HasHeadHit		= GetWorld()->LineTraceSingleByChannel(HeadHitResult, HeadStartLocation, HeadDestLocation, PoseCheckerChannel, CollisionParams);
 	bool HasPelvisHit	= GetWorld()->LineTraceSingleByChannel(PelvisHitResult, PelvisStartLocation, PelvisDestLocation, PoseCheckerChannel, CollisionParams);
 
+	/*bool HasHeadHit = GetWorld()->SweepSingleByChannel(HeadHitResult, HeadStartLocation, HeadDestLocation, FQuat::Identity,
+		PoseCheckerChannel, FCollisionShape::MakeSphere(20.f), CollisionParams);
+
+	bool HasPelvisHit = GetWorld()->SweepSingleByChannel(PelvisHitResult, PelvisStartLocation, PelvisDestLocation, FQuat::Identity,
+		PoseCheckerChannel, FCollisionShape::MakeSphere(20.f), CollisionParams);*/
+	
+
 	if (EnableDebugLine)
 	{
+		/*DrawDebugSphere(GetWorld(), HeadStartLocation, 20.f, 12, FColor::Red, false, 0.5f);
+		DrawDebugSphere(GetWorld(), HeadDestLocation, 20.f, 12, FColor::Red, false, 0.5f);
+		DrawDebugLine(GetWorld(), HeadStartLocation, HeadDestLocation, FColor::Red, false, 0.5f);
+
+		DrawDebugSphere(GetWorld(), PelvisStartLocation, 20.f, 12, FColor::Red, false, 0.5f);
+		DrawDebugSphere(GetWorld(), PelvisDestLocation, 20.f, 12, FColor::Red, false, 0.5f);
+		DrawDebugLine(GetWorld(), PelvisStartLocation, PelvisDestLocation, FColor::Red, false, 0.5f);*/
 		DrawDebugLine(GetWorld(), HeadStartLocation, HeadHitResult.ImpactPoint, FColor::Red, false, 0.5f);
 		DrawDebugLine(GetWorld(), PelvisStartLocation, PelvisHitResult.ImpactPoint, FColor::Red, false, 0.5f);
 	}
