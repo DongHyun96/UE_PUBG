@@ -103,8 +103,6 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 {
 	UE_LOG(LogTemp, Warning, TEXT(">>> NativeOnDragDetected Called"));
 	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
-	FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
-
 
 	//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
 	//PlayerController->SetIgnoreMoveInput(false); // 이동 허용
@@ -158,7 +156,7 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 
 void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
-	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
+	//IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 	//// ListItemObject를 UC_Item 클래스로 캐스팅하여 아이템 데이터 사용
 	//CachedItem = Cast<AC_Item>(ListItemObject);
 
@@ -178,7 +176,7 @@ void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	CachedItem = DataObj->ItemRef;
 
 	// 초기 UI 세팅
-	UpdateWidget(DataObj);
+	//UpdateWidget(DataObj);
 
 	//DataObj->OnItemDataChanged.AddDynamic(this, &UC_BasicItemBarWidget::UpdateWidget);
 

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InvenUI/Panel/C_BasicPanelWidget.h"
-#include "Components/ListView.h"
+//#include "Components/ListView.h"
 #include "C_BasicItemPanelWidget.generated.h"
 
 /**
@@ -48,11 +48,12 @@ public:
 
     void PreInitializeItemBars();
 
+
 public:
-    UListView* GetItemListView() { return ItemListView; }
+    //UListView* GetItemListView() { return ItemListView; }
 protected:
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-    UListView* ItemListView = nullptr;
+    //UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+    //UListView* ItemListView = nullptr;
 
     // DataObject 풀
     UPROPERTY()
@@ -69,8 +70,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UUserWidget> ItemBarWidgetClass;
 
-protected:
-
+protected://Scroll box로 전환
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+    class UScrollBox* ItemScrollBox = nullptr;
 };
 
 

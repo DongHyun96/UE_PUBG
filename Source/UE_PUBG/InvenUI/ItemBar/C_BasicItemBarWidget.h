@@ -79,6 +79,10 @@ public:
 	/// </summary>
 	bool HalfStackItemInteraction();
 
+	AC_Item* GetCachedItem() { return CachedItem; }
+
+	UC_ItemDataObject* GetDataObj() { return DataObj; }
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UImage* ItemImage = nullptr;

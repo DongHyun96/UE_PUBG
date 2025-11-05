@@ -206,6 +206,8 @@ bool AC_Item::MoveToInven(AC_BasicCharacter* Character, int32 InStack)
 		Player->GetInvenSystem()->GetInvenUI()->UpdateWidget();
 	}
 
+
+
 	return bIsMoveItem;
 }
 
