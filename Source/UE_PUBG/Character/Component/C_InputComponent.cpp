@@ -601,6 +601,46 @@ void UC_InputComponent::OnWalkReleased()
 /// </summary>
 void UC_InputComponent::OnFKey()
 {
+	// For Testing
+	switch (Player->GetSwimmingComponent()->GetSwimmingState())
+	{
+	case ESwimmingState::ON_GROUND: UC_Util::Print("Player Swimming State : ON_GROUND", FColor::Green, 10.f);
+		break;
+	case ESwimmingState::SWIMMING_SURFACE: UC_Util::Print("Player Swimming State : SWIMMING_SURFACE", FColor::Green, 10.f);
+		break;
+	case ESwimmingState::SWIMMING_UNDER: UC_Util::Print("Player Swimming State : SWIMMING_UNDER", FColor::Green, 10.f);
+		break;
+	case ESwimmingState::MAX: UC_Util::Print("Player Swimming State : MAX", FColor::Green, 10.f);
+		break;
+	}
+
+	switch (Player->GetSkyDivingComponent()->GetSkyDivingState())
+	{
+	case ESkyDivingState::READY: UC_Util::Print("Player SkyDivingState : READY", FColor::Blue, 10.f);
+		break;
+	case ESkyDivingState::SKYDIVING: UC_Util::Print("Player SkyDivingState : SKYDIVING", FColor::Blue, 10.f);
+		break;
+	case ESkyDivingState::PARACHUTING: UC_Util::Print("Player SkyDivingState : PARACHUTING", FColor::Blue, 10.f);
+		break;
+	case ESkyDivingState::LANDING: UC_Util::Print("Player SkyDivingState : LANDING", FColor::Blue, 10.f);
+		break;
+	case ESkyDivingState::MAX: UC_Util::Print("Player SkyDivingState : MAX", FColor::Blue, 10.f);
+		break;
+	}
+
+	switch (Player->GetMainState())
+	{
+	case EMainState::IDLE: UC_Util::Print("Player Main State : IDLE", FColor::Red, 10.f);
+		break;
+	case EMainState::SKYDIVING: UC_Util::Print("Player Main State : SKYDIVING", FColor::Red, 10.f);
+		break;
+	case EMainState::DEAD: UC_Util::Print("Player Main State : DEAD", FColor::Red, 10.f);
+		break;
+	case EMainState::MAX: UC_Util::Print("Player Main State : MAX", FColor::Red, 10.f);
+		break;
+	}
+	
+	
 	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), this->Inventory->GetMaxVolume());
 	//FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetMaxVolume());
 	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
