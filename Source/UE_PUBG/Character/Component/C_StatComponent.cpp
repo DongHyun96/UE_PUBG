@@ -128,10 +128,21 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 		(OwnerEnemy && OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest) ? 1.f : 0.f // StatCare 테스팅용 Enemy의 경우 무적으로 둠
 	);*/
 
+	float MinHP{};
+
 	// Testing용 AI에 따라 최소로 둘 수 있는 HP값 결정
-	const float MinHP =  !OwnerEnemy ? 0.f : 
-						  OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::SkyDivingTest ? 100.f :
-						  OwnerEnemy->GetBehaviorType() == EEnemyBehaviorType::StatCareTest  ? 1.f : 0.f;
+	if (OwnerEnemy)
+	{
+		switch (OwnerEnemy->GetBehaviorType())
+		{
+		case EEnemyBehaviorType::MovementTest: case EEnemyBehaviorType::SkyDivingTest: MinHP = 100.f;
+			break;
+		case EEnemyBehaviorType::StatCareTest: MinHP = 1.f;
+			break;
+		default: MinHP = 0.f; // CombatTester, InGamePlayable
+		}
+	}
+	
 	
 	CurHP = FMath::Max(CurHP - DamageAmount, MinHP);
 
@@ -165,7 +176,14 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 			GetPlayerCombatFieldManager()->GetPlayerCombatFieldState();
 			
 			// Player의 경우 TrainingGround의 PlayerCombatField fight 진행 중이지 않는 상황을 제외하고 사망 처리는 모두 꺼둠
-			if (Player && PlayerCombatFieldState == EPlayerCombatFieldState::Idle) return true;
+			if (Player)
+			{
+				if (PlayerCombatFieldState == EPlayerCombatFieldState::PlayingRound)
+					OwnerCharacter->CharacterDead(KillFeedDescriptor);
+				
+				return true;
+			}
+
 		}
 
 		// Testing 용이하게 하기 위해 ShantyTown 및 TrainingGround을 제외한 Map에서는 사망 처리 x
@@ -175,6 +193,8 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 		
 		if (GAMESCENE_MANAGER->GetIsGameOver()) return true;
 
+		if (Cast<AC_Player>(OwnerCharacter)) return true; // TODO : 이 라인 지우기
+		
 		// 사망 처리
 		OwnerCharacter->CharacterDead(KillFeedDescriptor);
 	}

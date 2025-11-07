@@ -639,6 +639,9 @@ void UC_InputComponent::OnFKey()
 	case EMainState::MAX: UC_Util::Print("Player Main State : MAX", FColor::Red, 10.f);
 		break;
 	}
+
+	if (Player->GetCanMove()) UC_Util::Print("CanMove", FColor::Cyan, 10.f);
+	else UC_Util::Print("Cannot move", FColor::Cyan, 10.f);
 	
 	
 	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), this->Inventory->GetMaxVolume());

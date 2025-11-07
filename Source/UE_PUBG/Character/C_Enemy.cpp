@@ -377,6 +377,10 @@ void AC_Enemy::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 	EnemyAIController->GetPerceptionComponent()->SetComponentTickEnabled(false);
 
 	EnemyAIController->GetBrainComponent()->StopLogic("Died");
+	/*if (UBehaviorTreeComponent* BTComponent = Cast<UBehaviorTreeComponent>(EnemyAIController->GetBrainComponent()))
+		BTComponent->StopTree(EBTStopMode::Safe);
+	else UC_Util::Print("From AC_Enemy::CharacterDead : BTComponent Casting Failed!", FColor::Red, 10.f);*/
+	
 
 	// 현재 Level이 Training Ground일 경우, 모든 Enemy가 사망했다고 하더라도 Winner가 없음
 	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());

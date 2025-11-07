@@ -296,6 +296,8 @@ protected:
 	static const FName HOLSTER_SOCKET_NAME;
 	static const FName THROW_START_SOCKET_NAME; // TempMesh의 위치로 Throwable Start 위치 잡는 Socket & 실질적으로 Throw Throwable할 때 Projectile위치를 이 Socket으로 잡음
 
+	static const FName CRAWL_RELEASE_SOCKET_NAME; // Crawl 상태에서 ReleaseOnGround 처리할 때 Teleport할 위치
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
