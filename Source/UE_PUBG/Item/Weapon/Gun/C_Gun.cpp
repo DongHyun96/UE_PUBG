@@ -590,7 +590,7 @@ bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 		InvenComp->RemoveItemToAroundList(this);
 		if (AC_Player* Player = Cast<AC_Player>(Character)) // Gun장착시 AroundItemList에서 제거
 		{
-			Player->GetInvenSystem()->GetInvenUI()->RemoveItemInList(this);
+			//Player->GetInvenSystem()->GetInvenUI()->RemoveItemInList(this);
 		}
 		return true;
 	}
@@ -604,7 +604,7 @@ bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 		InvenComp->RemoveItemToAroundList(this);
 		if (AC_Player* Player = Cast<AC_Player>(Character)) // Gun장착시 AroundItemList에서 제거
 		{
-			Player->GetInvenSystem()->GetInvenUI()->RemoveItemInList(this);
+			//Player->GetInvenSystem()->GetInvenUI()->RemoveItemInList(this);
 		}
 		return true;
 	}
@@ -617,7 +617,7 @@ bool AC_Gun::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 		InvenComp->RemoveItemToAroundList(this);
 		if (AC_Player* Player = Cast<AC_Player>(Character)) // Gun장착시 AroundItemList에서 제거
 		{
-			Player->GetInvenSystem()->GetInvenUI()->RemoveItemInList(this);
+			//Player->GetInvenSystem()->GetInvenUI()->RemoveItemInList(this);
 		}
 		
 		DroppedGun->DropItem(Character);

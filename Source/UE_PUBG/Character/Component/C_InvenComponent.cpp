@@ -380,6 +380,15 @@ void UC_InvenComponent::GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<
 
 }
 
+void UC_InvenComponent::RemoveItemToAroundList(AC_Item* item)
+{
+	AroundItems.Remove(item);
+	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter)) 
+	{
+		Player->GetInvenSystem()->GetInvenUI()->RemoveItemInList(item);
+	}
+}
+
 void UC_InvenComponent::CheckBackPackOnCharacter()
 {
 	if (!OwnerCharacter) return;
