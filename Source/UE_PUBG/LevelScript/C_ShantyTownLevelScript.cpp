@@ -47,8 +47,8 @@ void AC_ShantyTownLevelScript::BeginPlay()
 	//UC_Util::Print("Spawned Items Count : " + FString::FromInt(ItemLocationsInAComponent.Num()), FColor::Emerald, 10.f);
 	UC_Util::Print("Spawned Items Count : " + FString::FromInt(GAMESCENE_MANAGER->GetItemManager()->GetItemContainer().Num()),FColor::Emerald, 10);
 
-	GAMESCENE_MANAGER->ToggleVehiclesHiddenInGame(true);
-	GAMESCENE_MANAGER->GetItemManager()->ToggleItemsHiddenInGame(true);
+	GAMESCENE_MANAGER->ToggleVehiclesHiddenInGame(bHideSpawnedItemsOnGameStart);
+	GAMESCENE_MANAGER->GetItemManager()->ToggleItemsHiddenInGame(bHideSpawnedItemsOnGameStart);
 }
 
 void AC_ShantyTownLevelScript::Tick(float DeltaTime)

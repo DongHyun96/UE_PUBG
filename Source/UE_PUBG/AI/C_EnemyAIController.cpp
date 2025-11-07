@@ -214,6 +214,9 @@ bool AC_EnemyAIController::TrySetTargetCharacterBasedOnPriority()
 
 void AC_EnemyAIController::UpdateDetectedCharactersRangeLevel()
 {
+	if (!IsValid(OwnerEnemy)) return;
+	if (OwnerEnemy->GetMainState() == EMainState::DEAD) return;
+	
 	// DetectedCharacters에 들어있는 Character들 모두 RangeLevel 갱신시키기
 	
 	TSet<AC_BasicCharacter*> Updated{}; // 이미 갱신 처리된 Character들

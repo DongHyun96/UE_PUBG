@@ -86,9 +86,13 @@ void UC_PoseColliderHandlerComponent::SetColliderByPoseState(EPoseState InPoseSt
 
 void UC_PoseColliderHandlerComponent::SetColliderBySwimmingMovingState(const bool& IsMoving)
 {
-	RootColliderHeightRadiusLerpDest	= POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[IsMoving ? EPoseState::CRAWL : EPoseState::STAND];
-	MeshZPosLerpDest					= POSE_BY_MESH_Z_POS[EPoseState::STAND];
-	PoseBySizeLerpFlag					= true;
+	const TPair<float, float> PrevHeightRadius = RootColliderHeightRadiusLerpDest;
+	
+	RootColliderHeightRadiusLerpDest = POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[IsMoving ? EPoseState::CRAWL : EPoseState::STAND];
+	if (PrevHeightRadius == RootColliderHeightRadiusLerpDest) return;
+	
+	MeshZPosLerpDest = POSE_BY_MESH_Z_POS[EPoseState::STAND];
+	PoseBySizeLerpFlag = true;
 }
 
 bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(EPoseState InChangeTo)
@@ -207,7 +211,9 @@ void UC_PoseColliderHandlerComponent::HandleLerpBodySizeByPose(const float& Delt
 
 		OwnerCharacter->GetMesh()->SetRelativeLocation(FVector(MeshLocation.X, MeshLocation.Y, MeshZPosLerpDest));
 
-		// TODO : Swimming 상태일 경우 생략
+		OwnerCharacter->SetCanMove(true);
+		PoseBySizeLerpFlag = false;
+		
 		if (OwnerCharacter->GetPoseState() == EPoseState::CRAWL)
 		{
 			OwnerCharacter->GetCapsuleComponent()->SetSimulatePhysics(true);
@@ -216,6 +222,7 @@ void UC_PoseColliderHandlerComponent::HandleLerpBodySizeByPose(const float& Delt
 		}
 		else
 		{
+			if (OwnerCharacter->GetSwimmingComponent()->IsSwimming()) return;
 			// 5 10
 			CrawlCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -240,10 +247,6 @@ void UC_PoseColliderHandlerComponent::HandleLerpBodySizeByPose(const float& Delt
 				OwnerCharacter->SetActorLocation(NewLocation);
 			}
 		}
-
-		OwnerCharacter->SetCanMove(true);
-		PoseBySizeLerpFlag = false;
-
 		return;
 	}
 
@@ -268,7 +271,7 @@ void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& D
 	static const float HEIGHT_OFFSET	= 50.f;
 	TPair<float, float> ImpactDistances{};
 
-	CrawlSlopeAngle		= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET, true);
+	CrawlSlopeAngle		= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET);
 	float SlopeDegree	= FMath::RadiansToDegrees(CrawlSlopeAngle);
 
 	//UC_Util::Print(SlopeDegree);
