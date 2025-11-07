@@ -62,6 +62,7 @@ bool AC_Helmet::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 	//OwnerCharacter = nullptr;
 	this->SetItemPlace(EItemPlace::AROUND);
 
+
 	// Player의 경우 HUD Armor info 업데이트
 	if (AC_Player* Player = Cast<AC_Player>(Character))
 		Player->GetHUDWidget()->GetArmorInfoWidget()->SetHelmetInfo(0);
