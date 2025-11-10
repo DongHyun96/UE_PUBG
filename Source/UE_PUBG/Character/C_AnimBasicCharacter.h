@@ -168,6 +168,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	ESkyDivingState SkyDivingState{};
 
+protected:
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsActivatingConsumableItem{};
+
 };
 
 

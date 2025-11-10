@@ -54,7 +54,7 @@ public class UE_PUBG : ModuleRules
         });
         */
 
-        PrivateDependencyModuleNames.AddRange(new string[] { });
+        PrivateDependencyModuleNames.AddRange(new string[] { /*"Blutility"*/ });
 
         PublicIncludePaths.Add(ModuleDirectory);
 

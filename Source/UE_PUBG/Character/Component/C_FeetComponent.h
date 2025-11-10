@@ -14,20 +14,28 @@ struct FFeetData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FVector LeftDistance;
+	FFeetData()
+		: LeftDistance(FVector::ZeroVector)
+		, RightDistance(FVector::ZeroVector)
+		, RootBoneDistance(FVector::ZeroVector)
+		, LeftRotation(FRotator::ZeroRotator)
+		, RightRotation(FRotator::ZeroRotator)
+	{}
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FVector RightDistance;
+	FVector LeftDistance{};
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FVector RootBoneDistance;
+	FVector RightDistance{};
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FRotator LeftRotation;
+	FVector RootBoneDistance{};
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FRotator RightRotation;
+	FRotator LeftRotation{};
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	FRotator RightRotation{};
 };
 
 // Foot Sound 관련 Descriptor

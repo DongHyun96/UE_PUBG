@@ -123,7 +123,7 @@ public:
 	void AddItemToAroundList(AC_Item* item) { AroundItems.Add(item); }
 
 	// Around Item List에 아이템을 제거하는 함수
-	void RemoveItemToAroundList(AC_Item* item) { AroundItems.Remove(item); }
+	void RemoveItemToAroundList(AC_Item* item); //{ AroundItems.Remove(item); }
 
 	// 캐릭터가 가방을 매고 있는지 확인하고 총의 위치를 조정하는 함수.
 	void CheckBackPackOnCharacter();

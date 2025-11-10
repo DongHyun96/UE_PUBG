@@ -164,6 +164,14 @@ void AC_ItemManager::PoolingWeightedItemCodes()
 //	ItemContainer.Add(InItem);  
 //}
 
+void AC_ItemManager::ToggleItemsHiddenInGame(bool InHiddenInGame)
+{
+	for (AC_Item* SpawnedItem : ItemContainer)
+	{
+		SpawnedItem->SetActorHiddenInGame(InHiddenInGame);
+	}
+}
+
 FItemData* AC_ItemManager::GetItemData(FName ItemCode)
 {
     if (GeneralItemDataCache.Contains(ItemCode))

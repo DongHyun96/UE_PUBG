@@ -32,6 +32,8 @@ public:
     UPROPERTY(BlueprintReadOnly, Category = "Item")
     AC_Item* ItemRef = nullptr;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+    float UseProgress = 0.f;
 private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item", meta = (AllowPrivateAccess = "true"))
     FName ItemCode = "NONE";

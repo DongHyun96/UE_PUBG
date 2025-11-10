@@ -385,7 +385,7 @@ bool UC_InformWidget::AddPlayerWarningLog(const FString& WarningLog)
     return true;
 }
 
-bool UC_InformWidget::AddTopKillFeedLog(const struct FKillFeedDescriptor& KillFeedDescriptor)
+bool UC_InformWidget::AddTopKillFeedLog(const FKillFeedDescriptor& KillFeedDescriptor)
 {
     int TargetIndex = TopKillFeedLogSequence.Last();
     TopKillFeedLogSequence.RemoveAt(TopKillFeedLogSequence.Num() - 1);

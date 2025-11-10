@@ -21,7 +21,6 @@ void UC_BTTaskSkyDiveTestSkyDive::TickTask(UBehaviorTreeComponent& OwnerComp, ui
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	// TODO : TMap에 저장해두기(Casting 최적화 처리)
 	AC_EnemyAIController* 		EnemyAIController       = Cast<AC_EnemyAIController>(OwnerComp.GetAIOwner());
 	AC_Enemy*			  		Enemy                   = Cast<AC_Enemy>(EnemyAIController->GetPawn());
 	UC_EnemySkyDivingComponent* EnemySkyDivingComponent = Cast<UC_EnemySkyDivingComponent>(Enemy->GetSkyDivingComponent());

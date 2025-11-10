@@ -13,5 +13,7 @@ public class UE_PUBGTarget : TargetRules
 		ExtraModuleNames.Add("UE_PUBG");
 		// ExtraModuleNames.Add("LoadingScreenModule");
 
-    }
+		bUsesSteam = false;
+		bUseLoggingInShipping = false;
+	}
 }

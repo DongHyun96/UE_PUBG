@@ -17,7 +17,8 @@ void FLoadingScreenModule::StartupModule()
 		if (!BGPath.IsNull())
 		{
 			// Load the texture synchronously and store it
-			// StaticLoadObject parameters:
+			// Static
+			// parameters:
 			// 1. Class to load (UTexture2D)
 			// 2. Outer object (nullptr = default)
 			// 3. Path to the asset

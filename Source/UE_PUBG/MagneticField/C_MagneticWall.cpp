@@ -2,6 +2,8 @@
 
 
 #include "MagneticField/C_MagneticWall.h"
+
+#include "Character/Component/SkyDivingComponent/C_SkyDivingComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Materials/MaterialInterface.h"

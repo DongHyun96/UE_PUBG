@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InvenUI/Panel/C_BasicPanelWidget.h"
-#include "Components/ListView.h"
+//#include "Components/ListView.h"
 #include "C_BasicItemPanelWidget.generated.h"
 
 /**
@@ -18,6 +18,10 @@ class UE_PUBG_API UC_BasicItemPanelWidget : public UC_BasicPanelWidget
 public:
 
 	void NativeConstruct() override;
+
+    class UC_ItemDataObject* GetDataObject();
+
+    void ReturnDataObject(UC_ItemDataObject* Obj);
 
     /// <summary>
     /// InventoryItemList의 Update함수
@@ -42,11 +46,14 @@ public:
     
 	void RemoveItemInList(class UC_ItemDataObject* InDataObj);
 
+    void PreInitializeItemBars();
+
+
 public:
-    UListView* GetItemListView() { return ItemListView; }
+    //UListView* GetItemListView() { return ItemListView; }
 protected:
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
-    UListView* ItemListView = nullptr;
+    //UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+    //UListView* ItemListView = nullptr;
 
     // DataObject 풀
     UPROPERTY()
@@ -58,16 +65,14 @@ protected:
 
     // 풀 크기
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemPanel")
-    int32 MaxPoolSize = 30;
+    int32 MaxPoolSize = 60;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UUserWidget> ItemBarWidgetClass;
 
-protected:
-    // DataObject 생성 함수
-    UC_ItemDataObject* GetDataObject();
-
-    void ReturnDataObject(UC_ItemDataObject* Obj);
+protected://Scroll box로 전환
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+    class UScrollBox* ItemScrollBox = nullptr;
 };
 
 

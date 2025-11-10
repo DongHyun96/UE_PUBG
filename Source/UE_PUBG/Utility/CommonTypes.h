@@ -4,6 +4,8 @@
 // 이유는 100개가 넘는 검사가 이루어 지기 때문.
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+//#include "Character/Component/C_AttachableItemMeshComponent.h"
+//#include "Item/C_Item.h"
 #include "CommonTypes.generated.h"
 
 
@@ -35,6 +37,54 @@ enum class EItemPlace : uint8
 	AROUND,
 	INVEN,
 	SLOT
+};
+
+/// <summary>
+/// AttachableItem PartsName Enum class
+/// C_Gun에서 부착 가능 부위
+/// </summary>
+UENUM(BlueprintType)
+enum class EPartsName : uint8
+{
+	NONE,
+	SCOPE,
+	MUZZLE,
+	GRIP,
+	MAGAZINE,
+	GUNSTOCK,
+	MAX
+};
+
+/// <summary>
+/// Attachment 아이템 이름들
+/// </summary>
+UENUM(BlueprintType)
+enum class EAttachmentNames : uint8
+{
+	REDDOT,
+	SCOPE4,
+	SCOPE8,
+	VERTGRIP,
+	EXTENDMAG,
+	QUICKMAG,
+	COMPENSATOR,
+	SUPPRESSOR,
+	MAX
+};
+
+UENUM(BlueprintType)
+enum class EItemNames : uint8
+{
+	NONE,
+	HELMET,
+	ARMORE,
+	BACKPACK,
+	MAINGUN,
+	MELEEWEAPON,
+	THROWABLE,
+	ATTACHMENT,
+	CONSUMPTIONITEM,
+	BULLET
 };
 
 USTRUCT(BlueprintType)
@@ -71,6 +121,21 @@ struct FItemData : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Sound")
 	USoundBase* PickUpSound{};
+};
+
+USTRUCT(BlueprintType)
+struct FAttachmentTableRow : public FTableRowBase
+{
+	GENERATED_BODY();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EPartsName PartType{};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EAttachmentNames AttachmentName{};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class AAttachmentActor> AttachmentClass{};
 };
 
 /// <summary>

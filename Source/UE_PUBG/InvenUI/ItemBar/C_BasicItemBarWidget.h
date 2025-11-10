@@ -20,6 +20,10 @@ public:
 
 	void NativeConstruct() override;
 
+	FReply NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent) override;
+
+	void NativeOnFocusLost(const FFocusEvent& InFocusEvent)	override;
+
 	/// <summary>
 	/// ItemBar를 우클릭했을 때 이벤트 구현.(Item의 Interaction 함수 호출)
 	/// </summary>
@@ -43,6 +47,7 @@ public:
 	/// <param name="InMouseEvent"></param>
 	/// <param name="OutOperation"></param>
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+
 
 	// 이벤트 함수 선언
 	// ListView에서 항목 객체가 설정될 때 호출되는 함수
@@ -74,6 +79,10 @@ public:
 	/// </summary>
 	bool HalfStackItemInteraction();
 
+	AC_Item* GetCachedItem() { return CachedItem; }
+
+	UC_ItemDataObject* GetDataObj() { return DataObj; }
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
 	class UImage* ItemImage = nullptr;
@@ -99,7 +108,6 @@ protected:
 	//에디터에서 바인딩으로 처리한다면?
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//const FItemData* CachedItemData = nullptr; 
-
 };
 
 

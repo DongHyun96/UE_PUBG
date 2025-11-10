@@ -58,6 +58,13 @@ public:
 	}
 
 public:
+	
+	/// <summary>
+	/// 현재 level에 배치된 모든 Item들의 HiddenInGame setting 
+	/// </summary>
+	void ToggleItemsHiddenInGame(bool InHiddenInGame);
+
+public:
     // 아이템을 이름으로 조회
     FItemData* GetItemData(FName ItemCode);
 

@@ -81,7 +81,7 @@ void UC_LobbyWidget::NativeConstruct()
 		PlayerController->SetLobbyWidget(this);
 	else UC_Util::Print("From UC_LobbyWidget::NativeConstruct : Failed to get PlayerController", FColor::Red, 10.f);
 
-	// TODO : 현재 최초 로그인인지 확인하여, 맞다면 Login 처리 먼저 진행
+	// 현재 최초 로그인인지 확인하여, 맞다면 Login 처리 먼저 진행
 	if (UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance()))
 		CurrentLobbyPageLocation = GameInstance->GetPlayerNickNameSet() ? ELobbyPageLocation::MainLobby : ELobbyPageLocation::LogIn;
 

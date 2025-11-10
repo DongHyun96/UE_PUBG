@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Item/C_Item.h"
 #include "C_AttachableItemMeshComponent.generated.h"
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UE_PUBG_API UC_AttachableItemMeshComponent : public UActorComponent
@@ -37,7 +38,7 @@ public:
 	void UseAttachmentStrategy(USceneComponent* InParent);
 protected:
 	class AC_BasicCharacter* OwnerCharacter;
-	TMap<EPartsName, TMap<EAttachmentNames,TArray<class AAttachmentActor*>>> AttachableItemsMesh;
+	TMap<EPartsName, TMap<EAttachmentNames, TArray<class AAttachmentActor*>>> AttachableItemsMesh;
 		
 };
 

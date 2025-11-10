@@ -13,7 +13,6 @@
 				"CoreUObject",
 				"UMG",
 				"Engine",
-				"Blutility",
 				"EnhancedInput"
 			]
 		},
@@ -61,5 +60,8 @@
 			"Name": "ElectraPlayer",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Windows"
 	]
 }

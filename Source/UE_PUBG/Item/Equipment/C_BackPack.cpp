@@ -103,9 +103,9 @@ bool AC_BackPack::MoveSlotToAround(AC_BasicCharacter* Character,int32 InStack)
 	curBackPack = Cast<AC_BackPack>(InvenComp->GetEquipmentItems()[EEquipSlot::BACKPACK]);
 
 	float curVolume = InvenComp->GetCurVolume();
-	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel()) + InvenComp->GetVestVolume();
+	float preMaxVolume = 70.f + InvenComp->GetVestVolume();
 
-	if (curVolume > preMaxVolume) return false;
+	if (curVolume > preMaxVolume && InStack != -1) return false;
 
 	if (curBackPack)
 	{
@@ -141,14 +141,17 @@ bool AC_BackPack::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 	float curVolume = InvenComp->GetCurVolume();
 	float preMaxVolume = 70.f + InvenComp->CheckBackPackVolume(this->GetLevel()) + InvenComp->GetVestVolume();
 
-	if (curVolume >= preMaxVolume) return false;
+	if (curVolume > preMaxVolume) return false;
+
 
 	if (curBackPack)
-		curBackPack->MoveToAround(Character, InStack);
-
-	//InvenComp->EquippedBackPack(this);
+	{
+		curBackPack->MoveToAround(Character, -1);
+	}
 
 	InvenComp->SetSlotEquipment(EEquipSlot::BACKPACK, this);
+	//InvenComp->EquippedBackPack(this);
+
 
 	InvenComp->CheckBackPackOnCharacter();
 

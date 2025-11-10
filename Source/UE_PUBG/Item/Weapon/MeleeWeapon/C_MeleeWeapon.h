@@ -52,42 +52,9 @@ public:
 
 	bool Interaction(AC_BasicCharacter* Character) override;
 
-	/// <summary>
-	/// 해당 아이템(객체)를 얼마나 인벤에 넣을 수 있는지 계산해서 넣는다. -> 일부만 넣는 경우에는 인벤에 넣을 때 Spawn을 통해 새로운 객체를 만들어 
-	/// 갯수를 설정해주고 원본의 갯수도 수정. (원본stack = 수정된 원본의 stack + 생성객체의 stack)
-	/// </summary>
-	/// <param name="Character"></param>
-	/// <returns></returns>
-	//bool LegacyMoveToInven(AC_BasicCharacter* Character) override;
-
-	/// <summary>
-	/// 해당 아이템(객체)를 얼마나 버릴 것인지 계산해서 버린다.(이것은 후에 나눠버리기 기능을 위해 uint8정도를 받아 사용하면 좋을듯.)
-	/// ->일부만 버리는 경우 아이템(객체)를 새로 생성해서 원본과 수량을 조정해야 한다. (원본stack = 수정된 원본의 stack + 생성객체의 stack)
-	/// </summary>
-	/// <param name="Character"></param>
-	/// <returns></returns>
-	//bool LegacyMoveToAround(AC_BasicCharacter* Character) override;
-
-	/// <summary>
-	/// 아이템을 슬롯으로 이동.
-	/// </summary>
-	/// <param name="Character"></param>
-	/// <returns>true면 이동 성공, false면 실패</returns>
-	//bool LegacyMoveToSlot(AC_BasicCharacter* Character) override;
-
-protected:
-	//bool MoveAroundToSlot(AC_BasicCharacter* Character) override;
-	//bool MoveAroundToInven(AC_BasicCharacter* Character) override;
-	//
-	//bool MoveInvenToAround(AC_BasicCharacter* Character) override;
-	//bool MoveInvenToSlot(AC_BasicCharacter* Character) override;
-	//
-	//bool MoveSlotToAround(AC_BasicCharacter* Character) override;
-	//bool MoveSlotToInven(AC_BasicCharacter* Character) override;
-
 public:
 
-	struct FPriorityAnimMontage GetAttackMontage() const { return AttackMontage; }
+	FPriorityAnimMontage GetAttackMontage() const { return AttackMontage; }
 
 	const FMeleeWeaponSoundDatas* GetPanSoundData() const { return MeleeWeaponSoundData; }
 

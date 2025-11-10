@@ -13,34 +13,34 @@ DECLARE_DELEGATE_OneParam(FRespawnableItemPickedUp, class AC_Item*);
 /// AttachableItem PartsName Enum class
 /// C_Gun에서 부착 가능 부위
 /// </summary>
-UENUM(BlueprintType)
-enum class EPartsName : uint8
-{
-	NONE,
-	SCOPE,
-	MUZZLE,
-	GRIP,
-	MAGAZINE,
-	GUNSTOCK,
-	MAX
-};
+//UENUM(BlueprintType)
+//enum class EPartsName : uint8
+//{
+//	NONE,
+//	SCOPE,
+//	MUZZLE,
+//	GRIP,
+//	MAGAZINE,
+//	GUNSTOCK,
+//	MAX
+//};
 
 /// <summary>
 /// Attachment 아이템 이름들
 /// </summary>
-UENUM(BlueprintType)
-enum class EAttachmentNames : uint8
-{
-	REDDOT,
-	SCOPE4,
-	SCOPE8,
-	VERTGRIP,
-	EXTENDMAG,
-	QUICKMAG,
-	COMPENSATOR,
-	SUPPRESSOR,
-	MAX
-};
+//UENUM(BlueprintType)
+//enum class EAttachmentNames : uint8
+//{
+//	REDDOT,
+//	SCOPE4,
+//	SCOPE8,
+//	VERTGRIP,
+//	EXTENDMAG,
+//	QUICKMAG,
+//	COMPENSATOR,
+//	SUPPRESSOR,
+//	MAX
+//};
 /// <summary>
 /// 현재 제대로 사용하지는 않고 있음.
 /// </summary>
@@ -74,20 +74,20 @@ enum class EAttachmentNames : uint8
 //	SLOT
 //};
 
-UENUM(BlueprintType)
-enum class EItemNames : uint8
-{
-	NONE,
-	HELMET,
-	ARMORE,
-	BACKPACK,
-	MAINGUN,
-	MELEEWEAPON,
-	THROWABLE,
-	ATTACHMENT,
-	CONSUMPTIONITEM,
-	BULLET
-};
+//UENUM(BlueprintType)
+//enum class EItemNames : uint8
+//{
+//	NONE,
+//	HELMET,
+//	ARMORE,
+//	BACKPACK,
+//	MAINGUN,
+//	MELEEWEAPON,
+//	THROWABLE,
+//	ATTACHMENT,
+//	CONSUMPTIONITEM,
+//	BULLET
+//};
 
 //USTRUCT(BlueprintType)
 //struct FItemData : public FTableRowBase
@@ -173,7 +173,6 @@ public:
 
 	/// <summary>
 	/// Around -> MyItems로 아이템이 이동할 때, 이미 해당 아이템이 존재할때 ItemStack을 C_Item내에서 Set하는 함수.
-	/// TODO : 만약 내부적으로만 사용하는 함수라면 private로 바꿔야함.
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	void SetItemStack(int32 inItemStack);// { ItemDatas.ItemCurStack = inItemStack; }
@@ -248,7 +247,7 @@ public:
 	/// <param name="bNetForce"></param>
 	/// <param name="bShouldModifyLevel"></param>
 	/// <returns></returns>
-	bool DestroyItem(bool bNetForce = false, bool bShouldModifyLevel = true);
+	virtual bool DestroyItem(bool bNetForce = false, bool bShouldModifyLevel = true);
 
 protected:
 	//MoveTo~에 사용되는 9개 함수.
@@ -312,6 +311,13 @@ public:
 	// 현재 구조로는 아이템을 만들 때 마다 해당 블루프린트에 정의된 GetItemMeshComp()를 오버라이드 해야함.
 	UFUNCTION(BlueprintImplementableEvent)
 	USceneComponent* GetItemMeshComp();
+
+	float GetUseProgress() const { return UseProgress; }
+
+	void SetUseProgress(float NewProgress)
+	{
+		UseProgress = NewProgress;
+	}
 protected:
 
 	/// <summary>
@@ -332,6 +338,12 @@ protected:
 	/// </summary>
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
 	int32 ItemCurStack = 0;
+
+	/// <summary>
+	/// Time Progress Bar percent
+	/// </summary>
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	float UseProgress = 0.f;
 
 	/// <summary>
 	/// 아이템 데이터 구조체

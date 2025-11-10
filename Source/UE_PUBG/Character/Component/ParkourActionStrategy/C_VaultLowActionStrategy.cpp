@@ -76,8 +76,6 @@ void UC_VaultLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* T
 
 	MotionWarping->AddOrUpdateWarpTarget(Target);
 
-	// TODO : ParkourMontageMap 초기화
-
 	UC_ParkourComponent* TargetParkourComponent = TargetCharacter->GetParkourComponent();
 
 	// 현재 Parkour Action에 해당하는 Random한 parkourAction 재생

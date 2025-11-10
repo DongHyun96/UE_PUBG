@@ -95,8 +95,6 @@ private:
 	/// </summary>
 	void ExecuteMotionWarpingAction(const FParkourDescriptor& CurParkourDesc);
 
-	// TODO : 무기를 들고 있었다면 holster에 붙인 뒤, parkour가 끝나면 다시 무기를 드는 동작으로 가져가야 함
-
 	/// <summary>
 	/// 현 skeletalMesh에 부착된 Actor 조사하기
 	/// </summary>
@@ -108,11 +106,6 @@ private:
 	/// </summary>
 	/// <param name="PrevAttachedActors"> : 전에 부착되었었던 Actor들 </param>
 	void ReAttachActorsToSocket(const TMap<FName, AActor*>& PrevAttachedActors);
-
-	/// <summary>
-	/// SwapMesh -> MainMesh로 돌아왔을 때 호출
-	/// </summary>
-	void SetOwnerCharacterCanMoveToTrue() { OwnerCharacter->SetCanMove(true); }
 
 private:
 
@@ -247,10 +240,6 @@ private:
 
 private:
 
-	// TODO : TimerHandle Tick에서 불리고 있는 쪽이 있음
-	// 이거 처리해줘야 됨
-	FTimerHandle TimerHandle{};
-	
 	// Warp Action이 끝나고 MainSkeletalMesh로 돌아온 이 후, CanMove를 true로 주기까지의 Timer 시간
 	float CanMoveTimerAfterWarpActionFin{};
 

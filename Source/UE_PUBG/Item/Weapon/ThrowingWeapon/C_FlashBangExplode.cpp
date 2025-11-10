@@ -50,7 +50,17 @@ bool AC_FlashBangExplode::UseStrategy(AC_ThrowingWeapon* ThrowingWeapon)
 	// DrawDebugSphere(ThrowingWeapon->GetWorld(), ExplosionLocation, ExplosionRad, 30, FColor::MakeRandomColor(), true);
 
 	// Overlapped된 Actor가 없음
-	if (!bHit) return true;
+	if (!bHit)
+	{
+		ThrowingWeapon->SetActorHiddenInGame(true);
+		FTimerHandle& TimerHandle = UC_GameSceneManager::GetInstance(ThrowingWeapon->GetWorld())->GetTimerHandle();
+		ThrowingWeapon->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [ThrowingWeapon]()
+		{
+			ThrowingWeapon->DestroyItem();
+		}, 10.f, false);
+		
+		return true;
+	}
 
 	TSet<AC_BasicCharacter*> OverlappedCharacters{};
 

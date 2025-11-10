@@ -594,8 +594,7 @@ void AC_BasicCharacter::PoolingBullets()
 	Param2.Owner = this;
 	for (int i = 0; i < 30; i++)
 	{
-		UClass* BulletBPClass = StaticLoadClass(AC_Bullet::StaticClass(), nullptr, TEXT("/Game/Project_PUBG/Hyunho/Weapon/Bullet/BPC_Bullet.BPC_Bullet_C"));
-		AC_Bullet* Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletBPClass, Param2);
+		AC_Bullet* Bullet = GetWorld()->SpawnActor<AC_Bullet>(BulletClass, Param2);
 		Bullet->SetInstanceNum(i);
 		Bullet->DeactivateInstance();
 		if (IsValid(Bullet))

@@ -69,7 +69,7 @@ struct FGunData : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float BulletSpeed;
+	float BulletSpeed{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float BulletRPM{};
@@ -96,7 +96,7 @@ struct FGunData : public FTableRowBase
 	EBulletType CurGunBulletType = EBulletType::NONE;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float SprintSpeedFactor = 0.0f;
+	float SprintSpeedFactor{};
 };
 
 USTRUCT(BlueprintType)
@@ -128,22 +128,22 @@ public:
 	void InitializeItem(FName NewItemCode) override;
 
 public:
-	virtual bool AttachToHolster(class USceneComponent* InParent) override;
-	virtual bool AttachToHand(class USceneComponent* InParent) override;
+	bool AttachToHolster(USceneComponent* InParent) override;
+	bool AttachToHand(USceneComponent* InParent) override;
 
-	virtual void ChangeGunState(EGunState InGunState) { CurState = InGunState; }
-	virtual bool SetAimingDown();
-	virtual bool SetAimingPress();
-	virtual bool BackToMainCamera();
-	virtual void SetIsAimPress(bool InIsAimDown) { bIsAimDown = InIsAimDown; }
-	virtual bool GetIsAimPress() { return bIsAimDown; }
-	virtual void HandleSpringArmRotation();
+	void ChangeGunState(EGunState InGunState) { CurGunSlotState = InGunState; }
+	bool SetAimingDown();
+	bool SetAimingPress();
+	bool BackToMainCamera();
+	void SetIsAimPress(bool InIsAimDown) { bIsAimDown = InIsAimDown; }
+	bool GetIsAimPress() const { return bIsAimDown; }
+	void HandleSpringArmRotation();
 	
-	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter);
+	void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter);
 
 	
 	USkeletalMeshComponent* GetGunMesh() { return GunMesh; }
-	EGunState GetCurrentWeaponState() { return CurState; }
+	EGunState GetCurrentWeaponState() { return CurGunSlotState; }
 	TMap<EPoseState, FAnimationMontages> GetSheathMontages() { return SheathMontages; };
 	TMap<EPoseState, FAnimationMontages > GetDrawMontages() { return DrawMontages; };
 	FTransform GetLeftHandSocketTransform() const { return LeftHandSocketLocation; }
@@ -227,8 +227,8 @@ protected: /* 무기집 Socket 이름들 */
 	
 protected:
 	
-	FName EQUIPPED_SOCKET_NAME;
-	EGunState CurState = EGunState::MAIN_GUN;
+	FName EquippedSocketName{};
+	EGunState CurGunSlotState = EGunState::MAIN_GUN; // MainGun or SubGun
 
 private:
 	
@@ -240,10 +240,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* GunMesh;
 public:
-	void SetMainOrSubSlot(EGunState InState) { CurState = InState; }
+	void SetMainOrSubSlot(EGunState InState) { CurGunSlotState = InState; }
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FTransform LeftHandSocketLocation;
+	UPROPERTY(BlueprintReadWrite)
+	FTransform LeftHandSocketLocation{};
 
 	class UCameraComponent* AimSightCamera;
 
@@ -276,12 +276,12 @@ protected:
 	//GunData 구조체를 const 포인터 변수로 가지고 있음.
 	const FGunData* GunDataRef = nullptr;
 
-	//Gun Sound Datas, TODO : 
+	
 	const FGunSoundData* GunSoundData = nullptr;
 
 public:
 
-	FName GetEQUIPPED_SOCKET_NAME() const { return EQUIPPED_SOCKET_NAME; }
+	FName GetEQUIPPED_SOCKET_NAME() const { return EquippedSocketName; }
 	
 protected: // 총알 발사 관련 변수들
 
@@ -343,7 +343,6 @@ protected:
 	void HandleAimWidgetShowAndHideWhileAiming();
 protected:
 	//탄창
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	AC_AttachableItem* Magazine{};
 
 	void LoadMagazine();

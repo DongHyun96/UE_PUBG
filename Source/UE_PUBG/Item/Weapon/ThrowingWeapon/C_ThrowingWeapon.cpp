@@ -76,6 +76,8 @@ const TMap<EThrowableType, FName> AC_ThrowingWeapon::EQUIPPED_SOCKET_NAMES =
 const FName AC_ThrowingWeapon::HOLSTER_SOCKET_NAME		= "Throwable_Holster";
 const FName AC_ThrowingWeapon::THROW_START_SOCKET_NAME	= "Throwable_ThrowStart";
 
+const FName AC_ThrowingWeapon::CRAWL_RELEASE_SOCKET_NAME = "CrawlThrowableReleaseLocation";
+
 const float AC_ThrowingWeapon::PROJECTILE_RADIUS		= 5.f;
 
 TMap<EThrowableType, II_AIThrowableAttackStrategy*> AC_ThrowingWeapon::AIAttackStrategies{};
@@ -353,15 +355,6 @@ void AC_ThrowingWeapon::InitializeItem(FName NewItemCode)
 	
 	return THROWABLETYPE_ITEMNAME_MAP[TargetType];
   }
-
-//  void AC_ThrowingWeapon::PickUpItem(AC_BasicCharacter* Character)
-//{
-//	//여기서하는 용량체크는 인벤에서 이미 한번 처리 되었지만 혹시몰라 넣어 놓은것으로 확인후 제거할 것.
-//	//인벤에서 체크하지 않고 아이템에서 체크하는 방식으로 가야 할듯.
-//	
-//	//EquipToCharacter(Character);
-//	LegacyMoveToSlot(Character);
-//}
 
 void AC_ThrowingWeapon::DropItem(AC_BasicCharacter* Character)
 {
@@ -855,6 +848,12 @@ bool AC_ThrowingWeapon::ReleaseOnGround()
 	if (ProjectileMovement->IsActive()) return false;	// 이미 던졌었다면
 
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+	const FName ReleaseLocationSocketName = (OwnerCharacter->GetPoseState() == EPoseState::CRAWL) ?
+		CRAWL_RELEASE_SOCKET_NAME : THROW_START_SOCKET_NAME;
+	
+	const FVector ReleaseLocation = OwnerCharacter->GetMesh()->GetSocketLocation(ReleaseLocationSocketName);
+	this->SetActorLocation(ReleaseLocation);
 
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 

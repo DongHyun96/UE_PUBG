@@ -28,48 +28,66 @@
 
 void UC_BasicItemBarWidget::NativeConstruct()
 {
+	Super::NativeConstruct();
 	bIsFocusable = false;
+	this->SetIsFocusable(false);
+	// 혹시라도 포커스를 받았다면 즉시 해제
+	//if (HasUserFocus(GetOwningPlayer()))
+	//{
+	//	FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::Cleared);
+	//}
+}
+
+FReply UC_BasicItemBarWidget::NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent)
+{
+	// 그냥 포커스를 무시하고 즉시 반납
+	return FReply::Unhandled();
+}
+
+void UC_BasicItemBarWidget::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
+{
 }
 
 FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
+	if (!OwnerPlayer) return FReply::Unhandled();
 
-	if (OwnerPlayer->GetIsActivatingConsumableItem()) return FReply::Unhandled();
+	// Consumable 아이템 사용 중이면 무시
+	if (OwnerPlayer->GetIsActivatingConsumableItem())
+		return FReply::Unhandled();
 
-	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton) && InMouseEvent.IsLeftAltDown())
-	{
-		if (HalfStackItemInteraction()) // true면 return, false면 남은 코드 실행.
-		{
-			UpdateInvenUIWidget();
-			return FReply::Handled(); 
-		}
-	}
-
+	// 우클릭 처리
 	if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
-		//우클릭 이벤트 실행
-		//TODO : 구현
-		if (!CachedItem) return FReply::Handled();
+		if (!CachedItem) return FReply::Unhandled();
 
-		if (InMouseEvent.IsAltDown())
-			if (HalfStackItemInteraction()) return FReply::Handled(); //참이면 return, 거짓이면 남은 코드 실행.
+		if (InMouseEvent.IsAltDown() && HalfStackItemInteraction())
+		{
+			UpdateInvenUIWidget();
+			return FReply::Unhandled();
+		}
 
 		if (CachedItem->Interaction(OwnerPlayer))
 		{
-			// Consumable Usage 처리일 떄에는 SFX 재생 x 처리를 위함
 			AC_ConsumableItem* ConsumableItem = Cast<AC_ConsumableItem>(CachedItem);
-			if (!ConsumableItem)
+			if (!ConsumableItem || ConsumableItem->GetConsumableItemState() != EConsumableItemState::ACTIVATING)
+			{
 				UGameplayStatics::PlaySound2D(CachedItem, CachedItem->GetPickUpSound());
-			else if (ConsumableItem->GetConsumableItemState() != EConsumableItemState::ACTIVATING)
-				UGameplayStatics::PlaySound2D(CachedItem, CachedItem->GetPickUpSound());
+			}
 		}
 
-		//UpdateWidget(CachedItem);
 		UpdateWidget(DataObj);
 		UpdateInvenUIWidget();
 
-		return FReply::Handled();
+		return FReply::Unhandled(); // 우클릭 후에도 키보드 입력 유지
+	}
+
+	// 좌클릭 드래그 감지
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && CachedItem)
+	{
+		// DetectDragIfPressed 호출 (드래그 시작)
+		return UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton).NativeReply;
 	}
 
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
@@ -77,37 +95,17 @@ FReply UC_BasicItemBarWidget::NativeOnMouseButtonDown(const FGeometry& InGeometr
 
 FReply UC_BasicItemBarWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
-
-	if (OwnerPlayer->GetIsActivatingConsumableItem()) return FReply::Unhandled();
-
-	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton))
-	{
-
-
-		if (CachedItem)
-		{
-			//드래그 이벤트 실행.
-			//드래그를 시작하고 반응함
-			FEventReply RePlyResult =
-				UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-			//AC_Player* OwnerPlayer = Cast<AC_Player>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)); //TODO : 게임 신 매니저에서 플레이어 가져오기
-			//UC_Util::Print("LeftMouseButton");
-			OwnerPlayer->GetInvenSystem()->GetInvenUI()->SetIsDragging(true);
-
-			return RePlyResult.NativeReply;
-		}
-	}
 	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
 
 }
 
 void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
+	UE_LOG(LogTemp, Warning, TEXT(">>> NativeOnDragDetected Called"));
 	AC_Player* OwnerPlayer = GAMESCENE_MANAGER->GetPlayer();
 
-	AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
-	PlayerController->SetIgnoreMoveInput(false); // 이동 허용
+	//AC_PlayerController* PlayerController = Cast<AC_PlayerController>(GetWorld()->GetFirstPlayerController());
+	//PlayerController->SetIgnoreMoveInput(false); // 이동 허용
 	//dragdrop class를 새로 만들어 사용해야 할 수 있음.
 	UC_DragDropOperation* DragOperation = NewObject<UC_DragDropOperation>();
 
@@ -117,7 +115,7 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 	FLinearColor BorderColor = FLinearColor(1.0f, 1.0f, 1.0f, 0.1f); // (R, G, B, A)
 	Border->SetBrushColor(BorderColor);
 
-	UImage* DragVisual = NewObject<UImage>(Texture);
+	UImage* DragVisual = NewObject<UImage>(this);
 
 	DragVisual->SetBrushFromTexture(Texture);
 	DragVisual->Brush.ImageSize = FVector2D(64.f, 64.f);
@@ -158,7 +156,7 @@ void UC_BasicItemBarWidget::NativeOnDragDetected(const FGeometry& InGeometry, co
 
 void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
-	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
+	//IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 	//// ListItemObject를 UC_Item 클래스로 캐스팅하여 아이템 데이터 사용
 	//CachedItem = Cast<AC_Item>(ListItemObject);
 
@@ -170,7 +168,7 @@ void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 	//	return;
 	//}
-
+	//SetPercent(0.f, 1.f);
 	DataObj = Cast<UC_ItemDataObject>(ListItemObject);
 
 	if (!DataObj) return;
@@ -178,7 +176,7 @@ void UC_BasicItemBarWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	CachedItem = DataObj->ItemRef;
 
 	// 초기 UI 세팅
-	UpdateWidget(DataObj);
+	//UpdateWidget(DataObj);
 
 	//DataObj->OnItemDataChanged.AddDynamic(this, &UC_BasicItemBarWidget::UpdateWidget);
 
@@ -222,6 +220,8 @@ void UC_BasicItemBarWidget::UpdateWidget(UC_ItemDataObject* InDataObj)
 			Consumable->SetLinkedItemBarWidget(this);
 		}
 
+		ItemUsingTimer->SetPercent(InDataObj->UseProgress);
+
 		//ItemImage->SetBrushFromTexture(InDataObj->ItemDataRef->ItemBarIcon);
 		//ItemName->SetText(FText::FromString(InDataObj->ItemDataRef->ItemName));
 		//ItemType = InDataObj->ItemDataRef->ItemType;
@@ -231,6 +231,7 @@ void UC_BasicItemBarWidget::UpdateWidget(UC_ItemDataObject* InDataObj)
 
 void UC_BasicItemBarWidget::SetPercent(float curTime, float endTime)
 {
+	CachedItem->SetUseProgress(curTime / endTime);
 	ItemUsingTimer->SetPercent(curTime / endTime);
 }
 

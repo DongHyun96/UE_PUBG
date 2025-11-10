@@ -60,6 +60,8 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	SkyDivingState	  = OwnerCharacter->GetSkyDivingComponent()->GetSkyDivingState();
 
 	CurrentFallingHeight = OwnerCharacter->GetStatComponent()->GetCurrentFallingHeight();
+
+	bIsActivatingConsumableItem = OwnerCharacter->GetIsActivatingConsumableItem();
 	
 	//switch (SwimmingState)
 	//{

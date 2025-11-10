@@ -52,9 +52,9 @@ bool AC_Item_Bullet::Interaction(AC_BasicCharacter* Character)
 
 bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 
-	uint8 ItemStackCount = invenComp->LoopCheckVolume(this); //아이템Stack을 몇개까지 인벤에 넣을 수 있는가?
+	uint8 ItemStackCount = InvenComp->LoopCheckVolume(this); //아이템Stack을 몇개까지 인벤에 넣을 수 있는가?
 
 	if (ItemStackCount == 0)
 	{
@@ -72,21 +72,21 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InSta
 	{
 		//아이템을 전부 인벤에 넣을 수 있는 경우
 
-		if (invenComp->FindMyItemByName(this->GetItemCode()))
+		if (InvenComp->FindMyItemByName(this->GetItemCode()))
 		{
 			// 인벤에 동일한 이름의 아이템이 존재 한다면 실행.
 
-			invenComp->AddItemToMyList(this);
+			InvenComp->AddItemToMyList(this);
 			/*UC_Util::Print(int(CurBulletType));
 			UC_Util::Print("Item Stack Add!!!!!!!!!!!!!!!!");*/
 			//this->Destroy(); // Inven에 존재하던 동일한 아이템과 합쳐졌으므로 삭제.
 		}
 		else
 		{
-			invenComp->AddItemToMyList(this);
+			InvenComp->AddItemToMyList(this);
 		}
-		if (invenComp->FindMyItem(this))
-			invenComp->RemoveItemToAroundList(this);
+		if (InvenComp->FindMyItem(this))
+			InvenComp->RemoveItemToAroundList(this);
 
 		if (AC_Player* OwnerPlayer = Cast<AC_Player>(Character))
 			UpdateLeftAmmoWidget(OwnerPlayer); //Player만 실행.
@@ -100,14 +100,14 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InSta
 		AC_Item_Bullet* SpawnedItem = Cast<AC_Item_Bullet>(SpawnItem(Character));  	//동일한 아이템 객체를 생성
 		SpawnedItem->SetItemStack(ItemStackCount);						 			//생성한 아이템 stack을 설정
 																					
-		if (invenComp->FindMyItemByName(this->GetItemCode()))
+		if (InvenComp->FindMyItemByName(this->GetItemCode()))
 		{
-			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
+			InvenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
 			//this->Destroy();
 		}
 		else
 		{
-			invenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
+			InvenComp->AddItemToMyList(SpawnedItem);						 //inven에 추가
 			UC_Util::Print(ItemStackCount);
 		}
 
@@ -125,9 +125,9 @@ bool AC_Item_Bullet::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStac
 
 bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_InvenComponent* InvenComp = Character->GetInvenComponent();
 
-	if (!invenComp->FindMyItem(this)) return false;
+	if (!InvenComp->FindMyItem(this)) return false;
 
 	if (this->GetItemCurStack() > InStack)
 	{
@@ -138,7 +138,7 @@ bool AC_Item_Bullet::MoveInvenToAround(AC_BasicCharacter* Character, int32 InSta
 	}
 	else
 	{
-		invenComp->RemoveItemFromMyList(this);				 //내 아이템 리스트에서 아이템 제거.
+		InvenComp->RemoveItemFromMyList(this);				 //내 아이템 리스트에서 아이템 제거.
 		//invenComp->AddInvenCurVolume(-this->GetAllVolume()); // 버리는 아이템만큼 curVolume 조절하기. TODO : Inven에서 아이템 버릴 때 문제 생기면 체크하기.
 		DropItem(Character);
 	}

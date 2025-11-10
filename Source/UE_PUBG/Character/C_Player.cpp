@@ -801,16 +801,15 @@ void AC_Player::CharacterDead(const FKillFeedDescriptor& KillFeedDescriptor)
 	HUDWidget->GetInformWidget()->ActivateMiddleKillFeedLog(KillFeedDescriptor);
 
 	// Training Ground의 경우, GameOver 처리 X
+	// & ShantyTown을 제외한 일반 Testing Level에서 GameOver 처리하지 않기
 	UC_GameInstance* GameInstance = Cast<UC_GameInstance>(GetGameInstance());
-	if (GameInstance->GetCurrentSelectedLevelType() == ELevelType::TrainingGround)
+	if (GameInstance->GetCurrentSelectedLevelType() != ELevelType::ShantyTown)
 		return;
 	
 	GAMESCENE_MANAGER->SetIsGameOver(true);
 	
-	// TODO : 밑의 if else 문으로 대체하기
-	GameOverWidget->ActivateLoseSequence();
-	//if (Ranking == 1) GameOverWidget->ActivateWinningSequence();
-	//else GameOverWidget->ActivateLoseSequence();
+	if (Ranking == 1) GameOverWidget->ActivateWinningSequence();
+	else			  GameOverWidget->ActivateLoseSequence();
 }
 
 void AC_Player::EnableRagdoll()

@@ -181,7 +181,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeleteSpawnedItemFromContainer(AC_Item* InItem);
 
-	void ToggleItemsHiddenInGame(bool InHiddenInGame);
+	void ToggleVehiclesHiddenInGame(bool InHiddenInGame);
 
 	UFUNCTION(BlueprintCallable)
 	void AddVehiclesToContainer(class APawn* InVehicle);
@@ -245,10 +245,7 @@ private:
 private:
 
 	bool bIsGameOver{};
-
-private:
 	
-	TArray<AC_Item*> ItemContainer{};
 	TArray<APawn*> VehicleContainer{};
 
 protected:

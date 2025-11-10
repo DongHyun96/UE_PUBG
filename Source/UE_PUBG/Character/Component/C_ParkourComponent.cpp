@@ -113,14 +113,11 @@ void UC_ParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		}
 		else
 		{
-			GetWorld()->GetTimerManager().SetTimer
-			(
-				GAMESCENE_MANAGER->GetTimerHandle(),
-				this,
-				&UC_ParkourComponent::SetOwnerCharacterCanMoveToTrue,
-				CanMoveTimerAfterWarpActionFin, 
-				false
-			);
+			FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+			{
+				OwnerCharacter->SetCanMove(true);
+			}, CanMoveTimerAfterWarpActionFin, false);
 		}
 
 		// 착용 중인 무기가 있었을 때 해당 무기 다시 장착 시도

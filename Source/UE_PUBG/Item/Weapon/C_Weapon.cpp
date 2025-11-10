@@ -115,20 +115,17 @@ bool AC_Weapon::ExecuteMrb_Completed()
 
 bool AC_Weapon::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_EquippedComponent* EquippedComponent = Character->GetEquippedComponent();
 
 	//Slot에 있다는건 장착된 상태라는 것. Around로 간다는건 장착을 해제하고 아이템을 땅에 떨군다는 뜻.
 	EWeaponSlot curWeaponSlot = GetWeaponSlot();
-
-	AC_Weapon* curWeapon = equipComp->GetWeapons()[curWeaponSlot];
 
 	//if (curWeapon != this) return false; //장착된 아이템이 자신이 아니라면 return.
 	
 	//if (curWeaponSlot == EWeaponSlot::MAIN_GUN)
 	//	curWeapon->DetachmentItem();
 	//else
-	equipComp->SetSlotWeapon(curWeaponSlot, nullptr); //장착된 아이템이 자신이면, 장착해제를 진행.
+	EquippedComponent->SetSlotWeapon(curWeaponSlot, nullptr); //장착된 아이템이 자신이면, 장착해제를 진행.
 
 	DropItem(Character);
 
@@ -137,20 +134,20 @@ bool AC_Weapon::MoveSlotToAround(AC_BasicCharacter* Character, int32 InStack)
 
 bool AC_Weapon::MoveSlotToInven(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_EquippedComponent* EquipComp = Character->GetEquippedComponent();
+	UC_InvenComponent* InvenComp = Character->GetInvenComponent();		
 	//if (invenComp->GetMaxVolume() > invenComp->GetCurVolume() + GetOnceVolume())
-	if (!invenComp->CheckVolume(this)) return false; //인벤에 this가 들어가서 curVolume > MaxVolume이 된다면 return.
+	if (!InvenComp->CheckVolume(this)) return false; //인벤에 this가 들어가서 curVolume > MaxVolume이 된다면 return.
 
 	EWeaponSlot curWeaponSlot = GetWeaponSlot();
 
-	AC_Weapon* curWeapon = equipComp->GetWeapons()[curWeaponSlot];
+	AC_Weapon* curWeapon = EquipComp->GetWeapons()[curWeaponSlot];
 
 	if (curWeapon != this) return false; //장착된 아이템이 자신이 아니라면 return.
 
-	equipComp->SetSlotWeapon(curWeaponSlot, nullptr); //장착된 아이템이 자신이면, 장착해제를 진행.
+	EquipComp->SetSlotWeapon(curWeaponSlot, nullptr); //장착된 아이템이 자신이면, 장착해제를 진행.
 
-	invenComp->AddItemToMyList(this);//장착 해제된 아이템을 내 아이템 리스트에 추가.
+	InvenComp->AddItemToMyList(this);//장착 해제된 아이템을 내 아이템 리스트에 추가.
 
 	return true;
 }
@@ -164,8 +161,7 @@ bool AC_Weapon::MoveSlotToSlot(AC_BasicCharacter* Character, int32 InStack)
 //Gun만 사용 X
 bool AC_Weapon::MoveInvenToAround(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 
 	if (!invenComp->FindMyItem(this)) return false;
 
@@ -187,8 +183,8 @@ bool AC_Weapon::MoveInvenToInven(AC_BasicCharacter* Character, int32 InStack)
 //Gun만 사용 X
 bool AC_Weapon::MoveInvenToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		
 
 	EWeaponSlot curWeaponSlot = GetWeaponSlot();
 
@@ -226,8 +222,7 @@ bool AC_Weapon::MoveAroundToAround(AC_BasicCharacter* Character, int32 InStack)
 //Gun만 사용 X
 bool AC_Weapon::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();
 
 	uint8 ItemStackCount = invenComp->LoopCheckVolume(this); //아이템Stack을 몇개까지 인벤에 넣을 수 있는가?
 
@@ -259,8 +254,8 @@ bool AC_Weapon::MoveAroundToInven(AC_BasicCharacter* Character, int32 InStack)
 
 bool AC_Weapon::MoveAroundToSlot(AC_BasicCharacter* Character, int32 InStack)
 {
-	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();//TODO : 안쓰는건 삭제하기.
-	UC_InvenComponent* invenComp = Character->GetInvenComponent();		//TODO : 안쓰는건 삭제하기.
+	UC_EquippedComponent* equipComp = Character->GetEquippedComponent();
+	UC_InvenComponent* invenComp = Character->GetInvenComponent();		
 
 	EWeaponSlot curWeaponSlot = GetWeaponSlot();
 

@@ -110,13 +110,6 @@ public:
 	void OnSheathEnd();
 
 	/// <summary>
-	/// 무기 Draw가 시작시 Notify로 불러질 call back 함수
-	/// </summary>
-	UFUNCTION(BlueprintCallable)
-	void OnDrawStart();
-
-
-	/// <summary>
 	/// 무기 Draw가 끝났을 시 Notify로 불러질 call back 함수
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
