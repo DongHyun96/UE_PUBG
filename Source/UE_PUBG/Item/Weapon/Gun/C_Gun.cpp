@@ -310,17 +310,16 @@ bool AC_Gun::BackToMainCamera()
 	if (!IsValid(Player)) return false;
 	
 	AimSightCamera->SetActive(false);
-	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetViewTarget() == this)
-	{
-		UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(OwnerCharacter, 0.2);
-	}
+	
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(OwnerCharacter, 0.2);
+	
 	OwnerCharacter->GetMesh()->UnHideBoneByName(FName("Head"));
 	OwnerCharacter->bUseControllerRotationYaw = false;
 	bIsAimDown = false;
 	Player->BackToMainCamera();
 	if (IsValid(AttachedItem[EPartsName::SCOPE]))
 		AttachedItem[EPartsName::SCOPE]->UseMrbStrategy();
-	UC_Util::Print("BackToMainCamera", FColor::MakeRandomColor(), 10.f);
+	UC_Util::Print("BackToMainCamera", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 	return true;
 	
 	//FString TheFloatStr = FString::SanitizeFloat(MrbPressTimeCount);

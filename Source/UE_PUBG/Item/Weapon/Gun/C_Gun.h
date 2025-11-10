@@ -128,18 +128,18 @@ public:
 	void InitializeItem(FName NewItemCode) override;
 
 public:
-	virtual bool AttachToHolster(class USceneComponent* InParent) override;
-	virtual bool AttachToHand(class USceneComponent* InParent) override;
+	bool AttachToHolster(USceneComponent* InParent) override;
+	bool AttachToHand(USceneComponent* InParent) override;
 
-	virtual void ChangeGunState(EGunState InGunState) { CurGunSlotState = InGunState; }
-	virtual bool SetAimingDown();
-	virtual bool SetAimingPress();
-	virtual bool BackToMainCamera();
-	virtual void SetIsAimPress(bool InIsAimDown) { bIsAimDown = InIsAimDown; }
-	virtual bool GetIsAimPress() { return bIsAimDown; }
-	virtual void HandleSpringArmRotation();
+	void ChangeGunState(EGunState InGunState) { CurGunSlotState = InGunState; }
+	bool SetAimingDown();
+	bool SetAimingPress();
+	bool BackToMainCamera();
+	void SetIsAimPress(bool InIsAimDown) { bIsAimDown = InIsAimDown; }
+	bool GetIsAimPress() const { return bIsAimDown; }
+	void HandleSpringArmRotation();
 	
-	virtual void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter);
+	void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter);
 
 	
 	USkeletalMeshComponent* GetGunMesh() { return GunMesh; }
