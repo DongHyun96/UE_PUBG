@@ -48,7 +48,7 @@ AC_AR::AC_AR()
 	//ItemType 설정.
 	//ItemDataRef.ItemType = EItemTypes::MAINGUN; ItemType
 	//CurGunType = EGunType::AR;
-	EQUIPPED_SOCKET_NAME = FName("Rifle_Equip"); // 무기가 손에 부착될 socket 이름
+	EquippedSocketName = FName("Rifle_Equip"); // 무기가 손에 부착될 socket 이름
 	IronSightWindowLocation = FVector2D(0.5f, 0.4f);
 
 }
@@ -149,7 +149,7 @@ void AC_AR::CancelReload()
 	Super::CancelReload();
 	UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 
-	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurGunSlotState].AnimMontage;
 
 
 	if (CurAnimInstance->Montage_IsPlaying(ReloadMontage))

@@ -129,8 +129,8 @@ void AC_Gun::Tick(float DeltaTime)
 
 	if (!OwnerCharacter) return;
 
-	CurDrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState];
-	CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurState];
+	CurDrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurGunSlotState];
+	CurSheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurGunSlotState];
 	//GunMesh->SetWorldRotation(OwnerCharacter->GetControlRotation());
 	if (IsValid(GunMesh))
 	{
@@ -208,7 +208,7 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 	const bool bHasBackpack = OwnerCharacter->GetInvenComponent()->GetEquipmentItems()[EEquipSlot::BACKPACK] != nullptr;
 
 	// 배낭을 메고 있는지 여부 & MainGun인지 SubGun인지에 따라 AttackSocket 이름 지정
-	const FName AttachSocketName = (CurState == EGunState::MAIN_GUN) ?
+	const FName AttachSocketName = (CurGunSlotState == EGunState::MAIN_GUN) ?
 		(bHasBackpack ? MAIN_HOLSTER_BAG_SOCKET_NAME : MAIN_HOLSTER_SOCKET_NAME) :
 		(bHasBackpack ? SUB_HOLSTER_BAG_SOCKET_NAME  : SUB_HOLSTER_SOCKET_NAME);
 
@@ -225,89 +225,39 @@ bool AC_Gun::AttachToHolster(USceneComponent* InParent)
 
 bool AC_Gun::AttachToHand(USceneComponent* InParent)
 {
-	UAnimMontage* DrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
-	//UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
 
-	//if (!IsValid(DrawMontage)) return false;
-	// 만일 SUB_GUN의 Draw가 실행된다면 왼손으로 먼저 Attach
-	//현재 왼손으로 옮겨지고 있다면 다시 어태치 하지 않고 If문 밑으로 진행
-	FName CurSocketName = GetAttachParentSocketName();
-
-	// 총기 HUD 켜주기
-	int LeftAmmoCount = 0;
-	AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>( OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
-	if (IsValid(CurBullet))
+	if (OwnerPlayer)
 	{
-		LeftAmmoCount = CurBullet->GetItemCurStack();
-	}
-
-	if (AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter))
-	{
+		// 총기 HUD 켜주기
 		UC_AmmoWidget* AmmoWidget = OwnerPlayer->GetHUDWidget()->GetAmmoWidget();
+
+		/*AC_Item_Bullet* CurBullet = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
+		int LeftAmmoCount = IsValid(CurBullet) ? CurBullet->GetItemCurStack() : 0;*/
 
 		AmmoWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible, true);
 		AmmoWidget->SetShootingMode(CurrentShootingMode);
 		//AmmoWidget->SetLeftAmmoText(LeftAmmoCount);
 		AmmoWidget->SetMagazineText(CurMagazineBulletCount);
-	}
 
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-
-	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(DrawMontage) && CurSocketName != SUB_DRAW_SOCKET_NAME)
-	{
-
-		//Crawl일 때는 모션이 달라 왼손에 어태치 안함
-		if (CurState == EGunState::SUB_GUN && OwnerCharacter->GetPoseState() != EPoseState::CRAWL)
-		{
-			bool IsAttached = AttachToComponent
-			(
-				InParent,
-				FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-				SUB_DRAW_SOCKET_NAME
-			);
-
-			CurSocketName = SUB_DRAW_SOCKET_NAME;
-
-			if (AC_SR* SR = Cast<AC_SR>(this)) CurSocketName = "Pre_Sniper_Equip";
-
-			UpdatePreviewWeaponMesh(this->GetWeaponSlot(), CurSocketName);
-
-			return IsAttached;
-		}
-	}
-
-	OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
-	//if (OwnerPlayer)
-	//{
-	//	OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::WEAPON_GUN);
-	//}
-
-	if (OwnerPlayer)
-	{
+		// CrossHair 모양 수정
 		OwnerPlayer->GetCrosshairWidgetComponent()->SetCrosshairState(ECrosshairState::RIFLE);
 		OwnerPlayer->SetRecoilTimelineValues(GunDataRef->BulletRPM);
 	}
-	FString TempSocketName = EQUIPPED_SOCKET_NAME.ToString();
+
+	OwnerCharacter->SetHandState(EHandState::WEAPON_GUN);
 	
-	UC_Util::Print(TempSocketName);
-	bool SuccessToAttach;
-	SuccessToAttach = AttachToComponent(
+	bool SuccessToAttach = AttachToComponent
+	(
 		InParent,
 		FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-		EQUIPPED_SOCKET_NAME
+		EquippedSocketName
 	);
-	UC_Util::Print(SuccessToAttach);
 
 	if (SuccessToAttach)
 	{
-		//CurSocketName
-
-		CurSocketName = EQUIPPED_SOCKET_NAME;
-
-		if (AC_SR* SR = Cast<AC_SR>(this)) CurSocketName = "Pre_Sniper_Equip";
-
+		FName CurSocketName = (Cast<AC_SR>(this)) ? "Pre_Sniper_Equip" : EquippedSocketName;
 		UpdatePreviewWeaponMesh(this->GetWeaponSlot(), CurSocketName);
-
 		//UpdatePreviewWeaponMesh(this->GetWeaponSlot(), EQUIPPED_SOCKET_NAME);
 	}
 
@@ -370,6 +320,7 @@ bool AC_Gun::BackToMainCamera()
 	Player->BackToMainCamera();
 	if (IsValid(AttachedItem[EPartsName::SCOPE]))
 		AttachedItem[EPartsName::SCOPE]->UseMrbStrategy();
+	UC_Util::Print("BackToMainCamera", FColor::MakeRandomColor(), 10.f);
 	return true;
 	
 	//FString TheFloatStr = FString::SanitizeFloat(MrbPressTimeCount);
@@ -520,10 +471,10 @@ FPriorityAnimMontage AC_Gun::GetReloadMontage(EPoseState InPoseState, EGunState 
 bool AC_Gun::GetIsPlayingMontagesOfAny()
 {
 	UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
-	UAnimMontage* DrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+	UAnimMontage* DrawMontage = DrawMontages[OwnerCharacter->GetPoseState()].Montages[CurGunSlotState].AnimMontage;
 	//UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
-	UAnimMontage* SheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
-	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+	UAnimMontage* SheathMontage = SheathMontages[OwnerCharacter->GetPoseState()].Montages[CurGunSlotState].AnimMontage;
+	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurGunSlotState].AnimMontage;
 	
 	bool IsPlayingMontagesOfAny = 
 		CurAnimInstance->Montage_IsPlaying(DrawMontage)   || 
@@ -549,14 +500,14 @@ bool AC_Gun::ExecuteMagazineReloadMontage()
 	if (CurMagazineBulletCount == MaxMagazineBulletCount) return false;
 
 	// 이미 장전 모션이 실행 중일 때(이미 장전이 실행 중인 상태일 때)
-	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))
+	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurGunSlotState].AnimMontage))
 		return false;
 	
 	if (!OwnerCharacter->GetCanMove()) return false;
 	
 	SetMagazineVisibility(false);
 	OwnerCharacter->SetIsReloadingBullet(true);
-	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState]); // 장전 모션 실행
+	OwnerCharacter->PlayAnimMontage(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurGunSlotState]); // 장전 모션 실행
 	
 	BackToMainCamera();
 	

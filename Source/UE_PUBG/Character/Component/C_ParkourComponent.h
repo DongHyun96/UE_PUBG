@@ -107,11 +107,6 @@ private:
 	/// <param name="PrevAttachedActors"> : 전에 부착되었었던 Actor들 </param>
 	void ReAttachActorsToSocket(const TMap<FName, AActor*>& PrevAttachedActors);
 
-	/// <summary>
-	/// SwapMesh -> MainMesh로 돌아왔을 때 호출
-	/// </summary>
-	void SetOwnerCharacterCanMoveToTrue() { OwnerCharacter->SetCanMove(true); }
-
 private:
 
 	/// <summary>

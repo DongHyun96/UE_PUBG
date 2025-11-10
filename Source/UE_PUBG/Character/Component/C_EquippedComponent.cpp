@@ -490,30 +490,6 @@ void UC_EquippedComponent::OnSheathEnd()
     OwnerCharacter->PlayAnimMontage(GetCurWeapon()->GetCurDrawMontage());
 }
 
-void UC_EquippedComponent::OnDrawStart()
-{
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
-
-    // 무기를 바꾸는 도중에 SlotWeapon 장착 해제 예외 처리 -> 바꿔들 무기가 사라졌을 때
-    if (!Weapons[NextWeaponType])
-    {
-        //OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f, GetCurWeapon()->GetCurDrawMontage().AnimMontage);
-        bIsCurrentlyChangingWeapon = false;
-        NextWeaponType  = EWeaponSlot::NONE;
-        CurWeaponType   = EWeaponSlot::NONE;
-        OwnerCharacter->SetHandState(EHandState::UNARMED);
-        //if (OwnerPlayer)
-        //{
-        //    OwnerPlayer->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
-        //}
-        return;
-    }
-
-    bIsCurrentlyChangingWeapon = true;
-    Weapons[NextWeaponType]->AttachToHand(OwnerCharacter->GetMesh());
-    //GetCurWeapon()->AttachToHand(OwnerCharacter->GetMesh());
-}   
-
 void UC_EquippedComponent::OnDrawEnd()
 {
     bIsCurrentlyChangingWeapon = false;
@@ -537,8 +513,6 @@ void UC_EquippedComponent::OnDrawEnd()
 
         return;
     }
-
-    UC_Util::Print("OnDrawEnd", FColor::Cyan, 5.f);
 
     Weapons[NextWeaponType]->AttachToHand(OwnerCharacter->GetMesh());
     CurWeaponType = NextWeaponType;

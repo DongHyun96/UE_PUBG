@@ -45,7 +45,7 @@ AC_SR::AC_SR()
 	//ItemType 설정.
 	//ItemDataRef.ItemType = EItemTypes::MAINGUN;
 	//CurGunType = EGunType::SR;
-	EQUIPPED_SOCKET_NAME = FName("Sniper_Equip"); // 무기가 손에 부착될 socket 이름
+	EquippedSocketName = FName("Sniper_Equip"); // 무기가 손에 부착될 socket 이름
 	IronSightWindowLocation = FVector2D(0.5f, 0.5f);
 	CurrentShootingMode = EShootingMode::SEMI_AUTO;
 }
@@ -67,7 +67,7 @@ bool AC_SR::ExecuteBoltActionReloadMontage()
 	if (!IsValid(OwnerCharacter)) return false;
 
 	// 이미 탄창 장전 모션이 실행중일 때
-	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage))
+	if (OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_IsPlaying(ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurGunSlotState].AnimMontage))
 		return false;
 
 	// Bolt Action 장전할 수 없는 상황일 때
@@ -181,7 +181,7 @@ void AC_SR::CancelReload()
 	Super::CancelReload();
 	UAnimInstance* CurAnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
 
-	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurState].AnimMontage;
+	UAnimMontage* ReloadMontage = ReloadMontages[OwnerCharacter->GetPoseState()].Montages[CurGunSlotState].AnimMontage;
 
 	UAnimMontage* SniperReloadMontage = SniperReloadMontages[OwnerCharacter->GetPoseState()].AnimMontage;
 	UC_Util::Print("CancelReload : ", FColor::Red, 10.f);

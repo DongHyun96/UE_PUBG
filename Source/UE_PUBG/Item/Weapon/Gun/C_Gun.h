@@ -131,7 +131,7 @@ public:
 	virtual bool AttachToHolster(class USceneComponent* InParent) override;
 	virtual bool AttachToHand(class USceneComponent* InParent) override;
 
-	virtual void ChangeGunState(EGunState InGunState) { CurState = InGunState; }
+	virtual void ChangeGunState(EGunState InGunState) { CurGunSlotState = InGunState; }
 	virtual bool SetAimingDown();
 	virtual bool SetAimingPress();
 	virtual bool BackToMainCamera();
@@ -143,7 +143,7 @@ public:
 
 	
 	USkeletalMeshComponent* GetGunMesh() { return GunMesh; }
-	EGunState GetCurrentWeaponState() { return CurState; }
+	EGunState GetCurrentWeaponState() { return CurGunSlotState; }
 	TMap<EPoseState, FAnimationMontages> GetSheathMontages() { return SheathMontages; };
 	TMap<EPoseState, FAnimationMontages > GetDrawMontages() { return DrawMontages; };
 	FTransform GetLeftHandSocketTransform() const { return LeftHandSocketLocation; }
@@ -227,8 +227,8 @@ protected: /* 무기집 Socket 이름들 */
 	
 protected:
 	
-	FName EQUIPPED_SOCKET_NAME;
-	EGunState CurState = EGunState::MAIN_GUN;
+	FName EquippedSocketName{};
+	EGunState CurGunSlotState = EGunState::MAIN_GUN; // MainGun or SubGun
 
 private:
 	
@@ -240,7 +240,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* GunMesh;
 public:
-	void SetMainOrSubSlot(EGunState InState) { CurState = InState; }
+	void SetMainOrSubSlot(EGunState InState) { CurGunSlotState = InState; }
 
 	UPROPERTY(BlueprintReadWrite)
 	FTransform LeftHandSocketLocation{};
@@ -281,7 +281,7 @@ protected:
 
 public:
 
-	FName GetEQUIPPED_SOCKET_NAME() const { return EQUIPPED_SOCKET_NAME; }
+	FName GetEQUIPPED_SOCKET_NAME() const { return EquippedSocketName; }
 	
 protected: // 총알 발사 관련 변수들
 
