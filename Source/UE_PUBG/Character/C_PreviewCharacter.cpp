@@ -139,6 +139,12 @@ bool AC_PreviewCharacter::AttachGunMesh(EWeaponSlot InSlot, FName InSocket)
 	{
 		return DetachWeaponMesh(InSlot); // 무기가 없으면 제거
 	}
+
+	//if (WeaponMeshes.Contains(InSlot) && WeaponMeshes[InSlot])
+	//{
+	//	WeaponMeshes[InSlot]->DestroyComponent();
+	//	WeaponMeshes[InSlot] = nullptr;
+	//}
 	
 	// 기존 메시 제거
 	//DetachWeaponMesh(InSlot);
@@ -432,21 +438,29 @@ bool AC_PreviewCharacter::SwapSlotsWhileGunHandState()
 
 	EWeaponSlot CurWeaponType = EquipComp->GetCurWeaponType();
 
-	// 기존 Mesh 포인터 스왑
+	// 기존 Mesh 포인터
 	USceneComponent* CurMainGunMesh = WeaponMeshes[EWeaponSlot::MAIN_GUN];
 	USceneComponent* CurSubGunMesh = WeaponMeshes[EWeaponSlot::SUB_GUN];
 
-	WeaponMeshes[EWeaponSlot::SUB_GUN]  = CurMainGunMesh;
-	WeaponMeshes[EWeaponSlot::MAIN_GUN] = CurSubGunMesh;
+	// 기존 메시 정리
+	if (CurMainGunMesh) CurMainGunMesh->DestroyComponent();
+	if (CurSubGunMesh)  CurSubGunMesh->DestroyComponent();
 
-	// 현재 무기만 재장착
+	WeaponMeshes[EWeaponSlot::MAIN_GUN] = nullptr;
+	WeaponMeshes[EWeaponSlot::SUB_GUN] = nullptr;
+
+	// 스왑 로직
 	if (CurWeaponType == EWeaponSlot::MAIN_GUN)
 	{
-		return AttachGunMesh(EWeaponSlot::SUB_GUN, Cast<AC_Gun>(EquipComp->GetWeapons()[EWeaponSlot::SUB_GUN])->GetEQUIPPED_SOCKET_NAME());
+		AC_Gun* SubGun = Cast<AC_Gun>(EquipComp->GetWeapons()[EWeaponSlot::SUB_GUN]);
+		if (!SubGun) return false; //SubGun이 없으면 새 메시 만들지 않음
+		return AttachGunMesh(EWeaponSlot::SUB_GUN, SubGun->GetEQUIPPED_SOCKET_NAME());
 	}
 	else if (CurWeaponType == EWeaponSlot::SUB_GUN)
 	{
-		return AttachGunMesh(EWeaponSlot::MAIN_GUN, Cast<AC_Gun>(EquipComp->GetWeapons()[EWeaponSlot::MAIN_GUN])->GetEQUIPPED_SOCKET_NAME());
+		AC_Gun* MainGun = Cast<AC_Gun>(EquipComp->GetWeapons()[EWeaponSlot::MAIN_GUN]);
+		if (!MainGun) return false; //MainGun이 없으면 새 메시 만들지 않음
+		return AttachGunMesh(EWeaponSlot::MAIN_GUN, MainGun->GetEQUIPPED_SOCKET_NAME());
 	}
 
 	return false;
