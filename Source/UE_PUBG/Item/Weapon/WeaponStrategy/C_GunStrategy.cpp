@@ -185,7 +185,7 @@ bool AC_GunStrategy::UseMrb_StartedStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	if (WeaponUser->GetIsTooCloseToAimGun()) return false;
-	//if (!WeaponUser->GetCanFireBullet()) return false;
+	if (WeaponUser->GetIsActivatingConsumableItem()) return false;
 
 	MrbPressTimeCount = 0;
 	AC_Gun* CurWeapon = Cast<AC_Gun>(Weapon);
@@ -206,6 +206,7 @@ bool AC_GunStrategy::UseMrb_OnGoingStrategy(AC_BasicCharacter* WeaponUser, AC_We
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened())	return false; //UI가 열려 있을때 작동 금지.
 	if (WeaponUser->GetIsHoldDirection())								return false;
 	if (WeaponUser->GetIsTooCloseToAimGun())							return false;
+	if (WeaponUser->GetIsActivatingConsumableItem())					return false;
 
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 
@@ -233,6 +234,7 @@ bool AC_GunStrategy::UseMrb_CompletedStrategy(AC_BasicCharacter* WeaponUser, AC_
 	if (CurPlayer->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return false; //UI가 열려 있을때 작동 금지.
 	if (WeaponUser->GetIsHoldDirection()) return false;
 	if (WeaponUser->GetIsTooCloseToAimGun()) return false;
+	if (WeaponUser->GetIsActivatingConsumableItem()) return false;
 
 	//if (!WeaponUser->GetCanFireBullet()) return false;
 
