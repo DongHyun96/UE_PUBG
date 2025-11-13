@@ -83,6 +83,7 @@ void UC_InvenSystem::OpenInvenUI()
 	if (!IsValid(OwnerCharacter)) return;
 
 	// TODO : 확인
+	// 이 함수 자체가 호출 안되고 있는 함수임
 	UCharacterMovementComponent* CharacterMovement = OwnerCharacter->GetCharacterMovement();
 	if (CharacterMovement)
 		CharacterMovement->SetMovementMode(EMovementMode::MOVE_Walking);

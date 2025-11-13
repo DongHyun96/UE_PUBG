@@ -127,7 +127,7 @@ protected: // Anim state Transition callback 관련
 	
 	// Jumping 또는 Falling State에서 Stand 자세로 돌아갈 때 CallBack 
 	UFUNCTION(BlueprintCallable)
-	void AnimNotify_OnAnyFallingOrJumpingStateToStand();
+	virtual void AnimNotify_OnAnyFallingOrJumpingStateToStand();
 
 	// FallingHard to HardLanding Transition callback
 	UFUNCTION(BlueprintCallable)

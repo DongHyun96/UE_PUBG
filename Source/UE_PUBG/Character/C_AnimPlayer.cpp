@@ -64,6 +64,19 @@ void UC_AnimPlayer::AnimNotify_OnFallingHardToHardLanding()
 	
 }
 
+void UC_AnimPlayer::AnimNotify_OnAnyFallingOrJumpingStateToStand()
+{
+	Super::AnimNotify_OnAnyFallingOrJumpingStateToStand();
+	OwnerPlayer->SetIsCurrentlyFallingHard(false);
+	UC_Util::Print("UC_AnimPlayer::AnimNotify_OnAnyFallingOrJumpingStateToStand", FColor::MakeRandomColor(), 20.f);
+}
+
+void UC_AnimPlayer::AnimNotify_OnFallingIdleToFallingHard()
+{
+	UC_Util::Print("UC_AnimPlayer::AnimNotify_OnFallingIdleToFallingHard", FColor::MakeRandomColor(), 20.f);
+	OwnerPlayer->SetIsCurrentlyFallingHard(true);
+}
+
 void UC_AnimPlayer::AnimNotify_OnStandToJumpOrFalling()
 {
 	// BackToMainCam 처리

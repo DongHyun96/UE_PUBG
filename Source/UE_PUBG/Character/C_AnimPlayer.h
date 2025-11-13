@@ -22,12 +22,18 @@ private:
 
 	void AnimNotify_OnFallingHardToHardLanding() override;
 
+	void AnimNotify_OnAnyFallingOrJumpingStateToStand() override;
+
 protected:
 
 	// Stand To Jump or falling transition callback 
 	UFUNCTION(BlueprintCallable)
 	void AnimNotify_OnStandToJumpOrFalling();
 
+	// FallingIdle to FallingHard Transition callback
+	UFUNCTION(BlueprintCallable)
+	void AnimNotify_OnFallingIdleToFallingHard();
+	
 private:
 
 	AC_Player* OwnerPlayer{};
