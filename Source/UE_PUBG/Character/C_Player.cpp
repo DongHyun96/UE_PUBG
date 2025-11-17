@@ -298,6 +298,19 @@ void AC_Player::Tick(float DeltaTime)
 	{
 		UpdateInteractable(NewInteractableItem);
 	}
+
+	/*switch (HandState) {
+	case EHandState::UNARMED: UC_Util::Print("UnArmed");
+		break;
+	case EHandState::WEAPON_GUN: UC_Util::Print("Gun");
+		break;
+	case EHandState::WEAPON_MELEE: UC_Util::Print("Melee");
+		break;
+	case EHandState::WEAPON_THROWABLE: UC_Util::Print("Throwable");
+		break;
+	case EHandState::HANDSTATE_MAX: UC_Util::Print("Max");
+		break;
+	}*/
 }
 
 void AC_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

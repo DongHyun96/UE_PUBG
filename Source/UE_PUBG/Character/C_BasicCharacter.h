@@ -350,6 +350,9 @@ public:
 
 	class UC_SmokeEnteredChecker* GetSmokeEnteredChecker() const { return SmokeEnteredChecker; }
 
+	void SetIsCurrentlyFallingHard(bool InIsCurrentlyFallingHard) { bIsCurrentlyFallingHard = InIsCurrentlyFallingHard; }
+	bool GetIsCurrentlyFallingHard() const { return bIsCurrentlyFallingHard; }
+
 public:
 
 	/// <summary>
@@ -472,6 +475,9 @@ private:
 
 	// bIsFalling 상태일 때, 해당 상태가 Jump에 의해 처리되었는지 체크
 	bool bHasJumped{};
+
+	// 현재 Falling Hard 상태인지
+	bool bIsCurrentlyFallingHard{}; 
 
 protected:
 	// 장착된 무기 및 장구류 component

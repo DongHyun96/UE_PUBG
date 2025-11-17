@@ -222,7 +222,12 @@ void UC_PoseColliderHandlerComponent::HandleLerpBodySizeByPose(const float& Delt
 		}
 		else
 		{
-			if (OwnerCharacter->GetSwimmingComponent()->IsSwimming()) return;
+			if (OwnerCharacter->GetSwimmingComponent()->IsSwimming())
+			{
+				UC_Util::Print("From PoseColliderHandlerComponent : Character swimming so returning");
+				return;
+			}
+			
 			// 5 10
 			CrawlCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 

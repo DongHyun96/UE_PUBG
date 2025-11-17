@@ -126,9 +126,6 @@ public:
 	class UC_InputComponent* GetInputComponent() const { return MyInputComponent; }
 		
 	class AC_PreviewCharacter* GetPreviewCharacter() const { return PreviewCharacter; }
-
-	void SetIsCurrentlyFallingHard(bool InIsCurrentlyFallingHard) { bIsCurrentlyFallingHard = InIsCurrentlyFallingHard; }
-	bool GetIsCurrentlyFallingHard() const { return bIsCurrentlyFallingHard; }
 	
 public:
 	/// <summary>
@@ -376,11 +373,6 @@ private: // MainSpringArm & AimingSpringArm Lerp Destinations
 	FVector AimingSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
 
 	float SpringArmRelativeLocationLerpSpeed = 5.f;
-
-private:
-
-	// 현재 Falling Hard 상태인지
-	bool bIsCurrentlyFallingHard{};
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)

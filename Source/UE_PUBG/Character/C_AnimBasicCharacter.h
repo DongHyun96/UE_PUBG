@@ -64,6 +64,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	float CurrentFallingHeight{};
 
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsCurrentlyFallingHard{};
+
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsJumping{};
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -124,14 +127,18 @@ protected:
 	EGunType CurGunType{};
 
 protected: // Anim state Transition callback 관련
+
+	// FallingIdle to FallingHard Transition callback
+	UFUNCTION(BlueprintCallable)
+	void AnimNotify_OnFallingIdleToFallingHard();
+	
+	// FallingHard to HardLanding Transition callback
+	UFUNCTION(BlueprintCallable)
+	virtual void AnimNotify_OnFallingHardToHardLanding();
 	
 	// Jumping 또는 Falling State에서 Stand 자세로 돌아갈 때 CallBack 
 	UFUNCTION(BlueprintCallable)
-	virtual void AnimNotify_OnAnyFallingOrJumpingStateToStand();
-
-	// FallingHard to HardLanding Transition callback
-	UFUNCTION(BlueprintCallable)
-	virtual void AnimNotify_OnFallingHardToHardLanding();	
+	void AnimNotify_OnAnyFallingOrJumpingStateToIdle();
 
 protected:
 	
