@@ -132,7 +132,9 @@ private:
 
 private:
 
-	static const float CAN_WALK_DEPTH_LIMIT;
+	static const float CAN_WALK_DEPTH_LIMIT;	  		// 100.f
+	static const float DOWNWARD_CONTROLLER_PITCH; 		// 295.f
+	static const float DOWNWARD_CONTROLLER_PITCH_LIMIT; // 300.f
 
 private:
 

@@ -23,7 +23,8 @@
 #include "HUD/C_OxygenWidget.h"
 
 const float UC_SwimmingComponent::CAN_WALK_DEPTH_LIMIT = 100.f;
-
+const float UC_SwimmingComponent::DOWNWARD_CONTROLLER_PITCH = 295.f;
+const float UC_SwimmingComponent::DOWNWARD_CONTROLLER_PITCH_LIMIT = DOWNWARD_CONTROLLER_PITCH + 5.f;
 
 UC_SwimmingComponent::UC_SwimmingComponent()
 {
@@ -93,9 +94,10 @@ void UC_SwimmingComponent::HandlePlayerMovement(const FVector2D& MovementVector)
 
 		if (SwimmingState == ESwimmingState::SWIMMING_SURFACE)
 		{
-			if ((0.f <= Rotation.Pitch && Rotation.Pitch < 90.f) || 275.f < Rotation.Pitch) // 위 및 아래로 가는 회전 제거
+			
+			if ((0.f <= Rotation.Pitch && Rotation.Pitch < 90.f) || DOWNWARD_CONTROLLER_PITCH_LIMIT < Rotation.Pitch) // 위 및 아래로 가는 회전 제거
 				Rotation = FRotator(0.f, Rotation.Yaw, Rotation.Roll);
-			else if (Rotation.Pitch < 275.f) // SwimmingSurface 해제 임계치
+			else if (Rotation.Pitch < DOWNWARD_CONTROLLER_PITCH_LIMIT) // SwimmingSurface 해제 임계치
 				SwimmingState = ESwimmingState::SWIMMING_UNDER;
 		}
 
@@ -126,10 +128,8 @@ void UC_SwimmingComponent::OnSwimmingCKey()
 
 	if (OwnerPlayer->Controller)
 	{
-		static const float DOWNWARD_PITCH = 270.f;
-
 		FRotator Rotation	= OwnerPlayer->GetController()->GetControlRotation();
-		Rotation.Pitch		= DOWNWARD_PITCH;
+		Rotation.Pitch		= DOWNWARD_CONTROLLER_PITCH;
 		Rotation.Roll		= 0.f;
 		
 		const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);

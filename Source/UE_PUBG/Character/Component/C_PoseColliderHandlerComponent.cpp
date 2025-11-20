@@ -417,18 +417,11 @@ bool UC_PoseColliderHandlerComponent::IsCurrentlyAtDeepWater(float HeightOffset)
 	DrawDebugLine(GetWorld(), TraceStartLocation, HitResults[0].ImpactPoint, FColor::Red, false, 0.5f);
 
 	const EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResults[0].PhysMaterial.Get());
-	if (SurfaceType != SurfaceType9)
-	{
-		UC_Util::Print("First surface not water");
-		return false; // 첫 Line blocked된 지형지물의 유형이 물이 아니면 return false
-	}
+	if (SurfaceType != SurfaceType9) return false; // 첫 Line blocked된 지형지물의 유형이 물이 아니면 return false
+		
 
 	// MultiTrace 상황에서 Water 지형지물만 잡힌 상황 (이 상황은 나오지 않아야 맞음)
-	if (HitResults.Num() <= 1)
-	{
-		UC_Util::Print("First surface water but something wrong");
-		return false;
-	}
+	if (HitResults.Num() <= 1) return false;
 
 	DrawDebugLine(GetWorld(), HitResults[0].ImpactPoint, HitResults[1].ImpactPoint, FColor::Green, false, 0.5f);
 
