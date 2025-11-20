@@ -655,6 +655,18 @@ void UC_InputComponent::OnFKey()
 		break;
 	}
 
+	switch (Player->GetSwimmingComponent()->GetSwimmingState())
+	{
+	case ESwimmingState::ON_GROUND: UC_Util::Print("SwimmingState : OnGround", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+		break;
+	case ESwimmingState::SWIMMING_SURFACE: UC_Util::Print("SwimmingState : SWIMMING_SURFACE", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+		break;
+	case ESwimmingState::SWIMMING_UNDER: UC_Util::Print("SwimmingState : SWIMMING_UNDER", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+		break;
+	case ESwimmingState::MAX: UC_Util::Print("SwimmingState : MAX", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+		break;
+	}
+
 	UC_Util::Print(Player->GetParkourComponent()->GetRootedSkeletalMesh() == Player->GetMesh()->GetSkeletalMeshAsset() ?
 		"Currently OtherMesh" : "Currently Main Mesh", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 

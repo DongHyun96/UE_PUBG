@@ -9,6 +9,9 @@
 #include "C_FeetComponent.generated.h"
 
 
+/// <summary>
+/// Feet IK에 사용
+/// </summary>
 USTRUCT(BlueprintType)
 struct FFeetData
 {
@@ -85,6 +88,9 @@ public:
 	EPhysicalSurface GetRightSurfaceType() const {return RightFootSoundDescriptor.CurrentSurfaceType; }
 	
 	FFeetData GetData() const { return Data; }
+
+	bool IsLeftFootOnDeepWater()  const { return LeftFootSoundDescriptor.bIsDeepWater; }
+	bool IsRightFootOnDeepWater() const { return RightFootSoundDescriptor.bIsDeepWater; }
 
 private:
 

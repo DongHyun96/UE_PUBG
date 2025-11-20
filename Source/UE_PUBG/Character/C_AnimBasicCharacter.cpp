@@ -113,8 +113,6 @@ void UC_AnimBasicCharacter::AnimNotify_OnAnyFallingOrJumpingStateToIdle()
 	// 이전 자세가 Crouch일 때, Stand로 자세 바꾸기
 	if (OwnerCharacter->GetPoseState() != EPoseState::STAND)
 		OwnerCharacter->SetPoseState(OwnerCharacter->GetPoseState(), EPoseState::STAND);
-
-	UC_Util::Print("AnimNotify_OnAnyFallingOrJumpingStateToIdle", FColor::Cyan, 10.f);
 }
 
 void UC_AnimBasicCharacter::AnimNotify_OnFallingIdleToFallingHard()

@@ -302,7 +302,7 @@ void AC_MagneticFieldManager::SetRandomNextCircleAndSpeedDirection()
 	else
 	{
 		uint16 TryCount{};
-		while (true)
+		while (++TryCount < 500) // 500번 시도해서 WaterTile을 피해도 적절한 위치가 나오지 않았을 때에는 적절한 위치가 없다고 판단, 그냥 진행하기
 		{
 			float XDir = FMath::FRandRange(-1.f, 1.f);
 			float YDir = FMath::FRandRange(-1.f, 1.f);
@@ -321,9 +321,6 @@ void AC_MagneticFieldManager::SetRandomNextCircleAndSpeedDirection()
 			// 만약 WaterTile 개수를 따져서 위치를 잡아야 한다면 제대로 된 위치가 잡힐 때 까지 반복
 			uint8 WaterTileCount = WaterTileCheckerComponent->GetWaterTileCount(NextCircle);
 			if (WaterTileCount <= PhaseInfos[CurrentPhase + 1].WaterTileCountLimit) break;
-
-			// 500번 시도해서 WaterTile을 피해도 적절한 위치가 나오지 않았을 때에는 적절한 위치가 없다고 판단, 그냥 진행하기
-			if (++TryCount > 500) break;
 		}
 		
 		UC_Util::Print("Try Avoiding Water count : " + FString::FromInt(TryCount), FColor::Cyan, 10.f);

@@ -177,7 +177,7 @@ void UC_SwimmingComponent::HandleSwimmingState()
 
 	FVector CharacterLocation = OwnerCharacter->GetActorLocation();
 
-	float WaterDepth = GetWaterDepth(CharacterLocation);
+	const float WaterDepth = GetCurrentLocationWaterDepth();
 
 	// 수영 가능한 깊이인지 check
 	if (WaterDepth <= CAN_WALK_DEPTH_LIMIT)
@@ -251,9 +251,7 @@ void UC_SwimmingComponent::OnWaterDetectionColliderBeginOverlap
 	const FHitResult&		SweepResult
 )
 {
-	UC_Util::Print("Swimming Collider Begin Overlap");
-	UC_Util::Print(OtherActor->GetName(), FColor::Cyan, 10.f);
-
+	if (OwnerPlayer) UC_Util::Print("Swimming Collider Begin Overlap with " + OtherActor->GetName(), FColor::Cyan, 10.f);
 
 	// PostProcessVolume의 위치와 크기 정보를 가져옴
 	FVector PostProcessLocation = OtherActor->GetActorLocation();
@@ -266,8 +264,8 @@ void UC_SwimmingComponent::OnWaterDetectionColliderBeginOverlap
 	FVector Center  = FVector(WaterDetectionCollider->GetComponentLocation().X, WaterDetectionCollider->GetComponentLocation().Y, EnteredWaterZ);
 	DrawDebugSphere(GetWorld(), Center, 5.f, 10, FColor::Red, true);
 
+	if (GetCurrentLocationWaterDepth() < CAN_WALK_DEPTH_LIMIT) return;
 	StartSwimming();
-	//if (GetWaterDepth(OwnerCharacter->GetActorLocation()) < CAN_WALK_DEPTH_LIMIT) return;
 }
 
 void UC_SwimmingComponent::OnWaterDetectionColliderEndOverlap
@@ -278,7 +276,7 @@ void UC_SwimmingComponent::OnWaterDetectionColliderEndOverlap
 	int32					OtherBodyIndex
 )
 {
-	UC_Util::Print("Swimming Collider End Overlap");
+	if (OwnerPlayer) UC_Util::Print("OnWaterDetectionCollider End Overlap", FColor::Red, 10.f);
 }
 
 void UC_SwimmingComponent::StartSwimming()
@@ -286,7 +284,7 @@ void UC_SwimmingComponent::StartSwimming()
 	// 이미 수영하는 중
 	if (SwimmingState != ESwimmingState::ON_GROUND) return;
 
-	UC_Util::Print("Start Swimming", FColor::Red, 10.f);
+	if (OwnerPlayer) UC_Util::Print("Starting Swimming", FColor::Cyan, 10.f);
 
 	// SkyDiving Parachuting state 도중 물로 착지했을 때의 예외처리
 	if (OwnerCharacter->GetMainState() == EMainState::SKYDIVING)
@@ -329,7 +327,7 @@ void UC_SwimmingComponent::StopSwimming()
 	OwnerCharacter->GetMesh()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
 }
 
-float UC_SwimmingComponent::GetWaterDepth(const FVector& Position)
+float UC_SwimmingComponent::GetCurrentLocationWaterDepth()
 {
 	FCollisionQueryParams CollisionParams{};
 	CollisionParams.AddIgnoredActor(OwnerCharacter);

@@ -56,10 +56,11 @@ private:
 	void HandleLerpBodySizeByPose(const float& DeltaTime);
 
 	/// <summary>
-	/// Crawl 상태 시, Crawl Collider 지형지물에 따라 회전 시켜주기
+	/// <para> Crawl 상태 시, Crawl Collider 지형지물에 따라 회전 시켜주기 </para>
+	/// <para> Crawl 가능한 지형지물인지에 따른 강제 자세전환도 여기서 처리 </para>
 	/// </summary>
 	/// <param name="DeltaTime"></param>
-	void HandleCrawlColliderRotation(const float& DeltaTime);
+	void HandleCrawlColliderState(const float& DeltaTime);
 
 private:
 
@@ -83,16 +84,16 @@ private:
 	/// <returns> : 경사도 </returns>
 	float GetCrawlSlopeAngle(const FVector& HeadStartLocation, const FVector& PelvisStartLocation, OUT TPair<float, float>& ImpactDistances, const bool& EnableDebugLine = false);
 
+private:
+	
 	/// <summary>
 	/// 캐릭터 현재 위치의 경사도 구하기
 	/// </summary>
 	/// <param name="ImpactDistances"> : Head Pelvis 순 LineTrace Impact 거리 </param>
-	 /// <param name="HeightOffset"> : LineTrace Start Height(Z) Offset </param>
+	/// <param name="HeightOffset"> : LineTrace Start Height(Z) Offset </param>
 	/// <param name="EnableDebugLine"> : DebugLine을 그릴지 </param>
 	/// <returns> : 경사도 </returns>
 	float GetCrawlSlopeDegree(OUT TPair<float, float>& ImpactDistances, const float& HeightOffset = 0.f, const bool& EnableDebugLine = false);
-
-//public:
 
 	/// <summary>
 	/// 임의의 HeadLocation과 PelvisLocation이 주어질 때, 해당 위치의 경사도 구하기
@@ -122,6 +123,13 @@ public:
 	/// <param name="ImpactDistances"></param>
 	/// <returns></returns>
 	bool CanCrawlOnSlope(const float& SlopeDegree, const TPair<float, float>& ImpactDistances);
+
+private:
+	
+	/// <summary>
+	/// Crawl 상태에서 DeepWater에 있는지 체크하는 함수
+	/// </summary>
+	bool IsCurrentlyAtDeepWater(float HeightOffset);
 
 
 private:
@@ -171,6 +179,11 @@ private: // Crawl Collider Rotation Lerp 관련
 private:
 
 	float CrawlSlopeAngle{};
+
+private:
+
+	// 매 Tick에서의 Crawl 상태에서의 Any Line Trace collisionParams 
+	FCollisionQueryParams CollisionParams{};
 
 };
 
