@@ -762,29 +762,40 @@ bool AC_Gun::ReloadMagazine()
 	}
 
 	// Inven에 있는 남아있는 총알 개수 파악
-	int LeftAmmoCount = 0;
+	int InvenLeftAmmoCount = 0;
 	AC_Item_Bullet* CorrespondingBulletItemObject = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
 	UC_InvenComponent* InvenComponent = OwnerCharacter->GetInvenComponent();
-	if (IsValid(CorrespondingBulletItemObject)) LeftAmmoCount = InvenComponent->GetTotalStackByItemName(CorrespondingBulletItemObject->GetItemCode());
+	if (IsValid(CorrespondingBulletItemObject)) InvenLeftAmmoCount = InvenComponent->GetTotalStackByItemName(CorrespondingBulletItemObject->GetItemCode());
 
+	if (OwnerPlayer) UC_Util::Print("Reloading : LeftAmmo in Inven Count : " + FString::FromInt(InvenLeftAmmoCount), FColor::MakeRandomColor(), 10.f);
+	
+	
 	// 장전할 수 있는 탄알 수가 Inven에 존재하지 않을 때
-	if (LeftAmmoCount == 0) return false;
+	if (InvenLeftAmmoCount == 0) return false;
 
 	// 예외처리 끝 / 장전 하기
 
-	const int BeforeChangeAmmo = CurMagazineBulletCount;
+	const int TotalBulletCount = InvenLeftAmmoCount + CurMagazineBulletCount; // Inven 장탄 수 + Mag 장탄 수 총합
 
-	// 장전 처리한 Magazine 총알 수로 현재 MagazineBulletCount 조정
-	CurMagazineBulletCount = FMath::Min(MaxMagazineBulletCount, LeftAmmoCount);
+	if (TotalBulletCount - MaxMagazineBulletCount >= 0)
+	{
+		CurMagazineBulletCount				= MaxMagazineBulletCount;
+		const int PrevInvenLeftAmmoCount	= InvenLeftAmmoCount;
+		InvenLeftAmmoCount					= TotalBulletCount - CurMagazineBulletCount; // 장전하고 Inven에 남은 장탄수
+		const int ReloadedBulletCount		= PrevInvenLeftAmmoCount - InvenLeftAmmoCount; // Inven에서 빼야할 장탄수
 
-	// 실질적으로 장전되어 들어간 탄알 수
-	// 해당 갯수를 파악해서 Inven의 탄알 수에서 제거 & Volume도 조정
-	const int ReloadedTotalBulletCount = CurMagazineBulletCount - BeforeChangeAmmo;
+		InvenComponent->DecreaseItemStack(CorrespondingBulletItemObject->GetItemCode(), ReloadedBulletCount);
+		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(ReloadedBulletCount * CorrespondingBulletItemObject->GetItemDatas()->ItemVolume));
+	}
+	else // 장전을 해도 최대 장탄수를 채울 수 없을 때
+	{
+		CurMagazineBulletCount = TotalBulletCount;
+
+		// 남은 Inven 장탄수 모두 제거
+		InvenComponent->DecreaseItemStack(CorrespondingBulletItemObject->GetItemCode(), InvenLeftAmmoCount);
+		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(InvenLeftAmmoCount * CorrespondingBulletItemObject->GetItemDatas()->ItemVolume));
+	}
 	
-	//장전한 총알 갯수만큼 Inven의 총알 & curVolume 조절
-	InvenComponent->DecreaseItemStack(CorrespondingBulletItemObject->GetItemCode(), ReloadedTotalBulletCount);
-	OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(ReloadedTotalBulletCount * CorrespondingBulletItemObject->GetItemDatas()->ItemVolume));
-
 	/* OwnerCharacter가 Player 일 때의 추가 처리 */
 	OwnerPlayer->GetInvenSystem()->InitializeList();
 	//OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(CurBullet->GetItemCurStack(), true);
