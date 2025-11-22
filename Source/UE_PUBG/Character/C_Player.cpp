@@ -272,6 +272,9 @@ void AC_Player::Tick(float DeltaTime)
 	//UC_Util::Print(CurveFloatForSwitchCamera->GetFloatValue(GetWorld()->GetDeltaSeconds()));
 	//UC_Util::Print(AimCamera->IsActive());
 	//UC_Util::Print(MainCamera->IsActive());
+
+	/*if (GetCharacterMovement()->IsInWater())
+		UC_Util::Print("Player's CharacterMovement thinks player in water", FColor::MakeRandomColor());*/
 	
 	HandleTurnInPlace();
 	HandleTurnInPlaceWhileAiming();

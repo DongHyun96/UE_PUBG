@@ -274,7 +274,8 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget()->AddTopKillFeedLog(KillFeedDescriptor);
 
 	// AliveCount 업데이트
-	int LeftCharacterCount = GAMESCENE_MANAGER->RemoveOneFromCurrentAliveCharacterCount();
+	const int LeftCharacterCount = GAMESCENE_MANAGER->RemoveOneFromCurrentAliveCharacterCount();
+	UC_Util::Print("AC_BasicCharacter::CharacterDead : After Dead LeftCharacterCount : " + FString::FromInt(LeftCharacterCount), FColor::Red, 20.f);
 	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetTimeBoxWidget()->SetAliveCountText(LeftCharacterCount);
 	
 	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();

@@ -674,6 +674,30 @@ void UC_InputComponent::OnFKey()
 
 	UC_Util::Print("Current MovementMode : " + Player->GetCharacterMovement()->GetMovementName(), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 
+	int32 WaterVolumeCount{};
+	int32 TotalVolumeCount{};
+	// For testing
+	for (TActorIterator<APhysicsVolume> It(GetWorld()); It; ++It)
+	{
+		APhysicsVolume* Volume = *It;
+
+		if (!Volume) continue;
+
+		TotalVolumeCount++;
+		FString Address = FString::Printf(TEXT("%p"), Volume);
+		UC_Util::Print("Found Volume Address : " + Address, GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+		
+		if (Volume->bWaterVolume)
+		{
+			UC_Util::Print("Water Volume : " + FString::Printf(TEXT("%p"), Volume), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+			Volume->SetActorHiddenInGame(false);
+			WaterVolumeCount++;
+		}
+	}
+	UC_Util::Print("Total Volume count : " + FString::FromInt(TotalVolumeCount), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+	UC_Util::Print("Total Water volume found : " + FString::FromInt(WaterVolumeCount), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+	UC_Util::Print("Total Alive Character Count : " + FString::FromInt(GAMESCENE_MANAGER->GetCurrentAliveCharacterCount()), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+
 	// SkyDiving 관련 F키
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 	{

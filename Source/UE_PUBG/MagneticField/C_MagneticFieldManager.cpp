@@ -302,7 +302,7 @@ void AC_MagneticFieldManager::SetRandomNextCircleAndSpeedDirection()
 	else
 	{
 		uint16 TryCount{};
-		while (++TryCount < 500) // 500번 시도해서 WaterTile을 피해도 적절한 위치가 나오지 않았을 때에는 적절한 위치가 없다고 판단, 그냥 진행하기
+		while (++TryCount < 100) // 100번 시도해서 WaterTile을 피해도 적절한 위치가 나오지 않았을 때에는 적절한 위치가 없다고 판단, 그냥 진행하기
 		{
 			float XDir = FMath::FRandRange(-1.f, 1.f);
 			float YDir = FMath::FRandRange(-1.f, 1.f);

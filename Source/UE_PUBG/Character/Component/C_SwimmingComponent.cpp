@@ -251,7 +251,13 @@ void UC_SwimmingComponent::OnWaterDetectionColliderBeginOverlap
 	const FHitResult&		SweepResult
 )
 {
-	if (OwnerPlayer) UC_Util::Print("Swimming Collider Begin Overlap with " + OtherActor->GetName(), FColor::Cyan, 10.f);
+	if (OtherActor->GetName() != "Water") // Water StaticMeshActor에 대해서만 BeginOverlap 처리
+	{
+		if (OwnerPlayer) UC_Util::Print("Water Detector collided with different collider", FColor::MakeRandomColor(), 10.f);
+		return;
+	}
+
+	if (OwnerPlayer) UC_Util::Print("Water Detector collided with water", FColor::Cyan, 10.f);
 
 	// PostProcessVolume의 위치와 크기 정보를 가져옴
 	FVector PostProcessLocation = OtherActor->GetActorLocation();
