@@ -58,7 +58,7 @@ protected:
 	/// <summary>
 	/// 특정 행동을 할 때 Reloading 모션 중지
 	/// </summary>
-	virtual void CancelReload() override;
+	void CancelReload() override;
 
 public:
 	

@@ -309,7 +309,10 @@ public:
 	void SetRecoilMultiplierMuzzleHorizon(float InValue) { RecoilMultiplierMuzzleHorizon = InValue; }
 	FVector2D GetRecoilFactors();
 	float GetBulletRPM() { return GunDataRef->BulletRPM; }
-	virtual bool FireBullet();
+
+public:
+	
+	bool FireBullet();
 
 private:
 	
@@ -474,7 +477,7 @@ public:
 	FName GetCurrentBulletTypeName();
 public:
 
-	virtual void SetActorHiddenInGame(bool bNewHidden) override;
+	void SetActorHiddenInGame(bool bNewHidden) override;
 	virtual void CancelReload();
 
 public:

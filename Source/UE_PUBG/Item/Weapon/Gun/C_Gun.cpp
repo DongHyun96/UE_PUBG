@@ -620,118 +620,75 @@ bool AC_Gun::FireBullet()
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
 	if (!OnScreen) return false;
 	//ExecuteReloadMontage();
-
-
+	
 	FVector FireLocation{}, FireVelocity{}, HitLocation{};
+	bool bLineTraceHit{};
 	
-	bool HasHit;
-	if (!SetBulletVelocity(FireLocation, FireVelocity, HitLocation, HasHit)) return false;
+	if (!SetBulletVelocity(FireLocation, FireVelocity, HitLocation, bLineTraceHit)) return false;
+	
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	
+	const bool ApplyGravity = !bLineTraceHit;
+	
+	AC_Bullet* Bullet{};
 
-	//UC_Util::Print(FireLocation);
-	//UC_Util::Print(FireDirection);
-	
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter); 
-	// const bool ApplyGravity = OwnerPlayer->GetIsWatchingSight() || !HasHit;
-	const bool ApplyGravity = !HasHit;
-	
-	int BulletCount = 0;
-
-	for (auto& Bullet : OwnerPlayer->GetBullets())
+	// Finding available bullet from BulletPool
+	for (AC_Bullet* B : OwnerPlayer->GetBullets())
 	{
-		if (Bullet->GetIsActive()) continue; 			
-
-		BulletCount++;
-		//UC_Util::Print("FIRE!!!!!!!");
-		CurMagazineBulletCount--;
-		OwnerPlayer->RecoilController();
-		if (HasHit)
-		{
-			bool FireSucceeded = Bullet->Fire(this, FireLocation, FireVelocity, ApplyGravity, HitLocation);
-			//if (Cast<AC_Player>(OwnerCharacter))
-			if (OwnerCharacter->IsLocallyControlled())
-			{
-				if (GunSoundData->FireSound) UGameplayStatics::PlaySound2D(this, GunSoundData->FireSound);
-			}
-			else
-			{
-				if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
-			}
-			
-			if (FireSucceeded) 
-			{ 
-				OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true); 
-
-				if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::MAIN_GUN )
-					OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot()->UpdateCurAmmo(this);
-				else if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::SUB_GUN)
-					OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetSubGunSlot()->UpdateCurAmmo(this);
-			}
-			
-			if (IsValid(MuzzleFlameEffectParticle))
-			{
-				UGameplayStatics::SpawnEmitterAttached
-				(
-					MuzzleFlameEffectParticle,  // 파티클 시스템
-					GunMesh,					// 부착할 메쉬 (총)
-					TEXT("MuzzleSocket"),		// 총구 소켓에 부착
-					FVector(0.f),
-					FRotator(0.f),
-					FVector(0.2f)
-				);
-			}
-			return FireSucceeded;
-		}
-
-		// Not has hit during Setting Bullet velocity
-		
-		const bool FireSucceeded = Bullet->Fire(this, FireLocation, FireVelocity, ApplyGravity);
-		//if (Cast<AC_Player>(OwnerCharacter))
-		if (OwnerCharacter->IsLocallyControlled())
-		{
-			if (GunSoundData->FireSound) UGameplayStatics::PlaySound2D(this, GunSoundData->FireSound);
-		}
-		else
-		{
-			if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
-		}
-
-		if (FireSucceeded)
-		{
-			OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true);
-
-			if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::MAIN_GUN)
-				OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot()->UpdateCurAmmo(this);
-			else if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::SUB_GUN)
-				OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetSubGunSlot()->UpdateCurAmmo(this);
-
-		}
-		if (IsValid(MuzzleFlameEffectParticle))
-		{
-			UGameplayStatics::SpawnEmitterAttached
-			(
-				MuzzleFlameEffectParticle,  // 파티클 시스템
-				GunMesh,					// 부착할 메쉬 (총)
-				TEXT("MuzzleSocket"),		// 총구 소켓에 부착
-				FVector(0.f),
-				FRotator(0.f),
-				FVector(0.2f)
-			);
-			// MuzzleFlameEffectParticle->SetWorldLocation(FireLocation);
-			// //MuzzleFlameEffectParticle->SetRelativeRotation(this->GetActorForwardVector().Rotation());
-			// MuzzleFlameEffectParticle->SetWorldRotation(OwnerCharacter->GetActorForwardVector().Rotation());
-			//
-			// MuzzleFlameEffectParticle->Activate();
-			
-		}
-		return FireSucceeded;
-
-		//Bullet->Fire(this, FireLocation, FireDirection);
-		//if (BulletCount > 100)
-		//	return true;
+		if (B->GetIsActive()) continue;
+		Bullet = B;
+		break;
 	}
-	// UC_Util::Print("No More Bullets in Pool");
 
-	return false;
+	if (!Bullet)
+	{
+		UC_Util::Print("From AC_Gun::FireBullet : Available bullet not found in the pool!", FColor::Red, 10.f);
+		return false;
+	}
+
+	
+	if (!Bullet->Fire(this, FireLocation, FireVelocity, ApplyGravity, bLineTraceHit ? HitLocation : FVector::ZeroVector))
+		return false; // Bullet Fire failed!
+
+	CurMagazineBulletCount--;
+	OwnerPlayer->RecoilController();
+	
+	if (OwnerCharacter->IsLocallyControlled())
+	{
+		if (GunSoundData->FireSound) UGameplayStatics::PlaySound2D(this, GunSoundData->FireSound);
+	}
+	else
+	{
+		if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
+	}
+	
+	OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true); 
+
+	if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::MAIN_GUN )
+		OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot()->UpdateCurAmmo(this);
+	else if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::SUB_GUN)
+		OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetSubGunSlot()->UpdateCurAmmo(this);
+
+	if (!IsValid(MuzzleFlameEffectParticle))
+	{
+		UC_Util::Print("From AC_Gun::FireBullet : MuzzleFlameEffectParticle is not valid!", FColor::Red, 10.f);
+		return true;
+	}
+
+	// 플레이어의 AimDown 상태일 경우, MuzzleFlame이 시야를 방해하기 때문에 Effect spawn시키지 않음
+	if (OwnerPlayer && bIsAimDown) return true;
+	
+	UGameplayStatics::SpawnEmitterAttached
+	(
+		MuzzleFlameEffectParticle,  // 파티클 시스템
+		GunMesh,					// 부착할 메쉬 (총)
+		TEXT("MuzzleSocket"),		// 총구 소켓에 부착
+		FVector(0.f),
+		FRotator(0.f),
+		FVector(0.2f)
+	);
+
+	return true;
 }
 
 bool AC_Gun::ReloadMagazine()
