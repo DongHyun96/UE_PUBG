@@ -153,7 +153,7 @@ public:
 	/// CurrentRanking을 받음과 동시에 CurrentRanking 업데이트 처리
 	/// </summary>
 	/// <returns></returns>
-	int GetCurrentRankingAndUpdateCurrentRanking() { return CurrentRanking--; }
+	int GetCurrentRankingAndUpdateCurrentRanking() { return (CurrentRanking--); }
 
 	int GetTotalPlayedCharacterCount() const { return TotalPlayedCharacterCount; }
 
