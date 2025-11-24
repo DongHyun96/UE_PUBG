@@ -122,42 +122,9 @@ void AC_SR::SetRelativeRotationOnCrawl()
 
 bool AC_SR::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 {
-	if (GetIsPlayingMontagesOfAny()) return false;
-
-	const FVector BulletSpreadRadius	= FVector(100,100,100);
-	const FVector EnemyLocation			= InTargetCharacter->GetActorLocation();
-	      FVector SpreadLocation		= UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation,BulletSpreadRadius);
-	const FVector FireLocation			= GunMesh->GetSocketLocation(FName("MuzzleSocket"));
-	
-	FVector SmokeEnemyLocation{};
-	if (InTargetCharacter->GetSmokeEnteredChecker()->GetRandomLocationInSmokeArea(SmokeEnemyLocation))
-		SpreadLocation = SmokeEnemyLocation;
-	
-	const FVector BulletVelocity = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
-	
-	for (auto& Bullet : OwnerCharacter->GetBullets())
-	{
-		if (Bullet->GetIsActive()) continue;
-		
-		
-		bool Succeeded = Bullet->Fire(this, FireLocation, BulletVelocity);
-		if (!Succeeded)
-		{
-			UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
-			return false;
-		}
-
-		// Bullet Fire Succeeded
-		CurMagazineBulletCount--;
-		if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
-		
-		ExecuteBoltActionReloadMontage();
-
-		return Succeeded;
-	}
-	
-	UC_Util::Print("From AC_SR::AIFireBullet : No More Bullets in Pool", FColor::Red, 10.f);
-	return false;
+	bool FireSucceeded = Super::AIFireBullet(InTargetCharacter);
+	if (FireSucceeded) ExecuteBoltActionReloadMontage();
+	return FireSucceeded;
 }
 
 float AC_SR::GetDamageRateByBodyPart(const FName& BodyPart)

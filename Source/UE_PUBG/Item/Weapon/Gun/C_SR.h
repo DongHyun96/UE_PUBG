@@ -45,7 +45,7 @@ protected:
 	
 	void SetRelativeRotationOnCrawl();
 	
-public:
+private:
 	
 	bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) override;
 

@@ -37,6 +37,7 @@
 
 #include "Character/C_Player.h"
 #include "Character/C_Enemy.h"
+#include "Character/Component/C_SmokeEnteredChecker.h"
 
 #include "GameFramework/Actor.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -54,6 +55,7 @@
 
 
 #include "Item/ItemManager/C_ItemManager.h"
+#include "Kismet/KismetMathLibrary.h"
 
 FTutorialStageGoalCheckerDelegate AC_Gun::WeaponTutorialDelegate{};
 
@@ -1131,6 +1133,43 @@ bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)
 	if (!EnemyAIController->IsCurrentlyOnSight(InTargetCharacter)) return false;
 	
 	return true;
+}
+
+bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
+{
+	if (GetIsPlayingMontagesOfAny()) return false;
+
+	const FVector BulletSpreadRadius	= FVector(100,100,100);
+	const FVector EnemyLocation			= InTargetCharacter->GetActorLocation();
+	FVector SpreadLocation				= UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation,BulletSpreadRadius);
+	const FVector FireLocation			= GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+	
+	FVector SmokeEnemyLocation{};
+	if (InTargetCharacter->GetSmokeEnteredChecker()->GetRandomLocationInSmokeArea(SmokeEnemyLocation))
+		SpreadLocation = SmokeEnemyLocation;
+	
+	const FVector BulletVelocity = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
+	
+	for (auto& Bullet : OwnerCharacter->GetBullets())
+	{
+		if (Bullet->GetIsActive()) continue;
+		
+		if (!Bullet->Fire(this, FireLocation, BulletVelocity))
+		{
+			UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
+			return false;
+		}
+
+		// Bullet Fire Succeeded
+		CurMagazineBulletCount--;
+		if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
+		
+		return true;
+	}
+	
+	// 현재 Bullet pool에 Available한 총알이 없을 때
+	UC_Util::Print("From AC_Gun::AIFireBullet : No Available bullet found in the pool!", FColor::Red, 10.f);
+	return false;
 }
 
 void AC_Gun::CancelReload()

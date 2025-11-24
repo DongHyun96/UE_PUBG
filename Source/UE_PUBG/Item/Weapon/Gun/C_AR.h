@@ -25,13 +25,9 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 
-public:
-	
-	bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) override;
+private:
 
 	float GetDamageRateByBodyPart(const FName& BodyPart) override;
-
-private:
 
 	void ChangeCurShootingMode() override;
 	//특정 행동을 할 때 Reloading 모션 중지

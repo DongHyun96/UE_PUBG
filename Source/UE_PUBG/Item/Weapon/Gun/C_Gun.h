@@ -452,7 +452,7 @@ protected:
 	/// </summary>
 	/// <param name="InTargetCharacter"> : Target Character </param>
 	/// <returns> : 제대로 총알이 발사되었다면 return true </returns>
-	virtual bool AIFireBullet(AC_BasicCharacter* InTargetCharacter) PURE_VIRTUAL(AC_Gun::AIFireBullet, return false;);
+	virtual bool AIFireBullet(AC_BasicCharacter* InTargetCharacter);
 	
 	float AIFireTimer = 0.0f;
 
