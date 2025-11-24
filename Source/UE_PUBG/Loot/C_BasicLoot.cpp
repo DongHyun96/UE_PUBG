@@ -4,6 +4,7 @@
 #include "Loot/C_BasicLoot.h"
 #include "Item/C_Item.h"
 #include "Singleton/C_GameSceneManager.h"
+#include "Item/ItemManager/C_ItemManager.h"
 #include "Utility/C_Util.h"
 // Sets default values
 AC_BasicLoot::AC_BasicLoot()
@@ -31,6 +32,7 @@ void AC_BasicLoot::InitializeLootItems()
 {
 	for (AC_Item* Item : LootItems)
 	{
+		//GAMESCENE_MANAGER->GetItemManager()->SpawnItem(Item->GetItemCode(), GetActorLocation(), Item->GetItemCurStack());
 		Item->SetOwner(this);
 	}
 }

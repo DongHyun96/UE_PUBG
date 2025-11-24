@@ -374,7 +374,7 @@ bool AC_ConsumableItem::MoveAroundToInven(AC_BasicCharacter* Character, int32 In
 			//invenComp->GetCurVolume() += FoundItem->GetItemDatas().ItemVolume * ItemStackCount;
 			//TODO : destroy를 해도 잔상이 남는것을 대비해서 해놓음 만약 없이도 잔상이 안남는다면 지울 것.
 			InvenComp->AddInvenCurVolume(this->ItemDataRef->ItemVolume * ItemStackCount);
-
+			InvenComp->RemoveItemToAroundList(this);
 			this->SetActorEnableCollision(false);
 			this->SetActorHiddenInGame(true);
 			this->DestroyItem();
