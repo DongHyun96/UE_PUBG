@@ -770,7 +770,7 @@ bool UC_ParkourComponent::InitMustVaultOrMustMantle(FParkourDescriptor& CurParko
 
 void UC_ParkourComponent::OnParkourAnimMontageEnd()
 {
-	UC_Util::Print("OnParkourEnd", FColor::Cyan, 10.f);
+	UC_Util::Print("OnParkourAnimMontageEnd", FColor::MakeRandomColor(), 100.f);
 
 	OwnerCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	// OwnerCharacter->SetActorEnableCollision(true);

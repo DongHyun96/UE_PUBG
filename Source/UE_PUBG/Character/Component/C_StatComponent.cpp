@@ -193,7 +193,7 @@ bool UC_StatComponent::TakeDamage(const float& DamageAmount, const FKillFeedDesc
 		
 		if (GAMESCENE_MANAGER->GetIsGameOver()) return true;
 
-		if (Cast<AC_Player>(OwnerCharacter)) return true; // TODO : 이 라인 지우기
+		// if (Cast<AC_Player>(OwnerCharacter)) return true; // For testing
 		
 		// 사망 처리
 		OwnerCharacter->CharacterDead(KillFeedDescriptor);

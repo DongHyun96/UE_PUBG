@@ -3,6 +3,7 @@
 
 #include "Character/Component/C_PoseColliderHandlerComponent.h"
 
+#include "C_FeetComponent.h"
 #include "Character/C_Player.h"
 #include "Components/CapsuleComponent.h"
 #include "Character/Component/C_EquippedComponent.h"
@@ -59,7 +60,19 @@ void UC_PoseColliderHandlerComponent::TickComponent(float DeltaTime, ELevelTick 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	HandleLerpBodySizeByPose(DeltaTime);
-	HandleCrawlColliderRotation(DeltaTime);
+
+	if (OwnerCharacter->GetIsPoseTransitioning()) return;
+	if (OwnerCharacter->GetPoseState() != EPoseState::CRAWL) return;
+	
+	/* Initing Crawl state's any lineTrace CollisionParams */
+	CollisionParams = {};
+	CollisionParams.AddIgnoredActor(OwnerCharacter);
+
+	TArray<AActor*> AttachedActors{};
+	OwnerCharacter->GetAttachedActors(AttachedActors);
+	CollisionParams.AddIgnoredActors(AttachedActors);
+	
+	HandleCrawlColliderState(DeltaTime);
 	
 	/*UC_Util::Print(OwnerCharacter->GetCapsuleComponent()->GetComponentLocation().Z, FColor::Red);
 	UC_Util::Print(OwnerCharacter->GetMesh()->GetComponentLocation().Z, FColor::Blue);
@@ -103,24 +116,34 @@ bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(
 
 	switch (InChangeTo)
 	{
-	case EPoseState::STAND:
+	case EPoseState::STAND: case EPoseState::CROUCH:
 	{
 		// Crouch to stand or Crawl to Stand
 		FVector StartLocation	 = OwnerCharacter->GetActorLocation();
+		FVector DestLocation{};
 
-		StartLocation.Z			+= (OwnerCharacter->GetPoseState() == EPoseState::CROUCH) ? 
-								   POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[EPoseState::CROUCH].Key - SWEEP_SPHERE_RAD : CRAWL_START_OFFSET;
+		if (InChangeTo == EPoseState::STAND)
+		{
+			StartLocation.Z += (OwnerCharacter->GetPoseState() == EPoseState::CROUCH) ? 
+									   POSE_BY_ROOTCOLLIDER_HEIGHT_RADIUS[EPoseState::CROUCH].Key - SWEEP_SPHERE_RAD : CRAWL_START_OFFSET;
+			
+			DestLocation = StartLocation + FVector::UnitZ() * ((OwnerCharacter->GetPoseState() == EPoseState::CROUCH) ? 
+									   CROUCH_TO_STAND_SWEEP_DIST : CRAWL_TO_STAND_SWEEP_DIST);
+		}
+		else // Change to crouch (Only need Crawl to crouch test (stand to crouch always possible))
+		{
+			if (OwnerCharacter->GetPoseState() == EPoseState::STAND) return true; // Stand to crouch -> 언제든 자세를 바꿀 수 있음
+			
+			StartLocation.Z += CRAWL_START_OFFSET;
+			DestLocation	 = StartLocation + FVector::UnitZ() * CRAWL_TO_CROUCH_SWEEP_DIST;
+		}
 
-		FVector DestLocation	 = StartLocation + FVector::UnitZ() * ((OwnerCharacter->GetPoseState() == EPoseState::CROUCH) ? 
-								   CROUCH_TO_STAND_SWEEP_DIST : CRAWL_TO_STAND_SWEEP_DIST);
-
-		FCollisionQueryParams CollisionParams{};
+		CollisionParams = {};
 		CollisionParams.AddIgnoredActor(OwnerCharacter);
 		
 		TArray<AActor*> AttachedActors{};
 		OwnerCharacter->GetAttachedActors(AttachedActors);
 		CollisionParams.AddIgnoredActors(AttachedActors);
-		OwnerCharacter->GetEquippedComponent()->AddAttachedPartsActorsToIgnoreActors(CollisionParams);
 
 		FHitResult HitResult{};
 		
@@ -138,47 +161,27 @@ bool UC_PoseColliderHandlerComponent::CanChangePoseOnCurrentSurroundEnvironment(
 		//DrawDebugSphere(GetWorld(), StartLocation, SWEEP_SPHERE_RAD, 10, FColor::Red, true);
 		//DrawDebugSphere(GetWorld(), DestLocation,  SWEEP_SPHERE_RAD, 10, FColor::Red, true);
 
-		return !HasHit;
-	}
-	case EPoseState::CROUCH: // Crawl to Crouch만 확인 하면 됨
-	{
-		if (OwnerCharacter->GetPoseState() == EPoseState::STAND) return true; // Stand to crouch -> 언제든 자세를 바꿀 수 있음
-
-		// Crawl to Crouch test
-
-		FVector StartLocation	 = OwnerCharacter->GetActorLocation();
-		StartLocation.Z			+= CRAWL_START_OFFSET;
-		FVector DestLocation	 = StartLocation + FVector::UnitZ() * CRAWL_TO_CROUCH_SWEEP_DIST;
-
-		FCollisionQueryParams CollisionParams{};
-		CollisionParams.AddIgnoredActor(OwnerCharacter);
-
-		TArray<AActor*> AttachedActors{};
-		OwnerCharacter->GetAttachedActors(AttachedActors);
-		CollisionParams.AddIgnoredActors(AttachedActors);
-
-		FHitResult HitResult{};
-
-		bool HasHit = GetWorld()->SweepSingleByChannel
-		(
-			HitResult,
-			StartLocation,
-			DestLocation,
-			FQuat::Identity,
-			PoseCheckerChannel,
-			FCollisionShape::MakeSphere(SWEEP_SPHERE_RAD),
-			CollisionParams
-		);
-
-		//DrawDebugSphere(GetWorld(), StartLocation, SWEEP_SPHERE_RAD, 10, FColor::Red, true);
-		//DrawDebugSphere(GetWorld(), DestLocation,  SWEEP_SPHERE_RAD, 10, FColor::Red, true);
-		
 		return !HasHit;
 	}
 	case EPoseState::CRAWL:
 	{
+		// 발들 중 하나라도 물 속에 있고, 엎드릴 수 없는 수위일 경우 return false
+		if (OwnerCharacter->GetFeetComponent()->IsLeftFootOnDeepWater() || OwnerCharacter->GetFeetComponent()->IsRightFootOnDeepWater())
+		{
+			UC_Util::Print("Crawl blocked due to Foot on Deep water", FColor::Red, 10.f);
+			return false;
+		}
+		
 		// 높낮이가 높다하면 이미 떨어지는 상태이므로 Crawl 자체의 처리를 하지 않음 -> 높이 말고 경사도만 체크를 해주면 됨
 		TPair<float, float> ImpactDistances{};
+
+		CollisionParams = {};
+		CollisionParams.AddIgnoredActor(OwnerCharacter);
+
+		TArray<AActor*> AttachedActors{};
+		OwnerCharacter->GetAttachedActors(AttachedActors);
+		CollisionParams.AddIgnoredActors(AttachedActors);
+		
 		float SlopeDegree = GetCrawlSlopeDegree(ImpactDistances, true);
 		return FMath::Abs(SlopeDegree) < CRAWL_DEGREE_LIMIT;
 	}
@@ -222,7 +225,12 @@ void UC_PoseColliderHandlerComponent::HandleLerpBodySizeByPose(const float& Delt
 		}
 		else
 		{
-			if (OwnerCharacter->GetSwimmingComponent()->IsSwimming()) return;
+			if (OwnerCharacter->GetSwimmingComponent()->IsSwimming())
+			{
+				UC_Util::Print("From PoseColliderHandlerComponent : Character swimming so returning");
+				return;
+			}
+			
 			// 5 10
 			CrawlCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -263,19 +271,16 @@ void UC_PoseColliderHandlerComponent::HandleLerpBodySizeByPose(const float& Delt
 	OwnerCharacter->GetMesh()->SetRelativeLocation(DestLocation);
 }
 
-void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& DeltaTime)
+void UC_PoseColliderHandlerComponent::HandleCrawlColliderState(const float& DeltaTime)
 {
-	if (OwnerCharacter->GetIsPoseTransitioning()) return;
-	if (OwnerCharacter->GetPoseState() != EPoseState::CRAWL) return;
-
 	static const float HEIGHT_OFFSET	= 50.f;
 	TPair<float, float> ImpactDistances{};
 
-	CrawlSlopeAngle		= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET);
+	CrawlSlopeAngle		= GetCrawlSlopeAngle(ImpactDistances, HEIGHT_OFFSET, true);
 	float SlopeDegree	= FMath::RadiansToDegrees(CrawlSlopeAngle);
 
 	//UC_Util::Print(SlopeDegree);
-	if (!CanCrawlOnSlope(SlopeDegree, ImpactDistances))
+	if (!CanCrawlOnSlope(SlopeDegree, ImpactDistances) || IsCurrentlyAtDeepWater(HEIGHT_OFFSET))
 	{
 		if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter)) Player->GetHUDWidget()->GetInformWidget()->AddPlayerWarningLog("CRAWL BLOCKED!");
 
@@ -291,11 +296,11 @@ void UC_PoseColliderHandlerComponent::HandleCrawlColliderRotation(const float& D
 
 float UC_PoseColliderHandlerComponent::GetCrawlSlopeAngle(OUT TPair<float, float>& ImpactDistances, const float& HeightOffset, const bool& EnableDebugLine)
 {
-	FVector HeadStartLocation	= OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorForwardVector() * 75.f + FVector::UnitZ() * HeightOffset;
-	FVector PelvisStartLocation = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * HeightOffset;
+	const FVector HeadStartLocation	  = OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorForwardVector() * 75.f + FVector::UnitZ() * HeightOffset;
+	const FVector PelvisStartLocation = OwnerCharacter->GetActorLocation() + FVector::UnitZ() * HeightOffset;
 
-	float SlopeAngle = GetCrawlSlopeAngle(HeadStartLocation, PelvisStartLocation, ImpactDistances, EnableDebugLine);
-	ImpactDistances.Key -= HeightOffset;
+	const float SlopeAngle = GetCrawlSlopeAngle(HeadStartLocation, PelvisStartLocation, ImpactDistances, EnableDebugLine);
+	ImpactDistances.Key   -= HeightOffset;
 	ImpactDistances.Value -= HeightOffset;
 
 	return SlopeAngle;
@@ -312,13 +317,6 @@ float UC_PoseColliderHandlerComponent::GetCrawlSlopeAngle
 	FVector HeadDestLocation	= HeadStartLocation   - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
 	FVector PelvisDestLocation	= PelvisStartLocation - FVector::UnitZ() * CRAWL_LINETRACE_TEST_DIST;
 
-	FCollisionQueryParams CollisionParams{};
-	CollisionParams.AddIgnoredActor(OwnerCharacter);
-
-	TArray<AActor*> AttachedActors{};
-	OwnerCharacter->GetAttachedActors(AttachedActors);
-	CollisionParams.AddIgnoredActors(AttachedActors);
-
 	FHitResult HeadHitResult{};
 	FHitResult PelvisHitResult{};
 
@@ -334,23 +332,12 @@ float UC_PoseColliderHandlerComponent::GetCrawlSlopeAngle
 
 	if (EnableDebugLine)
 	{
-		/*DrawDebugSphere(GetWorld(), HeadStartLocation, 20.f, 12, FColor::Red, false, 0.5f);
-		DrawDebugSphere(GetWorld(), HeadDestLocation, 20.f, 12, FColor::Red, false, 0.5f);
-		DrawDebugLine(GetWorld(), HeadStartLocation, HeadDestLocation, FColor::Red, false, 0.5f);
-
-		DrawDebugSphere(GetWorld(), PelvisStartLocation, 20.f, 12, FColor::Red, false, 0.5f);
-		DrawDebugSphere(GetWorld(), PelvisDestLocation, 20.f, 12, FColor::Red, false, 0.5f);
-		DrawDebugLine(GetWorld(), PelvisStartLocation, PelvisDestLocation, FColor::Red, false, 0.5f);*/
 		DrawDebugLine(GetWorld(), HeadStartLocation, HeadHitResult.ImpactPoint, FColor::Red, false, 0.5f);
 		DrawDebugLine(GetWorld(), PelvisStartLocation, PelvisHitResult.ImpactPoint, FColor::Red, false, 0.5f);
 	}
 
 	if (!HasHeadHit || !HasPelvisHit) return 0.f;
-	// TODO : Length 체크
-	//if (HeadHitResult.ImpactPoint.Length() )
-
-	// 경사도 체크
-	//HeadHitResult.ImpactPoint
+	
 	float A				= (HeadHitResult.ImpactPoint - PelvisHitResult.ImpactPoint).Length();
 	float B				= FMath::Abs(HeadHitResult.ImpactPoint.Z - PelvisHitResult.ImpactPoint.Z);
 	float SlopeAngle	= FMath::Asin(B / A);
@@ -405,6 +392,41 @@ bool UC_PoseColliderHandlerComponent::CanCrawlOnSlope(const float& SlopeDegree, 
 	return FMath::Abs(SlopeDegree)	< CRAWL_DEGREE_LIMIT &&
 		ImpactDistances.Key			< CRAWL_GROUND_DIST_LIMIT &&
 		ImpactDistances.Value		< CRAWL_GROUND_DIST_LIMIT;
+}
+
+bool UC_PoseColliderHandlerComponent::IsCurrentlyAtDeepWater(float HeightOffset)
+{
+	CollisionParams.bReturnPhysicalMaterial = true;
+	
+	const FVector TraceStartLocation = OwnerCharacter->GetActorLocation() + OwnerCharacter->GetActorForwardVector() * 35.f + FVector::UnitZ() * HeightOffset;
+	const FVector TraceDestLocation = TraceStartLocation - FVector::UnitZ() * 100.f;
+
+	TArray<FHitResult> HitResults{};
+
+	const bool bIsHit = GetWorld()->LineTraceMultiByChannel
+	(
+		HitResults,
+		TraceStartLocation,
+		TraceDestLocation,
+		ECC_Visibility,
+		CollisionParams
+	);
+
+	if (!bIsHit || HitResults.IsEmpty()) return false;
+	
+	DrawDebugLine(GetWorld(), TraceStartLocation, HitResults[0].ImpactPoint, FColor::Red, false, 0.5f);
+
+	const EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(HitResults[0].PhysMaterial.Get());
+	if (SurfaceType != SurfaceType9) return false; // 첫 Line blocked된 지형지물의 유형이 물이 아니면 return false
+		
+
+	// MultiTrace 상황에서 Water 지형지물만 잡힌 상황 (이 상황은 나오지 않아야 맞음)
+	if (HitResults.Num() <= 1) return false;
+
+	DrawDebugLine(GetWorld(), HitResults[0].ImpactPoint, HitResults[1].ImpactPoint, FColor::Green, false, 0.5f);
+
+	// 30cm 이상으로 넘어가면 DeepWater로 판단 처리
+	return HitResults[0].ImpactPoint.Z - HitResults[1].ImpactPoint.Z > 30.f;
 }
 
 

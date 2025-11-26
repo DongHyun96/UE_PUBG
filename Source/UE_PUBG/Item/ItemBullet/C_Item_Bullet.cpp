@@ -76,6 +76,8 @@ bool AC_Item_Bullet::MoveAroundToInven(AC_BasicCharacter* Character, int32 InSta
 		{
 			// 인벤에 동일한 이름의 아이템이 존재 한다면 실행.
 
+			//InvenComp->RemoveItemToAroundList(this); // AroundList에서 제거 먼저.
+
 			InvenComp->AddItemToMyList(this);
 			/*UC_Util::Print(int(CurBulletType));
 			UC_Util::Print("Item Stack Add!!!!!!!!!!!!!!!!");*/

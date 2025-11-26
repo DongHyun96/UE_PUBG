@@ -153,7 +153,7 @@ public:
 	/// CurrentRanking을 받음과 동시에 CurrentRanking 업데이트 처리
 	/// </summary>
 	/// <returns></returns>
-	int GetCurrentRankingAndUpdateCurrentRanking() { return CurrentRanking--; }
+	int GetCurrentRankingAndUpdateCurrentRanking() { return (CurrentRanking--); }
 
 	int GetTotalPlayedCharacterCount() const { return TotalPlayedCharacterCount; }
 
@@ -161,13 +161,15 @@ public:
 	/// CurrentAliveCount에서 하나 제거 
 	/// </summary>
 	/// <returns> : 제거한 이후 CurrentAliveCharacterCount 수 </returns>
-	int RemoveOneFromCurrentAliveCharacterCount() { return --CurrentAliveCharacterCount; }
+	int RemoveOneFromCurrentAliveCharacterCount() { return (--CurrentAliveCharacterCount); }
 
 	/// <summary>
 	/// CurrentAliveCount에서 하나 추가
 	/// </summary>
 	/// <returns> : 추가된 이후 CurrentAliveCharacterCount </returns>
-	int AddOneToCurrentAliveCharacterCount() { return ++CurrentAliveCharacterCount; }
+	int AddOneToCurrentAliveCharacterCount() { return (++CurrentAliveCharacterCount); }
+
+	int GetCurrentAliveCharacterCount() const { return CurrentAliveCharacterCount; }
 
 public:
 	

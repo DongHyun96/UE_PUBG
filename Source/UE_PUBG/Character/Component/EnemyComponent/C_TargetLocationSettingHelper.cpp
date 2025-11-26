@@ -87,7 +87,7 @@ bool UC_TargetLocationSettingHelper::TrySetRandomInCircleTargetLocationAtMagneti
 
 		PickedPositionTile = GAMESCENE_MANAGER->GetContainingTileCoordinate(RandomPosition);
 		
-	} while (UC_WaterTileCheckerComponent::IsWaterTileCoord(PickedPositionTile) || ++AvoidingWaterTryCount > 100);
+	} while (UC_WaterTileCheckerComponent::IsWaterTileCoord(PickedPositionTile) && ++AvoidingWaterTryCount < 50);
 
 	// UC_Util::Print("Try avoiding water count : " + FString::FromInt(AvoidingWaterTryCount), FColor::Red, 10.f);
 

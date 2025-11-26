@@ -244,7 +244,7 @@ void AC_EnemyAIController::UpdateDetectedCharactersRangeLevel()
 				continue;
 			}
 
-			ESightRangeLevel CurrentSightRangeLevel = GetCharacterSightLevel(CurrentCharacter);
+			const ESightRangeLevel CurrentSightRangeLevel = GetCharacterSightLevel(CurrentCharacter);
 
 			// 만약 새로 조사한 Level이 현재의 Level과 같다면 현상황 유지
 			if (CurrentSightRangeLevel == CurrentLevel) continue;

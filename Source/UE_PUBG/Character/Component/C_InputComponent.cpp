@@ -247,7 +247,9 @@ void UC_InputComponent::Look(const FInputActionValue& Value)
 void UC_InputComponent::Crouch()
 {
 	if (Player->GetSwimmingComponent()->IsSwimming()) return;
-	//if (Player->GetParkourComponent()->GetIsCurrentlyWarping()) return;
+
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
 
 	
 	switch (Player->GetPoseState())
@@ -275,7 +277,8 @@ void UC_InputComponent::OnSwimmingCrouch()
 
 void UC_InputComponent::Crawl()
 {
-	//if (Player->GetParkourComponent()->GetIsCurrentlyWarping()) return;
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
 
 	switch (Player->GetPoseState())
 	{
@@ -299,7 +302,9 @@ void UC_InputComponent::OnJump()
 	if (!Player->GetCanMove())						  return;
 	if (PlayerMovement->IsFalling())				  return;
 	if (Player->GetSwimmingComponent()->IsSwimming()) return;
-	//if (Player->GetParkourComponent()->GetIsCurrentlyWarping()) return;
+	
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
 
 	CancelTurnInPlaceMotion();
 
@@ -476,6 +481,12 @@ void UC_InputComponent::OnNum5()
 
 bool UC_InputComponent::OnNumKey(EWeaponSlot ChangeTo)
 {
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return false;
+
+	// Hard falling 중 무기 바꾸지 못함
+	if (Player->GetIsCurrentlyFallingHard()) return false;
+	
 	if (Player->GetMainState() != EMainState::IDLE) return false;
 	
 	if (Player->GetEquippedComponent()->GetWeapons()[ChangeTo] && Player->GetIsActivatingConsumableItem())
@@ -501,6 +512,8 @@ bool UC_InputComponent::OnNumKey(EWeaponSlot ChangeTo)
 void UC_InputComponent::OnXKey()
 {
 	if (Player->GetMainState() != EMainState::IDLE) return;
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return; // 파쿠르 처리 중
+	if (Player->GetIsCurrentlyFallingHard()) return; // Hard Falling 중 무기 Swap 불가
 	
 	Player->GetEquippedComponent()->ToggleArmed();
 	Player->GetPreviewCharacter()->UpdateHandPose(EHandState::UNARMED);
@@ -510,18 +523,29 @@ void UC_InputComponent::OnXKey()
 void UC_InputComponent::OnBKey()
 {
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
+	
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
+	
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteBKey();
 }
 
 void UC_InputComponent::OnRKey()
 {
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
+
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
+	
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteRKey();
 }
 
 void UC_InputComponent::OnMLBStarted()
 {
 	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
+
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
 
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return;
@@ -531,6 +555,9 @@ void UC_InputComponent::OnMLBStarted()
 void UC_InputComponent::OnMLBOnGoing()
 {
 	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
+
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
 	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	//if (Player->GetInvenSystem()->GetIsPanelOpend()) return;
@@ -540,6 +567,9 @@ void UC_InputComponent::OnMLBOnGoing()
 void UC_InputComponent::OnMLBCompleted()
 {
 	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
+
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
 	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMlb_Completed();
@@ -548,6 +578,9 @@ void UC_InputComponent::OnMLBCompleted()
 void UC_InputComponent::OnMRBStarted()
 {
 	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
+
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
 	
 	if (Player->GetInvenSystem()->GetInvenUI()->GetIsPanelOpened()) return;
 
@@ -558,6 +591,9 @@ void UC_InputComponent::OnMRBStarted()
 void UC_InputComponent::OnMRBOnGoing()
 {
 	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
+
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
 	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMrb_OnGoing();
@@ -566,6 +602,9 @@ void UC_InputComponent::OnMRBOnGoing()
 void UC_InputComponent::OnMRBCompleted()
 {
 	if (CombatControlMouseInteractionDelegate.IsBound() && CombatControlMouseInteractionDelegate.Execute()) return;
+
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
 	
 	if (!IsValid(Player->GetEquippedComponent()->GetCurWeapon())) return;
 	Player->GetEquippedComponent()->GetCurWeapon()->ExecuteMrb_Completed();
@@ -602,56 +641,62 @@ void UC_InputComponent::OnWalkReleased()
 void UC_InputComponent::OnFKey()
 {
 	// For Testing
-	switch (Player->GetSwimmingComponent()->GetSwimmingState())
-	{
-	case ESwimmingState::ON_GROUND: UC_Util::Print("Player Swimming State : ON_GROUND", FColor::Green, 10.f);
-		break;
-	case ESwimmingState::SWIMMING_SURFACE: UC_Util::Print("Player Swimming State : SWIMMING_SURFACE", FColor::Green, 10.f);
-		break;
-	case ESwimmingState::SWIMMING_UNDER: UC_Util::Print("Player Swimming State : SWIMMING_UNDER", FColor::Green, 10.f);
-		break;
-	case ESwimmingState::MAX: UC_Util::Print("Player Swimming State : MAX", FColor::Green, 10.f);
-		break;
-	}
-
-	switch (Player->GetSkyDivingComponent()->GetSkyDivingState())
-	{
-	case ESkyDivingState::READY: UC_Util::Print("Player SkyDivingState : READY", FColor::Blue, 10.f);
-		break;
-	case ESkyDivingState::SKYDIVING: UC_Util::Print("Player SkyDivingState : SKYDIVING", FColor::Blue, 10.f);
-		break;
-	case ESkyDivingState::PARACHUTING: UC_Util::Print("Player SkyDivingState : PARACHUTING", FColor::Blue, 10.f);
-		break;
-	case ESkyDivingState::LANDING: UC_Util::Print("Player SkyDivingState : LANDING", FColor::Blue, 10.f);
-		break;
-	case ESkyDivingState::MAX: UC_Util::Print("Player SkyDivingState : MAX", FColor::Blue, 10.f);
-		break;
-	}
+	UC_Util::Print(Player->GetCharacterMovement()->IsFalling() ? "IsFalling" : "Not IsFalling", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 
 	switch (Player->GetMainState())
 	{
-	case EMainState::IDLE: UC_Util::Print("Player Main State : IDLE", FColor::Red, 10.f);
+	case EMainState::IDLE: UC_Util::Print("Player Main State : IDLE", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 		break;
-	case EMainState::SKYDIVING: UC_Util::Print("Player Main State : SKYDIVING", FColor::Red, 10.f);
+	case EMainState::SKYDIVING: UC_Util::Print("Player Main State : SKYDIVING", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 		break;
-	case EMainState::DEAD: UC_Util::Print("Player Main State : DEAD", FColor::Red, 10.f);
+	case EMainState::DEAD: UC_Util::Print("Player Main State : DEAD", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 		break;
-	case EMainState::MAX: UC_Util::Print("Player Main State : MAX", FColor::Red, 10.f);
+	case EMainState::MAX: UC_Util::Print("Player Main State : MAX", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 		break;
 	}
 
-	if (Player->GetCanMove()) UC_Util::Print("CanMove", FColor::Cyan, 10.f);
-	else UC_Util::Print("Cannot move", FColor::Cyan, 10.f);
-	
-	
-	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), this->Inventory->GetMaxVolume());
-	//FString TheFloatStr = FString::SanitizeFloat(this->Inventory->GetMaxVolume());
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr);
-	//
-	//FString TheFloatStr1 = FString::SanitizeFloat((float)this->Inventory->GetCurBackPackLevel());
-	//GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, TheFloatStr1);
+	switch (Player->GetSwimmingComponent()->GetSwimmingState())
+	{
+	case ESwimmingState::ON_GROUND: UC_Util::Print("SwimmingState : OnGround", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+		break;
+	case ESwimmingState::SWIMMING_SURFACE: UC_Util::Print("SwimmingState : SWIMMING_SURFACE", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+		break;
+	case ESwimmingState::SWIMMING_UNDER: UC_Util::Print("SwimmingState : SWIMMING_UNDER", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+		break;
+	case ESwimmingState::MAX: UC_Util::Print("SwimmingState : MAX", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+		break;
+	}
 
-	//UE_LOG(LogTemp, Log, TEXT("Max Volume: %d"), NearInventory[0]);
+	UC_Util::Print(Player->GetParkourComponent()->GetRootedSkeletalMesh() == Player->GetMesh()->GetSkeletalMeshAsset() ?
+		"Currently OtherMesh" : "Currently Main Mesh", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+
+	UC_Util::Print(Player->GetCanMove() ? "CanMove" : "Cannot move", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+
+	UC_Util::Print("Current MovementMode : " + Player->GetCharacterMovement()->GetMovementName(), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+
+	int32 WaterVolumeCount{};
+	int32 TotalVolumeCount{};
+	// For testing
+	for (TActorIterator<APhysicsVolume> It(GetWorld()); It; ++It)
+	{
+		APhysicsVolume* Volume = *It;
+
+		if (!Volume) continue;
+
+		TotalVolumeCount++;
+		FString Address = FString::Printf(TEXT("%p"), Volume);
+		UC_Util::Print("Found Volume Address : " + Address, GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+		
+		if (Volume->bWaterVolume)
+		{
+			UC_Util::Print("Water Volume : " + FString::Printf(TEXT("%p"), Volume), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+			Volume->SetActorHiddenInGame(false);
+			WaterVolumeCount++;
+		}
+	}
+	UC_Util::Print("Total Volume count : " + FString::FromInt(TotalVolumeCount), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+	UC_Util::Print("Total Water volume found : " + FString::FromInt(WaterVolumeCount), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
+	UC_Util::Print("Total Alive Character Count : " + FString::FromInt(GAMESCENE_MANAGER->GetCurrentAliveCharacterCount()), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 
 	// SkyDiving 관련 F키
 	if (Player->GetMainState() == EMainState::SKYDIVING)
@@ -731,10 +776,16 @@ void UC_InputComponent::OnTabKey()
 
 void UC_InputComponent::OnGKey()
 {
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
+	
 	Player->ToggleThrowablegWeaponWheel();
 }
 
 void UC_InputComponent::OnTKey()
 {
+	// 파쿠르 중
+	if (Player->GetMesh()->GetSkeletalMeshAsset() == Player->GetParkourComponent()->GetRootedSkeletalMesh()) return;
+	
 	Player->ToggleConsumableWheel();
 }

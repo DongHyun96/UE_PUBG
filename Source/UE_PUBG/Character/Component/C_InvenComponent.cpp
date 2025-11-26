@@ -261,8 +261,10 @@ void UC_InvenComponent::AddItemToMyList(AC_Item* item)
 			return;
 		}
 
-		CurVolume += item->GetItemAllVolume();
+		RemoveItemToAroundList(item);
 
+		CurVolume += item->GetItemAllVolume();
+		//RemoveItemToAroundList(item);
 		// 원본 아이템 삭제 TODO : 혹시 중복 삭제가 되는 경우가 생기는지 확인하기.
 		item->DestroyItem();
 	}
@@ -382,6 +384,7 @@ void UC_InvenComponent::GetMapValues(const TMap<FString, AC_Item*>& Map, TArray<
 
 void UC_InvenComponent::RemoveItemToAroundList(AC_Item* item)
 {
+	if (!AroundItems.Contains(item)) return;
 	AroundItems.Remove(item);
 	if (AC_Player* Player = Cast<AC_Player>(OwnerCharacter)) 
 	{

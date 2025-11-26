@@ -160,6 +160,7 @@ void UC_FeetComponent::Trace(const FName& InName, float& OutDistance, FRotator& 
 
 	OutDistance = 0;
 	OutRotation = FRotator::ZeroRotator;
+	OutSoundDescriptor.bIsDeepWater = false;
 
 	// DrawDebugLine(GetWorld(), Start, End, FColor::Red, false);
 	

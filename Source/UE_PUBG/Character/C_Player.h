@@ -263,8 +263,8 @@ public:
 	void OnCameraTransitionTimelineFinished();
 
 private:
-	FVector InitialCameraLocation;
-	FRotator InitialCameraRotation;
+	FVector InitialCameraLocation{};
+	FRotator InitialCameraRotation{};
 public:
 	void SetTimeLineComponentForMovingCamera();
 
@@ -373,7 +373,6 @@ private: // MainSpringArm & AimingSpringArm Lerp Destinations
 	FVector AimingSpringArmRelativeLocationDest{}; // Spring Arm Relative Location 위치 Lerp시킬 Destination 값
 
 	float SpringArmRelativeLocationLerpSpeed = 5.f;
-
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)

@@ -37,6 +37,7 @@
 
 #include "Character/C_Player.h"
 #include "Character/C_Enemy.h"
+#include "Character/Component/C_SmokeEnteredChecker.h"
 
 #include "GameFramework/Actor.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -54,6 +55,7 @@
 
 
 #include "Item/ItemManager/C_ItemManager.h"
+#include "Kismet/KismetMathLibrary.h"
 
 FTutorialStageGoalCheckerDelegate AC_Gun::WeaponTutorialDelegate{};
 
@@ -620,118 +622,75 @@ bool AC_Gun::FireBullet()
 	bool OnScreen = (OwnerCharacter->GetNextSpeed() < 600) && OwnerCharacter->GetCanMove();
 	if (!OnScreen) return false;
 	//ExecuteReloadMontage();
-
-
+	
 	FVector FireLocation{}, FireVelocity{}, HitLocation{};
+	bool bLineTraceHit{};
 	
-	bool HasHit;
-	if (!SetBulletVelocity(FireLocation, FireVelocity, HitLocation, HasHit)) return false;
+	if (!SetBulletVelocity(FireLocation, FireVelocity, HitLocation, bLineTraceHit)) return false;
+	
+	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter);
+	
+	const bool ApplyGravity = !bLineTraceHit;
+	
+	AC_Bullet* Bullet{};
 
-	//UC_Util::Print(FireLocation);
-	//UC_Util::Print(FireDirection);
-	
-	AC_Player* OwnerPlayer = Cast<AC_Player>(OwnerCharacter); 
-	// const bool ApplyGravity = OwnerPlayer->GetIsWatchingSight() || !HasHit;
-	const bool ApplyGravity = !HasHit;
-	
-	int BulletCount = 0;
-
-	for (auto& Bullet : OwnerPlayer->GetBullets())
+	// Finding available bullet from BulletPool
+	for (AC_Bullet* B : OwnerPlayer->GetBullets())
 	{
-		if (Bullet->GetIsActive()) continue; 			
-
-		BulletCount++;
-		//UC_Util::Print("FIRE!!!!!!!");
-		CurMagazineBulletCount--;
-		OwnerPlayer->RecoilController();
-		if (HasHit)
-		{
-			bool FireSucceeded = Bullet->Fire(this, FireLocation, FireVelocity, ApplyGravity, HitLocation);
-			//if (Cast<AC_Player>(OwnerCharacter))
-			if (OwnerCharacter->IsLocallyControlled())
-			{
-				if (GunSoundData->FireSound) UGameplayStatics::PlaySound2D(this, GunSoundData->FireSound);
-			}
-			else
-			{
-				if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
-			}
-			
-			if (FireSucceeded) 
-			{ 
-				OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true); 
-
-				if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::MAIN_GUN )
-					OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot()->UpdateCurAmmo(this);
-				else if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::SUB_GUN)
-					OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetSubGunSlot()->UpdateCurAmmo(this);
-			}
-			
-			if (IsValid(MuzzleFlameEffectParticle))
-			{
-				UGameplayStatics::SpawnEmitterAttached
-				(
-					MuzzleFlameEffectParticle,  // 파티클 시스템
-					GunMesh,					// 부착할 메쉬 (총)
-					TEXT("MuzzleSocket"),		// 총구 소켓에 부착
-					FVector(0.f),
-					FRotator(0.f),
-					FVector(0.2f)
-				);
-			}
-			return FireSucceeded;
-		}
-
-		// Not has hit during Setting Bullet velocity
-		
-		const bool FireSucceeded = Bullet->Fire(this, FireLocation, FireVelocity, ApplyGravity);
-		//if (Cast<AC_Player>(OwnerCharacter))
-		if (OwnerCharacter->IsLocallyControlled())
-		{
-			if (GunSoundData->FireSound) UGameplayStatics::PlaySound2D(this, GunSoundData->FireSound);
-		}
-		else
-		{
-			if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
-		}
-
-		if (FireSucceeded)
-		{
-			OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true);
-
-			if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::MAIN_GUN)
-				OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot()->UpdateCurAmmo(this);
-			else if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::SUB_GUN)
-				OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetSubGunSlot()->UpdateCurAmmo(this);
-
-		}
-		if (IsValid(MuzzleFlameEffectParticle))
-		{
-			UGameplayStatics::SpawnEmitterAttached
-			(
-				MuzzleFlameEffectParticle,  // 파티클 시스템
-				GunMesh,					// 부착할 메쉬 (총)
-				TEXT("MuzzleSocket"),		// 총구 소켓에 부착
-				FVector(0.f),
-				FRotator(0.f),
-				FVector(0.2f)
-			);
-			// MuzzleFlameEffectParticle->SetWorldLocation(FireLocation);
-			// //MuzzleFlameEffectParticle->SetRelativeRotation(this->GetActorForwardVector().Rotation());
-			// MuzzleFlameEffectParticle->SetWorldRotation(OwnerCharacter->GetActorForwardVector().Rotation());
-			//
-			// MuzzleFlameEffectParticle->Activate();
-			
-		}
-		return FireSucceeded;
-
-		//Bullet->Fire(this, FireLocation, FireDirection);
-		//if (BulletCount > 100)
-		//	return true;
+		if (B->GetIsActive()) continue;
+		Bullet = B;
+		break;
 	}
-	// UC_Util::Print("No More Bullets in Pool");
 
-	return false;
+	if (!Bullet)
+	{
+		UC_Util::Print("From AC_Gun::FireBullet : Available bullet not found in the pool!", FColor::Red, 10.f);
+		return false;
+	}
+
+	
+	if (!Bullet->Fire(this, FireLocation, FireVelocity, ApplyGravity, bLineTraceHit ? HitLocation : FVector::ZeroVector))
+		return false; // Bullet Fire failed!
+
+	CurMagazineBulletCount--;
+	OwnerPlayer->RecoilController();
+	
+	if (OwnerCharacter->IsLocallyControlled())
+	{
+		if (GunSoundData->FireSound) UGameplayStatics::PlaySound2D(this, GunSoundData->FireSound);
+	}
+	else
+	{
+		if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
+	}
+	
+	OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetMagazineText(CurMagazineBulletCount, true); 
+
+	if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::MAIN_GUN )
+		OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetMainGunSlot()->UpdateCurAmmo(this);
+	else if (OwnerPlayer->GetEquippedComponent()->GetCurWeaponType() == EWeaponSlot::SUB_GUN)
+		OwnerPlayer->GetInvenSystem()->GetInvenUI()->GetEquipmentPanel()->GetSubGunSlot()->UpdateCurAmmo(this);
+
+	if (!IsValid(MuzzleFlameEffectParticle))
+	{
+		UC_Util::Print("From AC_Gun::FireBullet : MuzzleFlameEffectParticle is not valid!", FColor::Red, 10.f);
+		return true;
+	}
+
+	// 플레이어의 AimDown 상태일 경우, MuzzleFlame이 시야를 방해하기 때문에 Effect spawn시키지 않음
+	if (OwnerPlayer && bIsAimDown) return true;
+	
+	UGameplayStatics::SpawnEmitterAttached
+	(
+		MuzzleFlameEffectParticle,  // 파티클 시스템
+		GunMesh,					// 부착할 메쉬 (총)
+		TEXT("MuzzleSocket"),		// 총구 소켓에 부착
+		FVector(0.f),
+		FRotator(0.f),
+		FVector(0.2f)
+	);
+
+	return true;
 }
 
 bool AC_Gun::ReloadMagazine()
@@ -762,29 +721,40 @@ bool AC_Gun::ReloadMagazine()
 	}
 
 	// Inven에 있는 남아있는 총알 개수 파악
-	int LeftAmmoCount = 0;
+	int InvenLeftAmmoCount = 0;
 	AC_Item_Bullet* CorrespondingBulletItemObject = Cast<AC_Item_Bullet>(OwnerCharacter->GetInvenComponent()->FindMyItemByName(GetCurrentBulletTypeName()));
 	UC_InvenComponent* InvenComponent = OwnerCharacter->GetInvenComponent();
-	if (IsValid(CorrespondingBulletItemObject)) LeftAmmoCount = InvenComponent->GetTotalStackByItemName(CorrespondingBulletItemObject->GetItemCode());
+	if (IsValid(CorrespondingBulletItemObject)) InvenLeftAmmoCount = InvenComponent->GetTotalStackByItemName(CorrespondingBulletItemObject->GetItemCode());
 
+	if (OwnerPlayer) UC_Util::Print("Reloading : LeftAmmo in Inven Count : " + FString::FromInt(InvenLeftAmmoCount), FColor::MakeRandomColor(), 10.f);
+	
+	
 	// 장전할 수 있는 탄알 수가 Inven에 존재하지 않을 때
-	if (LeftAmmoCount == 0) return false;
+	if (InvenLeftAmmoCount == 0) return false;
 
 	// 예외처리 끝 / 장전 하기
 
-	const int BeforeChangeAmmo = CurMagazineBulletCount;
+	const int TotalBulletCount = InvenLeftAmmoCount + CurMagazineBulletCount; // Inven 장탄 수 + Mag 장탄 수 총합
 
-	// 장전 처리한 Magazine 총알 수로 현재 MagazineBulletCount 조정
-	CurMagazineBulletCount = FMath::Min(MaxMagazineBulletCount, LeftAmmoCount);
+	if (TotalBulletCount - MaxMagazineBulletCount >= 0)
+	{
+		CurMagazineBulletCount				= MaxMagazineBulletCount;
+		const int PrevInvenLeftAmmoCount	= InvenLeftAmmoCount;
+		InvenLeftAmmoCount					= TotalBulletCount - CurMagazineBulletCount; // 장전하고 Inven에 남은 장탄수
+		const int ReloadedBulletCount		= PrevInvenLeftAmmoCount - InvenLeftAmmoCount; // Inven에서 빼야할 장탄수
 
-	// 실질적으로 장전되어 들어간 탄알 수
-	// 해당 갯수를 파악해서 Inven의 탄알 수에서 제거 & Volume도 조정
-	const int ReloadedTotalBulletCount = CurMagazineBulletCount - BeforeChangeAmmo;
+		InvenComponent->DecreaseItemStack(CorrespondingBulletItemObject->GetItemCode(), ReloadedBulletCount);
+		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(ReloadedBulletCount * CorrespondingBulletItemObject->GetItemDatas()->ItemVolume));
+	}
+	else // 장전을 해도 최대 장탄수를 채울 수 없을 때
+	{
+		CurMagazineBulletCount = TotalBulletCount;
+
+		// 남은 Inven 장탄수 모두 제거
+		InvenComponent->DecreaseItemStack(CorrespondingBulletItemObject->GetItemCode(), InvenLeftAmmoCount);
+		OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(InvenLeftAmmoCount * CorrespondingBulletItemObject->GetItemDatas()->ItemVolume));
+	}
 	
-	//장전한 총알 갯수만큼 Inven의 총알 & curVolume 조절
-	InvenComponent->DecreaseItemStack(CorrespondingBulletItemObject->GetItemCode(), ReloadedTotalBulletCount);
-	OwnerCharacter->GetInvenComponent()->AddInvenCurVolume(-(ReloadedTotalBulletCount * CorrespondingBulletItemObject->GetItemDatas()->ItemVolume));
-
 	/* OwnerCharacter가 Player 일 때의 추가 처리 */
 	OwnerPlayer->GetInvenSystem()->InitializeList();
 	//OwnerPlayer->GetHUDWidget()->GetAmmoWidget()->SetLeftAmmoText(CurBullet->GetItemCurStack(), true);
@@ -1163,6 +1133,48 @@ bool AC_Gun::CanAIAttack(AC_BasicCharacter* InTargetCharacter)
 	if (!EnemyAIController->IsCurrentlyOnSight(InTargetCharacter)) return false;
 	
 	return true;
+}
+
+bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
+{
+	if (GetIsPlayingMontagesOfAny()) return false;
+
+	const FVector BulletSpreadRadius	= FVector(100,100,100);
+	const FVector EnemyLocation			= InTargetCharacter->GetActorLocation();
+	FVector SpreadLocation				= UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation,BulletSpreadRadius);
+	const FVector FireLocation			= GunMesh->GetSocketLocation(FName("MuzzleSocket"));
+	
+	FVector SmokeEnemyLocation{};
+	if (InTargetCharacter->GetSmokeEnteredChecker()->GetRandomLocationInSmokeArea(SmokeEnemyLocation))
+		SpreadLocation = SmokeEnemyLocation;
+	
+	const FVector BulletVelocity = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
+	
+	for (AC_Bullet* Bullet : OwnerCharacter->GetBullets())
+	{
+		if (!IsValid(Bullet))
+		{
+			UC_Util::Print("From AC_Gun::AIFireBullet : Bullet is not valid!", FColor::Red, 100.f);
+			continue;
+		}
+		if (Bullet->GetIsActive()) continue;
+		
+		if (!Bullet->Fire(this, FireLocation, BulletVelocity))
+		{
+			UC_Util::Print("From AC_Gun::ExecuteAIAttack : Bullet->Fire Failed!", FColor::MakeRandomColor(), 10.f);
+			return false;
+		}
+
+		// Bullet Fire Succeeded
+		CurMagazineBulletCount--;
+		if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
+		
+		return true;
+	}
+	
+	// 현재 Bullet pool에 Available한 총알이 없을 때
+	UC_Util::Print("From AC_Gun::AIFireBullet : No Available bullet found in the pool!", FColor::Red, 10.f);
+	return false;
 }
 
 void AC_Gun::CancelReload()

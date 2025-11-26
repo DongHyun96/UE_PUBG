@@ -102,11 +102,10 @@ private:
 	void StopSwimming();
 
 	/// <summary>
-	/// 해당 위치의 수심 구하기
+	/// 현재 OwnerCharacter 위치의 수심 구하기
 	/// </summary>
-	/// <param name="Position"> : 수심을 구할 위치 </param>
 	/// <returns> : 수심 </returns>
-	float GetWaterDepth(const FVector& Position);
+	float GetCurrentLocationWaterDepth();
 
 	/// <summary>
 	/// WaterDetectionCollider로부터 물 바닥면까지의 깊이 구하기
@@ -133,7 +132,9 @@ private:
 
 private:
 
-	static const float CAN_WALK_DEPTH_LIMIT;
+	static const float CAN_WALK_DEPTH_LIMIT;	  		// 100.f
+	static const float DOWNWARD_CONTROLLER_PITCH; 		// 295.f
+	static const float DOWNWARD_CONTROLLER_PITCH_LIMIT; // 300.f
 
 private:
 

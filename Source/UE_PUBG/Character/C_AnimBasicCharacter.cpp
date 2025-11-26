@@ -102,14 +102,23 @@ void UC_AnimBasicCharacter::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UC_AnimBasicCharacter::AnimNotify_OnAnyFallingOrJumpingStateToStand()
+void UC_AnimBasicCharacter::AnimNotify_OnAnyFallingOrJumpingStateToIdle()
 {
+	bIsCurrentlyFallingHard = false;
+	
 	OwnerCharacter->SetCanMove(true);
 	OwnerCharacter->SetHasJumped(false);
+	OwnerCharacter->SetIsCurrentlyFallingHard(false);
 
 	// 이전 자세가 Crouch일 때, Stand로 자세 바꾸기
 	if (OwnerCharacter->GetPoseState() != EPoseState::STAND)
 		OwnerCharacter->SetPoseState(OwnerCharacter->GetPoseState(), EPoseState::STAND);
+}
+
+void UC_AnimBasicCharacter::AnimNotify_OnFallingIdleToFallingHard()
+{
+	bIsCurrentlyFallingHard = true;
+	OwnerCharacter->SetIsCurrentlyFallingHard(true);
 }
 
 void UC_AnimBasicCharacter::AnimNotify_OnFallingHardToHardLanding()

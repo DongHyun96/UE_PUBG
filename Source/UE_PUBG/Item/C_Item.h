@@ -160,8 +160,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool Interaction(AC_BasicCharacter* Character) PURE_VIRTUAL(AC_Item::Interaction, return false;);
 
-	virtual bool UseItem() PURE_VIRTUAL(AC_Item::UseItem, return false;);
-
 	/// <summary>
 	/// 플레이어가 아이템을 습득할때 사용되는 함수.
 	/// 각 클래스에서 override해서 클래스에 맞게 사용.

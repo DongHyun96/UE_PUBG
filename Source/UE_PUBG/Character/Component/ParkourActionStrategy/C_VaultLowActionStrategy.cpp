@@ -10,7 +10,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "MotionWarpingComponent.h"
+#include "DynamicMesh/DynamicMesh3.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 #include "Utility/C_Util.h"
 
@@ -73,6 +75,9 @@ void UC_VaultLowActionStrategy::UseMotionWarpActionStrategy(AC_BasicCharacter* T
 	Target = {};
 	Target.Name = FName(TEXT("VaultLand"));
 	Target.Location = WarpLandPos;
+
+	UKismetSystemLibrary::FlushPersistentDebugLines(TargetCharacter->GetWorld());
+	DrawDebugSphere(TargetCharacter->GetWorld(), WarpLandPos, 30.f, 10, FColor::MakeRandomColor(), true);
 
 	MotionWarping->AddOrUpdateWarpTarget(Target);
 

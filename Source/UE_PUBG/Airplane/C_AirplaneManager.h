@@ -90,6 +90,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	class AC_Airplane* Airplane{};
 
+	UPROPERTY(EditInstanceOnly)
+	bool bStartTakeOffTimer = true;
+	
 private:
 
 	// const float PLANE_ALTITUDE = 30000.f;

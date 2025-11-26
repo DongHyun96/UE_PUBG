@@ -43,9 +43,8 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	// 무기를 들고 있지 않은 상황
 	if (!EquippedComponent->GetCurWeapon() || Enemy->GetHandState() == EHandState::UNARMED)
 	{
-		if (GAMESCENE_MANAGER->GetEnemies().Num() <= 1)
-			UC_Util::Print("From UC_BTTaskAttack::ExecuteTask : Not holding any weapons", FColor::Red, 10.f);
-		
+		Controller->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
+		Controller->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 		return EBTNodeResult::Failed;
 	}
 	
@@ -54,17 +53,20 @@ EBTNodeResult::Type UC_BTTaskAttack::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 	AC_BasicCharacter* TargetCharacter = Cast<AC_BasicCharacter>(BehaviorComponent->GetTargetCharacter());
 	if (!IsValid(TargetCharacter))
 	{
-		if (GAMESCENE_MANAGER->GetEnemies().Num() <= 1)
-			UC_Util::Print("From UC_BTTaskAttack::ExecuteTask : Invalid TargetCharacter", FColor::Red, 10.f);
-		
-		
+		Controller->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
+		Controller->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 		return EBTNodeResult::Failed;
 	}
 
 	AC_Weapon* CurrentAttackingWeapon = EquippedComponent->GetCurWeapon();
 	
 	// TickTask가 필요한 무기의 경우, TickTask에서 Continue / 필요 없는 무기의 경우 TickTask에서 바로 Succeeded로 처리
-	if (!CurrentAttackingWeapon->ExecuteAIAttack(TargetCharacter)) return EBTNodeResult::Failed;
+	if (!CurrentAttackingWeapon->ExecuteAIAttack(TargetCharacter))
+	{
+		Controller->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
+		Controller->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
+		return EBTNodeResult::Failed;
+	}
 
 	BehaviorComponent->SetAfterAttackTaskWaitTime(0.f);
 	
@@ -110,6 +112,18 @@ void UC_BTTaskAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 void UC_BTTaskAttack::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
+
+	if (TaskResult != EBTNodeResult::Failed) return;
+
+	// Failed일 경우, IDLE WAIT 상태로 돌리기
+	AC_EnemyAIController* EnemyAIController = Cast<AC_EnemyAIController>(OwnerComp.GetAIOwner());
+	if (!IsValid(EnemyAIController)) return;
+
+	AC_Enemy* Enemy = Cast<AC_Enemy>(EnemyAIController->GetPawn());
+	if (!IsValid(Enemy) || Enemy->GetMainState() == EMainState::DEAD) return;
+	
+	EnemyAIController->GetBehaviorComponent()->SetServiceType(EServiceType::IDLE);
+	EnemyAIController->GetBehaviorComponent()->SetIdleTaskType(EIdleTaskType::WAIT);
 }
 
 

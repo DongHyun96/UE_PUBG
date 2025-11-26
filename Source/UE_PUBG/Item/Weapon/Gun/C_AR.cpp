@@ -64,48 +64,6 @@ void AC_AR::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-bool AC_AR::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
-{
-	if (GetIsPlayingMontagesOfAny()) return false;
-	
-	const FVector BulletSpreadRadius	= FVector(100,100,100);
-	const FVector EnemyLocation			= InTargetCharacter->GetActorLocation();
-	      FVector SpreadLocation		= UKismetMathLibrary::RandomPointInBoundingBox(EnemyLocation,BulletSpreadRadius);
-	const FVector FireLocation			= GunMesh->GetSocketLocation(FName("MuzzleSocket"));
-
-	// Target Character가 연막 안에 있을 때, Spread location 재조정
-	FVector SmokeEnemyLocation;
-	if (InTargetCharacter->GetSmokeEnteredChecker()->GetRandomLocationInSmokeArea(SmokeEnemyLocation))
-		SpreadLocation = SmokeEnemyLocation;
-	
-	FVector BulletVelocity = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
-	
-	for (auto& Bullet : OwnerCharacter->GetBullets())
-	{
-		if (CurMagazineBulletCount == 0) break;
-		
-		if (Bullet->GetIsActive()) continue;
-		
-		CurMagazineBulletCount--;
-
-		if (Bullet->Fire(this, FireLocation, BulletVelocity))
-		{
-			if (GunSoundData->FireSound) UGameplayStatics::PlaySoundAtLocation(this, GunSoundData->FireSound, GetActorLocation());
-			return true;
-		}
-
-		// Fire failed
-		AIFireTimer = 0.0f;
-		// SR의 경우 여기에 ExecuteReloadMontage()가 들어감 (여기 하나만 다름)
-		return false;
-	}
-	
-	ExecuteMagazineReloadMontage(); // 탄창 재장전
-	
-	// 현재 Bullet pool에 Available한 총알이 없을 때
-	return false;
-}
-
 float AC_AR::GetDamageRateByBodyPart(const FName& BodyPart)
 {
 	if (!BODYPARTS_DAMAGERATE.Contains(BodyPart))

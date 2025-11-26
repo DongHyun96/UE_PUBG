@@ -403,8 +403,6 @@ void AC_Enemy::DestroyCharacter()
 	if (Delegate_OnCombatCharacterDestroy.ExecuteIfBound()) return;
 	
 	Super::DestroyCharacter();
-	
-	UC_Util::Print("Destroying Enemy", FColor::Red, 10.f);
 	GAMESCENE_MANAGER->GetEnemies().Remove(this);
 	this->Destroy();
 }

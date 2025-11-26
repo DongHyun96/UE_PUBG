@@ -274,7 +274,8 @@ void AC_BasicCharacter::CharacterDead(const FKillFeedDescriptor& KillFeedDescrip
 	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetInformWidget()->AddTopKillFeedLog(KillFeedDescriptor);
 
 	// AliveCount 업데이트
-	int LeftCharacterCount = GAMESCENE_MANAGER->RemoveOneFromCurrentAliveCharacterCount();
+	const int LeftCharacterCount = GAMESCENE_MANAGER->RemoveOneFromCurrentAliveCharacterCount();
+	UC_Util::Print("AC_BasicCharacter::CharacterDead : After Dead LeftCharacterCount : " + FString::FromInt(LeftCharacterCount), FColor::Red, 20.f);
 	GAMESCENE_MANAGER->GetPlayer()->GetHUDWidget()->GetTimeBoxWidget()->SetAliveCountText(LeftCharacterCount);
 	
 	FTimerHandle& TimerHandle = GAMESCENE_MANAGER->GetTimerHandle();
@@ -376,15 +377,15 @@ void AC_BasicCharacter::UpdateMaxWalkSpeed(const FVector2D& MovementVector)
 	//										(PoseState == EPoseState::CROUCH) ? 200.f :
 	//										(PoseState == EPoseState::CRAWL)  ? 100.f : 600.f;
 
-	if (MovementVector.X == 0.f && MovementVector.Y == 0.f) // No input
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
-		return;
-	}
-	
 	if (SwimmingComponent->IsSwimming())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		return;
+	}
+	
+	if (MovementVector.X == 0.f && MovementVector.Y == 0.f) // No input
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 0.f;
 		return;
 	}
 

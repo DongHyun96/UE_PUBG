@@ -29,7 +29,7 @@ public class UE_PUBG : ModuleRules
             "JsonUtilities",
             "MotionWarping",
             "AIModule",
-            "Water",
+            // "Water",
             "NavigationSystem",
             "PhysicsCore",
             "LoadingScreenModule",
