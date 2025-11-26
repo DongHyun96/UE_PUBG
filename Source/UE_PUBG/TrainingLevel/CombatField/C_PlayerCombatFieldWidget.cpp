@@ -45,9 +45,13 @@ void UC_PlayerCombatFieldWidget::NativeConstruct()
 	}
 
 	// Set Player names
-	FString PlayerName = GAMESCENE_MANAGER->GetPlayer()->GetCharacterName();
-	RoundResultPlayerNameText->SetText(FText::FromString(PlayerName));
-	MatchResultPanelPlayerName->SetText(FText::FromString(PlayerName));
+	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+	{
+		// Player(BasicCharacter)의 이름 setting을 BeginPlay에서 하기 때문에 다음 Tick에서 해당 이름 초기화
+		FString PlayerName = GAMESCENE_MANAGER->GetPlayer()->GetCharacterName();
+		RoundResultPlayerNameText->SetText(FText::FromString(PlayerName));
+		MatchResultPanelPlayerName->SetText(FText::FromString(PlayerName));
+	});
 
 	// WidgetAnimation의 경우 BindWidgetAnim을 통하여서만 멤버변수를 초기화할 수 있기 때문에 아래처럼 초기화 시켜둠
 	TopRoundResultDotAnimations.Add(Round1ResultTopDotAnimation);

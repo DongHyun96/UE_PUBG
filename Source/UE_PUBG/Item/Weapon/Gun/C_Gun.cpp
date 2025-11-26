@@ -1150,8 +1150,13 @@ bool AC_Gun::AIFireBullet(AC_BasicCharacter* InTargetCharacter)
 	
 	const FVector BulletVelocity = (SpreadLocation - FireLocation).GetSafeNormal() * 100 * GunDataRef->BulletSpeed;
 	
-	for (auto& Bullet : OwnerCharacter->GetBullets())
+	for (AC_Bullet* Bullet : OwnerCharacter->GetBullets())
 	{
+		if (!IsValid(Bullet))
+		{
+			UC_Util::Print("From AC_Gun::AIFireBullet : Bullet is not valid!", FColor::Red, 100.f);
+			continue;
+		}
 		if (Bullet->GetIsActive()) continue;
 		
 		if (!Bullet->Fire(this, FireLocation, BulletVelocity))
