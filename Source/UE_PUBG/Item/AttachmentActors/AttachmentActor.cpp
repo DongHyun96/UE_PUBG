@@ -3,6 +3,8 @@
 
 #include "Item/AttachmentActors/AttachmentActor.h"
 
+#include "Item/Weapon/Gun/C_Gun.h"
+
 // Sets default values
 AAttachmentActor::AAttachmentActor()
 {
@@ -24,6 +26,24 @@ void AAttachmentActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+}
+
+bool AAttachmentActor::UseAttachStrategy()
+{
+	if (!GetAttachParentActor()) return false;
+	CurrentGun = Cast<AC_Gun>(GetAttachParentActor());
+	if (!IsValid(CurrentGun)) return false;
+		
+	return true;
+}
+
+bool AAttachmentActor::UseDetachStrategy()
+{
+	if (!GetAttachParentActor()) return false;
+	CurrentGun = Cast<AC_Gun>(GetAttachParentActor());
+	if (!IsValid(CurrentGun)) return false;
+		
+	return true;
 }
 
 

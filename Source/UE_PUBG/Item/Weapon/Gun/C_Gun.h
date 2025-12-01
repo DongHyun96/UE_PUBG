@@ -138,8 +138,13 @@ public:
 	void SetIsAimPress(bool InIsAimDown) { bIsAimDown = InIsAimDown; }
 	bool GetIsAimPress() const { return bIsAimDown; }
 	void HandleSpringArmRotation();
+
+	// ADS 상태일 때, DepthOfField 초점 맞추기 처리
+	void HandleDepthOfFieldFocalDistanceOnADSMode();
 	
 	void SetOwnerCharacter(AC_BasicCharacter* InOwnerCharacter);
+
+	class UCameraComponent* GetAimSightCamera() const { return AimSightCamera; } // TODO : 이 Getter 지울 것
 
 	
 	USkeletalMeshComponent* GetGunMesh() { return GunMesh; }
@@ -360,13 +365,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<EPartsName> AttachableParts{};
 
-	//안쓰는듯?
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<EPartsName, class UMeshComponent*> AttachedParts{};
+	/*//안쓰는듯?
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EPartsName, class UMeshComponent*> AttachedParts{};*/
 
 	//홀스터 이름
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-
 	TMap<EAttachmentNames, FName> AttachmentPartsHolsterNames{};
 
 	//해당 부위 파츠가 장착중인지 -> 아래 AttachedItem으로 통합 예정
@@ -375,16 +379,14 @@ protected:
 
 	//해당 부위에 어떤 파츠가 붙어있는가 -> 아래 AttachedItem으로 통합 예정
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-
 	TMap<EPartsName, EAttachmentNames> AttachedItemName{};
 
 	//스코프 카메라 위치 정보
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-
 	TMap<EAttachmentNames, FVector4> ScopeCameraLocations{};
 
 	//해당 부위 장착된 파츠(AAttachmentActor) mesh 객체 
-	TMap<EPartsName, class AAttachmentActor*> AttachedItem{};
+	TMap<EPartsName, class AAttachmentActor*> AttachmentActors{};
 
 	//해당 부위에 장착될 수 있는 파츠(C_AttachableItem)
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -392,11 +394,8 @@ protected:
 
 public:
 
-	/// <summary>
-	/// 총에 직접 부착되는 부착물의 Mesh TMap을 반환한다.
-	/// </summary>
-	/// <returns></returns>
-	TMap<EPartsName, AAttachmentActor*> GetAttachedItem() { return AttachedItem; }
+	/// <returns> 총에 직접 부착되는 부착물 Actor </returns>
+	TMap<EPartsName, AAttachmentActor*> GetAttachmentActors() const { return AttachmentActors; }
 
 	/// <summary>
 	/// 인벤에서 사용하는 부착물 TMap을 반환한다.(Mesh가 아님)
@@ -409,7 +408,7 @@ public:
 public:
 	TMap<EAttachmentNames, FName> GetAttachmentPartsHolsterNames() { return AttachmentPartsHolsterNames; }
 	TMap<EAttachmentNames, FVector4> GetScopeCameraLocations() { return ScopeCameraLocations; }
-	void SetAttachedItems(EPartsName InPartName, AAttachmentActor* InAttachedItem) { AttachedItem[InPartName] = InAttachedItem; }
+	void SetAttachedItems(EPartsName InPartName, AAttachmentActor* InAttachedItem) { AttachmentActors[InPartName] = InAttachedItem; }
 protected:
 	void SetHolsterNames();
 	UMeshComponent* IronSightMesh{};

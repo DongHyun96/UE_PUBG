@@ -76,8 +76,7 @@ public:
 	/// </summary>
 	virtual void Init() override;
 
-	/// <summary>
-	/// <para> UFUNCTION() required for binding to the PreLoadMap delegate </para>
+	/// <summary>	/// <para> UFUNCTION() required for binding to the PreLoadMap delegate </para>
 	/// <para> Called before a new map starts loading </para>
 	/// </summary>
 	/// <param name="InMapName"> : The name/path of the map that's about to be loaded </param>

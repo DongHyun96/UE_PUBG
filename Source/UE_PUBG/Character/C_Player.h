@@ -295,14 +295,12 @@ private:
 protected:
 	AC_Item* CurOutLinedItem = nullptr;
 
-protected:
-	//Aim Press Camera
+protected: // Cameras
+	//Aim Press Camera (견착 조준 카메라)
 	UPROPERTY(EditDefaultsOnly)
 	class UCameraComponent* AimCamera{};
 	UPROPERTY(EditDefaultsOnly)
-	USpringArmComponent* AimSpringArmTemp{};
-
-protected: // Camera
+	USpringArmComponent* AimSpringArmTemp{}; // 견착 조준 카메라 SpringArm
 
 	UPROPERTY(BluePrintReadWrite, EditAnywhere)
 	UCameraComponent* MainCamera{};

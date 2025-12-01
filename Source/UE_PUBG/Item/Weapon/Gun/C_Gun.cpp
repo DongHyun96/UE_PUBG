@@ -141,8 +141,8 @@ void AC_Gun::Tick(float DeltaTime)
 		FTransform TempVec{};
 		FRotator AdditionalRotation = FRotator(0, 0, 0); // Yaw를 45도 회전시키는 예제
 
-		if (IsValid(AttachedItem[EPartsName::GRIP]))
-			TempVec = AttachedItem[EPartsName::GRIP]->GetAttachmentMesh()->GetSocketTransform("LeftHandSocket");
+		if (IsValid(AttachmentActors[EPartsName::GRIP]))
+			TempVec = AttachmentActors[EPartsName::GRIP]->GetAttachmentMesh()->GetSocketTransform("LeftHandSocket");
 		else
 			TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
 		//TempVec = GunMesh->GetSocketTransform("LeftHandSocket");
@@ -162,6 +162,8 @@ void AC_Gun::Tick(float DeltaTime)
 	CheckPlayerIsRunning();
 	//CheckBackPackLevelChange();
 	HandleAimWidgetShowAndHideWhileAiming();
+
+	HandleDepthOfFieldFocalDistanceOnADSMode();
 }
 
 void AC_Gun::InitializeItem(FName NewItemCode)
@@ -284,8 +286,8 @@ bool AC_Gun::SetAimingDown()
 	AimSightCamera->SetActive(true);
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetViewTargetWithBlend(this, 0.2);
 	bIsAimDown = true;
-	if (IsValid(AttachedItem[EPartsName::SCOPE]))
-		AttachedItem[EPartsName::SCOPE]->UseMrbStrategy();
+	if (IsValid(AttachmentActors[EPartsName::SCOPE]))
+		return AttachmentActors[EPartsName::SCOPE]->UseMrbStrategy();
 	return true;
 }
 //견착 조준만할 때 Player AimKePress함수로 메인카메라에서 에임 카메라로 바꿔주기
@@ -319,8 +321,8 @@ bool AC_Gun::BackToMainCamera()
 	OwnerCharacter->bUseControllerRotationYaw = false;
 	bIsAimDown = false;
 	Player->BackToMainCamera();
-	if (IsValid(AttachedItem[EPartsName::SCOPE]))
-		AttachedItem[EPartsName::SCOPE]->UseMrbStrategy();
+	if (IsValid(AttachmentActors[EPartsName::SCOPE]))
+		AttachmentActors[EPartsName::SCOPE]->UseMrbStrategy();
 	UC_Util::Print("BackToMainCamera", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
 	return true;
 	
@@ -342,6 +344,33 @@ void AC_Gun::HandleSpringArmRotation()
 		NewRotation.Yaw -= 0.5f;
 	}
 	AimSightSpringArm->SetWorldRotation(NewRotation);
+}
+
+void AC_Gun::HandleDepthOfFieldFocalDistanceOnADSMode()
+{
+	if (!Cast<AC_Player>(OwnerCharacter)) return;
+	if (!bIsAimDown) return;
+
+	switch (AttachedItemName[EPartsName::SCOPE])
+	{
+	case EAttachmentNames::SCOPE4:
+	{
+		// Scope Actor
+		AAttachmentActor* Scope = AttachmentActors[EPartsName::SCOPE];
+
+		const FVector SightSocketLocation    = Scope->GetAttachmentMesh()->GetSocketLocation("SightSocket");
+		const FVector AimSightCameraLocation = AimSightCamera->GetComponentLocation();
+		const float CamAndSightDistance		 = FVector::Distance(SightSocketLocation, AimSightCameraLocation);
+
+		UC_Util::Print(CamAndSightDistance);
+
+		AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = CamAndSightDistance;
+		return;
+	}
+	case EAttachmentNames::REDDOT: case EAttachmentNames::MAX: default:
+		AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = 0.f;
+		return;
+	}
 }
 
 void AC_Gun::SetOwnerCharacter(AC_BasicCharacter * InOwnerCharacter)
@@ -868,8 +897,8 @@ bool AC_Gun::SetBulletVelocity(FVector &OutLocation, FVector &OutVelocity, FVect
 			GetAttachedItemName(EPartsName::SCOPE) == EAttachmentNames::SCOPE8
 			)
 		{
-			const FVector  AttachmentLocation = AttachedItem[EPartsName::SCOPE]->GetActorLocation();
-			const FRotator AttachmentRotation = AttachedItem[EPartsName::SCOPE]->GetActorRotation();
+			const FVector  AttachmentLocation = AttachmentActors[EPartsName::SCOPE]->GetActorLocation();
+			const FRotator AttachmentRotation = AttachmentActors[EPartsName::SCOPE]->GetActorRotation();
 			const FVector  AttachmentForward  = AttachmentRotation.Vector().GetSafeNormal();
 			
 			DestLocation = AttachmentLocation + AttachmentForward * 100000;
@@ -992,7 +1021,7 @@ void AC_Gun::SetMagazineVisibility(bool InIsVisible)
 
 bool AC_Gun::GetGunHasGrip()
 {
-	return 	IsValid(AttachedItem[EPartsName::GRIP]);
+	return 	IsValid(AttachmentActors[EPartsName::GRIP]);
 }
 
 void AC_Gun::SetHolsterNames()
@@ -1017,7 +1046,7 @@ void AC_Gun::SetHolsterNames()
 	for (int32 i = 0; i < (int32)EPartsName::MAX; ++i) // EAttachmentNames에 MAX가 있다면
 	{
 		EPartsName AttachmentName = (EPartsName)i;
-		AttachedItem.Add(AttachmentName, nullptr);
+		AttachmentActors.Add(AttachmentName, nullptr);
 		IsPartAttached.Add(AttachmentName, false);
 		AttachedItemName.Add(AttachmentName, EAttachmentNames::MAX);
 	}
@@ -1046,14 +1075,31 @@ void AC_Gun::SetSightCameraSpringArmLocation(const FVector4& InLocationAndArmLen
 
 void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
 {
+	/*bOverride_DepthOfFieldFstop
+	bOverride_DepthOfFieldFocalDistance
+	bOverride_DepthOfFieldSensorWidth*/
+	
+	/*// 공통적으로 모든 Blur/Sharpen 관련 PostProcess를 끔
+	
+	AimSightCamera->PostProcessSettings.bOverride_MotionBlurAmount = true;
+	AimSightCamera->PostProcessSettings.bOverride_MotionBlurMax = true;
+	AimSightCamera->PostProcessSettings.bOverride_Sharpen = true;
+
+	AimSightCamera->PostProcessSettings.DepthOfFieldFstop = 0.0f;
+	AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = 0.0f;
+	AimSightCamera->PostProcessSettings.DepthOfFieldSensorWidth = 0.0f;
+
+	AimSightCamera->PostProcessSettings.MotionBlurAmount = 0.0f;
+	AimSightCamera->PostProcessSettings.MotionBlurMax = 0.0f;
+
+	AimSightCamera->PostProcessSettings.Sharpen = 0.0f;*/
+
+	AimSightCamera->PostProcessSettings.bOverride_DepthOfFieldFstop			= true;
+	AimSightCamera->PostProcessSettings.bOverride_DepthOfFieldFocalDistance = true;
+	AimSightCamera->PostProcessSettings.bOverride_DepthOfFieldSensorWidth	= true;
+
 	switch (InAttachmentName)
 	{
-	case EAttachmentNames::MAX:
-	case EAttachmentNames::REDDOT:
-		AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = 0.0f;
-		AimSightCamera->PostProcessSettings.DepthOfFieldSensorWidth   = 0.0f;
-		AimSightCamera->PostProcessSettings.DepthOfFieldFstop         = 0.0f;
-		break;
 	case EAttachmentNames::SCOPE4:
 		AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = 6.5f;
 		AimSightCamera->PostProcessSettings.DepthOfFieldSensorWidth   = 5.0f;
@@ -1064,7 +1110,7 @@ void AC_Gun::SetScopeCameraMode(EAttachmentNames InAttachmentName)
 		AimSightCamera->PostProcessSettings.DepthOfFieldSensorWidth   = 5.0f;
 		AimSightCamera->PostProcessSettings.DepthOfFieldFstop         = 4.0f;
 		break;
-	default:
+	case EAttachmentNames::MAX: case EAttachmentNames::REDDOT: default:
 		AimSightCamera->PostProcessSettings.DepthOfFieldFocalDistance = 0.f;
 		AimSightCamera->PostProcessSettings.DepthOfFieldSensorWidth   = 0.f;
 		AimSightCamera->PostProcessSettings.DepthOfFieldFstop         = 0.f;
@@ -1201,7 +1247,7 @@ void AC_Gun::SetActorHiddenInGame(bool bNewHidden)
 
 		if (!IsPartAttached[PartsName]) continue;
 
-		AttachedItem[PartsName]->SetActorHiddenInGame(bNewHidden);
+		AttachmentActors[PartsName]->SetActorHiddenInGame(bNewHidden);
 	}
 
 	SetMagazineVisibility(!bNewHidden);

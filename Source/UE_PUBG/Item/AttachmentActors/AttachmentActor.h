@@ -36,9 +36,15 @@ public:
 	EAttachmentNames GetAttachmentName() { return AttachmentName; }
 	UMeshComponent* GetAttachmentMesh() { return AttachmentMesh; }
 
-	virtual bool UseAttachStrategy() PURE_VIRTUAL(AAttachmentActor::UseAttachStrategy, return false;);
-	virtual bool UseDetachStrategy() PURE_VIRTUAL(AAttachmentActor::UseDetachStrategy, return false;);
+	virtual bool UseAttachStrategy();
+	virtual bool UseDetachStrategy();
 	virtual bool UseMrbStrategy() { return false; };
+
+protected:
+
+	// 현재 부착 처리된 Gun (없다면 nullptr)
+	class AC_Gun* CurrentGun{};
+	
 };
 
 
