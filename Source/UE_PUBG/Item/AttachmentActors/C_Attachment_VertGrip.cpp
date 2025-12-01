@@ -29,11 +29,7 @@ void AC_Attachment_VertGrip::Tick(float DeltaTime)
 
 bool AC_Attachment_VertGrip::UseAttachStrategy()
 {
-	if (!GetAttachParentActor())
-		return false;
-	AC_Gun* CurrentGun = Cast<AC_Gun>(GetAttachParentActor());
-	if (!IsValid(CurrentGun))
-		return false;
+	if (!Super::UseAttachStrategy()) return false;
 
 	CurrentGun->SetRecoilMultiplierGripVert(0.7f);
 	return true;
@@ -41,21 +37,11 @@ bool AC_Attachment_VertGrip::UseAttachStrategy()
 
 bool AC_Attachment_VertGrip::UseDetachStrategy()
 {
-	if (!GetAttachParentActor())
-		return false;
-	AC_Gun* CurrentGun = Cast<AC_Gun>(GetAttachParentActor());
-	if (!IsValid(CurrentGun))
-		return false;
+	if (!Super::UseDetachStrategy()) return false;
+	
 	CurrentGun->SetRecoilMultiplierGripVert(1.0f);
 
 	DetachRootComponentFromParent();
 	SetActorHiddenInGame(true);
 	return true;
 }
-
-bool AC_Attachment_VertGrip::UseMrbStrategy()
-{
-	return false;
-}
-
-

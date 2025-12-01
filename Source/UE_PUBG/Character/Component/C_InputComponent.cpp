@@ -640,64 +640,6 @@ void UC_InputComponent::OnWalkReleased()
 /// </summary>
 void UC_InputComponent::OnFKey()
 {
-	// For Testing
-	UC_Util::Print(Player->GetCharacterMovement()->IsFalling() ? "IsFalling" : "Not IsFalling", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-
-	switch (Player->GetMainState())
-	{
-	case EMainState::IDLE: UC_Util::Print("Player Main State : IDLE", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		break;
-	case EMainState::SKYDIVING: UC_Util::Print("Player Main State : SKYDIVING", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		break;
-	case EMainState::DEAD: UC_Util::Print("Player Main State : DEAD", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		break;
-	case EMainState::MAX: UC_Util::Print("Player Main State : MAX", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		break;
-	}
-
-	switch (Player->GetSwimmingComponent()->GetSwimmingState())
-	{
-	case ESwimmingState::ON_GROUND: UC_Util::Print("SwimmingState : OnGround", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		break;
-	case ESwimmingState::SWIMMING_SURFACE: UC_Util::Print("SwimmingState : SWIMMING_SURFACE", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		break;
-	case ESwimmingState::SWIMMING_UNDER: UC_Util::Print("SwimmingState : SWIMMING_UNDER", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		break;
-	case ESwimmingState::MAX: UC_Util::Print("SwimmingState : MAX", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		break;
-	}
-
-	UC_Util::Print(Player->GetParkourComponent()->GetRootedSkeletalMesh() == Player->GetMesh()->GetSkeletalMeshAsset() ?
-		"Currently OtherMesh" : "Currently Main Mesh", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-
-	UC_Util::Print(Player->GetCanMove() ? "CanMove" : "Cannot move", GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-
-	UC_Util::Print("Current MovementMode : " + Player->GetCharacterMovement()->GetMovementName(), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-
-	int32 WaterVolumeCount{};
-	int32 TotalVolumeCount{};
-	// For testing
-	for (TActorIterator<APhysicsVolume> It(GetWorld()); It; ++It)
-	{
-		APhysicsVolume* Volume = *It;
-
-		if (!Volume) continue;
-
-		TotalVolumeCount++;
-		FString Address = FString::Printf(TEXT("%p"), Volume);
-		UC_Util::Print("Found Volume Address : " + Address, GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-		
-		if (Volume->bWaterVolume)
-		{
-			UC_Util::Print("Water Volume : " + FString::Printf(TEXT("%p"), Volume), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-			Volume->SetActorHiddenInGame(false);
-			WaterVolumeCount++;
-		}
-	}
-	UC_Util::Print("Total Volume count : " + FString::FromInt(TotalVolumeCount), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-	UC_Util::Print("Total Water volume found : " + FString::FromInt(WaterVolumeCount), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-	UC_Util::Print("Total Alive Character Count : " + FString::FromInt(GAMESCENE_MANAGER->GetCurrentAliveCharacterCount()), GAMESCENE_MANAGER->GetTickRandomColor(), 10.f);
-
 	// SkyDiving 관련 F키
 	if (Player->GetMainState() == EMainState::SKYDIVING)
 	{

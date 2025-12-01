@@ -33,11 +33,8 @@ void AC_Attachment_Scope4X::Tick(float DeltaTime)
 
 bool AC_Attachment_Scope4X::UseAttachStrategy()
 {
-	if (!GetAttachParentActor())
-		return false;
-	AC_Gun* CurrentGun = Cast<AC_Gun>(GetAttachParentActor());
-	if (!IsValid(CurrentGun))
-		return false;
+	if (!Super::UseAttachStrategy()) return false;
+	
 	CurrentGun->SetSightCameraSpringArmLocation(CurrentGun->GetScopeCameraLocations()[AttachmentName]);
 	CurrentGun->SetScopeCameraMode(AttachmentName);
 
@@ -46,31 +43,32 @@ bool AC_Attachment_Scope4X::UseAttachStrategy()
 
 bool AC_Attachment_Scope4X::UseDetachStrategy()
 {
-	if (!GetAttachParentActor())
-		return false;
-	AC_Gun* CurrentGun = Cast<AC_Gun>(GetAttachParentActor());
-	if (!IsValid(CurrentGun))
-		return false;
+	if (!Super::UseDetachStrategy()) return false;
+	
 	CurrentGun->SetSightCameraSpringArmLocation(CurrentGun->GetScopeCameraLocations()[EAttachmentNames::MAX]);
 	CurrentGun->SetScopeCameraMode(EAttachmentNames::MAX);
 	CurrentGun->SetIronSightMeshHiddenInGame(false);
+	
 	DetachRootComponentFromParent();
+	
 	SetActorHiddenInGame(true);
+	
 	if (IsValid(SceneCaptureComponent))
 		SceneCaptureComponent->SetActive(false);
+	
 	return true;
 }
 
 bool AC_Attachment_Scope4X::UseMrbStrategy()
 {
-	if (!GetAttachParentActor())
-		return false;
-	AC_Gun* CurrentGun = Cast<AC_Gun>(GetAttachParentActor());
-	if (!IsValid(CurrentGun))
-		return false;
-	if (IsValid(SceneCaptureComponent))
-		SceneCaptureComponent->SetActive(CurrentGun->GetIsAimPress());
-	return false;
+	if (!GetAttachParentActor()) return false;
+	
+	CurrentGun = Cast<AC_Gun>(GetAttachParentActor());
+	if (!IsValid(CurrentGun)) return false;
+	if (!IsValid(SceneCaptureComponent)) return false;
+	
+	SceneCaptureComponent->SetActive(CurrentGun->GetIsAimPress());
+	return true;
 }
 
 

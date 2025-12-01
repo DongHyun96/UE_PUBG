@@ -26,8 +26,6 @@ public:
 
 	virtual bool UseAttachStrategy() override;
 	virtual bool UseDetachStrategy() override;
-	virtual bool UseMrbStrategy()    override;
-
 };
 
 

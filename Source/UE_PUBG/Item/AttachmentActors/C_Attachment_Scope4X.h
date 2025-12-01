@@ -28,6 +28,8 @@ public:
 	virtual bool UseDetachStrategy() override;
 	virtual bool UseMrbStrategy()    override;
 
+private:
+
 	class USceneCaptureComponent2D* SceneCaptureComponent;
 };
 
